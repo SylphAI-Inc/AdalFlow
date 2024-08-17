@@ -15,7 +15,7 @@ ModelClient
 .. 3. How to use ``ModelClient`` directly?
 
 
-:ref:`ModelClient<core-model_client>` is the standardized protocol and base class for all model inference SDKs (either via APIs or local) to communicate with LightRAG internal components.
+:ref:`ModelClient<core-model_client>` is the standardized protocol and base class for all model inference SDKs (either via APIs or local) to communicate with AdalFlow internal components.
 Therefore, by switching out the ``ModelClient`` in a ``Generator``, ``Embedder``, or ``Retriever`` (those components that take models), you can make these functional components model-agnostic.
 
 
@@ -25,7 +25,7 @@ Therefore, by switching out the ``ModelClient`` in a ``Generator``, ``Embedder``
     :alt: ModelClient
     :width: 400px
 
-    The bridge between all model inference SDKs and internal components in LightRAG
+    The bridge between all model inference SDKs and internal components in AdalFlow
 
 .. note::
 
@@ -94,7 +94,7 @@ This is how ``TransformerClient`` does the same thing:
         def init_sync_client(self):
             return TransformerEmbedder()
 
-Second, we use `convert_inputs_to_api_kwargs` for subclasses to convert LightRAG inputs into the `api_kwargs` (SDK arguments).
+Second, we use `convert_inputs_to_api_kwargs` for subclasses to convert AdalFlow inputs into the `api_kwargs` (SDK arguments).
 
 .. code-block:: python
 
@@ -165,8 +165,8 @@ This is how ``TransformerClient`` does the same thing:
                 raise ValueError(f"model_type {model_type} is not supported")
 
 
-In addition, you can add any method that parses the SDK-specific output to a format compatible with LightRAG components.
-Typically, an LLM needs to use `parse_chat_completion` to parse the completion to text and `parse_embedding_response` to parse the embedding response to a structure that LightRAG components can understand.
+In addition, you can add any method that parses the SDK-specific output to a format compatible with AdalFlow components.
+Typically, an LLM needs to use `parse_chat_completion` to parse the completion to text and `parse_embedding_response` to parse the embedding response to a structure that AdalFlow components can understand.
 You can refer to :class:`OpenAIClient<components.model_client.openai_client.OpenAIClient>` for API embedding model integration and :class:`TransformersClient<components.model_client.transformers_client.TransformersClient>` for local embedding model integration.
 
 
@@ -209,9 +209,9 @@ Here is an example of using ``OpenAIClient`` directly, first on an LLM model:
 
 .. code-block:: python
 
-    from lightrag.components.model_client import OpenAIClient
-    from lightrag.core.types import ModelType
-    from lightrag.utils import setup_env
+    from adalflow.components.model_client import OpenAIClient
+    from adalflow.core.types import ModelType
+    from adalflow.utils import setup_env
 
     setup_env()
 

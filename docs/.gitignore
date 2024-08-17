@@ -13,4 +13,5 @@ source/apis/tracing/tracing*
 source/apis/tracing/modules*
 source/apis/optim/optim*
 source/apis/optim/modules*
+source/apis/datasets/datasets*
 tests.txt

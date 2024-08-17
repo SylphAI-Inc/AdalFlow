@@ -1,17 +1,17 @@
 from typing import Any, List, Optional
 
-from lightrag.core.generator import Generator
-from lightrag.components.data_process.data_components import (
+from adalflow.core.generator import Generator
+from adalflow.components.data_process.data_components import (
     RetrieverOutputToContextStr,
 )
 
-from lightrag.core.string_parser import JsonParser
-from lightrag.core.component import Component, Sequential
-from lightrag.core.db import LocalDB
-from lightrag.core.types import Document
+from adalflow.core.string_parser import JsonParser
+from adalflow.core.component import Component, Sequential
+from adalflow.core.db import LocalDB
+from adalflow.core.types import Document
 
-from lightrag.components.retriever import BM25Retriever
-from lightrag.components.model_client import OpenAIClient
+from adalflow.components.retriever import BM25Retriever
+from adalflow.components.model_client import OpenAIClient
 
 
 # TODO: RAG can potentially be a component itsefl and be provided to the users

@@ -152,7 +152,7 @@ All of the parsers are quite straightforward to use.
 
 .. code-block:: python
 
-    from lightrag.core.string_parser import BooleanParser
+    from adalflow.core.string_parser import BooleanParser
 
     bool_str = "True"
     bool_str_2 = "False"
@@ -185,7 +185,7 @@ Boolean parsers will not work for '1', '0', 'yes', 'no' as they are not the stan
 
 .. code-block:: python
 
-    rom lightrag.core.string_parser import IntParser
+    rom adalflow.core.string_parser import IntParser
 
     int_str = "42"
     int_str_2 = "42.0"
@@ -214,7 +214,7 @@ The printout will be:
 
 .. code-block:: python
 
-    from lightrag.core.string_parser import FloatParser
+    from adalflow.core.string_parser import FloatParser
 
     float_str = "42.0"
     float_str_2 = "42"
@@ -244,7 +244,7 @@ The printout will be:
 
 .. code-block:: python
 
-    from lightrag.core.string_parser import ListParser
+    from adalflow.core.string_parser import ListParser
 
     list_str = '["key", "value"]'
     list_str_2 = 'prefix["key", 2]...'
@@ -269,7 +269,7 @@ Even though it can work on lists, it is better to only use it for dictionaries.
 
 .. code-block:: python
 
-    from lightrag.core.string_parser import JsonParser
+    from adalflow.core.string_parser import JsonParser
 
     dict_str = '{"key": "value"}'
     nested_dict_str = (
@@ -300,7 +300,7 @@ Though it works almost on all of the previous examples, it is better to use it f
 
 .. code-block:: python
 
-    from lightrag.core.string_parser import YamlParser
+    from adalflow.core.string_parser import YamlParser
 
     yaml_dict_str = "key: value"
     yaml_nested_dict_str = (
@@ -335,7 +335,7 @@ And we will demonstrate how to use ``JsonOutputParser`` and ``YamlOutputParser``
 .. code-block:: python
 
     from dataclasses import dataclass, field
-    from lightrag.core import DataClass
+    from adalflow.core import DataClass
 
     @dataclass
     class User(DataClass):
@@ -350,7 +350,7 @@ Here is how to use ``JsonOutputParser``:
 
 .. code-block:: python
 
-    from lightrag.components.output_parsers import JsonOutputParser
+    from adalflow.components.output_parsers import JsonOutputParser
 
     parser = JsonOutputParser(data_class=User, examples=[user_example])
     print(parser)
@@ -422,7 +422,7 @@ The steps are totally the same as the ``JsonOutputParser``.
 
 .. code-block:: python
 
-    from lightrag.components.output_parsers import YamlOutputParser
+    from adalflow.components.output_parsers import YamlOutputParser
 
     parser = YamlOutputParser(data_class=User, examples=[user_example])
     print(parser)

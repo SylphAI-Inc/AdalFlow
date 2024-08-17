@@ -32,7 +32,7 @@ Design
 
 .. figure:: /_static/images/generator.png
     :align: center
-    :alt: LightRAG generator design
+    :alt: AdalFlow generator design
     :width: 700px
 
     Generator - The Orchestrator for LLM Prediction
@@ -119,8 +119,8 @@ The minimum setup to initiate a generator in the code:
 
 .. code-block:: python
 
-    from lightrag.core import Generator
-    from lightrag.components.model_client import GroqAPIClient
+    from adalflow.core import Generator
+    from adalflow.components.model_client import GroqAPIClient
 
     generator = Generator(
         model_client=GroqAPIClient(),
@@ -282,10 +282,10 @@ We will use the `JsonParser` to parse the output back to a `dict` object.
 
 .. code-block:: python
 
-    from lightrag.core import Generator
-    from lightrag.core.types import GeneratorOutput
-    from lightrag.components.model_client import OpenAIClient
-    from lightrag.core.string_parser import JsonParser
+    from adalflow.core import Generator
+    from adalflow.core.types import GeneratorOutput
+    from adalflow.components.model_client import OpenAIClient
+    from adalflow.core.string_parser import JsonParser
 
     output_format_str = r"""Your output should be formatted as a standard JSON object with two keys:
     {
@@ -346,7 +346,7 @@ We can even use :class:`ModelClientType<core.types.ModelClientType>` to switch t
 
 .. code-block:: python
 
-    from lightrag.core.types import ModelClientType
+    from adalflow.core.types import ModelClientType
 
     generator = Generator(
         model_client=ModelClientType.OPENAI(),  # or ModelClientType.GROQ()
@@ -378,7 +378,7 @@ In this case, we know we are creating a generator, we will use ``from_config`` m
 
 .. code-block:: python
 
-    from lightrag.core import Generator
+    from adalflow.core import Generator
 
     config = {
         "model_client": {
@@ -411,8 +411,8 @@ We just need to follow the config structure: ``component_name`` and ``component_
 
 .. code-block:: python
 
-    from lightrag.utils.config import new_component
-    from lightrag.core import Generator
+    from adalflow.utils.config import new_component
+    from adalflow.core import Generator
 
     config = {
         "generator": {

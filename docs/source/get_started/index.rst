@@ -10,6 +10,7 @@ Here is the content of our documentation project.
    :caption: Get Started
 
    installation
+   adalflow_in_15mins
    community
 
 .. lightrag_in_10_mins

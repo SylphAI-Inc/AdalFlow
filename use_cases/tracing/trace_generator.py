@@ -1,8 +1,8 @@
-from lightrag.core.generator import Generator
-from lightrag.core.component import Component
+from adalflow.core.generator import Generator
+from adalflow.core.component import Component
 
-from lightrag.components.model_client import GroqAPIClient
-from lightrag.tracing.decorators import trace_generator_states, trace_generator_call
+from adalflow.components.model_client import GroqAPIClient
+from adalflow.tracing.decorators import trace_generator_states, trace_generator_call
 
 
 @trace_generator_states()
@@ -33,7 +33,7 @@ class SimpleQA(Component):
 
 
 if __name__ == "__main__":
-    from lightrag.utils import get_logger
+    from adalflow.utils import get_logger
 
     get_logger(enable_file=False, level="DEBUG")
     log = get_logger(__name__, level="INFO")

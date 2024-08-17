@@ -1,4 +1,4 @@
-from typing import Dict, Sequence, List
+from typing import Sequence, List
 
 
 from torchmetrics.classification import MulticlassF1Score, MulticlassAccuracy
@@ -6,8 +6,10 @@ from torchmetrics import Accuracy
 import torch
 from torch import Tensor
 
+from adalflow.eval.base import BaseEvaluator
 
-class ClassifierEvaluator:
+
+class ClassifierEvaluator(BaseEvaluator):
     def __init__(self, num_classes: int):
         self.num_classes = num_classes
         self.macro_f1 = MulticlassF1Score(num_classes=num_classes, average="macro")
@@ -19,7 +21,12 @@ class ClassifierEvaluator:
             num_classes=num_classes, average=None
         )
 
-    def run(self, preds: Sequence[int], targets: Sequence[int]):
+    def compute_single_item(self, pred: int, target: int) -> float:
+        if pred == target:
+            return 1.0
+        return 0.0
+
+    def compute(self, preds: Sequence[int], targets: Sequence[int]):
         # convert predict to tensor
         # 1 -> [0, 1,..., 0]
         preds_tensor = torch.zeros(len(preds), self.num_classes)

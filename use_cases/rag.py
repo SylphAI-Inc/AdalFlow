@@ -1,15 +1,15 @@
 from typing import Any, List, Optional
 import os
-from lightrag.core import Component, Generator, Embedder, Sequential
-from lightrag.core.types import Document, ModelClientType
-from lightrag.core.string_parser import JsonParser
-from lightrag.core.db import LocalDB
-from lightrag.utils import setup_env
+from adalflow.core import Component, Generator, Embedder, Sequential
+from adalflow.core.types import Document, ModelClientType
+from adalflow.core.string_parser import JsonParser
+from adalflow.core.db import LocalDB
+from adalflow.utils import setup_env
 
-from lightrag.components.retriever.faiss_retriever import FAISSRetriever
-from lightrag.components.model_client import OpenAIClient
+from adalflow.components.retriever.faiss_retriever import FAISSRetriever
+from adalflow.components.model_client import OpenAIClient
 
-from lightrag.components.data_process import (
+from adalflow.components.data_process import (
     RetrieverOutputToContextStr,
     ToEmbeddings,
     TextSplitter,

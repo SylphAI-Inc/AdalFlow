@@ -1,0 +1,629 @@
+{
+    "optimizer": "BootstrapFewShotClassSampler",
+    "shots": 6,
+    "runs": 5,
+    "run_test_0": {
+        "acc": 0.556,
+        "macro_f1": 0.5,
+        "examples": [
+            {
+                "index": 358,
+                "data": {
+                    "text": "What is the abbreviation for micro ?",
+                    "coarse_label": 0,
+                    "fine_label": 0,
+                    "thought": "The question is asking for an abbreviation, which fits into the ABBR class."
+                }
+            },
+            {
+                "index": 373,
+                "data": {
+                    "text": "What cocktail inspired John Doxat to write the book Stirred-Not Shaken ?",
+                    "coarse_label": 1,
+                    "fine_label": 9,
+                    "thought": "The question is asking about a specific cocktail that inspired an author, which makes it fall under the 'Entity' category."
+                }
+            },
+            {
+                "index": 284,
+                "data": {
+                    "text": "What are the distinct physical characterstics of the Arabian horse ?",
+                    "coarse_label": 2,
+                    "fine_label": 25,
+                    "thought": "The question is asking for details about physical characteristics, which falls under the 'Description and abstract concept' category."
+                }
+            },
+            {
+                "index": 276,
+                "data": {
+                    "text": "Who was the inventor of silly putty ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question is asking for a person, hence categorized under human being."
+                }
+            },
+            {
+                "index": 511,
+                "data": {
+                    "text": "Where is the Rose Bowl played ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "The question is asking for the location of the Rose Bowl, which is a place."
+                }
+            },
+            {
+                "index": 285,
+                "data": {
+                    "text": "What amount of money did the Philippine ex-dictator Marcos steal from the treasury ?",
+                    "coarse_label": 5,
+                    "fine_label": 41,
+                    "thought": "The question asks for a specific amount of money which is a numeric value."
+                }
+            }
+        ]
+    },
+    "run_eval_0": {
+        "acc": 0.7,
+        "macro_f1": 0.525,
+        "examples": [
+            {
+                "index": 358,
+                "data": {
+                    "text": "What is the abbreviation for micro ?",
+                    "coarse_label": 0,
+                    "fine_label": 0,
+                    "thought": "The question is asking for an abbreviation, which fits into the ABBR class."
+                }
+            },
+            {
+                "index": 373,
+                "data": {
+                    "text": "What cocktail inspired John Doxat to write the book Stirred-Not Shaken ?",
+                    "coarse_label": 1,
+                    "fine_label": 9,
+                    "thought": "The question is asking about a specific cocktail that inspired an author, which makes it fall under the 'Entity' category."
+                }
+            },
+            {
+                "index": 284,
+                "data": {
+                    "text": "What are the distinct physical characterstics of the Arabian horse ?",
+                    "coarse_label": 2,
+                    "fine_label": 25,
+                    "thought": "The question is asking for details about physical characteristics, which falls under the 'Description and abstract concept' category."
+                }
+            },
+            {
+                "index": 276,
+                "data": {
+                    "text": "Who was the inventor of silly putty ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question is asking for a person, hence categorized under human being."
+                }
+            },
+            {
+                "index": 511,
+                "data": {
+                    "text": "Where is the Rose Bowl played ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "The question is asking for the location of the Rose Bowl, which is a place."
+                }
+            },
+            {
+                "index": 285,
+                "data": {
+                    "text": "What amount of money did the Philippine ex-dictator Marcos steal from the treasury ?",
+                    "coarse_label": 5,
+                    "fine_label": 41,
+                    "thought": "The question asks for a specific amount of money which is a numeric value."
+                }
+            }
+        ]
+    },
+    "run_test_1": {
+        "acc": 0.4,
+        "macro_f1": 0.411,
+        "examples": [
+            {
+                "index": 454,
+                "data": {
+                    "text": "What does the `` c '' stand for in the equation E=mc2 ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "The question is asking for the meaning or stands for the term 'c' in the equation E=mc2, which falls under abbreviation."
+                }
+            },
+            {
+                "index": 267,
+                "data": {
+                    "text": "What do chefs call The Master Spice ?",
+                    "coarse_label": 1,
+                    "fine_label": 9,
+                    "thought": "The question is asking for what chefs refer to as 'The Master Spice,' which is seeking a specific entity."
+                }
+            },
+            {
+                "index": 469,
+                "data": {
+                    "text": "How do you recognize anorexia ?",
+                    "coarse_label": 2,
+                    "fine_label": 26,
+                    "thought": "The question is asking for an explanation or abstract concept regarding the recognition of anorexia."
+                }
+            },
+            {
+                "index": 342,
+                "data": {
+                    "text": "Who invented the vacuum cleaner ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question is inquiring about the individual responsible for inventing the vacuum cleaner, which pertains to a human being."
+                }
+            },
+            {
+                "index": 523,
+                "data": {
+                    "text": "What city is served by McCarren Airport ?",
+                    "coarse_label": 4,
+                    "fine_label": 32,
+                    "thought": "McCarren Airport is a specific place, so it's associated with a location."
+                }
+            },
+            {
+                "index": 21,
+                "data": {
+                    "text": "When did humans first begin to write history seriously ?",
+                    "coarse_label": 5,
+                    "fine_label": 39,
+                    "thought": "The question is asking for a specific time period, which is a numeric value."
+                }
+            }
+        ]
+    },
+    "run_eval_1": {
+        "acc": 0.6,
+        "macro_f1": 0.39,
+        "examples": [
+            {
+                "index": 454,
+                "data": {
+                    "text": "What does the `` c '' stand for in the equation E=mc2 ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "The question is asking for the meaning or stands for the term 'c' in the equation E=mc2, which falls under abbreviation."
+                }
+            },
+            {
+                "index": 267,
+                "data": {
+                    "text": "What do chefs call The Master Spice ?",
+                    "coarse_label": 1,
+                    "fine_label": 9,
+                    "thought": "The question is asking for what chefs refer to as 'The Master Spice,' which is seeking a specific entity."
+                }
+            },
+            {
+                "index": 469,
+                "data": {
+                    "text": "How do you recognize anorexia ?",
+                    "coarse_label": 2,
+                    "fine_label": 26,
+                    "thought": "The question is asking for an explanation or abstract concept regarding the recognition of anorexia."
+                }
+            },
+            {
+                "index": 342,
+                "data": {
+                    "text": "Who invented the vacuum cleaner ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question is inquiring about the individual responsible for inventing the vacuum cleaner, which pertains to a human being."
+                }
+            },
+            {
+                "index": 523,
+                "data": {
+                    "text": "What city is served by McCarren Airport ?",
+                    "coarse_label": 4,
+                    "fine_label": 32,
+                    "thought": "McCarren Airport is a specific place, so it's associated with a location."
+                }
+            },
+            {
+                "index": 21,
+                "data": {
+                    "text": "When did humans first begin to write history seriously ?",
+                    "coarse_label": 5,
+                    "fine_label": 39,
+                    "thought": "The question is asking for a specific time period, which is a numeric value."
+                }
+            }
+        ]
+    },
+    "run_test_2": {
+        "acc": 0.5,
+        "macro_f1": 0.407,
+        "examples": [
+            {
+                "index": 189,
+                "data": {
+                    "text": "What is the acronym for the National Bureau of Investigation ?",
+                    "coarse_label": 0,
+                    "fine_label": 0,
+                    "thought": "The question asks for the acronym of an organization, which falls under the abbreviation category."
+                }
+            },
+            {
+                "index": 594,
+                "data": {
+                    "text": "What is a fear of slime ?",
+                    "coarse_label": 1,
+                    "fine_label": 7,
+                    "thought": "The question is asking about the name of a specific phobia, which classifies it under entities."
+                }
+            },
+            {
+                "index": 475,
+                "data": {
+                    "text": "What is a courier ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "The question is asking for a definition or explanation, indicating it falls under the 'Description and abstract concept' class."
+                }
+            },
+            {
+                "index": 445,
+                "data": {
+                    "text": "What is the name of the firm that makes Spumante ?",
+                    "coarse_label": 3,
+                    "fine_label": 28,
+                    "thought": "The firm that makes Spumante is an entity, not a human being."
+                }
+            },
+            {
+                "index": 498,
+                "data": {
+                    "text": "What country 's capital was formed when Pesth and Buda merged ?",
+                    "coarse_label": 4,
+                    "fine_label": 33,
+                    "thought": "The question is asking about a capital, which is a specific location, formed by the merging of Pesth and Buda, hence it refers to a location."
+                }
+            },
+            {
+                "index": 271,
+                "data": {
+                    "text": "When did the Carolingian period begin ?",
+                    "coarse_label": 5,
+                    "fine_label": 39,
+                    "thought": "The question is asking for a specific time period, which relates to a numeric value."
+                }
+            }
+        ]
+    },
+    "run_eval_2": {
+        "acc": 0.5,
+        "macro_f1": 0.227,
+        "examples": [
+            {
+                "index": 189,
+                "data": {
+                    "text": "What is the acronym for the National Bureau of Investigation ?",
+                    "coarse_label": 0,
+                    "fine_label": 0,
+                    "thought": "The question asks for the acronym of an organization, which falls under the abbreviation category."
+                }
+            },
+            {
+                "index": 594,
+                "data": {
+                    "text": "What is a fear of slime ?",
+                    "coarse_label": 1,
+                    "fine_label": 7,
+                    "thought": "The question is asking about the name of a specific phobia, which classifies it under entities."
+                }
+            },
+            {
+                "index": 475,
+                "data": {
+                    "text": "What is a courier ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "The question is asking for a definition or explanation, indicating it falls under the 'Description and abstract concept' class."
+                }
+            },
+            {
+                "index": 445,
+                "data": {
+                    "text": "What is the name of the firm that makes Spumante ?",
+                    "coarse_label": 3,
+                    "fine_label": 28,
+                    "thought": "The firm that makes Spumante is an entity, not a human being."
+                }
+            },
+            {
+                "index": 498,
+                "data": {
+                    "text": "What country 's capital was formed when Pesth and Buda merged ?",
+                    "coarse_label": 4,
+                    "fine_label": 33,
+                    "thought": "The question is asking about a capital, which is a specific location, formed by the merging of Pesth and Buda, hence it refers to a location."
+                }
+            },
+            {
+                "index": 271,
+                "data": {
+                    "text": "When did the Carolingian period begin ?",
+                    "coarse_label": 5,
+                    "fine_label": 39,
+                    "thought": "The question is asking for a specific time period, which relates to a numeric value."
+                }
+            }
+        ]
+    },
+    "run_test_3": {
+        "acc": 0.4,
+        "macro_f1": 0.444,
+        "examples": [
+            {
+                "index": 439,
+                "data": {
+                    "text": "What is DSL ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "DSL is an abbreviation, and the question asks for its meaning or definition."
+                }
+            },
+            {
+                "index": 365,
+                "data": {
+                    "text": "What movie tour of the Roman empire features the admonition : `` Row well and live '' ?",
+                    "coarse_label": 1,
+                    "fine_label": 5,
+                    "thought": "The question asks about a specific movie, which is a type of entity."
+                }
+            },
+            {
+                "index": 11,
+                "data": {
+                    "text": "What does Venus Retrograde mean ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "The question is asking for an explanation or meaning of 'Venus Retrograde,' which classifies it as a description or abstract concept."
+                }
+            },
+            {
+                "index": 10,
+                "data": {
+                    "text": "What detective lives on Punchbowl Hill and has 11 children ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question is about a specific detective who is a human character, hence it falls under Human being."
+                }
+            },
+            {
+                "index": 531,
+                "data": {
+                    "text": "What Mediterranean island is home to the first Club Med ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "The question asks for a specific geographic location, which belongs to the class 'Location'."
+                }
+            },
+            {
+                "index": 122,
+                "data": {
+                    "text": "How many months does it take the moon to revolve around the Earth ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "The question seeks a numeric value regarding the time it takes for the moon to complete its orbit around the Earth."
+                }
+            }
+        ]
+    },
+    "run_eval_3": {
+        "acc": 0.7,
+        "macro_f1": 0.419,
+        "examples": [
+            {
+                "index": 439,
+                "data": {
+                    "text": "What is DSL ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "DSL is an abbreviation, and the question asks for its meaning or definition."
+                }
+            },
+            {
+                "index": 365,
+                "data": {
+                    "text": "What movie tour of the Roman empire features the admonition : `` Row well and live '' ?",
+                    "coarse_label": 1,
+                    "fine_label": 5,
+                    "thought": "The question asks about a specific movie, which is a type of entity."
+                }
+            },
+            {
+                "index": 11,
+                "data": {
+                    "text": "What does Venus Retrograde mean ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "The question is asking for an explanation or meaning of 'Venus Retrograde,' which classifies it as a description or abstract concept."
+                }
+            },
+            {
+                "index": 10,
+                "data": {
+                    "text": "What detective lives on Punchbowl Hill and has 11 children ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question is about a specific detective who is a human character, hence it falls under Human being."
+                }
+            },
+            {
+                "index": 531,
+                "data": {
+                    "text": "What Mediterranean island is home to the first Club Med ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "The question asks for a specific geographic location, which belongs to the class 'Location'."
+                }
+            },
+            {
+                "index": 122,
+                "data": {
+                    "text": "How many months does it take the moon to revolve around the Earth ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "The question seeks a numeric value regarding the time it takes for the moon to complete its orbit around the Earth."
+                }
+            }
+        ]
+    },
+    "run_test_4": {
+        "acc": 0.4,
+        "macro_f1": 0.411,
+        "examples": [
+            {
+                "index": 383,
+                "data": {
+                    "text": "What is the correct way to abbreviate cc. at the bottom of a business letter ?",
+                    "coarse_label": 0,
+                    "fine_label": 0,
+                    "thought": "The question is asking about the correct way to abbreviate 'cc.' which indicates it falls under the abbreviation category."
+                }
+            },
+            {
+                "index": 433,
+                "data": {
+                    "text": "What are different products of petroleum ?",
+                    "coarse_label": 1,
+                    "fine_label": 15,
+                    "thought": "The question is asking for different items (products of petroleum), which are entities."
+                }
+            },
+            {
+                "index": 144,
+                "data": {
+                    "text": "What is the definition of the term `` weapons system '' ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "The question is asking for the definition of a term, which is a request for a description or abstract concept."
+                }
+            },
+            {
+                "index": 269,
+                "data": {
+                    "text": "Who made the first gas engine ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question is asking about the person who invented the first gas engine, which relates to a human being."
+                }
+            },
+            {
+                "index": 349,
+                "data": {
+                    "text": "What two countries are linked by the Brenner Pass ?",
+                    "coarse_label": 4,
+                    "fine_label": 33,
+                    "thought": "I know that the Brenner Pass is a mountain pass that links two countries geographically."
+                }
+            },
+            {
+                "index": 36,
+                "data": {
+                    "text": "How many bones are in the human hand ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "The question is asking for a specific number, indicating it's looking for a numeric value."
+                }
+            }
+        ]
+    },
+    "run_eval_4": {
+        "acc": 0.5,
+        "macro_f1": 0.192,
+        "examples": [
+            {
+                "index": 383,
+                "data": {
+                    "text": "What is the correct way to abbreviate cc. at the bottom of a business letter ?",
+                    "coarse_label": 0,
+                    "fine_label": 0,
+                    "thought": "The question is asking about the correct way to abbreviate 'cc.' which indicates it falls under the abbreviation category."
+                }
+            },
+            {
+                "index": 433,
+                "data": {
+                    "text": "What are different products of petroleum ?",
+                    "coarse_label": 1,
+                    "fine_label": 15,
+                    "thought": "The question is asking for different items (products of petroleum), which are entities."
+                }
+            },
+            {
+                "index": 144,
+                "data": {
+                    "text": "What is the definition of the term `` weapons system '' ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "The question is asking for the definition of a term, which is a request for a description or abstract concept."
+                }
+            },
+            {
+                "index": 269,
+                "data": {
+                    "text": "Who made the first gas engine ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question is asking about the person who invented the first gas engine, which relates to a human being."
+                }
+            },
+            {
+                "index": 349,
+                "data": {
+                    "text": "What two countries are linked by the Brenner Pass ?",
+                    "coarse_label": 4,
+                    "fine_label": 33,
+                    "thought": "I know that the Brenner Pass is a mountain pass that links two countries geographically."
+                }
+            },
+            {
+                "index": 36,
+                "data": {
+                    "text": "How many bones are in the human hand ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "The question is asking for a specific number, indicating it's looking for a numeric value."
+                }
+            }
+        ]
+    },
+    "test_acc": {
+        "max_acc": 0.556,
+        "min_acc": 0.4,
+        "mean_acc": 0.45119999999999993,
+        "std_acc": 0.06515949662175116
+    },
+    "eval_acc": {
+        "max_acc": 0.7,
+        "min_acc": 0.5,
+        "mean_acc": 0.6,
+        "std_acc": 0.08944271909999157
+    },
+    "test_macro_f1": {
+        "max_macro_f1": 0.5,
+        "min_macro_f1": 0.407,
+        "mean_macro_f1": 0.4346,
+        "std_macro_f1": 0.035330440133120346
+    },
+    "eval_macro_f1": {
+        "max_macro_f1": 0.525,
+        "min_macro_f1": 0.192,
+        "mean_macro_f1": 0.3506,
+        "std_macro_f1": 0.12415893040776406
+    }
+}

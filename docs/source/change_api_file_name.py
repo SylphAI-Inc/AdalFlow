@@ -61,6 +61,7 @@ if __name__ == "__main__":
         "./source/apis/core",
         "./source/apis/components",
         # "./source/apis/components/_autosummary",
+        "./source/apis/datasets",
         "./source/apis/utils",
         "./source/apis/eval",
         "./source/apis/tracing",

@@ -1,7 +1,7 @@
 API Reference
 =============
 
-Welcome to `LightRAG`.
+Welcome to `AdalFlow`.
 The API reference is organized by subdirectories.
 
 ..  This section provides detailed documentation of the internal APIs that make up the LightRAG framework. Explore the APIs to understand how to effectively utilize and integrate LightRAG components into your projects.
@@ -68,26 +68,51 @@ Functional components like model client, retriever, agent, local data processing
 
    components.output_parsers.outputs
 
+Datasets
+-----------
 
-Evaluation
-----------
 .. autosummary::
 
+   datasets.big_bench_hard
+   datasets.trec
+   datasets.hotpot_qa
+   datasets.types
+
+
+
+
+Evaluation
+------------
+.. autosummary::
+
+   eval.base
    eval.answer_match_acc
    eval.retriever_recall
    eval.retriever_relevance
    eval.llm_as_judge
 
 
-Optimizer
-----------
+Optimization
+--------------
 .. autosummary::
 
-   optim.few_shot_optimizer
-   optim.llm_augment
-   optim.llm_optimizer
+
+   optim.parameter
    optim.optimizer
-   optim.sampler
+   optim.grad_component
+
+   optim.types
+   optim.function
+   optim.few_shot.bootstrap_optimizer
+   optim.text_grad.text_loss_with_eval_fn
+   optim.text_grad.tgd_optimizer
+   optim.text_grad.llm_text_loss
+   optim.trainer.trainer
+   optim.trainer.adal
+
+
+
+
 
 
 Tracing
@@ -103,6 +128,8 @@ Utils
 ----------
 .. autosummary::
 
+
+   utils.data
    utils.logger
    utils.setup_env
    utils.lazy_import
@@ -117,6 +144,7 @@ Utils
 
    core/index
    components/index
+   datasets/index
    eval/index
    optim/index
    tracing/index

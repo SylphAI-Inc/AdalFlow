@@ -182,7 +182,7 @@ Normally, this is not possible with the native `dataclasses` module as it will r
 
 .. code-block:: python
 
-    from lightrag.core import DataClass, required_field
+    from adalflow.core import DataClass, required_field
 
     @dataclass
     class TrecData2(DataClass):
@@ -304,7 +304,7 @@ For data class format, we have :class:`DataClassFormatType<core.base_data_class.
 
 .. code-block:: python
 
-    from lightrag.core import DataClassFormatType
+    from adalflow.core import DataClassFormatType
 
     json_signature = TrecData2.format_class_str(DataClassFormatType.SIGNATURE_JSON)
     print(json_signature)
@@ -512,7 +512,7 @@ Similarly, (1) all ``to_dict``, ``to_json``, and ``to_yaml`` works with `exclude
 
 .. code-block:: python
 
-    from lightrag.core import DataClassFormatType
+    from adalflow.core import DataClassFormatType
 
     example_str = example.format_example_str(DataClassFormatType.EXAMPLE_JSON)
     print(example_str)

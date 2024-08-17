@@ -4,22 +4,22 @@ Installation
 
 .. _Installation:
 
-LightRAG is available in Python.
+AdalFlow is available in Python.
 
-1. Install LightRAG
+1. Install AdalFlow
 ~~~~~~~~~~~~~~~~~~~~
 
 To install the package, run:
 
 .. code-block:: bash
 
-   pip install lightrag
+   pip install adalflow
 
 If you know you will need `openai` and `faiss-cpu`, you can do so with:
 
 .. code-block:: bash
 
-   pip install lightrag[openai, faiss-cpu]
+   pip install adalflow[openai, faiss-cpu]
 
 .. note::
    Check the `Optional Packages` section for more information on the available packages.
@@ -50,7 +50,7 @@ You can use the following import:
 
 .. code-block:: python
 
-   from lightrag.utils import setup_env
+   from adalflow.utils import setup_env
 
    setup_env()
 
@@ -61,13 +61,13 @@ Or, you can load it yourself with ``python-dotenv``:
    from dotenv import load_dotenv
    load_dotenv()  # This loads the environment variables from `.env`.
 
-This setup ensures that LightRAG can access all necessary configurations during runtime.
+This setup ensures that AdalFlow can access all necessary configurations during runtime.
 
 4. Install Optional Packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-LightRAG currently has built-in support for (1) OpenAI, Groq, Anthropic, Google, and Cohere, and (2) FAISS and Transformers.
+AdalFlow currently has built-in support for (1) OpenAI, Groq, Anthropic, Google, and Cohere, and (2) FAISS and Transformers.
 You can find all optional packages at :class:`OptionalPackages<utils.lazy_import.OptionalPackages>`.
 Make sure to install the necessary SDKs for the components you plan to use.
 Here is the list of our tested versions:
@@ -99,12 +99,12 @@ You can install the optional packages with either ``pip install package_name`` o
 
 .. 1. **Clone the Repository:**
 
-..    Start by cloning the LightRAG repository to your local machine:
+..    Start by cloning the AdalFlow repository to your local machine:
 
 ..    .. code-block:: bash
 
-..       git clone https://github.com/SylphAI-Inc/LightRAG
-..       cd LightRAG
+..       git clone https://github.com/SylphAI-Inc/AdalFlow
+..       cd AdalFlow
 
 .. 2. **Configure API Keys:**
 
