@@ -132,7 +132,7 @@ This [Trace Graph](https://adalflow.sylph.ai/tutorials/trace_graph.html) demonst
 Just define it as a ``Parameter`` and pass it to our ``Generator``.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/trainable_task_pipeline.png" alt="AdalFlow Trainable Task Pipeline">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/Trainable_task_pipeline.png" alt="AdalFlow Trainable Task Pipeline">
 </p>
 
 ### **AdalComponent & Trainer**
