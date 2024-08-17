@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Light &#8212; LightRAG: The Lightning Library for LLM Applications</title>
+    <title>Unites Research and Production &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
   
   
   
@@ -134,8 +134,8 @@
       
     
     
-    <img src="_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="_static/adalflow-logo.png" class="logo__image only-light" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>
+    <script>document.write(`<img src="_static/adalflow-logo.png" class="logo__image only-dark" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>`);</script>
   
   
 </a></div>
@@ -265,10 +265,6 @@
     </div>
   
 
-  
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
   
 </div>
 
@@ -409,151 +405,62 @@
                   
   <a class="reference internal image-reference" href="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/adalflow-logo.png"><img alt="Adalflow Logo" src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/adalflow-logo.png" style="width: 100%;" />
 </a>
-<p align="center">
+<div class="desktop-only">
+  <h2 style="text-align: center; font-size: 2.5em; margin-top: 0px;">
+  ⚡ The Library to Build and Auto-optimize Any LLM Task Pipeline ⚡
+  </h2>
+  <h3 style="text-align: center; font-size: 1.5em; margin-top: 20px; margin-bottom: 20px;">
+    Embracing a design philosophy similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
+  </h3>
+</div>
+<div class="mobile-only">
+  <h2 style="text-align: center; font-size: 1.8em; margin-top: 0px;">
+  ⚡ The Library to Build and Auto-optimize Any LLM Task Pipeline ⚡
+  </h2>
+  <h3 style="text-align: center; font-size: 0.9em; margin-top: 20px; margin-bottom: 20px;">
+    Embracing a design philosophy similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
+  </h3>
+</div>
 
+<style>
+  .mobile-only {
+    display: none;
+  }
 
- <a href="https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing">
-     <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
- </a>
-</p>
-
-<div style="text-align: center; margin-bottom: 20px;">
-   <a href="https://pypi.org/project/adalflow/"><img src="https://img.shields.io/pypi/v/adalflow?style=flat-square" alt="PyPI Version"></a>
-   <a href="https://github.com/SylphAI-Inc/AdalFlow" style="display: inline-block; margin-left: 10px;">
-      <img src="https://img.shields.io/badge/GitHub-AdalFlow-blue?logo=github&style=flat-square" alt="GitHub Repo">
-   </a>
-   <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
-   <a href="https://discord.gg/ezzszrRZvT">
-     <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
-   </a>
-   <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
-</div><h3 style="text-align: center; font-size: 1.5em; margin-top: 10px;">
-⚡ The Library to Build and to Auto-optimize Any LLM Task Pipeline ⚡
-</h3><section id="light">
-<h1>Light<a class="headerlink" href="#light" title="Link to this heading">#</a></h1>
-<p>AdalFlow shares similar design pattern as <cite>PyTorch</cite> for deep learning modeling.
-We provide developers with fundamental building blocks of <em>100% clarity and simplicity</em>.</p>
-<ul class="simple">
-<li><p>Only two fundamental but powerful base classes: <cite>Component</cite> for the pipeline and <cite>DataClass</cite> for data interaction with LLMs.</p></li>
-<li><p>A highly readable codebase and less than two levels of class inheritance. <a class="reference internal" href="tutorials/class_hierarchy.html"><span class="doc">Class Hierarchy</span></a>.</p></li>
-<li><p>We maximize the library’s tooling and prompting capabilities to minimize the reliance on LLM API features such as tools and JSON format.</p></li>
-<li><p>The result is a library with bare minimum abstraction, providing developers with <em>maximum customizability</em>.</p></li>
-</ul>
-<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
-<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-1 sd-row-cols-lg-1 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-1 docutils">
-<div class="sd-col sd-d-flex-row docutils">
-<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
-<div class="sd-card-body docutils">
-<div class="sd-card-title sd-font-weight-bold docutils">
-PyTorch</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-
-<span class="k">class</span> <span class="nc">Net</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-      <span class="nb">super</span><span class="p">(</span><span class="n">Net</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">dropout1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout2d</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">dropout2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout2d</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">9216</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-
-   <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-      <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-      <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-      <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-      <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-      <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="sd-col sd-d-flex-row docutils">
-<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
-<div class="sd-card-body docutils">
-<div class="sd-card-title sd-font-weight-bold docutils">
-AdalFlow</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">adalflow</span> <span class="k">as</span> <span class="nn">adal</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">GroqAPIClient</span>
-
-
-<span class="k">class</span> <span class="nc">SimpleQA</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
-   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-      <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-      <span class="n">template</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;SYS&gt;</span>
-<span class="s2">      You are a helpful assistant.</span>
-<span class="s2">      &lt;/SYS&gt;</span>
-<span class="s2">      User: {{input_str}}</span>
-<span class="s2">      You:</span>
-<span class="s2">      &quot;&quot;&quot;</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span>
-            <span class="n">model_client</span><span class="o">=</span><span class="n">GroqAPIClient</span><span class="p">(),</span>
-            <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;llama3-8b-8192&quot;</span><span class="p">},</span>
-            <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
-      <span class="p">)</span>
-
-   <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
-      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="p">({</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">})</span>
-
-   <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
-      <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">acall</span><span class="p">({</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">})</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="modular">
-<h1>Modular<a class="headerlink" href="#modular" title="Link to this heading">#</a></h1>
-<p>AdalFlow resembles PyTorch in the way that we provide a modular and composable structure for developers to build and to optimize their LLM applications.</p>
-<ul class="simple">
-<li><p><cite>Component</cite> and <cite>DataClass</cite> are to AdalFlow for LLM Applications what  <cite>module</cite> and <cite>Tensor</cite> are to PyTorch for deep learning modeling.</p></li>
-<li><p><cite>ModelClient</cite> to bridge the gap between the LLM API and the AdalFlow pipeline.</p></li>
-<li><p><cite>Orchestrator</cite> components like <cite>Retriever</cite>, <cite>Embedder</cite>, <cite>Generator</cite>, and <cite>Agent</cite> are all model-agnostic (you can use the component on different models from different providers).</p></li>
-</ul>
-<p>Similar to the PyTorch <cite>module</cite>, our <cite>Component</cite> provides excellent visualization of the pipeline structure.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SimpleQA</span><span class="p">(</span>
-   <span class="p">(</span><span class="n">generator</span><span class="p">):</span> <span class="n">Generator</span><span class="p">(</span>
-      <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;llama3-8b-8192&#39;</span><span class="p">},</span>
-      <span class="p">(</span><span class="n">prompt</span><span class="p">):</span> <span class="n">Prompt</span><span class="p">(</span>
-         <span class="n">template</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">SYS</span><span class="o">&gt;</span>
-               <span class="n">You</span> <span class="n">are</span> <span class="n">a</span> <span class="n">helpful</span> <span class="n">assistant</span><span class="o">.</span>
-               <span class="o">&lt;/</span><span class="n">SYS</span><span class="o">&gt;</span>
-               <span class="n">User</span><span class="p">:</span> <span class="p">{{</span><span class="n">input_str</span><span class="p">}}</span>
-               <span class="n">You</span><span class="p">:</span>
-               <span class="p">,</span> <span class="n">prompt_variables</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;input_str&#39;</span><span class="p">]</span>
-      <span class="p">)</span>
-      <span class="p">(</span><span class="n">model_client</span><span class="p">):</span> <span class="n">GroqAPIClient</span><span class="p">()</span>
-   <span class="p">)</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>To switch to <cite>gpt-3.5-turbo</cite> by OpenAI, simply update the <cite>model_client`</cite> and <cite>model_kwargs</cite> in the Generator component.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
-
-<span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span>
-     <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
-     <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
-     <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
- <span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="robust">
-<h1>Robust<a class="headerlink" href="#robust" title="Link to this heading">#</a></h1>
-<p>Our simplicity did not come from doing less.
-On the contrary, we have to do more and go deeper and wider on any topic to offer developers <em>maximum control and robustness</em>.</p>
-<ul class="simple">
-<li><p>LLMs are sensitive to the prompt. We allow developers full control over their prompts without relying on LLM API features such as tools and JSON format with components like <cite>Prompt</cite>, <cite>OutputParser</cite>, <cite>FunctionTool</cite>, and <cite>ToolManager</cite>.</p></li>
-<li><p>Our goal is not to optimize for integration, but to provide a robust abstraction with representative examples. See this in <a class="reference internal" href="tutorials/model_client.html#tutorials-model-client"><span class="std std-ref">ModelClient</span></a> and <a class="reference internal" href="tutorials/retriever.html#tutorials-retriever"><span class="std std-ref">Retriever</span></a> components.</p></li>
-<li><p>All integrations, such as different API SDKs, are formed as optional packages but all within the same library. You can easily switch to any models from different providers that we officially support.</p></li>
-</ul>
-</section>
+  @media (max-width: 600px) {
+    .desktop-only {
+      display: none;
+    }
+    .mobile-only {
+      display: block;
+    }
+  }
+</style><h3 style="text-align: left; font-size: 1.5em; margin-top: 50px;">
+Light, Modular, and Model-agnositc Task Pipeline
+</h3><p>LLMs are like water; AdalFlow help developers quickly shape them into any applications, from GenAI applications such as chatbots, translation, summarization, code generation, RAG, and autonomous agents to classical NLP tasks like text classification and named entity recognition.</p>
+<p>Only two fundamental but powerful base classes: <cite>Component</cite> for the pipeline and <cite>DataClass</cite> for data interaction with LLMs.
+The result is a library with bare minimum abstraction, providing developers with <em>maximum customizability</em>.</p>
+<p>You have full control over the prompt template, the model you use, and the output parsing for your task pipeline.</p>
+<figure class="align-center">
+<img alt="AdalFlow Task Pipeline" src="_images/AdalFlow_task_pipeline.png" />
+</figure>
+<h3 style="text-align: left; font-size: 1.5em; margin-top: 10px;">
+Unified Framework for Auto-Optimization
+</h3><p>AdalFlow provides token-efficient and high-performing prompt optimization within a unified framework.
+To optimize your pipeline, simply define a <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> and pass it to our <code class="docutils literal notranslate"><span class="pre">Generator</span></code>.
+Whether you need to optimize task instructions or few-shot demonstrations,
+our unified framework offers an easy way to <strong>diagnose</strong>, <strong>visualize</strong>, <strong>debug</strong>, and <strong>train</strong> your pipeline.</p>
+<p>This trace graph demonstrates how our auto-differentiation works: <a class="reference internal" href="tutorials/trace_graph.html"><span class="doc">trace_graph</span></a></p>
+<p><strong>Trainable Task Pipeline</strong></p>
+<p>Just define it as a <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> and pass it to our <code class="docutils literal notranslate"><span class="pre">Generator</span></code>.</p>
+<figure class="align-center">
+<img alt="AdalFlow Trainable Task Pipeline" src="_static/images/trainable_task_pipeline.png" />
+</figure>
+<p><code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code> acts as the <cite>interpreter</cite>  between task pipeline and the trainer, defining training and validation steps, optimizers, evaluators, loss functions, backward engine for textual gradients or tracing the demonstrations, the teacher generator.</p>
+<p><strong>AdalComponent &amp; Trainer</strong></p>
+<figure class="align-center">
+<img alt="AdalFlow AdalComponent &amp; Trainer" src="_images/trainer.png" />
+</figure>
 <section id="unites-research-and-production">
 <h1>Unites Research and Production<a class="headerlink" href="#unites-research-and-production" title="Link to this heading">#</a></h1>
 <p>Our team has experience in both AI research and production.
@@ -598,29 +505,6 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Light</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#modular">Modular</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#robust">Robust</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#unites-research-and-production">Unites Research and Production</a><ul class="visible nav section-nav flex-column">
-</ul>
-</li>
-</ul>
-
-  </nav></div>
-
-</div></div>
               
             
           </div>
