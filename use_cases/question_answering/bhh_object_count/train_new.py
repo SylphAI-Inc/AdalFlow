@@ -1,5 +1,3 @@
-from adalflow.optim.trainer.trainer import Trainer
-
 from use_cases.question_answering.bhh_object_count.task import (
     ObjectCountTaskPipeline,
 )
@@ -129,7 +127,7 @@ def train(
         backward_engine_model_config=gpt_4o_model
     )
     print(adal_component)
-    trainer = Trainer(
+    trainer = adal.Trainer(
         train_batch_size=train_batch_size,
         strategy=strategy,
         max_steps=max_steps,
