@@ -35,12 +35,38 @@
 
 .. raw:: html
 
-    <h2 style="text-align: center; font-size: 2.5em; margin-top: 0px;">
-    ⚡ The Library to Build and Auto-optimize Any LLM Task Pipeline ⚡
-    </h2>
-    <h3 style="text-align: center; font-size: 1.5em; margin-top: 20px; margin-bottom: 20px;">
-      Embracing a design philosophy similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
+    <div class="desktop-only">
+      <h2 style="text-align: center; font-size: 2.5em; margin-top: 0px;">
+      ⚡ The Library to Build and Auto-optimize Any LLM Task Pipeline ⚡
+      </h2>
+      <h3 style="text-align: center; font-size: 1.5em; margin-top: 20px; margin-bottom: 20px;">
+        Embracing a design philosophy similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
       </h3>
+    </div>
+    <div class="mobile-only">
+      <h2 style="text-align: center; font-size: 1.8em; margin-top: 0px;">
+      ⚡ The Library to Build and Auto-optimize Any LLM Task Pipeline ⚡
+      </h2>
+      <h3 style="text-align: center; font-size: 0.9em; margin-top: 20px; margin-bottom: 20px;">
+        Embracing a design philosophy similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
+      </h3>
+    </div>
+
+    <style>
+      .mobile-only {
+        display: none;
+      }
+
+      @media (max-width: 600px) {
+        .desktop-only {
+          display: none;
+        }
+        .mobile-only {
+          display: block;
+        }
+      }
+    </style>
+
 
 ..  <div style="text-align: center;">
 ..      <p>
@@ -160,9 +186,16 @@ This trace graph demonstrates how our auto-differentiation works: :doc:`trace_gr
 
 **Trainable Task Pipeline**
 
+Just define it as a ``Parameter`` and pass it to our ``Generator``.
+
+
 .. figure:: /_static/images/trainable_task_pipeline.png
    :alt: AdalFlow Trainable Task Pipeline
    :align: center
+
+
+
+``AdalComponent`` acts as the `interpreter`  between task pipeline and the trainer, defining training and validation steps, optimizers, evaluators, loss functions, backward engine for textual gradients or tracing the demonstrations, the teacher generator.
 
 **AdalComponent & Trainer**
 
