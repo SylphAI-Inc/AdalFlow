@@ -560,7 +560,7 @@ class AdalComponent(Component):
         self, model_client: "ModelClient", model_kwargs: Dict[str, Any]
     ) -> List[TextOptimizer]:
         r"""One text optimizer can handle multiple text parameters."""
-        from adalflow.optim.text_grad.tgd_optimer import TGDOptimizer
+        from adalflow.optim.text_grad.tgd_optimizer import TGDOptimizer
         from adalflow.optim.parameter import ParameterType
 
         parameters = []

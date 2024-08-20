@@ -1,9 +1,10 @@
 Classification Optimization
 =============================
 
-Classification is one of the widely used tasks in NLP.
-Be able to optimize the GenAI based classification can help developers to quickly develop a well-performing model.
-In the longer term, this model can help bootstrap the training of a cheaper and classification model.
+
+Classification is one of the most widely used tasks in NLP.
+Optimizing GenAI-based classification can help developers quickly create a well-performing model.
+In the long term, this model can also help bootstrap the training of a more cost-effective classification model.
 
 
 .. figure:: /_static/images/classification_training_map.png
@@ -23,11 +24,11 @@ In the longer term, this model can help bootstrap the training of a cheaper and 
 
 Here is what you  will learn from this tutorial:
 
-1. Build a classification task pipeline with structured output
+1. How to build a classification task pipeline with structured output.
 
-2. Learn the ``mixed`` and ``sequential`` training when we explore both ``TextOptimizer`` and ``DemoOptimizer`` to optimize the classification task.
+2. The concepts of ``mixed`` and ``sequential`` training as we explore both ``TextOptimizer`` and ``DemoOptimizer`` to optimize the classification task.
 
-3. Handle the case where the val dataset is not a good indicator to the test accuracy.
+3. How to handle the situations where the val dataset is not a good indicator of test accuracy.
 
 
 
@@ -36,11 +37,13 @@ Here is what you  will learn from this tutorial:
 
 
 .. note::
-    Your can find all our code at ``use_cases/classification`` and the Dspy's implementation at ``benchmarks/trec_classification``.
+    You can find all our code in our GitHub repo: `use_cases/classification`, and the Dspy implementation at `benchmarks/trec_classification`.
 
 Task Pipeline with Structured Output
 --------------------------------------
-AdalFlow starting prompt and data class:
+We will use the following overall template with ``system_prompt``, ``output_format_str``, and ``few_shot_demos`` varaibles.
+``task_desc_template`` will be used to render the final classification task description from class names and each label's description.
+``TRECExtendedData`` is a dataclass that extends :class:`TrecData<datasets.types.TrecData>` with a rationale field. This will ensure our generator to first levarage 'Chain-of-Thought' reasoning before predicting the final class_name.
 
 .. code-block:: python
 
@@ -78,30 +81,12 @@ AdalFlow starting prompt and data class:
             default=None,
         )
         __input_fields__ = ["question"]
-        __output_fields__ = ["rationale", "class_name"]
+        __output_fields__ = ["rationale", "class_name"] # it is important to have the rationale before the class_name
 
-    # for context, TrecData has the following fields:
-    @dataclass
-    class TrecData(BaseData):
-        __doc__ = """A dataclass for representing examples in the TREC dataset."""
-        question: str = field(
-            metadata={"desc": "The question to be classified"},
-            default=None,
-        )
-        class_name: str = field(
-            metadata={"desc": "One of {ABBR, ENTY, DESC, HUM, LOC, NUM}"},
-            default=None,
-        )
-        class_index: int = field(
-            metadata={"desc": "The class label, in range [0, 5]"},
-            default=-1,
-        )
 
-        __input_fields__ = ["question"]  # follow this order too.
-        __output_fields__ = ["class_name", "class_index"]
 
-We just need a ``Component`` class to assemble this pipeline.
-
+We will subclass from ``Component`` for our final task pipeline.
+We use :class:`DataClassParser<components.output_parsers.dataclass_parser.DataClassParser>` to streamline the process of output formatting and parsing.
 
 .. code-block:: python
 
@@ -174,12 +159,15 @@ We just need a ``Component`` class to assemble this pipeline.
             return output
 
 In this taske pipeline, we have prepared two trainable prameters: ``system_prompt`` and ``few_shot_demos`` and each is of type ``adal.ParameterType.PROMPT`` and ``adal.ParameterType.DEMOS`` respectively.
-
+We will need :class:`TGDOptimizer<optim.text_grad.tgd_optimizer.TGDOptimizer>` to optimize ``system_prompt`` and :class:`BootstrapOptimizer<optim.few_shot.bootstrap_optimizer.BootstrapFewShot>`
+to optimize ``few_shot_demos``.
 
 Define the AdalComponent
 -------------------------
 Now, we will define a subclass of ``AdalComponent`` to prepare the pipeline for training.
-We have set up the ``eval_fn``, ``loss_fn``, methods to configure backward engine  for the text optimizer and method to configure teacher generator for the demo optimizer.
+We have set up the ``eval_fn``, ``loss_fn``, along with methods to configure backward engine for the text optimizer,
+as well as a method method to configure teacher generator for the demo optimizer.
+
 
 .. code-block:: python
 
@@ -253,9 +241,16 @@ We have set up the ``eval_fn``, ``loss_fn``, methods to configure backward engin
 
 Trainer and Training Strategy
 ------------------------------
-In general, the training strategy where we first run ``max_steps`` to train the text optimizer and then run ``max_steps`` to train the demo optimizer is called ``mixed`` training works well as shown in Fig 1.
-For the text optimizer, we will use ``constrained`` training instead of ``random`` search strategy as it converges faster and more token-efficient.
-Here is our code to start training:
+
+**Training Strategy**
+
+The following code shows our default training configuration. We use a batch size of 4, 12 steps, and 4 workers to call LLMs in parallel.
+The ``optimize_order`` is set to ``sequential`` to first train the text optimizer and then the demo optimizer.
+This training strategy has been working well. With the text optimized, this might boost the performance for the teacher model.
+With the teacher model's reasoning, the demo optimizer can learn to reason better even with merefly one demonstration from the teacher.
+When we are at the ``sequential`` optimization order, we will end up with 24 steps trained.
+
+In addition, you can try ``mixed`` for the optimization order, where at each step, it will update both the text optimizer and the demo optimizer.
 
 .. code-block:: python
 
@@ -304,10 +299,24 @@ Here is our code to start training:
 
 In this case, we did not use ``val_dataset`` as we did diagnose and as shown in Table 1, the val dataset is not a good indicator for the test accuracy.
 Thus, our final training strategy is to directly validate on the test dataset.
+
+**Training checkpoints**:
+
+At the end of the training, we will print out the ckpt path where you can look up all the details about the trained prompt.
+Here is our above training:
+
+.. code-block:: bash
+
+    Loading Data: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 144/144 [00:00<00:00, 51011.81it/s]
+    Evaluating step(24): 0.8426 across 108 samples, Max potential: 0.8819:  75%|█████████████████████████████████████████████████████████████████████▊                       | 108/144 [00:00<00:00, 1855.48it/s]
+    Fail validation: 0.8348623853211009 <= 0.8819444444444444, revert
+    Training Step: 24: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [03:05<00:00, 15.46s/it]
+    Saved ckpt to /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_848d2_run_7.json
+    Training time: 823.8977522850037s
+
+We can see that the training takes only 14 minutes.
 We use 12 steps, and the learning curve is shown in Fig 1.
 Here is our trained system prompt and the demo prompt:
-
-
 
 
 .. code-block:: python
@@ -414,3 +423,6 @@ Our SOTA performance is due to the combination of
    - :class:`optim.parameter.Parameter`
    - :class:`optim.trainer.trainer.Trainer`
    - :class:`optim.trainer.adal.AdalComponent`
+   - :class:`components.output_parsers.dataclass_parser.DataClassParser`
+   - :class:`optim.text_grad.tgd_optimizer.TGDOptimizer`
+   - :class:`optim.few_shot.bootstrap_optimizer.BootstrapFewShot`

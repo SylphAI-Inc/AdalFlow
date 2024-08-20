@@ -51,7 +51,7 @@ class TestParameter(unittest.TestCase):
 #         )
 
 
-from adalflow.optim.text_grad.tgd_optimer import TGDOptimizer
+from adalflow.optim.text_grad.tgd_optimizer import TGDOptimizer
 
 
 class TestUpdatePrompt(unittest.TestCase):
