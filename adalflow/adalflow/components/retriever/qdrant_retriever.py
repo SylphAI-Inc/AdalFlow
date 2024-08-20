@@ -3,12 +3,12 @@
 from typing import List, Optional, Any
 from qdrant_client import QdrantClient, models
 
-from lightrag.core.retriever import (
+from adalflow.core.retriever import (
     Retriever,
 )
-from lightrag.core.embedder import Embedder
+from adalflow.core.embedder import Embedder
 
-from lightrag.core.types import (
+from adalflow.core.types import (
     RetrieverOutput,
     RetrieverStrQueryType,
     RetrieverStrQueriesType,

@@ -615,7 +615,7 @@ The retriever supports any embeddings provider. The field to be returned from th
 
 .. code-block:: python
 
-    from lightrag.components.retriever import QdrantRetriever
+    from adalflow.components.retriever import QdrantRetriever
     from qdrant_client import QdrantClient
 
 

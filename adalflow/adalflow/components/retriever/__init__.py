@@ -23,7 +23,7 @@ PostgresRetriever = LazyImport(
 )
 
 QdrantRetriever = LazyImport(
-    "lightrag.components.retriever.qdrant_retriever.QdrantRetriever",
+    "adalflow.components.retriever.qdrant_retriever.QdrantRetriever",
     OptionalPackages.QDRANT,
 )
 
