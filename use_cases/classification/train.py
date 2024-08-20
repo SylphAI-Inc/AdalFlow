@@ -51,7 +51,6 @@ class TrecClassifierAdal(adal.AdalComponent):
     def handle_one_loss_sample(
         self, sample: TRECExtendedData, y_pred: adal.Parameter, *args, **kwargs
     ) -> Tuple[Callable[..., Any], Dict]:
-        # prepare for evaluation
         full_response = y_pred.full_response
         y_label = -1
         if (
@@ -60,17 +59,14 @@ class TrecClassifierAdal(adal.AdalComponent):
             and full_response.data.class_name is not None
         ):
             y_label = full_response.data.class_name
-            # y_label = int(full_response.data.class_index)
 
         y_pred.eval_input = y_label
         y_gt = adal.Parameter(
             name="y_gt",
             data=sample.class_name,
-            # eval_input=sample.class_index,
             eval_input=sample.class_name,
             requires_opt=False,
         )
-        # print(f"y_label: {y_label}, y_gt_label: {sample.class_index}")
         return self.loss_fn, {"kwargs": {"y": y_pred, "y_gt": y_gt}}
 
     def configure_teacher_generator(self):
@@ -93,8 +89,8 @@ def train(
     bootstrap_shots: int = 1,
     max_steps=1,
     num_workers=4,
-    strategy="random",
-    optimization_order="mix",
+    strategy="constrained",
+    optimization_order="sequential",
     debug=False,
 ):
     # TODO: ensure the teacher prompt gets updated with the new model

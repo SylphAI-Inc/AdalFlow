@@ -5,83 +5,41 @@ Classification is one of the widely used tasks in NLP.
 Be able to optimize the GenAI based classification can help developers to quickly develop a well-performing model.
 In the longer term, this model can help bootstrap the training of a cheaper and classification model.
 
+
+.. figure:: /_static/images/classification_training_map.png
+    :align: center
+    :alt: Learning Curve
+    :width: 700px
+
+    Learning Curve on training system task instruction and on one-shot demonstration.
+
+.. figure:: /_static/images/classification_opt_prompt.png
+    :align: center
+    :alt: Optimized prompt
+    :width: 700px
+
+    The optimized prompt for the classification task.
+
+
 Here is what you  will learn from this tutorial:
 
 1. Build a classification task pipeline with structured output
-2. Learn the ``mixed`` and ``sequential`` training when we explore both``TextOptimizer``
-and ``DemoOptimizer`` to optimize the classification task.
+
+2. Learn the ``mixed`` and ``sequential`` training when we explore both ``TextOptimizer`` and ``DemoOptimizer`` to optimize the classification task.
+
 3. Handle the case where the val dataset is not a good indicator to the test accuracy.
 
 
-Performance Hightlight
------------------------
-Here is the peroformance result, where our optimizers
-.. list-table:: Top2 best Zero-shot Optimized Classification on GPT-3.5-turbo
-   :header-rows: 1
-   :widths: 20 20 20 20
-
-   * - Method
-     - Train
-     - Val
-     - Test
-   * - Start (manual prompt)
-     - 67.5% (20*6 samples)
-     - 69.4% (6*6 samples)
-     - 82.64% (144 samples)
-   * - Start (GPT-4o/Teacher)
-     - 77.5%
-     - 77.78%
-     - 86.11%
-   * - DsPy (Start)
-     - 57.5%
-     - 61.1%
-     - 60.42%
-   * - DsPy (bootstrap 4-shots + raw 36-shots)
-     - N/A
-     - 86.1%
-     - 82.6%
-   * - AdalFlow (Optimized Zero-shot)
-     - N/A
-     - 77.78%, 80.5% (**+8.4%**)
-     - 86.81%, 89.6% (**+4.2%**)
-   * - AdalFlow (Optimized Zero-shot + bootstrap 1-shot)
-     - N/A
-     - N/A
-     - 88.19%
-   * - AdalFlow (Optimized Zero-shot + bootstrap 1-shot + 40 raw shots)
-     - N/A
-     - **86.1%**
-     - **90.28%**
-   * - AdalFlow (Optimized Zero-shot on GPT-4o)
-     - 77.8%
-     - 77.78%
-     - 84.03%
 
 
-In this case, Text-Grad 2.0 is able to close the gap to the teacher model, leaving no space for the DemoOptimizer to improve as it learns to boost its reasoning from a teacher model's reasoning.
-Even though the many-shots (as many as 40) can still improve the performance for a bit, but it will adds a lot more tokens.
 
 
-Here is the DsPy's Signature (similar to the prompt) where its task description is a direct copy our AdalFlow's starting prompt:
 
-.. code-block:: python
+.. note::
+    Your can find all our code at ``use_cases/classification`` and the Dspy's implementation at ``benchmarks/trec_classification``.
 
-   class GenerateAnswer(dspy.Signature):
-        """You are a classifier. Given a question, you need to classify it into one of the following classes:
-        Format: class_index. class_name, class_description
-        1. ABBR, Abbreviation
-        2. ENTY, Entity
-        3. DESC, Description and abstract concept
-        4. HUM, Human being
-        5. LOC, Location
-        6. NUM, Numeric value
-        - Do not try to answer the question:"""
-
-        question: str = dspy.InputField(desc="Question to be classified")
-        answer: str = dspy.OutputField(
-            desc="Select one from ABBR, ENTY, DESC, HUM, LOC, NUM"
-        )
-
+Task Pipeline with Structured Output
+--------------------------------------
 AdalFlow starting prompt and data class:
 
 .. code-block:: python
@@ -142,38 +100,317 @@ AdalFlow starting prompt and data class:
         __input_fields__ = ["question"]  # follow this order too.
         __output_fields__ = ["class_name", "class_index"]
 
+We just need a ``Component`` class to assemble this pipeline.
 
-We can see that being able to flexibly control the prompt instead of delegate to a fixed ``Signature`` is advantageous.
-We use ``yaml`` format for the output in this case, and be able to use template to control which part we want to train.
-
-We eventually find that ``TextOptimizer`` works better on smaller instruction prompt.
-Here is our Parameters:
 
 .. code-block:: python
 
-           prompt_kwargs = {
-            "system_prompt": adal.Parameter(
-                data=self.parser.get_task_desc_str(),
-                role_desc="Task description",
-                requires_opt=True,
-                param_type=adal.ParameterType.PROMPT,
-            ),
-            "output_format_str": adal.Parameter(
-                data=self.parser.get_output_format_str(),
-                role_desc="Output format requirements",
+   class TRECClassifierStructuredOutput(adal.Component):
+
+        def __init__(self, model_client: adal.ModelClient, model_kwargs: Dict):
+            super().__init__()
+
+            label_desc = [
+                {"label": label, "desc": desc}
+                for label, desc in zip(_COARSE_LABELS, _COARSE_LABELS_DESC)
+            ]
+
+            task_desc_str = adal.Prompt(
+                template=task_desc_template, prompt_kwargs={"classes": label_desc}
+            )()
+
+            self.data_class = TRECExtendedData
+            self.data_class.set_task_desc(task_desc_str)
+
+            self.parser = adal.DataClassParser(
+                data_class=self.data_class, return_data_class=True, format_type="yaml"
+            )
+
+            prompt_kwargs = {
+                "system_prompt": adal.Parameter(
+                    data=self.parser.get_task_desc_str(),
+                    role_desc="Task description",
+                    requires_opt=True,
+                    param_type=adal.ParameterType.PROMPT,
+                ),
+                "output_format_str": adal.Parameter(
+                    data=self.parser.get_output_format_str(),
+                    role_desc="Output format requirements",
+                    requires_opt=False,
+                    param_type=adal.ParameterType.PROMPT,
+                ),
+                "few_shot_demos": adal.Parameter(
+                    data=None,
+                    requires_opt=True,
+                    role_desc="Few shot examples to help the model",
+                    param_type=adal.ParameterType.DEMOS,
+                ),
+            }
+
+            self.llm = adal.Generator(
+                model_client=model_client,
+                model_kwargs=model_kwargs,
+                prompt_kwargs=prompt_kwargs,
+                template=template,
+                output_processors=self.parser,
+                use_cache=True,
+            )
+
+        def _prepare_input(self, question: str):
+            input_data = self.data_class(question=question)
+            input_str = self.parser.get_input_str(input_data)
+            prompt_kwargs = {
+                "input_str": adal.Parameter(
+                    data=input_str, requires_opt=False, role_desc="input to the LLM"
+                )
+            }
+            return prompt_kwargs
+
+        def call(
+            self, question: str, id: Optional[str] = None
+        ) -> Union[adal.GeneratorOutput, adal.Parameter]:
+            prompt_kwargs = self._prepare_input(question)
+            output = self.llm(prompt_kwargs=prompt_kwargs, id=id)
+            return output
+
+In this taske pipeline, we have prepared two trainable prameters: ``system_prompt`` and ``few_shot_demos`` and each is of type ``adal.ParameterType.PROMPT`` and ``adal.ParameterType.DEMOS`` respectively.
+
+
+Define the AdalComponent
+-------------------------
+Now, we will define a subclass of ``AdalComponent`` to prepare the pipeline for training.
+We have set up the ``eval_fn``, ``loss_fn``, methods to configure backward engine  for the text optimizer and method to configure teacher generator for the demo optimizer.
+
+.. code-block:: python
+
+    class TrecClassifierAdal(adal.AdalComponent):
+        def __init__(
+            self,
+            model_client: adal.ModelClient,
+            model_kwargs: Dict,
+            teacher_model_config: Dict,
+            backward_engine_model_config: Dict,
+            text_optimizer_model_config: Dict,
+        ):
+            task = TRECClassifierStructuredOutput(model_client, model_kwargs)
+            eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
+            loss_fn = adal.EvalFnToTextLoss(
+                eval_fn=eval_fn,
+                eval_fn_desc="exact_match: 1 if str(y) == str(y_gt) else 0",
+            )
+            super().__init__(
+                task=task,
+                eval_fn=eval_fn,
+                loss_fn=loss_fn,
+                backward_engine_model_config=backward_engine_model_config,
+                text_optimizer_model_config=text_optimizer_model_config,
+                teacher_model_config=teacher_model_config,
+            )
+
+        def handle_one_task_sample(self, sample: TRECExtendedData):
+            return self.task.call, {"question": sample.question, "id": sample.id}
+
+        def evaluate_one_sample(
+            self, sample: TRECExtendedData, y_pred: adal.GeneratorOutput
+        ) -> float:
+            y_label = -1
+            if y_pred and y_pred.data is not None and y_pred.data.class_name is not None:
+                y_label = y_pred.data.class_name
+            return self.eval_fn(y_label, sample.class_name)
+
+        def handle_one_loss_sample(
+            self, sample: TRECExtendedData, y_pred: adal.Parameter, *args, **kwargs
+        ) -> Tuple[Callable[..., Any], Dict]:
+            full_response = y_pred.full_response
+            y_label = -1
+            if (
+                full_response
+                and full_response.data is not None
+                and full_response.data.class_name is not None
+            ):
+                y_label = full_response.data.class_name
+
+            y_pred.eval_input = y_label
+            y_gt = adal.Parameter(
+                name="y_gt",
+                data=sample.class_name,
+                eval_input=sample.class_name,
                 requires_opt=False,
-                param_type=adal.ParameterType.PROMPT,
-            ),
-            "few_shot_demos": adal.Parameter(
-                data=None,
-                requires_opt=True,
-                role_desc="Few shot examples to help the model",
-                param_type=adal.ParameterType.DEMOS,
-            ),
-        }
+            )
+            return self.loss_fn, {"kwargs": {"y": y_pred, "y_gt": y_gt}}
 
-Being able to train each part of the prompt gives us more granular control and in this case, only train ``system_prompt`` instead of training both or train a joined prompt has gained better performance.
-And it is also cheaper to propose a smaller prompt.
+        def configure_teacher_generator(self):
+            super().configure_teacher_generator_helper(**self.teacher_model_config)
 
-:note::
-    Your can find all our code at ``use_cases/classification`` and the Dspy's implementation at ``benchmarks/trec_classification``.
+        def configure_backward_engine(self):
+            super().configure_backward_engine_helper(**self.backward_engine_model_config)
+
+        def configure_optimizers(self):
+            to = super().configure_text_optimizer_helper(**self.text_optimizer_model_config)
+            do = super().configure_demo_optimizer_helper()
+            return to + do
+
+
+Trainer and Training Strategy
+------------------------------
+In general, the training strategy where we first run ``max_steps`` to train the text optimizer and then run ``max_steps`` to train the demo optimizer is called ``mixed`` training works well as shown in Fig 1.
+For the text optimizer, we will use ``constrained`` training instead of ``random`` search strategy as it converges faster and more token-efficient.
+Here is our code to start training:
+
+.. code-block:: python
+
+    def train(
+        model_client: adal.ModelClient,
+        model_kwargs: Dict,
+        train_batch_size=4,  # larger batch size is not that effective, probably because of llm's lost in the middle
+        raw_shots: int = 0,
+        bootstrap_shots: int = 1,
+        max_steps=12,
+        num_workers=4,
+        strategy="constrained",
+        optimization_order="sequential",
+        debug=False,
+    ):
+        # TODO: ensure the teacher prompt gets updated with the new model
+        adal_component = TrecClassifierAdal(
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+            text_optimizer_model_config=gpt_4o_model,
+            backward_engine_model_config=gpt_4o_model,
+            teacher_model_config=gpt_4o_model,
+        )
+        print(adal_component)
+        trainer = adal.Trainer(
+            train_batch_size=train_batch_size,
+            adaltask=adal_component,
+            strategy=strategy,
+            max_steps=max_steps,
+            num_workers=num_workers,
+            raw_shots=raw_shots,
+            bootstrap_shots=bootstrap_shots,
+            debug=debug,
+            weighted_sampling=True,
+            optimization_order=optimization_order,
+            exclude_input_fields_from_bootstrap_demos=True,
+        )
+        print(trainer)
+
+        train_dataset, val_dataset, test_dataset = load_datasets()
+        trainer.fit(
+            train_dataset=train_dataset,
+            val_dataset=test_dataset,
+            debug=debug,
+        )
+
+In this case, we did not use ``val_dataset`` as we did diagnose and as shown in Table 1, the val dataset is not a good indicator for the test accuracy.
+Thus, our final training strategy is to directly validate on the test dataset.
+We use 12 steps, and the learning curve is shown in Fig 1.
+Here is our trained system prompt and the demo prompt:
+
+
+
+
+.. code-block:: python
+
+    system_prompt = "You are a classifier. Given a question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation or acronym\n1. ENTY, Entity, including specific terms, brand names, or other distinct entities\n2. DESC, Description and abstract concept, including explanations, characteristics, and meanings\n3. HUM, Human being\n4. LOC, Location, including spatial information, geographical places\n5. NUM, Numeric value, including measurable figures, quantities, distances, and time\n- Focus on correctly identifying the class based on the question's main inquiry:"
+    few_shot_demos = "rationale: The question is asking for a specific term used to describe the sum of\n  all genetic material in an organism.\nclass_name: ENTY"
+
+We can see that compared with our initial prompt, it adds some concise explanation to each class.
+The demo prompt is also short, directly from a teacher model teaching the student model to do rationale to reach to the final class_name.
+
+
+Performance & Benchmark
+------------------------
+
+We implemented Dspy Boostrap few-shot with random search.
+
+Here is the DsPy's Signature (similar to the prompt) where its task description is a direct copy our AdalFlow's starting prompt:
+
+
+.. code-block:: python
+
+   class GenerateAnswer(dspy.Signature):
+        """You are a classifier. Given a question, you need to classify it into one of the following classes:
+        Format: class_index. class_name, class_description
+        1. ABBR, Abbreviation
+        2. ENTY, Entity
+        3. DESC, Description and abstract concept
+        4. HUM, Human being
+        5. LOC, Location
+        6. NUM, Numeric value
+        - Do not try to answer the question:"""
+
+        question: str = dspy.InputField(desc="Question to be classified")
+        answer: str = dspy.OutputField(
+            desc="Select one from ABBR, ENTY, DESC, HUM, LOC, NUM"
+        )
+
+
+Here is the peroformance result
+
+.. list-table:: AdalFlow vs DsPy on GPT-3.5-turbo
+   :header-rows: 1
+   :widths: 20 20 20 20
+
+   * - Method
+     - Train
+     - Val
+     - Test
+   * - Start (manual prompt)
+     - 67.5% (20*6 samples)
+     - 69.4% (6*6 samples)
+     - 82.64% (144 samples)
+   * - Start (GPT-4o/Teacher)
+     - 77.5%
+     - 77.78%
+     - 86.11%
+   * - DsPy (Start)
+     - 57.5%
+     - 61.1%
+     - 60.42%
+   * - DsPy (bootstrap 4-shots + raw 36-shots)
+     - N/A
+     - 86.1%
+     - 82.6%
+   * - AdalFlow (Optimized Zero-shot)
+     - N/A
+     - 77.78%, 80.5% (**+8.4%**)
+     - 86.81%, 89.6% (**+4.2%**)
+   * - AdalFlow (Optimized Zero-shot + bootstrap 1-shot)
+     - N/A
+     - N/A
+     - 88.19%
+   * - AdalFlow (Optimized Zero-shot + bootstrap 1-shot + 40 raw shots)
+     - N/A
+     - **86.1%**
+     - **90.28%**
+   * - AdalFlow (Optimized Zero-shot on GPT-4o)
+     - 77.8%
+     - 77.78%
+     - 84.03%
+
+
+In this case, our text optimizer--Text-Grad 2.0 is able to close the gap to the teacher model, leaving little space for the DemoOptimizer to improve as it learns to boost its reasoning from a teacher model's reasoning.
+Even though the many-shots (as many as 40) can still improve the performance for a bit, but it will adds a lot more tokens.
+
+
+We can see that being able to flexibly control the prompt instead of delegate to a fixed ``Signature`` is advantageous.
+We use ``yaml`` format for the output in this case, and be able to use template to control which part we want to train.
+We trained to train a joined ``Parameter`` with both the system prompt and the output format, and found it is more effecitive to just train the system prompt.
+
+
+**Conclusion**:
+
+Our SOTA performance is due to the combination of
+
+1. Our research on optimizers: Each individual optimizer, the text optimizer implementing our research Text-grad 2.0 and the demo optimizer implementing our research ``Learn-to-reason Few-shot In-context Learning``
+2. Our research on training paradigm: The sequential training where we first train the text optimizer and then train the demo optimizer is proven to be effective to optimize the performe without adding too many tokens in the prompt.
+3. The flexibility and customizability of the library: With the library to provide developers direct control over the prompt and allow flexible and granular definition of the parameters is the second of the reason that we can surpass other methods by a large margin.
+
+
+.. admonition:: API reference
+   :class: highlight
+
+   - :class:`optim.parameter.Parameter`
+   - :class:`optim.trainer.trainer.Trainer`
+   - :class:`optim.trainer.adal.AdalComponent`

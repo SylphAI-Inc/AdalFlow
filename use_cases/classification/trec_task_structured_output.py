@@ -77,8 +77,6 @@ class TRECClassifierStructuredOutput(adal.Component):
                 param_type=adal.ParameterType.DEMOS,
             ),
         }
-        # TODO:
-        # mix, sequential (training)
 
         self.llm = adal.Generator(
             model_client=model_client,
