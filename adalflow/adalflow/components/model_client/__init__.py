@@ -44,6 +44,10 @@ GoogleGenAIClient = LazyImport(
     "adalflow.components.model_client.google_client.GoogleGenAIClient",
     OptionalPackages.GOOGLE_GENERATIVEAI,
 )
+LiteLLMClient = LazyImport(
+    "adalflow.components.model_client.litellm_client.LiteLLMClient",
+    OptionalPackages.LITELLM,
+)
 OllamaClient = LazyImport(
     "adalflow.components.model_client.ollama_client.OllamaClient",
     OptionalPackages.OLLAMA,
@@ -70,6 +74,7 @@ __all__ = [
     "TransformersClient",
     "AnthropicAPIClient",
     "GroqAPIClient",
+    "LiteLLMClient",
     "OpenAIClient",
     "GoogleGenAIClient",
 ]
