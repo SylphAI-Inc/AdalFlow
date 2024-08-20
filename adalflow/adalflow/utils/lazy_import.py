@@ -48,6 +48,10 @@ class OptionalPackages(Enum):
         "datasets",
         "Please install datasets with: pip install datasets",
     )
+    QDRANT = (
+        "qdrant-client",
+        "Please install qdrant-client with: pip install qdrant-client",
+    )
 
     def __init__(self, package_name, error_message):
         self.package_name = package_name
