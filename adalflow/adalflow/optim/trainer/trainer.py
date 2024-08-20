@@ -1781,7 +1781,7 @@ class Trainer(Component):
                     last_val_score = trainer_results.val_scores[-1]
                     val_output = self.adaltask.validation_step(
                         val_dataset,
-                        steps,
+                        total_steps,
                         self.num_workers,
                         minimum_score=last_val_score,
                     )
