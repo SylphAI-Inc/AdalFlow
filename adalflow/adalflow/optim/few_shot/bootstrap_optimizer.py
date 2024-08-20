@@ -35,7 +35,7 @@ class BootstrapFewShot(DemoOptimizer):
     Reference:
     - DsPy: Com-piling declarative language model calls into state-of-the-art pipelines.
     """
-    exclude_input_fields_from_bootstrap_demos: bool = True
+    exclude_input_fields_from_bootstrap_demos: bool = False
 
     def __init__(
         self,
@@ -44,7 +44,7 @@ class BootstrapFewShot(DemoOptimizer):
         bootstrap_shots: Optional[int] = None,
         dataset: Optional[List[DataClass]] = None,
         weighted: bool = True,
-        exclude_input_fields_from_bootstrap_demos: bool = True,
+        exclude_input_fields_from_bootstrap_demos: bool = False,
     ):
         super().__init__(weighted=weighted, dataset=dataset)
         self.params = [
@@ -162,8 +162,9 @@ class BootstrapFewShot(DemoOptimizer):
             raw_weights = [0.0] * len(filtered_dataset)
             # for those exist in the demos, assign higher score with failed demos
             for i, demo in enumerate(filtered_dataset):
-                if demo.id in demos and demos[demo.id].score is not None:
-                    raw_weights[i] += 1 - demos[demo.id].score
+                student_demo_score = self._student_scores.get(demo.id, None)
+                if student_demo_score is not None:
+                    raw_weights[i] += 1 - student_demo_score
         sampled_raw_demos = random_sample(
             filtered_dataset, raw_shots, replace=False, weights=raw_weights
         )

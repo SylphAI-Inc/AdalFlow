@@ -184,7 +184,6 @@ class ObjectCountTaskOriginal(Component):
         template = r"""<SYS>{{system_prompt}}
         <OUTPUT_FORMAT> {{output_format_str}}</OUTPUT_FORMAT></SYS>
         <USER>{{input_str}}</USER>You:"""  # noqa: F841
-        template_2 = r"""<START_OF_SYSTEM_PROMPT>{{system_prompt}}<OUTPUT_FORMAT> {{output_format_str}}</OUTPUT_FORMAT></END_OF_SYSTEM_PROMPT>{{input_str}}"""
         # data = (
         #     "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
         # )
@@ -201,7 +200,7 @@ class ObjectCountTaskOriginal(Component):
         self.llm_counter = Generator(
             model_client=model_client,
             model_kwargs=model_kwargs,
-            template=template_2,
+            template=template,
             prompt_kwargs={
                 "system_prompt": system_prompt,
             },

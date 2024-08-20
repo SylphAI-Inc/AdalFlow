@@ -190,6 +190,11 @@ def check_data_class_field_args_zero(cls):
     )
 
 
+def check_if_class_field_args_zero_exists(cls):
+    """Check if the field is a dataclass."""
+    return hasattr(cls, "__args__") and len(cls.__args__) > 0 and cls.__args__[0]
+
+
 def check_data_class_field_args_one(cls):
     """Check if the field is a dataclass."""
     return (
@@ -198,6 +203,11 @@ def check_data_class_field_args_one(cls):
         and cls.__args__[1]
         and hasattr(cls.__args__[1], "__dataclass_fields__")
     )
+
+
+def check_if_class_field_args_one_exists(cls):
+    """Check if the field is a dataclass."""
+    return hasattr(cls, "__args__") and len(cls.__args__) > 1 and cls.__args__[1]
 
 
 def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
@@ -236,6 +246,9 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
 
     """
     log.debug(f"Dataclass: {cls}, Data: {data}")
+    if data is None:
+        return None
+
     if is_dataclass(cls) or is_potential_dataclass(
         cls
     ):  # Optional[Address] will be false, and true for each check
@@ -243,14 +256,21 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
         log.debug(
             f"{is_dataclass(cls)} of {cls}, {is_potential_dataclass(cls)} of {cls}"
         )
+        # Ensure the data is a dictionary
+        if not isinstance(data, dict):
+            raise ValueError(
+                f"Expected data of type dict for {cls}, but got {type(data).__name__}"
+            )
         cls_type = extract_dataclass_type(cls)
         fieldtypes = {f.name: f.type for f in cls_type.__dataclass_fields__.values()}
-        return cls_type(
+
+        restored_data = cls_type(
             **{
                 key: dataclass_obj_from_dict(fieldtypes[key], value)
                 for key, value in data.items()
             }
         )
+        return restored_data
     elif isinstance(data, (list, tuple)):
         log.debug(f"List or Tuple: {cls}, {data}")
         restored_data = []
@@ -258,8 +278,12 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
             if check_data_class_field_args_zero(cls):
                 # restore the value to its dataclass type
                 restored_data.append(dataclass_obj_from_dict(cls.__args__[0], item))
-            else:
+
+            elif check_if_class_field_args_zero_exists(cls):
                 # Use the original data [Any]
+                restored_data.append(dataclass_obj_from_dict(cls.__args__[0], item))
+
+            else:
                 restored_data.append(item)
         return restored_data
 
@@ -270,6 +294,10 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
             if check_data_class_field_args_zero(cls):
                 # restore the value to its dataclass type
                 restored_data.add(dataclass_obj_from_dict(cls.__args__[0], item))
+            elif check_if_class_field_args_zero_exists(cls):
+                # Use the original data [Any]
+                restored_data.add(dataclass_obj_from_dict(cls.__args__[0], item))
+
             else:
                 # Use the original data [Any]
                 restored_data.add(item)
@@ -280,6 +308,10 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
         for key, value in data.items():
             if check_data_class_field_args_one(cls):
                 # restore the value to its dataclass type
+                data[key] = dataclass_obj_from_dict(cls.__args__[1], value)
+            elif check_if_class_field_args_one_exists(cls):
+                # Use the original data [Any]
+
                 data[key] = dataclass_obj_from_dict(cls.__args__[1], value)
             else:
                 # Use the original data [Any]

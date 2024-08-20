@@ -75,6 +75,7 @@ Here are some examples:
 {{input_str}}
 <END_OF_USER>
 """
+
 from typing import Dict, Union
 import adalflow as adal
 

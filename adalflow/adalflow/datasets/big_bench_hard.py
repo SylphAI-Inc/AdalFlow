@@ -7,17 +7,8 @@ import subprocess
 from adalflow.utils.data import Dataset
 from adalflow.datasets.types import Example
 
-from adalflow.utils.global_config import get_adalflow_default_root_path
 from adalflow.utils.file_io import save_csv
-
-
-def prepare_dataset_path(root: str, task_name: str):
-    if root is None:
-        root = os.path.join(get_adalflow_default_root_path(), "cache_datasets")
-
-    save_path = os.path.join(root, task_name)
-    os.makedirs(save_path, exist_ok=True)
-    return save_path
+from adalflow.datasets.utils import prepare_dataset_path
 
 
 # TODO: here users clean adalflow created files

@@ -1,3 +1,10 @@
+## [0.2.0.beta.4] - 2024-08-20
+### Added
+- Qdrant retriever.
+
+### Improved
+- Add "mixed" training in ``Trainer`` to do demo and text optimization both in each step.
+- ``DemoOptimizer``, allow to config if the input fields are included or excluded in the demonstration.
 ## [0.2.0.beta.3] - 2024-08-16
 ### Fixed
 - missing `diskcache` package in the dependencies.

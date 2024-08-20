@@ -3,9 +3,17 @@
     <img alt="AdalFlow logo" src="docs/source/_static/images/adalflow-logo.png" style="width: 100%;">
 </h4> -->
 
+
+
 <h4 align="center">
     <img alt="AdalFlow logo" src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/adalflow-logo.png" style="width: 100%;">
 </h4>
+
+<h2>
+    <p align="center">
+     ⚡ The Library to Build and Auto-optimize LLM Applications ⚡
+    </p>
+</h2>
 
 
 <p align="center">
@@ -54,17 +62,13 @@
 
 
 
-<h2>
-    <p align="center">
-     ⚡ The Library to Build and Auto-optimize LLM Applications ⚡
-    </p>
-</h2>
 
 
 
-# Why AdalFlow?
 
-Embracing a design philosophy similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
+<!-- # Why AdalFlow? -->
+AdalFlow not only helps developers build model-agnostic LLM task pipelines with full control over prompts and output processing, but it also auto-optimizes these pipelines to achieve SOTA accuracy.
+Embracing a design pattern similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
 
 ## Light, Modular, and Model-agnositc Task Pipeline
 

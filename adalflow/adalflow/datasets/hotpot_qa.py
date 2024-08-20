@@ -9,7 +9,7 @@ from adalflow.utils.lazy_import import safe_import, OptionalPackages
 from adalflow.utils.data import Dataset
 from adalflow.utils.global_config import get_adalflow_default_root_path
 from adalflow.utils.file_io import save_csv
-from adalflow.datasets.big_bench_hard import prepare_dataset_path
+from adalflow.datasets.utils import prepare_dataset_path
 from adalflow.core.base_data_class import DataClass
 from adalflow.datasets.types import HotPotQAData
 

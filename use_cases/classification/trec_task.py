@@ -20,14 +20,14 @@ Format: class_index. class_name, class_description
 
 @dataclass
 class TRECExtendedData(TrecData):
-    thought: str = field(
+    rational: str = field(
         metadata={
             "desc": "Your step-by-step reasoning to classify the question to class_name"
         },
         default=None,
     )
     __input_fields__ = ["question"]
-    __output_fields__ = ["thought", "class_name", "class_index"]
+    __output_fields__ = ["rational", "class_name", "class_index"]
 
 
 class TRECClassifier(adal.Component):
@@ -48,25 +48,22 @@ class TRECClassifier(adal.Component):
 
         self.data_class = TRECExtendedData
 
-        yaml_parser = adal.YamlOutputParser(
+        parser = adal.DataClassParser(
             data_class=TRECExtendedData,
-            include_fields=self.data_class.get_output_fields(),
             return_data_class=True,
+            format_type="yaml",
         )
 
         prompt_kwargs = {
             "task_desc_str": task_desc_str,
-            "output_format_str": yaml_parser.format_instructions(),
-            "input_format_str": self.data_class.to_yaml_signature(
-                include=self.data_class.get_input_fields()
-            ),
+            "output_format_str": parser.get_output_format_str(),
         }
 
         self.llm = adal.Generator(
             model_client=model_client,
             model_kwargs=model_kwargs,
             prompt_kwargs=prompt_kwargs,
-            output_processors=yaml_parser,
+            output_processors=parser,
         )
 
     def call(self, question: str, id: Optional[str] = None):
@@ -77,18 +74,8 @@ class TRECClassifier(adal.Component):
                 data=input_str, requires_opt=False, role_desc="input to the LLM"
             )
         }
-        # self.llm.print_prompt(**prompt_kwargs)
-        output = self.llm(prompt_kwargs)  # use forward method
-        output.data.question = question
+        output = self.llm(prompt_kwargs, id=id)  # use forward method
         return output
-
-
-# when it failed to make the prediction. We should use label = -1
-@adal.fun_to_component
-def format_class_label(data: Optional[TrecData]) -> TrecData:
-    if data is None:
-        return TrecData(class_index=-1)
-    return data
 
 
 # Build a DAG
@@ -195,6 +182,7 @@ template = r"""<START_OF_SYSTEM_MESSAGE>
 
 
 # use one system prompt
+# Create an auto template
 class TRECClassifierV3(adal.Component):
 
     def __init__(self, model_client: adal.ModelClient, model_kwargs: Dict):
