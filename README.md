@@ -212,6 +212,16 @@ AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_L
 
 [![contributors](https://contrib.rocks/image?repo=SylphAI-Inc/LightRAG&max=2000)](https://github.com/SylphAI-Inc/LightRAG/graphs/contributors)
 
+# Acknowledgements
+
+Many existing works greatly inspired this project! Here is a non-exhaustive list:
+
+- 📚 [PyTorch](https://github.com/pytorch/pytorch/) for design philosophy and design pattern of ``Component``, ``Parameter``, ``Sequential``.
+- 📚 [Micrograd](https://github.com/karpathy/micrograd): A tiny autograd engine for our auto-differentiative architecture.
+- 📚 [Text-Grad](https://github.com/zou-group/textgrad) for the ``Textual Gradient Descent`` text optimizer.
+- 📚 [DSPy](https://github.com/stanfordnlp/dspy) for inspiring the ``__{input/output}__fields`` in our ``DataClass`` and the bootstrap few-shot optimizer.
+- 📚 [ORPO](https://github.com/google-deepmind/opro) for adding past text instruction along with its accuracy in the text optimizer.
+
 # Citation
 
 ```bibtex
