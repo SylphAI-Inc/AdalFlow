@@ -2,7 +2,6 @@ from typing import Dict, Union, Optional
 
 import adalflow as adal
 from adalflow.datasets.trec import _COARSE_LABELS_DESC, _COARSE_LABELS
-from use_cases.classification.trec_task import task_desc_template
 from use_cases.classification.data import TRECExtendedData
 
 template = r"""<START_OF_SYSTEM_MESSAGE>
@@ -18,6 +17,15 @@ Here are some examples:
 <START_OF_USER_MESSAGE>
 {{input_str}}
 <END_OF_USER_MESSAGE>
+"""
+task_desc_template = r"""You are a classifier. Given a question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+{% if classes %}
+{% for class in classes %}
+{{loop.index-1}}. {{class.label}}, {{class.desc}}
+{% endfor %}
+{% endif %}
+- Do not try to answer the question:
 """
 
 

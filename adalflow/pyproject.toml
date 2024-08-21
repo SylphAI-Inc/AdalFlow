@@ -1,14 +1,14 @@
 [tool.poetry]
 name = "adalflow"
 
-version = "0.2.0.beta.3"
+version = "0.2.0"
 description = "The Library to Build and Auto-optimize Any LLM Task Pipeline"
 authors = ["Li Yin <li@sylphai.com>"]
 readme = "README.md"
 repository = "https://github.com/SylphAI-Inc/LightRAG"
 
 license = "MIT"
-maintainers = ["Xiaoyi Gu <xiaoyi@sylphai.com>", "Li Yin <li@sylphai.com>"]
+maintainers = ["Li Yin <li@sylphai.com>"]
 classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Libraries :: Python Modules",

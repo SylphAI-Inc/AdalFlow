@@ -9,7 +9,7 @@ safe_import(OptionalPackages.DATASETS.value[0], OptionalPackages.DATASETS.value[
 
 import torch
 from torch.utils.data import WeightedRandomSampler
-from datasets import Dataset as HFDataset
+
 
 from adalflow.utils.data import Dataset
 from adalflow.utils.file_io import save_csv
@@ -27,9 +27,8 @@ def calculate_class_weights(labels: torch.Tensor) -> torch.Tensor:
     return sample_weights
 
 
-def sample_subset_dataset(
-    dataset: HFDataset, num_samples: int, sample_weights
-) -> HFDataset:
+def sample_subset_dataset(dataset, num_samples: int, sample_weights):
+
     # Create a WeightedRandomSampler to get 400 samples
     sampler = WeightedRandomSampler(
         weights=sample_weights, num_samples=num_samples, replacement=False

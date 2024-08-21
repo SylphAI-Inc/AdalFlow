@@ -1,4 +1,4 @@
-## [0.2.0.beta.4] - 2024-08-20
+## [0.2.0] - 2024-08-20
 ### Added
 - Qdrant retriever.
 
@@ -8,6 +8,8 @@
 -  Added ``sequential`` and ``mix`` in the ``optimization_order`` in the ``Trainer`` to support the mixed training.
 -  Added ``resume_from_ckpt`` in the ``Trainer.fit``.
 
+### Fixed Bug
+- wrong import in ``react`` agent.
 ## [0.2.0.beta.3] - 2024-08-16
 ### Fixed
 - missing `diskcache` package in the dependencies.
