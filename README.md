@@ -87,18 +87,18 @@ Here is our optimization demonstration on a text classification task:
   <img src="docs/source/_static/images/classification_opt_prompt.png" alt="AdalFlow Auto-optimization" style="width: 80%;">
 </p> -->
 
-<p align="center">
+<p align="center" style="background-color: #f0f0f0;">
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/classification_training_map.png" style="width: 80%;" alt="AdalFlow Auto-optimization">
 </p>
 
-<p align="center">
+<p align="center" style="background-color: #f0f0f0;">
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/classification_opt_prompt.png" alt="AdalFlow Optimized Prompt" style="width: 80%;">
 </p>
 
 
 Among all libraries, we achieved the highest accuracy with manual prompting (starting at 82%) and the highest accuracy after optimization.
 
-
+Further reading: [Optimize Classification](https://adalflow.sylph.ai/use_cases/classification.html)
 
 ## Light, Modular, and Model-agnositc Task Pipeline
 
@@ -211,6 +211,16 @@ AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_L
 # Contributors
 
 [![contributors](https://contrib.rocks/image?repo=SylphAI-Inc/LightRAG&max=2000)](https://github.com/SylphAI-Inc/LightRAG/graphs/contributors)
+
+# Acknowledgements
+
+Many existing works greatly inspired this project! Here is a non-exhaustive list:
+
+- 📚 [PyTorch](https://github.com/pytorch/pytorch/) for design philosophy and design pattern of ``Component``, ``Parameter``, ``Sequential``.
+- 📚 [Micrograd](https://github.com/karpathy/micrograd): A tiny autograd engine for our auto-differentiative architecture.
+- 📚 [Text-Grad](https://github.com/zou-group/textgrad) for the ``Textual Gradient Descent`` text optimizer.
+- 📚 [DSPy](https://github.com/stanfordnlp/dspy) for inspiring the ``__{input/output}__fields`` in our ``DataClass`` and the bootstrap few-shot optimizer.
+- 📚 [ORPO](https://github.com/google-deepmind/opro) for adding past text instruction along with its accuracy in the text optimizer.
 
 # Citation
 
