@@ -1,6 +1,6 @@
 """All data types used by Parameter, Optimizer, AdalComponent, and Trainer."""
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from enum import Enum
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -69,17 +69,17 @@ class PromptData:
 @dataclass
 class TrainerStepResult(DataClass):
     step: int = field(default=0, metadata={"desc": "Step number"})
-    val_score: Optional[float] = field(
+    val_score: float = field(
         default=None,
         metadata={
             "desc": "Validation score. Usually a smaller set than test set to chose the best parameter value."
         },
     )
-    test_score: Optional[float] = field(default=None, metadata={"desc": "Test score"})
-    attempted_val_score: Optional[float] = field(
+    test_score: float = field(default=None, metadata={"desc": "Test score"})
+    attempted_val_score: float = field(
         default=None, metadata={"desc": "Attempted validation score"}
     )
-    prompt: Optional[List[PromptData]] = field(
+    prompt: List[PromptData] = field(
         default=None, metadata={"desc": "Optimized prompts for this step"}
     )
 
@@ -122,7 +122,7 @@ class TrainerResult(DataClass):
         default_factory=dict,
         metadata={"desc": "Effective measures of the constrained training strategy"},
     )
-    validate_stats: Optional[TrainerValidateStats] = field(
+    validate_stats: TrainerValidateStats = field(
         default=None,
         metadata={"desc": "Attempted Validation score statistics"},
     )

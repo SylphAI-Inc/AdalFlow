@@ -378,7 +378,6 @@ class TGDOptimizer(TextOptimizer):
                 prompt_kwargs=prompt_kwargs, use_cache=not no_cache
             )
             prompt_str = self.llm_optimizer.get_prompt(**prompt_kwargs)
-            print(f"TGD LLM optimizer prompt: {prompt_str}")
             log.debug(f"TGD LLM optimizer prompt: {prompt_str}")
             proposed_data = response.data
             log.info(f"Response from the optimizer: {response}")

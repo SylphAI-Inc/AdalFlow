@@ -3,9 +3,17 @@
     <img alt="AdalFlow logo" src="docs/source/_static/images/adalflow-logo.png" style="width: 100%;">
 </h4> -->
 
+
+
 <h4 align="center">
     <img alt="AdalFlow logo" src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/adalflow-logo.png" style="width: 100%;">
 </h4>
+
+<h2>
+    <p align="center">
+     ⚡ The Library to Build and Auto-optimize LLM Applications ⚡
+    </p>
+</h2>
 
 
 <p align="center">
@@ -54,17 +62,43 @@
 
 
 
-<h2>
-    <p align="center">
-     ⚡ The Library to Build and Auto-optimize LLM Applications ⚡
-    </p>
-</h2>
 
 
 
-# Why AdalFlow?
 
-Embracing a design philosophy similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
+# Why AdalFlow
+
+1. Embracing a design pattern similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
+AdalFlow provides `Model-agnostic` building blocks to build LLM task pipeline, ranging from RAG, Agents to classical NLP tasks like text classification and named entity recognition. It is easy to get high performance even with just basic manual promting.
+2. AdalFlow provides a unified auto-differentiative framework for both zero-shot prompt optimization and few-shot optimization. It advances existing auto-optimization research, including ``Text-Grad`` and ``DsPy``.
+Through our research, ``Text-Grad 2.0`` and ``Learn-to-Reason Few-shot In Context Learning``, AdalFlow ``Trainer`` achieves the highest accuracy while being the most token-efficient.
+
+<!-- It advances existing auto-optimization research, including Text-Grad and DsPy. Through our research, Text-Grad 2.0, and Learn-to-Reason Few-shot In-Context Learning, AdalFlow Trainer achieves the highest accuracy while being the most token-efficient. -->
+
+<!-- AdalFlow not only helps developers build model-agnostic LLM task pipelines with full control over prompts and output processing, but it also auto-optimizes these pipelines to achieve SOTA accuracy. -->
+<!-- Embracing a design pattern similar to PyTorch, AdalFlow is powerful, light, modular, and robust. -->
+
+Here is our optimization demonstration on a text classification task:
+<!-- <p align="center">
+  <img src="docs/source/_static/images/classification_training_map.png" alt="AdalFlow Auto-optimization" style="width: 80%;">
+</p>
+
+<p align="center">
+  <img src="docs/source/_static/images/classification_opt_prompt.png" alt="AdalFlow Auto-optimization" style="width: 80%;">
+</p> -->
+
+<p align="center" style="background-color: #f0f0f0;">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/classification_training_map.png" style="width: 80%;" alt="AdalFlow Auto-optimization">
+</p>
+
+<p align="center" style="background-color: #f0f0f0;">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/classification_opt_prompt.png" alt="AdalFlow Optimized Prompt" style="width: 80%;">
+</p>
+
+
+Among all libraries, we achieved the highest accuracy with manual prompting (starting at 82%) and the highest accuracy after optimization.
+
+Further reading: [Optimize Classification](https://adalflow.sylph.ai/use_cases/classification.html)
 
 ## Light, Modular, and Model-agnositc Task Pipeline
 
@@ -177,6 +211,16 @@ AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_L
 # Contributors
 
 [![contributors](https://contrib.rocks/image?repo=SylphAI-Inc/LightRAG&max=2000)](https://github.com/SylphAI-Inc/LightRAG/graphs/contributors)
+
+# Acknowledgements
+
+Many existing works greatly inspired this project! Here is a non-exhaustive list:
+
+- 📚 [PyTorch](https://github.com/pytorch/pytorch/) for design philosophy and design pattern of ``Component``, ``Parameter``, ``Sequential``.
+- 📚 [Micrograd](https://github.com/karpathy/micrograd): A tiny autograd engine for our auto-differentiative architecture.
+- 📚 [Text-Grad](https://github.com/zou-group/textgrad) for the ``Textual Gradient Descent`` text optimizer.
+- 📚 [DSPy](https://github.com/stanfordnlp/dspy) for inspiring the ``__{input/output}__fields`` in our ``DataClass`` and the bootstrap few-shot optimizer.
+- 📚 [ORPO](https://github.com/google-deepmind/opro) for adding past text instruction along with its accuracy in the text optimizer.
 
 # Citation
 

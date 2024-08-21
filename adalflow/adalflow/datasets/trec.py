@@ -9,12 +9,11 @@ safe_import(OptionalPackages.DATASETS.value[0], OptionalPackages.DATASETS.value[
 
 import torch
 from torch.utils.data import WeightedRandomSampler
-from datasets import Dataset as HFDataset
+
 
 from adalflow.utils.data import Dataset
-from adalflow.utils.global_config import get_adalflow_default_root_path
 from adalflow.utils.file_io import save_csv
-from adalflow.datasets.big_bench_hard import prepare_dataset_path
+from adalflow.datasets.utils import prepare_dataset_path
 from adalflow.datasets.types import TrecData
 
 
@@ -28,9 +27,8 @@ def calculate_class_weights(labels: torch.Tensor) -> torch.Tensor:
     return sample_weights
 
 
-def sample_subset_dataset(
-    dataset: HFDataset, num_samples: int, sample_weights
-) -> HFDataset:
+def sample_subset_dataset(dataset, num_samples: int, sample_weights):
+
     # Create a WeightedRandomSampler to get 400 samples
     sampler = WeightedRandomSampler(
         weights=sample_weights, num_samples=num_samples, replacement=False
@@ -55,8 +53,9 @@ def prepare_datasets():
     num_classes = 6
 
     # (1) create eval dataset from the first 1/3 of the train datset, 6 samples per class
+    # TODO: save all json data besides of the subset
     org_train_dataset = dataset["train"].shuffle(seed=42)
-    train_size = num_classes * 100
+    train_size = num_classes * 20  # 120
     len_train_dataset = len(org_train_dataset)
 
     org_test_dataset = dataset["test"]
@@ -150,17 +149,16 @@ class TrecDataset(Dataset):
     ) -> None:
         if split not in ["train", "val", "test"]:
             raise ValueError("Split must be one of 'train', 'val', 'test'")
-        if root is None:
-            root = get_adalflow_default_root_path()
-            print(f"Saving dataset to {root}")
+
         self.root = root
         self.task_name = "trec_classification"
-        data_path = prepare_dataset_path(self.root, self.task_name, split)
+        data_path = prepare_dataset_path(self.root, self.task_name)
         # download and save
         self._check_or_download_dataset(data_path, split)
         # load from csv
         self.data = []
-        with open(data_path, newline="") as csvfile:
+        split_data_path = os.path.join(data_path, f"{split}.csv")
+        with open(split_data_path, newline="") as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 self.data.append(
@@ -168,17 +166,25 @@ class TrecDataset(Dataset):
                         id=row["id"],
                         question=row["text"],
                         class_index=int(row["coarse_label"]),
-                        class_name=_COARSE_LABELS_DESC[int(row["coarse_label"])],
+                        class_name=_COARSE_LABELS[int(row["coarse_label"])],
                     )
                 )
 
     def _check_or_download_dataset(self, data_path: str = None, split: str = "train"):
+
+        if data_path is None:
+            raise ValueError("data_path must be specified")
+        split_csv_path = os.path.join(data_path, f"{split}.csv")
+        if os.path.exists(split_csv_path):
+            return
+
         import uuid
 
-        if os.path.exists(data_path):
-            return
         # prepare all the data
         train_dataset, val_dataset, test_dataset = prepare_datasets()
+        print(
+            f"train: {len(train_dataset)}, val: {len(val_dataset)}, test: {len(test_dataset)}"
+        )
         # save to csv
         keys = ["id", "text", "coarse_label"]
         for split, examples in zip(
@@ -191,7 +197,7 @@ class TrecDataset(Dataset):
                 example["id"] = str(uuid.uuid4())
                 new_examples.append(example)
 
-            target_path = prepare_dataset_path(self.root, self.task_name, split)
+            target_path = os.path.join(data_path, f"{split}.csv")
             save_csv(new_examples, f=target_path, fieldnames=keys)
 
         # Return the dataset to data
