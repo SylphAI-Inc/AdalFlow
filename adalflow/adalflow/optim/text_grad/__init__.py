@@ -1,5 +1,5 @@
 from .llm_text_loss import LLMAsTextLoss
-from .tgd_optimer import TGDOptimizer
+from .tgd_optimizer import TGDOptimizer
 from .text_loss_with_eval_fn import EvalFnToTextLoss
 from .ops import sum_ops, Sum
 

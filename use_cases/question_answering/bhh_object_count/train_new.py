@@ -129,10 +129,10 @@ def train(
     print(adal_component)
     trainer = adal.Trainer(
         train_batch_size=train_batch_size,
+        adaltask=adal_component,
         strategy=strategy,
         max_steps=max_steps,
         num_workers=num_workers,
-        adaltask=adal_component,
         raw_shots=raw_shots,
         bootstrap_shots=bootstrap_shots,
         debug=debug,

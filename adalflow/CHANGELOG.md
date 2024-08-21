@@ -1,3 +1,15 @@
+## [0.2.0] - 2024-08-20
+### Added
+- Qdrant retriever.
+
+### Improved
+- Add "mixed" training in ``Trainer`` to do demo and text optimization both in each step.
+- ``DemoOptimizer``, allow to config if the input fields are included or excluded in the demonstration.
+-  Added ``sequential`` and ``mix`` in the ``optimization_order`` in the ``Trainer`` to support the mixed training.
+-  Added ``resume_from_ckpt`` in the ``Trainer.fit``.
+
+### Fixed Bug
+- wrong import in ``react`` agent.
 ## [0.2.0.beta.3] - 2024-08-16
 ### Fixed
 - missing `diskcache` package in the dependencies.

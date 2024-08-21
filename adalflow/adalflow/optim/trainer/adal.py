@@ -64,6 +64,15 @@ class AdalComponent(Component):
         self.teacher_model_config = teacher_model_config
         self.text_optimizer_model_config = text_optimizer_model_config
 
+    def _set_param_values(self, prompts: List[PromptData]):
+        r"""Set the parameters for the task. Used to resume from ckpt."""
+
+        params_dict = {p.name: p for p in prompts}
+
+        for name, param in self.task.named_parameters():
+            if name in params_dict:
+                param.update_value(params_dict[name].data)
+
     def _get_param_values(self) -> List[PromptData]:
         r"""Get the current values of the parameters."""
         return [
@@ -141,6 +150,13 @@ class AdalComponent(Component):
         Note:
             ensure it supports both Tuple(batch) and a list of any type (fits for datasets).
         """
+        from adalflow.optim.parameter import Parameter
+
+        if not isinstance(y_preds, list) or len(y_preds) == 0:
+            raise ValueError(f"y_preds is not a list or empty: {y_preds}")
+        y_pred_0 = y_preds[0]
+        if isinstance(y_pred_0, Parameter):
+            raise ValueError(f"y_pred_0 should not be a Parameter: {y_pred_0}")
         if metadata is None:
             acc_list = [
                 self.evaluate_one_sample(sample, y_pred)
@@ -544,7 +560,7 @@ class AdalComponent(Component):
         self, model_client: "ModelClient", model_kwargs: Dict[str, Any]
     ) -> List[TextOptimizer]:
         r"""One text optimizer can handle multiple text parameters."""
-        from adalflow.optim.text_grad.tgd_optimer import TGDOptimizer
+        from adalflow.optim.text_grad.tgd_optimizer import TGDOptimizer
         from adalflow.optim.parameter import ParameterType
 
         parameters = []

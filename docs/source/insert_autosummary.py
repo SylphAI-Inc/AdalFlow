@@ -113,7 +113,7 @@ def generate_autosummary_docs(src_dir, dest_dir):
 
 if __name__ == "__main__":
 
-    source_root_dir = "../lightrag/lightrag"
+    source_root_dir = "../adalflow/adalflow"
 
     source_directories = [
         "core",

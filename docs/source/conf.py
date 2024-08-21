@@ -36,6 +36,7 @@ html_theme = "pydata_sphinx_theme"
 html_show_sourcelink = False
 
 html_logo = "./_static/images/adalflow-logo.png"
+# autodoc_mock_imports = ["datasets"]
 
 html_theme_options = {
     "collapse_navigation": False,
@@ -138,3 +139,12 @@ autodoc_default_options = {
 
 def setup(app):
     app.add_css_file("css/custom.css")
+
+
+from unittest import mock
+
+try:
+    import datasets as hf_datasets
+except ImportError:
+    hf_datasets = mock.Mock()
+    sys.modules["hf_datasets"] = hf_datasets

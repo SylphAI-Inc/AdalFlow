@@ -470,9 +470,10 @@ In particular, we provide two tracing methods to help you develop and improve th
 As this note is getting rather long. Please refer to the :doc:`tracing<logging_tracing>` to learn about these two tracing methods.
 
 
-Training [Experimental]
+Training
 ---------------------------------------
-Coming soon!
+Generator in default support training mode.
+It will require users to define ``Parameter`` and pass it to the ``prompt_kwargs``.
 
 .. A Note on Tokenization#
 .. By default, LlamaIndex uses a global tokenizer for all token counting. This defaults to cl100k from tiktoken, which is the tokenizer to match the default LLM gpt-3.5-turbo.
