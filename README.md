@@ -88,7 +88,7 @@ Here is our optimization demonstration on a text classification task:
 </p> -->
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/classification_training_map.png" style="width: 80%;">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/classification_training_map.png" style="width: 80%;" alt="AdalFlow Auto-optimization">
 </p>
 
 <p align="center">
