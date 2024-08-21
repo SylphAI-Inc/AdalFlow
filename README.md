@@ -87,18 +87,18 @@ Here is our optimization demonstration on a text classification task:
   <img src="docs/source/_static/images/classification_opt_prompt.png" alt="AdalFlow Auto-optimization" style="width: 80%;">
 </p> -->
 
-<p align="center">
+<p align="center" style="background-color: #f0f0f0;">
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/classification_training_map.png" style="width: 80%;" alt="AdalFlow Auto-optimization">
 </p>
 
-<p align="center">
+<p align="center" style="background-color: #f0f0f0;">
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/classification_opt_prompt.png" alt="AdalFlow Optimized Prompt" style="width: 80%;">
 </p>
 
 
 Among all libraries, we achieved the highest accuracy with manual prompting (starting at 82%) and the highest accuracy after optimization.
 
-
+Further reading: [Optimize Classification](https://adalflow.sylph.ai/use_cases/classification.html)
 
 ## Light, Modular, and Model-agnositc Task Pipeline
 
