@@ -423,6 +423,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
 </ul>
 </details></li>
@@ -480,7 +481,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimizer.html">tgd_optimizer</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -570,11 +571,15 @@
                   
   <section id="module-datasets.big_bench_hard">
 <span id="big-bench-hard"></span><span id="datasets-big-bench-hard"></span><h1>big_bench_hard<a class="headerlink" href="#module-datasets.big_bench_hard" title="Link to this heading">#</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="datasets.big_bench_hard.prepare_dataset_path">
-<span class="sig-name descname"><span class="pre">prepare_dataset_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/datasets/big_bench_hard.html#prepare_dataset_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datasets.big_bench_hard.prepare_dataset_path" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datasets.big_bench_hard.BigBenchHard" title="datasets.big_bench_hard.BigBenchHard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BigBenchHard</span></code></a>([task_name, root, split])</p></td>
+<td><p>Big Bench Hard dataset for object counting task.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="datasets.big_bench_hard.BigBenchHard">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BigBenchHard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'BBH_object_counting'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'BBH_object_counting'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'train'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'val'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'test'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/datasets/big_bench_hard.html#BigBenchHard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datasets.big_bench_hard.BigBenchHard" title="Link to this definition">#</a></dt>
@@ -641,7 +646,6 @@ if root is not specified.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datasets.big_bench_hard.prepare_dataset_path"><code class="docutils literal notranslate"><span class="pre">prepare_dataset_path()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datasets.big_bench_hard.BigBenchHard"><code class="docutils literal notranslate"><span class="pre">BigBenchHard</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datasets.big_bench_hard.BigBenchHard.get_default_task_instruction"><code class="docutils literal notranslate"><span class="pre">BigBenchHard.get_default_task_instruction()</span></code></a></li>
 </ul>

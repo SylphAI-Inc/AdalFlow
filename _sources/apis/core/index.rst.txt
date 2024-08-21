@@ -28,7 +28,6 @@ Overview
    core.types
    core.db
    core.functional
-   core.parameter
    core.tokenizer
 
 
@@ -54,5 +53,4 @@ Overview
    core.types
    core.db
    core.functional
-   core.parameter
    core.tokenizer

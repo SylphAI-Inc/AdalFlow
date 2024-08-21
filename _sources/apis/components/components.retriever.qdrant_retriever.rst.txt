@@ -1,0 +1,17 @@
+.. _components-retriever-qdrant_retriever:
+
+qdrant_retriever
+=============================================
+
+.. automodule:: components.retriever.qdrant_retriever
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      QdrantRetriever
+

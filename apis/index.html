@@ -425,6 +425,7 @@
 <li class="toctree-l3"><a class="reference internal" href="components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components/components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components/components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
 </ul>
 </details></li>
@@ -482,7 +483,7 @@
 <li class="toctree-l3"><a class="reference internal" href="optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="optim/optim.text_grad.ops.html">ops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim/optim.text_grad.tgd_optimizer.html">tgd_optimizer</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -630,52 +631,55 @@ The API reference is organized by subdirectories.</p>
 <p>Functional components like model client, retriever, agent, local data processing, and output parsers are here.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client" title="components.model_client.anthropic_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.anthropic_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.agent.react.html#module-components.agent.react" title="components.agent.react"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent.react</span></code></a></p></td>
+<td><p>Implementation and optimization of React agent.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client" title="components.model_client.anthropic_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.anthropic_client</span></code></a></p></td>
 <td><p>Anthropic ModelClient integration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
 <td><p>Cohere ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.google_client.html#module-components.model_client.google_client" title="components.model_client.google_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.google_client</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.google_client.html#module-components.model_client.google_client" title="components.model_client.google_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.google_client</span></code></a></p></td>
 <td><p>Google GenAI ModelClient integration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
 <td><p>Groq ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
 <td><p>OpenAI ModelClient integration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.transformers_client.html#module-components.model_client.transformers_client" title="components.model_client.transformers_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.transformers_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.transformers_client.html#module-components.model_client.transformers_client" title="components.model_client.transformers_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.transformers_client</span></code></a></p></td>
 <td><p>Huggingface transformers ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.utils.html#module-components.model_client.utils" title="components.model_client.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.utils</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.utils.html#module-components.model_client.utils" title="components.model_client.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.utils</span></code></a></p></td>
 <td><p>Helpers for model client for integrating models and parsing the output.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.data_process.data_components.html#module-components.data_process.data_components" title="components.data_process.data_components"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.data_components</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.data_process.data_components.html#module-components.data_process.data_components" title="components.data_process.data_components"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.data_components</span></code></a></p></td>
 <td><p>Helper components for data transformation such as embeddings and document splitting.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.data_process.text_splitter.html#module-components.data_process.text_splitter" title="components.data_process.text_splitter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.text_splitter</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.data_process.text_splitter.html#module-components.data_process.text_splitter" title="components.data_process.text_splitter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.text_splitter</span></code></a></p></td>
 <td><p>Splitting texts is commonly used as a preprocessing step before embedding and retrieving texts.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.reasoning.chain_of_thought.html#module-components.reasoning.chain_of_thought" title="components.reasoning.chain_of_thought"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.reasoning.chain_of_thought</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.reasoning.chain_of_thought.html#module-components.reasoning.chain_of_thought" title="components.reasoning.chain_of_thought"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.reasoning.chain_of_thought</span></code></a></p></td>
 <td><p>Chain of the thought(CoT) is to mimic a step-by-step thought process for arriving at the answer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever" title="components.retriever.bm25_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever" title="components.retriever.bm25_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever</span></code></a></p></td>
 <td><p>BM25 retriever implementation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever" title="components.retriever.faiss_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.faiss_retriever</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever" title="components.retriever.faiss_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.faiss_retriever</span></code></a></p></td>
 <td><p>Semantic search/embedding-based retriever using FAISS.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
 <td><p>LLM as retriever module.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever" title="components.retriever.postgres_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.postgres_retriever</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever" title="components.retriever.postgres_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.postgres_retriever</span></code></a></p></td>
 <td><p>Leverage a postgres database to store and retrieve documents.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
 <td><p>Reranking model using modelclient as a retriever.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
 <td><p>The most commonly used output parsers for the Generator.</p></td>
 </tr>
 </tbody>
@@ -689,10 +693,13 @@ The API reference is organized by subdirectories.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="datasets/datasets.big_bench_hard.html#module-datasets.big_bench_hard" title="datasets.big_bench_hard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datasets.big_bench_hard</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="datasets/datasets.hotpot_qa.html#module-datasets.hotpot_qa" title="datasets.hotpot_qa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datasets.hotpot_qa</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="datasets/datasets.trec.html#module-datasets.trec" title="datasets.trec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datasets.trec</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="datasets/datasets.types.html#module-datasets.types" title="datasets.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datasets.types</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="datasets/datasets.hotpot_qa.html#module-datasets.hotpot_qa" title="datasets.hotpot_qa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datasets.hotpot_qa</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="datasets/datasets.types.html#module-datasets.types" title="datasets.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datasets.types</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -747,13 +754,16 @@ The API reference is organized by subdirectories.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="optim/optim.text_grad.text_loss_with_eval_fn.html#module-optim.text_grad.text_loss_with_eval_fn" title="optim.text_grad.text_loss_with_eval_fn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.text_grad.text_loss_with_eval_fn</span></code></a></p></td>
 <td><p>Adapted from text_grad's String Based Function</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="optim/optim.text_grad.llm_text_loss.html#module-optim.text_grad.llm_text_loss" title="optim.text_grad.llm_text_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.text_grad.llm_text_loss</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="optim/optim.text_grad.tgd_optimizer.html#module-optim.text_grad.tgd_optimizer" title="optim.text_grad.tgd_optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.text_grad.tgd_optimizer</span></code></a></p></td>
+<td><p>Text-grad optimizer and prompts.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="optim/optim.text_grad.llm_text_loss.html#module-optim.text_grad.llm_text_loss" title="optim.text_grad.llm_text_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.text_grad.llm_text_loss</span></code></a></p></td>
 <td><p>Implementation of TextGrad: Automatic “Differentiation” via Text</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="optim/optim.trainer.trainer.html#module-optim.trainer.trainer" title="optim.trainer.trainer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.trainer.trainer</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="optim/optim.trainer.trainer.html#module-optim.trainer.trainer" title="optim.trainer.trainer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.trainer.trainer</span></code></a></p></td>
 <td><p>Ready to use trainer for LLM task pipeline</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="optim/optim.trainer.adal.html#module-optim.trainer.adal" title="optim.trainer.adal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.trainer.adal</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="optim/optim.trainer.adal.html#module-optim.trainer.adal" title="optim.trainer.adal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.trainer.adal</span></code></a></p></td>
 <td><p>AdalComponent provides an interface to compose different parts, from eval_fn, train_step, loss_step, optimizers, backward engine, teacher generator, etc to work with Trainer.</p></td>
 </tr>
 </tbody>

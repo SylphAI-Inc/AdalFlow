@@ -423,6 +423,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
 </ul>
 </details></li>
@@ -480,7 +481,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimizer.html">tgd_optimizer</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -581,6 +582,21 @@ Please add the following colorama setting at the beginning of your code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">colorama</span>
 <span class="n">colorama</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">autoreset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
+</div>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.logger.get_current_script_and_line" title="utils.logger.get_current_script_and_line"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_current_script_and_line</span></code></a>()</p></td>
+<td><p>Get the function name, script name, and line of where the print is called.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.logger.get_logger" title="utils.logger.get_logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logger</span></code></a>([name, level, save_dir, ...])</p></td>
+<td><p>Get or configure a logger, including both the root logger and named logger.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.logger.printc" title="utils.logger.printc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">printc</span></code></a>(text[, color])</p></td>
+<td><p>Color enhanced print function with logger-like format.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.logger.get_logger">

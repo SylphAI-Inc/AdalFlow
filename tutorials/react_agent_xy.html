@@ -496,7 +496,7 @@ use <code class="docutils literal notranslate"><span class="pre">user</span> <sp
 </pre></div>
 </div>
 <p>The agent will then call these external functions based on the function descriptions.
-In addition to user-defined tools, the <code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code> built-in <code class="docutils literal notranslate"><span class="pre">llm_tool</span></code>
+In addition to user-defined tools, the <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code></a> built-in <code class="docutils literal notranslate"><span class="pre">llm_tool</span></code>
 for leveraging LLM’s internal knowledge, and <code class="docutils literal notranslate"><span class="pre">finish</span></code> for completing processes. <code class="docutils literal notranslate"><span class="pre">llm_tool</span></code> uses the same model with the agent. Developers have the flexibility to enable or disable these as needed.</p>
 <ol class="arabic simple" start="3">
 <li><p><strong>Output Parser:</strong> <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> requests the model to output intermediate Thought and Action as JSON, which facilitates better error handling and easier data manipulation than strings. For example,</p></li>

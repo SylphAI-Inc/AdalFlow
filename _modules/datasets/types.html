@@ -475,7 +475,7 @@
 
 
 <div class="viewcode-block" id="TrecData">
-<a class="viewcode-back" href="../../apis/datasets/datasets.types.html#datasets.types.TrecData">[docs]</a>
+<a class="viewcode-back" href="../../apis/datasets/index.html#datasets.types.TrecData">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">TrecData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;A dataclass for representing examples in the TREC dataset.&quot;&quot;&quot;</span>
@@ -483,7 +483,10 @@
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The question to be classified&quot;</span><span class="p">},</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The class name&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;One of {ABBR, ENTY, DESC, HUM, LOC, NUM}&quot;</span><span class="p">},</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">class_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The class label, in range [0, 5]&quot;</span><span class="p">},</span>
         <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>

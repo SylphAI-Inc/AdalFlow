@@ -1,0 +1,17 @@
+.. _datasets-utils:
+
+utils
+=====================
+
+.. automodule:: datasets.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      prepare_dataset_path
+

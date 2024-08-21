@@ -13,6 +13,7 @@ Submodules
    components.retriever.faiss_retriever
    components.retriever.llm_retriever
    components.retriever.postgres_retriever
+   components.retriever.qdrant_retriever
    components.retriever.reranker_retriever
 
 

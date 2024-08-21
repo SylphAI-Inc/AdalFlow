@@ -423,6 +423,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
 </ul>
 </details></li>
@@ -480,7 +481,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimizer.html">tgd_optimizer</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -571,6 +572,33 @@
   <section id="module-core.base_data_class">
 <span id="base-data-class"></span><span id="core-base-data-class"></span><h1>base_data_class<a class="headerlink" href="#module-core.base_data_class" title="Link to this heading">#</a></h1>
 <p>A base class that provides an easy way for data to interact with LLMs.</p>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.base_data_class.check_adal_dataclass" title="core.base_data_class.check_adal_dataclass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_adal_dataclass</span></code></a>(data_class)</p></td>
+<td><p>Check if the provided class is a valid dataclass for the AdalFlow framework.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.base_data_class.required_field" title="core.base_data_class.required_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">required_field</span></code></a>()</p></td>
+<td><p>A factory function to create a required field in a dataclass.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataClass</span></code></a>()</p></td>
+<td><p>The base data class for all data types that interact with LLMs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.base_data_class.DataClassFormatType" title="core.base_data_class.DataClassFormatType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataClassFormatType</span></code></a>(value[, names, module, ...])</p></td>
+<td><p>The format type for the DataClass schema.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.base_data_class.DynamicDataClassFactory" title="core.base_data_class.DynamicDataClassFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DynamicDataClassFactory</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DataClassFormatType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/base_data_class.html#DataClassFormatType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.base_data_class.DataClassFormatType" title="Link to this definition">#</a></dt>

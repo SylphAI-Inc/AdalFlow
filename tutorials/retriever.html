@@ -936,6 +936,68 @@ Here is our code:</p>
 </pre></div>
 </div>
 </section>
+<section id="qdrant-retriever">
+<h3>Qdrant Retriever<a class="headerlink" href="#qdrant-retriever" title="Link to this heading">#</a></h3>
+<p>You can retrieve documents loaded into your <a class="reference external" href="https://qdrant.tech/">Qdrant</a> collections using the <a class="reference internal" href="../apis/components/components.retriever.qdrant_retriever.html#components.retriever.qdrant_retriever.QdrantRetriever" title="components.retriever.qdrant_retriever.QdrantRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">QdrantRetriever</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Install the <code class="docutils literal notranslate"><span class="pre">qdrant-client</span></code> package in your project to use this retriever.</p>
+</div>
+<p>The retriever supports any embeddings provider. The field to be returned from the Qdrant payload can be configured along with other parameters like filters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever</span> <span class="kn">import</span> <span class="n">QdrantRetriever</span>
+<span class="kn">from</span> <span class="nn">qdrant_client</span> <span class="kn">import</span> <span class="n">QdrantClient</span>
+
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">QdrantClient</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://localhost:6333&quot;</span><span class="p">)</span>
+<span class="n">qdrant_retriever</span> <span class="o">=</span> <span class="n">QdrantRetriever</span><span class="p">(</span>
+    <span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{collection_name}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+    <span class="n">embedder</span><span class="o">=</span><span class="n">embedder</span><span class="p">,</span>
+    <span class="n">top_k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">text_key</span><span class="o">=</span><span class="s2">&quot;content&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">qdrant_retriever</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QdrantRetriever</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">_embedder</span><span class="p">):</span> <span class="n">Embedder</span><span class="p">(</span>
+        <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;text-embedding-3-small&#39;</span><span class="p">,</span> <span class="s1">&#39;dimensions&#39;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span> <span class="s1">&#39;encoding_format&#39;</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span><span class="p">},</span>
+        <span class="p">(</span><span class="n">model_client</span><span class="p">):</span> <span class="n">OpenAIClient</span><span class="p">()</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>We can invoke the Qdrant retriever like the others:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">output_1</span> <span class="o">=</span> <span class="n">qdrant_retriever</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">query_1</span><span class="p">)</span>
+<span class="n">output_2</span> <span class="o">=</span> <span class="n">qdrant_retriever</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">query_2</span><span class="p">)</span>
+<span class="n">output_3</span> <span class="o">=</span> <span class="n">qdrant_retriever</span><span class="p">(</span><span class="nb">input</span> <span class="o">=</span> <span class="p">[</span><span class="n">query_1</span><span class="p">,</span> <span class="n">query_2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>You can use <a class="reference external" href="https://qdrant.tech/documentation/concepts/filtering/">filters</a> to further refine the search results as per requirements when setting up the retriever.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qdrant_client</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="n">qdrant_retriever</span> <span class="o">=</span> <span class="n">QdrantRetriever</span><span class="p">(</span>
+    <span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{collection_name}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+    <span class="n">embedder</span><span class="o">=</span><span class="n">embedder</span><span class="p">,</span>
+    <span class="n">text_key</span><span class="o">=</span><span class="s2">&quot;content&quot;</span><span class="p">,</span>
+    <span class="nb">filter</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Filter</span><span class="p">(</span>
+        <span class="n">must</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">FieldCondition</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="s2">&quot;category&quot;</span><span class="p">,</span>
+                <span class="n">match</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">MatchValue</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;facts&quot;</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">FieldCondition</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
+                <span class="nb">range</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Range</span><span class="p">(</span><span class="n">gte</span><span class="o">=</span><span class="mf">0.98</span><span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="postgresretriever">
 <h3>PostgresRetriever<a class="headerlink" href="#postgresretriever" title="Link to this heading">#</a></h3>
 <p>Coming soon.</p>
@@ -1012,6 +1074,7 @@ Additionally, <code class="docutils literal notranslate"><span class="pre">Local
 <li><p><a class="reference internal" href="../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever" title="components.retriever.bm25_retriever.BM25Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever.BM25Retriever</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever" title="components.retriever.reranker_retriever.RerankerRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever.RerankerRetriever</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever" title="components.retriever.llm_retriever.LLMRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.llm_retriever.LLMRetriever</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.retriever.qdrant_retriever.html#components.retriever.qdrant_retriever.QdrantRetriever" title="components.retriever.qdrant_retriever.QdrantRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.qdrant_retriever.QdrantRetriever</span></code></a></p></li>
 </ul>
 </div>
 </section>
@@ -1076,6 +1139,7 @@ Additionally, <code class="docutils literal notranslate"><span class="pre">Local
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bm25retriever">BM25Retriever</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reranker-as-retriever">Reranker as Retriever</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-as-retriever">LLM as Retriever</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#qdrant-retriever">Qdrant Retriever</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#postgresretriever">PostgresRetriever</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-score-threshold-instead-of-top-k">Use Score Threshold instead of top_k</a></li>
 </ul>

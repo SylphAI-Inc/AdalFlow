@@ -1,0 +1,810 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>components.agent.react &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=5422b685" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/rtd_search_config.js"></script>
+    <script src="../../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/components/agent/react';</script>
+    <link rel="icon" href="../../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/adalflow-logo.png" class="logo__image only-light" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>
+    <script>document.write(`<img src="../../../_static/adalflow-logo.png" class="logo__image only-dark" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">components.a...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for components.agent.react</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Implementation and optimization of React agent.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+
+<span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span><span class="p">,</span> <span class="n">AsyncCallable</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.tool_manager</span> <span class="kn">import</span> <span class="n">ToolManager</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.output_parsers</span> <span class="kn">import</span> <span class="n">JsonOutputParser</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">StepOutput</span><span class="p">,</span>
+    <span class="n">GeneratorOutput</span><span class="p">,</span>
+    <span class="n">Function</span><span class="p">,</span>
+    <span class="n">FunctionOutput</span><span class="p">,</span>
+    <span class="n">FunctionExpression</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils.logger</span> <span class="kn">import</span> <span class="n">printc</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DEFAULT_REACT_AGENT_SYSTEM_PROMPT&quot;</span><span class="p">,</span> <span class="s2">&quot;ReActAgent&quot;</span><span class="p">]</span>
+
+<span class="c1"># TODO: test react agent</span>
+
+<span class="n">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;SYS&gt;</span>
+<span class="s2">{# role/task description #}</span>
+<span class="s2">You are a helpful assistant.</span>
+<span class="s2">Answer the user&#39;s query using the tools provided below with minimal steps and maximum accuracy.</span>
+<span class="s2">{# REACT instructions #}</span>
+<span class="s2">Each step you will read the previous Thought, Action, and Observation(execution result of the action) and then provide the next Thought and Action.</span>
+<span class="s2">{# Tools #}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f tools %}</span>
+<span class="s2">&lt;TOOLS&gt;</span>
+<span class="s2">You available tools are:</span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or tool in tools %}</span>
+<span class="s2">{{ loop.index }}.</span>
+<span class="s2">{{tool}}</span>
+<span class="s2">------------------------</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">&lt;/TOOLS&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">{# output format and examples for output format #}</span>
+<span class="s2">&lt;OUTPUT_FORMAT&gt;</span>
+<span class="s2">{{output_format_str}}</span>
+<span class="s2">&lt;/OUTPUT_FORMAT&gt;</span>
+<span class="s2">&lt;TASK_SPEC&gt;</span>
+<span class="s2">{# Task specification to teach the agent how to think using &#39;divide and conquer&#39; strategy #}</span>
+<span class="s2">- For simple queries: Directly call the ``finish`` action and provide the answer.</span>
+<span class="s2">- For complex queries:</span>
+<span class="s2">    - Step 1: Read the user query and potentially divide it into subqueries. And get started with the first subquery.</span>
+<span class="s2">    - Call one available tool at a time to solve each subquery/subquestion. \</span>
+<span class="s2">    - At step &#39;finish&#39;, join all subqueries answers and finish the task.</span>
+<span class="s2">Remember:</span>
+<span class="s2">- Action must call one of the above tools with name. It can not be empty.</span>
+<span class="s2">- You will always end with &#39;finish&#39; action to finish the task. The answer can be the final answer or failure message.</span>
+<span class="s2">&lt;/TASK_SPEC&gt;</span>
+<span class="s2">&lt;/SYS&gt;</span>
+<span class="s2">-----------------</span>
+<span class="s2">User query:</span>
+<span class="s2">{{ input_str }}</span>
+<span class="s2">{# Step History #}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f step_history %}</span>
+<span class="s2">&lt;STEPS&gt;</span>
+<span class="s2">Your previous steps:</span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or history in step_history %}</span>
+<span class="s2">Step {{ loop.index }}.</span>
+<span class="s2">&quot;Thought&quot;: &quot;{{history.action.thought}}&quot;,</span>
+<span class="s2">&quot;Action&quot;: &quot;{{history.action.action}}&quot;,</span>
+<span class="s2">&quot;Observation&quot;: &quot;{{history.observation}}&quot;</span>
+<span class="s2">------------------------</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">&lt;/STEPS&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">You:&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="ReActAgent">
+<a class="viewcode-back" href="../../../apis/components/components.agent.react.html#components.agent.ReActAgent">[docs]</a>
+<span class="k">class</span> <span class="nc">ReActAgent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;ReActAgent uses generator as a planner that runs multiple and sequential functional call steps to generate the final response.</span>
+
+<span class="s2">    Users need to set up:</span>
+<span class="s2">    - tools: a list of tools to use to complete the task. Each tool is a function or a function tool.</span>
+<span class="s2">    - max_steps: the maximum number of steps the agent can take to complete the task.</span>
+<span class="s2">    - use_llm_as_fallback: a boolean to decide whether to use an additional LLM model as a fallback tool to answer the query.</span>
+<span class="s2">    - model_client: the model client to use to generate the response.</span>
+<span class="s2">    - model_kwargs: the model kwargs to use to generate the response.</span>
+<span class="s2">    - template: the template to use to generate the prompt. Default is DEFAULT_REACT_AGENT_SYSTEM_PROMPT.</span>
+
+<span class="s2">    For the generator, the default arguments are:</span>
+<span class="s2">    (1) default prompt: DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span>
+<span class="s2">    (2) default output_processors: JsonParser</span>
+
+<span class="s2">    There are `examples` which is optional, a list of string examples in the prompt.</span>
+
+<span class="s2">    Example:</span>
+
+<span class="s2">    .. code-block:: python</span>
+
+<span class="s2">        from core.openai_client import OpenAIClient</span>
+<span class="s2">        from components.agent.react import ReActAgent</span>
+<span class="s2">        from core.func_tool import FunctionTool</span>
+<span class="s2">        # define the tools</span>
+<span class="s2">        def multiply(a: int, b: int) -&gt; int:</span>
+<span class="s2">            &#39;&#39;&#39;Multiply two numbers.&#39;&#39;&#39;</span>
+<span class="s2">            return a * b</span>
+<span class="s2">        def add(a: int, b: int) -&gt; int:</span>
+<span class="s2">            &#39;&#39;&#39;Add two numbers.&#39;&#39;&#39;</span>
+<span class="s2">            return a + b</span>
+<span class="s2">        agent = ReActAgent(</span>
+<span class="s2">            tools=[multiply, add],</span>
+<span class="s2">            model_client=OpenAIClient(),</span>
+<span class="s2">            model_kwargs={&quot;model&quot;: &quot;gpt-3.5-turbo&quot;},</span>
+<span class="s2">        )</span>
+
+<span class="s2">        # Using examples:</span>
+
+<span class="s2">        call_multiply = FunctionExpression.from_function(</span>
+<span class="s2">            thought=&quot;I want to multiply 3 and 4.&quot;,</span>
+
+
+
+<span class="s2">    Reference:</span>
+<span class="s2">    [1] https://arxiv.org/abs/2210.03629, published in Mar, 2023.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO: allow users to pass in a few examples. Need to be a list of FunctionExpression instances.</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="c1"># added arguments specifc to React</span>
+        <span class="n">tools</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">AsyncCallable</span><span class="p">,</span> <span class="n">FunctionTool</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">add_llm_as_fallback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="c1"># TODO: the examples are just for specifying the output format, not end to end input-output examples, need further optimization</span>
+        <span class="n">examples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FunctionExpression</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="c1"># the following arguments are mainly for the planner</span>
+        <span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># allow users to customize the template</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">template</span> <span class="ow">or</span> <span class="n">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="n">max_steps</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_llm_as_fallback</span> <span class="o">=</span> <span class="n">add_llm_as_fallback</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_tools</span><span class="p">(</span><span class="n">tools</span><span class="p">,</span> <span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">)</span>
+
+        <span class="n">ouput_data_class</span> <span class="o">=</span> <span class="n">FunctionExpression</span>
+        <span class="n">example</span> <span class="o">=</span> <span class="n">FunctionExpression</span><span class="o">.</span><span class="n">from_function</span><span class="p">(</span>
+            <span class="n">thought</span><span class="o">=</span><span class="s2">&quot;I have finished the task.&quot;</span><span class="p">,</span>
+            <span class="n">func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_finish</span><span class="p">,</span>
+            <span class="n">answer</span><span class="o">=</span><span class="s2">&quot;final answer: &#39;answer&#39;&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_examples</span> <span class="o">=</span> <span class="n">examples</span> <span class="o">+</span> <span class="p">[</span><span class="n">example</span><span class="p">]</span>
+
+        <span class="n">output_parser</span> <span class="o">=</span> <span class="n">JsonOutputParser</span><span class="p">(</span>
+            <span class="n">data_class</span><span class="o">=</span><span class="n">ouput_data_class</span><span class="p">,</span> <span class="n">examples</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_examples</span><span class="p">,</span> <span class="n">return_data_class</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;tools&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="o">.</span><span class="n">yaml_definitions</span><span class="p">,</span>
+            <span class="s2">&quot;output_format_str&quot;</span><span class="p">:</span> <span class="n">output_parser</span><span class="o">.</span><span class="n">format_instructions</span><span class="p">(),</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">planner</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
+            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+            <span class="n">output_processors</span><span class="o">=</span><span class="n">output_parser</span><span class="p">,</span>
+            <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">_init_tools</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tools</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">AsyncCallable</span><span class="p">,</span> <span class="n">FunctionTool</span><span class="p">]],</span>
+        <span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize the tools.&quot;&quot;&quot;</span>
+        <span class="n">tools</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">tools</span><span class="p">)</span>
+        <span class="n">_additional_llm_tool</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">Generator</span><span class="p">(</span><span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_llm_as_fallback</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">llm_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;I answer any input query with llm&#39;s world knowledge. Use me as a fallback tool or when the query is simple.&quot;&quot;&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="n">_additional_llm_tool</span><span class="p">(</span>
+                    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">}</span>
+                <span class="p">)</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="n">output</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="k">return</span> <span class="n">response</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error using the generator: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error using the generator: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Finish the task with answer.&quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="n">answer</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finish</span> <span class="o">=</span> <span class="n">finish</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_llm_as_fallback</span><span class="p">:</span>
+            <span class="n">tools</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">llm_tool</span><span class="p">)</span>
+        <span class="n">tools</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">finish</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="p">:</span> <span class="n">ToolManager</span> <span class="o">=</span> <span class="n">ToolManager</span><span class="p">(</span><span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ReActAgent.reset">
+<a class="viewcode-back" href="../../../apis/components/components.agent.react.html#components.agent.ReActAgent.reset">[docs]</a>
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Reset the agent to start a new query.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+    <span class="c1"># TODO: add async execution</span>
+    <span class="k">def</span> <span class="nf">_execute_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_step</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the action string to a function call and execute it. Update the action_step with the result.&quot;&quot;&quot;</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">action_step</span><span class="o">.</span><span class="n">action</span>
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="n">fun</span><span class="p">:</span> <span class="n">Function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="o">.</span><span class="n">parse_func_expr</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">:</span> <span class="n">FunctionOutput</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="o">.</span><span class="n">execute_func</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span>
+            <span class="c1"># TODO: optimize the action_step</span>
+            <span class="n">action_step</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="n">fun</span>
+            <span class="n">action_step</span><span class="o">.</span><span class="n">observation</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">output</span>
+            <span class="k">return</span> <span class="n">action_step</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error executing </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># pass the error as observation so that the agent can continue and correct the error in the next step</span>
+            <span class="n">action_step</span><span class="o">.</span><span class="n">observation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error executing </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">return</span> <span class="n">action_step</span>
+
+    <span class="k">def</span> <span class="nf">_run_one_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run one step of the agent. Plan and execute the action for the step.&quot;&quot;&quot;</span>
+        <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span> <span class="o">=</span> <span class="n">StepOutput</span><span class="p">(</span><span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span>
+        <span class="n">prompt_kwargs</span><span class="p">[</span><span class="s2">&quot;step_history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Running step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2"> with prompt: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">response</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="p">(</span>
+            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error planning step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">step_output</span><span class="o">.</span><span class="n">observation</span> <span class="o">=</span> <span class="n">error_msg</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fun_expr</span><span class="p">:</span> <span class="n">FunctionExpression</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+                <span class="n">step_output</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">fun_expr</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">fun_expr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">step_output</span> <span class="ow">and</span> <span class="n">step_output</span><span class="o">.</span><span class="n">action</span><span class="p">:</span>
+                    <span class="n">step_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_action</span><span class="p">(</span><span class="n">step_output</span><span class="p">)</span>
+                    <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="se">\n</span><span class="si">{</span><span class="n">step_output</span><span class="si">}</span><span class="se">\n</span><span class="s2">_______</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse response for step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error parsing response for step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">step_output</span><span class="o">.</span><span class="n">observation</span> <span class="o">=</span> <span class="n">error_msg</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_output</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span>
+
+<div class="viewcode-block" id="ReActAgent.call">
+<a class="viewcode-back" href="../../../apis/components/components.agent.react.html#components.agent.ReActAgent.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">promt_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs.&quot;&quot;&quot;</span>
+        <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">promt_kwargs</span><span class="p">,</span> <span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">}</span>
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;input_query: </span><span class="si">{</span><span class="nb">input</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">):</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_step</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">function</span>
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;finish&quot;</span>
+                <span class="p">):</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error running step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">observation</span>
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;answer:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">answer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;step_history: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">answer</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;max_steps=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="si">}</span><span class="s2">, add_llm_as_fallback=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">add_llm_as_fallback</span><span class="si">}</span><span class="s2">, &quot;</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

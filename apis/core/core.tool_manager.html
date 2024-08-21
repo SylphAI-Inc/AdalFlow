@@ -423,6 +423,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
 </ul>
 </details></li>
@@ -480,7 +481,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimizer.html">tgd_optimizer</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -571,6 +572,24 @@
   <section id="module-core.tool_manager">
 <span id="tool-manager"></span><span id="core-tool-manager"></span><h1>tool_manager<a class="headerlink" href="#module-core.tool_manager" title="Link to this heading">#</a></h1>
 <p>The ToolManager manages a list of tools, context, and all ways to execute functions.</p>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.tool_manager.run_async_in_new_loop" title="core.tool_manager.run_async_in_new_loop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_async_in_new_loop</span></code></a>(coro)</p></td>
+<td><p>Run async function in a new event loop.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ToolManager</span></code></a>([tools, additional_context])</p></td>
+<td><p>&quot;Manage a list of tools, context, and all ways to execute functions.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py function">
 <dt class="sig sig-object py" id="core.tool_manager.run_async_in_new_loop">
 <span class="sig-name descname"><span class="pre">run_async_in_new_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coro</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/tool_manager.html#run_async_in_new_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tool_manager.run_async_in_new_loop" title="Link to this definition">#</a></dt>

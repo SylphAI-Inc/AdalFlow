@@ -7,3 +7,12 @@ base
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      BaseEvaluator
+      EvaluationResult
+

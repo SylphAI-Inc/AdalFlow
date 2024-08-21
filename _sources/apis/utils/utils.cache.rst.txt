@@ -7,3 +7,19 @@ cache
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      direct
+      hash_text
+      hash_text_sha1
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      CachedEngine
+

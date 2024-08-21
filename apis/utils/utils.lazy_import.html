@@ -423,6 +423,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
 </ul>
 </details></li>
@@ -480,7 +481,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimizer.html">tgd_optimizer</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -571,6 +572,27 @@
   <section id="module-utils.lazy_import">
 <span id="lazy-import"></span><span id="utils-lazy-import"></span><h1>lazy_import<a class="headerlink" href="#module-utils.lazy_import" title="Link to this heading">#</a></h1>
 <p>Lazy import a module and class.</p>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.lazy_import.safe_import" title="utils.lazy_import.safe_import"><code class="xref py py-obj docutils literal notranslate"><span class="pre">safe_import</span></code></a>(module_name, install_message)</p></td>
+<td><p>Safely import a module and raise an ImportError with the install message if the module is not found.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.lazy_import.LazyImport" title="utils.lazy_import.LazyImport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LazyImport</span></code></a>(import_path, optional_package, ...)</p></td>
+<td><p>Lazy import a module and class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.lazy_import.OptionalPackages" title="utils.lazy_import.OptionalPackages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OptionalPackages</span></code></a>(value[, names, module, ...])</p></td>
+<td><p>Enum for optional packages that can be used in the library.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">OptionalPackages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utils/lazy_import.html#OptionalPackages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.lazy_import.OptionalPackages" title="Link to this definition">#</a></dt>
@@ -635,6 +657,11 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages.DATASETS">
 <span class="sig-name descname"><span class="pre">DATASETS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('datasets',</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">datasets</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">datasets')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.DATASETS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages.QDRANT">
+<span class="sig-name descname"><span class="pre">QDRANT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('qdrant-client',</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">qdrant-client</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">qdrant-client')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.QDRANT" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -754,6 +781,7 @@ When numpy is installed, it will print the numpy version.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.SQLALCHEMY"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.SQLALCHEMY</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.PGVECTOR"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.PGVECTOR</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.DATASETS"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.DATASETS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.QDRANT"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.QDRANT</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.LazyImport"><code class="docutils literal notranslate"><span class="pre">LazyImport</span></code></a><ul class="nav section-nav flex-column">

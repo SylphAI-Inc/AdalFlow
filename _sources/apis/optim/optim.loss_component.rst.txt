@@ -7,3 +7,11 @@ loss_component
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      LossComponent
+

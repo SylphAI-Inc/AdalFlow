@@ -52,7 +52,7 @@
     <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="tgd_optimer" href="optim.text_grad.tgd_optimer.html" />
+    <link rel="next" title="tgd_optimizer" href="optim.text_grad.tgd_optimizer.html" />
     <link rel="prev" title="ops" href="optim.text_grad.ops.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -423,6 +423,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
 </ul>
 </details></li>
@@ -480,7 +481,7 @@
 <li class="toctree-l3"><a class="reference internal" href="optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="optim.text_grad.ops.html">ops</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">text_loss_with_eval_fn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html">tgd_optimizer</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -576,6 +577,15 @@
   <section id="module-optim.text_grad.text_loss_with_eval_fn">
 <span id="text-loss-with-eval-fn"></span><span id="optim-text-grad-text-loss-with-eval-fn"></span><h1>text_loss_with_eval_fn<a class="headerlink" href="#module-optim.text_grad.text_loss_with_eval_fn" title="Link to this heading">#</a></h1>
 <p>Adapted from text_grad’s String Based Function</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#optim.text_grad.text_loss_with_eval_fn.EvalFnToTextLoss" title="optim.text_grad.text_loss_with_eval_fn.EvalFnToTextLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EvalFnToTextLoss</span></code></a>(eval_fn, eval_fn_desc[, ...])</p></td>
+<td><p>Convert an evaluation function to a text loss.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="optim.text_grad.text_loss_with_eval_fn.EvalFnToTextLoss">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EvalFnToTextLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BaseEvaluator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_fn_desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.generator.html#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><span class="pre">ModelClient</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/text_loss_with_eval_fn.html#EvalFnToTextLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.text_loss_with_eval_fn.EvalFnToTextLoss" title="Link to this definition">#</a></dt>
@@ -646,11 +656,11 @@ are only doing demo optimization and it will not have gradients but simply backp
       </div>
     </a>
     <a class="right-next"
-       href="optim.text_grad.tgd_optimer.html"
+       href="optim.text_grad.tgd_optimizer.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">tgd_optimer</p>
+        <p class="prev-next-title">tgd_optimizer</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

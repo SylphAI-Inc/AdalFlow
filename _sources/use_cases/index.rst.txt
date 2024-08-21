@@ -18,7 +18,7 @@ We will build use cases end-to-end, ranging from classification (classical NLP t
    * - :doc:`question_answering`
      - Question Answering with `bhh_hard_object_count` dataset, including textual-gradient descent and few-shot boostrap optimization.
    * - :doc:`classification`
-     - Classification with llama3.1-8b model and dataset (coming soon).
+     - Classification with `gpt-3.5-turbo`. The optimized task pipeline performs on-par with `gpt-4o`.
    * - :doc:`rag_opt`
      - RAG and multi-hop question answering with hotpotqa dataset, two generators, and one retriever, optimizing zero-shot and few-shot learning (coming soon).
 

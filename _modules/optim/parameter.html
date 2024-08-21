@@ -1119,6 +1119,8 @@
             <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_score</span><span class="p">,</span>
             <span class="s2">&quot;traces&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traces</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
             <span class="s2">&quot;input_args&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_args</span><span class="p">,</span>
+            <span class="c1"># demos</span>
+            <span class="s2">&quot;demos&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_demos</span><span class="p">],</span>
         <span class="p">}</span></div>
 
 
@@ -1141,6 +1143,8 @@
             <span class="n">raw_response</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;raw_response&quot;</span><span class="p">],</span>
             <span class="n">input_args</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;input_args&quot;</span><span class="p">],</span>
             <span class="n">score</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">],</span>
+            <span class="c1"># demos</span>
+            <span class="n">demos</span><span class="o">=</span><span class="p">[</span><span class="n">DataClass</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;demos&quot;</span><span class="p">]],</span>
         <span class="p">)</span>
         <span class="c1"># Reconstruct gradients_context from the list of tuples</span>
         <span class="n">param</span><span class="o">.</span><span class="n">gradients_context</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span>

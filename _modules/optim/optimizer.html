@@ -513,16 +513,21 @@
     <span class="n">_traces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>  <span class="c1"># key: parameter_id (demo)</span>
     <span class="n">dataset</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]</span>
     <span class="n">_weighted</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">exclude_input_fields_from_bootstrap_demos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">weighted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">dataset</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exclude_input_fields_from_bootstrap_demos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span> <span class="o">=</span> <span class="n">weighted</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exclude_input_fields_from_bootstrap_demos</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">exclude_input_fields_from_bootstrap_demos</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="DemoOptimizer.use_weighted_sampling">
 <a class="viewcode-back" href="../../apis/optim/optim.optimizer.html#optim.DemoOptimizer.use_weighted_sampling">[docs]</a>

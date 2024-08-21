@@ -265,6 +265,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -446,9 +450,405 @@
                   
   <section id="classification-optimization">
 <h1>Classification Optimization<a class="headerlink" href="#classification-optimization" title="Link to this heading">#</a></h1>
-<p>Classification is one of the widely used tasks in NLP.
-Be able to optimize the GenAI based classification can help developers to quickly develop a well-performing model.
-In the longer term, this model can help bootstrap the training of a cheaper and classification model.</p>
+<p>Classification is one of the most widely used tasks in NLP.
+Optimizing GenAI-based classification can help developers quickly create a well-performing model.
+In the long term, this model can also help bootstrap the training of a more cost-effective classification model.</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/classification_training_map.png"><img alt="Learning Curve" src="../_images/classification_training_map.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Learning Curve on training system task instruction and on one-shot demonstration.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/classification_opt_prompt.png"><img alt="Optimized prompt" src="../_images/classification_opt_prompt.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">The optimized prompt for the classification task.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Here is what you  will learn from this tutorial:</p>
+<ol class="arabic simple">
+<li><p>How to build a classification task pipeline with structured output.</p></li>
+<li><p>The concepts of <code class="docutils literal notranslate"><span class="pre">mixed</span></code> and <code class="docutils literal notranslate"><span class="pre">sequential</span></code> training as we explore both <code class="docutils literal notranslate"><span class="pre">TextOptimizer</span></code> and <code class="docutils literal notranslate"><span class="pre">DemoOptimizer</span></code> to optimize the classification task.</p></li>
+<li><p>How to handle the situations where the val dataset is not a good indicator of test accuracy.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can find all our code in our GitHub repo: <cite>use_cases/classification</cite>, and the Dspy implementation at <cite>benchmarks/trec_classification</cite>.</p>
+</div>
+<section id="task-pipeline-with-structured-output">
+<h2>Task Pipeline with Structured Output<a class="headerlink" href="#task-pipeline-with-structured-output" title="Link to this heading">#</a></h2>
+<p>We will use the following overall template with <code class="docutils literal notranslate"><span class="pre">system_prompt</span></code>, <code class="docutils literal notranslate"><span class="pre">output_format_str</span></code>, and <code class="docutils literal notranslate"><span class="pre">few_shot_demos</span></code> varaibles.
+<code class="docutils literal notranslate"><span class="pre">task_desc_template</span></code> will be used to render the final classification task description from class names and each label’s description.
+<code class="docutils literal notranslate"><span class="pre">TRECExtendedData</span></code> is a dataclass that extends <a class="reference internal" href="../apis/datasets/datasets.types.html#datasets.types.TrecData" title="datasets.types.TrecData"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrecData</span></code></a> with a rationale field. This will ensure our generator to first levarage ‘Chain-of-Thought’ reasoning before predicting the final class_name.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">template</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;START_OF_SYSTEM_MESSAGE&gt;</span>
+<span class="s2"> {{system_prompt}}</span>
+<span class="s2"> {</span><span class="si">% i</span><span class="s2">f output_format_str is not none %}</span>
+<span class="s2"> {{output_format_str}}</span>
+<span class="s2"> {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2"> {</span><span class="si">% i</span><span class="s2">f few_shot_demos is not none %}</span>
+<span class="s2"> Here are some examples:</span>
+<span class="s2"> {{few_shot_demos}}</span>
+<span class="s2"> {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2"> &lt;END_OF_SYSTEM_MESSAGE&gt;</span>
+<span class="s2"> &lt;START_OF_USER_MESSAGE&gt;</span>
+<span class="s2"> {{input_str}}</span>
+<span class="s2"> &lt;END_OF_USER_MESSAGE&gt;</span>
+<span class="s2"> &quot;&quot;&quot;</span>
+
+ <span class="n">task_desc_template</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;You are a classifier. Given a question, you need to classify it into one of the following classes:</span>
+<span class="s2"> Format: class_index. class_name, class_description</span>
+<span class="s2"> {</span><span class="si">% i</span><span class="s2">f classes %}</span>
+<span class="s2"> {</span><span class="si">% f</span><span class="s2">or class in classes %}</span>
+<span class="s2"> {{loop.index-1}}. {{class.label}}, {{class.desc}}</span>
+<span class="s2"> {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2"> {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2"> - Do not try to answer the question:</span>
+<span class="s2"> &quot;&quot;&quot;</span>
+
+ <span class="nd">@dataclass</span>
+ <span class="k">class</span> <span class="nc">TRECExtendedData</span><span class="p">(</span><span class="n">TrecData</span><span class="p">):</span>
+     <span class="n">rationale</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+             <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Your step-by-step reasoning to classify the question to class_name&quot;</span>
+         <span class="p">},</span>
+         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+     <span class="p">)</span>
+     <span class="n">__input_fields__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;question&quot;</span><span class="p">]</span>
+     <span class="n">__output_fields__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;rationale&quot;</span><span class="p">,</span> <span class="s2">&quot;class_name&quot;</span><span class="p">]</span> <span class="c1"># it is important to have the rationale before the class_name</span>
+</pre></div>
+</div>
+<p>We will subclass from <code class="docutils literal notranslate"><span class="pre">Component</span></code> for our final task pipeline.
+We use <a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code></a> to streamline the process of output formatting and parsing.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TRECClassifierStructuredOutput</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+
+     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+         <span class="n">label_desc</span> <span class="o">=</span> <span class="p">[</span>
+             <span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">desc</span><span class="p">}</span>
+             <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">desc</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_COARSE_LABELS</span><span class="p">,</span> <span class="n">_COARSE_LABELS_DESC</span><span class="p">)</span>
+         <span class="p">]</span>
+
+         <span class="n">task_desc_str</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Prompt</span><span class="p">(</span>
+             <span class="n">template</span><span class="o">=</span><span class="n">task_desc_template</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;classes&quot;</span><span class="p">:</span> <span class="n">label_desc</span><span class="p">}</span>
+         <span class="p">)()</span>
+
+         <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span> <span class="o">=</span> <span class="n">TRECExtendedData</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="o">.</span><span class="n">set_task_desc</span><span class="p">(</span><span class="n">task_desc_str</span><span class="p">)</span>
+
+         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">DataClassParser</span><span class="p">(</span>
+             <span class="n">data_class</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="p">,</span> <span class="n">return_data_class</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">format_type</span><span class="o">=</span><span class="s2">&quot;yaml&quot;</span>
+         <span class="p">)</span>
+
+         <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+             <span class="s2">&quot;system_prompt&quot;</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+                 <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get_task_desc_str</span><span class="p">(),</span>
+                 <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;Task description&quot;</span><span class="p">,</span>
+                 <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">param_type</span><span class="o">=</span><span class="n">adal</span><span class="o">.</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">PROMPT</span><span class="p">,</span>
+             <span class="p">),</span>
+             <span class="s2">&quot;output_format_str&quot;</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+                 <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get_output_format_str</span><span class="p">(),</span>
+                 <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;Output format requirements&quot;</span><span class="p">,</span>
+                 <span class="n">requires_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">param_type</span><span class="o">=</span><span class="n">adal</span><span class="o">.</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">PROMPT</span><span class="p">,</span>
+             <span class="p">),</span>
+             <span class="s2">&quot;few_shot_demos&quot;</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+                 <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;Few shot examples to help the model&quot;</span><span class="p">,</span>
+                 <span class="n">param_type</span><span class="o">=</span><span class="n">adal</span><span class="o">.</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">DEMOS</span><span class="p">,</span>
+             <span class="p">),</span>
+         <span class="p">}</span>
+
+         <span class="bp">self</span><span class="o">.</span><span class="n">llm</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span>
+             <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+             <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+             <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+             <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
+             <span class="n">output_processors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="p">,</span>
+             <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+         <span class="p">)</span>
+
+     <span class="k">def</span> <span class="nf">_prepare_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+         <span class="n">input_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="p">(</span><span class="n">question</span><span class="o">=</span><span class="n">question</span><span class="p">)</span>
+         <span class="n">input_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get_input_str</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+         <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+             <span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+                 <span class="n">data</span><span class="o">=</span><span class="n">input_str</span><span class="p">,</span> <span class="n">requires_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;input to the LLM&quot;</span>
+             <span class="p">)</span>
+         <span class="p">}</span>
+         <span class="k">return</span> <span class="n">prompt_kwargs</span>
+
+     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+         <span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span><span class="p">,</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+         <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_input</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
+         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+         <span class="k">return</span> <span class="n">output</span>
+</pre></div>
+</div>
+<p>In this taske pipeline, we have prepared two trainable prameters: <code class="docutils literal notranslate"><span class="pre">system_prompt</span></code> and <code class="docutils literal notranslate"><span class="pre">few_shot_demos</span></code> and each is of type <code class="docutils literal notranslate"><span class="pre">adal.ParameterType.PROMPT</span></code> and <code class="docutils literal notranslate"><span class="pre">adal.ParameterType.DEMOS</span></code> respectively.
+We will need <a class="reference internal" href="../apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer" title="optim.text_grad.tgd_optimizer.TGDOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">TGDOptimizer</span></code></a> to optimize <code class="docutils literal notranslate"><span class="pre">system_prompt</span></code> and <a class="reference internal" href="../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot" title="optim.few_shot.bootstrap_optimizer.BootstrapFewShot"><code class="xref py py-class docutils literal notranslate"><span class="pre">BootstrapOptimizer</span></code></a>
+to optimize <code class="docutils literal notranslate"><span class="pre">few_shot_demos</span></code>.</p>
+</section>
+<section id="define-the-adalcomponent">
+<h2>Define the AdalComponent<a class="headerlink" href="#define-the-adalcomponent" title="Link to this heading">#</a></h2>
+<p>Now, we will define a subclass of <code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code> to prepare the pipeline for training.
+We have set up the <code class="docutils literal notranslate"><span class="pre">eval_fn</span></code>, <code class="docutils literal notranslate"><span class="pre">loss_fn</span></code>, along with methods to configure backward engine for the text optimizer,
+as well as a method method to configure teacher generator for the demo optimizer.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TrecClassifierAdal</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">AdalComponent</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">teacher_model_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">backward_engine_model_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">text_optimizer_model_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">TRECClassifierStructuredOutput</span><span class="p">(</span><span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">)</span>
+        <span class="n">eval_fn</span> <span class="o">=</span> <span class="n">AnswerMatchAcc</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;exact_match&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">compute_single_item</span>
+        <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">EvalFnToTextLoss</span><span class="p">(</span>
+            <span class="n">eval_fn</span><span class="o">=</span><span class="n">eval_fn</span><span class="p">,</span>
+            <span class="n">eval_fn_desc</span><span class="o">=</span><span class="s2">&quot;exact_match: 1 if str(y) == str(y_gt) else 0&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
+            <span class="n">eval_fn</span><span class="o">=</span><span class="n">eval_fn</span><span class="p">,</span>
+            <span class="n">loss_fn</span><span class="o">=</span><span class="n">loss_fn</span><span class="p">,</span>
+            <span class="n">backward_engine_model_config</span><span class="o">=</span><span class="n">backward_engine_model_config</span><span class="p">,</span>
+            <span class="n">text_optimizer_model_config</span><span class="o">=</span><span class="n">text_optimizer_model_config</span><span class="p">,</span>
+            <span class="n">teacher_model_config</span><span class="o">=</span><span class="n">teacher_model_config</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">handle_one_task_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">TRECExtendedData</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">call</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">question</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">evaluate_one_sample</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">TRECExtendedData</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">y_label</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">y_pred</span> <span class="ow">and</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">class_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">y_label</span> <span class="o">=</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">class_name</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_fn</span><span class="p">(</span><span class="n">y_label</span><span class="p">,</span> <span class="n">sample</span><span class="o">.</span><span class="n">class_name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">handle_one_loss_sample</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">TRECExtendedData</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">]:</span>
+        <span class="n">full_response</span> <span class="o">=</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">full_response</span>
+        <span class="n">y_label</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">full_response</span>
+            <span class="ow">and</span> <span class="n">full_response</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">full_response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">class_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="n">y_label</span> <span class="o">=</span> <span class="n">full_response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">class_name</span>
+
+        <span class="n">y_pred</span><span class="o">.</span><span class="n">eval_input</span> <span class="o">=</span> <span class="n">y_label</span>
+        <span class="n">y_gt</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;y_gt&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">class_name</span><span class="p">,</span>
+            <span class="n">eval_input</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">class_name</span><span class="p">,</span>
+            <span class="n">requires_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y_pred</span><span class="p">,</span> <span class="s2">&quot;y_gt&quot;</span><span class="p">:</span> <span class="n">y_gt</span><span class="p">}}</span>
+
+    <span class="k">def</span> <span class="nf">configure_teacher_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_teacher_generator_helper</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">teacher_model_config</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">configure_backward_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_backward_engine_helper</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">backward_engine_model_config</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">to</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_text_optimizer_helper</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">text_optimizer_model_config</span><span class="p">)</span>
+        <span class="n">do</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_demo_optimizer_helper</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">to</span> <span class="o">+</span> <span class="n">do</span>
+</pre></div>
+</div>
+</section>
+<section id="trainer-and-training-strategy">
+<h2>Trainer and Training Strategy<a class="headerlink" href="#trainer-and-training-strategy" title="Link to this heading">#</a></h2>
+<p><strong>Training Strategy</strong></p>
+<p>The following code shows our default training configuration. We use a batch size of 4, 12 steps, and 4 workers to call LLMs in parallel.
+The <code class="docutils literal notranslate"><span class="pre">optimize_order</span></code> is set to <code class="docutils literal notranslate"><span class="pre">sequential</span></code> to first train the text optimizer and then the demo optimizer.
+This training strategy has been working well. With the text optimized, this might boost the performance for the teacher model.
+With the teacher model’s reasoning, the demo optimizer can learn to reason better even with merefly one demonstration from the teacher.
+When we are at the <code class="docutils literal notranslate"><span class="pre">sequential</span></code> optimization order, we will end up with 24 steps trained.</p>
+<p>In addition, you can try <code class="docutils literal notranslate"><span class="pre">mixed</span></code> for the optimization order, where at each step, it will update both the text optimizer and the demo optimizer.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span>
+    <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">train_batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>  <span class="c1"># larger batch size is not that effective, probably because of llm&#39;s lost in the middle</span>
+    <span class="n">raw_shots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">bootstrap_shots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">max_steps</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;constrained&quot;</span><span class="p">,</span>
+    <span class="n">optimization_order</span><span class="o">=</span><span class="s2">&quot;sequential&quot;</span><span class="p">,</span>
+    <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="c1"># TODO: ensure the teacher prompt gets updated with the new model</span>
+    <span class="n">adal_component</span> <span class="o">=</span> <span class="n">TrecClassifierAdal</span><span class="p">(</span>
+        <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+        <span class="n">text_optimizer_model_config</span><span class="o">=</span><span class="n">gpt_4o_model</span><span class="p">,</span>
+        <span class="n">backward_engine_model_config</span><span class="o">=</span><span class="n">gpt_4o_model</span><span class="p">,</span>
+        <span class="n">teacher_model_config</span><span class="o">=</span><span class="n">gpt_4o_model</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">adal_component</span><span class="p">)</span>
+    <span class="n">trainer</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span>
+        <span class="n">train_batch_size</span><span class="o">=</span><span class="n">train_batch_size</span><span class="p">,</span>
+        <span class="n">adaltask</span><span class="o">=</span><span class="n">adal_component</span><span class="p">,</span>
+        <span class="n">strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span>
+        <span class="n">max_steps</span><span class="o">=</span><span class="n">max_steps</span><span class="p">,</span>
+        <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
+        <span class="n">raw_shots</span><span class="o">=</span><span class="n">raw_shots</span><span class="p">,</span>
+        <span class="n">bootstrap_shots</span><span class="o">=</span><span class="n">bootstrap_shots</span><span class="p">,</span>
+        <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">,</span>
+        <span class="n">weighted_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">optimization_order</span><span class="o">=</span><span class="n">optimization_order</span><span class="p">,</span>
+        <span class="n">exclude_input_fields_from_bootstrap_demos</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+
+    <span class="n">train_dataset</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">load_datasets</span><span class="p">()</span>
+    <span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+        <span class="n">train_dataset</span><span class="o">=</span><span class="n">train_dataset</span><span class="p">,</span>
+        <span class="n">val_dataset</span><span class="o">=</span><span class="n">test_dataset</span><span class="p">,</span>
+        <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, we did not use <code class="docutils literal notranslate"><span class="pre">val_dataset</span></code> as we did diagnose and as shown in Table 1, the val dataset is not a good indicator for the test accuracy.
+Thus, our final training strategy is to directly validate on the test dataset.</p>
+<p><strong>Training checkpoints</strong>:</p>
+<p>At the end of the training, we will print out the ckpt path where you can look up all the details about the trained prompt.
+Here is our above training:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Loading<span class="w"> </span>Data:<span class="w"> </span><span class="m">100</span>%<span class="p">|</span>█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████<span class="p">|</span><span class="w"> </span><span class="m">144</span>/144<span class="w"> </span><span class="o">[</span><span class="m">00</span>:00&lt;<span class="m">00</span>:00,<span class="w"> </span><span class="m">51011</span>.81it/s<span class="o">]</span>
+Evaluating<span class="w"> </span>step<span class="o">(</span><span class="m">24</span><span class="o">)</span>:<span class="w"> </span><span class="m">0</span>.8426<span class="w"> </span>across<span class="w"> </span><span class="m">108</span><span class="w"> </span>samples,<span class="w"> </span>Max<span class="w"> </span>potential:<span class="w"> </span><span class="m">0</span>.8819:<span class="w">  </span><span class="m">75</span>%<span class="p">|</span>█████████████████████████████████████████████████████████████████████▊<span class="w">                       </span><span class="p">|</span><span class="w"> </span><span class="m">108</span>/144<span class="w"> </span><span class="o">[</span><span class="m">00</span>:00&lt;<span class="m">00</span>:00,<span class="w"> </span><span class="m">1855</span>.48it/s<span class="o">]</span>
+Fail<span class="w"> </span>validation:<span class="w"> </span><span class="m">0</span>.8348623853211009<span class="w"> </span>&lt;<span class="o">=</span><span class="w"> </span><span class="m">0</span>.8819444444444444,<span class="w"> </span>revert
+Training<span class="w"> </span>Step:<span class="w"> </span><span class="m">24</span>:<span class="w"> </span><span class="m">100</span>%<span class="p">|</span>█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████<span class="p">|</span><span class="w"> </span><span class="m">12</span>/12<span class="w"> </span><span class="o">[</span><span class="m">03</span>:05&lt;<span class="m">00</span>:00,<span class="w"> </span><span class="m">15</span>.46s/it<span class="o">]</span>
+Saved<span class="w"> </span>ckpt<span class="w"> </span>to<span class="w"> </span>/Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_848d2_run_7.json
+Training<span class="w"> </span>time:<span class="w"> </span><span class="m">823</span>.8977522850037s
+</pre></div>
+</div>
+<p>We can see that the training takes only 14 minutes.
+We use 12 steps, and the learning curve is shown in Fig 1.
+Here is our trained system prompt and the demo prompt:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">system_prompt</span> <span class="o">=</span> <span class="s2">&quot;You are a classifier. Given a question, you need to classify it into one of the following classes:</span><span class="se">\n</span><span class="s2">Format: class_index. class_name, class_description</span><span class="se">\n</span><span class="s2">0. ABBR, Abbreviation or acronym</span><span class="se">\n</span><span class="s2">1. ENTY, Entity, including specific terms, brand names, or other distinct entities</span><span class="se">\n</span><span class="s2">2. DESC, Description and abstract concept, including explanations, characteristics, and meanings</span><span class="se">\n</span><span class="s2">3. HUM, Human being</span><span class="se">\n</span><span class="s2">4. LOC, Location, including spatial information, geographical places</span><span class="se">\n</span><span class="s2">5. NUM, Numeric value, including measurable figures, quantities, distances, and time</span><span class="se">\n</span><span class="s2">- Focus on correctly identifying the class based on the question&#39;s main inquiry:&quot;</span>
+<span class="n">few_shot_demos</span> <span class="o">=</span> <span class="s2">&quot;rationale: The question is asking for a specific term used to describe the sum of</span><span class="se">\n</span><span class="s2">  all genetic material in an organism.</span><span class="se">\n</span><span class="s2">class_name: ENTY&quot;</span>
+</pre></div>
+</div>
+<p>We can see that compared with our initial prompt, it adds some concise explanation to each class.
+The demo prompt is also short, directly from a teacher model teaching the student model to do rationale to reach to the final class_name.</p>
+</section>
+<section id="performance-benchmark">
+<h2>Performance &amp; Benchmark<a class="headerlink" href="#performance-benchmark" title="Link to this heading">#</a></h2>
+<p>We implemented Dspy Boostrap few-shot with random search.</p>
+<p>Here is the DsPy’s Signature (similar to the prompt) where its task description is a direct copy our AdalFlow’s starting prompt:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">GenerateAnswer</span><span class="p">(</span><span class="n">dspy</span><span class="o">.</span><span class="n">Signature</span><span class="p">):</span>
+<span class="w">     </span><span class="sd">&quot;&quot;&quot;You are a classifier. Given a question, you need to classify it into one of the following classes:</span>
+<span class="sd">     Format: class_index. class_name, class_description</span>
+<span class="sd">     1. ABBR, Abbreviation</span>
+<span class="sd">     2. ENTY, Entity</span>
+<span class="sd">     3. DESC, Description and abstract concept</span>
+<span class="sd">     4. HUM, Human being</span>
+<span class="sd">     5. LOC, Location</span>
+<span class="sd">     6. NUM, Numeric value</span>
+<span class="sd">     - Do not try to answer the question:&quot;&quot;&quot;</span>
+
+     <span class="n">question</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">dspy</span><span class="o">.</span><span class="n">InputField</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Question to be classified&quot;</span><span class="p">)</span>
+     <span class="n">answer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">dspy</span><span class="o">.</span><span class="n">OutputField</span><span class="p">(</span>
+         <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Select one from ABBR, ENTY, DESC, HUM, LOC, NUM&quot;</span>
+     <span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is the peroformance result</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id3">
+<caption><span class="caption-text">AdalFlow vs DsPy on GPT-3.5-turbo</span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Train</p></th>
+<th class="head"><p>Val</p></th>
+<th class="head"><p>Test</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Start (manual prompt)</p></td>
+<td><p>67.5% (20*6 samples)</p></td>
+<td><p>69.4% (6*6 samples)</p></td>
+<td><p>82.64% (144 samples)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Start (GPT-4o/Teacher)</p></td>
+<td><p>77.5%</p></td>
+<td><p>77.78%</p></td>
+<td><p>86.11%</p></td>
+</tr>
+<tr class="row-even"><td><p>DsPy (Start)</p></td>
+<td><p>57.5%</p></td>
+<td><p>61.1%</p></td>
+<td><p>60.42%</p></td>
+</tr>
+<tr class="row-odd"><td><p>DsPy (bootstrap 4-shots + raw 36-shots)</p></td>
+<td><p>N/A</p></td>
+<td><p>86.1%</p></td>
+<td><p>82.6%</p></td>
+</tr>
+<tr class="row-even"><td><p>AdalFlow (Optimized Zero-shot)</p></td>
+<td><p>N/A</p></td>
+<td><p>77.78%, 80.5% (<strong>+8.4%</strong>)</p></td>
+<td><p>86.81%, 89.6% (<strong>+4.2%</strong>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>AdalFlow (Optimized Zero-shot + bootstrap 1-shot)</p></td>
+<td><p>N/A</p></td>
+<td><p>N/A</p></td>
+<td><p>88.19%</p></td>
+</tr>
+<tr class="row-even"><td><p>AdalFlow (Optimized Zero-shot + bootstrap 1-shot + 40 raw shots)</p></td>
+<td><p>N/A</p></td>
+<td><p><strong>86.1%</strong></p></td>
+<td><p><strong>90.28%</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>AdalFlow (Optimized Zero-shot on GPT-4o)</p></td>
+<td><p>77.8%</p></td>
+<td><p>77.78%</p></td>
+<td><p>84.03%</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>In this case, our text optimizer–Text-Grad 2.0 is able to close the gap to the teacher model, leaving little space for the DemoOptimizer to improve as it learns to boost its reasoning from a teacher model’s reasoning.
+Even though the many-shots (as many as 40) can still improve the performance for a bit, but it will adds a lot more tokens.</p>
+<p>We can see that being able to flexibly control the prompt instead of delegate to a fixed <code class="docutils literal notranslate"><span class="pre">Signature</span></code> is advantageous.
+We use <code class="docutils literal notranslate"><span class="pre">yaml</span></code> format for the output in this case, and be able to use template to control which part we want to train.
+We trained to train a joined <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> with both the system prompt and the output format, and found it is more effecitive to just train the system prompt.</p>
+<p><strong>Conclusion</strong>:</p>
+<p>Our SOTA performance is due to the combination of</p>
+<ol class="arabic simple">
+<li><p>Our research on optimizers: Each individual optimizer, the text optimizer implementing our research Text-grad 2.0 and the demo optimizer implementing our research <code class="docutils literal notranslate"><span class="pre">Learn-to-reason</span> <span class="pre">Few-shot</span> <span class="pre">In-context</span> <span class="pre">Learning</span></code></p></li>
+<li><p>Our research on training paradigm: The sequential training where we first train the text optimizer and then train the demo optimizer is proven to be effective to optimize the performe without adding too many tokens in the prompt.</p></li>
+<li><p>The flexibility and customizability of the library: With the library to provide developers direct control over the prompt and allow flexible and granular definition of the parameters is the second of the reason that we can surpass other methods by a large margin.</p></li>
+</ol>
+<div class="highlight admonition">
+<p class="admonition-title">API reference</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../apis/optim/optim.parameter.html#optim.parameter.Parameter" title="optim.parameter.Parameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.parameter.Parameter</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer" title="optim.trainer.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.trainer.trainer.Trainer</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent" title="optim.trainer.adal.AdalComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.trainer.adal.AdalComponent</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.dataclass_parser.DataClassParser</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer" title="optim.text_grad.tgd_optimizer.TGDOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.text_grad.tgd_optimizer.TGDOptimizer</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot" title="optim.few_shot.bootstrap_optimizer.BootstrapFewShot"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.few_shot.bootstrap_optimizer.BootstrapFewShot</span></code></a></p></li>
+</ul>
+</div>
+</section>
 </section>
 
 
@@ -485,6 +885,26 @@ In the longer term, this model can help bootstrap the training of a cheaper and 
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#task-pipeline-with-structured-output">Task Pipeline with Structured Output</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-adalcomponent">Define the AdalComponent</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trainer-and-training-strategy">Trainer and Training Strategy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-benchmark">Performance &amp; Benchmark</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

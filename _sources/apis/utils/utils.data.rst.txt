@@ -7,3 +7,19 @@ data
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      subset_dataset
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      DataLoader
+      Dataset
+      Subset
+

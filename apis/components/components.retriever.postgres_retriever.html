@@ -52,7 +52,7 @@
     <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="reranker_retriever" href="components.retriever.reranker_retriever.html" />
+    <link rel="next" title="qdrant_retriever" href="components.retriever.qdrant_retriever.html" />
     <link rel="prev" title="llm_retriever" href="components.retriever.llm_retriever.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -423,6 +423,7 @@
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.faiss_retriever.html">faiss_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">postgres_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.reranker_retriever.html">reranker_retriever</a></li>
 </ul>
 </details></li>
@@ -480,7 +481,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimizer.html">tgd_optimizer</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -576,6 +577,18 @@
   <section id="module-components.retriever.postgres_retriever">
 <span id="postgres-retriever"></span><span id="components-retriever-postgres-retriever"></span><h1>postgres_retriever<a class="headerlink" href="#module-components.retriever.postgres_retriever" title="Link to this heading">#</a></h1>
 <p>Leverage a postgres database to store and retrieve documents.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.retriever.postgres_retriever.DistanceToOperator" title="components.retriever.postgres_retriever.DistanceToOperator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DistanceToOperator</span></code></a>(value[, names, module, ...])</p></td>
+<td><p>Enum for the distance to operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#components.retriever.postgres_retriever.PostgresRetriever" title="components.retriever.postgres_retriever.PostgresRetriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PostgresRetriever</span></code></a>(embedder[, top_k, ...])</p></td>
+<td><p>Use a postgres database to store and retrieve documents.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="components.retriever.postgres_retriever.DistanceToOperator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DistanceToOperator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/postgres_retriever.html#DistanceToOperator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.postgres_retriever.DistanceToOperator" title="Link to this definition">#</a></dt>
@@ -682,11 +695,11 @@ that score.</p>
       </div>
     </a>
     <a class="right-next"
-       href="components.retriever.reranker_retriever.html"
+       href="components.retriever.qdrant_retriever.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">reranker_retriever</p>
+        <p class="prev-next-title">qdrant_retriever</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

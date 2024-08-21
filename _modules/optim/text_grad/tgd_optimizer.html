@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>optim.text_grad.tgd_optimer &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+    <title>optim.text_grad.tgd_optimizer &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
   
   
   
@@ -47,7 +47,7 @@
     <script src="../../../_static/js/rtd_search_config.js"></script>
     <script src="../../../_static/js/rtd_sphinx_search.min.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/optim/text_grad/tgd_optimer';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/optim/text_grad/tgd_optimizer';</script>
     <link rel="icon" href="../../../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -428,7 +428,7 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for optim.text_grad.tgd_optimer</h1><div class="highlight"><pre>
+  <h1>Source code for optim.text_grad.tgd_optimizer</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Text-grad optimizer and prompts. Also combined methods from ORPO llm optimizer.</span>
 
 <span class="sd">With the auto-diff gradients, it made it possible to optimize any prompt parameter in a task pipeline.</span>
@@ -538,7 +538,7 @@
 
 
 <div class="viewcode-block" id="HistoryPrompt">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.HistoryPrompt">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.HistoryPrompt">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">HistoryPrompt</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
@@ -591,7 +591,7 @@
 
 
 <div class="viewcode-block" id="Instruction">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.Instruction">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.Instruction">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Instruction</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Structure variable values for instructions. Can be used in the history of instructions.&quot;</span>
@@ -612,7 +612,7 @@
 
 
 <div class="viewcode-block" id="extract_new_variable">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.extract_new_variable">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.extract_new_variable">[docs]</a>
 <span class="k">def</span> <span class="nf">extract_new_variable</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&lt;VARIABLE&gt;(.*?)&lt;/VARIABLE&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 
@@ -627,7 +627,7 @@
 
 
 <div class="viewcode-block" id="TGDOptimizer">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer">[docs]</a>
 <span class="k">class</span> <span class="nc">TGDOptimizer</span><span class="p">(</span><span class="n">TextOptimizer</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Textual Gradient Descent(LLM) optimizer for text-based variables.&quot;&quot;&quot;</span>
 
@@ -698,14 +698,14 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">constraints_ordered</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TGDOptimizer.add_score_to_params">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.add_score_to_params">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.add_score_to_params">[docs]</a>
     <span class="k">def</span> <span class="nf">add_score_to_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_score</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_score_to_current_param</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">val_score</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TGDOptimizer.add_score_to_current_param">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.add_score_to_current_param">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.add_score_to_current_param">[docs]</a>
     <span class="k">def</span> <span class="nf">add_score_to_current_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">score</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">param_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter </span><span class="si">{</span><span class="n">param_id</span><span class="si">}</span><span class="s2"> not found in the history.&quot;</span><span class="p">)</span>
@@ -723,7 +723,7 @@
 
 
 <div class="viewcode-block" id="TGDOptimizer.add_history">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.add_history">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.add_history">[docs]</a>
     <span class="k">def</span> <span class="nf">add_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n">HistoryPrompt</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">param_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -739,7 +739,7 @@
 
 
 <div class="viewcode-block" id="TGDOptimizer.render_history">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.render_history">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.render_history">[docs]</a>
     <span class="k">def</span> <span class="nf">render_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">param_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
@@ -750,7 +750,7 @@
 
     <span class="c1"># TODO: optimize with adalflow template for better readability</span>
 <div class="viewcode-block" id="TGDOptimizer.get_gradient_memory_text">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.get_gradient_memory_text">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.get_gradient_memory_text">[docs]</a>
     <span class="k">def</span> <span class="nf">get_gradient_memory_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">grad_memory</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="n">variable_grad_memory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_memory_dict</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">][</span>
@@ -794,7 +794,7 @@
 
     <span class="c1"># TODO: better way to update the gradient memory</span>
 <div class="viewcode-block" id="TGDOptimizer.update_gradient_memory">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.update_gradient_memory">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.update_gradient_memory">[docs]</a>
     <span class="k">def</span> <span class="nf">update_gradient_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient_memory_dict</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">get_gradient_and_context_text</span><span class="p">()}</span>
@@ -802,7 +802,7 @@
 
 
 <div class="viewcode-block" id="TGDOptimizer.zero_grad">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.zero_grad">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.zero_grad">[docs]</a>
     <span class="k">def</span> <span class="nf">zero_grad</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
             <span class="n">p</span><span class="o">.</span><span class="n">reset_gradients</span><span class="p">()</span></div>
@@ -810,7 +810,7 @@
 
     <span class="c1"># TODO: in the future can propose multiple values at once</span>
 <div class="viewcode-block" id="TGDOptimizer.propose">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.propose">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.propose">[docs]</a>
     <span class="k">def</span> <span class="nf">propose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Proposing a value while keeping previous value saved on parameter.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
@@ -843,7 +843,6 @@
                 <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="ow">not</span> <span class="n">no_cache</span>
             <span class="p">)</span>
             <span class="n">prompt_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_optimizer</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TGD LLM optimizer prompt: </span><span class="si">{</span><span class="n">prompt_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TGD LLM optimizer prompt: </span><span class="si">{</span><span class="n">prompt_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">proposed_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Response from the optimizer: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -857,7 +856,7 @@
 
 
 <div class="viewcode-block" id="TGDOptimizer.revert">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.revert">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.revert">[docs]</a>
     <span class="k">def</span> <span class="nf">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Revert to the previous value when the evaluation is worse.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
@@ -870,7 +869,7 @@
 
 
 <div class="viewcode-block" id="TGDOptimizer.step">
-<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.step">[docs]</a>
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.step">[docs]</a>
     <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Discard the previous value and keep the proposed value.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>

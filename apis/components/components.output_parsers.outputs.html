@@ -423,6 +423,7 @@
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.faiss_retriever.html">faiss_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.postgres_retriever.html">postgres_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.reranker_retriever.html">reranker_retriever</a></li>
 </ul>
 </details></li>
@@ -480,7 +481,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimizer.html">tgd_optimizer</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -576,6 +577,27 @@
   <section id="module-components.output_parsers.outputs">
 <span id="outputs"></span><span id="components-output-parsers-outputs"></span><h1>outputs<a class="headerlink" href="#module-components.output_parsers.outputs" title="Link to this heading">#</a></h1>
 <p>The most commonly used output parsers for the Generator.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.output_parsers.outputs.BooleanOutputParser" title="components.output_parsers.outputs.BooleanOutputParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BooleanOutputParser</span></code></a>()</p></td>
+<td><p>Boolean output parser to parse boolean values from the string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#components.output_parsers.outputs.JsonOutputParser" title="components.output_parsers.outputs.JsonOutputParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JsonOutputParser</span></code></a>(data_class[, examples, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.output_parsers.outputs.ListOutputParser" title="components.output_parsers.outputs.ListOutputParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ListOutputParser</span></code></a>([list_output_format_template])</p></td>
+<td><p>List output parser to parse list of objects from the string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#components.output_parsers.outputs.OutputParser" title="components.output_parsers.outputs.OutputParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OutputParser</span></code></a>(*args, **kwargs)</p></td>
+<td><p>The abstract class for all output parsers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.output_parsers.outputs.YamlOutputParser" title="components.output_parsers.outputs.YamlOutputParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YamlOutputParser</span></code></a>(data_class[, examples, ...])</p></td>
+<td><p>YAML output parser using dataclass for schema extraction.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="components.output_parsers.outputs.OutputParser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">OutputParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/output_parsers/outputs.html#OutputParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.output_parsers.outputs.OutputParser" title="Link to this definition">#</a></dt>

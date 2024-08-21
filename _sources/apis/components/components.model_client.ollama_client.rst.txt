@@ -7,3 +7,18 @@ ollama_client
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      parse_generate_response
+      parse_stream_response
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      OllamaClient
+

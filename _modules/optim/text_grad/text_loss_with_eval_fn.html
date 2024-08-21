@@ -723,14 +723,14 @@
         <span class="n">gradient_value</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="n">backward_engine</span><span class="p">(</span>
             <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">backward_engine_prompt_kwargs</span>
         <span class="p">)</span>
-        <span class="n">gradient_prompt</span> <span class="o">=</span> <span class="n">backward_engine</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">backward_engine_prompt_kwargs</span><span class="p">)</span>
+        <span class="c1"># gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)</span>
         <span class="n">gradient_value_data</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">gradient_value</span><span class="o">.</span><span class="n">data</span>
             <span class="ow">or</span> <span class="n">backward_engine</span><span class="o">.</span><span class="n">failure_message_to_optimizer</span><span class="p">(</span>
                 <span class="n">gradient_response</span><span class="o">=</span><span class="n">gradient_value</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;gradient_prompt: </span><span class="si">{</span><span class="n">gradient_prompt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># print(f&quot;gradient_prompt: {gradient_prompt}&quot;)</span>
         <span class="c1"># gradient_value_data = response.data.to_yaml()</span>
 
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: Gradient for </span><span class="si">{</span><span class="n">pred</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">gradient_value_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

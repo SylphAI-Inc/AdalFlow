@@ -435,6 +435,24 @@
 <p>The sampler here is designed to sample examples in few-shots ICL.</p>
 <p>It differs from PyTorch’s Sampler at torch.utils.data.sampler, which is used to sample data for training.</p>
 <p>Our sampler directly impact the few-shot examples and can lead to different performance in the few-shot ICL.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#optim.sampler.ClassSampler" title="optim.sampler.ClassSampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClassSampler</span></code></a>(dataset, num_classes, ...[, ...])</p></td>
+<td><p>Sample from the dataset based on the class labels.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#optim.sampler.RandomSampler" title="optim.sampler.RandomSampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomSampler</span></code></a>([dataset, default_num_shots])</p></td>
+<td><p>Simple random sampler to sample from the dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#optim.sampler.Sample" title="optim.sampler.Sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sample</span></code></a>(index, data)</p></td>
+<td><p>Output data structure for each sampled data in the sequence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#optim.sampler.Sampler" title="optim.sampler.Sampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sampler</span></code></a>(*args, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="optim.sampler.Sample">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T_co</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/sampler.html#Sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.sampler.Sample" title="Link to this definition">#</a></dt>
