@@ -1471,37 +1471,16 @@ class Trainer(Component):
             if not isinstance(loss, Parameter):
                 raise ValueError("Loss should be a Parameter object")
         max_moving_batch_size = 20
-        # max_sampled_correct_size = 3
-        # max_sampled_error_size = 3
 
         correct_indices = [i for i, score in enumerate(acc_score_list) if score > 0.5]
         error_indices = [i for i, score in enumerate(acc_score_list) if score <= 0.5]
 
-        print(f"Moving batch correct size: {len(correct_indices)}")
-        print(f"Moving batch error size: {len(error_indices)}")
         if (
             len(error_indices) + len(correct_indices)
             <= max_moving_batch_size
             # and len(correct_indices) <= max_moving_batch_size
         ):
             return all_samples, all_losses, all_y_preds, acc_score_list
-        # sampled_error_indices = error_indices
-        # if len(correct_indices) > max_moving_batch_size:
-        #     sampled_error_indices = random.sample(
-        #         error_indices, min(max_moving_batch_size, len(error_indices))
-        #     )
-        # sampled_correct_indices = correct_indices
-        # if len(correct_indices) > max_moving_batch_size:
-        #     sampled_correct_indices = random.sample(
-        #         correct_indices,
-        #         min(
-        #             max_moving_batch_size,
-        #             len(correct_indices),
-        #         ),
-        #     )
-        # print(f"New moving batch size size: {len(sampled_error_indices)}")
-        # print(f"Subset Correct size: {len(sampled_correct_indices)}")
-        # new_sample_indices = sampled_error_indices + sampled_correct_indices
 
         # downsample from all samples
         new_sample_indices = random.sample(

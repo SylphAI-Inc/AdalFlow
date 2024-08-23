@@ -118,11 +118,14 @@ def train(
     max_steps=1,
     num_workers=4,
     strategy="random",
+    optimization_order="sequential",
     debug=False,
+    resume_from_ckpt=None,
+    exclude_input_fields_from_bootstrap_demos=False,
 ):
     adal_component = ObjectCountAdalComponent(
         **gpt_3_model,
-        teacher_model_config=gpt_3_model,
+        teacher_model_config=gpt_4o_model,
         text_optimizer_model_config=gpt_4o_model,
         backward_engine_model_config=gpt_4o_model
     )
@@ -137,6 +140,8 @@ def train(
         bootstrap_shots=bootstrap_shots,
         debug=debug,
         weighted_sampling=True,
+        optimization_order=optimization_order,
+        exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
     )
     print(trainer)
 
@@ -145,15 +150,18 @@ def train(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
         test_dataset=test_dataset,
-        debug=debug,
+        resume_from_ckpt=resume_from_ckpt,
     )
 
 
 if __name__ == "__main__":
 
     train(
-        debug=False, max_steps=24, strategy="constrained"
-    )  # TODO: few-shot constraint
+        debug=False,
+        max_steps=12,
+        strategy="constrained",
+        exclude_input_fields_from_bootstrap_demos=True,
+    )
 
     # train_diagnose(**gpt_3_model)
     # train_diagnose_teacher(**gpt_4o_model)

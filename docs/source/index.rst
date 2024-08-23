@@ -6,27 +6,27 @@
 
 
 
-.. .. raw:: html
+.. raw:: html
 
-..    <p align="center">
+   <p align="center">
 
 
-..     <a href="https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing">
-..         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
-..     </a>
-..    </p>
+    <a href="https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing">
+        <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
+    </a>
+   </p>
 
-..    <div style="text-align: center; margin-bottom: 20px;">
-..       <a href="https://pypi.org/project/adalflow/"><img src="https://img.shields.io/pypi/v/adalflow?style=flat-square" alt="PyPI Version"></a>
-..       <a href="https://github.com/SylphAI-Inc/AdalFlow" style="display: inline-block; margin-left: 10px;">
-..          <img src="https://img.shields.io/badge/GitHub-AdalFlow-blue?logo=github&style=flat-square" alt="GitHub Repo">
-..       </a>
-..       <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
-..       <a href="https://discord.gg/ezzszrRZvT">
-..         <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
-..       </a>
-..       <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
-..    </div>
+   <div style="text-align: center; margin-bottom: 20px;">
+      <a href="https://pypi.org/project/adalflow/"><img src="https://img.shields.io/pypi/v/adalflow?style=flat-square" alt="PyPI Version"></a>
+      <a href="https://github.com/SylphAI-Inc/AdalFlow" style="display: inline-block; margin-left: 10px;">
+         <img src="https://img.shields.io/badge/GitHub-AdalFlow-blue?logo=github&style=flat-square" alt="GitHub Repo">
+      </a>
+      <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
+      <a href="https://discord.gg/ezzszrRZvT">
+        <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
+      </a>
+      <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
+   </div>
 
 
 

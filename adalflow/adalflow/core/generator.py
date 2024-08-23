@@ -125,8 +125,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         )
         self.cache_path = os.path.join(_cache_path, f"cache_{model_str}.db")
 
-        print(f"cache_path: {self.cache_path}")
-
         CachedEngine.__init__(self, cache_path=self.cache_path)
         Component.__init__(self)
         GradComponent.__init__(self)
@@ -166,6 +164,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             "use_cache": use_cache,
         }
         self._teacher: Optional["Generator"] = None
+
+    def get_cache_path(self) -> str:
+        r"""Get the cache path for the generator."""
+        return self.cache_path
 
     @staticmethod
     def _get_default_mapping(
@@ -269,11 +271,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         return combined_model_kwargs
 
     def print_prompt(self, **kwargs) -> str:
-        # prompt_kwargs_str = _convert_prompt_kwargs_to_str(kwargs)
         return self.prompt.print_prompt(**kwargs)
 
     def get_prompt(self, **kwargs) -> str:
-        # prompt_kwargs_str = _convert_prompt_kwargs_to_str(kwargs)
         return self.prompt.call(**kwargs)
 
     def _extra_repr(self) -> str:
@@ -706,7 +706,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             model_kwargs=model_kwargs,
         )
         if output.error:
-            print(f"call back on failure: {output}")
             self.trigger_callbacks(
                 "on_failure",
                 output=output,
@@ -949,7 +948,6 @@ if __name__ == "__main__":
     call_logger = GeneratorCallLogger(save_dir="traces")
 
     def on_complete(output, input, prompt_kwargs, model_kwargs, logger_call: Callable):
-        print(f"on_complet  output: {output}")
         logger_call(
             output=output,
             input=input,
@@ -958,13 +956,9 @@ if __name__ == "__main__":
         )
 
     for model in [llama3_model, gpt_3_model, gemini_model, claude_model]:
-        print(f"""model: {model["model_kwargs"]["model"]}""")
         generator = Generator(**model)
 
-        print("_kwargs: ", generator._kwargs)
-
         teacher = create_teacher_generator(generator, **claude_model)
-        print(f"teacher: {teacher}")
 
         call_logger.register_generator("generator", "generator_call")
         # setup the callback
@@ -978,7 +972,6 @@ if __name__ == "__main__":
                 "input_str": "Hello, world!",
             }
         )
-        print(f"output: {output}")
         break
 
     # test the backward engine

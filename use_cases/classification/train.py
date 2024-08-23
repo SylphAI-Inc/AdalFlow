@@ -85,8 +85,8 @@ def train(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
     train_batch_size=4,  # larger batch size is not that effective, probably because of llm's lost in the middle
-    raw_shots: int = 0,
-    bootstrap_shots: int = 1,
+    raw_shots: int = 36,
+    bootstrap_shots: int = 4,
     max_steps=1,
     num_workers=4,
     strategy="constrained",
@@ -113,7 +113,7 @@ def train(
         debug=debug,
         weighted_sampling=True,
         optimization_order=optimization_order,
-        exclude_input_fields_from_bootstrap_demos=True,
+        exclude_input_fields_from_bootstrap_demos=False,
     )
     print(trainer)
 
@@ -124,7 +124,7 @@ def train(
         # val_dataset=val_dataset,
         # test_dataset=test_dataset,
         debug=debug,
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_1_33c1a_run_1.json",
+        resume_from_ckpt="/Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json",
     )
 
 

@@ -68,7 +68,7 @@ class TRECClassifierStructuredOutput(adal.Component):
                 # data="You are a classifier. Given a question, classify it into one of the following classes based on what the question is seeking:\n\nFormat: class_index. class_name, class_description\n\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\nPay special attention to questions about entities versus descriptions, as well as those asking for specific terms or people. Do not try to answer the question:",
                 # best  # data="You are a classifier. For each question given, classify it into one of the following classes:\n\nFormat: class_index. class_name, class_description\n\n0. ABBR, Abbreviation (includes initials)\n1. ENTY, Entity (includes products, languages, objects, etc.)\n2. DESC, Description and abstract concept (includes explanations)\n3. HUM, Human being (includes individuals, groups, etc.)\n4. LOC, Location (includes addresses, places, etc.)\n5. NUM, Numeric value (includes distances, dates, ages, etc.)\n\n- Focus on identifying the primary subject of the question and classifying based on what is being explicitly asked for.",
                 role_desc="Task description",
-                requires_opt=True,
+                requires_opt=False,
                 param_type=adal.ParameterType.PROMPT,
             ),
             "output_format_str": adal.Parameter(

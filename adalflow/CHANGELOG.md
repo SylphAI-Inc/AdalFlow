@@ -1,3 +1,6 @@
+## [0.2.1] - 2024-09-01
+### Added
+- `get_cache_path`, instead of print out the cache path all the time, we add a ``get_cache_path`` to get the cache path.
 ## [0.2.0] - 2024-08-20
 ### Added
 - Qdrant retriever.

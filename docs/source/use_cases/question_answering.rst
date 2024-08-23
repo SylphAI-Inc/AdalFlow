@@ -546,7 +546,7 @@ Now, we can use the trainer to train the model.
     ):
         adal_component = ObjectCountAdalComponent(
             **gpt_3_model,
-            teacher_model_config=gpt_3_model,
+            teacher_model_config=gpt_4o_model,
             text_optimizer_model_config=gpt_4o_model,
             backward_engine_model_config=gpt_4o_model
         )
