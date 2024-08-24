@@ -151,6 +151,7 @@ class Trainer(Component):
             exclude_input_fields_from_bootstrap_demos
         )
 
+    # TODO: need to support checkpoint resume too!
     def diagnose(self, dataset: Any, split: str = "train"):
         """Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent's default configure_callbacks
         Args:
@@ -1167,7 +1168,6 @@ class Trainer(Component):
         )
         print(f"save to {self.ckpt_file}")
         print(f"Starting step: {starting_step}")
-        print(f"trainer_results: {trainer_results.steps}")
 
         self.adaltask.train()
         self.adaltask.trace()

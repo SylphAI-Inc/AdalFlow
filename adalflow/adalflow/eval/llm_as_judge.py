@@ -11,12 +11,14 @@ from adalflow.core.model_client import ModelClient
 
 log = logging.getLogger(__name__)
 
-DEFAULT_LLM_EVALUATOR_PROMPT = r"""
-<<SYS>>{# task desc #}
-You are a helpful assistant.
+DEFAULT_LLM_EVALUATOR_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
+{# task desc #}
+You are an evaluator.
 Given the question, ground truth answer, and predicted answer, you need to answer the judgement query.
-Output True or False according to the judgement query.<</SYS>>
+Output True or False according to the judgement query.
+<END_OF_SYSTEM_PROMPT>
 ---------------------
+<START_OF_USER>
 {# question #}
 Question: {{question_str}}
 {# ground truth answer #}
@@ -26,7 +28,7 @@ Predicted answer: {{pred_answer_str}}
 {# judgement question #}
 Judgement question: {{judgement_str}}
 {# assistant response #}
-You:
+<END_OF_USER>
 """
 
 
@@ -55,6 +57,7 @@ class DefaultLLMJudge(Component):
         self,
         model_client: Optional[ModelClient] = None,
         model_kwargs: Optional[Dict[str, Any]] = None,
+        template: Optional[str] = None,
     ):
         from adalflow.core.generator import Generator
 
@@ -70,10 +73,11 @@ class DefaultLLMJudge(Component):
                 )
             self.model_client = OpenAIClient()
         self.model_kwargs = model_kwargs or DEFAULT_LLM_EVALUATOR_MODEL_KWARGS
+        self.template = template or DEFAULT_LLM_EVALUATOR_PROMPT
         self.llm_evaluator = Generator(
             model_client=self.model_client,
             model_kwargs=self.model_kwargs,
-            template=DEFAULT_LLM_EVALUATOR_PROMPT,
+            template=self.template,
         )
 
     def call(

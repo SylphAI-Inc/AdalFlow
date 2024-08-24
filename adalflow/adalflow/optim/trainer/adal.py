@@ -5,6 +5,7 @@ import concurrent
 from tqdm import tqdm
 import numpy as np
 import warnings
+import logging as log
 
 if TYPE_CHECKING:
     from adalflow.core.model_client import ModelClient
@@ -19,6 +20,9 @@ from adalflow.optim.types import PromptData
 from adalflow.eval.base import EvaluationResult
 
 from adalflow.optim.optimizer import DemoOptimizer, TextOptimizer
+
+
+log = log.getLogger(__name__)
 
 
 class AdalComponent(Component):
@@ -133,12 +137,45 @@ class AdalComponent(Component):
         The higher the score the better the prediction."""
         raise NotImplementedError("evaluate_one_sample method is not implemented")
 
-    def configure_optimizers(self, *args, **kwargs) -> Optimizer:
+    # def configure_optimizers(self, *args, **kwargs) -> Optimizer:
+    #     r"""Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too."""
+    #     raise NotImplementedError("configure_optimizers method is not implemented")
+
+    def configure_optimizers(self, *args, **kwargs) -> List[Optimizer]:
         r"""Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too."""
-        raise NotImplementedError("configure_optimizers method is not implemented")
+        if self._demo_optimizers is None:
+            self._demo_optimizers = self.configure_demo_optimizer_helper()
+        if self._text_optimizers is None:
+            if not self.text_optimizer_model_config:
+                raise ValueError("Text optimizer model config is not configured.")
+            if not self.text_optimizer_model_config.get("model_client"):
+                raise ValueError("Model client is not configured.")
+            if not self.text_optimizer_model_config.get("model_kwargs"):
+                raise ValueError("Model kwargs is not configured.")
+
+            self._text_optimizers = self.configure_text_optimizer_helper(
+                **self.text_optimizer_model_config
+            )
+        return self._demo_optimizers + self._text_optimizers
 
     def configure_backward_engine(self, *args, **kwargs):
-        raise NotImplementedError("configure_backward_engine method is not implemented")
+        r"""Configure a backward engine for all generators in the task for bootstrapping examples."""
+        # check if backward engine is already configured
+        if self.backward_engine:
+            log.warning("Backward engine is already configured.")
+        if not self.backward_engine_model_config:
+            raise ValueError("Backward engine model config is not configured.")
+        if not self.backward_engine_model_config.get("model_client"):
+            raise ValueError("Model client is not configured.")
+        if not self.backward_engine_model_config.get("model_kwargs"):
+            raise ValueError("Model kwargs is not configured.")
+        self.configure_backward_engine_helper(
+            model_client=self.backward_engine_model_config["model_client"],
+            model_kwargs=self.backward_engine_model_config["model_kwargs"],
+        )
+
+    # def configure_backward_engine(self, *args, **kwargs):
+    #     raise NotImplementedError("configure_backward_engine method is not implemented")
 
     def evaluate_samples(
         self, samples: Any, y_preds: List, metadata: Optional[Dict[str, Any]] = None
@@ -385,14 +422,28 @@ class AdalComponent(Component):
                 tqdm_loader.update(1)
         return losses
 
+    # def configure_teacher_generator(self):
+    #     r"""Configure a teach generator for all generators in the task for bootstrapping examples.
+
+    #     You can call `configure_teacher_generator_helper` to easily configure it by passing the model_client and model_kwargs.
+    #     """
+    #     raise NotImplementedError(
+    #         "configure_teacher_generator method is not implemented"
+    #     )
+
+    # use default implementation
     def configure_teacher_generator(self):
         r"""Configure a teach generator for all generators in the task for bootstrapping examples.
 
         You can call `configure_teacher_generator_helper` to easily configure it by passing the model_client and model_kwargs.
         """
-        raise NotImplementedError(
-            "configure_teacher_generator method is not implemented"
-        )
+        if not self.teacher_model_config:
+            raise ValueError("Teacher model config is not configured.")
+        if not self.teacher_model_config.get("model_client"):
+            raise ValueError("Model client is not configured.")
+        if not self.teacher_model_config.get("model_kwargs"):
+            raise ValueError("Model kwargs is not configured.")
+        self.configure_teacher_generator_helper(**self.teacher_model_config)
 
     def configure_teacher_generator_helper(
         self,
