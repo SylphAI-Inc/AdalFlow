@@ -2,7 +2,7 @@
 
 from adalflow.optim.parameter import ParameterType
 
-from use_cases.question_answering.bhh_object_count.data import (
+from use_cases.question_answering.bbh.data import (
     parse_integer_answer,
 )
 
@@ -23,15 +23,16 @@ Here are some examples:
 
 from typing import Dict, Union
 import adalflow as adal
+from adalflow.datasets.big_bench_hard import BigBenchHard
 
 
-class ObjectCountTaskPipeline(adal.Component):
+class QuestionAnswerTaskPipeline(adal.Component):
     def __init__(self, model_client: adal.ModelClient, model_kwargs: Dict):
         super().__init__()
 
         system_prompt = adal.Parameter(
             # data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
-            data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+            data=BigBenchHard.get_default_task_instruction(),
             role_desc="To give task instruction to the language model in the system prompt",
             requires_opt=True,
             param_type=ParameterType.PROMPT,
@@ -63,12 +64,20 @@ class ObjectCountTaskPipeline(adal.Component):
         return output
 
 
-def test_object_count_task():
-    from LightRAG.use_cases.config import gpt_3_model
+def test_word_sorting_task():
+    from use_cases.config import gpt_3_model
+    from use_cases.question_answering.bbh.data import load_datasets
 
-    question = "I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?"
-    task_pipeline = ObjectCountTaskPipeline(**gpt_3_model)
+    task_pipeline = QuestionAnswerTaskPipeline(**gpt_3_model)
     print(task_pipeline)
+
+    train_dataset, val_dataset, test_dataset = load_datasets(
+        task_name="BBH_word_sorting"
+    )
+
+    example = train_dataset[0]
+    question = example["question"]
+    print(example)
 
     answer = task_pipeline(question)
     print(answer)
@@ -90,4 +99,4 @@ if __name__ == "__main__":
     # print(task(question))
     # print(task_original(question))
 
-    test_object_count_task()
+    test_word_sorting_task()

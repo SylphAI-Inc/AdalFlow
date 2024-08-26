@@ -2,7 +2,7 @@
 
 from adalflow.optim.parameter import ParameterType
 
-from use_cases.question_answering.bhh_object_count.data import (
+from use_cases.question_answering.bbh.data import (
     parse_integer_answer,
 )
 
@@ -64,7 +64,7 @@ class ObjectCountTaskPipeline(adal.Component):
 
 
 def test_object_count_task():
-    from LightRAG.use_cases.config import gpt_3_model
+    from use_cases.config import gpt_3_model
 
     question = "I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?"
     task_pipeline = ObjectCountTaskPipeline(**gpt_3_model)

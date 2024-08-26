@@ -1,6 +1,10 @@
 from adalflow.components.model_client.groq_client import GroqAPIClient
 from adalflow.components.model_client.openai_client import OpenAIClient
 
+from adalflow.utils import setup_env
+
+setup_env()
+
 
 llama3_model = {
     "model_client": GroqAPIClient(),

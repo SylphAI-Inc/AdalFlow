@@ -63,7 +63,6 @@ class BigBenchHard(Dataset):
                 self.data.append(
                     Example(question=row["x"], answer=row["y"], id=row["id"])
                 )  # dont use a tuple, use a dict {"x": ..., "y": ...}
-        self._task_description = "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value."
 
     def _check_or_download_dataset(self, data_path: str = None, split: str = "train"):
 
@@ -120,8 +119,10 @@ class BigBenchHard(Dataset):
     def __len__(self):
         return len(self.data)
 
-    def get_default_task_instruction(self):
-        return self._task_description
+    @staticmethod
+    def get_default_task_instruction():
+        _task_description = "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value."
+        return _task_description
 
 
 if __name__ == "__main__":
