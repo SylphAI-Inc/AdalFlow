@@ -51,14 +51,6 @@ class TRECClassifierStructuredOutput(adal.Component):
         )
 
         prompt_kwargs = {
-            # "system_prompt": adal.Parameter(
-            #     data=self.parser.get_task_desc_str()
-            #     + "\n"
-            #     + self.parser.get_output_format_str(),
-            #     role_desc="Task description with output format requirements",
-            #     requires_opt=True,
-            #     param_type=adal.ParameterType.PROMPT,
-            # ),
             # NOTE: when the instruction is too long,
             # it is better to split it into two prompts it is more effective at training
             # 0.8056 val, 0.903 test

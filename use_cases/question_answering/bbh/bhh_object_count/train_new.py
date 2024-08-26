@@ -2,7 +2,7 @@ from use_cases.question_answering.bhh_object_count.task import (
     ObjectCountTaskPipeline,
 )
 
-from use_cases.question_answering.bhh_object_count.config import (
+from LightRAG.use_cases.config import (
     gpt_3_model,
     gpt_4o_model,
 )

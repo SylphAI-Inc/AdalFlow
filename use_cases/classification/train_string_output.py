@@ -7,7 +7,7 @@ from use_cases.classification.trec_task_structured_output import (
 from use_cases.classification.data import load_datasets, TRECExtendedData
 
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
-from use_cases.question_answering.bhh_object_count.config import (
+from LightRAG.use_cases.config import (
     gpt_3_model,
     gpt_4o_model,
 )
