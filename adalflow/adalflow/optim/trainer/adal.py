@@ -178,34 +178,97 @@ class AdalComponent(Component):
     #     raise NotImplementedError("configure_backward_engine method is not implemented")
 
     def evaluate_samples(
-        self, samples: Any, y_preds: List, metadata: Optional[Dict[str, Any]] = None
+        self,
+        samples: Any,
+        y_preds: List,
+        metadata: Optional[Dict[str, Any]] = None,
+        num_workers: int = 2,
     ) -> EvaluationResult:
-        r"""Run evaluation on samples. Use ``evaluate_one_sample`` defined by the user.
+        r"""Run evaluation on samples using parallel processing. Utilizes ``evaluate_one_sample`` defined by the user.
 
         Metadata is used for storing context that you can find from generator input.
 
-        Note:
-            ensure it supports both Tuple(batch) and a list of any type (fits for datasets).
+        Args:
+            samples (Any): The input samples to evaluate.
+            y_preds (List): The predicted outputs corresponding to each sample.
+            metadata (Optional[Dict[str, Any]]): Optional metadata dictionary.
+            num_workers (int): Number of worker threads for parallel processing.
+
+        Returns:
+            EvaluationResult: An object containing the average score and per-item scores.
         """
         from adalflow.optim.parameter import Parameter
 
         if not isinstance(y_preds, list) or len(y_preds) == 0:
             raise ValueError(f"y_preds is not a list or empty: {y_preds}")
+
         y_pred_0 = y_preds[0]
         if isinstance(y_pred_0, Parameter):
             raise ValueError(f"y_pred_0 should not be a Parameter: {y_pred_0}")
-        if metadata is None:
-            acc_list = [
-                self.evaluate_one_sample(sample, y_pred)
-                for sample, y_pred in zip(samples, y_preds)
-            ]
-        else:
-            acc_list = [
-                self.evaluate_one_sample(sample, y_pred, metadata=metadata)
-                for sample, y_pred in zip(samples, y_preds)
-            ]
+
+        acc_list = [None] * len(samples)  # Initialize accuracy list to hold results
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
+
+            # 1. submit all the tasks
+            futures = {}
+
+            for i, (sample, y_pred) in enumerate(zip(samples, y_preds)):
+                if metadata is None:
+                    future = executor.submit(self.evaluate_one_sample, sample, y_pred)
+                else:
+                    future = executor.submit(
+                        self.evaluate_one_sample, sample, y_pred, metadata=metadata
+                    )
+                futures[future] = i
+
+            # 2. collect the results, update the progress bar
+            # Initialize progress bar once outside the loop
+            progress_bar = tqdm(
+                total=len(samples), desc="Evaluating", position=0, leave=True
+            )
+
+            for future in concurrent.futures.as_completed(futures):
+                i = futures[future]
+                acc_list[i] = (
+                    future.result()
+                )  # Place the result in the correct position
+                progress_bar.update(
+                    1
+                )  # Update progress bar after each result is collected
+
         avg_score = float(np.mean(np.array(acc_list)))
         return EvaluationResult(avg_score=avg_score, per_item_scores=acc_list)
+
+    # def evaluate_samples(
+    #     self, samples: Any, y_preds: List, metadata: Optional[Dict[str, Any]] = None
+    # ) -> EvaluationResult:
+    #     r"""Run evaluation on samples. Use ``evaluate_one_sample`` defined by the user.
+
+    #     Metadata is used for storing context that you can find from generator input.
+
+    #     Note:
+    #         ensure it supports both Tuple(batch) and a list of any type (fits for datasets).
+    #     """
+    #     from adalflow.optim.parameter import Parameter
+
+    #     if not isinstance(y_preds, list) or len(y_preds) == 0:
+    #         raise ValueError(f"y_preds is not a list or empty: {y_preds}")
+    #     y_pred_0 = y_preds[0]
+    #     if isinstance(y_pred_0, Parameter):
+    #         raise ValueError(f"y_pred_0 should not be a Parameter: {y_pred_0}")
+    #     if metadata is None:
+    #         acc_list = [
+    #             self.evaluate_one_sample(sample, y_pred)
+    #             for sample, y_pred in zip(samples, y_preds)
+    #         ]
+    #     else:
+    #         acc_list = [
+    #             self.evaluate_one_sample(sample, y_pred, metadata=metadata)
+    #             for sample, y_pred in zip(samples, y_preds)
+    #         ]
+    #     avg_score = float(np.mean(np.array(acc_list)))
+    #     return EvaluationResult(avg_score=avg_score, per_item_scores=acc_list)
 
     def _train_step(
         self,
@@ -288,8 +351,10 @@ class AdalComponent(Component):
         y_preds = [None] * len(batch)
         samples = [None] * len(batch)
         completed_indices = set()
+        index_to_score = {}  # for running evaluation
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
+            # 1. submit all the tasks
             futures = []
             tqdm_loader = tqdm(batch, total=len(batch), desc="Loading Data")
             for i, sample in enumerate(tqdm_loader):
@@ -297,10 +362,11 @@ class AdalComponent(Component):
                 future = executor.submit(task_call, **kwargs)
                 futures.append((future, i, sample))  # preserve the order of the samples
 
+            # 2. predict the results, update the progress bar
             tqdm_loader = tqdm(
                 total=len(futures),
                 position=0,
-                desc=f"Evaluating step: {batch_idx}",
+                desc=f"Prediting step: {batch_idx}",
             )
             for future, i, sample in futures:
                 y_pred = future.result()
@@ -311,13 +377,15 @@ class AdalComponent(Component):
                 assert (
                     y_pred.id == sample.id
                 ), f"ID mismatch: {y_pred.id} != {sample.id}, type: {type(y_pred)}"
+
                 completed_indices.add(i)  # Mark this index as completed
 
                 if running_eval and not isinstance(y_pred, Parameter):
-                    # Perform running evaluation only on completed samples
-                    sorted_indices = sorted(completed_indices)
-                    completed_y_preds = [y_preds[idx] for idx in sorted_indices]
-                    completed_samples = [samples[idx] for idx in sorted_indices]
+                    # evaluate one sample
+                    score = self.evaluate_one_sample(sample, y_pred)
+                    index_to_score[i] = score
+                    eval_score = np.mean(list(index_to_score.values())).item()
+
                     # for y_pred, sample in zip(completed_y_preds, completed_samples):
                     #     print(f"y_pred: {y_pred.data}, sample: {sample.answer}")
                     # for y_pred, sample in zip(completed_y_preds, completed_samples):
@@ -326,10 +394,6 @@ class AdalComponent(Component):
                     #             f"ID mismatch: {y_pred.id} != {sample.id}, type: {type(y_pred)}"
                     #         )
                     #     print(f"y_pred: {y_pred.data}, sample: {sample.answer}")
-                    # TODO: each time only call evaluate on one sample
-                    eval_score = self.evaluate_samples(
-                        completed_samples, completed_y_preds
-                    ).avg_score
 
                     remaining_samples = len(batch) - len(completed_indices)
                     max_score = (
@@ -340,10 +404,10 @@ class AdalComponent(Component):
                         break
 
                     tqdm_loader.set_description(
-                        f"Evaluating step({batch_idx}): {round(eval_score,4)} across {len(completed_indices)} samples, Max potential: {round(max_score,4)}"
+                        f"Predicting: step({batch_idx}): {round(eval_score,4)} across {len(completed_indices)} samples, Max potential: {round(max_score,4)}"
                     )
                 else:
-                    tqdm_loader.set_description(f"Evaluating step({batch_idx})")
+                    tqdm_loader.set_description(f"Predicting: step({batch_idx})")
 
                 tqdm_loader.update(1)  # Update the progress bar
 
@@ -351,7 +415,7 @@ class AdalComponent(Component):
         completed_y_preds = [y_preds[idx] for idx in sorted_indices]
         completed_samples = [samples[idx] for idx in sorted_indices]
 
-        return completed_y_preds, completed_samples
+        return completed_y_preds, completed_samples, index_to_score
 
     def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
         self.task.train()
@@ -384,12 +448,29 @@ class AdalComponent(Component):
         """
         # TODO: let use decide which mode to be
         self.task.eval()
-        completed_y_preds, completed_samples = self.pred_step(
+        completed_y_preds, completed_samples, index_to_score = self.pred_step(
             batch, batch_idx, num_workers, running_eval=True, min_score=minimum_score
         )
-        eval_results = self.evaluate_samples(
-            samples=completed_samples, y_preds=completed_y_preds
-        )
+        if index_to_score:
+            # compute score from index_to_score
+            print(
+                f"completed_samples: {len(completed_samples)}, len: {len(list(index_to_score.values()))}"
+            )
+            avg_score = np.mean(list(index_to_score.values())).item()
+            acc_list = [None] * len(index_to_score)
+            for i, score in index_to_score.items():
+                acc_list[i] = score
+            acc_list = list(index_to_score.values())
+            eval_results = EvaluationResult(
+                avg_score=avg_score, per_item_scores=acc_list
+            )
+        else:
+
+            eval_results = self.evaluate_samples(
+                samples=completed_samples,
+                y_preds=completed_y_preds,
+                num_workers=num_workers,
+            )
         return eval_results
 
     def loss_step(

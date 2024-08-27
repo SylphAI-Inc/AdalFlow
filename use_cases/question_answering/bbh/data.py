@@ -81,11 +81,24 @@ def parse_integer_answer(answer: str):
     return answer
 
 
-def load_datasets(max_samples: int = None):
+@adal.fun_to_component
+def extract_answer(answer: str) -> str:
+    try:
+        pattern = re.compile(r"Answer:\s*(.*)", re.DOTALL)
+        match = pattern.search(answer)
+        if match:
+            return match.group(1).strip()
+        else:
+            return ""
+    except ValueError:
+        return ""
+
+
+def load_datasets(max_samples: int = None, task_name: str = "BBH_object_count"):
     """Load the dataset"""
-    train_data = BigBenchHard(split="train")
-    val_data = BigBenchHard(split="val")
-    test_data = BigBenchHard(split="test")
+    train_data = BigBenchHard(split="train", task_name=task_name)
+    val_data = BigBenchHard(split="val", task_name=task_name)
+    test_data = BigBenchHard(split="test", task_name=task_name)
 
     # Limit the number of samples
     if max_samples:

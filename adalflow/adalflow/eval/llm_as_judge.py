@@ -1,6 +1,6 @@
 """This is the metric to use an LLM as a judge for evaluating the performance of predicted answers."""
 
-from typing import List, Dict, Any, Optional, TYPE_CHECKING
+from typing import List, Dict, Any, Optional, TYPE_CHECKING, Union, Literal
 import logging
 
 if TYPE_CHECKING:
@@ -13,9 +13,9 @@ log = logging.getLogger(__name__)
 
 DEFAULT_LLM_EVALUATOR_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
 {# task desc #}
-You are an evaluator.
-Given the question, ground truth answer, and predicted answer, you need to answer the judgement query.
-Output True or False according to the judgement query.
+You are an evaluator. Given the question, ground truth answer, and predicted answer,
+{# judgement question #}
+{{judgement_str}}
 <END_OF_SYSTEM_PROMPT>
 ---------------------
 <START_OF_USER>
@@ -25,11 +25,11 @@ Question: {{question_str}}
 Ground truth answer: {{gt_answer_str}}
 {# predicted answer #}
 Predicted answer: {{pred_answer_str}}
-{# judgement question #}
-Judgement question: {{judgement_str}}
 {# assistant response #}
 <END_OF_USER>
 """
+
+DEFAULT_JUDGEMENT_QUERY = "Does the predicted answer contain the ground truth answer? Say True if yes, False if no."
 
 
 # print(f"globals: {globals()}")
@@ -58,6 +58,9 @@ class DefaultLLMJudge(Component):
         model_client: Optional[ModelClient] = None,
         model_kwargs: Optional[Dict[str, Any]] = None,
         template: Optional[str] = None,
+        jugement_query: Optional[str] = None,
+        output_type: Literal["bool", "float"] = "bool",
+        use_cache: bool = True,
     ):
         from adalflow.core.generator import Generator
 
@@ -78,11 +81,18 @@ class DefaultLLMJudge(Component):
             model_client=self.model_client,
             model_kwargs=self.model_kwargs,
             template=self.template,
+            use_cache=use_cache,
         )
+        self._jugement_query = jugement_query or DEFAULT_JUDGEMENT_QUERY
+        self.output_type = output_type
 
     def call(
-        self, question: str, gt_answer: str, pred_answer: str, judgement_query: str
-    ) -> bool:
+        self,
+        question: str,
+        gt_answer: str,
+        pred_answer: str,
+        judgement_query: Optional[str] = None,
+    ) -> Union[bool, float]:
         r"""
         Get the judgement of the predicted answer for a single question.
 
@@ -95,6 +105,7 @@ class DefaultLLMJudge(Component):
         Returns:
             bool: Judgement result.
         """
+        judgement_query = judgement_query or self._jugement_query
         output = self.llm_evaluator(
             prompt_kwargs={
                 "question_str": question,
@@ -106,12 +117,15 @@ class DefaultLLMJudge(Component):
 
         judgement = output.raw_response
         judgement = judgement.strip().lower()
+        output = False if self.output_type == "bool" else 0.0
         if "true" in judgement:
-            return True
+            output = True if self.output_type == "bool" else 1.0
         elif "false" in judgement:
-            return False
+            output = False if self.output_type == "bool" else 0.0
         else:
-            raise ValueError(f"Invalid judgement: {judgement}")
+            print(f"Invalid judgement: {judgement}, use False or 0.0 instead.")
+            # raise ValueError(f"Invalid judgement: {judgement}")
+        return output
 
 
 class LLMasJudge:

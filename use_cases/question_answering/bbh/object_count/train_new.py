@@ -1,4 +1,4 @@
-from use_cases.question_answering.bhh_object_count.task import (
+from use_cases.question_answering.bbh.object_count.task import (
     ObjectCountTaskPipeline,
 )
 
@@ -80,7 +80,7 @@ def train_diagnose(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
 ) -> Dict:
-    from use_cases.question_answering.bhh_object_count.data import load_datasets
+    from use_cases.question_answering.bbh.data import load_datasets
 
     trainset, valset, testset = load_datasets()
 

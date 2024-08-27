@@ -1,6 +1,6 @@
 from typing import Dict
 import adalflow as adal
-from use_cases.question_answering.bhh_object_count.task import ObjectCountTaskPipeline
+from use_cases.question_answering.bbh.object_count.task import ObjectCountTaskPipeline
 
 from adalflow.datasets.types import Example
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
@@ -30,7 +30,7 @@ def diagnose(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
 ) -> Dict:
-    from use_cases.question_answering.bhh_object_count.data import load_datasets
+    from use_cases.question_answering.bbh.data import load_datasets
 
     trainset, valset, testset = load_datasets()
     # use max_samples=10 to test the code

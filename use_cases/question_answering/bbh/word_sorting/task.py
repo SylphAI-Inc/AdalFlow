@@ -3,7 +3,7 @@
 from adalflow.optim.parameter import ParameterType
 
 from use_cases.question_answering.bbh.data import (
-    parse_integer_answer,
+    extract_answer,
 )
 
 
@@ -23,7 +23,6 @@ Here are some examples:
 
 from typing import Dict, Union
 import adalflow as adal
-from adalflow.datasets.big_bench_hard import BigBenchHard
 
 
 class QuestionAnswerTaskPipeline(adal.Component):
@@ -31,8 +30,7 @@ class QuestionAnswerTaskPipeline(adal.Component):
         super().__init__()
 
         system_prompt = adal.Parameter(
-            # data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
-            data=BigBenchHard.get_default_task_instruction(),
+            data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is the answer.",
             role_desc="To give task instruction to the language model in the system prompt",
             requires_opt=True,
             param_type=ParameterType.PROMPT,
@@ -45,7 +43,7 @@ class QuestionAnswerTaskPipeline(adal.Component):
             param_type=ParameterType.DEMOS,
         )
 
-        self.llm_counter = adal.Generator(
+        self.llm = adal.Generator(
             model_client=model_client,
             model_kwargs=model_kwargs,
             template=few_shot_template,
@@ -53,14 +51,14 @@ class QuestionAnswerTaskPipeline(adal.Component):
                 "system_prompt": system_prompt,
                 "few_shot_demos": few_shot_demos,
             },
-            output_processors=parse_integer_answer,
+            output_processors=extract_answer,
             use_cache=True,
         )
 
     def call(
         self, question: str, id: str = None
     ) -> Union[adal.GeneratorOutput, adal.Parameter]:
-        output = self.llm_counter(prompt_kwargs={"input_str": question}, id=id)
+        output = self.llm(prompt_kwargs={"input_str": question}, id=id)
         return output
 
 
@@ -76,7 +74,7 @@ def test_word_sorting_task():
     )
 
     example = train_dataset[0]
-    question = example["question"]
+    question = example.question
     print(example)
 
     answer = task_pipeline(question)

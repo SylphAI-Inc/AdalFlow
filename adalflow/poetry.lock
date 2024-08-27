@@ -2320,8 +2320,8 @@ files = [
 [package.dependencies]
 numpy = [
     {version = ">=1.22.4", markers = "python_version < \"3.11\""},
-    {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
     {version = ">=1.23.2", markers = "python_version == \"3.11\""},
+    {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
 ]
 python-dateutil = ">=2.8.2"
 pytz = ">=2020.1"
@@ -3941,6 +3941,7 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [extras]
 anthropic = ["anthropic"]
 cohere = ["cohere"]
+datasets = []
 faiss-cpu = ["faiss-cpu"]
 google-generativeai = ["google-generativeai"]
 groq = ["groq"]
@@ -3953,4 +3954,4 @@ torch = ["torch"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9, <4.0"
-content-hash = "2738134e77ae589eba11e3bc0a2b15491ce297f655f0cb0d79e28fcb7f248a33"
+content-hash = "39c83de88b46df53f3909df37da0e43d48b6aa9590dc5c38e798f4e7adba310a"
