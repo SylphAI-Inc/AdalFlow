@@ -67,6 +67,8 @@ class AdalComponent(Component):
         self.backward_engine_model_config = backward_engine_model_config
         self.teacher_model_config = teacher_model_config
         self.text_optimizer_model_config = text_optimizer_model_config
+        self._demo_optimizers = None
+        self._text_optimizers = None
 
     def _set_param_values(self, prompts: List[PromptData]):
         r"""Set the parameters for the task. Used to resume from ckpt."""
@@ -524,6 +526,7 @@ class AdalComponent(Component):
             raise ValueError("Model client is not configured.")
         if not self.teacher_model_config.get("model_kwargs"):
             raise ValueError("Model kwargs is not configured.")
+        print("Configuring teacher generator.")
         self.configure_teacher_generator_helper(**self.teacher_model_config)
 
     def configure_teacher_generator_helper(

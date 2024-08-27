@@ -152,7 +152,6 @@ class EvalFnToTextLoss(LossComponent):
         eval_inputs = {}
         for k, v in kwargs.items():
             eval_inputs[k] = v.eval_input
-
         score: float = self.eval_fn(**eval_inputs)
 
         # Create a parameter

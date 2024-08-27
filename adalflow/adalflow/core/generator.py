@@ -420,8 +420,12 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         if self.mock_output:
             output = GeneratorOutput(data=self.mock_output_data)
         else:
-            if self.teacher_mode:
+            if self.teacher_mode and not isinstance(self, BackwardEngine):
                 if not self._teacher:
+                    print(
+                        f"prompt_kwargs: {prompt_kwargs}, model_kwargs: {model_kwargs}"
+                    )
+                    print(f"names: {self.name}")
                     raise ValueError("Teacher generator is not set.")
                 log.info(f"Using teacher: {self._teacher}")
                 input_args = {
@@ -848,6 +852,8 @@ class BackwardEngine(Generator):  # it is a generator with defaule template
             kwargs = {}
         kwargs["template"] = FEEDBACK_ENGINE_TEMPLATE
         super().__init__(**kwargs)
+        self.name = "BackwardEngine"
+        self.teacher_mode = False
 
     @staticmethod
     def failure_message_to_optimizer(

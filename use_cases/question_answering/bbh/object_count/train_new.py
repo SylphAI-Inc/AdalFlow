@@ -12,6 +12,7 @@ import adalflow as adal
 
 from adalflow.datasets.types import Example
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
+from use_cases.question_answering.bbh.data import load_datasets
 
 
 class ObjectCountAdalComponent(adal.AdalComponent):
@@ -95,7 +96,6 @@ def train_diagnose_teacher(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
 ) -> Dict:
-    from use_cases.question_answering.bhh_object_count.data import load_datasets
 
     trainset, valset, testset = load_datasets()
 
@@ -104,9 +104,6 @@ def train_diagnose_teacher(
     trainer.diagnose(dataset=trainset, split="train_teacher")
     trainer.diagnose(dataset=valset, split="val_teacher")
     trainer.diagnose(dataset=testset, split="test_teacher")
-
-
-from use_cases.question_answering.bhh_object_count.data import load_datasets
 
 
 # You will answer a reasoning question. Think step by step and double-check each calculation you make. Pay close attention to any numerical quantities in the text, converting written numbers into their numerical equivalents. Additionally, re-verify your final answer before concluding. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.
