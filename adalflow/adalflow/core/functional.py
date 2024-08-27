@@ -1264,6 +1264,8 @@ def random_sample(
     Randomly sample num_shots from the dataset. If replace is True, sample with replacement.
     """
     dataset_size = len(dataset)
+    if dataset_size == 0:
+        return []
 
     if not replace and num_shots > dataset_size:
         log.debug(

@@ -29,13 +29,13 @@ class BootstrapFewShot(DemoOptimizer):
         to prioritize failed demos but successful in augmented demos based on the evaluation score
         while we backpropagate the demo samples.
      2. In default, we exclude the input fields from the augmented demos. Our reserch finds that
-        using the reasoning demostrations from teacher model can be more effective to just take inputs and output
+        using the reasoning demostrations from teacher model can be more effective in some cases than taking both inputs and output
         samples and be more token efficient.
 
     Reference:
     - DsPy: Com-piling declarative language model calls into state-of-the-art pipelines.
     """
-    exclude_input_fields_from_bootstrap_demos: bool = False
+    exclude_input_fields_from_bootstrap_demos: bool
 
     def __init__(
         self,
@@ -145,9 +145,7 @@ class BootstrapFewShot(DemoOptimizer):
                     if w < 0:
                         w = 0
                 weights.append(w)
-            # avoid all 0 weights
-            if all(weight == 0 for weight in weights):
-                weights = [1.0] * len(augmented_options)
+
         # print(f"augs: {augmented_options}")
         sampled_augmented_demos = (
             random_sample(
@@ -159,6 +157,7 @@ class BootstrapFewShot(DemoOptimizer):
 
         # 2. sample from raw demos
         # exclude the sampled augmented demos
+        # TODO: ensure all data points has unique ids
         filtered_dataset = list(
             filter(
                 lambda x: x.id
@@ -166,6 +165,9 @@ class BootstrapFewShot(DemoOptimizer):
                 dataset,
             )
         )
+        if len(filtered_dataset) == 0:
+            # If no demos left we will get raw_weights [], sum to 0
+            return sampled_augmented_demos, []
         # assigne weights 0 to all options
         raw_weights = None
         if weighted:
@@ -181,9 +183,7 @@ class BootstrapFewShot(DemoOptimizer):
                             f"score must be in range [0, 1], got {student_demo_score}"
                         )
                     raw_weights[i] = 1 - student_demo_score
-            if all(weight == 0 for weight in raw_weights):
 
-                raw_weights = [1.0] * len(filtered_dataset)  # Equal probability for all
         sampled_raw_demos = random_sample(
             filtered_dataset, raw_shots, replace=False, weights=raw_weights
         )

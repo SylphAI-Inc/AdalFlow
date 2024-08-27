@@ -30,11 +30,11 @@ class QuestionAnswerTaskPipeline(adal.Component):
         super().__init__()
 
         system_prompt = adal.Parameter(
-            data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is the answer.",
+            data="Sort the following words alphabetically. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is the answer.",
             role_desc="To give task instruction to the language model in the system prompt",
             requires_opt=True,
             param_type=ParameterType.PROMPT,
-            instruction_to_optimizer="You can try to show examples to see if it helps.",
+            # instruction_to_optimizer="Try to instruct what exactly word sorting is and what to do if two words have the same starting letter.",
         )
         few_shot_demos = adal.Parameter(
             data=None,

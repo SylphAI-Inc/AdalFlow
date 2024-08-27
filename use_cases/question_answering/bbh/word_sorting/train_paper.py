@@ -10,10 +10,10 @@ from use_cases.question_answering.bbh.data import load_datasets
 from use_cases.config import gpt_3_model, gpt_4o_model
 
 
-judgement_query = r"""Does the predicted answer match with the ground truth answer where words are in exact same order? PLEASE Ignore the difference of separators between words.
+judgement_query = r"""Does the predicted answer match with the ground truth answer? PLEASE Ignore the difference of separators between words.
 Say True if it matches, False if not.
 Example:
-Question: List: syndrome therefrom
+Question: Sort the following words alphabetically: List: syndrome therefrom
 Ground truth answer: syndrome therefrom
 Predicted answer: syndrome, therefrom
 Answer: True"""
@@ -142,12 +142,6 @@ def train(
     train_dataset, val_dataset, test_dataset = load_datasets(
         task_name="BBH_word_sorting"
     )
-    for dataset in [train_dataset, val_dataset, test_dataset]:
-        for example in dataset:
-            example.question = example.question.replace(
-                "Sort the following words alphabetically:", ""
-            )
-
     trainer.fit(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
@@ -162,6 +156,6 @@ if __name__ == "__main__":
         debug=False,
         max_steps=10,
         strategy="constrained",
-        exclude_input_fields_from_bootstrap_demos=True,
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/WordSortingAdalComponent/constrained_max_steps_12_7dc6a_run_2.json",
+        exclude_input_fields_from_bootstrap_demos=False,
+        # resume_from_ckpt="constrained_max_steps_12_7dc6a_run_2.json",
     )
