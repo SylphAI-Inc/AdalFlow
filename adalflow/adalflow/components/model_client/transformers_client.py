@@ -40,6 +40,208 @@ def average_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:
     return last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]
 
 
+
+
+#
+#
+#
+# DRAFT
+#
+#
+#
+from transformers import PreTrainedModel, PreTrainedTokenizer, PreTrainedTokenizerFast
+
+def mean_pooling(model_output, attention_mask):
+    token_embeddings = model_output[0] #First element of model_output contains all token embeddings
+    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+
+class TransformerEmbeddingModelClient(ModelClient):
+
+    #
+    #   Model initialisation
+    #
+    def __init__(
+            self,
+            model_name: Optional[str] = None,
+            tokenizer_kwargs: Optional[dict] = dict(),
+            auto_model: Optional[type] = AutoModel,
+            auto_tokenizer: Optional[type] = AutoTokenizer,
+            custom_model: Optional[PreTrainedModel] = None,
+            custom_tokenizer: Optional[Union[PreTrainedTokenizer, PreTrainedTokenizerFast]] = None
+            ):
+
+        super().__init__()
+        self.model_name = model_name
+        self.tokenizer_kwargs = tokenizer_kwargs
+        self.auto_model=auto_model,
+        self.auto_tokenizer=auto_tokenizer,
+        self.custom_model=custom_model,
+        self.custom_tokenizer=custom_tokenizer
+
+        # Check if there is conflicting arguments
+        self.use_auto_model = auto_model is not None
+        self.use_auto_tokenizer = auto_tokenizer is not None
+        self.use_cusom_model = custom_model is not None
+        self.use_cusom_tokenizer = custom_tokenizer is not None
+        self.model_name_exit = model_name is not None
+
+        ## arguments related to model
+        if self.use_auto_model and self.use_cusom_model:
+            raise ValueError("Cannot specify 'auto_model' and 'custom_model'.")
+        elif (not self.use_auto_model) and (not self.use_cusom_model):
+            raise ValueError("Need to specify either 'auto_model' or 'custom_model'.")
+        elif self.use_auto_model and (not self.model_name_exit):
+            raise ValueError("When 'auto_model' is specified 'model_name' must be specified too.")
+        
+        ## arguments related to tokenizer
+        if self.use_auto_tokenizer and self.use_cusom_tokenizer:
+            raise Exception("Cannot specify 'auto_tokenizer' and 'custom_tokenizer'.")
+        elif (not self.use_auto_tokenizer) and (not self.use_cusom_tokenizer):
+            raise Exception("Need to specify either'auto_tokenizer' and 'custom_tokenizer'.")
+        elif self.use_auto_tokenizer and (not self.model_name_exit):
+            raise ValueError("When 'auto_tokenizer' is specified 'model_name' must be specified too.")
+
+        self.init_sync_client()
+
+    def init_sync_client(self):
+        self.init_model(
+            model_name=self.model_name,
+            auto_model=self.auto_model,
+            auto_tokenizer=self.auto_tokenizer,
+            custom_model=self.custom_model,
+            custom_tokenizer=self.custom_tokenizer
+            )
+
+    @lru_cache(None)
+    def init_model(
+        self,
+        model_name: Optional[str] = None,
+        auto_model: Optional[type] = AutoModel,
+        auto_tokenizer: Optional[type] = AutoTokenizer,
+        custom_model: Optional[PreTrainedModel] = None,
+        custom_tokenizer: Optional[PreTrainedTokenizer | PreTrainedTokenizerFast] = None
+        ):
+
+        try:
+            if self.use_auto_model:
+                self.model = auto_model.from_pretrained(model_name)
+            else:
+                self.model = custom_model
+
+            if self.use_auto_tokenizer:
+                self.tokenizer = auto_tokenizer.from_pretrained(model_name)
+            else:
+                self.tokenizer = custom_tokenizer
+
+            log.info(f"Done loading model {model_name}")
+
+        except Exception as e:
+            log.error(f"Error loading model {model_name}: {e}")
+            raise e
+
+    #
+    #   Inference code
+    #
+    def infer_embedding(
+        self,
+        input=Union[str, List[str], List[List[str]]],
+        tolist: bool = True,
+    ):
+        model = self.model
+
+        self.handle_input(input)
+        batch_dict = self.tokenize_inputs(input, kwargs=self.tokenizer_kwargs)
+        outputs = self.compute_model_outputs(batch_dict, model)
+        embeddings = self.compute_embeddings(outputs, batch_dict)
+
+        # normalize embeddings
+        embeddings = F.normalize(embeddings, p=2, dim=1)
+        if tolist:
+            embeddings = embeddings.tolist()
+        return embeddings
+
+    def handle_input(self, input: Union[str, List[str], List[List[str]]]):
+        if isinstance(input, str):
+            input = [input]
+        return input
+     
+    def tokenize_inputs(self, input, kwargs: Optional[dict] = dict()):
+        batch_dict = self.tokenizer(input, **kwargs)
+        return batch_dict
+
+    def compute_model_outputs(self, batch_dict, model):
+        with torch.no_grad():
+            outputs = model(**batch_dict)
+        return outputs
+
+    def compute_embeddings(self, outputs, batch_dict):
+        embeddings = mean_pooling(
+            outputs, batch_dict["attention_mask"]
+        )
+        return embeddings
+    """
+    def __call__(self, **kwargs):
+        if "model" not in kwargs:
+            raise ValueError("model is required")
+
+        if "mock" in kwargs and kwargs["mock"]:
+            import numpy as np
+
+            embeddings = np.array([np.random.rand(768).tolist()])
+            return embeddings
+
+        # inference the model
+        return self.infer_embedding(kwargs["input"])
+    """
+
+    #
+    # Preprocessing, postprocessing and call for inference code
+    #
+    def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
+        
+        # I don't think it is useful anymore
+        # if "model" not in api_kwargs:
+        #     raise ValueError("model must be specified in api_kwargs")
+        if (
+            model_type == ModelType.EMBEDDER
+            # and "model" in api_kwargs
+        ):
+            if "mock" in api_kwargs and api_kwargs["mock"]:
+                import numpy as np
+
+                embeddings = np.array([np.random.rand(768).tolist()])
+                return embeddings
+
+        # inference the model
+        return self.infer_embedding(api_kwargs["input"])
+
+    def parse_embedding_response(self, response: Any) -> EmbedderOutput:
+        embeddings: List[Embedding] = []
+        for idx, emb in enumerate(response):
+            embeddings.append(Embedding(index=idx, embedding=emb))
+        response = EmbedderOutput(data=embeddings)
+        return response
+
+    def convert_inputs_to_api_kwargs(
+        self,
+        input: Any,  # for retriever, it is a single query,
+        model_kwargs: dict = {},
+        model_type: ModelType = ModelType.UNDEFINED,
+    ) -> dict:
+        final_model_kwargs = model_kwargs.copy()
+        if model_type == ModelType.EMBEDDER:
+            final_model_kwargs["input"] = input
+            return final_model_kwargs
+
+#
+#
+#
+#  END OF DRAFT 
+#
+#
+#
+
 # TODO: provide a standard api for embedding and chat models used in local model SDKs
 class TransformerEmbedder:
     """Local model SDK for transformers.
