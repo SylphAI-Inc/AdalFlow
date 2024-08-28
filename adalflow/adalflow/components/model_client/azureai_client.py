@@ -174,8 +174,8 @@ class AzureAIClient(ModelClient):
             return AzureOpenAI(api_key=api_key, azure_endpoint=azure_endpoint, api_version=api_version)
         elif self._credential:
             # credential = DefaultAzureCredential()
-            token_provider = get_bearer_token_provider(credential)
-            return AzureOpenAI(token=token_provider(), azure_endpoint=azure_endpoint, api_version=api_version)
+            token_provider = get_bearer_token_provider(DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
+            return AzureOpenAI(azure_ad_token_provider=token_provider, azure_endpoint=azure_endpoint, api_version=api_version)
         else:
             raise ValueError("Environment variable AZURE_OPENAI_API_KEY must be set or credential must be provided")
         
@@ -194,8 +194,8 @@ class AzureAIClient(ModelClient):
             return AsyncAzureOpenAI(api_key=api_key, azure_endpoint=azure_endpoint, api_version=api_version)
         elif self._credential:
             # credential = DefaultAzureCredential()
-            token_provider = get_bearer_token_provider(credential)
-            return AsyncAzureOpenAI(token=token_provider(), azure_endpoint=azure_endpoint, api_version=api_version)
+            token_provider = get_bearer_token_provider(DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
+            return AsyncAzureOpenAI(azure_ad_token_provider=token_provider, azure_endpoint=azure_endpoint, api_version=api_version)
         else:
             raise ValueError("Environment variable AZURE_OPENAI_API_KEY must be set or credential must be provided")
 
