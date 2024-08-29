@@ -1,55 +1,110 @@
 import unittest
 import torch
-
+from adalflow.components.model_client.transformers_client import TransformerEmbeddingModelClient
+from adalflow.core.types import ModelType
+from adalflow.core import Embedder
 
 # Set the number of threads for PyTorch, avoid segementation fault
 torch.set_num_threads(1)
 torch.set_num_interop_threads(1)
 
 
-class TestTransformerModelClient(unittest.TestCase):
+class TestTransformerEmbeddingModelClient(unittest.TestCase):
     def setUp(self) -> None:
-
         self.query = "what is panda?"
         self.documents = [
             "The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China.",
             "The red panda (Ailurus fulgens), also called the lesser panda, the red bear-cat, and the red cat-bear, is a mammal native to the eastern Himalayas and southwestern China.",
         ]
 
-    # def test_transformer_embedder(self):
-    #     transformer_embedder_model = "thenlper/gte-base"
-    #     transformer_embedder_model_component = TransformerEmbedder(
-    #         model_name=transformer_embedder_model
-    #     )
-    #     print(
-    #         f"Testing transformer embedder with model {transformer_embedder_model_component}"
-    #     )
-    #     print("Testing transformer embedder")
-    #     output = transformer_embedder_model_component(
-    #         model=transformer_embedder_model, input="Hello world"
-    #     )
-    #     print(output)
+    def test_execution(self):
+        test_input = "Hello word"
+        embedding_model = "thenlper/gte-base"
+        model_kwargs = {"model": embedding_model}
+        tokenizer_kwargs = {
+            "max_length": 512,
+            "padding": True,
+            "truncation": True,
+            "return_tensors": 'pt'
+        }
+        model_client = TransformerEmbeddingModelClient(
+            model_name=embedding_model,
+            tokenizer_kwargs=tokenizer_kwargs
+        )
+        print(
+            f"Testing model client with model {embedding_model}"
+        )
+        api_kwargs = model_client.convert_inputs_to_api_kwargs(input=test_input, model_kwargs=model_kwargs)
+        output = model_client.call(api_kwargs=api_kwargs)
+        print(output)
 
-    # def test_transformer_client(self):
-    #     transformer_client = TransformersClient()
-    #     print("Testing transformer client")
-    #     # run the model
-    #     kwargs = {
-    #         "model": "thenlper/gte-base",
-    #         # "mock": False,
-    #     }
-    #     api_kwargs = transformer_client.convert_inputs_to_api_kwargs(
-    #         input="Hello world",
-    #         model_kwargs=kwargs,
-    #         model_type=ModelType.EMBEDDER,
-    #     )
-    #     # print(api_kwargs)
-    #     output = transformer_client.call(
-    #         api_kwargs=api_kwargs, model_type=ModelType.EMBEDDER
-    #     )
+    def test_integration_with_embedder(self):
 
-    #     # print(transformer_client)
-    #     # print(output)
+        test_input = "Hello word"
+        embedding_model = "thenlper/gte-base"
+        model_kwargs = {"model": embedding_model}
+        tokenizer_kwargs = {
+            "max_length": 512,
+            "padding": True,
+            "truncation": True,
+            "return_tensors": 'pt'
+        }
+        model_client = TransformerEmbeddingModelClient(
+            model_name=embedding_model,
+            tokenizer_kwargs=tokenizer_kwargs
+        )
+        print(
+            f"Testing model client with model {embedding_model}"
+        )
+        embedder = Embedder(model_client=model_client,
+            model_kwargs=model_kwargs
+            )
+        output = embedder(test_input)
+        print(output)
+
+# class TestTransformerModelClient(unittest.TestCase):
+#     def setUp(self) -> None:
+
+#         self.query = "what is panda?"
+#         self.documents = [
+#             "The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China.",
+#             "The red panda (Ailurus fulgens), also called the lesser panda, the red bear-cat, and the red cat-bear, is a mammal native to the eastern Himalayas and southwestern China.",
+#         ]
+
+#     def test_transformer_embedder(self):
+#         transformer_embedder_model = "thenlper/gte-base"
+#         transformer_embedder_model_component = TransformerEmbedder(
+#             model_name=transformer_embedder_model
+#         )
+#         print(
+#             f"Testing transformer embedder with model {transformer_embedder_model_component}"
+#         )
+#         print("Testing transformer embedder")
+#         output = transformer_embedder_model_component(
+#             model=transformer_embedder_model, input="Hello world"
+#         )
+#         print(output)
+
+#     def test_transformer_client(self):
+#         transformer_client = TransformersClient()
+#         print("Testing transformer client")
+#         # run the model
+#         kwargs = {
+#             "model": "thenlper/gte-base",
+#             # "mock": False,
+#         }
+#         api_kwargs = transformer_client.convert_inputs_to_api_kwargs(
+#             input="Hello world",
+#             model_kwargs=kwargs,
+#             model_type=ModelType.EMBEDDER,
+#         )
+#         # print(api_kwargs)
+#         output = transformer_client.call(
+#             api_kwargs=api_kwargs, model_type=ModelType.EMBEDDER
+#         )
+
+        # print(transformer_client)
+        # print(output)
 
     # def test_transformer_reranker(self):
     #     transformer_reranker_model = "BAAI/bge-reranker-base"
