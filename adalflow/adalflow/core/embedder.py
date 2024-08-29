@@ -36,7 +36,6 @@ class Embedder(Component):
         - Use ``BatchEmbedder`` for automatically batching input of large size, larger than 100.
     """
 
-    model_type: ModelType = ModelType.EMBEDDER
     model_client: ModelClient
     output_processors: Optional[Component]
 
@@ -100,8 +99,7 @@ class Embedder(Component):
         # step 2: convert the input to the api_kwargs
         api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
             input=input,
-            model_kwargs=composed_model_kwargs,
-            model_type=self.model_type,
+            model_kwargs=composed_model_kwargs
         )
         log.debug(f"api_kwargs: {api_kwargs}")
         return api_kwargs
@@ -140,7 +138,7 @@ class Embedder(Component):
         response = None
         try:
             response = self.model_client.call(
-                api_kwargs=api_kwargs, model_type=self.model_type
+                api_kwargs=api_kwargs
             )
         except Exception as e:
             log.error(f"Error calling the model: {e}")
