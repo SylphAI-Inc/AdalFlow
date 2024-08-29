@@ -74,9 +74,9 @@ class TransformerEmbeddingModelClient(ModelClient):
         super().__init__()
         self.model_name = model_name
         self.tokenizer_kwargs = tokenizer_kwargs
-        self.auto_model=auto_model,
-        self.auto_tokenizer=auto_tokenizer,
-        self.custom_model=custom_model,
+        self.auto_model=auto_model
+        self.auto_tokenizer=auto_tokenizer
+        self.custom_model=custom_model
         self.custom_tokenizer=custom_tokenizer
 
         # Check if there is conflicting arguments
