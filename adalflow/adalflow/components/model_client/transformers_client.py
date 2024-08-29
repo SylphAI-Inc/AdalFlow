@@ -35,7 +35,7 @@ from transformers import (
 log = logging.getLogger(__name__)
 
 
-def average_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:
+def average_pool(last_hidden_states: Tensor, attention_mask: list) -> Tensor:
     last_hidden = last_hidden_states.masked_fill(~attention_mask[..., None].bool(), 0.0)
     return last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]
 
@@ -51,7 +51,7 @@ def average_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:
 #
 from transformers import PreTrainedModel, PreTrainedTokenizer, PreTrainedTokenizerFast
 
-def mean_pooling(model_output, attention_mask):
+def mean_pooling(model_output: dict, attention_mask) -> Tensor:
     token_embeddings = model_output[0] #First element of model_output contains all token embeddings
     input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
     return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
@@ -147,7 +147,7 @@ class TransformerEmbeddingModelClient(ModelClient):
         self,
         input=Union[str, List[str], List[List[str]]],
         tolist: bool = True,
-    ):
+    ) -> Union[List, Tensor]:
         model = self.model
 
         self.handle_input(input)
@@ -161,62 +161,48 @@ class TransformerEmbeddingModelClient(ModelClient):
             embeddings = embeddings.tolist()
         return embeddings
 
-    def handle_input(self, input: Union[str, List[str], List[List[str]]]):
+    def handle_input(self, input: Union[str, List[str], List[List[str]]]) -> Union[List[str], List[List[str]]]:
         if isinstance(input, str):
             input = [input]
         return input
      
-    def tokenize_inputs(self, input, kwargs: Optional[dict] = dict()):
+    def tokenize_inputs(self, input: Union[str, List[str], List[List[str]]], kwargs: Optional[dict] = dict()) -> dict:
         batch_dict = self.tokenizer(input, **kwargs)
         return batch_dict
 
-    def compute_model_outputs(self, batch_dict, model):
+    def compute_model_outputs(self, batch_dict: dict, model: PreTrainedModel) -> dict:
         with torch.no_grad():
             outputs = model(**batch_dict)
         return outputs
 
-    def compute_embeddings(self, outputs, batch_dict):
+    def compute_embeddings(self, outputs: dict, batch_dict: dict):
         embeddings = mean_pooling(
             outputs, batch_dict["attention_mask"]
         )
         return embeddings
-    """
-    def __call__(self, **kwargs):
-        if "model" not in kwargs:
-            raise ValueError("model is required")
 
-        if "mock" in kwargs and kwargs["mock"]:
+    #
+    # Preprocessing, postprocessing and call for inference code
+    #
+    def call(self, api_kwargs: Dict = {}) -> Union[List, Tensor]:
+        
+        # I don't think it is useful anymore
+        # if "model" not in api_kwargs:
+        #     raise ValueError("model must be specified in api_kwargs")
+        # if (
+        #     model_type == ModelType.EMBEDDER
+        #     # and "model" in api_kwargs
+        # ):
+        if "mock" in api_kwargs and api_kwargs["mock"]:
             import numpy as np
 
             embeddings = np.array([np.random.rand(768).tolist()])
             return embeddings
 
         # inference the model
-        return self.infer_embedding(kwargs["input"])
-    """
-
-    #
-    # Preprocessing, postprocessing and call for inference code
-    #
-    def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
-        
-        # I don't think it is useful anymore
-        # if "model" not in api_kwargs:
-        #     raise ValueError("model must be specified in api_kwargs")
-        if (
-            model_type == ModelType.EMBEDDER
-            # and "model" in api_kwargs
-        ):
-            if "mock" in api_kwargs and api_kwargs["mock"]:
-                import numpy as np
-
-                embeddings = np.array([np.random.rand(768).tolist()])
-                return embeddings
-
-        # inference the model
         return self.infer_embedding(api_kwargs["input"])
 
-    def parse_embedding_response(self, response: Any) -> EmbedderOutput:
+    def parse_embedding_response(self, response: Union[List, Tensor]) -> EmbedderOutput:
         embeddings: List[Embedding] = []
         for idx, emb in enumerate(response):
             embeddings.append(Embedding(index=idx, embedding=emb))
@@ -226,13 +212,12 @@ class TransformerEmbeddingModelClient(ModelClient):
     def convert_inputs_to_api_kwargs(
         self,
         input: Any,  # for retriever, it is a single query,
-        model_kwargs: dict = {},
-        model_type: ModelType = ModelType.UNDEFINED,
+        model_kwargs: dict = {}
     ) -> dict:
         final_model_kwargs = model_kwargs.copy()
-        if model_type == ModelType.EMBEDDER:
-            final_model_kwargs["input"] = input
-            return final_model_kwargs
+        # if model_type == ModelType.EMBEDDER:
+        final_model_kwargs["input"] = input
+        return final_model_kwargs
 
 #
 #
