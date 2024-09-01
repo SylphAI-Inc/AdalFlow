@@ -831,6 +831,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         s = f"model_kwargs={self.model_kwargs}, "
         return s
 
+    def to_dict(self) -> Dict[str, Any]:
+        r"""Convert the generator to a dictionary."""
+        # exclude default functions
+
     @staticmethod
     def failure_message_to_backward_engine(
         gradient_response: GeneratorOutput,
