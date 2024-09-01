@@ -10,12 +10,12 @@
       </a>
    </div>
 
-Learn AdalFlow in 15 minutes
-=============================
+
+Question Answer with LLM as Judge
+===================================
 
 
-AdalFlow provides easy way to build and to auto-optimize LLM task pipelines.
-We provide token-efficient and high-performing prompt optimization within a unified framework.
+AdalFlow provides token-efficient and high-performing prompt optimization within a unified framework.
 
 Overview
 ----------------
@@ -44,9 +44,9 @@ With a low-performing starting prompt, our zero-shot optimizer states:
      - Val
      - Test
    * - Start (manual prompt)
-     - N/A (50 samples)
-     - 0.54 (50 samples)
-     - 0.65 (100 samples)
+     - 0.84 (50 samples)
+     - 0.66 (50 samples)
+     - 0.77 (100 samples)
    * - Optimized Zero-shot
      - N/A
      - 0.9 (**+36%**)
@@ -559,7 +559,7 @@ Now, we can use the trainer to train the model.
     ):
         adal_component = ObjectCountAdalComponent(
             **gpt_3_model,
-            teacher_model_config=gpt_3_model,
+            teacher_model_config=gpt_4o_model,
             text_optimizer_model_config=gpt_4o_model,
             backward_engine_model_config=gpt_4o_model
         )
@@ -767,3 +767,10 @@ We also leverage single message prompt, sending the whole template to the model'
 
 .. note::
     In the start we use same prompt but we use a single template which achieves much better zero-shot performance than text-grad which sends the system prompt to system message and the input to user message.
+
+.. admonition:: References
+   :class: highlight
+
+   .. [1] Text-grad: https://arxiv.org/abs/2406.07496
+   .. [2] DsPy: https://arxiv.org/abs/2310.03714
+   .. [3] ORPO: https://arxiv.org/abs/2309.03409

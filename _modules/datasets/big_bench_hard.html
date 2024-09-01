@@ -448,6 +448,10 @@
 <span class="k">class</span> <span class="nc">BigBenchHard</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Big Bench Hard dataset for object counting task.</span>
 
+<span class="s2">    You can find the task name from the following link:</span>
+<span class="s2">    https://github.com/suzgunmirac/BIG-Bench-Hard/tree/main/bbh</span>
+
+
 <span class="s2">    Data will be saved to ~/.adalflow/cache_datasets/BBH_object_counting/</span><span class="si">{split}</span><span class="s2">.csv</span>
 <span class="s2">    if root is not specified.</span>
 
@@ -455,6 +459,11 @@
 <span class="s2">    - train: 50 examples</span>
 <span class="s2">    - val: 50 examples</span>
 <span class="s2">    - test: 100 examples</span>
+
+<span class="s2">    Args:</span>
+<span class="s2">        task_name (str): The name of the task. &quot;BHH_</span><span class="si">{task_name}</span><span class="s2">&quot; is the task name in the dataset.</span>
+<span class="s2">        root (str, optional): Root directory of the dataset to save the data. Defaults to ~/.adalflow/cache_datasets/task_name.</span>
+<span class="s2">        split (str, optional): The dataset split, supports ``&quot;train&quot;`` (default), ``&quot;val&quot;`` and ``&quot;test&quot;``.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -487,7 +496,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="n">Example</span><span class="p">(</span><span class="n">question</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">answer</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="nb">id</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
                 <span class="p">)</span>  <span class="c1"># dont use a tuple, use a dict {&quot;x&quot;: ..., &quot;y&quot;: ...}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_task_description</span> <span class="o">=</span> <span class="s2">&quot;You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: &#39;Answer: $VALUE&#39; where VALUE is a numerical value.&quot;</span>
 
     <span class="k">def</span> <span class="nf">_check_or_download_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">):</span>
 
@@ -514,6 +522,9 @@
 
         <span class="n">examples</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;examples&quot;</span><span class="p">]</span>
 
+        <span class="c1"># NOTE: better to shuffle the examples before splitting.</span>
+        <span class="c1"># We do this splitting in order to be consistent with text-grad paper.</span>
+
         <span class="n">train_examples</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">ex</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">],</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">ex</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">],</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())}</span>
             <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">examples</span><span class="p">[:</span><span class="mi">50</span><span class="p">]</span>
@@ -524,8 +535,9 @@
         <span class="p">]</span>
         <span class="n">test_examples</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">ex</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">],</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">ex</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">],</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())}</span>
-            <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">examples</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">200</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">examples</span><span class="p">[</span><span class="mi">150</span><span class="p">:</span><span class="mi">250</span><span class="p">]</span>
         <span class="p">]</span>
+        <span class="c1"># ensure the</span>
 
         <span class="k">for</span> <span class="n">split</span><span class="p">,</span> <span class="n">examples</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
             <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">train_examples</span><span class="p">,</span> <span class="n">val_examples</span><span class="p">,</span> <span class="n">test_examples</span><span class="p">]</span>
@@ -542,8 +554,10 @@
 
 <div class="viewcode-block" id="BigBenchHard.get_default_task_instruction">
 <a class="viewcode-back" href="../../apis/datasets/index.html#datasets.big_bench_hard.BigBenchHard.get_default_task_instruction">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_default_task_instruction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_description</span></div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_default_task_instruction</span><span class="p">():</span>
+        <span class="n">_task_description</span> <span class="o">=</span> <span class="s2">&quot;You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: &#39;Answer: $VALUE&#39; where VALUE is a numerical value.&quot;</span>
+        <span class="k">return</span> <span class="n">_task_description</span></div>
 </div>
 
 
@@ -551,8 +565,8 @@
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">adalflow.datasets.big_bench_hard</span> <span class="kn">import</span> <span class="n">BigBenchHard</span>
 
-    <span class="n">dataset</span> <span class="o">=</span> <span class="n">BigBenchHard</span><span class="p">(</span><span class="s2">&quot;BBH_object_counting&quot;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">BigBenchHard</span><span class="p">(</span><span class="s2">&quot;BBH_word_sorting&quot;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
     <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">get_default_task_instruction</span><span class="p">())</span>
 </pre></div>

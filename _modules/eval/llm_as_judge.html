@@ -431,7 +431,7 @@
   <h1>Source code for eval.llm_as_judge</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;This is the metric to use an LLM as a judge for evaluating the performance of predicted answers.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Literal</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -442,23 +442,25 @@
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">DEFAULT_LLM_EVALUATOR_PROMPT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">&lt;&lt;SYS&gt;&gt;{# task desc #}</span>
-<span class="s2">You are a helpful assistant.</span>
-<span class="s2">Given the question, ground truth answer, and predicted answer, you need to answer the judgement query.</span>
-<span class="s2">Output True or False according to the judgement query.&lt;&lt;/SYS&gt;&gt;</span>
+<span class="n">DEFAULT_LLM_EVALUATOR_PROMPT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;START_OF_SYSTEM_PROMPT&gt;</span>
+<span class="s2">{# task desc #}</span>
+<span class="s2">You are an evaluator. Given the question, ground truth answer, and predicted answer,</span>
+<span class="s2">{# judgement question #}</span>
+<span class="s2">{{judgement_str}}</span>
+<span class="s2">&lt;END_OF_SYSTEM_PROMPT&gt;</span>
 <span class="s2">---------------------</span>
+<span class="s2">&lt;START_OF_USER&gt;</span>
 <span class="s2">{# question #}</span>
 <span class="s2">Question: {{question_str}}</span>
 <span class="s2">{# ground truth answer #}</span>
 <span class="s2">Ground truth answer: {{gt_answer_str}}</span>
 <span class="s2">{# predicted answer #}</span>
 <span class="s2">Predicted answer: {{pred_answer_str}}</span>
-<span class="s2">{# judgement question #}</span>
-<span class="s2">Judgement question: {{judgement_str}}</span>
 <span class="s2">{# assistant response #}</span>
-<span class="s2">You:</span>
+<span class="s2">&lt;END_OF_USER&gt;</span>
 <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">DEFAULT_JUDGEMENT_QUERY</span> <span class="o">=</span> <span class="s2">&quot;Does the predicted answer contain the ground truth answer? Say True if yes, False if no.&quot;</span>
 
 
 <span class="c1"># print(f&quot;globals: {globals()}&quot;)</span>
@@ -488,6 +490,10 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model_client</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ModelClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">jugement_query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">output_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+        <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
 
@@ -503,17 +509,25 @@
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span> <span class="ow">or</span> <span class="n">DEFAULT_LLM_EVALUATOR_MODEL_KWARGS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="n">template</span> <span class="ow">or</span> <span class="n">DEFAULT_LLM_EVALUATOR_PROMPT</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">llm_evaluator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
             <span class="n">model_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="p">,</span>
             <span class="n">model_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="p">,</span>
-            <span class="n">template</span><span class="o">=</span><span class="n">DEFAULT_LLM_EVALUATOR_PROMPT</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span>
+            <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jugement_query</span> <span class="o">=</span> <span class="n">jugement_query</span> <span class="ow">or</span> <span class="n">DEFAULT_JUDGEMENT_QUERY</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_type</span> <span class="o">=</span> <span class="n">output_type</span>
 
 <div class="viewcode-block" id="DefaultLLMJudge.call">
 <a class="viewcode-back" href="../../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gt_answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pred_answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">judgement_query</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">gt_answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">pred_answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">judgement_query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the judgement of the predicted answer for a single question.</span>
 
@@ -526,6 +540,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: Judgement result.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">judgement_query</span> <span class="o">=</span> <span class="n">judgement_query</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jugement_query</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_evaluator</span><span class="p">(</span>
             <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;question_str&quot;</span><span class="p">:</span> <span class="n">question</span><span class="p">,</span>
@@ -537,12 +552,15 @@
 
         <span class="n">judgement</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">raw_response</span>
         <span class="n">judgement</span> <span class="o">=</span> <span class="n">judgement</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span> <span class="k">else</span> <span class="mf">0.0</span>
         <span class="k">if</span> <span class="s2">&quot;true&quot;</span> <span class="ow">in</span> <span class="n">judgement</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span> <span class="k">else</span> <span class="mf">1.0</span>
         <span class="k">elif</span> <span class="s2">&quot;false&quot;</span> <span class="ow">in</span> <span class="n">judgement</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span> <span class="k">else</span> <span class="mf">0.0</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid judgement: </span><span class="si">{</span><span class="n">judgement</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid judgement: </span><span class="si">{</span><span class="n">judgement</span><span class="si">}</span><span class="s2">, use False or 0.0 instead.&quot;</span><span class="p">)</span>
+            <span class="c1"># raise ValueError(f&quot;Invalid judgement: {judgement}&quot;)</span>
+        <span class="k">return</span> <span class="n">output</span></div>
 </div>
 
 

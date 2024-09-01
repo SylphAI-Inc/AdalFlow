@@ -1820,6 +1820,8 @@
 <span class="sd">    Randomly sample num_shots from the dataset. If replace is True, sample with replacement.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dataset_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dataset_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">replace</span> <span class="ow">and</span> <span class="n">num_shots</span> <span class="o">&gt;</span> <span class="n">dataset_size</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>

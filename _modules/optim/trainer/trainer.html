@@ -584,6 +584,7 @@
             <span class="n">exclude_input_fields_from_bootstrap_demos</span>
         <span class="p">)</span>
 
+    <span class="c1"># TODO: need to support checkpoint resume too!</span>
 <div class="viewcode-block" id="Trainer.diagnose">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.diagnose">[docs]</a>
     <span class="k">def</span> <span class="nf">diagnose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">):</span>
@@ -775,6 +776,8 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">exclude_input_fields_from_bootstrap_demos</span>
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">configure_teacher_generator</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Configured demo optimizers&quot;</span><span class="p">)</span>
+            <span class="c1"># return</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No trainable demo params to optimize&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span> <span class="o">=</span> <span class="p">[]</span>
@@ -820,8 +823,8 @@
 
         <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debugging mode&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_fit_text_grads_one_step_for_debug</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)</span>
+            <span class="c1"># if len(self.text_optimizers) &gt; 0:</span>
+            <span class="c1">#     self._fit_text_grads_one_step_for_debug(train_loader)</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_fit_demos_one_step_for_debug</span><span class="p">(</span>
@@ -1119,8 +1122,8 @@
             <span class="p">)</span>
             <span class="c1"># for loss in losses_student:</span>
             <span class="c1">#     loss.backward()</span>
-
-            <span class="n">eval_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">evaluate_samples</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">y_preds_student</span><span class="p">)</span>
+            <span class="n">y_preds_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">full_response</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">y_preds_student</span><span class="p">]</span>
+            <span class="n">eval_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">evaluate_samples</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">y_preds_outputs</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Eval result: </span><span class="si">{</span><span class="n">eval_result</span><span class="o">.</span><span class="n">avg_score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">eval_score_per_item</span> <span class="o">=</span> <span class="n">eval_result</span><span class="o">.</span><span class="n">per_item_scores</span>
 
@@ -1615,7 +1618,6 @@
         <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;save to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ckpt_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting step: </span><span class="si">{</span><span class="n">starting_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;trainer_results: </span><span class="si">{</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">steps</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span>
@@ -1919,37 +1921,16 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Loss should be a Parameter object&quot;</span><span class="p">)</span>
         <span class="n">max_moving_batch_size</span> <span class="o">=</span> <span class="mi">20</span>
-        <span class="c1"># max_sampled_correct_size = 3</span>
-        <span class="c1"># max_sampled_error_size = 3</span>
 
         <span class="n">correct_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">acc_score_list</span><span class="p">)</span> <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">]</span>
         <span class="n">error_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">acc_score_list</span><span class="p">)</span> <span class="k">if</span> <span class="n">score</span> <span class="o">&lt;=</span> <span class="mf">0.5</span><span class="p">]</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Moving batch correct size: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">correct_indices</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Moving batch error size: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">error_indices</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">error_indices</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">correct_indices</span><span class="p">)</span>
             <span class="o">&lt;=</span> <span class="n">max_moving_batch_size</span>
             <span class="c1"># and len(correct_indices) &lt;= max_moving_batch_size</span>
         <span class="p">):</span>
             <span class="k">return</span> <span class="n">all_samples</span><span class="p">,</span> <span class="n">all_losses</span><span class="p">,</span> <span class="n">all_y_preds</span><span class="p">,</span> <span class="n">acc_score_list</span>
-        <span class="c1"># sampled_error_indices = error_indices</span>
-        <span class="c1"># if len(correct_indices) &gt; max_moving_batch_size:</span>
-        <span class="c1">#     sampled_error_indices = random.sample(</span>
-        <span class="c1">#         error_indices, min(max_moving_batch_size, len(error_indices))</span>
-        <span class="c1">#     )</span>
-        <span class="c1"># sampled_correct_indices = correct_indices</span>
-        <span class="c1"># if len(correct_indices) &gt; max_moving_batch_size:</span>
-        <span class="c1">#     sampled_correct_indices = random.sample(</span>
-        <span class="c1">#         correct_indices,</span>
-        <span class="c1">#         min(</span>
-        <span class="c1">#             max_moving_batch_size,</span>
-        <span class="c1">#             len(correct_indices),</span>
-        <span class="c1">#         ),</span>
-        <span class="c1">#     )</span>
-        <span class="c1"># print(f&quot;New moving batch size size: {len(sampled_error_indices)}&quot;)</span>
-        <span class="c1"># print(f&quot;Subset Correct size: {len(sampled_correct_indices)}&quot;)</span>
-        <span class="c1"># new_sample_indices = sampled_error_indices + sampled_correct_indices</span>
 
         <span class="c1"># downsample from all samples</span>
         <span class="n">new_sample_indices</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Introduction to AdalFlow library &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+    <title>Question Answer with LLM as Judge &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
   
   
   
@@ -48,12 +48,10 @@
     <script src="../_static/js/rtd_search_config.js"></script>
     <script src="../_static/js/rtd_sphinx_search.min.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'use_cases/question_answering';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'use_cases/question_answering_word_sort';</script>
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Classification Optimization" href="classification.html" />
-    <link rel="prev" title="Use Cases" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -163,7 +161,7 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
     Use Cases
   </a>
@@ -279,7 +277,9 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -308,7 +308,7 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
     Use Cases
   </a>
@@ -381,21 +381,6 @@
     
   </div>
   
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-<nav class="bd-docs-nav bd-links"
-     aria-label="Section Navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Use Cases</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction to AdalFlow library</a></li>
-<li class="toctree-l1"><a class="reference internal" href="classification.html">Classification Optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rag_opt.html">RAG optimization</a></li>
-</ul>
-</div>
-</nav></div>
-    </div>
-  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -428,10 +413,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Use Cases</a></li>
-    
-    <li class="breadcrumb-item active" aria-current="page">Introduction...</li>
+    <li class="breadcrumb-item active" aria-current="page">Question...</li>
   </ul>
 </nav>
 </div>
@@ -456,8 +438,8 @@
       <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
       <span style="vertical-align: middle;"> Open Source Code</span>
    </a>
-</div><section id="introduction-to-adalflow-library">
-<h1>Introduction to AdalFlow library<a class="headerlink" href="#introduction-to-adalflow-library" title="Link to this heading">#</a></h1>
+</div><section id="question-answer-with-llm-as-judge">
+<h1>Question Answer with LLM as Judge<a class="headerlink" href="#question-answer-with-llm-as-judge" title="Link to this heading">#</a></h1>
 <p>AdalFlow provides token-efficient and high-performing prompt optimization within a unified framework.</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
@@ -487,9 +469,9 @@ Here is an example from the dataset:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Start (manual prompt)</p></td>
-<td><p>N/A (50 samples)</p></td>
-<td><p>0.54 (50 samples)</p></td>
-<td><p>0.65 (100 samples)</p></td>
+<td><p>0.84 (50 samples)</p></td>
+<td><p>0.66 (50 samples)</p></td>
+<td><p>0.77 (100 samples)</p></td>
 </tr>
 <tr class="row-odd"><td><p>Optimized Zero-shot</p></td>
 <td><p>N/A</p></td>
@@ -1235,24 +1217,6 @@ We also leverage single message prompt, sending the whole template to the modelâ
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="index.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Use Cases</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="classification.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Classification Optimization</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               

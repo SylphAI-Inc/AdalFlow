@@ -558,8 +558,6 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_cache_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;cache_</span><span class="si">{</span><span class="n">model_str</span><span class="si">}</span><span class="s2">.db&quot;</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cache_path: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
         <span class="n">CachedEngine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">)</span>
         <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">GradComponent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -599,6 +597,13 @@
             <span class="s2">&quot;use_cache&quot;</span><span class="p">:</span> <span class="n">use_cache</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_teacher</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Generator&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Generator.get_cache_path">
+<a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.get_cache_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_cache_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the cache path for the generator.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span></div>
+
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_default_mapping</span><span class="p">(</span>
@@ -716,14 +721,12 @@
 <div class="viewcode-block" id="Generator.print_prompt">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.print_prompt">[docs]</a>
     <span class="k">def</span> <span class="nf">print_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="c1"># prompt_kwargs_str = _convert_prompt_kwargs_to_str(kwargs)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span><span class="o">.</span><span class="n">print_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Generator.get_prompt">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.get_prompt">[docs]</a>
     <span class="k">def</span> <span class="nf">get_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="c1"># prompt_kwargs_str = _convert_prompt_kwargs_to_str(kwargs)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -888,8 +891,12 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mock_output</span><span class="p">:</span>
             <span class="n">output</span> <span class="o">=</span> <span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mock_output_data</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">teacher_mode</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">teacher_mode</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">BackwardEngine</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_teacher</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;prompt_kwargs: </span><span class="si">{</span><span class="n">prompt_kwargs</span><span class="si">}</span><span class="s2">, model_kwargs: </span><span class="si">{</span><span class="n">model_kwargs</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;names: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Teacher generator is not set.&quot;</span><span class="p">)</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using teacher: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_teacher</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">input_args</span> <span class="o">=</span> <span class="p">{</span>
@@ -1178,7 +1185,6 @@
             <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;call back on failure: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trigger_callbacks</span><span class="p">(</span>
                 <span class="s2">&quot;on_failure&quot;</span><span class="p">,</span>
                 <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
@@ -1311,6 +1317,13 @@
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;model_kwargs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="si">}</span><span class="s2">, &quot;</span>
         <span class="k">return</span> <span class="n">s</span>
 
+<div class="viewcode-block" id="Generator.to_dict">
+<a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.to_dict">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the generator to a dictionary.&quot;&quot;&quot;</span></div>
+
+        <span class="c1"># exclude default functions</span>
+
 <div class="viewcode-block" id="Generator.failure_message_to_backward_engine">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.failure_message_to_backward_engine">[docs]</a>
     <span class="nd">@staticmethod</span>
@@ -1338,6 +1351,8 @@
             <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;template&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FEEDBACK_ENGINE_TEMPLATE</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;BackwardEngine&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">teacher_mode</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="BackwardEngine.failure_message_to_optimizer">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.BackwardEngine.failure_message_to_optimizer">[docs]</a>
@@ -1445,7 +1460,6 @@
     <span class="n">call_logger</span> <span class="o">=</span> <span class="n">GeneratorCallLogger</span><span class="p">(</span><span class="n">save_dir</span><span class="o">=</span><span class="s2">&quot;traces&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">on_complete</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">,</span> <span class="n">logger_call</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;on_complet  output: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">logger_call</span><span class="p">(</span>
             <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
             <span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>
@@ -1454,13 +1468,9 @@
         <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="p">[</span><span class="n">llama3_model</span><span class="p">,</span> <span class="n">gpt_3_model</span><span class="p">,</span> <span class="n">gemini_model</span><span class="p">,</span> <span class="n">claude_model</span><span class="p">]:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;model: </span><span class="si">{</span><span class="n">model</span><span class="p">[</span><span class="s2">&quot;model_kwargs&quot;</span><span class="p">][</span><span class="s2">&quot;model&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
         <span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span><span class="o">**</span><span class="n">model</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;_kwargs: &quot;</span><span class="p">,</span> <span class="n">generator</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">)</span>
-
         <span class="n">teacher</span> <span class="o">=</span> <span class="n">create_teacher_generator</span><span class="p">(</span><span class="n">generator</span><span class="p">,</span> <span class="o">**</span><span class="n">claude_model</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;teacher: </span><span class="si">{</span><span class="n">teacher</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">call_logger</span><span class="o">.</span><span class="n">register_generator</span><span class="p">(</span><span class="s2">&quot;generator&quot;</span><span class="p">,</span> <span class="s2">&quot;generator_call&quot;</span><span class="p">)</span>
         <span class="c1"># setup the callback</span>
@@ -1474,7 +1484,6 @@
                 <span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello, world!&quot;</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;output: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">break</span>
 
     <span class="c1"># test the backward engine</span>

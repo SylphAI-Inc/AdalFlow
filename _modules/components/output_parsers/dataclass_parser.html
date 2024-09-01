@@ -528,7 +528,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_class</span><span class="o">.</span><span class="n">to_json_signature</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_fields</span><span class="p">)</span>
             <span class="n">output_format_str</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">JSON_OUTPUT_FORMAT</span><span class="p">)(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;output_format_str: </span><span class="si">{</span><span class="n">output_format_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output_format_str</span></div>
 
 

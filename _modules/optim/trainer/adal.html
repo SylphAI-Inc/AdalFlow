@@ -436,6 +436,7 @@
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">logging</span> <span class="k">as</span> <span class="nn">log</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
@@ -450,6 +451,9 @@
 <span class="kn">from</span> <span class="nn">adalflow.eval.base</span> <span class="kn">import</span> <span class="n">EvaluationResult</span>
 
 <span class="kn">from</span> <span class="nn">adalflow.optim.optimizer</span> <span class="kn">import</span> <span class="n">DemoOptimizer</span><span class="p">,</span> <span class="n">TextOptimizer</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="AdalComponent">
@@ -496,6 +500,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">backward_engine_model_config</span> <span class="o">=</span> <span class="n">backward_engine_model_config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">teacher_model_config</span> <span class="o">=</span> <span class="n">teacher_model_config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizer_model_config</span> <span class="o">=</span> <span class="n">text_optimizer_model_config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_text_optimizers</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_set_param_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PromptData</span><span class="p">]):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Set the parameters for the task. Used to resume from ckpt.&quot;&quot;&quot;</span>
@@ -575,51 +581,147 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;evaluate_one_sample method is not implemented&quot;</span><span class="p">)</span></div>
 
 
+    <span class="c1"># def configure_optimizers(self, *args, **kwargs) -&gt; Optimizer:</span>
+    <span class="c1">#     r&quot;&quot;&quot;Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too.&quot;&quot;&quot;</span>
+    <span class="c1">#     raise NotImplementedError(&quot;configure_optimizers method is not implemented&quot;)</span>
+
 <div class="viewcode-block" id="AdalComponent.configure_optimizers">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.configure_optimizers">[docs]</a>
-    <span class="k">def</span> <span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optimizer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Optimizer</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;configure_optimizers method is not implemented&quot;</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">configure_demo_optimizer_helper</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_optimizers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizer_model_config</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Text optimizer model config is not configured.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizer_model_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_client&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model client is not configured.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizer_model_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_kwargs&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model kwargs is not configured.&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_text_optimizers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">configure_text_optimizer_helper</span><span class="p">(</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">text_optimizer_model_config</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_optimizers</span></div>
 
 
 <div class="viewcode-block" id="AdalComponent.configure_backward_engine">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.configure_backward_engine">[docs]</a>
     <span class="k">def</span> <span class="nf">configure_backward_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;configure_backward_engine method is not implemented&quot;</span><span class="p">)</span></div>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Configure a backward engine for all generators in the task for bootstrapping examples.&quot;&quot;&quot;</span>
+        <span class="c1"># check if backward engine is already configured</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward_engine</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Backward engine is already configured.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward_engine_model_config</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Backward engine model config is not configured.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward_engine_model_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_client&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model client is not configured.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward_engine_model_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_kwargs&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model kwargs is not configured.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configure_backward_engine_helper</span><span class="p">(</span>
+            <span class="n">model_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backward_engine_model_config</span><span class="p">[</span><span class="s2">&quot;model_client&quot;</span><span class="p">],</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backward_engine_model_config</span><span class="p">[</span><span class="s2">&quot;model_kwargs&quot;</span><span class="p">],</span>
+        <span class="p">)</span></div>
 
+
+    <span class="c1"># def configure_backward_engine(self, *args, **kwargs):</span>
+    <span class="c1">#     raise NotImplementedError(&quot;configure_backward_engine method is not implemented&quot;)</span>
 
 <div class="viewcode-block" id="AdalComponent.evaluate_samples">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.evaluate_samples">[docs]</a>
     <span class="k">def</span> <span class="nf">evaluate_samples</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">samples</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">y_preds</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EvaluationResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run evaluation on samples. Use ``evaluate_one_sample`` defined by the user.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run evaluation on samples using parallel processing. Utilizes ``evaluate_one_sample`` defined by the user.</span>
 
 <span class="sd">        Metadata is used for storing context that you can find from generator input.</span>
 
-<span class="sd">        Note:</span>
-<span class="sd">            ensure it supports both Tuple(batch) and a list of any type (fits for datasets).</span>
+<span class="sd">        Args:</span>
+<span class="sd">            samples (Any): The input samples to evaluate.</span>
+<span class="sd">            y_preds (List): The predicted outputs corresponding to each sample.</span>
+<span class="sd">            metadata (Optional[Dict[str, Any]]): Optional metadata dictionary.</span>
+<span class="sd">            num_workers (int): Number of worker threads for parallel processing.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            EvaluationResult: An object containing the average score and per-item scores.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_preds</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_preds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;y_preds is not a list or empty: </span><span class="si">{</span><span class="n">y_preds</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="n">y_pred_0</span> <span class="o">=</span> <span class="n">y_preds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_pred_0</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;y_pred_0 should not be a Parameter: </span><span class="si">{</span><span class="n">y_pred_0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">acc_list</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_one_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">)</span>
-            <span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">acc_list</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_one_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">)</span>
-            <span class="p">]</span>
+
+        <span class="n">acc_list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>  <span class="c1"># Initialize accuracy list to hold results</span>
+
+        <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+
+            <span class="c1"># 1. submit all the tasks</span>
+            <span class="n">futures</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluate_one_sample</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_one_sample</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span>
+                    <span class="p">)</span>
+                <span class="n">futures</span><span class="p">[</span><span class="n">future</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+            <span class="c1"># 2. collect the results, update the progress bar</span>
+            <span class="c1"># Initialize progress bar once outside the loop</span>
+            <span class="n">progress_bar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
+                <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Evaluating&quot;</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">leave</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">futures</span><span class="p">[</span><span class="n">future</span><span class="p">]</span>
+                <span class="n">acc_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+                <span class="p">)</span>  <span class="c1"># Place the result in the correct position</span>
+                <span class="n">progress_bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="mi">1</span>
+                <span class="p">)</span>  <span class="c1"># Update progress bar after each result is collected</span>
+
         <span class="n">avg_score</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">acc_list</span><span class="p">)))</span>
         <span class="k">return</span> <span class="n">EvaluationResult</span><span class="p">(</span><span class="n">avg_score</span><span class="o">=</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">per_item_scores</span><span class="o">=</span><span class="n">acc_list</span><span class="p">)</span></div>
 
+
+    <span class="c1"># def evaluate_samples(</span>
+    <span class="c1">#     self, samples: Any, y_preds: List, metadata: Optional[Dict[str, Any]] = None</span>
+    <span class="c1"># ) -&gt; EvaluationResult:</span>
+    <span class="c1">#     r&quot;&quot;&quot;Run evaluation on samples. Use ``evaluate_one_sample`` defined by the user.</span>
+
+    <span class="c1">#     Metadata is used for storing context that you can find from generator input.</span>
+
+    <span class="c1">#     Note:</span>
+    <span class="c1">#         ensure it supports both Tuple(batch) and a list of any type (fits for datasets).</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     from adalflow.optim.parameter import Parameter</span>
+
+    <span class="c1">#     if not isinstance(y_preds, list) or len(y_preds) == 0:</span>
+    <span class="c1">#         raise ValueError(f&quot;y_preds is not a list or empty: {y_preds}&quot;)</span>
+    <span class="c1">#     y_pred_0 = y_preds[0]</span>
+    <span class="c1">#     if isinstance(y_pred_0, Parameter):</span>
+    <span class="c1">#         raise ValueError(f&quot;y_pred_0 should not be a Parameter: {y_pred_0}&quot;)</span>
+    <span class="c1">#     if metadata is None:</span>
+    <span class="c1">#         acc_list = [</span>
+    <span class="c1">#             self.evaluate_one_sample(sample, y_pred)</span>
+    <span class="c1">#             for sample, y_pred in zip(samples, y_preds)</span>
+    <span class="c1">#         ]</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         acc_list = [</span>
+    <span class="c1">#             self.evaluate_one_sample(sample, y_pred, metadata=metadata)</span>
+    <span class="c1">#             for sample, y_pred in zip(samples, y_preds)</span>
+    <span class="c1">#         ]</span>
+    <span class="c1">#     avg_score = float(np.mean(np.array(acc_list)))</span>
+    <span class="c1">#     return EvaluationResult(avg_score=avg_score, per_item_scores=acc_list)</span>
 
     <span class="k">def</span> <span class="nf">_train_step</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -704,8 +806,10 @@
         <span class="n">y_preds</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
         <span class="n">completed_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">index_to_score</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># for running evaluation</span>
 
         <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="c1"># 1. submit all the tasks</span>
             <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">tqdm_loader</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Loading Data&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm_loader</span><span class="p">):</span>
@@ -713,10 +817,11 @@
                 <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">task_call</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">future</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span><span class="p">))</span>  <span class="c1"># preserve the order of the samples</span>
 
+            <span class="c1"># 2. predict the results, update the progress bar</span>
             <span class="n">tqdm_loader</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
                 <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">futures</span><span class="p">),</span>
                 <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Evaluating step: </span><span class="si">{</span><span class="n">batch_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Prediting step: </span><span class="si">{</span><span class="n">batch_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">future</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">futures</span><span class="p">:</span>
                 <span class="n">y_pred</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
@@ -727,13 +832,15 @@
                 <span class="k">assert</span> <span class="p">(</span>
                     <span class="n">y_pred</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">sample</span><span class="o">.</span><span class="n">id</span>
                 <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;ID mismatch: </span><span class="si">{</span><span class="n">y_pred</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> != </span><span class="si">{</span><span class="n">sample</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
                 <span class="n">completed_indices</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>  <span class="c1"># Mark this index as completed</span>
 
                 <span class="k">if</span> <span class="n">running_eval</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
-                    <span class="c1"># Perform running evaluation only on completed samples</span>
-                    <span class="n">sorted_indices</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">completed_indices</span><span class="p">)</span>
-                    <span class="n">completed_y_preds</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_preds</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">sorted_indices</span><span class="p">]</span>
-                    <span class="n">completed_samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">samples</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">sorted_indices</span><span class="p">]</span>
+                    <span class="c1"># evaluate one sample</span>
+                    <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_one_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+                    <span class="n">index_to_score</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">score</span>
+                    <span class="n">eval_score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">index_to_score</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
                     <span class="c1"># for y_pred, sample in zip(completed_y_preds, completed_samples):</span>
                     <span class="c1">#     print(f&quot;y_pred: {y_pred.data}, sample: {sample.answer}&quot;)</span>
                     <span class="c1"># for y_pred, sample in zip(completed_y_preds, completed_samples):</span>
@@ -742,10 +849,6 @@
                     <span class="c1">#             f&quot;ID mismatch: {y_pred.id} != {sample.id}, type: {type(y_pred)}&quot;</span>
                     <span class="c1">#         )</span>
                     <span class="c1">#     print(f&quot;y_pred: {y_pred.data}, sample: {sample.answer}&quot;)</span>
-                    <span class="c1"># TODO: each time only call evaluate on one sample</span>
-                    <span class="n">eval_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_samples</span><span class="p">(</span>
-                        <span class="n">completed_samples</span><span class="p">,</span> <span class="n">completed_y_preds</span>
-                    <span class="p">)</span><span class="o">.</span><span class="n">avg_score</span>
 
                     <span class="n">remaining_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">completed_indices</span><span class="p">)</span>
                     <span class="n">max_score</span> <span class="o">=</span> <span class="p">(</span>
@@ -756,10 +859,10 @@
                         <span class="k">break</span>
 
                     <span class="n">tqdm_loader</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Evaluating step(</span><span class="si">{</span><span class="n">batch_idx</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">eval_score</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2"> across </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">completed_indices</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples, Max potential: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">max_score</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Predicting: step(</span><span class="si">{</span><span class="n">batch_idx</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">eval_score</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2"> across </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">completed_indices</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples, Max potential: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">max_score</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">tqdm_loader</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evaluating step(</span><span class="si">{</span><span class="n">batch_idx</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                    <span class="n">tqdm_loader</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predicting: step(</span><span class="si">{</span><span class="n">batch_idx</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 
                 <span class="n">tqdm_loader</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Update the progress bar</span>
 
@@ -767,7 +870,7 @@
         <span class="n">completed_y_preds</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_preds</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">sorted_indices</span><span class="p">]</span>
         <span class="n">completed_samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">samples</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">sorted_indices</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">completed_y_preds</span><span class="p">,</span> <span class="n">completed_samples</span></div>
+        <span class="k">return</span> <span class="n">completed_y_preds</span><span class="p">,</span> <span class="n">completed_samples</span><span class="p">,</span> <span class="n">index_to_score</span></div>
 
 
 <div class="viewcode-block" id="AdalComponent.train_step">
@@ -809,12 +912,29 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: let use decide which mode to be</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
-        <span class="n">completed_y_preds</span><span class="p">,</span> <span class="n">completed_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred_step</span><span class="p">(</span>
+        <span class="n">completed_y_preds</span><span class="p">,</span> <span class="n">completed_samples</span><span class="p">,</span> <span class="n">index_to_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred_step</span><span class="p">(</span>
             <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">,</span> <span class="n">running_eval</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">min_score</span><span class="o">=</span><span class="n">minimum_score</span>
         <span class="p">)</span>
-        <span class="n">eval_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_samples</span><span class="p">(</span>
-            <span class="n">samples</span><span class="o">=</span><span class="n">completed_samples</span><span class="p">,</span> <span class="n">y_preds</span><span class="o">=</span><span class="n">completed_y_preds</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">index_to_score</span><span class="p">:</span>
+            <span class="c1"># compute score from index_to_score</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;completed_samples: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">completed_samples</span><span class="p">)</span><span class="si">}</span><span class="s2">, len: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">index_to_score</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="n">avg_score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">index_to_score</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="n">acc_list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">index_to_score</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">index_to_score</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">acc_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">score</span>
+            <span class="n">acc_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">index_to_score</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">eval_results</span> <span class="o">=</span> <span class="n">EvaluationResult</span><span class="p">(</span>
+                <span class="n">avg_score</span><span class="o">=</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">per_item_scores</span><span class="o">=</span><span class="n">acc_list</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">eval_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_samples</span><span class="p">(</span>
+                <span class="n">samples</span><span class="o">=</span><span class="n">completed_samples</span><span class="p">,</span>
+                <span class="n">y_preds</span><span class="o">=</span><span class="n">completed_y_preds</span><span class="p">,</span>
+                <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">eval_results</span></div>
 
 
@@ -851,6 +971,16 @@
         <span class="k">return</span> <span class="n">losses</span></div>
 
 
+    <span class="c1"># def configure_teacher_generator(self):</span>
+    <span class="c1">#     r&quot;&quot;&quot;Configure a teach generator for all generators in the task for bootstrapping examples.</span>
+
+    <span class="c1">#     You can call `configure_teacher_generator_helper` to easily configure it by passing the model_client and model_kwargs.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     raise NotImplementedError(</span>
+    <span class="c1">#         &quot;configure_teacher_generator method is not implemented&quot;</span>
+    <span class="c1">#     )</span>
+
+    <span class="c1"># use default implementation</span>
 <div class="viewcode-block" id="AdalComponent.configure_teacher_generator">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.configure_teacher_generator">[docs]</a>
     <span class="k">def</span> <span class="nf">configure_teacher_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -858,9 +988,14 @@
 
 <span class="sd">        You can call `configure_teacher_generator_helper` to easily configure it by passing the model_client and model_kwargs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;configure_teacher_generator method is not implemented&quot;</span>
-        <span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">teacher_model_config</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Teacher model config is not configured.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">teacher_model_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_client&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model client is not configured.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">teacher_model_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_kwargs&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model kwargs is not configured.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Configuring teacher generator.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configure_teacher_generator_helper</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">teacher_model_config</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AdalComponent.configure_teacher_generator_helper">

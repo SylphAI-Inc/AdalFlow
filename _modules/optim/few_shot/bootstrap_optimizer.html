@@ -462,13 +462,13 @@
 <span class="s2">        to prioritize failed demos but successful in augmented demos based on the evaluation score</span>
 <span class="s2">        while we backpropagate the demo samples.</span>
 <span class="s2">     2. In default, we exclude the input fields from the augmented demos. Our reserch finds that</span>
-<span class="s2">        using the reasoning demostrations from teacher model can be more effective to just take inputs and output</span>
+<span class="s2">        using the reasoning demostrations from teacher model can be more effective in some cases than taking both inputs and output</span>
 <span class="s2">        samples and be more token efficient.</span>
 
 <span class="s2">    Reference:</span>
 <span class="s2">    - DsPy: Com-piling declarative language model calls into state-of-the-art pipelines.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
-    <span class="n">exclude_input_fields_from_bootstrap_demos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">exclude_input_fields_from_bootstrap_demos</span><span class="p">:</span> <span class="nb">bool</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -569,10 +569,17 @@
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;score must be provided for each demo, id: </span><span class="si">{</span><span class="n">demo</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">, all scores: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_teacher_scores</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">)</span>
+                <span class="k">if</span> <span class="n">demo_score</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">demo_score</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;score must be in range [0, 1], got </span><span class="si">{</span><span class="n">demo_score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                 <span class="n">w</span> <span class="o">=</span> <span class="n">demo_score</span>
                 <span class="n">student_demo_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_student_scores</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">demo</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">student_demo_score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">student_demo_score</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">student_demo_score</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;score must be in range [0, 1], got </span><span class="si">{</span><span class="n">student_demo_score</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
                     <span class="c1"># if demo.id in demos and demos[demo.id].score is not None:</span>
                     <span class="n">w</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">w</span>
@@ -582,6 +589,7 @@
                     <span class="k">if</span> <span class="n">w</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">w</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+
         <span class="c1"># print(f&quot;augs: {augmented_options}&quot;)</span>
         <span class="n">sampled_augmented_demos</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">random_sample</span><span class="p">(</span>
@@ -593,6 +601,7 @@
 
         <span class="c1"># 2. sample from raw demos</span>
         <span class="c1"># exclude the sampled augmented demos</span>
+        <span class="c1"># TODO: ensure all data points has unique ids</span>
         <span class="n">filtered_dataset</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
             <span class="nb">filter</span><span class="p">(</span>
                 <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">id</span>
@@ -600,6 +609,9 @@
                 <span class="n">dataset</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filtered_dataset</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># If no demos left we will get raw_weights [], sum to 0</span>
+            <span class="k">return</span> <span class="n">sampled_augmented_demos</span><span class="p">,</span> <span class="p">[]</span>
         <span class="c1"># assigne weights 0 to all options</span>
         <span class="n">raw_weights</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">weighted</span><span class="p">:</span>
@@ -607,8 +619,15 @@
             <span class="c1"># for those exist in the demos, assign higher score with failed demos</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">demo</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">filtered_dataset</span><span class="p">):</span>
                 <span class="n">student_demo_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_student_scores</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">demo</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">student_demo_score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">raw_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">student_demo_score</span>
+                    <span class="c1"># ensure the score is in range [0, 1]</span>
+                    <span class="k">if</span> <span class="n">student_demo_score</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">student_demo_score</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;score must be in range [0, 1], got </span><span class="si">{</span><span class="n">student_demo_score</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                    <span class="n">raw_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">student_demo_score</span>
+
         <span class="n">sampled_raw_demos</span> <span class="o">=</span> <span class="n">random_sample</span><span class="p">(</span>
             <span class="n">filtered_dataset</span><span class="p">,</span> <span class="n">raw_shots</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">raw_weights</span>
         <span class="p">)</span>
@@ -715,7 +734,7 @@
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;BootstrapFewShot(raw_shots=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_shots</span><span class="si">}</span><span class="s2">, bootstrap_shots=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_bootstrap_shots</span><span class="si">}</span><span class="s2">, </span><span class="se">\</span>
-<span class="s2">            params=</span><span class="si">{</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">]</span><span class="si">}</span><span class="s2">, dataset=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+<span class="s2">            params=</span><span class="si">{</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">]</span><span class="si">}</span><span class="s2">, dataset=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="k">return</span> <span class="n">s</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

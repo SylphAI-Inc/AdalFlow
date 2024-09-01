@@ -1054,18 +1054,13 @@ Based on research from AdalFlow team and DsPy library.</p>
 to prioritize failed demos but successful in augmented demos based on the evaluation score
 while we backpropagate the demo samples.</p></li>
 <li><p>In default, we exclude the input fields from the augmented demos. Our reserch finds that
-using the reasoning demostrations from teacher model can be more effective to just take inputs and output
+using the reasoning demostrations from teacher model can be more effective in some cases than taking both inputs and output
 samples and be more token efficient.</p></li>
 </ol>
 </dd>
 </dl>
 <p>Reference:
 - DsPy: Com-piling declarative language model calls into state-of-the-art pipelines.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.BootstrapFewShot.exclude_input_fields_from_bootstrap_demos">
-<span class="sig-name descname"><span class="pre">exclude_input_fields_from_bootstrap_demos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#optim.BootstrapFewShot.exclude_input_fields_from_bootstrap_demos" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="optim.BootstrapFewShot.add_scores">
 <span class="sig-name descname"><span class="pre">add_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_teacher</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/few_shot/bootstrap_optimizer.html#BootstrapFewShot.add_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.BootstrapFewShot.add_scores" title="Link to this definition">#</a></dt>
@@ -1517,24 +1512,37 @@ The higher the score the better the prediction.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="optim.AdalComponent.configure_optimizers">
-<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optimizer</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_optimizers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.AdalComponent.configure_optimizers" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Optimizer</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_optimizers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.AdalComponent.configure_optimizers" title="Link to this definition">#</a></dt>
 <dd><p>Note: When you use text optimizor, ensure you call <cite>configure_backward_engine_engine</cite> too.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="optim.AdalComponent.configure_backward_engine">
 <span class="sig-name descname"><span class="pre">configure_backward_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_backward_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.AdalComponent.configure_backward_engine" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Configure a backward engine for all generators in the task for bootstrapping examples.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="optim.AdalComponent.evaluate_samples">
-<span class="sig-name descname"><span class="pre">evaluate_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_preds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EvaluationResult</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.evaluate_samples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.AdalComponent.evaluate_samples" title="Link to this definition">#</a></dt>
-<dd><p>Run evaluation on samples. Use <code class="docutils literal notranslate"><span class="pre">evaluate_one_sample</span></code> defined by the user.</p>
+<span class="sig-name descname"><span class="pre">evaluate_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_preds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EvaluationResult</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.evaluate_samples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.AdalComponent.evaluate_samples" title="Link to this definition">#</a></dt>
+<dd><p>Run evaluation on samples using parallel processing. Utilizes <code class="docutils literal notranslate"><span class="pre">evaluate_one_sample</span></code> defined by the user.</p>
 <p>Metadata is used for storing context that you can find from generator input.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>ensure it supports both Tuple(batch) and a list of any type (fits for datasets).</p>
-</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples</strong> (<em>Any</em>) – The input samples to evaluate.</p></li>
+<li><p><strong>y_preds</strong> (<em>List</em>) – The predicted outputs corresponding to each sample.</p></li>
+<li><p><strong>metadata</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – Optional metadata dictionary.</p></li>
+<li><p><strong>num_workers</strong> (<em>int</em>) – Number of worker threads for parallel processing.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An object containing the average score and per-item scores.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../eval/eval.base.html#eval.base.EvaluationResult" title="eval.base.EvaluationResult">EvaluationResult</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1808,7 +1816,6 @@ It will generate new values for a given text prompt.This includes:
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BackwardContext"><code class="docutils literal notranslate"><span class="pre">BackwardContext</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BootstrapFewShot"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BootstrapFewShot.exclude_input_fields_from_bootstrap_demos"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.exclude_input_fields_from_bootstrap_demos</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BootstrapFewShot.add_scores"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.add_scores()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BootstrapFewShot.config_shots"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.config_shots()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BootstrapFewShot.config_dataset"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.config_dataset()</span></code></a></li>
