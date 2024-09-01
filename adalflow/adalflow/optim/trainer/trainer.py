@@ -151,6 +151,7 @@ class Trainer(Component):
             exclude_input_fields_from_bootstrap_demos
         )
 
+    # TODO: need to support checkpoint resume too!
     def diagnose(self, dataset: Any, split: str = "train"):
         """Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent's default configure_callbacks
         Args:
@@ -337,6 +338,8 @@ class Trainer(Component):
                     self.exclude_input_fields_from_bootstrap_demos
                 )
             self.adaltask.configure_teacher_generator()
+            print("Configured demo optimizers")
+            # return
         else:
             print("No trainable demo params to optimize")
             self.demo_optimizers = []
@@ -382,8 +385,8 @@ class Trainer(Component):
 
         if debug:
             print("Debugging mode")
-            if len(self.text_optimizers) > 0:
-                self._fit_text_grads_one_step_for_debug(train_loader)
+            # if len(self.text_optimizers) > 0:
+            #     self._fit_text_grads_one_step_for_debug(train_loader)
 
             if len(self.demo_optimizers) > 0:
                 self._fit_demos_one_step_for_debug(
@@ -671,8 +674,8 @@ class Trainer(Component):
             )
             # for loss in losses_student:
             #     loss.backward()
-
-            eval_result = self.adaltask.evaluate_samples(batch, y_preds_student)
+            y_preds_outputs = [p.full_response for p in y_preds_student]
+            eval_result = self.adaltask.evaluate_samples(batch, y_preds_outputs)
             print(f"Eval result: {eval_result.avg_score}")
             eval_score_per_item = eval_result.per_item_scores
 
@@ -1167,7 +1170,6 @@ class Trainer(Component):
         )
         print(f"save to {self.ckpt_file}")
         print(f"Starting step: {starting_step}")
-        print(f"trainer_results: {trainer_results.steps}")
 
         self.adaltask.train()
         self.adaltask.trace()
@@ -1471,37 +1473,16 @@ class Trainer(Component):
             if not isinstance(loss, Parameter):
                 raise ValueError("Loss should be a Parameter object")
         max_moving_batch_size = 20
-        # max_sampled_correct_size = 3
-        # max_sampled_error_size = 3
 
         correct_indices = [i for i, score in enumerate(acc_score_list) if score > 0.5]
         error_indices = [i for i, score in enumerate(acc_score_list) if score <= 0.5]
 
-        print(f"Moving batch correct size: {len(correct_indices)}")
-        print(f"Moving batch error size: {len(error_indices)}")
         if (
             len(error_indices) + len(correct_indices)
             <= max_moving_batch_size
             # and len(correct_indices) <= max_moving_batch_size
         ):
             return all_samples, all_losses, all_y_preds, acc_score_list
-        # sampled_error_indices = error_indices
-        # if len(correct_indices) > max_moving_batch_size:
-        #     sampled_error_indices = random.sample(
-        #         error_indices, min(max_moving_batch_size, len(error_indices))
-        #     )
-        # sampled_correct_indices = correct_indices
-        # if len(correct_indices) > max_moving_batch_size:
-        #     sampled_correct_indices = random.sample(
-        #         correct_indices,
-        #         min(
-        #             max_moving_batch_size,
-        #             len(correct_indices),
-        #         ),
-        #     )
-        # print(f"New moving batch size size: {len(sampled_error_indices)}")
-        # print(f"Subset Correct size: {len(sampled_correct_indices)}")
-        # new_sample_indices = sampled_error_indices + sampled_correct_indices
 
         # downsample from all samples
         new_sample_indices = random.sample(

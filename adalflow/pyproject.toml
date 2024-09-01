@@ -44,6 +44,7 @@ tqdm = "^4.66.4"
 pyyaml = "^6.0.1"
 nest-asyncio = "^1.6.0"
 botocore = "^1.34.149"   # if not specified, it will fail to resolve the dependency
+diskcache = "^5.6.3"
 
 
 # Optional dependencies
@@ -57,7 +58,6 @@ anthropic = { version = "^0.31.1", optional = true }
 google-generativeai = { version = "^0.7.2", optional = true }
 cohere = { version = "^5.5.8", optional = true }
 ollama = { version = "^0.2.1", optional = true }
-diskcache = "^5.6.3"
 
 
 [tool.poetry.group.test.dependencies]
@@ -87,6 +87,9 @@ matplotlib = "^3.9.1"
 diskcache = "^5.6.3"
 
 
+[tool.poetry.group.extra.dependencies]
+datasets = "^2.21.0"
+
 [tool.poetry.extras] # allow pip install adalflow[openai, groq]
 openai = ["openai"]
 groq = ["groq"]
@@ -98,6 +101,7 @@ faiss-cpu = ["faiss-cpu"]
 sqlalchemy = ["sqlalchemy"]
 torch = ["torch"]
 ollama = ["ollama"]
+datasets = ["datasets"]
 
 
 # [[tool.poetry.source]]

@@ -501,7 +501,7 @@ if __name__ == "__main__":
     # get_logger(level="DEBUG")
     trainset, valset, testset = load_datasets()
 
-    from use_cases.question_answering.bhh_object_count.config import (
+    from LightRAG.use_cases.config import (
         gpt_3_model,
         gpt_4o_model,
     )

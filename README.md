@@ -16,6 +16,7 @@
 </h2>
 
 
+
 <p align="center">
     <a href="https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing">
         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
@@ -122,8 +123,7 @@ Because of this, no library can provide out-of-the-box solutions. Users must bui
 <!-- This is what AdalFlow is: light, modular, and robust, with a 100% readable codebase. -->
 
 
-Further reading: [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop),
-[Introduction](https://adalflow.sylph.ai/), [Design Philosophy](https://adalflow.sylph.ai/tutorials/lightrag_design_philosophy.html) and [Class hierarchy](https://adalflow.sylph.ai/tutorials/class_hierarchy.html).
+Further reading: [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop), <!-- [Introduction](https://adalflow.sylph.ai/),  -->[Design Philosophy](https://adalflow.sylph.ai/tutorials/lightrag_design_philosophy.html) and [Class hierarchy](https://adalflow.sylph.ai/tutorials/class_hierarchy.html).
 
 
 <!--
@@ -171,7 +171,7 @@ Just define it as a ``Parameter`` and pass it to our ``Generator``.
 
 ### **AdalComponent & Trainer**
 
-``AdalComponent`` acts as the `interpreter`  between task pipeline and the trainer, defining training and validation steps, optimizers, evaluators, loss functions, backward engine for textual gradients or tracing the demonstrations, the teacher generator.
+``AdalComponent`` acts as the 'interpreter'  between task pipeline and the trainer, defining training and validation steps, optimizers, evaluators, loss functions, backward engine for textual gradients or tracing the demonstrations, the teacher generator.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/trainer.png" alt="AdalFlow AdalComponent & Trainer">
@@ -214,13 +214,14 @@ AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_L
 
 # Acknowledgements
 
-Many existing works greatly inspired this project! Here is a non-exhaustive list:
+Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive list:
 
 - 📚 [PyTorch](https://github.com/pytorch/pytorch/) for design philosophy and design pattern of ``Component``, ``Parameter``, ``Sequential``.
 - 📚 [Micrograd](https://github.com/karpathy/micrograd): A tiny autograd engine for our auto-differentiative architecture.
 - 📚 [Text-Grad](https://github.com/zou-group/textgrad) for the ``Textual Gradient Descent`` text optimizer.
 - 📚 [DSPy](https://github.com/stanfordnlp/dspy) for inspiring the ``__{input/output}__fields`` in our ``DataClass`` and the bootstrap few-shot optimizer.
 - 📚 [ORPO](https://github.com/google-deepmind/opro) for adding past text instruction along with its accuracy in the text optimizer.
+- 📚 [PyTorch Lightning](https://github.com/Lightning-AI/pytorch-lightning) for the ``AdalComponent`` and ``Trainer``.
 
 # Citation
 
