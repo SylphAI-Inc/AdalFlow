@@ -463,7 +463,7 @@ class Parameter(Generic[T]):
             if filepath
             else os.path.join(root_path, "graphs", filename)
         )
-        print(f"Saving graph to {filepath}")
+        print(f"Saving graph to {filepath}.{format}")
 
         def wrap_text(text, width):
             """Wrap text to the specified width, considering HTML breaks."""

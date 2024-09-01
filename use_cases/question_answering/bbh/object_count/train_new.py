@@ -1,8 +1,8 @@
-from use_cases.question_answering.bhh_object_count.task import (
+from use_cases.question_answering.bbh.object_count.task import (
     ObjectCountTaskPipeline,
 )
 
-from use_cases.question_answering.bhh_object_count.config import (
+from LightRAG.use_cases.config import (
     gpt_3_model,
     gpt_4o_model,
 )
@@ -12,6 +12,7 @@ import adalflow as adal
 
 from adalflow.datasets.types import Example
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
+from use_cases.question_answering.bbh.data import load_datasets
 
 
 class ObjectCountAdalComponent(adal.AdalComponent):
@@ -80,7 +81,7 @@ def train_diagnose(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
 ) -> Dict:
-    from use_cases.question_answering.bhh_object_count.data import load_datasets
+    from use_cases.question_answering.bbh.data import load_datasets
 
     trainset, valset, testset = load_datasets()
 
@@ -95,7 +96,6 @@ def train_diagnose_teacher(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
 ) -> Dict:
-    from use_cases.question_answering.bhh_object_count.data import load_datasets
 
     trainset, valset, testset = load_datasets()
 
@@ -104,9 +104,6 @@ def train_diagnose_teacher(
     trainer.diagnose(dataset=trainset, split="train_teacher")
     trainer.diagnose(dataset=valset, split="val_teacher")
     trainer.diagnose(dataset=testset, split="test_teacher")
-
-
-from use_cases.question_answering.bhh_object_count.data import load_datasets
 
 
 # You will answer a reasoning question. Think step by step and double-check each calculation you make. Pay close attention to any numerical quantities in the text, converting written numbers into their numerical equivalents. Additionally, re-verify your final answer before concluding. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.
@@ -118,11 +115,14 @@ def train(
     max_steps=1,
     num_workers=4,
     strategy="random",
+    optimization_order="sequential",
     debug=False,
+    resume_from_ckpt=None,
+    exclude_input_fields_from_bootstrap_demos=False,
 ):
     adal_component = ObjectCountAdalComponent(
         **gpt_3_model,
-        teacher_model_config=gpt_3_model,
+        teacher_model_config=gpt_4o_model,
         text_optimizer_model_config=gpt_4o_model,
         backward_engine_model_config=gpt_4o_model
     )
@@ -137,6 +137,8 @@ def train(
         bootstrap_shots=bootstrap_shots,
         debug=debug,
         weighted_sampling=True,
+        optimization_order=optimization_order,
+        exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
     )
     print(trainer)
 
@@ -145,15 +147,18 @@ def train(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
         test_dataset=test_dataset,
-        debug=debug,
+        resume_from_ckpt=resume_from_ckpt,
     )
 
 
 if __name__ == "__main__":
 
     train(
-        debug=False, max_steps=24, strategy="constrained"
-    )  # TODO: few-shot constraint
+        debug=False,
+        max_steps=12,
+        strategy="constrained",
+        exclude_input_fields_from_bootstrap_demos=True,
+    )
 
     # train_diagnose(**gpt_3_model)
     # train_diagnose_teacher(**gpt_4o_model)

@@ -1,3 +1,10 @@
+## [0.2.1] - 2024-09-01
+### Added
+- `get_cache_path`, instead of print out the cache path all the time, we add a ``get_cache_path`` to get the cache path.
+- Make `huggingface datasets` as an optional dependency.
+### Modified
+- Add `template` to let users pass their own template, but need to have the same arguments as the default template.
+- Added `checkpoint resumt` in the `Trainer.diagnose` to show the newest performance and diagnostics on the checkpoint.
 ## [0.2.0] - 2024-08-20
 ### Added
 - Qdrant retriever.

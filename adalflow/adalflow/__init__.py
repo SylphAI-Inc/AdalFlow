@@ -2,7 +2,7 @@ __version__ = "0.2.0"
 
 from adalflow.core.component import Component, fun_to_component
 from adalflow.core.container import Sequential
-from adalflow.core.base_data_class import DataClass
+from adalflow.core.base_data_class import DataClass, DataClassFormatType, required_field
 
 from adalflow.optim.grad_component import GradComponent
 from adalflow.core.generator import Generator
@@ -55,7 +55,11 @@ from adalflow.components.model_client import (
 __all__ = [
     "Component",
     "fun_to_component",
+    # dataclass
     "DataClass",
+    "DataClassFormatType",
+    "required_field",
+    # Container
     "Sequential",
     "GradComponent",
     "ModelClient",
