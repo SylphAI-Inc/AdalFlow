@@ -1,6 +1,6 @@
-from lightrag.components.agent import ReActAgent
-from lightrag.core import Generator, ModelClientType, ModelClient
-from lightrag.utils import setup_env
+from adalflow.components.agent import ReActAgent
+from adalflow.core import Generator, ModelClientType, ModelClient
+from adalflow.utils import setup_env
 
 setup_env()
 
@@ -75,7 +75,7 @@ def test_react_agent_use_examples(model_client: ModelClient, model_kwargs: dict)
         "Give me 5 words rhyming with cool, and make a 4-sentence poem using them",
     ]
 
-    from lightrag.core.types import FunctionExpression
+    from adalflow.core.types import FunctionExpression
 
     # add examples for the output format str
     example_using_multiply = FunctionExpression.from_function(
@@ -106,7 +106,7 @@ def test_react_agent_use_examples(model_client: ModelClient, model_kwargs: dict)
 
 
 if __name__ == "__main__":
-    from lightrag.utils import get_logger
+    from adalflow.utils import get_logger
 
     get_logger(level="DEBUG")
 

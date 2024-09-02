@@ -27,8 +27,8 @@ def jinja2_template_example(template, **kwargs):
     print(t.render(**kwargs))
 
 
-def lightrag_prompt(template, task_desc_str, input_str, tools=None):
-    from lightrag.core.prompt_builder import Prompt
+def adalflow_prompt(template, task_desc_str, input_str, tools=None):
+    from adalflow.core.prompt_builder import Prompt
 
     prompt = Prompt(
         template=template,
@@ -48,8 +48,8 @@ def lightrag_prompt(template, task_desc_str, input_str, tools=None):
     print(restored_prompt)
 
 
-def lightrag_default_prompt():
-    from lightrag.core.prompt_builder import Prompt
+def adalflow_default_prompt():
+    from adalflow.core.prompt_builder import Prompt
 
     prompt = Prompt()
     input_str = "What is the capital of France?"
@@ -77,8 +77,8 @@ User: {{ input_str }}"""
     jinja2_template_example(
         template, task_desc_str=task_desc_str, input_str=input_str, tools=tools
     )
-    lightrag_prompt(
+    adalflow_prompt(
         template, task_desc_str=task_desc_str, input_str=input_str, tools=tools
     )
 
-    lightrag_default_prompt()
+    adalflow_default_prompt()
