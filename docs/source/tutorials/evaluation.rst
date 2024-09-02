@@ -14,7 +14,7 @@ Overall, such evaluation is a complex and multifaceted process. Below, we provid
 * **How to evaluate**: the protocols and metrics that are used for evaluation.
 
 
-What to evaluate?
+Tasks and Capabilities to Evaluate
 ------------------------------------------
 When we are considering the LLM evaluation, the first question that arises is what to evaluate. Deciding what tasks to evaluate or which capabilities to assess is crucial, as it influences both the selection of appropriate benchmarks (where to evaluate) and the choice of evaluation methods (how to evaluate). Below are some commonly evaluated tasks and capabilities of LLMs:
 
@@ -28,7 +28,7 @@ When we are considering the LLM evaluation, the first question that arises is wh
 
 For a more detailed and comprehensive description of the tasks and capabilities that LLMs are evaluated on, please refer to the review papers by *Chang et al.* [1]_ and *Guo et al.* [2]_.
 
-Where to evaluate?
+Datasets and Benchmarks
 ------------------------------------------
 Once we have decided what to evaluate, the next question is where to evaluate. The selection of datasets and benchmarks is important, as it determines the quality and relevance of the evaluation.
 
@@ -48,17 +48,37 @@ Please refer to the review papers (*Chang et al.* [1]_, *Guo et al.* [2]_, and *
     from datasets import load_dataset
     dataset = load_dataset(path="cais/mmlu", name='abstract_algebra')
     print(dataset["test"])
-    # Dataset({
-    # features: ['question', 'subject', 'choices', 'answer'],
-    # num_rows: 100
-    # })
 
-How to evaluate?
+The output will be a Dataset object containing the test set of the MMLU dataset.
+
+.. code-block:: json
+    Dataset({
+        features: ['question', 'subject', 'choices', 'answer'],
+        num_rows: 100
+    })
+
+Evaluation Metrics
 ------------------------------------------
 
-The final question is how to evaluate. Evaluation methods can be divided into *automated evaluation* and *human evaluation* (*Chang et al.* [1]_ and *Liu et al.* [6]_). Automated evaluation typically involves using metrics such as accuracy and BERTScore or employing an LLM as the judge, to quantitatively assess the performance of LLMs on specific tasks. Human evaluation, on the other hand, involves human in the loop to evaluate the quality of the generated text or the performance of the LLM. Here, we recommend a few automated evaluation methods that can be used to evaluate LLMs and their applications.
+The final question is how to evaluate.
+Evaluation methods can be divided into *automated evaluation* and *human evaluation* (*Chang et al.* [1]_ and *Liu et al.* [6]_).
+Automated evaluation typically involves using metrics such as accuracy and BERTScore or employing an LLM as the judge, to quantitatively assess the performance of LLMs on specific tasks.
+Human evaluation, on the other hand, involves human in the loop to evaluate the quality of the generated text or the performance of the LLM.
 
-If you are interested in computing metrics such as accuracy, F1-score, ROUGE, BERTScore, perplexity, etc for LLMs and LLM applications, you can check out the metrics provided by `Hugging Face Metrics <https://huggingface.co/metrics>`_ or `TorchMetrics <https://lightning.ai/docs/torchmetrics>`_. For instance, to compute the BERTScore, you can use the corresponding metric function provided by Hugging Face, which uses the pre-trained contextual embeddings from BERT and matched words in generated text and reference text by cosine similarity.
+Here, we recommend a few automated evaluation methods that can be used to evaluate LLMs and their applications.
+
+1. For classicial NLU tasks, such as text classification and sentiment analysis, you can use metrics such as accuracy, F1-score, and ROC-AUC to evaluate the performance of LLM response just like you would do using non-genAI models.
+You can check out `TorchMetrics <https://lightning.ai/docs/torchmetrics>`_.
+
+2. For NLG tasks, such as text summarization, translation, and question answering: (1) you can use metrics such as ROUGE, BLEU, METEOR, and BERTScore, perplexity, :class:`LLMasJudge <eval.llm_as_judge>` etc to evaluate the quality of the generated text with respect to the reference text.
+You can check out the metrics provided by `Hugging Face Metrics <https://huggingface.co/metrics>`_ or .
+For instance, to compute the BERTScore, you can use the corresponding metric function provided by Hugging Face, which uses the pre-trained contextual embeddings from BERT and matched words in generated text and reference text by cosine similarity.
+(2) When you have no reference text, :class:`LLMasJudge <eval.llm_as_judge>` with advanced model can be used to evaluate the generated text on the fly.
+
+3. For RAG (Retrieval-Augmented Generation) pipelines, you can use metrics such as :class:`RetrieverRecall <eval.retriever_recall>`, :class:`RetrieverRelevance <eval.retriever_relevance>`, :class:`AnswerMatchAcc <eval.answer_match_acc>`, and :class:`LLMasJudge <eval.llm_as_judge>` to evaluate the quality of the retrieved context and the generated answer.
+
+NLG Evaluation Examples
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
     :linenos:
@@ -69,12 +89,24 @@ If you are interested in computing metrics such as accuracy, F1-score, ROUGE, BE
     reference_text = ["life is great", "make it to the moon"]
     results = bertscore.compute(predictions=generated_text, references=reference_text, model_type="distilbert-base-uncased")
     print(results)
-    # {'precision': [0.9419728517532349, 0.7959791421890259], 'recall': [0.9419728517532349, 0.7749403119087219], 'f1': [0.9419728517532349, 0.7853187918663025], 'hashcode': 'distilbert-base-uncased_L5_no-idf_version=0.3.12(hug_trans=4.38.2)'}
 
+The output will be a dictionary containing the precision, recall, and F1-score of the BERTScore metric for the generated text compared to the reference text.
+
+.. code-block:: json
+
+    {'precision': [0.9419728517532349, 0.7959791421890259], 'recall': [0.9419728517532349, 0.7749403119087219], 'f1': [0.9419728517532349, 0.7853187918663025], 'hashcode': 'distilbert-base-uncased_L5_no-idf_version=0.3.12(hug_trans=4.38.2)'}
+
+RAG Evaluation Examples
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you are particulay interested in evaluating RAG (Retrieval-Augmented Generation) pipelines, we have several metrics available in AdalFlow to assess both the quality of the retrieved context and the quality of the final generated answer.
+
+For the retriever:
 
 - :class:`RetrieverRecall <eval.retriever_recall>`: This is used to evaluate the recall of the retriever component of the RAG pipeline.
 - :class:`RetrieverRelevance <eval.retriever_relevance>`: This is used to evaluate the relevance of the retrieved context to the query.
+
+For the generator:
+
 - :class:`AnswerMatchAcc <eval.answer_match_acc>`: This calculates the exact match accuracy or fuzzy match accuracy of the generated answers by comparing them to the ground truth answers.
 - :class:`LLMasJudge <eval.llm_as_judge>`: This uses an LLM to get the judgement of the generated answer for a list of questions. The task description and the judgement query of the LLM judge can be customized. It computes the judgement score, which is the number of generated answers that are judged as correct by the LLM divided by the total number of generated answers.
 
@@ -84,6 +116,7 @@ For example, you can use the following code snippet to compute the recall and re
     :linenos:
 
     from adalflow.eval import RetrieverRecall, RetrieverRelevance
+
     retrieved_contexts = [
         "Apple is founded before Google.",
         "Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.",
