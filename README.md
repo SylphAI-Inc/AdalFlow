@@ -220,7 +220,7 @@ Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive 
 - 📚 [Micrograd](https://github.com/karpathy/micrograd): A tiny autograd engine for our auto-differentiative architecture.
 - 📚 [Text-Grad](https://github.com/zou-group/textgrad) for the ``Textual Gradient Descent`` text optimizer.
 - 📚 [DSPy](https://github.com/stanfordnlp/dspy) for inspiring the ``__{input/output}__fields`` in our ``DataClass`` and the bootstrap few-shot optimizer.
-- 📚 [ORPO](https://github.com/google-deepmind/opro) for adding past text instruction along with its accuracy in the text optimizer.
+- 📚 [OPRO](https://github.com/google-deepmind/opro) for adding past text instruction along with its accuracy in the text optimizer.
 - 📚 [PyTorch Lightning](https://github.com/Lightning-AI/pytorch-lightning) for the ``AdalComponent`` and ``Trainer``.
 
 # Citation
