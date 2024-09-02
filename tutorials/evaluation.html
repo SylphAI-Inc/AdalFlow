@@ -52,8 +52,8 @@
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Logging" href="logging.html" />
-    <link rel="prev" title="Datasets" href="datasets.html" />
+    <link rel="next" title="Datasets" href="datasets.html" />
+    <link rel="prev" title="Agent" href="agent.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -415,8 +415,8 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluating</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">LLM Evaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="nav bd-sidenav">
@@ -488,8 +488,8 @@ Overall, such evaluation is a complex and multifaceted process. Below, we provid
 <li><p><strong>Where to evaluate</strong>: the datasets and benchmarks that are used for evaluation.</p></li>
 <li><p><strong>How to evaluate</strong>: the protocols and metrics that are used for evaluation.</p></li>
 </ul>
-<section id="what-to-evaluate">
-<h2>What to evaluate?<a class="headerlink" href="#what-to-evaluate" title="Link to this heading">#</a></h2>
+<section id="tasks-and-capabilities-to-evaluate">
+<h2>Tasks and Capabilities to Evaluate<a class="headerlink" href="#tasks-and-capabilities-to-evaluate" title="Link to this heading">#</a></h2>
 <p>When we are considering the LLM evaluation, the first question that arises is what to evaluate. Deciding what tasks to evaluate or which capabilities to assess is crucial, as it influences both the selection of appropriate benchmarks (where to evaluate) and the choice of evaluation methods (how to evaluate). Below are some commonly evaluated tasks and capabilities of LLMs:</p>
 <ul class="simple">
 <li><p><em>Natural language understanding</em> (NLU) tasks, such as text classification and sentiment analysis, which evaluate the LLM’s ability to understand natural language.</p></li>
@@ -502,8 +502,8 @@ Overall, such evaluation is a complex and multifaceted process. Below, we provid
 </ul>
 <p>For a more detailed and comprehensive description of the tasks and capabilities that LLMs are evaluated on, please refer to the review papers by <em>Chang et al.</em> <a class="footnote-reference brackets" href="#id13" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and <em>Guo et al.</em> <a class="footnote-reference brackets" href="#id14" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
 </section>
-<section id="where-to-evaluate">
-<h2>Where to evaluate?<a class="headerlink" href="#where-to-evaluate" title="Link to this heading">#</a></h2>
+<section id="datasets-and-benchmarks">
+<h2>Datasets and Benchmarks<a class="headerlink" href="#datasets-and-benchmarks" title="Link to this heading">#</a></h2>
 <p>Once we have decided what to evaluate, the next question is where to evaluate. The selection of datasets and benchmarks is important, as it determines the quality and relevance of the evaluation.</p>
 <p>To comprehensively assess the capabilities of LLMs, researchers typically utilize benchmarks and datasets that span a broad spectrum of tasks. For example, in the GPT-4 technical report <a class="footnote-reference brackets" href="#id15" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, the authors employed a variety of general language benchmarks, such as MMLU <a class="footnote-reference brackets" href="#id16" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>, and academic exams, such as the SAT, GRE, and AP courses, to evaluate the diverse capabilities of GPT-4. Below are some commonly used datasets and benchmarks for evaluating LLMs.</p>
 <ul class="simple">
@@ -517,55 +517,77 @@ Overall, such evaluation is a complex and multifaceted process. Below, we provid
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_dataset</span>
 <span class="linenos">2</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;cais/mmlu&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;abstract_algebra&#39;</span><span class="p">)</span>
 <span class="linenos">3</span><span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">])</span>
-<span class="linenos">4</span><span class="c1"># Dataset({</span>
-<span class="linenos">5</span><span class="c1"># features: [&#39;question&#39;, &#39;subject&#39;, &#39;choices&#39;, &#39;answer&#39;],</span>
-<span class="linenos">6</span><span class="c1"># num_rows: 100</span>
-<span class="linenos">7</span><span class="c1"># })</span>
 </pre></div>
 </div>
+<p>The output will be a Dataset object containing the test set of the MMLU dataset.</p>
 </section>
-<section id="how-to-evaluate">
-<h2>How to evaluate?<a class="headerlink" href="#how-to-evaluate" title="Link to this heading">#</a></h2>
-<p>The final question is how to evaluate. Evaluation methods can be divided into <em>automated evaluation</em> and <em>human evaluation</em> (<em>Chang et al.</em> <a class="footnote-reference brackets" href="#id13" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and <em>Liu et al.</em> <a class="footnote-reference brackets" href="#id18" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>). Automated evaluation typically involves using metrics such as accuracy and BERTScore or employing an LLM as the judge, to quantitatively assess the performance of LLMs on specific tasks. Human evaluation, on the other hand, involves human in the loop to evaluate the quality of the generated text or the performance of the LLM. Here, we recommend a few automated evaluation methods that can be used to evaluate LLMs and their applications.</p>
-<p>If you are interested in computing metrics such as accuracy, F1-score, ROUGE, BERTScore, perplexity, etc for LLMs and LLM applications, you can check out the metrics provided by <a class="reference external" href="https://huggingface.co/metrics">Hugging Face Metrics</a> or <a class="reference external" href="https://lightning.ai/docs/torchmetrics">TorchMetrics</a>. For instance, to compute the BERTScore, you can use the corresponding metric function provided by Hugging Face, which uses the pre-trained contextual embeddings from BERT and matched words in generated text and reference text by cosine similarity.</p>
+<section id="evaluation-metrics">
+<h2>Evaluation Metrics<a class="headerlink" href="#evaluation-metrics" title="Link to this heading">#</a></h2>
+<p>The final question is how to evaluate.
+Evaluation methods can be divided into <em>automated evaluation</em> and <em>human evaluation</em> (<em>Chang et al.</em> <a class="footnote-reference brackets" href="#id13" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and <em>Liu et al.</em> <a class="footnote-reference brackets" href="#id18" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>).
+Automated evaluation typically involves using metrics such as accuracy and BERTScore or employing an LLM as the judge, to quantitatively assess the performance of LLMs on specific tasks.
+Human evaluation, on the other hand, involves human in the loop to evaluate the quality of the generated text or the performance of the LLM.</p>
+<p>Here, we recommend a few automated evaluation methods that can be used to evaluate LLMs and their applications.</p>
+<p>1. For classicial NLU tasks, such as text classification and sentiment analysis, you can use metrics such as accuracy, F1-score, and ROC-AUC to evaluate the performance of LLM response just like you would do using non-genAI models.
+You can check out <a class="reference external" href="https://lightning.ai/docs/torchmetrics">TorchMetrics</a>.</p>
+<p>2. For NLG tasks, such as text summarization, translation, and question answering: (1) you can use metrics such as ROUGE, BLEU, METEOR, and BERTScore, perplexity, <a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge" title="eval.llm_as_judge"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMasJudge</span></code></a> etc to evaluate the quality of the generated text with respect to the reference text.
+You can check out the metrics provided by <a class="reference external" href="https://huggingface.co/metrics">Hugging Face Metrics</a> or .
+For instance, to compute the BERTScore, you can use the corresponding metric function provided by Hugging Face, which uses the pre-trained contextual embeddings from BERT and matched words in generated text and reference text by cosine similarity.
+(2) When you have no reference text, <a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge" title="eval.llm_as_judge"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMasJudge</span></code></a> with advanced model can be used to evaluate the generated text on the fly.</p>
+<ol class="arabic simple" start="3">
+<li><p>For RAG (Retrieval-Augmented Generation) pipelines, you can use metrics such as <a class="reference internal" href="../apis/eval/eval.retriever_recall.html#module-eval.retriever_recall" title="eval.retriever_recall"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverRecall</span></code></a>, <a class="reference internal" href="../apis/eval/eval.retriever_relevance.html#module-eval.retriever_relevance" title="eval.retriever_relevance"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverRelevance</span></code></a>, <a class="reference internal" href="../apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc" title="eval.answer_match_acc"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnswerMatchAcc</span></code></a>, and <a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge" title="eval.llm_as_judge"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMasJudge</span></code></a> to evaluate the quality of the retrieved context and the generated answer.</p></li>
+</ol>
+<section id="nlg-evaluation-examples">
+<h3>NLG Evaluation Examples<a class="headerlink" href="#nlg-evaluation-examples" title="Link to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_metric</span>
 <span class="linenos">2</span><span class="n">bertscore</span> <span class="o">=</span> <span class="n">load_metric</span><span class="p">(</span><span class="s2">&quot;bertscore&quot;</span><span class="p">)</span>
 <span class="linenos">3</span><span class="n">generated_text</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;life is good&quot;</span><span class="p">,</span> <span class="s2">&quot;aim for the stars&quot;</span><span class="p">]</span>
 <span class="linenos">4</span><span class="n">reference_text</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;life is great&quot;</span><span class="p">,</span> <span class="s2">&quot;make it to the moon&quot;</span><span class="p">]</span>
 <span class="linenos">5</span><span class="n">results</span> <span class="o">=</span> <span class="n">bertscore</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">predictions</span><span class="o">=</span><span class="n">generated_text</span><span class="p">,</span> <span class="n">references</span><span class="o">=</span><span class="n">reference_text</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;distilbert-base-uncased&quot;</span><span class="p">)</span>
 <span class="linenos">6</span><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-<span class="linenos">7</span><span class="c1"># {&#39;precision&#39;: [0.9419728517532349, 0.7959791421890259], &#39;recall&#39;: [0.9419728517532349, 0.7749403119087219], &#39;f1&#39;: [0.9419728517532349, 0.7853187918663025], &#39;hashcode&#39;: &#39;distilbert-base-uncased_L5_no-idf_version=0.3.12(hug_trans=4.38.2)&#39;}</span>
 </pre></div>
 </div>
+<p>The output will be a dictionary containing the precision, recall, and F1-score of the BERTScore metric for the generated text compared to the reference text.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="err">&#39;precisio</span><span class="kc">n</span><span class="err">&#39;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.9419728517532349</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7959791421890259</span><span class="p">],</span><span class="w"> </span><span class="err">&#39;recall&#39;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.9419728517532349</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7749403119087219</span><span class="p">],</span><span class="w"> </span><span class="err">&#39;</span><span class="kc">f</span><span class="mi">1</span><span class="err">&#39;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.9419728517532349</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7853187918663025</span><span class="p">],</span><span class="w"> </span><span class="err">&#39;hashcode&#39;</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;dis</span><span class="kc">t</span><span class="err">ilber</span><span class="kc">t</span><span class="mi">-</span><span class="err">base</span><span class="mi">-</span><span class="err">u</span><span class="kc">n</span><span class="err">cased_L</span><span class="mi">5</span><span class="err">_</span><span class="kc">n</span><span class="err">o</span><span class="mi">-</span><span class="err">id</span><span class="kc">f</span><span class="err">_versio</span><span class="kc">n</span><span class="err">=</span><span class="mf">0.3.12</span><span class="err">(hug_</span><span class="kc">trans</span><span class="err">=</span><span class="mf">4.38.2</span><span class="err">)&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="rag-evaluation-examples">
+<h3>RAG Evaluation Examples<a class="headerlink" href="#rag-evaluation-examples" title="Link to this heading">#</a></h3>
 <p>If you are particulay interested in evaluating RAG (Retrieval-Augmented Generation) pipelines, we have several metrics available in AdalFlow to assess both the quality of the retrieved context and the quality of the final generated answer.</p>
+<p>For the retriever:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/eval/eval.retriever_recall.html#module-eval.retriever_recall" title="eval.retriever_recall"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverRecall</span></code></a>: This is used to evaluate the recall of the retriever component of the RAG pipeline.</p></li>
 <li><p><a class="reference internal" href="../apis/eval/eval.retriever_relevance.html#module-eval.retriever_relevance" title="eval.retriever_relevance"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverRelevance</span></code></a>: This is used to evaluate the relevance of the retrieved context to the query.</p></li>
+</ul>
+<p>For the generator:</p>
+<ul class="simple">
 <li><p><a class="reference internal" href="../apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc" title="eval.answer_match_acc"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnswerMatchAcc</span></code></a>: This calculates the exact match accuracy or fuzzy match accuracy of the generated answers by comparing them to the ground truth answers.</p></li>
 <li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge" title="eval.llm_as_judge"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMasJudge</span></code></a>: This uses an LLM to get the judgement of the generated answer for a list of questions. The task description and the judgement query of the LLM judge can be customized. It computes the judgement score, which is the number of generated answers that are judged as correct by the LLM divided by the total number of generated answers.</p></li>
 </ul>
 <p>For example, you can use the following code snippet to compute the recall and relevance of the retriever component of the RAG pipeline for a single query.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">adalflow.eval</span> <span class="kn">import</span> <span class="n">RetrieverRecall</span><span class="p">,</span> <span class="n">RetrieverRelevance</span>
-<span class="linenos"> 2</span><span class="n">retrieved_contexts</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos"> 3</span>    <span class="s2">&quot;Apple is founded before Google.&quot;</span><span class="p">,</span>
-<span class="linenos"> 4</span>    <span class="s2">&quot;Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.&quot;</span><span class="p">,</span>
-<span class="linenos"> 5</span><span class="p">]</span>
-<span class="linenos"> 6</span><span class="n">gt_contexts</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos"> 7</span>    <span class="p">[</span>
-<span class="linenos"> 8</span>        <span class="s2">&quot;Apple is founded in 1976.&quot;</span><span class="p">,</span>
-<span class="linenos"> 9</span>        <span class="s2">&quot;Google is founded in 1998.&quot;</span><span class="p">,</span>
-<span class="linenos">10</span>        <span class="s2">&quot;Apple is founded before Google.&quot;</span><span class="p">,</span>
-<span class="linenos">11</span>    <span class="p">],</span>
-<span class="linenos">12</span>    <span class="p">[</span><span class="s2">&quot;Feburary has 28 days in common years&quot;</span><span class="p">,</span> <span class="s2">&quot;Feburary has 29 days in leap years&quot;</span><span class="p">],</span>
-<span class="linenos">13</span><span class="p">]</span>
-<span class="linenos">14</span><span class="n">retriever_recall</span> <span class="o">=</span> <span class="n">RetrieverRecall</span><span class="p">()</span>
-<span class="linenos">15</span><span class="n">avg_recall</span><span class="p">,</span> <span class="n">recall_list</span> <span class="o">=</span> <span class="n">retriever_recall</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">retrieved_contexts</span><span class="p">,</span> <span class="n">gt_contexts</span><span class="p">)</span> <span class="c1"># Compute the recall of the retriever</span>
-<span class="linenos">16</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recall: </span><span class="si">{</span><span class="n">avg_recall</span><span class="si">}</span><span class="s2">, Recall List: </span><span class="si">{</span><span class="n">recall_list</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="linenos">17</span><span class="c1"># Recall: 0.6666666666666666, Recall List: [0.3333333333333333, 1.0]</span>
-<span class="linenos">18</span><span class="n">retriever_relevance</span> <span class="o">=</span> <span class="n">RetrieverRelevance</span><span class="p">()</span>
-<span class="linenos">19</span><span class="n">avg_relevance</span><span class="p">,</span> <span class="n">relevance_list</span> <span class="o">=</span> <span class="n">retriever_relevance</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">retrieved_contexts</span><span class="p">,</span> <span class="n">gt_contexts</span><span class="p">)</span> <span class="c1"># Compute the relevance of the retriever</span>
-<span class="linenos">20</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Relevance: </span><span class="si">{</span><span class="n">avg_relevance</span><span class="si">}</span><span class="s2">, Relevance List: </span><span class="si">{</span><span class="n">relevance_list</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="linenos">21</span><span class="c1"># Relevance: 0.803030303030303, Relevance List: [1.0, 0.6060606060606061]</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="n">retrieved_contexts</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos"> 4</span>    <span class="s2">&quot;Apple is founded before Google.&quot;</span><span class="p">,</span>
+<span class="linenos"> 5</span>    <span class="s2">&quot;Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.&quot;</span><span class="p">,</span>
+<span class="linenos"> 6</span><span class="p">]</span>
+<span class="linenos"> 7</span><span class="n">gt_contexts</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos"> 8</span>    <span class="p">[</span>
+<span class="linenos"> 9</span>        <span class="s2">&quot;Apple is founded in 1976.&quot;</span><span class="p">,</span>
+<span class="linenos">10</span>        <span class="s2">&quot;Google is founded in 1998.&quot;</span><span class="p">,</span>
+<span class="linenos">11</span>        <span class="s2">&quot;Apple is founded before Google.&quot;</span><span class="p">,</span>
+<span class="linenos">12</span>    <span class="p">],</span>
+<span class="linenos">13</span>    <span class="p">[</span><span class="s2">&quot;Feburary has 28 days in common years&quot;</span><span class="p">,</span> <span class="s2">&quot;Feburary has 29 days in leap years&quot;</span><span class="p">],</span>
+<span class="linenos">14</span><span class="p">]</span>
+<span class="linenos">15</span><span class="n">retriever_recall</span> <span class="o">=</span> <span class="n">RetrieverRecall</span><span class="p">()</span>
+<span class="linenos">16</span><span class="n">avg_recall</span><span class="p">,</span> <span class="n">recall_list</span> <span class="o">=</span> <span class="n">retriever_recall</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">retrieved_contexts</span><span class="p">,</span> <span class="n">gt_contexts</span><span class="p">)</span> <span class="c1"># Compute the recall of the retriever</span>
+<span class="linenos">17</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recall: </span><span class="si">{</span><span class="n">avg_recall</span><span class="si">}</span><span class="s2">, Recall List: </span><span class="si">{</span><span class="n">recall_list</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">18</span><span class="c1"># Recall: 0.6666666666666666, Recall List: [0.3333333333333333, 1.0]</span>
+<span class="linenos">19</span><span class="n">retriever_relevance</span> <span class="o">=</span> <span class="n">RetrieverRelevance</span><span class="p">()</span>
+<span class="linenos">20</span><span class="n">avg_relevance</span><span class="p">,</span> <span class="n">relevance_list</span> <span class="o">=</span> <span class="n">retriever_relevance</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">retrieved_contexts</span><span class="p">,</span> <span class="n">gt_contexts</span><span class="p">)</span> <span class="c1"># Compute the relevance of the retriever</span>
+<span class="linenos">21</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Relevance: </span><span class="si">{</span><span class="n">avg_relevance</span><span class="si">}</span><span class="s2">, Relevance List: </span><span class="si">{</span><span class="n">relevance_list</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">22</span><span class="c1"># Relevance: 0.803030303030303, Relevance List: [1.0, 0.6060606060606061]</span>
 </pre></div>
 </div>
 <p>For a more detailed instructions on how build and evaluate RAG pipelines, you can refer to the use case on <span class="xref std std-doc">Evaluating a RAG Pipeline</span>.</p>
@@ -602,6 +624,7 @@ Overall, such evaluation is a complex and multifaceted process. Below, we provid
 </aside>
 </section>
 </section>
+</section>
 
 
                 </article>
@@ -614,20 +637,20 @@ Overall, such evaluation is a complex and multifaceted process. Below, we provid
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="datasets.html"
+       href="agent.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Datasets</p>
+        <p class="prev-next-title">Agent</p>
       </div>
     </a>
     <a class="right-next"
-       href="logging.html"
+       href="datasets.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Logging</p>
+        <p class="prev-next-title">Datasets</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -649,9 +672,13 @@ Overall, such evaluation is a complex and multifaceted process. Below, we provid
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-evaluate">What to evaluate?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-evaluate">Where to evaluate?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-evaluate">How to evaluate?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tasks-and-capabilities-to-evaluate">Tasks and Capabilities to Evaluate</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datasets-and-benchmarks">Datasets and Benchmarks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-metrics">Evaluation Metrics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlg-evaluation-examples">NLG Evaluation Examples</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rag-evaluation-examples">RAG Evaluation Examples</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

@@ -229,6 +229,8 @@ This section we will briefly cover the datasets and evaluation metrics supported
 
 Evaluating
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+You can not optimize what you can not meature.
+In this section, we provide a general guide to the evaluation datasets, metrics, and methods to productionize your LLM tasks and to publish your research.
 
 .. list-table::
    :widths: 20 80
@@ -236,20 +238,18 @@ Evaluating
 
    * - Part
      - Description
-   * - :doc:`datasets`
-     - The datasets used in the evaluation.
    * - :doc:`evaluation`
-     - The evaluation metrics and methods.
+     - A quick guide to the evaluation datasets, metrics, and methods.
+   * - :doc:`datasets`
+     - How to load and use the datasets in the library.
 
 .. toctree::
    :maxdepth: 1
    :caption: Evaluating
    :hidden:
 
-
-   datasets
-
    evaluation
+   datasets
 
 
 Training

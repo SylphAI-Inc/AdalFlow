@@ -52,8 +52,8 @@
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="LLM Evaluation" href="evaluation.html" />
-    <link rel="prev" title="Agent" href="agent.html" />
+    <link rel="next" title="Logging" href="logging.html" />
+    <link rel="prev" title="LLM Evaluation" href="evaluation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -411,8 +411,8 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluating</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Datasets</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="nav bd-sidenav">
@@ -477,7 +477,17 @@
                   
   <section id="datasets">
 <span id="id1"></span><h1>Datasets<a class="headerlink" href="#datasets" title="Link to this heading">#</a></h1>
-<p>Coming soon!</p>
+<p>Datasets are wrapped in a <a class="reference internal" href="../apis/utils/utils.data.html#utils.data.Dataset" title="utils.data.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> object.
+The <cite>Dataset</cite> often will be used together with <a class="reference internal" href="../apis/utils/utils.data.html#utils.data.DataLoader" title="utils.data.DataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.data.DataLoader</span></code></a> to load data in batches.
+DataLoader can also handle parallel data loading with multiple workers and apply data shuffling.</p>
+<p>To be able to use your data, you need to:</p>
+<ol class="arabic simple">
+<li><p>Create a subclass of <a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></a> that defines the data structure, including a unique identifier, input and output fields for LLM calls.</p></li>
+<li><p>Create a subclass of <a class="reference internal" href="../apis/utils/utils.data.html#utils.data.Dataset" title="utils.data.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.data.Dataset</span></code></a> that defines how to load the data (local/cloud), split the data, and convert it to your defined DataClass, and how to load and preprocess the data. Optionally you can use PyTorch’s dataset, the only thing is it often works with Tensor, you will need to convert it back to normal data at some point.</p></li>
+</ol>
+<p>In default, AdalFlow saved any downloaded datasets in the <cite>~/.adalflow/cached_datasets</cite> directory.</p>
+<p>You can see plenty of examples in the <a class="reference internal" href="../apis/datasets/index.html#apis-datasets"><span class="std std-ref">Datasets</span></a> directory.
+The examples of <cite>DataClass</cite> can be found at <a class="reference internal" href="../apis/datasets/datasets.types.html#datasets-types"><span class="std std-ref">types</span></a>.</p>
 </section>
 
 
@@ -491,20 +501,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="agent.html"
+       href="evaluation.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Agent</p>
+        <p class="prev-next-title">LLM Evaluation</p>
       </div>
     </a>
     <a class="right-next"
-       href="evaluation.html"
+       href="logging.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">LLM Evaluation</p>
+        <p class="prev-next-title">Logging</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
