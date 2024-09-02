@@ -6,7 +6,6 @@ import os
 import json
 
 from typing import Any, Dict, Optional, Union, Callable, Tuple, List
-from copy import deepcopy
 import logging
 
 
@@ -110,11 +109,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             )
 
         template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
-        try:
-            prompt_kwargs = deepcopy(prompt_kwargs)
-        except Exception as e:
-            log.warning(f"Error copying the prompt_kwargs: {e}")
-            prompt_kwargs = prompt_kwargs
 
         # Cache
         model_str = (
