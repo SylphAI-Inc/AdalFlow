@@ -15,8 +15,6 @@ import numpy as np
 import logging
 import os
 
-import faiss
-
 
 from adalflow.core.retriever import Retriever
 from adalflow.core.embedder import Embedder
@@ -31,6 +29,7 @@ from adalflow.core.functional import normalize_np_array, is_normalized
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
 safe_import(OptionalPackages.FAISS.value[0], OptionalPackages.FAISS.value[1])
+import faiss
 
 log = logging.getLogger(__name__)
 
