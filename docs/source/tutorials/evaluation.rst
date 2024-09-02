@@ -67,13 +67,12 @@ Human evaluation, on the other hand, involves human in the loop to evaluate the 
 
 Here, we recommend a few automated evaluation methods that can be used to evaluate LLMs and their applications.
 
-1. For classicial NLU tasks, such as text classification and sentiment analysis, you can use metrics such as accuracy, F1-score, and ROC-AUC to evaluate the performance of LLM response just like you would do using non-genAI models.
-You can check out `TorchMetrics <https://lightning.ai/docs/torchmetrics>`_.
+1. For classicial NLU tasks, such as text classification and sentiment analysis, you can use metrics such as accuracy, F1-score, and ROC-AUC to evaluate the performance of LLM response just like you would do using non-genAI models. You can check out `TorchMetrics <https://lightning.ai/docs/torchmetrics>`_.
 
 2. For NLG tasks, such as text summarization, translation, and question answering: (1) you can use metrics such as ROUGE, BLEU, METEOR, and BERTScore, perplexity, :class:`LLMasJudge <eval.llm_as_judge>` etc to evaluate the quality of the generated text with respect to the reference text.
-You can check out the metrics provided by `Hugging Face Metrics <https://huggingface.co/metrics>`_ or .
-For instance, to compute the BERTScore, you can use the corresponding metric function provided by Hugging Face, which uses the pre-trained contextual embeddings from BERT and matched words in generated text and reference text by cosine similarity.
-(2) When you have no reference text, :class:`LLMasJudge <eval.llm_as_judge>` with advanced model can be used to evaluate the generated text on the fly.
+   You can check out the metrics provided by `Hugging Face Metrics <https://huggingface.co/metrics>`_.
+   For instance, to compute the BERTScore, you can use the corresponding metric function provided by Hugging Face, which uses the pre-trained contextual embeddings from BERT and matched words in generated text and reference text by cosine similarity.
+   (2) When you have no reference text, :class:`LLMasJudge <eval.llm_as_judge>` with advanced model can be used to evaluate the generated text on the fly.
 
 3. For RAG (Retrieval-Augmented Generation) pipelines, you can use metrics such as :class:`RetrieverRecall <eval.retriever_recall>`, :class:`RetrieverRelevance <eval.retriever_relevance>`, :class:`AnswerMatchAcc <eval.answer_match_acc>`, and :class:`LLMasJudge <eval.llm_as_judge>` to evaluate the quality of the retrieved context and the generated answer.
 
