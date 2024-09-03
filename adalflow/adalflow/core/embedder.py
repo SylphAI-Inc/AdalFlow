@@ -36,6 +36,7 @@ class Embedder(Component):
         - Use ``BatchEmbedder`` for automatically batching input of large size, larger than 100.
     """
 
+    model_type: ModelType = ModelType.EMBEDDER
     model_client: ModelClient
     output_processors: Optional[Component]
 
