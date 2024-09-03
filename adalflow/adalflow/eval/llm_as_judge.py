@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     pass
 from adalflow.core.component import Component
 from adalflow.core.model_client import ModelClient
+from adalflow.eval.base import BaseEvaluator
 
 
 log = logging.getLogger(__name__)
@@ -32,8 +33,6 @@ Predicted answer: {{pred_answer_str}}
 DEFAULT_JUDGEMENT_QUERY = "Does the predicted answer contain the ground truth answer? Say True if yes, False if no."
 
 
-# print(f"globals: {globals()}")
-
 DEFAULT_LLM_EVALUATOR_MODEL_KWARGS = {
     "model": "gpt-3.5-turbo",
     "temperature": 0.3,
@@ -51,6 +50,13 @@ class DefaultLLMJudge(Component):
     Args:
         model_client (ModelClient): The model client to use for the generator.
         model_kwargs (Dict[str, Any], optional): The model kwargs to pass to the model client. Defaults to {}. Please refer to :ref:`ModelClient<components-model_client>` for the details on how to set the model_kwargs for your specific model if it is from our library.
+        template (str, optional): The template to use for the LLM evaluator. Defaults to None.
+        jugement_query (str, optional): The judgement query string. Defaults to DEFAULT_JUDGEMENT_QUERY.
+        output_type (Literal["bool", "float"], optional): The output type of the judgement. Defaults to "bool".
+        use_cache (bool, optional): Whether to use cache for the LLM evaluator. Defaults to True.
+
+    Note:
+        Must use True/False instead of Yes/No in the judgement_query for response.
     """
 
     def __init__(
@@ -117,6 +123,7 @@ class DefaultLLMJudge(Component):
 
         judgement = output.raw_response
         judgement = judgement.strip().lower()
+        print(judgement)
         output = False if self.output_type == "bool" else 0.0
         if "true" in judgement:
             output = True if self.output_type == "bool" else 1.0
@@ -128,7 +135,7 @@ class DefaultLLMJudge(Component):
         return output
 
 
-class LLMasJudge:
+class LLMasJudge(BaseEvaluator):
     r"""
     LLM as judge for evaluating the performance of a LLM.
 
@@ -158,6 +165,7 @@ class LLMasJudge:
         self,
         llm_evaluator: Optional[Component] = None,
     ):
+        super().__init__()
         self.llm_evaluator = llm_evaluator or DefaultLLMJudge()
 
     def compute(
@@ -165,7 +173,7 @@ class LLMasJudge:
         questions: List[str],
         gt_answers: List[str],
         pred_answers: List[str],
-        judgement_query: str,
+        judgement_query: Optional[str] = None,
     ) -> List[bool]:
         r"""
         Get the judgement of the predicted answer for a list of questions.
@@ -194,6 +202,9 @@ class LLMasJudge:
 
 
 if __name__ == "__main__":
+    import adalflow as adal
+
+    adal.setup_env()
 
     questions = [
         "Is Beijing in China?",
@@ -202,12 +213,12 @@ if __name__ == "__main__":
     ]
     pred_answers = ["Yes", "Yes, Appled is founded before Google", "Yes"]
     gt_answers = ["Yes", "Yes", "No"]
-    judgement_query = (
-        "For the question, does the predicted answer contain the ground truth answer?"
-    )
+    # judgement_query = (
+    #     "For the question, does the predicted answer contain the ground truth answer?"
+    # )
     llm_judge = LLMasJudge()
     avg_judgement, judgement_list = llm_judge.compute(
-        questions, gt_answers, pred_answers, judgement_query
+        questions, gt_answers, pred_answers
     )
     print(avg_judgement)
     print(judgement_list)

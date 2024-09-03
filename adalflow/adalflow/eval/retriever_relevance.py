@@ -1,10 +1,11 @@
 """This is the metric for evaluating the relevance of the retrieved context."""
 
-from typing import List, Union, Tuple
+from typing import List, Union
 from adalflow.core.tokenizer import Tokenizer
+from adalflow.eval.base import BaseEvaluator, EvaluationResult
 
 
-class RetrieverRelevance:
+class RetrieverRelevance(BaseEvaluator):
     r"""
     Metric for evaluating the relevance of the retrieved context. The context relevance is the ratio of the number of relevant context tokens in the retrieved context to the total number of tokens in the retrieved context.
 
@@ -31,7 +32,7 @@ class RetrieverRelevance:
     """
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def _compute_single_item(
         self, retrieved_context: str, gt_context: Union[str, List[str]]
@@ -59,7 +60,7 @@ class RetrieverRelevance:
         self,
         retrieved_contexts: List[str],
         gt_contexts: Union[List[str], List[List[str]]],
-    ) -> Tuple[float, List[float]]:
+    ) -> EvaluationResult:
         r"""
         Compute the context relevance of the retrieved context for a list of queries.
 
@@ -77,7 +78,9 @@ class RetrieverRelevance:
             context_relevance = self._compute_single_item(retrieved_context, gt_context)
             context_relevance_list.append(context_relevance)
 
-        return (
-            sum(context_relevance_list) / len(context_relevance_list),
+        avg_score = sum(context_relevance_list) / len(context_relevance_list)
+        return EvaluationResult(
+            avg_score,
             context_relevance_list,
+            additional_info={"type": "RetrieverRelevance"},
         )

@@ -454,7 +454,7 @@ Besides these examples, LLM is like water, even in our library, we have componen
 
 - :class:`LLMRetriever<components.retriever.llm_retriever.LLMRetriever>` is a retriever that uses Generator to call LLM to retrieve the most relevant documents.
 - :class:`DefaultLLMJudge<eval.llm_as_judge.DefaultLLMJudge>` is a judge that uses Generator to call LLM to evaluate the quality of the response.
-- :class:`LLMOptimizer<optim.llm_optimizer.LLMOptimizer>` is an optimizer that uses Generator to call LLM to optimize the prompt.
+- :class:`TGDOptimizer<optim.text_grad.tgd_optimizer.TGDOptimizer>` is an optimizer that uses Generator to call LLM to optimize the prompt.
 - :class:`ReAct Agent Planner<components.agent.react.ReActAgent>` is an LLM planner that uses Generator to plan and to call functions in ReAct Agent.
 
 Tracing
@@ -495,5 +495,5 @@ It will require users to define ``Parameter`` and pass it to the ``prompt_kwargs
    - :class:`components.retriever.llm_retriever.LLMRetriever`
    - :class:`components.agent.react.ReActAgent`
    - :class:`eval.llm_as_judge.DefaultLLMJudge`
-   - :class:`optim.llm_optimizer.LLMOptimizer`
+   - :class:`optim.text_grad.tgd_optimizer.TGDOptimizer`
    - :func:`utils.config.new_component`

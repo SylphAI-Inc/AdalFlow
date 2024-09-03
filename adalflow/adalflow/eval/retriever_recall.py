@@ -1,9 +1,11 @@
 """This is the metric to evaluate the recall of the retriever."""
 
-from typing import List, Union, Tuple
+from typing import List, Union
+
+from adalflow.eval.base import BaseEvaluator, EvaluationResult
 
 
-class RetrieverRecall:
+class RetrieverRecall(BaseEvaluator):
     r"""
     Metric to evaluate the recall of the retriever. The recall is the ratio of the number of relevant context strings in the retrieved context to the total number of ground truth relevant context strings.
 
@@ -29,7 +31,7 @@ class RetrieverRecall:
     """
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def _compute_single_item(
         self, retrieved_context: str, gt_context: Union[str, List[str]]
@@ -56,7 +58,7 @@ class RetrieverRecall:
         self,
         retrieved_contexts: List[str],
         gt_contexts: Union[List[str], List[List[str]]],
-    ) -> Tuple[float, List[float]]:
+    ) -> EvaluationResult:
         r"""
         Compute the recall of the retrieved context for a list of queries.
         Args:
@@ -73,4 +75,7 @@ class RetrieverRecall:
             recall = self._compute_single_item(retrieved_context, gt_context)
             recall_list.append(recall)
 
-        return sum(recall_list) / len(recall_list), recall_list
+        avg_score = sum(recall_list) / len(recall_list)
+        return EvaluationResult(
+            avg_score, recall_list, additional_info={"type": "RetrieverRecall"}
+        )
