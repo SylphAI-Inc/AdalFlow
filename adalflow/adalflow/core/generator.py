@@ -312,7 +312,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
             input=prompt_str,
             model_kwargs=composed_model_kwargs,
-            model_type=self.model_type,
         )
         return api_kwargs
 
@@ -329,7 +328,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                     return cached_completion
 
             completion = self.model_client.call(
-                api_kwargs=api_kwargs, model_type=self.model_type
+                api_kwargs=api_kwargs
             )
             # prepare cache
             if use_cache:
@@ -799,7 +798,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         try:
             completion = await self.model_client.acall(
-                api_kwargs=api_kwargs, model_type=self.model_type
+                api_kwargs=api_kwargs
             )
         except Exception as e:
             log.error(f"Error calling the model: {e}")
