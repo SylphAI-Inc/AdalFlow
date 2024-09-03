@@ -168,7 +168,7 @@ class Embedder(Component):
         response = None
         try:
             response = await self.model_client.acall(
-                api_kwargs=api_kwargs, model_type=self.model_type
+                api_kwargs=api_kwargs
             )
         except Exception as e:
             log.error(f"Error calling the model: {e}")
