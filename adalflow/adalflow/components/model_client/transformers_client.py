@@ -186,9 +186,9 @@ class TransformerEmbeddingModelClient(ModelClient):
     #
     def call(self, api_kwargs: Dict = {}) -> Union[List, Tensor]:
         
+        if "model" not in api_kwargs:
+            raise ValueError("model must be specified in api_kwargs")
         # I don't think it is useful anymore
-        # if "model" not in api_kwargs:
-        #     raise ValueError("model must be specified in api_kwargs")
         # if (
         #     model_type == ModelType.EMBEDDER
         #     # and "model" in api_kwargs
