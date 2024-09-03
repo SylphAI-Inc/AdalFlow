@@ -28,9 +28,12 @@ from torch import Tensor
 from transformers import (
     AutoTokenizer,
     AutoModel,
+    AutoModelForCausalLM,
     AutoModelForSequenceClassification,
+    pipeline
 )
 
+from os import getenv as get_env_variable
 
 log = logging.getLogger(__name__)
 
@@ -217,6 +220,271 @@ class TransformerEmbeddingModelClient(ModelClient):
         final_model_kwargs = model_kwargs.copy()
         # if model_type == ModelType.EMBEDDER:
         final_model_kwargs["input"] = input
+        return final_model_kwargs
+
+
+class TransformerLLMModelClient(ModelClient):
+
+    #
+    #   Model initialisation
+    #
+    def __init__(
+        self,
+        model_name: Optional[str] = None,
+        init_from: Optional[str] = "autoclass",
+        use_token: bool = False,
+        torch_dtype: Optional[Any] = torch.bfloat16,
+        local_files_only: Optional[bool] = False
+    ):
+        super().__init__()
+
+        self.model_name = model_name  # current model to use
+        self.use_token = use_token
+        self.torch_dtype = torch_dtype
+        self.init_from = init_from
+        self.local_files_only = local_files_only
+        self.model = None
+        if model_name is not None:
+            self.init_model(model_name=model_name)
+
+    def _check_token(self, token: str):
+        if get_env_variable(token) is None:
+            warnings.warn(
+                f"{token} is not set. You may not be able to access the model."
+            )
+
+    def _get_token_if_relevant(self) -> Union[str, bool]:
+        if self.use_token:
+            self._check_token("HF_TOKEN")
+            token = get_env_variable("HF_TOKEN")
+        else:
+            token = False      
+        return token
+
+    def _init_from_pipeline(self):
+
+        clean_device_cache()
+        token = self._get_token_if_relevant() # return a token string or False
+        self.model = pipeline(
+            "text-generation",
+            model=self.model_name,
+            torch_dtype=self.torch_dtype,
+            device=get_device(),
+            token=token
+        )
+
+    def _init_from_automodelcasual_lm(self):
+
+        token = self._get_token_if_relevant() # return a token str or False
+
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            self.model_name,
+            token=token,
+            local_files_only=self.local_files_only
+        )
+        self.model = AutoModelForCausalLM.from_pretrained(
+            self.model_name,
+            torch_dtype=self.torch_dtype,
+            device_map="auto",
+            token=token,
+            local_files_only=self.local_files_only
+        )
+
+    @lru_cache(None)
+    def init_model(self, model_name: str):
+
+        log.debug(f"Loading model {model_name}") 
+        try:
+            if self.init_from == "autoclass":
+                self._init_from_automodelcasual_lm()
+            elif self.init_from == "pipeline":
+                self._init_from_pipeline()
+            else:
+                raise ValueError("argument 'init_from' must be one of 'autoclass' or 'pipeline'.")
+        except Exception as e:
+            log.error(f"Error loading model {model_name}: {e}")
+            raise e
+
+    #
+    #   Inference code
+    #
+    def _infer_from_pipeline(
+    self,
+    *,
+    model: str,
+    messages: Sequence[Dict[str, str]],
+    max_tokens: Optional[int] = None,
+    apply_chat_template: bool = False,
+    chat_template: Optional[str] = None,
+    chat_template_kwargs: Optional[dict] = dict(tokenize=False, add_generation_prompt=True),
+    **kwargs,
+    ):
+
+        if not self.model:
+            self.init_model(model_name=model)
+
+        log.info(
+            f"Start to infer model {model}, messages: {messages}, kwargs: {kwargs}"
+        )
+        #  TO DO: add default values in doc
+        final_kwargs = {
+            "max_new_tokens": max_tokens or 256,
+            "do_sample": True,
+            "temperature": kwargs.get("temperature", 0.7),
+            "top_k": kwargs.get("top_k", 50),
+            "top_p": kwargs.get("top_p", 0.95),
+        }
+        if apply_chat_template:
+            model_input = self._handle_input(
+                messages,
+                apply_chat_template=True,
+                chat_template_kwargs=chat_template_kwargs,
+                chat_template=chat_template
+                )
+        else:
+            model_input = self._handle_input(messages)
+
+        outputs = self.model(
+            model_input,
+            **final_kwargs,
+        )
+        log.info(f"Outputs: {outputs}")
+        return outputs
+
+    def _infer_from_automodelcasual_lm(
+        self,
+        *,
+        model: str,
+        messages: Sequence[Dict[str, str]],
+        max_tokens: Optional[int] = None,
+        max_length: Optional[int] = 8192,  # model-agnostic
+        apply_chat_template: bool = False,
+        chat_template: Optional[str] = None,
+        chat_template_kwargs: Optional[dict] = dict(tokenize=False, add_generation_prompt=True),
+        **kwargs,
+    ):
+        if not self.model:
+            self.init_model(model_name=model)
+
+        if apply_chat_template:
+            model_input = self._handle_input(
+                messages,
+                apply_chat_template=True,
+                chat_template_kwargs=chat_template_kwargs,
+                chat_template=chat_template
+                )
+        else:
+           model_input = self._handle_input(messages) 
+
+        input_ids = self.tokenizer(model_input, return_tensors="pt").to(
+            get_device()
+        )
+        outputs_tokens = self.model.generate(**input_ids, max_length=max_length, max_new_tokens=max_tokens, **kwargs)
+        outputs = []
+        for output in outputs_tokens:
+            outputs.append(self.tokenizer.decode(output))
+        return outputs
+
+    def _handle_input(
+            self,
+            messages: Sequence[Dict[str, str]],
+            apply_chat_template: bool = False,
+            chat_template_kwargs: dict = None,
+            chat_template: Optional[str] = None,
+            ) -> str:
+
+        if apply_chat_template:
+            if chat_template is not None:
+                self.tokenizer.chat_template = chat_template
+            prompt = self.model.tokenizer.apply_chat_template(
+                messages, **chat_template_kwargs
+            )
+            return prompt
+        else:
+            text = messages[-1]["content"]
+            return text
+
+    def infer_llm(
+        self,
+        *,
+        model: str,
+        messages: Sequence[Dict[str, str]],
+        max_tokens: Optional[int] = None,
+        **kwargs,
+    ):
+
+        if self.init_from == "pipeline":
+            return self._infer_from_pipeline(
+                model=model, messages=messages, max_tokens=max_tokens, **kwargs
+            )
+        else:
+            return self._infer_from_automodelcasual_lm(
+                model=model, messages=messages, max_tokens=max_tokens, **kwargs
+            )
+
+    #
+    # Preprocessing, postprocessing and call for inference code
+    #
+    def call(self, api_kwargs: Dict = {}):
+
+        log.debug(f"api_kwargs: {api_kwargs}")
+        
+        if "model" not in api_kwargs:
+            raise ValueError("model must be specified in api_kwargs")
+
+        model_name = api_kwargs["model"]
+        if (model_name != self.model_name) and (self.model_name is not None):
+            # need to update the model_name
+            log.warning(f"The model passed in 'model_kwargs' is different that the one that has been previously initialised: Updating model from {self.model_name} to {model_name}.")
+            self.model_name = model_name
+            self.init_model(model_name=model_name)
+        elif (model_name != self.model_name) and (self.model_name is None):
+            # need to initialize the model for the first time
+            self.model_name = model_name
+            self.init_model(model_name=model_name)
+
+
+        output = self.infer_llm(**api_kwargs)
+        return output
+
+    def _parse_chat_completion_from_pipeline(self, completion: Any) -> str:
+
+        text = completion[0]["generated_text"]
+
+        pattern = r"(?<=\|assistant\|>).*"
+
+        match = re.search(pattern, text)
+
+        if match:
+            text = match.group().strip().lstrip("\\n")
+            return text
+        else:
+            return ""
+
+    def _parse_chat_completion_from_automodelcasual_lm(self, completion: Any) -> GeneratorOutput:
+        print(f"completion: {completion}")
+        return completion[0]
+
+    def parse_chat_completion(self, completion: Any) -> str:
+        try:
+            if self.init_from == "pipeline":
+                output = self._parse_chat_completion_from_pipeline(completion)
+            else:
+                output = self._parse_chat_completion_from_automodelcasual_lm(completion)
+            return GeneratorOutput(data=output, raw_response=str(completion))
+        except Exception as e:
+            log.error(f"Error parsing chat completion: {e}")
+            return GeneratorOutput(data=None, raw_response=str(completion), error=e)
+
+    def convert_inputs_to_api_kwargs(
+        self,
+        input: Any,  # for retriever, it is a single query,
+        model_kwargs: dict = {}
+    ) -> dict:
+        final_model_kwargs = model_kwargs.copy()
+        assert "model" in final_model_kwargs, "model must be specified"
+        messages = [{"role": "system", "content": input}]
+        final_model_kwargs["messages"] = messages
         return final_model_kwargs
 
 #
