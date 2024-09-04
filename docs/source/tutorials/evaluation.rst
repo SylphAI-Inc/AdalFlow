@@ -1,3 +1,23 @@
+
+.. _tutorials-llm-evaluation:
+
+.. todo: link to source code and colab version.
+
+
+.. <a href="https://colab.research.google.com/drive/1gmxeX1UuUxZDouWhkLGQYrD4hAdt9IVX?usp=sharing" target="_blank" style="margin-right: 10px;">
+..     <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+.. </a>
+
+.. raw:: html
+
+   <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+
+      <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/evaluation" target="_blank" style="display: flex; align-items: center;">
+         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+         <span style="vertical-align: middle;"> Open Source Code</span>
+      </a>
+   </div>
+
 LLM Evaluation
 ====================================
 
@@ -79,40 +99,155 @@ Here, we recommend a few automated evaluation methods that can be used to evalua
 NLG Evaluation Examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Classicial String Metrics
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The simplest metric would be :class:`AnswerMatchAcc <eval.answer_match_acc>`: This calculates the exact match accuracy or fuzzy match accuracy of the generated answers by comparing them to the ground truth answers.
+
+
+There are more advanced traditional metrics such as BLEU[8]_ and ROUGE[9]_ may fail to capture the semantic similarity between the reference text and the generated text.
+You can use `TorchMetrics` [10]_ to compute these two metrics.
+
+For instance
+
 .. code-block:: python
-    :linenos:
 
-    from datasets import load_metric
-    bertscore = load_metric("bertscore")
-    generated_text = ["life is good", "aim for the stars"]
-    reference_text = ["life is great", "make it to the moon"]
-    results = bertscore.compute(predictions=generated_text, references=reference_text, model_type="distilbert-base-uncased")
-    print(results)
+    gt = "Brazil has won 5 FIFA World Cup titles"
+    pred = "Brazil is the five-time champion of the FIFA WorldCup."
 
-The output will be a dictionary containing the precision, recall, and F1-score of the BERTScore metric for the generated text compared to the reference text.
+    def compute_rouge(gt, pred):
+        from torchmetrics.text.rouge import ROUGEScore
+
+        rouge = ROUGEScore()
+        return rouge(pred, gt)
+
+
+    def compute_bleu(gt, pred):
+        from torchmetrics.text.bleu import BLEUScore
+
+        bleu = BLEUScore()
+        return bleu([pred], [[gt]])
+
+The output Rouge score is:
 
 .. code-block:: json
 
-    {'precision': [0.9419728517532349, 0.7959791421890259], 'recall': [0.9419728517532349, 0.7749403119087219], 'f1': [0.9419728517532349, 0.7853187918663025], 'hashcode': 'distilbert-base-uncased_L5_no-idf_version=0.3.12(hug_trans=4.38.2)'}
+    {'rouge1_fmeasure': tensor(0.2222), 'rouge1_precision': tensor(0.2000), 'rouge1_recall': tensor(0.2500), 'rouge2_fmeasure': tensor(0.), 'rouge2_precision': tensor(0.), 'rouge2_recall': tensor(0.), 'rougeL_fmeasure': tensor(0.2222), 'rougeL_precision': tensor(0.2000), 'rougeL_recall': tensor(0.2500), 'rougeLsum_fmeasure': tensor(0.2222), 'rougeLsum_precision': tensor(0.2000), 'rougeLsum_recall': tensor(0.2500)}
 
-RAG Evaluation Examples
+The output BLEU score is: 0.0
+
+These two sentences totally mean the same, but it scored low in BLEU and ROUGE.
+
+Model-based Metrics
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To make up to this, model based metrics such as BERTScore was created.
+You can find BERT score from both `Hugging Face Metrics <https://huggingface.co/metrics>`_ and `TorchMetrics <https://lightning.ai/docs/torchmetrics/stable/text/bertscore.html>`_.
+
+.. code-block:: python
+
+    def compute_bertscore(gt, pred):
+        r"""
+        https://lightning.ai/docs/torchmetrics/stable/text/bert_score.html
+        """
+        from torchmetrics.text.bert import BERTScore
+
+        bertscore = BERTScore()
+        return bertscore([pred], [gt])
+
+The output BERT score is:
+
+.. code-block:: json
+
+    {'precision': tensor(0.9752), 'recall': tensor(0.9827), 'f1': tensor(0.9789)}
+
+This score does reflect the semantic similarity between the two sentences almost perfectly.
+However, the downside of all the above metrics is that you need to have a reference text to compare with.
+Labeling such as reference text can be quite challenging in many NLG tasks, such as a summarization task.
+
+
+.. .. code-block:: python
+..     :linenos:
+
+..     from datasets import load_metric
+..     bertscore = load_metric("bertscore")
+..     generated_text = ["life is good", "aim for the stars"]
+..     reference_text = ["life is great", "make it to the moon"]
+..     results = bertscore.compute(predictions=generated_text, references=reference_text, model_type="distilbert-base-uncased")
+..     print(results)
+
+
+.. The output will be a dictionary containing the precision, recall, and F1-score of the BERTScore metric for the generated text compared to the reference text.
+
+.. .. code-block:: json
+
+..     {'precision': [0.9419728517532349, 0.7959791421890259], 'recall': [0.9419728517532349, 0.7749403119087219], 'f1': [0.9419728517532349, 0.7853187918663025], 'hashcode': 'distilbert-base-uncased_L5_no-idf_version=0.3.12(hug_trans=4.38.2)'}
+
+.. In general, BERT score works much better but you still need to label a ground truth.
+
+G-eval
+^^^^^^^^^^^^^^^^^^^^^^^^^
+If you have no reference text, you can use G-eval [11]_ to evaluate the generated text on the fly.
+:class:`LLMasJudge <eval.llm_as_judge>` works whether you have a reference text or not.
+
+**With References**
+
+
+.. code-block:: python
+
+    def compute_llm_as_judge():
+        import adalflow as adal
+        from adalflow.eval.llm_as_judge import LLMasJudge
+
+        adal.setup_env()
+
+        questions = [
+            "Is Beijing in China?",
+            "Is Apple founded before Google?",
+            "Is earth flat?",
+        ]
+        pred_answers = ["Yes", "Yes, Appled is founded before Google", "Yes"]
+        gt_answers = ["Yes", "Yes", "No"]
+        # judgement_query = (
+        #     "For the question, does the predicted answer contain the ground truth answer?"
+        # )
+        llm_judge = LLMasJudge()
+        avg_judgement, judgement_list = llm_judge.compute(
+            questions, gt_answers, pred_answers
+        )
+        print(avg_judgement)
+        print(judgement_list)
+
+The output will be:
+
+.. code-block:: json
+
+    0.6666666666666666
+    [True, True, False]
+
+RAG Evaluation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If you are particulay interested in evaluating RAG (Retrieval-Augmented Generation) pipelines, we have several metrics available in AdalFlow to assess both the quality of the retrieved context and the quality of the final generated answer.
+RAG (Retrieval-Augmented Generation) pipelines are a combination of a retriever and a generator. The retriever retrieves relevant context from a large corpus, and the generator generates the final answer based on the retrieved context.
+When a retriever failed to retrieve relevant context, the generator may fail.
+Therefore, besides of evaluating RAG pipelines as a whole using NLG metrics, it is also important to evaluate the retriever and to optimize the evalulation metrics from both stages to best improve the final performance.
 
-For the retriever:
+For the retriever, the metrics used are nothing new but from the standard information retrieval literature.
+Often, we have Mean Reciprocal Rank(MRR@k), Recall@k, Precision@k, F1@k, MAP@k, NDCG@k, etc.
+All of these metrics, you can find at `TorchMetrics <https://lightning.ai/docs/torchmetrics/stable/>`_.
 
-- :class:`RetrieverRecall <eval.retriever_recall>`: This is used to evaluate the recall of the retriever component of the RAG pipeline.
-- :class:`RetrieverRelevance <eval.retriever_relevance>`: This is used to evaluate the relevance of the retrieved context to the query.
 
-For the generator:
+.. For the retriever:
 
-- :class:`AnswerMatchAcc <eval.answer_match_acc>`: This calculates the exact match accuracy or fuzzy match accuracy of the generated answers by comparing them to the ground truth answers.
-- :class:`LLMasJudge <eval.llm_as_judge>`: This uses an LLM to get the judgement of the generated answer for a list of questions. The task description and the judgement query of the LLM judge can be customized. It computes the judgement score, which is the number of generated answers that are judged as correct by the LLM divided by the total number of generated answers.
+.. - :class:`RetrieverRecall <eval.retriever_recall>`: This is used to evaluate the recall of the retriever component of the RAG pipeline.
+.. .. - :class:`RetrieverRelevance <eval.retriever_relevance>`: This is used to evaluate the relevance of the retrieved context to the query.
+
+.. For the generator:
+
+.. - :class:`LLMasJudge <eval.llm_as_judge>`: This uses an LLM to get the judgement of the generated answer for a list of questions. The task description and the judgement query of the LLM judge can be customized. It computes the judgement score, which is the number of generated answers that are judged as correct by the LLM divided by the total number of generated answers.
 
 For example, you can use the following code snippet to compute the recall and relevance of the retriever component of the RAG pipeline for a single query.
 
 .. code-block:: python
-    :linenos:
 
     from adalflow.eval import RetrieverRecall, RetrieverRelevance
 
@@ -131,16 +266,25 @@ For example, you can use the following code snippet to compute the recall and re
     retriever_recall = RetrieverRecall()
     avg_recall, recall_list = retriever_recall.compute(retrieved_contexts, gt_contexts) # Compute the recall of the retriever
     print(f"Recall: {avg_recall}, Recall List: {recall_list}")
-    # Recall: 0.6666666666666666, Recall List: [0.3333333333333333, 1.0]
-    retriever_relevance = RetrieverRelevance()
-    avg_relevance, relevance_list = retriever_relevance.compute(retrieved_contexts, gt_contexts) # Compute the relevance of the retriever
-    print(f"Relevance: {avg_relevance}, Relevance List: {relevance_list}")
-    # Relevance: 0.803030303030303, Relevance List: [1.0, 0.6060606060606061]
+
+The output will be:
+
+.. code-block:: json
+    Recall: 0.6666666666666666, Recall List: [0.3333333333333333, 1.0]
+
+
+.. retriever_relevance = RetrieverRelevance()
+.. avg_relevance, relevance_list = retriever_relevance.compute(retrieved_contexts, gt_contexts) # Compute the relevance of the retriever
+.. print(f"Relevance: {avg_relevance}, Relevance List: {relevance_list}")
+.. # Relevance: 0.803030303030303, Relevance List: [1.0, 0.6060606060606061]
 
 For a more detailed instructions on how build and evaluate RAG pipelines, you can refer to the use case on :doc:`Evaluating a RAG Pipeline <../tutorials/eval_a_rag>`.
 
 If you intent to use metrics that are not available in the AdalFlow library, you can also implement your own custom metric functions or use other libraries such as `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_ to compute the desired metrics for evaluating RAG pipelines.
 
+
+References
+------------------------------------------
 
 .. [1] Chang, Yupeng, et al. "A survey on evaluation of large language models." ACM Transactions on Intelligent Systems and Technology 15.3 (2024): 1-45.
 .. [2] Guo, Zishan, et al. "Evaluating large language models: A comprehensive survey." arXiv preprint arXiv:2310.19736 (2023).
@@ -148,3 +292,17 @@ If you intent to use metrics that are not available in the AdalFlow library, you
 .. [4] Hendrycks, Dan, et al. "Measuring massive multitask language understanding." International Conference on Learning Representations. 2020.
 .. [5] Chen, Mark, et al. "Evaluating large language models trained on code." arXiv preprint arXiv:2107.03374 (2021).
 .. [6] Liu, Yang, et al. "Datasets for Large Language Models: A Comprehensive Survey." arXiv preprint arXiv:2402.18041 (2024).
+.. [7] Finardi, Paulo, et al. "The Chronicles of RAG: The Retriever, the Chunk and the Generator." arXiv preprint arXiv:2401.07883 (2024).
+.. [8]  K. Papineni, S. Roukos, T. Ward, and W.-J. Zhu, “Bleu: a method for automatic evaluation of machine transla-tion,” in Proceedings of the 40th annual meeting on association for computational linguistics. Association for Computational Linguistics, 2002, pp. 311–318.
+.. [9]  C.-Y. Lin, “Rouge: a package for automatic evaluation of summaries,” 2004.
+.. [10] https://lightning.ai/docs/torchmetrics/stable/text/rouge_score.html
+.. [11] Y. Liu, D. Iter, Y. Xu, S. Wang, R. Xu, and C. Zhu, “G-eval: Nlg evaluation using gpt-4 with better humanalignment,” 2023.
+
+
+.. admonition:: Evaluation Metrics libraries
+   :class: highlight
+
+   - `TorchMetrics <https://lightning.ai/docs/torchmetrics>`_
+   - `Hugging Face Metrics <https://huggingface.co/metrics>`_
+   - `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_
+   - `G-eval <https://arxiv.org/abs/2303.08774>`_

@@ -1,7 +1,18 @@
-Evaluating a RAG Pipeline
+Evaluating RAG
 ==========================
 
 In LightRAG, we provide a set of metrics in :ref:`our evaluators <evaluators>`. In this tutorial, we will show how to use them to evaluate the performance of the retriever and generator components of a RAG pipeline
+
+As RAG consists of two stages:
+
+1. Retrieval: The retriever fetches relevant context from a knowledge base.
+   The metrics used here are nothing new but from the standard information retrieval literature.
+   Often, we have Mean Reciprocal Rank(MRR@k), Recall@k, Precision@k, F1@k, MAP@k, NDCG@k, etc.
+   Please read our :ref:`Retriever <tutorials-retriever>` for more details on the retrieval itself.
+   All of these metrics, you can find at `TorchMetrics <https://lightning.ai/docs/torchmetrics/stable/>`_.
+
+2. Generation: The metrics used for evaluating the response is more diverse and highly dependent on the tasks.
+   You can refer to our :ref:`Evaluation guidelines <tutorials-llm-evaluation>` for more details.
 
 The full code for this tutorial can be found in `use_cases/rag_hotpotqa.py <https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/rag_hotpotqa.py>`_.
 
@@ -183,3 +194,11 @@ Note that :obj:`task_desc_str` and :obj:`judgement_query` can be customized.
 
 **Conclusion.**
 In this tutorial, we learned how to evaluate a RAG pipeline using the HotpotQA dataset. We walked through the code and explained each step of the evaluation process. You can use this tutorial as a starting point to evaluate your own RAG pipelines and customize the evaluation metrics based on your requirements.
+
+.. admonition:: API References
+   :class: highlight
+
+.. admonition:: References
+   :class: highlight
+
+   .. [1] Finardi, Paulo, et al. "The Chronicles of RAG: The Retriever, the Chunk and the Generator." arXiv preprint arXiv:2401.07883 (2024).

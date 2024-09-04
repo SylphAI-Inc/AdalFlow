@@ -199,26 +199,3 @@ class LLMasJudge(BaseEvaluator):
             judgement_list.append(judgement)
 
         return judgement_list.count(True) / len(judgement_list), judgement_list
-
-
-if __name__ == "__main__":
-    import adalflow as adal
-
-    adal.setup_env()
-
-    questions = [
-        "Is Beijing in China?",
-        "Is Apple founded before Google?",
-        "Is earth flat?",
-    ]
-    pred_answers = ["Yes", "Yes, Appled is founded before Google", "Yes"]
-    gt_answers = ["Yes", "Yes", "No"]
-    # judgement_query = (
-    #     "For the question, does the predicted answer contain the ground truth answer?"
-    # )
-    llm_judge = LLMasJudge()
-    avg_judgement, judgement_list = llm_judge.compute(
-        questions, gt_answers, pred_answers
-    )
-    print(avg_judgement)
-    print(judgement_list)
