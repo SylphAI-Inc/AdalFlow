@@ -2,11 +2,10 @@ import datasets
 from typing import List, Union
 
 import adalflow as adal
-from use_cases.retrieval_augmented_generation.build.rag import (
+from use_cases.rag.build.rag import (
     RAG,
 )
 from adalflow.eval.retriever_recall import RetrieverRecall
-from adalflow.eval.retriever_relevance import RetrieverRelevance
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from adalflow.eval.llm_as_judge import LLMasJudge
 
@@ -100,10 +99,7 @@ if __name__ == "__main__":
         print(f"predicted answer: {response.data['answer']}")
         print(f"ground truth answer: {item['answer']}")
 
-    avg_recall, recall_list = RetrieverRecall().compute(retrieved_contexts, gt_contexts)
-    avg_relevance, relevance_list = RetrieverRelevance().compute(
-        retrieved_contexts, gt_contexts
-    )
+    avg_recall = RetrieverRecall().compute(retrieved_contexts, gt_contexts)
     answer_match_acc = AnswerMatchAcc(type="fuzzy_match")
     acc_rslt = answer_match_acc.compute(
         pred_answers=pred_answers, gt_answers=gt_answers
@@ -113,6 +109,5 @@ if __name__ == "__main__":
         questions=questions, gt_answers=gt_answers, pred_answers=pred_answers
     )
     print(f"judge_acc_rslt: {judge_acc_rslt}")
-    print(f"avg_recall: {avg_recall}, recall_list: {recall_list}")
-    print(f"avg_relevance: {avg_relevance}, relevance_list: {relevance_list}")
+    print(f"avg_recall: {avg_recall}")
     print(f"avg_acc: {acc_rslt}")

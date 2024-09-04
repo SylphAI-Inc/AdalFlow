@@ -8,6 +8,24 @@ Use Cases
 
 We will build use cases end-to-end, ranging from classification (classical NLP tasks) to question answering, retrieval-augmented generation (RAG), and multi-generator pipelines.
 
+RAG
+----------------
+.. list-table::
+   :widths: 30 70
+   :header-rows: 1
+
+   * - Part
+     - Description
+   * - :doc:`rag`
+     - Question Answering with `bhh_hard_object_count` dataset, including textual-gradient descent and few-shot boostrap optimization.
+   * - :doc:`classification`
+     - Classification with `gpt-3.5-turbo`. The optimized task pipeline performs on-par with `gpt-4o`.
+   * - :doc:`rag_opt`
+     - RAG and multi-hop question answering with hotpotqa dataset, two generators, and one retriever, optimizing zero-shot and few-shot learning (coming soon).
+
+
+Optimization
+----------------
 
 .. list-table::
    :widths: 30 70
