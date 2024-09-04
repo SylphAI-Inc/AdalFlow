@@ -231,7 +231,11 @@ class TransformerLLMModelClient(ModelClient):
     def __init__(
         self,
         model_name: Optional[str] = None,
+        tokenizer_kwargs: Optional[dict] = {},
         init_from: Optional[str] = "autoclass",
+        apply_chat_template: bool = False,
+        chat_template: Optional[str] = None,
+        chat_template_kwargs: Optional[dict] = dict(tokenize=False, add_generation_prompt=True),
         use_token: bool = False,
         torch_dtype: Optional[Any] = torch.bfloat16,
         local_files_only: Optional[bool] = False
@@ -239,9 +243,13 @@ class TransformerLLMModelClient(ModelClient):
         super().__init__()
 
         self.model_name = model_name  # current model to use
+        self.tokenizer_kwargs = tokenizer_kwargs
         self.use_token = use_token
         self.torch_dtype = torch_dtype
         self.init_from = init_from
+        self.apply_chat_template = apply_chat_template
+        self.chat_template = chat_template
+        self.chat_template_kwargs = chat_template_kwargs
         self.local_files_only = local_files_only
         self.model = None
         if model_name is not None:
@@ -280,7 +288,8 @@ class TransformerLLMModelClient(ModelClient):
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.model_name,
             token=token,
-            local_files_only=self.local_files_only
+            local_files_only=self.local_files_only,
+            **self.tokenizer_kwargs
         )
         self.model = AutoModelForCausalLM.from_pretrained(
             self.model_name,
@@ -289,6 +298,13 @@ class TransformerLLMModelClient(ModelClient):
             token=token,
             local_files_only=self.local_files_only
         )
+        # Set pad token if it's not already set
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token  # common fallback
+            self.model.config.pad_token_id = (
+                self.tokenizer.eos_token_id
+            )  # ensure consistency in the model config
+
 
     @lru_cache(None)
     def init_model(self, model_name: str):
@@ -309,15 +325,15 @@ class TransformerLLMModelClient(ModelClient):
     #   Inference code
     #
     def _infer_from_pipeline(
-    self,
-    *,
-    model: str,
-    messages: Sequence[Dict[str, str]],
-    max_tokens: Optional[int] = None,
-    apply_chat_template: bool = False,
-    chat_template: Optional[str] = None,
-    chat_template_kwargs: Optional[dict] = dict(tokenize=False, add_generation_prompt=True),
-    **kwargs,
+        self,
+        *,
+        model: str,
+        messages: Sequence[Dict[str, str]],
+        max_tokens: Optional[int] = None,
+        apply_chat_template: bool = False,
+        chat_template: Optional[str] = None,
+        chat_template_kwargs: Optional[dict] = dict(tokenize=False, add_generation_prompt=True),
+        **kwargs,
     ):
 
         if not self.model:
@@ -335,11 +351,24 @@ class TransformerLLMModelClient(ModelClient):
             "top_p": kwargs.get("top_p", 0.95),
         }
         if apply_chat_template:
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                self.model_name,
+                token=self._get_token_if_relevant(),
+                local_files_only=self.local_files_only,
+                **self.tokenizer_kwargs
+            )
+            # Set pad token if it's not already set
+            if self.tokenizer.pad_token is None:
+                self.tokenizer.pad_token = self.tokenizer.eos_token  # common fallback
+                self.model.config.pad_token_id = (
+                    self.tokenizer.eos_token_id
+                )  # ensure consistency in the model config
+
             model_input = self._handle_input(
                 messages,
                 apply_chat_template=True,
+                chat_template=chat_template,
                 chat_template_kwargs=chat_template_kwargs,
-                chat_template=chat_template
                 )
         else:
             model_input = self._handle_input(messages)
@@ -396,10 +425,14 @@ class TransformerLLMModelClient(ModelClient):
         if apply_chat_template:
             if chat_template is not None:
                 self.tokenizer.chat_template = chat_template
-            prompt = self.model.tokenizer.apply_chat_template(
+            prompt = self.tokenizer.apply_chat_template(
                 messages, **chat_template_kwargs
             )
-            return prompt
+            if ("tokenize" in chat_template_kwargs) and (chat_template_kwargs["tokenize"] == True):
+                prompt = self.tokenizer.decode(prompt)
+                return prompt
+            else:
+                return prompt
         else:
             text = messages[-1]["content"]
             return text
@@ -415,11 +448,23 @@ class TransformerLLMModelClient(ModelClient):
 
         if self.init_from == "pipeline":
             return self._infer_from_pipeline(
-                model=model, messages=messages, max_tokens=max_tokens, **kwargs
+                model=model,
+                messages=messages,
+                max_tokens=max_tokens,
+                apply_chat_template=self.apply_chat_template,
+                chat_template=self.chat_template,
+                chat_template_kwargs=self.chat_template_kwargs,
+                **kwargs
             )
         else:
             return self._infer_from_automodelcasual_lm(
-                model=model, messages=messages, max_tokens=max_tokens, **kwargs
+                model=model,
+                messages=messages,
+                max_tokens=max_tokens,
+                apply_chat_template=self.apply_chat_template,
+                chat_template=self.chat_template,
+                chat_template_kwargs=self.chat_template_kwargs,
+                **kwargs
             )
 
     #
@@ -483,7 +528,8 @@ class TransformerLLMModelClient(ModelClient):
     ) -> dict:
         final_model_kwargs = model_kwargs.copy()
         assert "model" in final_model_kwargs, "model must be specified"
-        messages = [{"role": "system", "content": input}]
+        #messages = [{"role": "system", "content": input}]
+        messages = [{"role": "user", "content": input}] # Not sure, but it seems to make more sense
         final_model_kwargs["messages"] = messages
         return final_model_kwargs
 
