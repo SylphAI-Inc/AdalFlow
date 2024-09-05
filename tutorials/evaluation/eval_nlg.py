@@ -54,6 +54,7 @@ def compute_llm_as_judge():
     #     "For the question, does the predicted answer contain the ground truth answer?"
     # )
     llm_judge = LLMasJudge()
+    print(llm_judge)
     avg_judgement, judgement_list = llm_judge.compute(
         questions, gt_answers, pred_answers
     )

@@ -134,6 +134,10 @@ class DefaultLLMJudge(Component):
             # raise ValueError(f"Invalid judgement: {judgement}")
         return output
 
+    def _extra_repr(self) -> str:
+        s = f"judgement_query= {self._jugement_query}, "
+        return s
+
 
 class LLMasJudge(BaseEvaluator):
     r"""
@@ -159,6 +163,12 @@ class LLMasJudge(BaseEvaluator):
         2 / 3
         >>> judgement_list
         [True, True, False]
+
+    Customize the LLMJudge
+
+    .. code-block:: python
+
+        llm_judge = Def
     """
 
     def __init__(
@@ -199,3 +209,7 @@ class LLMasJudge(BaseEvaluator):
             judgement_list.append(judgement)
 
         return judgement_list.count(True) / len(judgement_list), judgement_list
+
+    def __str__(self) -> str:
+        s = f"llm_evaluator={self.llm_evaluator}"
+        return s

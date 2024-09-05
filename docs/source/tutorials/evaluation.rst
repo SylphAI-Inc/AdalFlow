@@ -105,7 +105,7 @@ Classicial String Metrics
 The simplest metric would be :class:`AnswerMatchAcc <eval.answer_match_acc>`: This calculates the exact match accuracy or fuzzy match accuracy of the generated answers by comparing them to the ground truth answers.
 
 
-There are more advanced traditional metrics such as BLEU[8]_ and ROUGE[9]_ may fail to capture the semantic similarity between the reference text and the generated text.
+There are more advanced traditional metrics such as BLEU[8]_, ROUGE[9]_, and METEOR[12]_ may fail to capture the semantic similarity between the reference text and the generated text, resulting low correlation with human judgement.
 You can use `TorchMetrics` [10]_ to compute these two metrics.
 
 For instance
@@ -141,7 +141,7 @@ These two sentences totally mean the same, but it scored low in BLEU and ROUGE.
 Model-based Metrics
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To make up to this, model based metrics such as BERTScore was created.
+To make up to this, model based metrics or neural evaluators such as BERTScore was created.
 You can find BERT score from both `Hugging Face Metrics <https://huggingface.co/metrics>`_ and `TorchMetrics <https://lightning.ai/docs/torchmetrics/stable/text/bertscore.html>`_.
 
 .. code-block:: python
@@ -225,6 +225,38 @@ The output will be:
     0.6666666666666666
     [True, True, False]
 
+You can view the prompt we used simply using `print(llm_judge)`:
+
+.. code-block:: python
+
+    llm_evaluator=DefaultLLMJudge(
+        judgement_query= Does the predicted answer contain the ground truth answer? Say True if yes, False if no.
+        (model_client): OpenAIClient()
+        (llm_evaluator): Generator(
+            model_kwargs={'model': 'gpt-3.5-turbo', 'temperature': 0.3, 'stream': False},
+            (prompt): Prompt(
+            template: <START_OF_SYSTEM_PROMPT>
+            {# task desc #}
+            You are an evaluator. Given the question, ground truth answer, and predicted answer,
+            {# judgement question #}
+            {{judgement_str}}
+            <END_OF_SYSTEM_PROMPT>
+            ---------------------
+            <START_OF_USER>
+            {# question #}
+            Question: {{question_str}}
+            {# ground truth answer #}
+            Ground truth answer: {{gt_answer_str}}
+            {# predicted answer #}
+            Predicted answer: {{pred_answer_str}}
+            {# assistant response #}
+            <END_OF_USER>
+            , prompt_variables: ['pred_answer_str', 'judgement_str', 'gt_answer_str', 'question_str']
+            )
+            (model_client): OpenAIClient()
+        )
+    )
+
 RAG Evaluation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 RAG (Retrieval-Augmented Generation) pipelines are a combination of a retriever and a generator. The retriever retrieves relevant context from a large corpus, and the generator generates the final answer based on the retrieved context.
@@ -282,6 +314,7 @@ For a more detailed instructions on how build and evaluate RAG pipelines, you ca
 
 If you intent to use metrics that are not available in the AdalFlow library, you can also implement your own custom metric functions or use other libraries such as `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_ to compute the desired metrics for evaluating RAG pipelines.
 
+Additionally, there are more research for RAG evaluation, such as SemScore[13]_, ARES[14]_, RGB[15]_, etc.
 
 References
 ------------------------------------------
@@ -297,6 +330,10 @@ References
 .. [9]  C.-Y. Lin, “Rouge: a package for automatic evaluation of summaries,” 2004.
 .. [10] https://lightning.ai/docs/torchmetrics/stable/text/rouge_score.html
 .. [11] Y. Liu, D. Iter, Y. Xu, S. Wang, R. Xu, and C. Zhu, “G-eval: Nlg evaluation using gpt-4 with better humanalignment,” 2023.
+.. [12] Satanjeev Banerjee and Alon Lavie. 2005. Meteor: Anautomatic metric for mt evaluation with improved cor-relation with human judgments. In Proceedings ofthe acl workshop on intrinsic and extrinsic evaluationmeasures for machine translation and/or summariza-tion, pages 65–72.
+.. [13] SemScore: https://arxiv.org/abs/2401.17072
+.. [14] ARES: https://arxiv.org/abs/2311.09476
+.. [15] RGB: https://ojs.aaai.org/index.php/AAAI/article/view/29728
 
 
 .. admonition:: Evaluation Metrics libraries
