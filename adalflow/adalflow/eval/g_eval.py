@@ -93,13 +93,9 @@ class GEvalLLMJudge(Component):
         model_client (ModelClient): The model client to use for the generator.
         model_kwargs (Dict[str, Any], optional): The model kwargs to pass to the model client. Defaults to {}. Please refer to :ref:`ModelClient<components-model_client>` for the details on how to set the model_kwargs for your specific model if it is from our library.
         template (str, optional): The template to use for the LLM evaluator. Defaults to None.
-        jugement_query (str, optional): The judgement query string. Defaults to DEFAULT_JUDGEMENT_QUERY.
-        output_type (Literal["bool", "float"], optional): The output type of the judgement. Defaults to "bool".
         use_cache (bool, optional): Whether to use cache for the LLM evaluator. Defaults to True.
-
-    Note:
-        Must use True/False instead of Yes/No in the judgement_query for response.
-    """
+        default_task (NLGTask, optional): The default task to use for the judgement query. Defaults to None.
+   """
 
     def __init__(
         self,
@@ -127,8 +123,8 @@ class GEvalLLMJudge(Component):
         self.prompt_kwargs = {k: {} for k in GEvalMetric}
         self.default_task = default_task
         if default_task:
-            task_name = default_task.name
-            print(f"task_name: {task_name}")
+            # task_name = default_task.name
+            # print(f"task_name: {task_name}")
             for metric_name in all_geval_metrics:
                 metric_name_lower = metric_name.lower()
                 self.prompt_kwargs[metric_name] = {
@@ -172,9 +168,9 @@ class GEvalLLMJudge(Component):
             metric_score = self.llm_evaluator(
                 prompt_kwargs=self.prompt_kwargs[metric_name]
             )
-            print(
-                f"prompt: {self.llm_evaluator.get_prompt(**self.prompt_kwargs[metric_name])}"
-            )
+            # print(
+            #     f"prompt: {self.llm_evaluator.get_prompt(**self.prompt_kwargs[metric_name])}"
+            # )
             output[metric_name] = (
                 metric_score.data if metric_score and metric_score.data else None
             )
