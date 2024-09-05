@@ -138,10 +138,10 @@ The output BLEU score is: 0.0
 
 These two sentences totally mean the same, but it scored low in BLEU and ROUGE.
 
-Model-based Metrics
+Embedding-based Metrics
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To make up to this, model based metrics or neural evaluators such as BERTScore was created.
+To make up to this, Embedding-based  metrics or neural evaluators such as BERTScore was created.
 You can find BERT score from both `Hugging Face Metrics <https://huggingface.co/metrics>`_ and `TorchMetrics <https://lightning.ai/docs/torchmetrics/stable/text/bertscore.html>`_.
 
 .. code-block:: python
@@ -185,10 +185,13 @@ Labeling such as reference text can be quite challenging in many NLG tasks, such
 
 .. In general, BERT score works much better but you still need to label a ground truth.
 
-G-eval
+LLM as Judge
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-If you have no reference text, you can use G-eval [11]_ to evaluate the generated text on the fly.
-:class:`LLMasJudge <eval.llm_as_judge>` works whether you have a reference text or not.
+
+Evaluating the LLM application using LLM as a judge is no different from building LLM task pipeline.
+Developers should better know the underlying prompt to the LLM judge to decide if the default judge is enough or that they need customization.
+Because of so, AdalFlow decided to provide a comprehensive set of LLM as Judge instead of sending our developers to other evaluation packages.
+We did research on both the research papers and the existing libraries and found there is no library that has provided such evaluators with 100% clarity and without enforcing developers to install many other dependencies.
 
 **With References**
 
@@ -256,6 +259,19 @@ You can view the prompt we used simply using `print(llm_judge)`:
             (model_client): OpenAIClient()
         )
     )
+
+**Without References (G-eval)**
+
+.. figure:: /_static/images/G_eval_structure.png
+    :align: center
+    :alt: G-eval structure
+    :width: 700px
+
+    G-eval framework structure
+
+If you have no reference text, you can use G-eval [11]_ to evaluate the generated text on the fly.
+
+
 
 RAG Evaluation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -334,6 +350,7 @@ References
 .. [13] SemScore: https://arxiv.org/abs/2401.17072
 .. [14] ARES: https://arxiv.org/abs/2311.09476
 .. [15] RGB: https://ojs.aaai.org/index.php/AAAI/article/view/29728
+.. [16] G-eval: https://github.com/nlpyang/geval
 
 
 .. admonition:: Evaluation Metrics libraries

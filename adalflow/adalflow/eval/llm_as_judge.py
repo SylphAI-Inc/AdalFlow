@@ -35,7 +35,7 @@ DEFAULT_JUDGEMENT_QUERY = "Does the predicted answer contain the ground truth an
 
 DEFAULT_LLM_EVALUATOR_MODEL_KWARGS = {
     "model": "gpt-3.5-turbo",
-    "temperature": 0.3,
+    "temperature": 1,
     "stream": False,
 }
 

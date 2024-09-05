@@ -1,4 +1,4 @@
-"""This is the metric for answer matching. It compares the predicted answer with the ground truth answer."""
+"""This is the metric for QA generation. It compares the predicted answer with the ground truth answer."""
 
 from typing import List, Literal
 from adalflow.eval.base import BaseEvaluator, EvaluationResult
