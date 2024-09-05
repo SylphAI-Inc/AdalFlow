@@ -247,7 +247,7 @@ class GEvalJudgeEvaluator(BaseEvaluator):
         return output
 
     def __str__(self) -> str:
-        s = f"llm_evaluator={self.llm_evaluator}"
+        s = f"llm_evaluator={self.llm_evaluator}, prompt_kwargs={self.llm_evaluator.prompt_kwargs}"
         return s
 
 
@@ -280,39 +280,3 @@ if __name__ == "__main__":
 
     response = g_evaluator(input_strs=[input_str])
     print(f"response: {response}")
-
-
-# from deepeval import evaluate
-# from deepeval.metrics import ContextualRecallMetric
-# from deepeval.test_case import LLMTestCase
-# from adalflow.utils import setup_env
-
-# setup_env()
-
-# # Replace this with the actual output from your LLM application
-# actual_output = "We offer a 30-day full refund at no extra cost."
-
-# # Replace this with the expected output from your RAG generator
-# expected_output = "You are eligible for a 30 day full refund at no extra cost."
-
-# # Replace this with the actual retrieved context from your RAG pipeline
-# retrieval_context = [
-#     "All customers are eligible for a 30 day full refund at no extra cost."
-# ]
-
-# metric = ContextualRecallMetric(threshold=0.7, model="gpt-4", include_reason=True)
-# test_case = LLMTestCase(
-#     input="What if these shoes don't fit?",
-#     actual_output=actual_output,
-#     expected_output=expected_output,
-#     retrieval_context=retrieval_context,
-# )
-
-# print(f"metric: {metric}")
-
-# metric.measure(test_case)
-# print(metric.score)
-# print(metric.reason)
-
-# # or evaluate test cases in bulk
-# evaluate([test_case], [metric])
