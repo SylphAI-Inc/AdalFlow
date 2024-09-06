@@ -1,8 +1,8 @@
 import unittest
 import torch
-from adalflow.components.model_client.transformers_client import TransformerEmbeddingModelClient
+from adalflow.components.model_client.transformers_client import TransformerEmbeddingModelClient, TransformerLLMModelClient
 from adalflow.core.types import ModelType
-from adalflow.core import Embedder
+from adalflow.core import Embedder, Generator
 
 # Set the number of threads for PyTorch, avoid segementation fault
 torch.set_num_threads(1)
@@ -60,6 +60,87 @@ class TestTransformerEmbeddingModelClient(unittest.TestCase):
             model_kwargs=model_kwargs
             )
         output = embedder(test_input)
+        print(output)
+
+class TestTransformerLLMModelClient(unittest.TestCase):
+
+    def setUp(self) -> None:
+
+        self.model_kwargs = {
+            "model": "roneneldan/TinyStories-1M",
+            "temperature": 0.1,
+            "do_sample": True
+        }
+        self.tokenizer_kwargs = {
+            "max_length": True,
+            "truncation": True,
+        }
+        self.prompt_kwargs = {
+            "input_str": "Where is Brian?", # test input
+        }
+        self.chat_template_kwargs = {
+            "tokenize": False,
+            "add_generation_prompt": False
+        }
+        self.chat_template = """
+        {%- for message in messages %}
+            {%- if message['role'] == 'user' %}
+                {{- bos_token + '[INST] ' + message['content'].strip() + ' [/INST]' }}
+            {%- elif message['role'] == 'system' %}
+                {{- '<<SYS>>\\n' + message['content'].strip() + '\\n<</SYS>>\\n\\n' }}
+            {%- elif message['role'] == 'assistant' %}
+                {{- '[ASST] '  + message['content'] + ' [/ASST]' + eos_token }}
+            {%- endif %}
+        {%- endfor %}
+        """ # Reference: https://huggingface.co/docs/transformers/main/en/chat_templating#how-do-i-create-a-chat-template
+    
+    def test_exectution(self):
+        model_client = TransformerLLMModelClient(
+            tokenizer_kwargs=self.tokenizer_kwargs,
+            local_files_only=False,
+            init_from="autoclass",
+            apply_chat_template=True,
+            chat_template=self.chat_template,
+            chat_template_kwargs=self.chat_template_kwargs
+            )
+        api_kwargs = model_client.convert_inputs_to_api_kwargs(input="Where is brian?", model_kwargs=self.model_kwargs)
+        output = model_client.call(api_kwargs=api_kwargs)
+        print(output)
+
+    def test_integration_with_generator_autoclass(self):
+        model_client = TransformerLLMModelClient(
+            tokenizer_kwargs=self.tokenizer_kwargs,
+            local_files_only=False,
+            init_from="autoclass",
+            apply_chat_template=True,
+            chat_template=self.chat_template,
+            chat_template_kwargs=self.chat_template_kwargs
+            )
+        generator = Generator(
+            model_client=model_client,
+            model_kwargs=self.model_kwargs,
+            # prompt_kwargs=prompt_kwargs,
+            # output_processors=JsonParser(),
+        )
+        output = generator(prompt_kwargs=self.prompt_kwargs)
+        print(output)
+
+    def test_integration_with_generator_pipeline(self):
+        model_client = TransformerLLMModelClient(
+            tokenizer_kwargs=self.tokenizer_kwargs,
+            local_files_only=False,
+            init_from="pipeline",
+            apply_chat_template=True,
+            chat_template=self.chat_template,
+            chat_template_kwargs=self.chat_template_kwargs
+            )
+        generator = Generator(
+            model_client=model_client,
+            model_kwargs=self.model_kwargs,
+            # prompt_kwargs=prompt_kwargs,
+            # output_processors=JsonParser(),
+        )
+        output = generator(prompt_kwargs=self.prompt_kwargs)
         print(output)
 
 # class TestTransformerModelClient(unittest.TestCase):
