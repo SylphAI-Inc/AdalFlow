@@ -187,7 +187,7 @@ class TransformerEmbeddingModelClient(ModelClient):
     #
     # Preprocessing, postprocessing and call for inference code
     #
-    def call(self, api_kwargs: Dict = {}) -> Union[List, Tensor]:
+    def call(self, api_kwargs: Dict = {}, model_type: Optional[ModelType]= ModelType.UNDEFINED) -> Union[List, Tensor]:
         
         if "model" not in api_kwargs:
             raise ValueError("model must be specified in api_kwargs")
@@ -215,7 +215,8 @@ class TransformerEmbeddingModelClient(ModelClient):
     def convert_inputs_to_api_kwargs(
         self,
         input: Any,  # for retriever, it is a single query,
-        model_kwargs: dict = {}
+        model_kwargs: dict = {},
+        model_type: Optional[ModelType]= ModelType.UNDEFINED
     ) -> dict:
         final_model_kwargs = model_kwargs.copy()
         # if model_type == ModelType.EMBEDDER:
@@ -469,7 +470,7 @@ class TransformerLLMModelClient(ModelClient):
     #
     # Preprocessing, postprocessing and call for inference code
     #
-    def call(self, api_kwargs: Dict = {}):
+    def call(self, api_kwargs: Dict = {}, model_type: Optional[ModelType]= ModelType.UNDEFINED):
 
         if "model" not in api_kwargs:
             raise ValueError("model must be specified in api_kwargs")
@@ -521,7 +522,8 @@ class TransformerLLMModelClient(ModelClient):
     def convert_inputs_to_api_kwargs(
         self,
         input: Any,  # for retriever, it is a single query,
-        model_kwargs: dict = {}
+        model_kwargs: dict = {},
+        model_type: Optional[ModelType]= ModelType.UNDEFINED
     ) -> dict:
         final_model_kwargs = model_kwargs.copy()
         assert "model" in final_model_kwargs, "model must be specified"
