@@ -139,7 +139,8 @@ class Embedder(Component):
         response = None
         try:
             response = self.model_client.call(
-                api_kwargs=api_kwargs
+                api_kwargs=api_kwargs,
+                model_type=self.model_type
             )
         except Exception as e:
             log.error(f"Error calling the model: {e}")

@@ -328,7 +328,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                     return cached_completion
 
             completion = self.model_client.call(
-                api_kwargs=api_kwargs
+                api_kwargs=api_kwargs,
+                model_type=self.model_type
             )
             # prepare cache
             if use_cache:
