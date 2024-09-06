@@ -404,7 +404,6 @@ class TransformerLLMModelClient(ModelClient):
                 )
         else:
            model_input = self._handle_input(messages) 
-
         input_ids = self.tokenizer(model_input, return_tensors="pt").to(
             get_device()
         )
@@ -472,8 +471,6 @@ class TransformerLLMModelClient(ModelClient):
     #
     def call(self, api_kwargs: Dict = {}):
 
-        log.debug(f"api_kwargs: {api_kwargs}")
-        
         if "model" not in api_kwargs:
             raise ValueError("model must be specified in api_kwargs")
 
