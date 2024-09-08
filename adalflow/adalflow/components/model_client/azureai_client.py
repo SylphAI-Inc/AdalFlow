@@ -98,28 +98,79 @@ def get_probabilities(completion: ChatCompletion) -> List[List[TokenLogProb]]:
 
 
 class AzureAIClient(ModelClient):
-    __doc__ = r"""A component wrapper for the AzureOpenAI API client.
+    __doc__ = r"""
+    A client wrapper for interacting with Azure OpenAI's API.
 
-    Support both embedding and chat completion API.
+    This class provides support for both embedding and chat completion API calls.
+    Users can use this class to simplify their interactions with Azure OpenAI models 
+    through the `Embedder` and `Generator` components.
 
-    Users (1) simplify use ``Embedder`` and ``Generator`` components by passing OpenAIClient() as the model_client.
-    (2) can use this as an example to create their own API client or extend this class(copying and modifing the code) in their own project.
+    **Initialization:**
 
-    Note:
-        We suggest users not to use `response_format` to enforce output data type or `tools` and `tool_choice`  in your model_kwargs when calling the API.
-        We do not know how AzureOpenAI is doing the formating or what prompt they have added.
-        Instead
-        - use :ref:`OutputParser<components-output_parsers>` for response parsing and formating.
+    You can initialize the `AzureAIClient` with either an API key or Azure Active Directory (AAD) token 
+    authentication. It is recommended to set environment variables for sensitive data like API keys.
 
     Args:
-        api_key (Optional[str], optional): AzureOpenAI API key. Defaults to None.
-        chat_completion_parser (Callable[[Completion], Any], optional): A function to parse the chat completion to a str. Defaults to None.
-            Default is `get_first_message_content`.
+        api_key (Optional[str]): Azure OpenAI API key. Default is None.
+        api_version (Optional[str]): API version to use. Default is None.
+        azure_endpoint (Optional[str]): Azure OpenAI endpoint URL. Default is None.
+        credential (Optional[DefaultAzureCredential]): Azure AD credential for token-based authentication. Default is None.
+        chat_completion_parser (Callable[[Completion], Any]): Function to parse chat completions. Default is `get_first_message_content`.
+        input_type (Literal["text", "messages"]): Format for input, either "text" or "messages". Default is "text".
 
-    References:
-        - Embeddings models: https://platform.openai.com/docs/guides/embeddings
-        - Chat models: https://platform.openai.com/docs/guides/text-generation
-        - AzureOpenAI docs: https://learn.microsoft.com/en-us/azure/ai-services/openai/overview
+    **Setup Instructions:**
+
+    - **Using API Key:**
+      Set up the following environment variables:
+      ```bash
+      export AZURE_OPENAI_API_KEY="your_api_key"
+      export AZURE_OPENAI_ENDPOINT="your_endpoint"
+      export AZURE_OPENAI_VERSION="your_version"
+      ```
+
+    - **Using Azure AD Token:**
+      Ensure you have configured Azure AD credentials. The `DefaultAzureCredential` will automatically use your configured credentials.
+
+    **Example Usage:**do
+
+    ```python
+    from azure.identity import DefaultAzureCredential
+    from your_module import AzureAIClient  # Adjust import based on your module name
+
+    # Initialize with API key
+    client = AzureAIClient(
+        api_key="your_api_key",
+        api_version="2023-05-15",
+        azure_endpoint="https://your-endpoint.openai.azure.com/"
+    )
+
+    # Or initialize with Azure AD token
+    client = AzureAIClient(
+        api_version="2023-05-15",
+        azure_endpoint="https://your-endpoint.openai.azure.com/",
+        credential=DefaultAzureCredential()
+    )
+
+    # Example call to the chat completion API
+    api_kwargs = {
+        "model": "gpt-3.5-turbo",
+        "messages": [{"role": "user", "content": "What is the meaning of life?"}],
+        "stream": True
+    }
+    response = client.call(api_kwargs=api_kwargs, model_type=ModelType.LLM)
+
+    for chunk in response:
+        print(chunk)
+    ```
+
+    **Notes:**
+    - Ensure that the API key or credentials are correctly set up and accessible to avoid authentication errors.
+    - Use `chat_completion_parser` to define how to extract and handle the chat completion responses.
+    - The `input_type` parameter determines how input is formatted for the API call.
+
+    **References:**
+    - [Azure OpenAI API Documentation](https://learn.microsoft.com/en-us/azure/ai-services/openai/overview)
+    - [OpenAI API Documentation](https://platform.openai.com/docs/guides/text-generation)
     """
 
     def __init__(
@@ -131,7 +182,7 @@ class AzureAIClient(ModelClient):
         chat_completion_parser: Callable[[Completion], Any] = None,
         input_type: Literal["text", "messages"] = "text",
     ):
-        r"""It is recommended to set the OPENAI_API_KEY environment variable instead of passing it as an argument.
+        r"""It is recommended to set the API_KEY into the  environment variable instead of passing it as an argument.
 
          
         Initializes the Azure OpenAI client with either API key or AAD token authentication.
