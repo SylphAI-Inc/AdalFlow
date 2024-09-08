@@ -98,8 +98,8 @@ Here, we recommend a few automated evaluation methods that can be used to evalua
 
 3. For RAG (Retrieval-Augmented Generation) pipelines, you can use metrics such as :class:`RetrieverRecall <eval.retriever_recall>`, :class:`RetrieverRelevance <eval.retriever_relevance>`, :class:`AnswerMatchAcc <eval.answer_match_acc>`, and :class:`LLMasJudge <eval.llm_as_judge>` to evaluate the quality of the retrieved context and the generated answer.
 
-NLG Evaluation Examples
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+NLG Evaluation
+------------------------------------------
 
 Classicial String Metrics
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -168,24 +168,7 @@ However, the downside of all the above metrics is that you need to have a refere
 Labeling such as reference text can be quite challenging in many NLG tasks, such as a summarization task.
 
 
-.. .. code-block:: python
-..     :linenos:
 
-..     from datasets import load_metric
-..     bertscore = load_metric("bertscore")
-..     generated_text = ["life is good", "aim for the stars"]
-..     reference_text = ["life is great", "make it to the moon"]
-..     results = bertscore.compute(predictions=generated_text, references=reference_text, model_type="distilbert-base-uncased")
-..     print(results)
-
-
-.. The output will be a dictionary containing the precision, recall, and F1-score of the BERTScore metric for the generated text compared to the reference text.
-
-.. .. code-block:: json
-
-..     {'precision': [0.9419728517532349, 0.7959791421890259], 'recall': [0.9419728517532349, 0.7749403119087219], 'f1': [0.9419728517532349, 0.7853187918663025], 'hashcode': 'distilbert-base-uncased_L5_no-idf_version=0.3.12(hug_trans=4.38.2)'}
-
-.. In general, BERT score works much better but you still need to label a ground truth.
 
 LLM as Judge
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -327,27 +310,32 @@ You have different choice, such as:
 
 
 RAG Evaluation
-^^^^^^^^^^^^^^^^^^^
+------------------------------------------
 RAG (Retrieval-Augmented Generation) pipelines are a combination of a retriever and a generator.
 The retriever retrieves relevant context from a large corpus, and the generator generates the final answer based on the retrieved context.
 When a retriever failed to retrieve relevant context, the generator may fail.
 Therefore, besides of evaluating RAG pipelines as a whole using NLG metrics, it is also important to evaluate the retriever and to optimize the evalulation metrics from both stages to best improve the final performance.
 
-For the retriever, the metrics used are nothing new but from the standard information retrieval literature.
-Often, we have Mean Reciprocal Rank(MRR@k), Recall@k, Precision@k, F1@k, MAP@k, NDCG@k, etc.
-All of these metrics, you can find at `TorchMetrics <https://lightning.ai/docs/torchmetrics/stable/>`_.
+With GT for Retriever
+^^^^^^^^^^^^^^^^^^^^^^^^^
+For the retriever, the metrics used are nothing new but from the standard information retrieval/ranking literature.
+Often, we have
+
+1. Recall@k: the proportion of relevant documents that are retrieved out of the total number of relevant documents.
+
+2. Mean Reciprocal Rank(MRR@k)
+
+3. NDCG@k
+
+4. Precision@k, MAP@k etc.
+
+For defails of these metrics, please refer to [18]_.
+All of these metrics, you can also find at `TorchMetrics <https://lightning.ai/docs/torchmetrics/stable/>`_.
 
 
-.. For the retriever:
-
-.. - :class:`RetrieverRecall <eval.retriever_recall>`: This is used to evaluate the recall of the retriever component of the RAG pipeline.
-.. .. - :class:`RetrieverRelevance <eval.retriever_relevance>`: This is used to evaluate the relevance of the retrieved context to the query.
-
-.. For the generator:
-
-.. - :class:`LLMasJudge <eval.llm_as_judge>`: This uses an LLM to get the judgement of the generated answer for a list of questions. The task description and the judgement query of the LLM judge can be customized. It computes the judgement score, which is the number of generated answers that are judged as correct by the LLM divided by the total number of generated answers.
-
-For example, you can use the following code snippet to compute the recall and relevance of the retriever component of the RAG pipeline for a single query.
+For example, you can use the following code snippet to compute the recall@k the retriever component of the RAG pipeline for a single query if
+the ground truth context is provided.
+In this example, the retrieved contexts is a joined string of the retrieved context chunks, and the gt_contexts is a list of ground truth context chunks for each query.
 
 .. code-block:: python
 
@@ -374,21 +362,64 @@ The output will be:
 .. code-block:: json
     Recall: 0.6666666666666666, Recall List: [0.3333333333333333, 1.0]
 
+For the first query, only one out of three relevant documents is retrieved, resulting in a recall of 0.33.
+For the second query, all relevant documents are retrieved, resulting in a recall of 1.0.
 
-.. retriever_relevance = RetrieverRelevance()
-.. avg_relevance, relevance_list = retriever_relevance.compute(retrieved_contexts, gt_contexts) # Compute the relevance of the retriever
-.. print(f"Relevance: {avg_relevance}, Relevance List: {relevance_list}")
-.. # Relevance: 0.803030303030303, Relevance List: [1.0, 0.6060606060606061]
 
-For a more detailed instructions on how build and evaluate RAG pipelines, you can refer to the use case on :doc:`Evaluating a RAG Pipeline <../tutorials/eval_a_rag>`.
+Without gt_contexts
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you intent to use metrics that are not available in the AdalFlow library, you can also implement your own custom metric functions or use other libraries such as `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_ to compute the desired metrics for evaluating RAG pipelines.
+RAGAS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Ideally, for each query, we will retrieve the top k (@k) chunks and to get the above score, we expect each query, retrieved chunk pair comes with a ground truth labeling.
+But this is highly unrealistic especially if corpora is large.
+If we have 100 test queries, and a corpus of size 1000 chunks, the pairs we need to annoate is 10^5.
+There are different strategies to handle this problem but we could not dive into all of them here.
+
+There is one new way is to indirectly use the ground truth answers from the generator to evaluate the retriever.
+`RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_ framework provides one way to do this.
+
+    Recall = [GT statements that can be attributed to the retrieved context] / [GT statements]
+
+
+LLM or model based judge for Retriever Recall
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+**LLM judge with in-context prompting**
+
+LLM judge to directly straightforward way to evaluate the top k score on the fly.
+
+We can create a subset of query, retrieved chunk pairs and manually label them, and we train an LLM judge to predict the score.
+If the judge can achieve a high accuracy then we are able to annotate any metric in the retriever given the query and the retrieved chunk pairs.
+
+**ARES with finetuned classifier with synthetic data**
+
+ARES [14]_ proposed to create a synthetic dataset from an in-domain corpora.
+The generated data represent both positive and negative examples of `query–passage–answer triples`` (e.g.,relevant/irrelevant passages and correct/incorrectanswers).
+
+
+The synthetic dataset is used to train a classifier consists of  embedding and a classification head.
+It claims to be able to adapt to other domains where the classifier is not trained on.
+The cost of this approach is quite low as you can compute the embedding for only once for each query and each chunk in the corpus.
+
+
+See the evaluation on datasets at :doc:`Evaluating a RAG Pipeline <../tutorials/eval_a_rag>`.
 
 Additionally, there are more research for RAG evaluation, such as SemScore [13]_, ARES [14]_, RGB [15]_, etc.
 
-ARES
-~~~~~~~~
 
+For Contributors
+------------------------------------------
+There are way too many metrics and evaluation methods that AdalFlow can cover in the library.
+We encourage contributors who work on evaluation research and production to build evaluator that is compatible with AdalFlow.
+This means that:
+
+1. The evaluator can potentially output a single float score in range [0, 1] so that AdalFlow Trainer can use it to optimize the pipeline.
+
+2. For using LLM as judge, the judge should be built similar to `DefaultLLMJudge` so that there are trainable_prompt_kwargs that users can further align the judge with human preference dataset.
+
+For instance, for the research papers we have listed here, it would be great to have a version that is easily compatible with AdalFlow.
 
 References
 ------------------------------------------
@@ -406,10 +437,11 @@ References
 .. [11] Y. Liu, D. Iter, Y. Xu, S. Wang, R. Xu, and C. Zhu, “G-eval: Nlg evaluation using gpt-4 with better humanalignment,” 2023.
 .. [12] Satanjeev Banerjee and Alon Lavie. 2005. Meteor: Anautomatic metric for mt evaluation with improved cor-relation with human judgments. In Proceedings ofthe acl workshop on intrinsic and extrinsic evaluationmeasures for machine translation and/or summariza-tion, pages 65–72.
 .. [13] SemScore: https://arxiv.org/abs/2401.17072
-.. [14] ARES: https://arxiv.org/abs/2311.09476
+.. [14] ARES: https://arxiv.org/abs/2311.09476, https://github.com/stanford-futuredata/ARES
 .. [15] RGB: https://ojs.aaai.org/index.php/AAAI/article/view/29728
 .. [16] G-eval: https://github.com/nlpyang/geval
 .. [17] Text-grad: https://arxiv.org/abs/2309.03409
+.. [18] Pretrained Transformers for Text Ranking: BERT and Beyond: https://arxiv.org/pdf/2010.06467
 
 
 .. admonition:: Evaluation Metrics libraries
@@ -419,3 +451,11 @@ References
    - `Hugging Face Metrics <https://huggingface.co/metrics>`_
    - `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_
    - `G-eval <https://arxiv.org/abs/2303.08774>`_
+
+
+
+.. admonition:: API Reference
+   :class: highlight
+
+   - `RetrieverRecall <eval.retriever_recall>`
+   - `DefaultLLMJudge <eval.llm_as_judge>`

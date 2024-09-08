@@ -1,4 +1,4 @@
-from adalflow.eval import RetrieverRecall, RetrieverRelevance
+from adalflow.eval import RetrieverRecall
 
 retrieved_contexts = [
     "Apple is founded before Google.",
@@ -16,19 +16,10 @@ gt_contexts = [
 
 def evaluate_retriever(retrieved_contexts, gt_contexts):
     retriever_recall = RetrieverRecall()
-    avg_recall, recall_list = retriever_recall.compute(
-        retrieved_contexts, gt_contexts
-    )  # Compute the recall of the retriever
-    retriever_relevance = RetrieverRelevance()
-    avg_relevance, relevance_list = retriever_relevance.compute(
-        retrieved_contexts, gt_contexts
-    )  # Compute the relevance of the retriever
-    return avg_recall, recall_list, avg_relevance, relevance_list
+    avg_recall, recall_list = retriever_recall.compute(retrieved_contexts, gt_contexts)
+    return avg_recall, recall_list
 
 
 if __name__ == "__main__":
-    avg_recall, recall_list, avg_relevance, relevance_list = evaluate_retriever(
-        retrieved_contexts, gt_contexts
-    )
+    avg_recall, recall_list = evaluate_retriever(retrieved_contexts, gt_contexts)
     print(f"avg_recall: {avg_recall}, recall_list: {recall_list}")
-    print(f"avg_relevance: {avg_relevance}, relevance_list: {relevance_list}")

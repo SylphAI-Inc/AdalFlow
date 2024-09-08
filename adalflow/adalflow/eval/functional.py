@@ -35,8 +35,47 @@ def confidence_interval(
     return (lower_bound, upper_bound)
 
 
+def longest_common_substring(s1: str, s2: str) -> str:
+    """
+    Find the longest common substring between two strings.
+    """
+    # Create a matrix to store lengths of longest common suffixes of substrings
+    # Initialize all values to 0
+    m, n = len(s1), len(s2)
+    lcs_matrix = [[0] * (n + 1) for _ in range(m + 1)]
+
+    # Variable to store the length of the longest common substring
+    longest_length = 0
+    # Variable to store the ending index of the longest common substring in s1
+    ending_index_s1 = 0
+
+    # Build the matrix in a bottom-up manner
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if s1[i - 1] == s2[j - 1]:
+                lcs_matrix[i][j] = lcs_matrix[i - 1][j - 1] + 1
+                if lcs_matrix[i][j] > longest_length:
+                    longest_length = lcs_matrix[i][j]
+                    ending_index_s1 = i - 1
+            else:
+                lcs_matrix[i][j] = 0
+
+    # The longest common substring
+    longest_common_substring = s1[
+        ending_index_s1 - longest_length + 1 : ending_index_s1 + 1
+    ]
+
+    return longest_common_substring
+
+
 if __name__ == "__main__":
     # Example binary judgments (True/False as 1/0)
     judgements = [1, 1, 0, 1, 0, 1, 1]  # Convert to 1/0
     score_range = confidence_interval(judgements)
     print(score_range)
+
+    # Example longest common substring
+    s1 = "abcdfghijk"
+    s2 = "abedfghxyz"
+    cs = longest_common_substring(s1, s2)
+    print(cs)
