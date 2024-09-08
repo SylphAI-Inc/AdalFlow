@@ -69,6 +69,36 @@ def compute_llm_as_judge():
     print(judgement_list)
 
 
+def compute_g_eval_summarization():
+    from adalflow.eval.g_eval import GEvalLLMJudge, GEvalJudgeEvaluator, NLGTask
+
+    model_kwargs = {
+        "model": "gpt-4o",
+        "n": 20,
+        "top_p": 1,
+        "max_tokens": 5,
+        "temperature": 1,
+    }
+
+    g_eval = GEvalLLMJudge(
+        default_task=NLGTask.SUMMARIZATION, model_kwargs=model_kwargs
+    )
+    print(g_eval)
+    input_template = """Source Document: {source}
+    Summary: {summary}
+    """
+
+    input_str = input_template.format(
+        source="Paul Merson has restarted his row with Andros Townsend after the Tottenham midfielder was brought on with only seven minutes remaining in his team 's 0-0 draw with Burnley on Sunday . 'Just been watching the game , did you miss the coach ? # RubberDub # 7minutes , ' Merson put on Twitter . Merson initially angered Townsend for writing in his Sky Sports column that 'if Andros Townsend can get in ( the England team ) then it opens it up to anybody . ' Paul Merson had another dig at Andros Townsend after his appearance for Tottenham against Burnley Townsend was brought on in the 83rd minute for Tottenham as they drew 0-0 against Burnley Andros Townsend scores England 's equaliser in their 1-1 friendly draw with Italy in Turin on Tuesday night The former Arsenal man was proven wrong when Townsend hit a stunning equaliser for England against Italy and he duly admitted his mistake . 'It 's not as though I was watching hoping he would n't score for England , I 'm genuinely pleased for him and fair play to him \u00e2\u20ac\u201c it was a great goal , ' Merson said . 'It 's just a matter of opinion , and my opinion was that he got pulled off after half an hour at Manchester United in front of Roy Hodgson , so he should n't have been in the squad . 'When I 'm wrong , I hold my hands up . I do n't have a problem with doing that - I 'll always be the first to admit when I 'm wrong . ' Townsend hit back at Merson on Twitter after scoring for England against Italy Sky Sports pundit Merson ( centre ) criticised Townsend 's call-up to the England squad last week Townsend hit back at Merson after netting for England in Turin on Wednesday , saying 'Not bad for a player that should be 'nowhere near the squad ' ay @ PaulMerse ? ' Any bad feeling between the pair seemed to have passed but Merson was unable to resist having another dig at Townsend after Tottenham drew at Turf Moor .",
+        summary="Paul merson was brought on with only seven minutes remaining in his team 's 0-0 draw with burnley . Andros townsend scored the tottenham midfielder in the 89th minute . Paul merson had another dig at andros townsend after his appearance . The midfielder had been brought on to the england squad last week . Click here for all the latest arsenal news news .",
+    )
+
+    g_evaluator = GEvalJudgeEvaluator(llm_judge=g_eval)
+
+    response = g_evaluator(input_strs=[input_str])
+    print(f"response: {response}")
+
+
 if __name__ == "__main__":
     import nltk
 
@@ -82,3 +112,5 @@ if __name__ == "__main__":
     # score 0.9752, recall: 0.9827, and precision: 0.9789
 
     compute_llm_as_judge()
+
+    compute_g_eval_summarization()

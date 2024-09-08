@@ -26,19 +26,25 @@ LLM Evaluation
 
 ..    `Meng Liu <https://github.com/mengliu1998>`_
 
-"You cannot improve what you cannot measure". This is especially true in the context of LLMs, which have become increasingly popular due to their impressive performance on a wide range of tasks. Evaluating LLMs and their applications is crucial in both research and production to understand their capabilities and limitations.
-Overall, such evaluation is a complex and multifaceted process. Below, we provide a guideline for evaluating LLMs and their applications, incorporating aspects outlined by *Chang et al.* [1]_:
+"You cannot optimize what you cannot measure".
+
+This is especially true in the context of LLMs, which have become increasingly popular due to their impressive performance on a wide range of tasks.
+Evaluating LLMs and their applications is crucial in both research and production to understand their capabilities and limitations.
+Overall, such evaluation is a complex and multifaceted process.
+Below, we provide a guideline for evaluating LLMs and their applications, incorporating aspects outlined by *Chang et al.* [1]_ and more for RAG evaluation.
 
 * **What to evaluate**: the tasks and capabilities that LLMs are evaluated on.
 * **Where to evaluate**: the datasets and benchmarks that are used for evaluation.
 * **How to evaluate**: the protocols and metrics that are used for evaluation.
 
 
-Tasks and Capabilities to Evaluate
+Tasks and Capabilities
 ------------------------------------------
-TODO: how come they did not mention RAG evaluation?
 
-When we are considering the LLM evaluation, the first question that arises is what to evaluate. Deciding what tasks to evaluate or which capabilities to assess is crucial, as it influences both the selection of appropriate benchmarks (where to evaluate) and the choice of evaluation methods (how to evaluate). Below are some commonly evaluated tasks and capabilities of LLMs:
+.. When we are considering the LLM evaluation, the first question that arises is what to evaluate.
+.. Deciding what tasks to evaluate or which capabilities to assess is crucial, as it influences both the selection of appropriate benchmarks (where to evaluate) and the choice of evaluation methods (how to evaluate).
+
+Below are some commonly evaluated tasks and capabilities of LLMs summarized in [1]_.
 
 * *Natural language understanding* (NLU) tasks, such as text classification and sentiment analysis, which evaluate the LLM's ability to understand natural language.
 * *Natural language generation* (NLG) tasks, such as text summarization, translation, and question answering, which evaluate the LLM's ability to generate natural language.
@@ -49,10 +55,11 @@ When we are considering the LLM evaluation, the first question that arises is wh
 * *Agent applications*, which evaluate the LLM's ability to use external tools and APIs to perform tasks, such as web search.
 
 For a more detailed and comprehensive description of the tasks and capabilities that LLMs are evaluated on, please refer to the review papers by *Chang et al.* [1]_ and *Guo et al.* [2]_.
+RRAG [21]_ evaluation differs as it introduces a retrieval component to the pipeline, which we will discuss in the next section.
 
 Datasets and Benchmarks
 ------------------------------------------
-Once we have decided what to evaluate, the next question is where to evaluate. The selection of datasets and benchmarks is important, as it determines the quality and relevance of the evaluation.
+The selection of datasets and benchmarks [19]_ is important, as it determines the quality and relevance of the evaluation.
 
 To comprehensively assess the capabilities of LLMs, researchers typically utilize benchmarks and datasets that span a broad spectrum of tasks. For example, in the GPT-4 technical report [3]_, the authors employed a variety of general language benchmarks, such as MMLU [4]_, and academic exams, such as the SAT, GRE, and AP courses, to evaluate the diverse capabilities of GPT-4. Below are some commonly used datasets and benchmarks for evaluating LLMs.
 
@@ -79,24 +86,41 @@ The output will be a Dataset object containing the test set of the MMLU dataset.
         num_rows: 100
     })
 
+**Datasets for RAG Evaluation**
+
+According to RAGEval [21]_, the evaluation dataset can be categorized into two types: traditional open-domain QA datasets and scenario-specific RAG evaluation datasets.
+
+Traditional open-domain QA datasets include:
+
+- HotPotQA: A dataset for multi-hop question answering.
+- Natural Questions: A dataset for open-domain question answering.
+- MS MARCO: A dataset for passage retrieval and question answering.
+- 2WikiMultiHopQA: A dataset for multi-hop question answering.
+- KILT: A benchmark for knowledge-intensive language tasks.
+
+Scenario-specific RAG evaluation datasets,
+
+- RGB: assesses LLMs’ ability to lever-age retrieved information, focusing on noise ro-bustness and information integration.
+- CRAG: increases domain coverage and introducesmock APIs to simulate real-world retrieval sce-narios.
+
 Evaluation Metrics
 ------------------------------------------
 
-The final question is how to evaluate.
 Evaluation methods can be divided into *automated evaluation* and *human evaluation* (*Chang et al.* [1]_ and *Liu et al.* [6]_).
+
 Automated evaluation typically involves using metrics such as accuracy and BERTScore or employing an LLM as the judge, to quantitatively assess the performance of LLMs on specific tasks.
 Human evaluation, on the other hand, involves human in the loop to evaluate the quality of the generated text or the performance of the LLM.
 
-Here, we recommend a few automated evaluation methods that can be used to evaluate LLMs and their applications.
+Here, we categorize the automated evaluation methods as follows:
 
 1. For classicial NLU tasks, such as text classification and sentiment analysis, you can use metrics such as accuracy, F1-score, and ROC-AUC to evaluate the performance of LLM response just like you would do using non-genAI models. You can check out `TorchMetrics <https://lightning.ai/docs/torchmetrics>`_.
 
 2. For NLG tasks, such as text summarization, translation, and question answering: (1) you can use metrics such as ROUGE, BLEU, METEOR, and BERTScore, perplexity, :class:`LLMasJudge <eval.llm_as_judge>` etc to evaluate the quality of the generated text with respect to the reference text.
-   You can check out the metrics provided by `Hugging Face Metrics <https://huggingface.co/metrics>`_.
-   For instance, to compute the BERTScore, you can use the corresponding metric function provided by Hugging Face, which uses the pre-trained contextual embeddings from BERT and matched words in generated text and reference text by cosine similarity.
-   (2) When you have no reference text, :class:`LLMasJudge <eval.llm_as_judge>` with advanced model can be used to evaluate the generated text on the fly.
+   Or using :class:`GEvalLLMJudge <eval.g_eval>` to evaluate the generated text even without reference text.
 
-3. For RAG (Retrieval-Augmented Generation) pipelines, you can use metrics such as :class:`RetrieverRecall <eval.retriever_recall>`, :class:`RetrieverRelevance <eval.retriever_relevance>`, :class:`AnswerMatchAcc <eval.answer_match_acc>`, and :class:`LLMasJudge <eval.llm_as_judge>` to evaluate the quality of the retrieved context and the generated answer.
+3. For RAG (Retrieval-Augmented Generation) pipelines, you can use metrics such as :class:`RetrieverRecall <eval.retriever_recall>`, :class:`AnswerMatchAcc <eval.answer_match_acc>`, and :class:`LLMasJudge <eval.llm_as_judge>` to evaluate the quality of the retrieved context and the generated answer.
+
+You can also check out the metrics provided by `Hugging Face Metrics <https://huggingface.co/metrics>`_, `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_,  `TorchMetrics <https://lightning.ai/docs/torchmetrics/stable/>`_, `ARES <https://arxiv.org/abs/2311.09476>`_, `SemScore <https://arxiv.org/abs/2401.17072>`_, `RGB <https://ojs.aaai.org/index.php/AAAI/article/view/29728>`_, etc.
 
 NLG Evaluation
 ------------------------------------------
@@ -104,13 +128,12 @@ NLG Evaluation
 Classicial String Metrics
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The simplest metric would be :class:`AnswerMatchAcc <eval.answer_match_acc>`: This calculates the exact match accuracy or fuzzy match accuracy of the generated answers by comparing them to the ground truth answers.
+The simplest metric would be EM :class:`AnswerMatchAcc <eval.answer_match_acc>`: This calculates the exact match accuracy or fuzzy match accuracy of the generated answers by comparing them to the ground truth answers.
 
 
-There are more advanced traditional metrics such as BLEU[8]_, ROUGE[9]_, and METEOR[12]_ may fail to capture the semantic similarity between the reference text and the generated text, resulting low correlation with human judgement.
-You can use `TorchMetrics` [10]_ to compute these two metrics.
+More advanced traditional metrics, such as F1, BLEU [8]_, ROUGE [9]_, [20]_, and METEOR [12]_, may fail to capture the semantic similarity between the reference text and the generated text, resulting in low correlation with human judgment.
 
-For instance
+You can use `TorchMetrics` [10]_ or `Hugging Face Metrics <https://huggingface.co/metrics>`_ to compute these metrics. For instance,
 
 .. code-block:: python
 
@@ -143,8 +166,10 @@ These two sentences totally mean the same, but it scored low in BLEU and ROUGE.
 Embedding-based Metrics
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To make up to this, Embedding-based  metrics or neural evaluators such as BERTScore was created.
-You can find BERT score from both `Hugging Face Metrics <https://huggingface.co/metrics>`_ and `TorchMetrics <https://lightning.ai/docs/torchmetrics/stable/text/bertscore.html>`_.
+To make up for this, embedding-based  metrics or neural evaluators such as BERTScore was created.
+You can find BERTScore in both `Hugging Face Metrics <https://huggingface.co/metrics>`_ and `TorchMetrics <https://lightning.ai/docs/torchmetrics/stable/text/bertscore.html>`_.
+BERTScore uses pre-trained contextual embeddings from BERT and matched words in generated text and reference text using cosine similarity.
+
 
 .. code-block:: python
 
@@ -165,7 +190,7 @@ The output BERT score is:
 
 This score does reflect the semantic similarity between the two sentences almost perfectly.
 However, the downside of all the above metrics is that you need to have a reference text to compare with.
-Labeling such as reference text can be quite challenging in many NLG tasks, such as a summarization task.
+Labeling, such as creating a reference text, can be quite challenging in many NLG tasks, such as summarization.
 
 
 
@@ -173,19 +198,21 @@ Labeling such as reference text can be quite challenging in many NLG tasks, such
 LLM as Judge
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Evaluating the LLM application using LLM as a judge is no different from building LLM task pipeline.
-Developers should better know the underlying prompt to the LLM judge to decide if the default judge is enough or that they need customization.
-Because of so, AdalFlow decided to provide a comprehensive set of LLM as Judge instead of sending our developers to other evaluation packages.
-We did research on both the research papers and the existing libraries and found there is no library that has provided such evaluators with 100% clarity and without enforcing developers to install many other dependencies.
+Evaluating an LLM application using an LLM as a judge is similar to building an LLM task pipeline.
+Developers need to understand the underlying prompt used by the LLM judge to determine whether the default judge is sufficient or if customization is required.
 
-You can use LLM as judge for cases where you have or do not have reference text.
-The key is to define the metric clearly using text.
-**We are building LLM judge to replace human labelers, increasing the overall efficiency and reducing financial costs.**
+After reviewing research papers and existing libraries, we found no solution that provides these evaluators with complete clarity without requiring developers to install numerous additional dependencies.
+With this in mind, AdalFlow decided to offer a comprehensive set of LLM evaluators rather than directing our developers to external evaluation packages.
+
+
+You can use an LLM as a judge in cases where you have a reference text or not.
+The key is to clearly define the metric using text.
+
+**We are developing LLM judge to replace human labelers, boosting efficiency and reducing financial costs.**
 
 **With References**
 
-The most straightforward LLM judge is to predict a yes/no answer or a float score in range [0, 1] between the generated text and the reference text
-per a judgement query.
+The most straightforward LLM judge predicts a yes/no answer or a float score in range [0, 1] based on the comparison between the generated text and the reference text for a given judgment query.
 
 Here is AdalFlow's default judegement query:
 
@@ -193,7 +220,8 @@ Here is AdalFlow's default judegement query:
 
     DEFAULT_JUDGEMENT_QUERY = "Does the predicted answer contain the ground truth answer? Say True if yes, False if no."
 
-Now, you can use the following code to the final score per the judgement query:
+Now, you can use the following code to calculate the final score based on the judgment query:
+
 
 .. code-block:: python
 
@@ -228,9 +256,7 @@ Now, you can use the following code to the final score per the judgement query:
         print(avg_judgement)
         print(confidence_interval)
 
-To be more rigid, you can compute a 95% confidence interval for the judgement score.
-When the evaluation dataset is small, the confidence interval can have a large range, which indicates that the judgement score is not very reliable.
-
+To ensure more rigor, you can compute a 95% confidence interval for the judgment score. When the evaluation dataset is small, the confidence interval may have a large range, indicating that the judgment score is not very reliable.
 
 The output will be:
 
@@ -239,7 +265,7 @@ The output will be:
     0.6666666666666666
     (0.013333333333333197, 1)
 
-This type of LLM judege is seen in text-grad [17]_.
+This type of LLM judeg is seen in text-grad [17]_.
 You can view the prompt we used simply using `print(llm_judge)`:
 
 .. code-block:: python
@@ -293,20 +319,98 @@ G-eval provided a way to evaluate:
 - `coherence`: evaluates the the factual alignment between the summary and the summarized source.
 
 In our library, we provides the prompt for task `Summarization` and `Chatbot` as default.
+We also map the score to the range [0, 1] for the ease of optimization.
 
+Here is the code snippet to compute the G-eval score:
+
+.. code-block:: python
+
+    def compute_g_eval_summarization():
+        from adalflow.eval.g_eval import GEvalLLMJudge, GEvalJudgeEvaluator, NLGTask
+
+        model_kwargs = {
+            "model": "gpt-4o",
+            "n": 20,
+            "top_p": 1,
+            "max_tokens": 5,
+            "temperature": 1,
+        }
+
+        g_eval = GEvalLLMJudge(
+            default_task=NLGTask.SUMMARIZATION, model_kwargs=model_kwargs
+        )
+        print(g_eval)
+        input_template = """Source Document: {source}
+        Summary: {summary}
+        """
+
+        input_str = input_template.format(
+            source="Paul Merson has restarted his row with Andros Townsend after the Tottenham midfielder was brought on with only seven minutes remaining in his team 's 0-0 draw with Burnley on Sunday . 'Just been watching the game , did you miss the coach ? # RubberDub # 7minutes , ' Merson put on Twitter . Merson initially angered Townsend for writing in his Sky Sports column that 'if Andros Townsend can get in ( the England team ) then it opens it up to anybody . ' Paul Merson had another dig at Andros Townsend after his appearance for Tottenham against Burnley Townsend was brought on in the 83rd minute for Tottenham as they drew 0-0 against Burnley Andros Townsend scores England 's equaliser in their 1-1 friendly draw with Italy in Turin on Tuesday night The former Arsenal man was proven wrong when Townsend hit a stunning equaliser for England against Italy and he duly admitted his mistake . 'It 's not as though I was watching hoping he would n't score for England , I 'm genuinely pleased for him and fair play to him \u00e2\u20ac\u201c it was a great goal , ' Merson said . 'It 's just a matter of opinion , and my opinion was that he got pulled off after half an hour at Manchester United in front of Roy Hodgson , so he should n't have been in the squad . 'When I 'm wrong , I hold my hands up . I do n't have a problem with doing that - I 'll always be the first to admit when I 'm wrong . ' Townsend hit back at Merson on Twitter after scoring for England against Italy Sky Sports pundit Merson ( centre ) criticised Townsend 's call-up to the England squad last week Townsend hit back at Merson after netting for England in Turin on Wednesday , saying 'Not bad for a player that should be 'nowhere near the squad ' ay @ PaulMerse ? ' Any bad feeling between the pair seemed to have passed but Merson was unable to resist having another dig at Townsend after Tottenham drew at Turf Moor .",
+            summary="Paul merson was brought on with only seven minutes remaining in his team 's 0-0 draw with burnley . Andros townsend scored the tottenham midfielder in the 89th minute . Paul merson had another dig at andros townsend after his appearance . The midfielder had been brought on to the england squad last week . Click here for all the latest arsenal news news .",
+        )
+
+        g_evaluator = GEvalJudgeEvaluator(llm_judge=g_eval)
+
+        response = g_evaluator(input_strs=[input_str])
+        print(f"response: {response}")
+
+The output will be:
+
+.. code-block:: json
+
+    response: ({'Relevance': 0.4, 'Fluency': 0.3333333333333333, 'Consistency': 0.2, 'Coherence': 0.4, 'overall': 0.33333333333333337}, [{'Relevance': 0.4, 'Fluency': 0.3333333333333333, 'Consistency': 0.2, 'Coherence': 0.4, 'overall': 0.33333333333333337}])
+
+`print(g_eval)` will be:
+
+.. code-block:: python
+
+    GEvalLLMJudge(
+        default_task= NLGTask.SUMMARIZATION, prompt_kwargs={'Relevance': {'task_desc_str': 'You will be given a summary of a text.  Please evaluate the summary based on the following criteria:', 'evaluation_criteria_str': 'Relevance (1-5) - selection of important content from the source.\n        The summary should include only important information from the source document.\n        Annotators were instructed to penalize summaries which contained redundancies and excess information.', 'evaluation_steps_str': '1. Read the summary and the source document carefully.\n        2. Compare the summary to the source document and identify the main points of the article.\n        3. Assess how well the summary covers the main points of the article, and how much irrelevant or redundant information it contains.\n        4. Assign a relevance score from 1 to 5.', 'metric_name': 'Relevance'}, 'Fluency': {'task_desc_str': 'You will be given a summary of a text.  Please evaluate the summary based on the following criteria:', 'evaluation_criteria_str': 'Fluency (1-3): the quality of the summary in terms of grammar, spelling, punctuation, word choice, and sentence structure.\n        - 1: Poor. The summary has many errors that make it hard to understand or sound unnatural.\n        - 2: Fair. The summary has some errors that affect the clarity or smoothness of the text, but the main points are still comprehensible.\n        - 3: Good. The summary has few or no errors and is easy to read and follow.\n        ', 'evaluation_steps_str': None, 'metric_name': 'Fluency'}, 'Consistency': {'task_desc_str': 'You will be given a summary of a text.  Please evaluate the summary based on the following criteria:', 'evaluation_criteria_str': 'Consistency (1-5) - the factual alignment between the summary and the summarized source.\n        A factually consistent summary contains only statements that are entailed by the source document.\n        Annotators were also asked to penalize summaries that contained hallucinated facts. ', 'evaluation_steps_str': '1. Read the summary and the source document carefully.\n        2. Identify the main facts and details it presents.\n        3. Read the summary and compare it to the source document to identify any inconsistencies or factual errors that are not supported by the source.\n        4. Assign a score for consistency based on the Evaluation Criteria.', 'metric_name': 'Consistency'}, 'Coherence': {'task_desc_str': 'You will be given a summary of a text.  Please evaluate the summary based on the following criteria:', 'evaluation_criteria_str': 'Coherence (1-5) - the collective quality of all sentences.\n        We align this dimension with the DUC quality question of structure and coherence whereby "the summary should be well-structured and well-organized.\n        The summary should not just be a heap of related information, but should build from sentence to a coherent body of information about a topic.', 'evaluation_steps_str': '1. Read the input text carefully and identify the main topic and key points.\n        2. Read the summary and assess how well it captures the main topic and key points. And if it presents them in a clear and logical order.\n        3. Assign a score for coherence on a scale of 1 to 5, where 1 is the lowest and 5 is the highest based on the Evaluation Criteria.', 'metric_name': 'Coherence'}}
+        (model_client): OpenAIClient()
+        (llm_evaluator): Generator(
+            model_kwargs={'model': 'gpt-4o', 'n': 20, 'top_p': 1, 'max_tokens': 5, 'temperature': 1}, trainable_prompt_kwargs=[]
+            (prompt): Prompt(
+            template:
+            <START_OF_SYSTEM_PROMPT>
+            {# task desc #}
+            {{task_desc_str}}
+            ---------------------
+            {# evaluation criteria #}
+            Evaluation Criteria:
+            {{evaluation_criteria_str}}
+            ---------------------
+            {# evaluation steps #}
+            {% if evaluation_steps_str %}
+            Evaluation Steps:
+            {{evaluation_steps_str}}
+            ---------------------
+            {% endif %}
+            {{input_str}}
+            { # evaluation form #}
+            Evaluation Form (scores ONLY):
+            - {{metric_name}}:
+
+            Output the score only.
+            <END_OF_SYSTEM_PROMPT>
+            , prompt_variables: ['input_str', 'task_desc_str', 'evaluation_criteria_str', 'evaluation_steps_str', 'metric_name']
+            )
+            (model_client): OpenAIClient()
+            (output_processors): FloatParser()
+        )
+    )
 
 Train/Align LLM Judge
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We should better align the LLM judge with a human preference dataset that has the (generated text, ground truth text, score) triplets.
-This process is the same as optimize the task pipeline, you can create an `AdalComponent` and call our `Trainer` to do the in-context learning.
-As you can see two trainable_prompt_kwargs in the `DefaultLLMJudge` from the printout.
+We should better align the LLM judge with a human preference dataset that contains (generated text, ground truth text, score) triplets.
+This process is the same as optimizinh the task pipeline, where you can create an ``AdalComponent`` and call our ``Trainer`` to do the in-context learning.
+From the printout, you can observe the two trainable_prompt_kwargs in the ``DefaultLLMJudge``.
 
-In this case, we might want to compute a correlation score between the human judge and the LLM judge.
-You have different choice, such as:
+In this case, we may want to compute a correlation score between the human judge and the LLM judge.
+You have various options, such as:
 
 1. Pearson Correlation Coefficient
-2. Kendallrank correlation coefficient from ARES [14]_ in particular for the ranking system (Retrieval).
+2. Kendallrank correlation coefficient from ARES [14]_, particularly useful for ranking systems (Retrieval).
 
 
 RAG Evaluation
@@ -323,7 +427,7 @@ Often, we have
 
 1. Recall@k: the proportion of relevant documents that are retrieved out of the total number of relevant documents.
 
-2. Mean Reciprocal Rank(MRR@k)
+2. Mean Reciprocal Rank(MRR@k), HitRate@k, etc.
 
 3. NDCG@k
 
@@ -403,6 +507,12 @@ The synthetic dataset is used to train a classifier consists of  embedding and a
 It claims to be able to adapt to other domains where the classifier is not trained on.
 The cost of this approach is quite low as you can compute the embedding for only once for each query and each chunk in the corpus.
 
+**RAGEval for vertical domain evaluation**
+
+RAGEVal [21]_ proposed a framework to synthesize vertical domain evaluation dataset such as finance, healthcare, legal etc where due to the privacy, it is challenging to create a large real-world dataset.
+
+
+**More**
 
 See the evaluation on datasets at :doc:`Evaluating a RAG Pipeline <../tutorials/eval_a_rag>`.
 
@@ -442,20 +552,24 @@ References
 .. [16] G-eval: https://github.com/nlpyang/geval
 .. [17] Text-grad: https://arxiv.org/abs/2309.03409
 .. [18] Pretrained Transformers for Text Ranking: BERT and Beyond: https://arxiv.org/pdf/2010.06467
+.. [19] Liu, Yang, et al. "Datasets for large language models: A comprehensive survey." arXiv preprint arXiv:2402.18041 (2024).
+.. [20] ROUGE Deep dive: https://medium.com/nlplanet/two-minutes-nlp-learn-the-rouge-metric-by-examples-f179cc285499
+.. [21] Zhu, Kunlun, et al. "RAGEval: Scenario Specific RAG Evaluation Dataset Generation Framework." arXiv preprint arXiv:2408.01262 (2024).
+
+.. admonition:: AdalFlow Eval API Reference
+   :class: highlight
+
+   - :class:`RetrieverRecall <eval.retriever_recall>`
+   - :class:`DefaultLLMJudge <eval.llm_as_judge>`
+   - :class:`AnswerMatchAcc <eval.answer_match_acc>`
+   - :class:`GEvalLLMJudge <eval.g_eval>`
+   - :class:`GEvalJudgeEvaluator <eval.g_eval>`
 
 
-.. admonition:: Evaluation Metrics libraries
+.. admonition:: Other Evaluation Metrics libraries
    :class: highlight
 
    - `TorchMetrics <https://lightning.ai/docs/torchmetrics>`_
    - `Hugging Face Metrics <https://huggingface.co/metrics>`_
    - `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_
    - `G-eval <https://arxiv.org/abs/2303.08774>`_
-
-
-
-.. admonition:: API Reference
-   :class: highlight
-
-   - `RetrieverRecall <eval.retriever_recall>`
-   - `DefaultLLMJudge <eval.llm_as_judge>`

@@ -2,7 +2,7 @@
 Instead of getting 1/5 as the score, AdalFlow will use 0.2 as the score, so that we can have a score in range [0, 1] for all metrics."""
 
 from enum import Enum
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Tuple
 import logging
 
 
@@ -127,7 +127,7 @@ class GEvalLLMJudge(Component):
             self.model_client = OpenAIClient()
         self.model_kwargs = model_kwargs or DEFAULT_LLM_EVALUATOR_MODEL_KWARGS
         self.template = template or DEFAULT_G_EVAL_RPROMPT
-        self.prompt_kwargs = {k: {} for k in GEvalMetric}
+        self.prompt_kwargs = {k: {} for k in all_geval_metrics}
         self.default_task = default_task
         if default_task:
             # task_name = default_task.name
@@ -191,7 +191,7 @@ class GEvalLLMJudge(Component):
         return output
 
     def _extra_repr(self) -> str:
-        s = f"default_task= {self.default_task}, "
+        s = f"default_task= {self.default_task}, prompt_kwargs={self.prompt_kwargs}"
         return s
 
 
@@ -202,31 +202,7 @@ class GEvalJudgeEvaluator(BaseEvaluator):
     Relevance, Fluency, Consistency, Coherence.
 
     Args:
-        llm_judge (Component, optional): The LLM evaluator to use. Defaults to DefaultLLMJudge.
-
-    Examples:
-        >>> questions = [
-        "Is Beijing in China?",
-        "Is Apple founded before Google?",
-        "Is earth flat?",
-        ]
-        >>> pred_answers = ["Yes", "Yes, Appled is founded before Google", "Yes"]
-        >>> gt_answers = ["Yes", "Yes", "No"]
-        >>> judgement_query = "For the question, does the predicted answer contain the ground truth answer?"
-        >>> llm_judge = LLMasJudge()
-        >>> avg_judgement, judgement_list = llm_judge.compute(
-        questions, gt_answers, pred_answers, judgement_query
-        )
-        >>> avg_judgement
-        2 / 3
-        >>> judgement_list
-        [True, True, False]
-
-    Customize the LLMJudge
-
-    .. code-block:: python
-
-        llm_judge = Def
+        llm_judge (Component, optional): The LLM evaluator to use. Defaults to GEvalLLMJudge().
     """
 
     def __init__(
@@ -251,7 +227,7 @@ class GEvalJudgeEvaluator(BaseEvaluator):
     def compute(
         self,
         input_strs: List[str],
-    ) -> List[Dict[str, Any]]:
+    ) -> Tuple[Dict, List[Dict[str, Any]]]:
         r"""
         Get the judgement of the predicted answer for a list of questions.
 
@@ -263,39 +239,24 @@ class GEvalJudgeEvaluator(BaseEvaluator):
         output = []
         for input_str in input_strs:
             output.append(self.compute_single_item(input_str))
-        return output
+
+        # average across different keys
+        final_output = {metric: [] for metric in all_geval_metrics}
+        final_output.update({"overall": []})
+        for data in output:
+            for metric, score in data.items():
+                if score is None:
+                    continue
+                final_output[metric].append(score)
+
+        for metric, scores in final_output.items():
+            if not scores:
+                final_output[metric] = None
+            else:
+                final_output[metric] = sum(scores) / len(scores)
+
+        return final_output, output
 
     def __str__(self) -> str:
         s = f"llm_judge={self.llm_evaluator}, prompt_kwargs={self.llm_judge.prompt_kwargs}"
         return s
-
-
-if __name__ == "__main__":
-    from adalflow.utils import setup_env
-
-    setup_env()
-
-    model_kwargs = {
-        "model": "gpt-4o",
-        "n": 20,
-        "top_p": 1,
-        "max_tokens": 5,
-        "temperature": 1,
-    }
-
-    g_eval = GEvalLLMJudge(
-        default_task=NLGTask.SUMMARIZATION, model_kwargs=model_kwargs
-    )
-    input_template = """Source Document: {source}
-    Summary: {summary}
-    """
-
-    input_str = input_template.format(
-        source="Paul Merson has restarted his row with Andros Townsend after the Tottenham midfielder was brought on with only seven minutes remaining in his team 's 0-0 draw with Burnley on Sunday . 'Just been watching the game , did you miss the coach ? # RubberDub # 7minutes , ' Merson put on Twitter . Merson initially angered Townsend for writing in his Sky Sports column that 'if Andros Townsend can get in ( the England team ) then it opens it up to anybody . ' Paul Merson had another dig at Andros Townsend after his appearance for Tottenham against Burnley Townsend was brought on in the 83rd minute for Tottenham as they drew 0-0 against Burnley Andros Townsend scores England 's equaliser in their 1-1 friendly draw with Italy in Turin on Tuesday night The former Arsenal man was proven wrong when Townsend hit a stunning equaliser for England against Italy and he duly admitted his mistake . 'It 's not as though I was watching hoping he would n't score for England , I 'm genuinely pleased for him and fair play to him \u00e2\u20ac\u201c it was a great goal , ' Merson said . 'It 's just a matter of opinion , and my opinion was that he got pulled off after half an hour at Manchester United in front of Roy Hodgson , so he should n't have been in the squad . 'When I 'm wrong , I hold my hands up . I do n't have a problem with doing that - I 'll always be the first to admit when I 'm wrong . ' Townsend hit back at Merson on Twitter after scoring for England against Italy Sky Sports pundit Merson ( centre ) criticised Townsend 's call-up to the England squad last week Townsend hit back at Merson after netting for England in Turin on Wednesday , saying 'Not bad for a player that should be 'nowhere near the squad ' ay @ PaulMerse ? ' Any bad feeling between the pair seemed to have passed but Merson was unable to resist having another dig at Townsend after Tottenham drew at Turf Moor .",
-        summary="Paul merson was brought on with only seven minutes remaining in his team 's 0-0 draw with burnley . Andros townsend scored the tottenham midfielder in the 89th minute . Paul merson had another dig at andros townsend after his appearance . The midfielder had been brought on to the england squad last week . Click here for all the latest arsenal news news .",
-    )
-
-    g_evaluator = GEvalJudgeEvaluator(llm_evaluator=g_eval)
-
-    response = g_evaluator(input_strs=[input_str])
-    print(f"response: {response}")
