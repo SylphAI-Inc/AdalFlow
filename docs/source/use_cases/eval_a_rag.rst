@@ -1,6 +1,9 @@
 Evaluating RAG
 ==========================
 
+As RAG admits so many design choices, it is difficult to build a traditional benchmark dataset from scratch.
+When it comes to evaluating RAG, we have to define the metrics, the evaluation datasets, and to annotate such datasets and ensure the metrics can reflect
+
 In LightRAG, we provide a set of metrics in :ref:`our evaluators <evaluators>`. In this tutorial, we will show how to use them to evaluate the performance of the retriever and generator components of a RAG pipeline
 
 As RAG consists of two stages:

@@ -36,6 +36,8 @@ Overall, such evaluation is a complex and multifaceted process. Below, we provid
 
 Tasks and Capabilities to Evaluate
 ------------------------------------------
+TODO: how come they did not mention RAG evaluation?
+
 When we are considering the LLM evaluation, the first question that arises is what to evaluate. Deciding what tasks to evaluate or which capabilities to assess is crucial, as it influences both the selection of appropriate benchmarks (where to evaluate) and the choice of evaluation methods (how to evaluate). Below are some commonly evaluated tasks and capabilities of LLMs:
 
 * *Natural language understanding* (NLU) tasks, such as text classification and sentiment analysis, which evaluate the LLM's ability to understand natural language.
@@ -193,14 +195,29 @@ Developers should better know the underlying prompt to the LLM judge to decide i
 Because of so, AdalFlow decided to provide a comprehensive set of LLM as Judge instead of sending our developers to other evaluation packages.
 We did research on both the research papers and the existing libraries and found there is no library that has provided such evaluators with 100% clarity and without enforcing developers to install many other dependencies.
 
+You can use LLM as judge for cases where you have or do not have reference text.
+The key is to define the metric clearly using text.
+**We are building LLM judge to replace human labelers, increasing the overall efficiency and reducing financial costs.**
+
 **With References**
 
+The most straightforward LLM judge is to predict a yes/no answer or a float score in range [0, 1] between the generated text and the reference text
+per a judgement query.
+
+Here is AdalFlow's default judegement query:
+
+.. code-block:: python
+
+    DEFAULT_JUDGEMENT_QUERY = "Does the predicted answer contain the ground truth answer? Say True if yes, False if no."
+
+Now, you can use the following code to the final score per the judgement query:
 
 .. code-block:: python
 
     def compute_llm_as_judge():
         import adalflow as adal
-        from adalflow.eval.llm_as_judge import LLMasJudge
+        from adalflow.eval.llm_as_judge import LLMasJudge, DefaultLLMJudge
+        from adalflow.components.model_client import OpenAIClient
 
         adal.setup_env()
 
@@ -211,38 +228,52 @@ We did research on both the research papers and the existing libraries and found
         ]
         pred_answers = ["Yes", "Yes, Appled is founded before Google", "Yes"]
         gt_answers = ["Yes", "Yes", "No"]
-        # judgement_query = (
-        #     "For the question, does the predicted answer contain the ground truth answer?"
-        # )
-        llm_judge = LLMasJudge()
-        avg_judgement, judgement_list = llm_judge.compute(
+
+        llm_judge = DefaultLLMJudge(
+            model_client=OpenAIClient(),
+            model_kwargs={
+                "model": "gpt-4o",
+                "temperature": 1.0,
+                "max_tokens": 10,
+            },
+        )
+        llm_evaluator = LLMasJudge(llm_judge=llm_judge)
+        print(llm_judge)
+        avg_judgement, confidence_interval = llm_evaluator.compute(
             questions, gt_answers, pred_answers
         )
         print(avg_judgement)
-        print(judgement_list)
+        print(confidence_interval)
+
+To be more rigid, you can compute a 95% confidence interval for the judgement score.
+When the evaluation dataset is small, the confidence interval can have a large range, which indicates that the judgement score is not very reliable.
+
 
 The output will be:
 
 .. code-block:: json
 
     0.6666666666666666
-    [True, True, False]
+    (0.013333333333333197, 1)
 
+This type of LLM judege is seen in text-grad [17]_.
 You can view the prompt we used simply using `print(llm_judge)`:
 
 .. code-block:: python
 
-    llm_evaluator=DefaultLLMJudge(
-        judgement_query= Does the predicted answer contain the ground truth answer? Say True if yes, False if no.
+    DefaultLLMJudge(
+        judgement_query= Does the predicted answer contain the ground truth answer? Say True if yes, False if no.,
         (model_client): OpenAIClient()
         (llm_evaluator): Generator(
-            model_kwargs={'model': 'gpt-3.5-turbo', 'temperature': 0.3, 'stream': False},
+            model_kwargs={'model': 'gpt-4o', 'temperature': 1.0, 'max_tokens': 10}, trainable_prompt_kwargs=['task_desc_str', 'examples_str']
             (prompt): Prompt(
             template: <START_OF_SYSTEM_PROMPT>
             {# task desc #}
-            You are an evaluator. Given the question, ground truth answer, and predicted answer,
-            {# judgement question #}
-            {{judgement_str}}
+            {{task_desc_str}}
+            {# examples #}
+            {% if examples_str %}
+            {{examples_str}}
+            {% endif %}
             <END_OF_SYSTEM_PROMPT>
             ---------------------
             <START_OF_USER>
@@ -254,11 +285,12 @@ You can view the prompt we used simply using `print(llm_judge)`:
             Predicted answer: {{pred_answer_str}}
             {# assistant response #}
             <END_OF_USER>
-            , prompt_variables: ['pred_answer_str', 'judgement_str', 'gt_answer_str', 'question_str']
+            , prompt_kwargs: {'task_desc_str': 'You are an evaluator. Given the question, ground truth answer, and predicted answer, Does the predicted answer contain the ground truth answer? Say True if yes, False if no.', 'examples_str': None}, prompt_variables: ['examples_str', 'pred_answer_str', 'task_desc_str', 'gt_answer_str', 'question_str']
             )
             (model_client): OpenAIClient()
         )
     )
+
 
 **Without References (G-eval)**
 
@@ -270,12 +302,34 @@ You can view the prompt we used simply using `print(llm_judge)`:
     G-eval framework structure
 
 If you have no reference text, you can use G-eval [11]_ to evaluate the generated text on the fly.
+G-eval provided a way to evaluate:
 
+- `relevance`: evaluates how relevant the summarized text to the source text.
+- `fluency`: the quality of the summary in terms of grammar, spelling, punctuation, word choice, and sentence structure.
+- `consistency`: evaluates the collective quality of all sentences.
+- `coherence`: evaluates the the factual alignment between the summary and the summarized source.
+
+In our library, we provides the prompt for task `Summarization` and `Chatbot` as default.
+
+
+Train/Align LLM Judge
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We should better align the LLM judge with a human preference dataset that has the (generated text, ground truth text, score) triplets.
+This process is the same as optimize the task pipeline, you can create an `AdalComponent` and call our `Trainer` to do the in-context learning.
+As you can see two trainable_prompt_kwargs in the `DefaultLLMJudge` from the printout.
+
+In this case, we might want to compute a correlation score between the human judge and the LLM judge.
+You have different choice, such as:
+
+1. Pearson Correlation Coefficient
+2. Kendallrank correlation coefficient from ARES [14]_ in particular for the ranking system (Retrieval).
 
 
 RAG Evaluation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-RAG (Retrieval-Augmented Generation) pipelines are a combination of a retriever and a generator. The retriever retrieves relevant context from a large corpus, and the generator generates the final answer based on the retrieved context.
+^^^^^^^^^^^^^^^^^^^
+RAG (Retrieval-Augmented Generation) pipelines are a combination of a retriever and a generator.
+The retriever retrieves relevant context from a large corpus, and the generator generates the final answer based on the retrieved context.
 When a retriever failed to retrieve relevant context, the generator may fail.
 Therefore, besides of evaluating RAG pipelines as a whole using NLG metrics, it is also important to evaluate the retriever and to optimize the evalulation metrics from both stages to best improve the final performance.
 
@@ -330,7 +384,11 @@ For a more detailed instructions on how build and evaluate RAG pipelines, you ca
 
 If you intent to use metrics that are not available in the AdalFlow library, you can also implement your own custom metric functions or use other libraries such as `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_ to compute the desired metrics for evaluating RAG pipelines.
 
-Additionally, there are more research for RAG evaluation, such as SemScore[13]_, ARES[14]_, RGB[15]_, etc.
+Additionally, there are more research for RAG evaluation, such as SemScore [13]_, ARES [14]_, RGB [15]_, etc.
+
+ARES
+~~~~~~~~
+
 
 References
 ------------------------------------------
@@ -351,6 +409,7 @@ References
 .. [14] ARES: https://arxiv.org/abs/2311.09476
 .. [15] RGB: https://ojs.aaai.org/index.php/AAAI/article/view/29728
 .. [16] G-eval: https://github.com/nlpyang/geval
+.. [17] Text-grad: https://arxiv.org/abs/2309.03409
 
 
 .. admonition:: Evaluation Metrics libraries

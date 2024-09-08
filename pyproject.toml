@@ -63,6 +63,7 @@ accelerate = "^0.33.0"
 faiss-cpu = "^1.8.0.post1"
 nltk = "^3.9.1"
 deepeval = "^1.1.6"
+ragas = "^0.1.16"
 
 
 [build-system]

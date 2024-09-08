@@ -39,7 +39,8 @@ def compute_bertscore(gt, pred):
 
 def compute_llm_as_judge():
     import adalflow as adal
-    from adalflow.eval.llm_as_judge import LLMasJudge
+    from adalflow.eval.llm_as_judge import LLMasJudge, DefaultLLMJudge
+    from adalflow.components.model_client import OpenAIClient
 
     adal.setup_env()
 
@@ -50,12 +51,18 @@ def compute_llm_as_judge():
     ]
     pred_answers = ["Yes", "Yes, Appled is founded before Google", "Yes"]
     gt_answers = ["Yes", "Yes", "No"]
-    # judgement_query = (
-    #     "For the question, does the predicted answer contain the ground truth answer?"
-    # )
-    llm_judge = LLMasJudge()
+
+    llm_judge = DefaultLLMJudge(
+        model_client=OpenAIClient(),
+        model_kwargs={
+            "model": "gpt-4o",
+            "temperature": 1.0,
+            "max_tokens": 10,
+        },
+    )
+    llm_evaluator = LLMasJudge(llm_judge=llm_judge)
     print(llm_judge)
-    avg_judgement, judgement_list = llm_judge.compute(
+    avg_judgement, judgement_list = llm_evaluator.compute(
         questions, gt_answers, pred_answers
     )
     print(avg_judgement)

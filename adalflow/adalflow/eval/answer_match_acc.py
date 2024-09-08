@@ -68,38 +68,6 @@ class AnswerMatchAcc(BaseEvaluator):
         else:
             raise NotImplementedError
 
-    # def compute_single_item(self, pred_answer: object, gt_answer: object) -> float:
-    #     r"""
-    #     Compute the match accuracy of the predicted answer for a single query.
-
-    #     Allow any type of input for pred_answer and gt_answer.
-    #     When evaluating, the input will be converted to string.
-
-    #     Args:
-    #         pred_answer (object): Predicted answer.
-    #         gt_answer (object): Ground truth answer.
-
-    #     Returns:
-    #         float: Match accuracy.
-    #     """
-    #     if isinstance(pred_answer, Parameter):
-    #         pred_answer = pred_answer.data
-    #     if isinstance(gt_answer, Parameter):
-    #         gt_answer = gt_answer.data
-    #     try:
-    #         pred_answer = str(pred_answer).split(" ")
-    #         gt_answer = str(gt_answer).split(" ")
-    #     except Exception as e:
-    #         raise ValueError(
-    #             f"Error converting pred_answer and gt_answer to string: {e}"
-    #         )
-    #     if self.type == "exact_match":
-    #         return 1.0 if pred_answer == gt_answer else 0.0
-    #     elif self.type == "fuzzy_match":
-    #         return 1.0 if gt_answer in pred_answer else 0.0
-    #     else:
-    #         raise NotImplementedError
-
     def compute(
         self, pred_answers: List[str], gt_answers: List[str]
     ) -> EvaluationResult:

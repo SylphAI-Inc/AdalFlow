@@ -1,4 +1,5 @@
-"""Implementation of G-Eval: G-eval <https://arxiv.org/abs/2303.08774, https://github.com/nlpyang/geval>"""
+"""Implementation of G-Eval: G-eval <https://arxiv.org/abs/2303.08774, https://github.com/nlpyang/geval>
+Instead of getting 1/5 as the score, AdalFlow will use 0.2 as the score, so that we can have a score in range [0, 1] for all metrics."""
 
 from enum import Enum
 from typing import Dict, Any, Optional, List
@@ -23,6 +24,12 @@ class GEvalMetric(Enum):
 
 
 all_geval_metrics = [m.value for m in GEvalMetric]
+all_geval_metrics_to_range = {
+    "Relevance": 5.0,
+    "Fluency": 3.0,
+    "Consistency": 5.0,
+    "Coherence": 5.0,
+}
 
 
 class NLGTask(Enum):
@@ -172,7 +179,9 @@ class GEvalLLMJudge(Component):
             #     f"prompt: {self.llm_evaluator.get_prompt(**self.prompt_kwargs[metric_name])}"
             # )
             output[metric_name] = (
-                metric_score.data if metric_score and metric_score.data else None
+                metric_score.data / all_geval_metrics_to_range[metric_name]
+                if metric_score and metric_score.data
+                else None
             )
             if output[metric_name]:
                 total_scores += output[metric_name]
@@ -188,10 +197,12 @@ class GEvalLLMJudge(Component):
 
 class GEvalJudgeEvaluator(BaseEvaluator):
     r"""
-    LLM as judge for evaluating the performance of a LLM.
+    LLM as judge for evaluating the performance of a LLM in form of GEval with 4 main metrics:
+
+    Relevance, Fluency, Consistency, Coherence.
 
     Args:
-        llm_evaluator (Component, optional): The LLM evaluator to use. Defaults to DefaultLLMJudge.
+        llm_judge (Component, optional): The LLM evaluator to use. Defaults to DefaultLLMJudge.
 
     Examples:
         >>> questions = [
@@ -220,10 +231,22 @@ class GEvalJudgeEvaluator(BaseEvaluator):
 
     def __init__(
         self,
-        llm_evaluator: Optional[Component] = None,
+        llm_judge: Optional[Component] = None,
     ):
         super().__init__()
-        self.llm_evaluator = llm_evaluator or GEvalLLMJudge()
+        self.llm_judge = llm_judge or GEvalLLMJudge()
+
+    def compute_single_item(self, input_str: str) -> Dict[str, Any]:
+        r"""
+        Compute the score for a single item.
+
+        Args:
+            input_str (str): The input string with all information.
+
+        Returns:
+            Dict[str, Any]: The judgement result.
+        """
+        return self.llm_judge(input_str=input_str)
 
     def compute(
         self,
@@ -239,11 +262,11 @@ class GEvalJudgeEvaluator(BaseEvaluator):
         """
         output = []
         for input_str in input_strs:
-            output.append(self.llm_evaluator(input_str=input_str))
+            output.append(self.compute_single_item(input_str))
         return output
 
     def __str__(self) -> str:
-        s = f"llm_evaluator={self.llm_evaluator}, prompt_kwargs={self.llm_evaluator.prompt_kwargs}"
+        s = f"llm_judge={self.llm_evaluator}, prompt_kwargs={self.llm_judge.prompt_kwargs}"
         return s
 
 

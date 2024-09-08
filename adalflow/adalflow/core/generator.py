@@ -822,7 +822,17 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             return self.call(*args, **kwargs)
 
     def _extra_repr(self) -> str:
+        # Create the string for model_kwargs
         s = f"model_kwargs={self.model_kwargs}, "
+
+        # Create the string for trainable prompt_kwargs
+        prompt_kwargs_repr = [
+            k
+            for k, v in self.prompt_kwargs.items()
+            if isinstance(v, Parameter) and v.requires_opt
+        ]
+
+        s += f"trainable_prompt_kwargs={prompt_kwargs_repr}"
         return s
 
     def to_dict(self) -> Dict[str, Any]:
