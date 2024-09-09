@@ -1,6 +1,6 @@
 import unittest
 import torch
-from adalflow.components.model_client.transformers_client import TransformerEmbeddingModelClient, TransformerLLMModelClient
+from adalflow.components.model_client.transformers_client import TransformerEmbeddingModelClient, TransformerLLMModelClient, TransformerRerankerModelClient
 from adalflow.core.types import ModelType
 from adalflow.core import Embedder, Generator
 
@@ -142,6 +142,68 @@ class TestTransformerLLMModelClient(unittest.TestCase):
         )
         output = generator(prompt_kwargs=self.prompt_kwargs)
         print(output)
+
+class TestTransformerModelClient(unittest.TestCase):
+    def setUp(self) -> None:
+
+        self.query = "what is panda?"
+        self.documents = [
+            "The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China.",
+            "The red panda (Ailurus fulgens), also called the lesser panda, the red bear-cat, and the red cat-bear, is a mammal native to the eastern Himalayas and southwestern China.",
+        ]
+
+    def test_execution(self):
+        transformer_reranker_model = "BAAI/bge-reranker-base"
+        transformer_reranker_model_client = TransformerRerankerModelClient(
+            tokenizer_kwargs={"padding": True}
+        )
+        print(
+            f"Testing TransformerRerankerModelClient with model {transformer_reranker_model}"
+        )
+
+        model_kwargs = {
+            "model": transformer_reranker_model,
+            "documents": self.documents,
+            "top_k": 2,
+        }
+
+        api_kwargs = transformer_reranker_model_client.convert_inputs_to_api_kwargs(self.query, model_kwargs=model_kwargs)
+        output = transformer_reranker_model_client.call(api_kwargs)
+        # assert output is a list of list with length 2
+        self.assertEqual(len(output), 2)
+        self.assertEqual(type(output[0]), list)
+        self.assertEqual(type(output[1]), list)
+        # assert output[0] is a list of int of length top_k
+        tok_k = model_kwargs["top_k"]
+        self.assertTrue(all([isinstance(elmt, int) for elmt in output[0]]))
+        self.assertEqual(len(output[0]), tok_k)
+        # assert output[1] is a list of float of length top_k
+        tok_k = model_kwargs["top_k"]
+        self.assertTrue(all([isinstance(elmt, float) for elmt in output[1]]))
+        self.assertEqual(len(output[1]), tok_k)
+
+    def test_transformer_reranker_client(self):
+        transformer_reranker_client = TransformerRerankerModelClient(
+            tokenizer_kwargs={"padding": True}
+        )
+        print("Testing transformer reranker client")
+        # run the model
+        kwargs = {
+            "model": "BAAI/bge-reranker-base",
+            "documents": self.documents,
+            "top_k": 2,
+        }
+        api_kwargs = transformer_reranker_client.convert_inputs_to_api_kwargs(
+            input=self.query,
+            model_kwargs=kwargs,
+
+        )
+        print(api_kwargs)
+        self.assertEqual(api_kwargs["model"], "BAAI/bge-reranker-base")
+        output = transformer_reranker_client.call(
+            api_kwargs=api_kwargs
+        )
+        self.assertEqual(type(output), tuple)
 
 # class TestTransformerModelClient(unittest.TestCase):
 #     def setUp(self) -> None:
