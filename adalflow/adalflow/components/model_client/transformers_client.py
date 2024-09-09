@@ -77,6 +77,8 @@ class TransformerEmbeddingModelClient(ModelClient):
         super().__init__()
         self.model_name = model_name
         self.tokenizer_kwargs = tokenizer_kwargs
+        if "return_tensors" not in self.tokenizer_kwargs:
+            self.tokenizer_kwargs["return_tensors"]= "pt"
         self.auto_model=auto_model
         self.auto_tokenizer=auto_tokenizer
         self.custom_model=custom_model
@@ -245,6 +247,8 @@ class TransformerLLMModelClient(ModelClient):
 
         self.model_name = model_name  # current model to use
         self.tokenizer_kwargs = tokenizer_kwargs
+        if "return_tensors" not in self.tokenizer_kwargs:
+            self.tokenizer_kwargs["return_tensors"]= "pt"
         self.use_token = use_token
         self.torch_dtype = torch_dtype
         self.init_from = init_from
