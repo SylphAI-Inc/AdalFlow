@@ -75,7 +75,14 @@ def clean_device_cache():
 
 
 class TransformerEmbeddingModelClient(ModelClient):
+    __doc__ = r"""LightRAG API client for embedding models using HuggingFace's transformers library.
 
+    Use: ``ls ~/.cache/huggingface/hub `` to see the cached models.
+
+    Some modeles are gated, you will need to their page to get the access token.
+    Find how to apply tokens here: https://huggingface.co/docs/hub/security-tokens
+    Once you have a token and have access, put the token in the environment variable HF_TOKEN.
+    """
     #
     #   Model initialisation
     #
@@ -242,7 +249,14 @@ class TransformerEmbeddingModelClient(ModelClient):
 
 
 class TransformerLLMModelClient(ModelClient):
+    __doc__ = r"""LightRAG API client for text generation models using HuggingFace's transformers library.
 
+    Use: ``ls ~/.cache/huggingface/hub `` to see the cached models.
+
+    Some modeles are gated, you will need to their page to get the access token.
+    Find how to apply tokens here: https://huggingface.co/docs/hub/security-tokens
+    Once you have a token and have access, put the token in the environment variable HF_TOKEN.
+    """
     #
     #   Model initialisation
     #
@@ -553,7 +567,14 @@ class TransformerLLMModelClient(ModelClient):
 
 
 class TransformerRerankerModelClient(ModelClient):
+    __doc__ = r"""LightRAG API client for reranker (cross-encoder) models using HuggingFace's transformers library.
 
+    Use: ``ls ~/.cache/huggingface/hub `` to see the cached models.
+
+    Some modeles are gated, you will need to their page to get the access token.
+    Find how to apply tokens here: https://huggingface.co/docs/hub/security-tokens
+    Once you have a token and have access, put the token in the environment variable HF_TOKEN.
+    """
     #
     #   Model initialisation
     #
