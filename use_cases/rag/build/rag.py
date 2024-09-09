@@ -7,14 +7,12 @@ from adalflow.core.db import LocalDB
 from adalflow.utils import setup_env
 
 from adalflow.components.retriever.faiss_retriever import FAISSRetriever
-from adalflow.components.model_client import OpenAIClient
 
 from adalflow.components.data_process import (
     RetrieverOutputToContextStr,
     ToEmbeddings,
     TextSplitter,
 )
-from adalflow.core import ModelClient
 from adalflow.utils.global_config import get_adalflow_default_root_path
 
 setup_env()
@@ -33,9 +31,12 @@ configs = {
         "top_k": 5,
     },
     "generator": {
-        "model": "gpt-3.5-turbo",
-        "temperature": 0.3,
-        "stream": False,
+        "model_client": ModelClientType.OPENAI(),
+        "model_kwargs": {
+            "model": "gpt-3.5-turbo",
+            "temperature": 0.3,
+            "stream": False,
+        },
     },
     "text_splitter": {
         "split_by": "word",
@@ -94,8 +95,9 @@ class RAG(Component):
         self,
         index_file: str = "index.faiss",
         index_path: Optional[str] = None,
-        model_client: ModelClient = ModelClientType.OPENAI(),
-        model_kwargs: dict = None,
+        # model_client: ModelClient = ModelClientType.OPENAI(),
+        # model_kwargs: dict = None,
+        configs: dict = configs,
     ):
         super().__init__()
 
@@ -126,11 +128,10 @@ class RAG(Component):
         self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)
 
         self.generator = Generator(
+            **configs["generator"],
             prompt_kwargs={
                 "task_desc_str": rag_prompt_task_desc,
             },
-            model_client=OpenAIClient(),
-            model_kwargs=configs["generator"],
             output_processors=JsonParser(),
         )
 

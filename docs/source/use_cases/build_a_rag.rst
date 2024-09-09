@@ -1,3 +1,17 @@
+.. <a href="https://colab.research.google.com/drive/1gmxeX1UuUxZDouWhkLGQYrD4hAdt9IVX?usp=sharing" target="_blank" style="margin-right: 10px;">
+..     <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+.. </a>
+
+.. raw:: html
+
+   <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+
+      <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/use_cases/rag/build" target="_blank" style="display: flex; align-items: center;">
+         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+         <span style="vertical-align: middle;"> Open Source Code</span>
+      </a>
+   </div>
+
 Designing RAG
 ================
 
