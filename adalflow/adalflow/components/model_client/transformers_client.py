@@ -50,6 +50,30 @@ def mean_pooling(model_output: dict, attention_mask) -> Tensor:
     input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
     return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
 
+def get_device():
+    # Check device availability and set the device
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        log.info("Using CUDA (GPU) for inference.")
+    elif torch.backends.mps.is_available():
+        device = torch.device("mps")
+        log.info("Using MPS (Apple Silicon) for inference.")
+    else:
+        device = torch.device("cpu")
+        log.info("Using CPU for inference.")
+
+    return device
+
+
+def clean_device_cache():
+    import torch
+
+    if torch.backends.mps.is_built():
+        torch.mps.empty_cache()
+
+        torch.mps.set_per_process_memory_fraction(1.0)
+
+
 class TransformerEmbeddingModelClient(ModelClient):
 
     #
@@ -536,9 +560,13 @@ class TransformerRerankerModelClient(ModelClient):
     def __init__(
         self,
         model_name: Optional[str] = None,
+        auto_model: Optional[type] = AutoModelForSequenceClassification,
+        auto_tokenizer: Optional[type] = AutoTokenizer,
         tokenizer_kwargs: Optional[dict] = {},
         local_files_only: Optional[bool] = False
     ):
+        self.auto_model = auto_model
+        self.auto_tokenizer= auto_tokenizer
         self.model_name = model_name
         self.tokenizer_kwargs = tokenizer_kwargs
         if "return_tensors" not in self.tokenizer_kwargs:
@@ -549,12 +577,12 @@ class TransformerRerankerModelClient(ModelClient):
 
     def init_model(self, model_name: str):
         try:
-            self.tokenizer = AutoTokenizer.from_pretrained(
+            self.tokenizer = self.auto_tokenizer.from_pretrained(
             self.model_name,
             local_files_only=self.local_files_only,
             **self.tokenizer_kwargs
             )
-            self.model = AutoModelForSequenceClassification.from_pretrained(
+            self.model = self.auto_model.from_pretrained(
             self.model_name,
             local_files_only=self.local_files_only
             )
@@ -738,31 +766,6 @@ class TransformerRerankerModelClient(ModelClient):
 #             return self.infer_gte_base_embedding(kwargs["input"])
 #         else:
 #             raise ValueError(f"model {model_name} is not supported")
-
-
-# def get_device():
-#     # Check device availability and set the device
-#     if torch.cuda.is_available():
-#         device = torch.device("cuda")
-#         log.info("Using CUDA (GPU) for inference.")
-#     elif torch.backends.mps.is_available():
-#         device = torch.device("mps")
-#         log.info("Using MPS (Apple Silicon) for inference.")
-#     else:
-#         device = torch.device("cpu")
-#         log.info("Using CPU for inference.")
-
-#     return device
-
-
-# def clean_device_cache():
-#     import torch
-
-#     if torch.has_mps:
-#         torch.mps.empty_cache()
-
-#         torch.mps.set_per_process_memory_fraction(1.0)
-
 
 # class TransformerReranker:
 #     __doc__ = r"""Local model SDK for a reranker model using transformers.
