@@ -536,6 +536,132 @@ class TransformerLLMModelClient(ModelClient):
         final_model_kwargs["messages"] = messages
         return final_model_kwargs
 
+
+class TransformerRerankerModelClient(ModelClient):
+
+    #
+    #   Model initialisation
+    #
+    def __init__(
+        self,
+        model_name: Optional[str] = None,
+        tokenizer_kwargs: Optional[dict] = {},
+        local_files_only: Optional[bool] = False
+    ):
+        self.model_name = model_name
+        self.tokenizer_kwargs = tokenizer_kwargs
+        if "return_tensors" not in self.tokenizer_kwargs:
+            self.tokenizer_kwargs["return_tensors"]= "pt"
+        self.local_files_only = local_files_only
+        if model_name is not None:
+            self.init_model(model_name=model_name)
+
+    def init_model(self, model_name: str):
+        try:
+            self.tokenizer = AutoTokenizer.from_pretrained(
+            self.model_name,
+            local_files_only=self.local_files_only,
+            **self.tokenizer_kwargs
+            )
+            self.model = AutoModelForSequenceClassification.from_pretrained(
+            self.model_name,
+            local_files_only=self.local_files_only
+            )
+            # Check device availability and set the device
+            device = get_device()
+
+            # Move model to the selected device
+            self.device = device
+            self.model.to(device)
+            self.model.eval()
+            # register the model
+            log.info(f"Done loading model {model_name}")
+
+        except Exception as e:
+            log.error(f"Error loading model {model_name}: {e}")
+            raise e
+
+    #
+    #   Inference code
+    #
+
+    def infer_reranker(
+        self,
+        model: str,
+        query: str,
+        documents: List[str],
+    ) -> List[float]:
+        if not self.model:
+            self.init_model(model_name=model)
+        # convert the query and documents to pair input
+        input = [(query, doc) for doc in documents]
+
+        with torch.no_grad():
+
+            inputs = self.tokenizer(
+                input,
+                **self.tokenizer_kwargs
+            )
+            inputs = {k: v.to(self.device) for k, v in inputs.items()}
+            scores = (
+                self.model(**inputs, return_dict=True)
+                .logits.view(
+                    -1,
+                )
+                .float()
+            )
+            # apply sigmoid to get the scores
+            scores = F.sigmoid(scores)
+
+        scores = scores.tolist()
+        return scores
+
+    #
+    # Preprocessing, postprocessing and call for inference code
+    #
+    def call(self, api_kwargs: Dict = {}):
+
+        if "model" not in api_kwargs:
+            raise ValueError("model must be specified in api_kwargs")
+
+        model_name = api_kwargs["model"]
+        if (model_name != self.model_name) and (self.model_name is not None):
+            # need to update the model_name
+            log.warning(f"The model passed in 'model_kwargs' is different that the one that has been previously initialised: Updating model from {self.model_name} to {model_name}.")
+            self.model_name = model_name
+            self.init_model(model_name=model_name)
+        elif (model_name != self.model_name) and (self.model_name is None):
+            # need to initialize the model for the first time
+            self.model_name = model_name
+            self.init_model(model_name=model_name)
+
+        assert "query" in api_kwargs, "query is required"
+        assert "documents" in api_kwargs, "documents is required"
+        assert "top_k" in api_kwargs, "top_k is required"
+
+        top_k = api_kwargs.pop("top_k")
+        scores = self.infer_reranker(**api_kwargs)
+        top_k_indices, top_k_scores = get_top_k_indices_scores(
+            scores, top_k
+        )
+        log.warning(f"output: ({top_k_indices}, {top_k_scores})")
+        return top_k_indices, top_k_scores
+
+    def convert_inputs_to_api_kwargs(
+        self,
+        input: Any,  # for retriever, it is a single query,
+        model_kwargs: dict = {},
+        model_type: ModelType = ModelType.UNDEFINED,
+    ) -> dict:
+        final_model_kwargs = model_kwargs.copy()
+
+        assert "model" in final_model_kwargs, "model must be specified"
+        assert "documents" in final_model_kwargs, "documents must be specified"
+        assert "top_k" in final_model_kwargs, "top_k must be specified"
+        final_model_kwargs["query"] = input
+        return final_model_kwargs
+
+
 #
 #
 #
