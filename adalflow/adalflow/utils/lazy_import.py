@@ -33,7 +33,10 @@ class OptionalPackages(Enum):
     TORCH = ("torch", "Please install torch with: pip install torch")
 
     # search library
-    FAISS = ("faiss", "Please install faiss with: pip install faiss")
+    FAISS = (
+        "faiss",
+        "Please install faiss with: pip install faiss-cpu (or faiss if you use GPU)",
+    )
 
     # db library
     SQLALCHEMY = (
@@ -47,6 +50,10 @@ class OptionalPackages(Enum):
     DATASETS = (
         "datasets",
         "Please install datasets with: pip install datasets",
+    )
+    QDRANT = (
+        "qdrant-client",
+        "Please install qdrant-client with: pip install qdrant-client",
     )
 
     def __init__(self, package_name, error_message):

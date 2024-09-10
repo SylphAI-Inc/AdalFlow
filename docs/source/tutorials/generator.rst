@@ -454,7 +454,7 @@ Besides these examples, LLM is like water, even in our library, we have componen
 
 - :class:`LLMRetriever<components.retriever.llm_retriever.LLMRetriever>` is a retriever that uses Generator to call LLM to retrieve the most relevant documents.
 - :class:`DefaultLLMJudge<eval.llm_as_judge.DefaultLLMJudge>` is a judge that uses Generator to call LLM to evaluate the quality of the response.
-- :class:`LLMOptimizer<optim.llm_optimizer.LLMOptimizer>` is an optimizer that uses Generator to call LLM to optimize the prompt.
+- :class:`TGDOptimizer<optim.text_grad.tgd_optimizer.TGDOptimizer>` is an optimizer that uses Generator to call LLM to optimize the prompt.
 - :class:`ReAct Agent Planner<components.agent.react.ReActAgent>` is an LLM planner that uses Generator to plan and to call functions in ReAct Agent.
 
 Tracing
@@ -470,9 +470,10 @@ In particular, we provide two tracing methods to help you develop and improve th
 As this note is getting rather long. Please refer to the :doc:`tracing<logging_tracing>` to learn about these two tracing methods.
 
 
-Training [Experimental]
+Training
 ---------------------------------------
-Coming soon!
+Generator in default support training mode.
+It will require users to define ``Parameter`` and pass it to the ``prompt_kwargs``.
 
 .. A Note on Tokenization#
 .. By default, LlamaIndex uses a global tokenizer for all token counting. This defaults to cl100k from tiktoken, which is the tokenizer to match the default LLM gpt-3.5-turbo.
@@ -494,5 +495,5 @@ Coming soon!
    - :class:`components.retriever.llm_retriever.LLMRetriever`
    - :class:`components.agent.react.ReActAgent`
    - :class:`eval.llm_as_judge.DefaultLLMJudge`
-   - :class:`optim.llm_optimizer.LLMOptimizer`
+   - :class:`optim.text_grad.tgd_optimizer.TGDOptimizer`
    - :func:`utils.config.new_component`

@@ -1,3 +1,24 @@
+## [0.2.2] - 2024-09-09
+### Added
+- `get_cache_path`, instead of print out the cache path all the time, we add a ``get_cache_path`` to get the cache path.
+- Make `huggingface datasets` as an optional dependency.
+- Eval: `G_eval` to evaluate llm applications that have no reference text.
+### Modified
+- Add `template` to let users pass their own template, but need to have the same arguments as the default template.
+- Added `checkpoint resume` in the `Trainer.diagnose` to show the newest performance and diagnostics on the checkpoint.
+
+## [0.2.0] - 2024-08-20
+### Added
+- Qdrant retriever.
+
+### Improved
+- Add "mixed" training in ``Trainer`` to do demo and text optimization both in each step.
+- ``DemoOptimizer``, allow to config if the input fields are included or excluded in the demonstration.
+-  Added ``sequential`` and ``mix`` in the ``optimization_order`` in the ``Trainer`` to support the mixed training.
+-  Added ``resume_from_ckpt`` in the ``Trainer.fit``.
+
+### Fixed Bug
+- wrong import in ``react`` agent.
 ## [0.2.0.beta.3] - 2024-08-16
 ### Fixed
 - missing `diskcache` package in the dependencies.

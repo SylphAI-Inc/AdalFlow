@@ -152,7 +152,6 @@ class EvalFnToTextLoss(LossComponent):
         eval_inputs = {}
         for k, v in kwargs.items():
             eval_inputs[k] = v.eval_input
-
         score: float = self.eval_fn(**eval_inputs)
 
         # Create a parameter
@@ -284,14 +283,14 @@ class EvalFnToTextLoss(LossComponent):
         gradient_value: GeneratorOutput = backward_engine(
             prompt_kwargs=backward_engine_prompt_kwargs
         )
-        gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
+        # gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
         gradient_value_data = (
             gradient_value.data
             or backward_engine.failure_message_to_optimizer(
                 gradient_response=gradient_value
             )
         )
-        print(f"gradient_prompt: {gradient_prompt}")
+        # print(f"gradient_prompt: {gradient_prompt}")
         # gradient_value_data = response.data.to_yaml()
 
         log.debug(f"EvalFnToTextLoss: Gradient for {pred}: {gradient_value_data}")

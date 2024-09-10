@@ -18,12 +18,14 @@ from adalflow.core.types import (
     FunctionExpression,
 )
 from adalflow.core.model_client import ModelClient
-from lighadalflowtrag.utils.logger import printc
+from adalflow.utils.logger import printc
 
 
 log = logging.getLogger(__name__)
 
 __all__ = ["DEFAULT_REACT_AGENT_SYSTEM_PROMPT", "ReActAgent"]
+
+# TODO: test react agent
 
 DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<SYS>
 {# role/task description #}

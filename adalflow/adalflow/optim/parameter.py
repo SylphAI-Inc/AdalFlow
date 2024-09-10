@@ -463,7 +463,7 @@ class Parameter(Generic[T]):
             if filepath
             else os.path.join(root_path, "graphs", filename)
         )
-        print(f"Saving graph to {filepath}")
+        print(f"Saving graph to {filepath}.{format}")
 
         def wrap_text(text, width):
             """Wrap text to the specified width, considering HTML breaks."""
@@ -609,6 +609,8 @@ class Parameter(Generic[T]):
             "score": self._score,
             "traces": {k: v.to_dict() for k, v in self._traces.items()},
             "input_args": self.input_args,
+            # demos
+            "demos": [d.to_dict() for d in self._demos],
         }
 
     @classmethod
@@ -628,6 +630,8 @@ class Parameter(Generic[T]):
             raw_response=data["raw_response"],
             input_args=data["input_args"],
             score=data["score"],
+            # demos
+            demos=[DataClass.from_dict(d) for d in data["demos"]],
         )
         # Reconstruct gradients_context from the list of tuples
         param.gradients_context = defaultdict(

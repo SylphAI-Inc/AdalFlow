@@ -1,3 +1,16 @@
+.. raw:: html
+
+   <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+      <a href="https://colab.research.google.com/drive/1n3mHUWekTEYHiBdYBTw43TKlPN41A9za?usp=sharing" target="_blank" style="margin-right: 10px;">
+         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+      </a>
+      <a href="https://github.com/SylphAI-Inc/AdalFlow/tree/main/use_cases/question_answering/bbh/object_count" target="_blank" style="display: flex; align-items: center;">
+         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+         <span style="vertical-align: middle;"> Open Source Code</span>
+      </a>
+   </div>
+
+
 Introduction to AdalFlow library
 ===============================
 
@@ -546,7 +559,7 @@ Now, we can use the trainer to train the model.
     ):
         adal_component = ObjectCountAdalComponent(
             **gpt_3_model,
-            teacher_model_config=gpt_3_model,
+            teacher_model_config=gpt_4o_model,
             text_optimizer_model_config=gpt_4o_model,
             backward_engine_model_config=gpt_4o_model
         )

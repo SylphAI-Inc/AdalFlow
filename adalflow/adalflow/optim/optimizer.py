@@ -59,16 +59,21 @@ class DemoOptimizer(Optimizer):
     _traces: Dict[str, Any]  # key: parameter_id (demo)
     dataset: Sequence[DataClass]
     _weighted: bool
+    exclude_input_fields_from_bootstrap_demos: bool = False
 
     def __init__(
         self,
         weighted: bool = True,
         dataset: Sequence[DataClass] = None,
+        exclude_input_fields_from_bootstrap_demos: bool = False,
         *args,
         **kwargs
     ):
         self._weighted = weighted
         self.dataset = dataset
+        self.exclude_input_fields_from_bootstrap_demos = (
+            exclude_input_fields_from_bootstrap_demos
+        )
 
     def use_weighted_sampling(self, weighted: bool):
         self._weighted = weighted

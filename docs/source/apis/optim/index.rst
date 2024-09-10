@@ -54,7 +54,6 @@ Textual Gradient
 ----------------------------
 .. autosummary::
 
-   optim.text_grad.function
    optim.text_grad.llm_text_loss
    optim.text_grad.text_loss_with_eval_fn
    optim.text_grad.ops

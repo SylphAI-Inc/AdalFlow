@@ -7,22 +7,17 @@ import subprocess
 from adalflow.utils.data import Dataset
 from adalflow.datasets.types import Example
 
-from adalflow.utils.global_config import get_adalflow_default_root_path
 from adalflow.utils.file_io import save_csv
-
-
-def prepare_dataset_path(root: str, task_name: str):
-    if root is None:
-        root = os.path.join(get_adalflow_default_root_path(), "cache_datasets")
-
-    save_path = os.path.join(root, task_name)
-    os.makedirs(save_path, exist_ok=True)
-    return save_path
+from adalflow.datasets.utils import prepare_dataset_path
 
 
 # TODO: here users clean adalflow created files
 class BigBenchHard(Dataset):
     __doc__ = """Big Bench Hard dataset for object counting task.
+
+    You can find the task name from the following link:
+    https://github.com/suzgunmirac/BIG-Bench-Hard/tree/main/bbh
+
 
     Data will be saved to ~/.adalflow/cache_datasets/BBH_object_counting/{split}.csv
     if root is not specified.
@@ -31,6 +26,11 @@ class BigBenchHard(Dataset):
     - train: 50 examples
     - val: 50 examples
     - test: 100 examples
+
+    Args:
+        task_name (str): The name of the task. "BHH_{task_name}" is the task name in the dataset.
+        root (str, optional): Root directory of the dataset to save the data. Defaults to ~/.adalflow/cache_datasets/task_name.
+        split (str, optional): The dataset split, supports ``"train"`` (default), ``"val"`` and ``"test"``.
     """
 
     def __init__(
@@ -63,7 +63,6 @@ class BigBenchHard(Dataset):
                 self.data.append(
                     Example(question=row["x"], answer=row["y"], id=row["id"])
                 )  # dont use a tuple, use a dict {"x": ..., "y": ...}
-        self._task_description = "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value."
 
     def _check_or_download_dataset(self, data_path: str = None, split: str = "train"):
 
@@ -90,6 +89,9 @@ class BigBenchHard(Dataset):
 
         examples = data["examples"]
 
+        # NOTE: better to shuffle the examples before splitting.
+        # We do this splitting in order to be consistent with text-grad paper.
+
         train_examples = [
             {"x": ex["input"], "y": ex["target"], "id": str(uuid.uuid4())}
             for ex in examples[:50]
@@ -100,8 +102,9 @@ class BigBenchHard(Dataset):
         ]
         test_examples = [
             {"x": ex["input"], "y": ex["target"], "id": str(uuid.uuid4())}
-            for ex in examples[100:200]
+            for ex in examples[150:250]
         ]
+        # ensure the
 
         for split, examples in zip(
             ["train", "val", "test"], [train_examples, val_examples, test_examples]
@@ -116,14 +119,16 @@ class BigBenchHard(Dataset):
     def __len__(self):
         return len(self.data)
 
-    def get_default_task_instruction(self):
-        return self._task_description
+    @staticmethod
+    def get_default_task_instruction():
+        _task_description = "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value."
+        return _task_description
 
 
 if __name__ == "__main__":
     from adalflow.datasets.big_bench_hard import BigBenchHard
 
-    dataset = BigBenchHard("BBH_object_counting", split="train")
-    print(dataset[0])
+    dataset = BigBenchHard("BBH_word_sorting", split="train")
+    print(dataset[0:10])
     print(len(dataset))
     print(dataset.get_default_task_instruction())

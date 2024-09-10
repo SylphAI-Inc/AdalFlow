@@ -1,17 +1,17 @@
-.. raw:: html
+.. .. raw:: html
 
-   <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
-      <a href="https://colab.research.google.com/drive/1_sGeHaKrwpI9RiL01g3cKyI2_5PJqZtr?usp=sharing" target="_blank" style="margin-right: 10px;">
-         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
-      </a>
-      <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/tutorials/prompt_note.py" target="_blank" style="display: flex; align-items: center;">
-         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
-         <span style="vertical-align: middle;"> Open Source Code</span>
-      </a>
-   </div>
+..    <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+..       <a href="https://colab.research.google.com/drive/1_sGeHaKrwpI9RiL01g3cKyI2_5PJqZtr?usp=sharing" target="_blank" style="margin-right: 10px;">
+..          <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+..       </a>
+..       <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/tutorials/prompt_note.py" target="_blank" style="display: flex; align-items: center;">
+..          <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+..          <span style="vertical-align: middle;"> Open Source Code</span>
+..       </a>
+..    </div>
 
 
-Data (Database/Pipeline) & RAG
+Data (Database/Pipeline)
 ================================
 
 .. .. admonition:: Author
@@ -20,7 +20,7 @@ Data (Database/Pipeline) & RAG
 ..    `Li Yin <https://github.com/liyin2015>`_
 
 
-The purpose of this note is to provide an overview on data, data modeling, and data storage in LLM applications along with how LightRAG works with data.
+The purpose of this note is to provide an overview on data, data modeling, and data storage in LLM applications along with how AdalFlow works with data.
 We will conver:
 
 * Data models on how to represent important data.
@@ -33,7 +33,7 @@ We will conver:
     Datasets, including the input and ground truth output loading and dataset will be covered in the optimizing section.
 
 So far, we have seen how our core components like ``Generator``, ``Embedder``, and ``Retriever`` work without any data cache/database and enforced data format to read data from and to write data to.
-However, in real-world LLM applications, we can not avoid to deal with data storage:
+However, in real-world LLM applications, we can not avoid dealing with data storage.
 
 1. Our documents to retrieve context from can be large and be stored in a file system or in a database in forms of tables or graphs.
 2. We often need to pre-process a large amount of data (like text splitting and embedding and idf in BM25) in a datapipline into a cloud database.
@@ -182,7 +182,7 @@ Here is the code to form a data pipeline:
 
     from adalflow.core.embedder import Embedder
     from adalflow.core.types import ModelClientType
-    from adalflow.components.data_process import DocumentSplitter, ToEmbeddings
+    from adalflow.components.data_process import TextSplitter, ToEmbeddings
     from adalflow.core.component import Sequential
 
 
@@ -198,7 +198,7 @@ Here is the code to form a data pipeline:
         "split_overlap": 10
     }
 
-    splitter = DocumentSplitter(**splitter_config)
+    splitter = TextSplitter(**splitter_config)
     embedder = Embedder(model_client =ModelClientType.OPENAI(), model_kwargs=model_kwargs)
     embedder_transformer = ToEmbeddings(embedder, batch_size=2)
     data_transformer = Sequential(splitter, embedder_transformer)
@@ -209,7 +209,7 @@ The printout will be:
 .. code-block::
 
     Sequential(
-    (0): DocumentSplitter(split_by=word, split_length=50, split_overlap=10)
+    (0): TextSplitter(split_by=word, split_length=50, split_overlap=10)
     (1): ToEmbeddings(
         batch_size=2
         (embedder): Embedder(
@@ -360,7 +360,7 @@ The printout will be:
     Adding embeddings to documents from batch: 2it [00:00, 63072.24it/s]
     [Document(id=64987b2b-b6c6-4eb4-9122-02448e3fd394, text='What are the benefits of renewable energy? I can see you are interested in renewable energy. Renewab...', meta_data=None, vector='len: 256', parent_doc_id=f2eddc77-4667-43f5-87e0-fd11f12958b3, order=0, score=None), Document(id=9a424d4c-4bd0-48ce-aba9-7a4f86892556, text='and installation sectors. The growth in renewable energy usage boosts local economies through increa...', meta_data=None, vector='len: 256', parent_doc_id=f2eddc77-4667-43f5-87e0-fd11f12958b3, order=1, score=None), Document(id=45efa517-8e52-4780-bdbd-2329ffa8d4b6, text='How do solar panels impact the environment? Solar panels convert sunlight into electricity by allowi...', meta_data=None, vector='len: 256', parent_doc_id=b2dbdf2f-f513-493d-aaa8-c77c98ac260f, order=0, score=None), Document(id=bc0ff7f6-27cc-4e24-8c3e-9435ed755e20, text='has been found to have a significant positive effect on the environment by reducing the reliance on ...', meta_data=None, vector='len: 256', parent_doc_id=b2dbdf2f-f513-493d-aaa8-c77c98ac260f, order=1, score=None)]
     Sequential(
-    (0): DocumentSplitter(split_by=word, split_length=50, split_overlap=10)
+    (0): TextSplitter(split_by=word, split_length=50, split_overlap=10)
     (1): ToEmbeddings(
         batch_size=2
         (embedder): Embedder(
@@ -520,15 +520,16 @@ Now, we can use the ``fetched_dialog_turns`` to continue the conversation with t
 
 Cloud database
 --------------------
+Please check out the :ref:`Retriever<tutorials-retriever>` for using Cloud database as a storage and a retriever.
 
-Suggestion on File reading and writing
+File Reading
 ------------------------------------------
-We dont provide integration on using ``fsspec``, but here we can give you some suggestions on how to use it.
+We dont provide integration currently, but using file reading packages like `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_ should be fairly easy to use with our data processing pipeline.
 
 
 
-Graph database
---------------------
+.. Graph database
+.. --------------------
 
 
 .. admonition:: API References
@@ -537,5 +538,10 @@ Graph database
    - :class:`core.types.Document`
    - :class:`core.types.DialogTurn`
    - :class:`core.db.LocalDB`
-   - :class:`components.data_process.DocumentSplitter`
+   - :class:`components.data_process.text_splitter.TextSplitter`
    - :class:`components.data_process.ToEmbeddings`
+
+
+.. admonition:: Additional Resources
+
+   - `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_

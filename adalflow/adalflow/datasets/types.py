@@ -41,7 +41,10 @@ class TrecData(BaseData):
         metadata={"desc": "The question to be classified"},
         default=None,
     )
-    class_name: str = field(metadata={"desc": "The class name"}, default=None)
+    class_name: str = field(
+        metadata={"desc": "One of {ABBR, ENTY, DESC, HUM, LOC, NUM}"},
+        default=None,
+    )
     class_index: int = field(
         metadata={"desc": "The class label, in range [0, 5]"},
         default=-1,

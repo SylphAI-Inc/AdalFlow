@@ -5,6 +5,7 @@ import concurrent
 from tqdm import tqdm
 import numpy as np
 import warnings
+import logging as log
 
 if TYPE_CHECKING:
     from adalflow.core.model_client import ModelClient
@@ -19,6 +20,9 @@ from adalflow.optim.types import PromptData
 from adalflow.eval.base import EvaluationResult
 
 from adalflow.optim.optimizer import DemoOptimizer, TextOptimizer
+
+
+log = log.getLogger(__name__)
 
 
 class AdalComponent(Component):
@@ -63,6 +67,17 @@ class AdalComponent(Component):
         self.backward_engine_model_config = backward_engine_model_config
         self.teacher_model_config = teacher_model_config
         self.text_optimizer_model_config = text_optimizer_model_config
+        self._demo_optimizers = None
+        self._text_optimizers = None
+
+    def _set_param_values(self, prompts: List[PromptData]):
+        r"""Set the parameters for the task. Used to resume from ckpt."""
+
+        params_dict = {p.name: p for p in prompts}
+
+        for name, param in self.task.named_parameters():
+            if name in params_dict:
+                param.update_value(params_dict[name].data)
 
     def _get_param_values(self) -> List[PromptData]:
         r"""Get the current values of the parameters."""
@@ -124,35 +139,138 @@ class AdalComponent(Component):
         The higher the score the better the prediction."""
         raise NotImplementedError("evaluate_one_sample method is not implemented")
 
-    def configure_optimizers(self, *args, **kwargs) -> Optimizer:
+    # def configure_optimizers(self, *args, **kwargs) -> Optimizer:
+    #     r"""Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too."""
+    #     raise NotImplementedError("configure_optimizers method is not implemented")
+
+    def configure_optimizers(self, *args, **kwargs) -> List[Optimizer]:
         r"""Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too."""
-        raise NotImplementedError("configure_optimizers method is not implemented")
+        if self._demo_optimizers is None:
+            self._demo_optimizers = self.configure_demo_optimizer_helper()
+        if self._text_optimizers is None:
+            if not self.text_optimizer_model_config:
+                raise ValueError("Text optimizer model config is not configured.")
+            if not self.text_optimizer_model_config.get("model_client"):
+                raise ValueError("Model client is not configured.")
+            if not self.text_optimizer_model_config.get("model_kwargs"):
+                raise ValueError("Model kwargs is not configured.")
+
+            self._text_optimizers = self.configure_text_optimizer_helper(
+                **self.text_optimizer_model_config
+            )
+        return self._demo_optimizers + self._text_optimizers
 
     def configure_backward_engine(self, *args, **kwargs):
-        raise NotImplementedError("configure_backward_engine method is not implemented")
+        r"""Configure a backward engine for all generators in the task for bootstrapping examples."""
+        # check if backward engine is already configured
+        if self.backward_engine:
+            log.warning("Backward engine is already configured.")
+        if not self.backward_engine_model_config:
+            raise ValueError("Backward engine model config is not configured.")
+        if not self.backward_engine_model_config.get("model_client"):
+            raise ValueError("Model client is not configured.")
+        if not self.backward_engine_model_config.get("model_kwargs"):
+            raise ValueError("Model kwargs is not configured.")
+        self.configure_backward_engine_helper(
+            model_client=self.backward_engine_model_config["model_client"],
+            model_kwargs=self.backward_engine_model_config["model_kwargs"],
+        )
+
+    # def configure_backward_engine(self, *args, **kwargs):
+    #     raise NotImplementedError("configure_backward_engine method is not implemented")
 
     def evaluate_samples(
-        self, samples: Any, y_preds: List, metadata: Optional[Dict[str, Any]] = None
+        self,
+        samples: Any,
+        y_preds: List,
+        metadata: Optional[Dict[str, Any]] = None,
+        num_workers: int = 2,
     ) -> EvaluationResult:
-        r"""Run evaluation on samples. Use ``evaluate_one_sample`` defined by the user.
+        r"""Run evaluation on samples using parallel processing. Utilizes ``evaluate_one_sample`` defined by the user.
 
         Metadata is used for storing context that you can find from generator input.
 
-        Note:
-            ensure it supports both Tuple(batch) and a list of any type (fits for datasets).
+        Args:
+            samples (Any): The input samples to evaluate.
+            y_preds (List): The predicted outputs corresponding to each sample.
+            metadata (Optional[Dict[str, Any]]): Optional metadata dictionary.
+            num_workers (int): Number of worker threads for parallel processing.
+
+        Returns:
+            EvaluationResult: An object containing the average score and per-item scores.
         """
-        if metadata is None:
-            acc_list = [
-                self.evaluate_one_sample(sample, y_pred)
-                for sample, y_pred in zip(samples, y_preds)
-            ]
-        else:
-            acc_list = [
-                self.evaluate_one_sample(sample, y_pred, metadata=metadata)
-                for sample, y_pred in zip(samples, y_preds)
-            ]
+        from adalflow.optim.parameter import Parameter
+
+        if not isinstance(y_preds, list) or len(y_preds) == 0:
+            raise ValueError(f"y_preds is not a list or empty: {y_preds}")
+
+        y_pred_0 = y_preds[0]
+        if isinstance(y_pred_0, Parameter):
+            raise ValueError(f"y_pred_0 should not be a Parameter: {y_pred_0}")
+
+        acc_list = [None] * len(samples)  # Initialize accuracy list to hold results
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
+
+            # 1. submit all the tasks
+            futures = {}
+
+            for i, (sample, y_pred) in enumerate(zip(samples, y_preds)):
+                if metadata is None:
+                    future = executor.submit(self.evaluate_one_sample, sample, y_pred)
+                else:
+                    future = executor.submit(
+                        self.evaluate_one_sample, sample, y_pred, metadata=metadata
+                    )
+                futures[future] = i
+
+            # 2. collect the results, update the progress bar
+            # Initialize progress bar once outside the loop
+            progress_bar = tqdm(
+                total=len(samples), desc="Evaluating", position=0, leave=True
+            )
+
+            for future in concurrent.futures.as_completed(futures):
+                i = futures[future]
+                acc_list[i] = (
+                    future.result()
+                )  # Place the result in the correct position
+                progress_bar.update(
+                    1
+                )  # Update progress bar after each result is collected
+
         avg_score = float(np.mean(np.array(acc_list)))
         return EvaluationResult(avg_score=avg_score, per_item_scores=acc_list)
+
+    # def evaluate_samples(
+    #     self, samples: Any, y_preds: List, metadata: Optional[Dict[str, Any]] = None
+    # ) -> EvaluationResult:
+    #     r"""Run evaluation on samples. Use ``evaluate_one_sample`` defined by the user.
+
+    #     Metadata is used for storing context that you can find from generator input.
+
+    #     Note:
+    #         ensure it supports both Tuple(batch) and a list of any type (fits for datasets).
+    #     """
+    #     from adalflow.optim.parameter import Parameter
+
+    #     if not isinstance(y_preds, list) or len(y_preds) == 0:
+    #         raise ValueError(f"y_preds is not a list or empty: {y_preds}")
+    #     y_pred_0 = y_preds[0]
+    #     if isinstance(y_pred_0, Parameter):
+    #         raise ValueError(f"y_pred_0 should not be a Parameter: {y_pred_0}")
+    #     if metadata is None:
+    #         acc_list = [
+    #             self.evaluate_one_sample(sample, y_pred)
+    #             for sample, y_pred in zip(samples, y_preds)
+    #         ]
+    #     else:
+    #         acc_list = [
+    #             self.evaluate_one_sample(sample, y_pred, metadata=metadata)
+    #             for sample, y_pred in zip(samples, y_preds)
+    #         ]
+    #     avg_score = float(np.mean(np.array(acc_list)))
+    #     return EvaluationResult(avg_score=avg_score, per_item_scores=acc_list)
 
     def _train_step(
         self,
@@ -235,8 +353,10 @@ class AdalComponent(Component):
         y_preds = [None] * len(batch)
         samples = [None] * len(batch)
         completed_indices = set()
+        index_to_score = {}  # for running evaluation
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
+            # 1. submit all the tasks
             futures = []
             tqdm_loader = tqdm(batch, total=len(batch), desc="Loading Data")
             for i, sample in enumerate(tqdm_loader):
@@ -244,10 +364,11 @@ class AdalComponent(Component):
                 future = executor.submit(task_call, **kwargs)
                 futures.append((future, i, sample))  # preserve the order of the samples
 
+            # 2. predict the results, update the progress bar
             tqdm_loader = tqdm(
                 total=len(futures),
                 position=0,
-                desc=f"Evaluating step: {batch_idx}",
+                desc=f"Prediting step: {batch_idx}",
             )
             for future, i, sample in futures:
                 y_pred = future.result()
@@ -258,13 +379,15 @@ class AdalComponent(Component):
                 assert (
                     y_pred.id == sample.id
                 ), f"ID mismatch: {y_pred.id} != {sample.id}, type: {type(y_pred)}"
+
                 completed_indices.add(i)  # Mark this index as completed
 
                 if running_eval and not isinstance(y_pred, Parameter):
-                    # Perform running evaluation only on completed samples
-                    sorted_indices = sorted(completed_indices)
-                    completed_y_preds = [y_preds[idx] for idx in sorted_indices]
-                    completed_samples = [samples[idx] for idx in sorted_indices]
+                    # evaluate one sample
+                    score = self.evaluate_one_sample(sample, y_pred)
+                    index_to_score[i] = score
+                    eval_score = np.mean(list(index_to_score.values())).item()
+
                     # for y_pred, sample in zip(completed_y_preds, completed_samples):
                     #     print(f"y_pred: {y_pred.data}, sample: {sample.answer}")
                     # for y_pred, sample in zip(completed_y_preds, completed_samples):
@@ -273,10 +396,6 @@ class AdalComponent(Component):
                     #             f"ID mismatch: {y_pred.id} != {sample.id}, type: {type(y_pred)}"
                     #         )
                     #     print(f"y_pred: {y_pred.data}, sample: {sample.answer}")
-                    # TODO: each time only call evaluate on one sample
-                    eval_score = self.evaluate_samples(
-                        completed_samples, completed_y_preds
-                    ).avg_score
 
                     remaining_samples = len(batch) - len(completed_indices)
                     max_score = (
@@ -287,10 +406,10 @@ class AdalComponent(Component):
                         break
 
                     tqdm_loader.set_description(
-                        f"Evaluating step({batch_idx}): {round(eval_score,4)} across {len(completed_indices)} samples, Max potential: {round(max_score,4)}"
+                        f"Predicting: step({batch_idx}): {round(eval_score,4)} across {len(completed_indices)} samples, Max potential: {round(max_score,4)}"
                     )
                 else:
-                    tqdm_loader.set_description(f"Evaluating step({batch_idx})")
+                    tqdm_loader.set_description(f"Predicting: step({batch_idx})")
 
                 tqdm_loader.update(1)  # Update the progress bar
 
@@ -298,7 +417,7 @@ class AdalComponent(Component):
         completed_y_preds = [y_preds[idx] for idx in sorted_indices]
         completed_samples = [samples[idx] for idx in sorted_indices]
 
-        return completed_y_preds, completed_samples
+        return completed_y_preds, completed_samples, index_to_score
 
     def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
         self.task.train()
@@ -331,12 +450,29 @@ class AdalComponent(Component):
         """
         # TODO: let use decide which mode to be
         self.task.eval()
-        completed_y_preds, completed_samples = self.pred_step(
+        completed_y_preds, completed_samples, index_to_score = self.pred_step(
             batch, batch_idx, num_workers, running_eval=True, min_score=minimum_score
         )
-        eval_results = self.evaluate_samples(
-            samples=completed_samples, y_preds=completed_y_preds
-        )
+        if index_to_score:
+            # compute score from index_to_score
+            print(
+                f"completed_samples: {len(completed_samples)}, len: {len(list(index_to_score.values()))}"
+            )
+            avg_score = np.mean(list(index_to_score.values())).item()
+            acc_list = [None] * len(index_to_score)
+            for i, score in index_to_score.items():
+                acc_list[i] = score
+            acc_list = list(index_to_score.values())
+            eval_results = EvaluationResult(
+                avg_score=avg_score, per_item_scores=acc_list
+            )
+        else:
+
+            eval_results = self.evaluate_samples(
+                samples=completed_samples,
+                y_preds=completed_y_preds,
+                num_workers=num_workers,
+            )
         return eval_results
 
     def loss_step(
@@ -369,14 +505,29 @@ class AdalComponent(Component):
                 tqdm_loader.update(1)
         return losses
 
+    # def configure_teacher_generator(self):
+    #     r"""Configure a teach generator for all generators in the task for bootstrapping examples.
+
+    #     You can call `configure_teacher_generator_helper` to easily configure it by passing the model_client and model_kwargs.
+    #     """
+    #     raise NotImplementedError(
+    #         "configure_teacher_generator method is not implemented"
+    #     )
+
+    # use default implementation
     def configure_teacher_generator(self):
         r"""Configure a teach generator for all generators in the task for bootstrapping examples.
 
         You can call `configure_teacher_generator_helper` to easily configure it by passing the model_client and model_kwargs.
         """
-        raise NotImplementedError(
-            "configure_teacher_generator method is not implemented"
-        )
+        if not self.teacher_model_config:
+            raise ValueError("Teacher model config is not configured.")
+        if not self.teacher_model_config.get("model_client"):
+            raise ValueError("Model client is not configured.")
+        if not self.teacher_model_config.get("model_kwargs"):
+            raise ValueError("Model kwargs is not configured.")
+        print("Configuring teacher generator.")
+        self.configure_teacher_generator_helper(**self.teacher_model_config)
 
     def configure_teacher_generator_helper(
         self,
@@ -544,7 +695,7 @@ class AdalComponent(Component):
         self, model_client: "ModelClient", model_kwargs: Dict[str, Any]
     ) -> List[TextOptimizer]:
         r"""One text optimizer can handle multiple text parameters."""
-        from adalflow.optim.text_grad.tgd_optimer import TGDOptimizer
+        from adalflow.optim.text_grad.tgd_optimizer import TGDOptimizer
         from adalflow.optim.parameter import ParameterType
 
         parameters = []

@@ -215,7 +215,7 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
 
 
 
-Optimizing
+Optimization
 -------------------
 AdalFlow auto-optimization provides a powerful and unified framework to optimize every single part of the prompt: (1) instruction, (2) few-shot examples, and (3) the prompt template,
 for any task pipeline you have just built. We leverage all SOTA prompt optimization from Dspy, Text-grad, ORPO, to our own research in the library.
@@ -227,8 +227,10 @@ The optimization requires users to have at least one dataset, an evaluator, and 
 This section we will briefly cover the datasets and evaluation metrics supported in the library.
 
 
-Evaluating
+Evaluation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+You can not optimize what you can not meature.
+In this section, we provide a general guide to the evaluation datasets, metrics, and methods to productionize your LLM tasks and to publish your research.
 
 .. list-table::
    :widths: 20 80
@@ -236,20 +238,18 @@ Evaluating
 
    * - Part
      - Description
-   * - :doc:`datasets`
-     - The datasets used in the evaluation.
    * - :doc:`evaluation`
-     - The evaluation metrics and methods.
+     - A quick guide to the evaluation datasets, metrics, and methods.
+   * - :doc:`datasets`
+     - How to load and use the datasets in the library.
 
 .. toctree::
    :maxdepth: 1
    :caption: Evaluating
    :hidden:
 
-
-   datasets
-
    evaluation
+   datasets
 
 
 Training
