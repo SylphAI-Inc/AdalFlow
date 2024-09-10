@@ -29,6 +29,7 @@
         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.html">Models</a> |
         <a href="https://adalflow.sylph.ai/apis/components/components.retriever.html">Retrievers</a> |
         <a href="https://adalflow.sylph.ai/apis/components/components.agent.html">Agents</a> |
+        <a href="https://adalflow.sylph.ai/tutorials/evaluation.html"> LLM evaluation</a> |
         <a href="https://adalflow.sylph.ai/use_cases/question_answering.html">Trainer & Optimizers</a>
     <p>
 </h4>
