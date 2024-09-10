@@ -11,7 +11,7 @@ Jupyter notebooks/colabs will be in complementary to documents on our [documenta
 
 We provided a colab template at `notebooks/adalflow_colab_template` that you can make a copy use:
 
-`git cp notebooks/adalflow_colab_template.ipynb notebooks/your_new_colab.ipynb`.
+`cp notebooks/adalflow_colab_template.ipynb notebooks/your_new_colab.ipynb`.
 
 The template consists of three parts:
 

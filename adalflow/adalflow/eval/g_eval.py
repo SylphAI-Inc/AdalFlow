@@ -81,10 +81,7 @@ Evaluation Steps:
 {% endif %}
 {{input_str}}
 { # evaluation form #}
-Evaluation Form (scores ONLY):
-- {{metric_name}}:
-
-Output the score only.
+Output the score for metric (scores ONLY!): {{metric_name}}
 <END_OF_SYSTEM_PROMPT>
 """
 
@@ -176,13 +173,14 @@ class GEvalLLMJudge(Component):
                 prompt_kwargs=self.prompt_kwargs[metric_name]
             )
             # print(
-            #     f"prompt: {self.llm_evaluator.get_prompt(**self.prompt_kwargs[metric_name])}"
+            #     f"prompt: \n{self.llm_evaluator.get_prompt(**self.prompt_kwargs[metric_name])}"
             # )
             output[metric_name] = (
                 metric_score.data / all_geval_metrics_to_range[metric_name]
                 if metric_score and metric_score.data
                 else None
             )
+            # print(f"metric score: {metric_score}")
             if output[metric_name]:
                 total_scores += output[metric_name]
                 num_metrics += 1

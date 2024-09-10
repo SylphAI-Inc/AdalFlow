@@ -210,7 +210,7 @@ The key is to clearly define the metric using text.
 
 **We are developing LLM judge to replace human labelers, boosting efficiency and reducing financial costs.**
 
-**With References**
+
 
 The most straightforward LLM judge predicts a yes/no answer or a float score in range [0, 1] based on the comparison between the generated text and the reference text for a given judgment query.
 
@@ -219,6 +219,33 @@ Here is AdalFlow's default judegement query:
 .. code-block:: python
 
     DEFAULT_JUDGEMENT_QUERY = "Does the predicted answer contain the ground truth answer? Say True if yes, False if no."
+
+
+
+
+AdalFlow provides a very customizable LLM judge, which can be used in three ways:
+
+1. With question, ground truth, and generated text
+2. Without question, with ground truth, and generated text, mainly matching the ground truth and the generated text
+3. With question, without ground truth, with generated text, mainly matching between the questiona and the generated text
+
+And you can customize the `judgement_query` towards your use case or even the whole llm template.
+
+AdalFlow LLM judge returns `LLMJudgeEvalResult` which has three fields:
+1. `avg_score`: average score of the generated text
+2. `judgement_score_list`: list of scores for each generated text
+3. `confidence_interval`: a tuple of the 95% confidence interval of the scores
+
+
+`DefaultLLMJudge` is an LLM task pipeline that takes a single question(optional), ground truth(optional), and generated text and returns the float score in range [0,1].
+
+You can use it as an `eval_fn` for AdalFlow Trainer.
+
+`LLMAsJudge` is an evaluator that takes a list of inputs and returns a list of `LLMJudgeEvalResult`.
+Besides of the score, it computes the confidence interval of the scores.
+
+
+**Case 1: With References**
 
 Now, you can use the following code to calculate the final score based on the judgment query:
 
@@ -250,11 +277,10 @@ Now, you can use the following code to calculate the final score based on the ju
         )
         llm_evaluator = LLMasJudge(llm_judge=llm_judge)
         print(llm_judge)
-        avg_judgement, confidence_interval = llm_evaluator.compute(
-            questions, gt_answers, pred_answers
+        eval_rslt = llm_evaluator.compute(
+            questions=questions, gt_answers=gt_answers, pred_answers=pred_answers
         )
-        print(avg_judgement)
-        print(confidence_interval)
+        print(eval_rslt)
 
 To ensure more rigor, you can compute a 95% confidence interval for the judgment score. When the evaluation dataset is small, the confidence interval may have a large range, indicating that the judgment score is not very reliable.
 
@@ -262,8 +288,7 @@ The output will be:
 
 .. code-block:: json
 
-    0.6666666666666666
-    (0.013333333333333197, 1)
+    LLMJudgeEvalResult(avg_score=0.6666666666666666, judgement_score_list=[1, 1, 0], confidence_interval=(0.013333333333333197, 1))
 
 This type of LLM judeg is seen in text-grad [17]_.
 You can view the prompt we used simply using `print(llm_judge)`:
@@ -287,21 +312,56 @@ You can view the prompt we used simply using `print(llm_judge)`:
             ---------------------
             <START_OF_USER>
             {# question #}
+            {% if question_str is defined %}
             Question: {{question_str}}
+            {% endif %}
             {# ground truth answer #}
+            {% if gt_answer_str is defined %}
             Ground truth answer: {{gt_answer_str}}
+            {% endif %}
             {# predicted answer #}
             Predicted answer: {{pred_answer_str}}
-            {# assistant response #}
             <END_OF_USER>
-            , prompt_kwargs: {'task_desc_str': 'You are an evaluator. Given the question, ground truth answer, and predicted answer, Does the predicted answer contain the ground truth answer? Say True if yes, False if no.', 'examples_str': None}, prompt_variables: ['examples_str', 'pred_answer_str', 'task_desc_str', 'gt_answer_str', 'question_str']
+            , prompt_kwargs: {'task_desc_str': 'You are an evaluator. Given the question(optional), ground truth answer(optional), and predicted answer, Does the predicted answer contain the ground truth answer? Say True if yes, False if no.', 'examples_str': None}, prompt_variables: ['task_desc_str', 'examples_str', 'pred_answer_str', 'question_str', 'gt_answer_str']
             )
             (model_client): OpenAIClient()
         )
     )
 
 
-**Without References (G-eval)**
+**Case 2: Without Question**
+
+.. code-block:: python
+
+    def compute_llm_as_judge_wo_questions():
+        from adalflow.eval.llm_as_judge import LLMasJudge, DefaultLLMJudge
+        from adalflow.components.model_client import OpenAIClient
+
+
+        llm_judge = DefaultLLMJudge(
+            model_client=OpenAIClient(),
+            model_kwargs={
+                "model": "gpt-4o",
+                "temperature": 1.0,
+                "max_tokens": 10,
+            },
+            jugement_query="Does the predicted answer means the same as the ground truth answer? Say True if yes, False if no.",
+        )
+        llm_evaluator = LLMasJudge(llm_judge=llm_judge)
+        print(llm_judge)
+        eval_rslt = llm_evaluator.compute(gt_answers=[gt], pred_answers=[pred])
+        print(eval_rslt)
+
+The output will be:
+
+.. code-block:: json
+
+    LLMJudgeEvalResult(avg_score=1.0, judgement_score_list=[1], confidence_interval=(0, 1))
+
+
+
+G_Eval
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. figure:: /_static/images/G_eval_structure.png
     :align: center
@@ -310,7 +370,7 @@ You can view the prompt we used simply using `print(llm_judge)`:
 
     G-eval framework structure
 
-If you have no reference text, you can use G-eval [11]_ to evaluate the generated text on the fly.
+If you have no reference text, you can also use G-eval [11]_ to evaluate the generated text on the fly.
 G-eval provided a way to evaluate:
 
 - `relevance`: evaluates how relevant the summarized text to the source text.

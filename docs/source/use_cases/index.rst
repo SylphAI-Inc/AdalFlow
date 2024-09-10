@@ -8,26 +8,27 @@ Use Cases
 
 We will build use cases end-to-end, ranging from classification (classical NLP tasks) to question answering, retrieval-augmented generation (RAG), and multi-generator pipelines.
 
-RAG
-----------------
-.. list-table::
-   :widths: 30 70
-   :header-rows: 1
+..
+  RAG
+  ----------------
+  .. list-table::
+    :widths: 30 70
+    :header-rows: 1
 
-   * - Part
-     - Description
-   * - :doc:`build_a_rag`
-     - Designing a RAG pipeline, from offline data processing to online inference.
-   * - :doc:`eval_a_rag`
-     - Question Answering with `bhh_hard_object_count` dataset, including textual-gradient descent and few-shot boostrap optimization.
+    * - Part
+      - Description
+    * - :doc:`build_a_rag`
+      - Designing a RAG pipeline, from offline data processing to online inference.
+    * - :doc:`eval_a_rag`
+      - Question Answering with `bhh_hard_object_count` dataset, including textual-gradient descent and few-shot boostrap optimization.
 
-.. toctree::
-   :maxdepth: 1
-   :caption: RAG vibe
-   :hidden:
+  .. toctree::
+    :maxdepth: 1
+    :caption: RAG vibe
+    :hidden:
 
-   build_a_rag
-   eval_a_rag
+    build_a_rag
+    eval_a_rag
 
 Optimization
 ----------------

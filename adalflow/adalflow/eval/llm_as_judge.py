@@ -1,7 +1,10 @@
 """This is the metric to use an LLM as a judge for evaluating the performance of predicted answers."""
 
-from typing import List, Dict, Any, Optional, TYPE_CHECKING, Union, Literal
+from typing import List, Dict, Any, Optional, TYPE_CHECKING, Union, Literal, Tuple
+from dataclasses import dataclass
 import logging
+from itertools import zip_longest
+
 
 if TYPE_CHECKING:
     pass
@@ -25,12 +28,15 @@ DEFAULT_LLM_EVALUATOR_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
 ---------------------
 <START_OF_USER>
 {# question #}
+{% if question_str is defined %}
 Question: {{question_str}}
+{% endif %}
 {# ground truth answer #}
+{% if gt_answer_str is defined %}
 Ground truth answer: {{gt_answer_str}}
+{% endif %}
 {# predicted answer #}
 Predicted answer: {{pred_answer_str}}
-{# assistant response #}
 <END_OF_USER>
 """
 
@@ -42,6 +48,13 @@ DEFAULT_LLM_EVALUATOR_MODEL_KWARGS = {
     "temperature": 1,
     "stream": False,
 }
+
+
+@dataclass
+class LLMJudgeEvalResult:
+    avg_score: float
+    judgement_score_list: List[bool]
+    confidence_interval: Tuple[float, float]
 
 
 class DefaultLLMJudge(Component):
@@ -69,6 +82,7 @@ class DefaultLLMJudge(Component):
         model_kwargs: Optional[Dict[str, Any]] = None,
         template: Optional[str] = None,
         jugement_query: Optional[str] = None,
+        example_str: Optional[str] = None,
         output_type: Literal["bool", "float"] = "bool",
         use_cache: bool = True,
     ):
@@ -95,10 +109,12 @@ class DefaultLLMJudge(Component):
             use_cache=use_cache,
             prompt_kwargs={
                 "task_desc_str": Parameter(
-                    data=f"""You are an evaluator. Given the question, ground truth answer, and predicted answer, {self._jugement_query}""",
+                    data=f"""You are an evaluator. Given the question(optional), ground truth answer(optional), and predicted answer, {self._jugement_query}""",
                     param_type=ParameterType.PROMPT,
                 ),
-                "examples_str": Parameter(data=None, param_type=ParameterType.DEMOS),
+                "examples_str": Parameter(
+                    data=example_str, param_type=ParameterType.DEMOS
+                ),
             },
         )
 
@@ -132,7 +148,6 @@ class DefaultLLMJudge(Component):
 
         judgement = output.raw_response
         judgement = judgement.strip().lower()
-        print(judgement)
         output = False if self.output_type == "bool" else 0.0
         if "true" in judgement:
             output = True if self.output_type == "bool" else 1.0
@@ -189,11 +204,12 @@ class LLMasJudge(BaseEvaluator):
 
     def compute(
         self,
-        questions: List[str],
-        gt_answers: List[str],
+        *,
         pred_answers: List[str],
+        questions: Optional[List[str]] = None,
+        gt_answers: Optional[List[str]] = None,
         # judgement_query: Optional[str] = None,
-    ) -> List[bool]:
+    ) -> LLMJudgeEvalResult:
         r"""
         Get the judgement of the predicted answer for a list of questions.
 
@@ -204,13 +220,15 @@ class LLMasJudge(BaseEvaluator):
             judgement_query (str): Judgement query string.
 
         Returns:
-            tuple:
-                - float: Average judgement score.
-                - List[bool]: Judgement results for each query.
+            LLMEvalResult: The evaluation result.
+
         """
         judgement_list = []
-        for question, gt_answer, pred_answer in zip(
-            questions, gt_answers, pred_answers
+        questions = questions or [None] * len(pred_answers)
+        gt_answers = gt_answers or [None] * len(pred_answers)
+
+        for question, gt_answer, pred_answer in zip_longest(
+            questions, gt_answers, pred_answers, fillvalue=None
         ):
             judgement = self.llm_judge(
                 question,
@@ -223,7 +241,7 @@ class LLMasJudge(BaseEvaluator):
 
         judgement_score_list = [1 if judgement else 0 for judgement in judgement_list]
         confidence = confidence_interval(judgement_score_list)
-        return avg_score, confidence
+        return LLMJudgeEvalResult(avg_score, judgement_score_list, confidence)
 
     def __str__(self) -> str:
         s = f"llm_judge={self.llm_judge}"
