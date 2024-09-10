@@ -100,7 +100,8 @@ class Embedder(Component):
         # step 2: convert the input to the api_kwargs
         api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
             input=input,
-            model_kwargs=composed_model_kwargs
+            model_kwargs=composed_model_kwargs,
+            model_type=self.model_type,
         )
         log.debug(f"api_kwargs: {api_kwargs}")
         return api_kwargs
@@ -139,8 +140,7 @@ class Embedder(Component):
         response = None
         try:
             response = self.model_client.call(
-                api_kwargs=api_kwargs,
-                model_type=self.model_type
+                api_kwargs=api_kwargs, model_type=self.model_type
             )
         except Exception as e:
             log.error(f"Error calling the model: {e}")
@@ -169,7 +169,7 @@ class Embedder(Component):
         response = None
         try:
             response = await self.model_client.acall(
-                api_kwargs=api_kwargs
+                api_kwargs=api_kwargs, model_type=self.model_type
             )
         except Exception as e:
             log.error(f"Error calling the model: {e}")
