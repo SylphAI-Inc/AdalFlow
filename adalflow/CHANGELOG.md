@@ -1,4 +1,4 @@
-## [0.2.1] - 2024-09-09
+## [0.2.2] - 2024-09-09
 ### Added
 - `get_cache_path`, instead of print out the cache path all the time, we add a ``get_cache_path`` to get the cache path.
 - Make `huggingface datasets` as an optional dependency.

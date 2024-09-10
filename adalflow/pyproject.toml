@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "adalflow"
 
-version = "0.2.1"
+version = "0.2.2"
 description = "The Library to Build and Auto-optimize Any LLM Task Pipeline"
 authors = ["Li Yin <li@sylphai.com>"]
 readme = "README.md"
