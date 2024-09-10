@@ -1,4 +1,4 @@
-__version__ = "0.2.0"
+__version__ = "0.2.2"
 
 from adalflow.core.component import Component, fun_to_component
 from adalflow.core.container import Sequential
@@ -8,7 +8,12 @@ from adalflow.optim.grad_component import GradComponent
 from adalflow.core.generator import Generator
 
 
-from adalflow.core.types import GeneratorOutput, EmbedderOutput, RetrieverOutput
+from adalflow.core.types import (
+    GeneratorOutput,
+    EmbedderOutput,
+    RetrieverOutput,
+    Document,
+)
 from adalflow.core.model_client import ModelClient
 from adalflow.core.embedder import Embedder
 from adalflow.core.string_parser import (
@@ -91,6 +96,7 @@ __all__ = [
     "GeneratorOutput",
     "EmbedderOutput",
     "RetrieverOutput",
+    "Document",
     # Optimizer types
     "Optimizer",
     "DemoOptimizer",

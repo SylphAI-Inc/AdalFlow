@@ -1,10 +1,12 @@
-## [0.2.1] - 2024-09-01
+## [0.2.2] - 2024-09-09
 ### Added
 - `get_cache_path`, instead of print out the cache path all the time, we add a ``get_cache_path`` to get the cache path.
 - Make `huggingface datasets` as an optional dependency.
+- Eval: `G_eval` to evaluate llm applications that have no reference text.
 ### Modified
 - Add `template` to let users pass their own template, but need to have the same arguments as the default template.
-- Added `checkpoint resumt` in the `Trainer.diagnose` to show the newest performance and diagnostics on the checkpoint.
+- Added `checkpoint resume` in the `Trainer.diagnose` to show the newest performance and diagnostics on the checkpoint.
+
 ## [0.2.0] - 2024-08-20
 ### Added
 - Qdrant retriever.

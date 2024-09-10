@@ -37,19 +37,25 @@
     <a href="https://pypi.org/project/adalflow/">
         <img alt="PyPI Version" src="https://img.shields.io/pypi/v/adalflow?style=flat-square">
     </a>
-    <a href="https://star-history.com/#SylphAI-Inc/LightRAG">
-        <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square">
+    <a href="https://star-history.com/#SylphAI-Inc/AdalFlow">
+        <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/AdalFlow?style=flat-square">
     </a>
-    <a href="https://github.com/SylphAI-Inc/LightRAG/issues">
-        <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square">
+    <a href="https://github.com/SylphAI-Inc/AdalFlow/issues">
+        <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/SylphAI-Inc/AdalFlow?style=flat-square">
     </a>
     <a href="https://opensource.org/license/MIT">
-        <img alt="License" src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG">
+        <img alt="License" src="https://img.shields.io/github/license/SylphAI-Inc/AdalFlow">
     </a>
       <a href="https://discord.gg/ezzszrRZvT">
         <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
     </a>
 </p>
+
+<h4>
+<p align="center">
+For AI researchers, product teams, and software engineers who want to learn the AI way.
+</p>
+</h4>
 
 
 

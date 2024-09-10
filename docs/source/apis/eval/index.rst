@@ -12,8 +12,8 @@ Overview
 
    eval.answer_match_acc
    eval.retriever_recall
-   eval.retriever_relevance
    eval.llm_as_judge
+   eval.g_eval
 
 
 .. toctree::
@@ -23,8 +23,8 @@ Overview
    eval.base
    eval.answer_match_acc
    eval.retriever_recall
-   eval.retriever_relevance
    eval.llm_as_judge
+   eval.g_eval
 
 
 
