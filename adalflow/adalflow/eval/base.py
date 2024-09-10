@@ -1,6 +1,6 @@
 """Abstract base class for evaluation metrics."""
 
-from typing import Optional, List
+from typing import Optional, List, Any
 
 from dataclasses import dataclass
 
@@ -22,7 +22,8 @@ class BaseEvaluator:
         """Compute the score for a single item."""
         raise NotImplementedError("Subclasses must implement this method.")
 
-    def compute(self, *args, **kwargs) -> EvaluationResult:
+    # TODO: support multi-threading or async to speed up evaluation
+    def compute(self, *args, **kwargs) -> Any:
         """Evaluate a list of predictions and ground truth values. and return overall score and per-item scores."""
         raise NotImplementedError("Subclasses must implement this method.")
 

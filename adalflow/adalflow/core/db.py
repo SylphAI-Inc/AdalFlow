@@ -9,6 +9,7 @@ import pickle
 
 from adalflow.core.component import Component
 from adalflow.utils.registry import EntityMapping
+from adalflow.utils.global_config import get_adalflow_default_root_path
 
 
 log = logging.getLogger(__name__)
@@ -18,6 +19,8 @@ T = TypeVar("T")  # Allow any type as items
 U = TypeVar("U")  # U will be the type after transformation
 
 
+# TODO: localDB does not need to be a component
+# TODO: DB clarity can be further improved
 @dataclass
 class LocalDB(Generic[T], Component):
     __doc__ = r"""LocalDB with in-memory CRUD operations, data transformation/processing pipelines, and persistence.
@@ -109,6 +112,9 @@ class LocalDB(Generic[T], Component):
     mapper_setups: Dict[str, Callable[[T], Any]] = field(
         default_factory=dict, metadata={"description": "Map function setup by key"}
     )
+    index_path: Optional[str] = field(
+        default="index.faiss", metadata={"description": "Path to the index file"}
+    )
 
     def __post_init__(self):
         super().__init__()
@@ -120,9 +126,27 @@ class LocalDB(Generic[T], Component):
     def get_transformer_keys(self) -> List[str]:
         return list(self.transformed_items.keys())
 
-    def get_transformed_data(self, key: str) -> List[U]:
-        """Get the transformed items by key."""
-        return self.transformed_items[key]
+    # def get_transformed_data(self, key: str) -> List[U]:
+    #     """Get the transformed items by key."""
+    #     return self.transformed_items[key]
+
+    def get_transformed_data(
+        self, key: str, filter_fn: Callable[[Any], bool] = lambda x: True
+    ) -> List[U]:
+        """
+        Get the transformed items by key after applying a filter on metadata.
+
+        Args:
+            key (str): The key to identify which transformed items to retrieve.
+            filter_fn (Callable[[Any], bool], optional): The filter function to apply on the metadata. Defaults to lambda x: True.
+
+        Returns:
+            List[U]: The filtered and transformed items.
+        """
+        if key not in self.transformed_items:
+            raise ValueError(f"Key {key} not found in transformed items.")
+        # Apply filter function on the transformed items
+        return list(filter(filter_fn, self.transformed_items[key]))
 
     def _get_transformer_name(self, transformer: Component) -> str:
         name = f"{transformer.__class__.__name__}_"
@@ -143,6 +167,7 @@ class LocalDB(Generic[T], Component):
         self.transformer_setups[key] = transformer
         if map_fn is not None:
             self.mapper_setups[key] = map_fn
+        self.transformed_items[key] = []
         return key
 
     @overload
@@ -209,9 +234,15 @@ class LocalDB(Generic[T], Component):
         """
         self.items = items
 
-    def extend(self, items: List[Any], apply_transformer: bool = True):
+    def extend(
+        self,
+        items: List[Any],
+        apply_transformer: bool = True,
+    ):
         """Extend the db with new items."""
+
         self.items.extend(items)
+
         if apply_transformer:
             for key, transformer in self.transformer_setups.items():
                 # check if there was a map function registered
@@ -222,8 +253,6 @@ class LocalDB(Generic[T], Component):
                 else:
                     transformed_items = transformer(items)
                 self.transformed_items[key].extend(transformed_items)
-
-        self.items.extend(items)
 
     def delete(self, index: Optional[int] = None, remove_transformed: bool = True):
         """Remove items by index or pop the last item. Optionally remove the transformed data as well.
@@ -293,26 +322,38 @@ class LocalDB(Generic[T], Component):
         self.mapper_setups = {}
         self.items = []
 
-    def save_state(self, filepath: str):
+    def save_state(self, filepath: str = None):
         """Save the current state (attributes) of the DB using pickle.
 
         Note:
             The transformer setups will be lost when pickling. As it might not be picklable.
         """
-        filepath = filepath or "storage/local_item_db.pkl"
+        filepath = filepath or os.path.join(
+            get_adalflow_default_root_path,
+            (
+                "local_db/local_item_db.pkl"
+                if not self.name
+                else f"local_db/{self.name}.pkl"
+            ),
+        )
+        self.index_path = filepath
         file_dir = os.path.dirname(filepath)
-        if file_dir and file_dir != "":
+        if not os.path.exists(file_dir):
             os.makedirs(file_dir, exist_ok=True)
 
         with open(filepath, "wb") as file:
             pickle.dump(self, file)
+        print(f"Saved the state of the DB to {filepath}")
 
     @classmethod
     def load_state(cls, filepath: str = None) -> "LocalDB":
         """Load the state of the DB from a pickle file."""
-        filepath = filepath or "storage/local_item_db.pkl"
-        with open(filepath, "rb") as file:
-            return pickle.load(file)
+        filepath = filepath or os.path.join(
+            get_adalflow_default_root_path, "local_db/local_item_db.pkl"
+        )
+        if os.path.exists(filepath):
+            with open(filepath, "rb") as file:
+                return pickle.load(file)
 
     def __getstate__(self):
         """Special handling of the components in pickling."""

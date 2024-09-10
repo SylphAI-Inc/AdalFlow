@@ -7,13 +7,13 @@ from adalflow.core.db import LocalDB
 from adalflow.utils import setup_env
 
 from adalflow.components.retriever.faiss_retriever import FAISSRetriever
-from adalflow.components.model_client import OpenAIClient
 
 from adalflow.components.data_process import (
     RetrieverOutputToContextStr,
     ToEmbeddings,
     TextSplitter,
 )
+from adalflow.utils.global_config import get_adalflow_default_root_path
 
 setup_env()
 # TODO: RAG can potentially be a component itsefl and be provided to the users
@@ -28,12 +28,15 @@ configs = {
         },
     },
     "retriever": {
-        "top_k": 2,
+        "top_k": 5,
     },
     "generator": {
-        "model": "gpt-3.5-turbo",
-        "temperature": 0.3,
-        "stream": False,
+        "model_client": ModelClientType.OPENAI(),
+        "model_kwargs": {
+            "model": "gpt-3.5-turbo",
+            "temperature": 0.3,
+            "stream": False,
+        },
     },
     "text_splitter": {
         "split_by": "word",
@@ -57,7 +60,13 @@ def prepare_data_pipeline():
     return data_transformer
 
 
-def prepare_database_with_index(docs: List[Document], index_path: str = "index.faiss"):
+def prepare_database_with_index(
+    docs: List[Document],
+    index_file: str = "index.faiss",
+    index_path: Optional[str] = None,
+):
+    index_path = index_path or get_adalflow_default_root_path()
+    index_path = os.path.join(index_path, index_file)
     if os.path.exists(index_path):
         return None
     db = LocalDB()
@@ -82,14 +91,29 @@ Output JSON format:
 
 class RAG(Component):
 
-    def __init__(self, index_path: str = "index.faiss"):
+    def __init__(
+        self,
+        index_file: str = "index.faiss",
+        index_path: Optional[str] = None,
+        # model_client: ModelClient = ModelClientType.OPENAI(),
+        # model_kwargs: dict = None,
+        configs: dict = configs,
+    ):
         super().__init__()
 
-        self.db = LocalDB.load_state(index_path)
-
-        self.transformed_docs: List[Document] = self.db.get_transformed_data(
-            "data_transformer"
-        )
+        # 1. it can restore data from existing storage
+        index_path = index_path or get_adalflow_default_root_path()
+        index_path = os.path.join(index_path, index_file)
+        self.index_path = index_path
+        if not os.path.exists(index_path):
+            self.db = LocalDB()
+            self.register_data_transformer()
+            self.transformed_docs = []
+        else:
+            self.db = LocalDB.load_state(index_path)
+            self.transformed_docs: List[Document] = self.db.get_transformed_data(
+                "data_transformer"
+            )
         embedder = Embedder(
             model_client=ModelClientType.OPENAI(),
             model_kwargs=configs["embedder"]["model_kwargs"],
@@ -102,19 +126,33 @@ class RAG(Component):
             document_map_func=lambda doc: doc.vector,
         )
         self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)
-        self.generator = Generator(
-            model_client=ModelClientType.OPENAI(),
-            model_kwargs=configs["generator"],
-            output_processors=JsonParser(),
-        )
 
         self.generator = Generator(
+            **configs["generator"],
             prompt_kwargs={
                 "task_desc_str": rag_prompt_task_desc,
             },
-            model_client=OpenAIClient(),
-            model_kwargs=configs["generator"],
             output_processors=JsonParser(),
+        )
+
+    def register_data_transformer(self):
+        if "data_transformer" not in self.db.get_transformer_keys():
+            data_transformer = prepare_data_pipeline()
+            self.db.register_transformer(data_transformer, key="data_transformer")
+            print("Data transformer registered")
+
+    def add_documents(self, docs: List[Document]):
+        self.db.extend(docs, apply_transformer=True)
+        # save the state
+        self.db.save_state(self.index_path)
+
+    def get_transformed_docs(self, filter_func=None):
+        return self.db.get_transformed_data("data_transformer", filter_func)
+
+    def prepare_retriever(self, filter_func=None):
+        self.transformed_docs = self.get_transformed_docs(filter_func)
+        self.retriever.build_index_from_documents(
+            self.transformed_docs, document_map_func=lambda doc: doc.vector
         )
 
     def generate(self, query: str, context: Optional[str] = None) -> Any:
@@ -126,9 +164,9 @@ class RAG(Component):
             "input_str": query,
         }
         response = self.generator(prompt_kwargs=prompt_kwargs)
-        return response
+        return response, context
 
-    def call(self, query: str) -> Any:
+    def call(self, query: str, verbose: bool = False) -> Any:
         retrieved_documents = self.retriever(query)
         # fill in the document
         for i, retriever_output in enumerate(retrieved_documents):
@@ -136,11 +174,12 @@ class RAG(Component):
                 self.transformed_docs[doc_index]
                 for doc_index in retriever_output.doc_indices
             ]
-
-        print(f"retrieved_documents: \n {retrieved_documents}")
+        if verbose:
+            print(f"retrieved_documents: \n {retrieved_documents}")
         context_str = self.retriever_output_processors(retrieved_documents)
 
-        print(f"context_str: \n {context_str}")
+        if verbose:
+            print(f"context_str: \n {context_str}")
 
         return self.generate(query, context=context_str)
 
@@ -159,11 +198,33 @@ if __name__ == "__main__":
         id="doc2",
     )
     # only run it once to prepare the data, if index exists, it will not run
-    prepare_database_with_index([doc1, doc2], index_path="index.faiss")
-    rag = RAG(index_path="index.faiss")
+    prepare_database_with_index([doc1, doc2], index_file="index.faiss")
+    rag = RAG(index_file="index.faiss")
     print(rag)
     query = "What is Li Yin's hobby and profession?"
 
     response = rag.call(query)
 
     print(f"response: {response}")
+
+    doc3 = Document(
+        meta_data={"title": "Apple's profile"},
+        text="Apple is a cute dog with black and tan fur"
+        + "lots of nonsense text" * 500,
+        id="doc3",
+    )
+    doc4 = Document(
+        meta_data={"title": "Apple's characteristics"},
+        text="lots of more nonsense text" * 250
+        + "Apple is energetic, loves to play with her monkey toy"
+        + "lots of more nonsense text" * 250,
+        id="doc4",
+    )
+    # Add more documents to the database at runtime
+    rag.add_documents([doc3, doc4])
+    rag.prepare_retriever()
+    response = rag.call("What is Apple's favorite toy?")
+    print(f"response: {response}")
+    print(rag.db.items)
+
+    # If you want to run a section time, please delete the index file or else there will be redundant data

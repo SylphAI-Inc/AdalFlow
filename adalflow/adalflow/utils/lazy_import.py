@@ -33,7 +33,10 @@ class OptionalPackages(Enum):
     TORCH = ("torch", "Please install torch with: pip install torch")
 
     # search library
-    FAISS = ("faiss", "Please install faiss with: pip install faiss")
+    FAISS = (
+        "faiss",
+        "Please install faiss with: pip install faiss-cpu (or faiss if you use GPU)",
+    )
 
     # db library
     SQLALCHEMY = (
