@@ -431,45 +431,64 @@
   <h1>Source code for eval.llm_as_judge</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;This is the metric to use an LLM as a judge for evaluating the performance of predicted answers.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">zip_longest</span>
+
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="k">pass</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">ParameterType</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.eval.base</span> <span class="kn">import</span> <span class="n">BaseEvaluator</span>
+<span class="kn">from</span> <span class="nn">adalflow.eval.functional</span> <span class="kn">import</span> <span class="n">confidence_interval</span>
 
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">DEFAULT_LLM_EVALUATOR_PROMPT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;START_OF_SYSTEM_PROMPT&gt;</span>
 <span class="s2">{# task desc #}</span>
-<span class="s2">You are an evaluator. Given the question, ground truth answer, and predicted answer,</span>
-<span class="s2">{# judgement question #}</span>
-<span class="s2">{{judgement_str}}</span>
+<span class="s2">{{task_desc_str}}</span>
+<span class="s2">{# examples #}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f examples_str %}</span>
+<span class="s2">{{examples_str}}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
 <span class="s2">&lt;END_OF_SYSTEM_PROMPT&gt;</span>
 <span class="s2">---------------------</span>
 <span class="s2">&lt;START_OF_USER&gt;</span>
 <span class="s2">{# question #}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f question_str is defined %}</span>
 <span class="s2">Question: {{question_str}}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
 <span class="s2">{# ground truth answer #}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f gt_answer_str is defined %}</span>
 <span class="s2">Ground truth answer: {{gt_answer_str}}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
 <span class="s2">{# predicted answer #}</span>
 <span class="s2">Predicted answer: {{pred_answer_str}}</span>
-<span class="s2">{# assistant response #}</span>
 <span class="s2">&lt;END_OF_USER&gt;</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">DEFAULT_JUDGEMENT_QUERY</span> <span class="o">=</span> <span class="s2">&quot;Does the predicted answer contain the ground truth answer? Say True if yes, False if no.&quot;</span>
 
 
-<span class="c1"># print(f&quot;globals: {globals()}&quot;)</span>
-
 <span class="n">DEFAULT_LLM_EVALUATOR_MODEL_KWARGS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="s2">&quot;stream&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">}</span>
+
+
+<div class="viewcode-block" id="LLMJudgeEvalResult">
+<a class="viewcode-back" href="../../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.LLMJudgeEvalResult">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">LLMJudgeEvalResult</span><span class="p">:</span>
+    <span class="n">avg_score</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">judgement_score_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
+    <span class="n">confidence_interval</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span></div>
+
 
 
 <div class="viewcode-block" id="DefaultLLMJudge">
@@ -484,6 +503,13 @@
 <span class="s2">    Args:</span>
 <span class="s2">        model_client (ModelClient): The model client to use for the generator.</span>
 <span class="s2">        model_kwargs (Dict[str, Any], optional): The model kwargs to pass to the model client. Defaults to </span><span class="si">{}</span><span class="s2">. Please refer to :ref:`ModelClient&lt;components-model_client&gt;` for the details on how to set the model_kwargs for your specific model if it is from our library.</span>
+<span class="s2">        template (str, optional): The template to use for the LLM evaluator. Defaults to None.</span>
+<span class="s2">        jugement_query (str, optional): The judgement query string. Defaults to DEFAULT_JUDGEMENT_QUERY.</span>
+<span class="s2">        output_type (Literal[&quot;bool&quot;, &quot;float&quot;], optional): The output type of the judgement. Defaults to &quot;bool&quot;.</span>
+<span class="s2">        use_cache (bool, optional): Whether to use cache for the LLM evaluator. Defaults to True.</span>
+
+<span class="s2">    Note:</span>
+<span class="s2">        Must use True/False instead of Yes/No in the judgement_query for response.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -492,6 +518,7 @@
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">jugement_query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">example_str</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">output_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
         <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
@@ -510,13 +537,23 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span> <span class="ow">or</span> <span class="n">DEFAULT_LLM_EVALUATOR_MODEL_KWARGS</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="n">template</span> <span class="ow">or</span> <span class="n">DEFAULT_LLM_EVALUATOR_PROMPT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jugement_query</span> <span class="o">=</span> <span class="n">jugement_query</span> <span class="ow">or</span> <span class="n">DEFAULT_JUDGEMENT_QUERY</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">llm_evaluator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
             <span class="n">model_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="p">,</span>
             <span class="n">model_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="p">,</span>
             <span class="n">template</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span>
             <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span>
+            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;task_desc_str&quot;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span>
+                    <span class="n">data</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;You are an evaluator. Given the question(optional), ground truth answer(optional), and predicted answer, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_jugement_query</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">,</span>
+                    <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">PROMPT</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;examples_str&quot;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">example_str</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">DEMOS</span>
+                <span class="p">),</span>
+            <span class="p">},</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_jugement_query</span> <span class="o">=</span> <span class="n">jugement_query</span> <span class="ow">or</span> <span class="n">DEFAULT_JUDGEMENT_QUERY</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">output_type</span> <span class="o">=</span> <span class="n">output_type</span>
 
 <div class="viewcode-block" id="DefaultLLMJudge.call">
@@ -526,7 +563,6 @@
         <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">gt_answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">pred_answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">judgement_query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the judgement of the predicted answer for a single question.</span>
@@ -540,13 +576,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: Judgement result.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">judgement_query</span> <span class="o">=</span> <span class="n">judgement_query</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jugement_query</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_evaluator</span><span class="p">(</span>
             <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;question_str&quot;</span><span class="p">:</span> <span class="n">question</span><span class="p">,</span>
                 <span class="s2">&quot;gt_answer_str&quot;</span><span class="p">:</span> <span class="n">gt_answer</span><span class="p">,</span>
                 <span class="s2">&quot;pred_answer_str&quot;</span><span class="p">:</span> <span class="n">pred_answer</span><span class="p">,</span>
-                <span class="s2">&quot;judgement_str&quot;</span><span class="p">:</span> <span class="n">judgement_query</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -561,13 +595,17 @@
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid judgement: </span><span class="si">{</span><span class="n">judgement</span><span class="si">}</span><span class="s2">, use False or 0.0 instead.&quot;</span><span class="p">)</span>
             <span class="c1"># raise ValueError(f&quot;Invalid judgement: {judgement}&quot;)</span>
         <span class="k">return</span> <span class="n">output</span></div>
-</div>
+
+
+    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;judgement_query= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_jugement_query</span><span class="si">}</span><span class="s2">, &quot;</span>
+        <span class="k">return</span> <span class="n">s</span></div>
 
 
 
 <div class="viewcode-block" id="LLMasJudge">
 <a class="viewcode-back" href="../../apis/eval/index.html#eval.llm_as_judge.LLMasJudge">[docs]</a>
-<span class="k">class</span> <span class="nc">LLMasJudge</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">LLMasJudge</span><span class="p">(</span><span class="n">BaseEvaluator</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    LLM as judge for evaluating the performance of a LLM.</span>
 
@@ -591,23 +629,31 @@
 <span class="sd">        2 / 3</span>
 <span class="sd">        &gt;&gt;&gt; judgement_list</span>
 <span class="sd">        [True, True, False]</span>
+
+<span class="sd">    Customize the LLMJudge</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        llm_judge = Def</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">llm_evaluator</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Component</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">llm_judge</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Component</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">llm_evaluator</span> <span class="o">=</span> <span class="n">llm_evaluator</span> <span class="ow">or</span> <span class="n">DefaultLLMJudge</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">llm_judge</span> <span class="o">=</span> <span class="n">llm_judge</span> <span class="ow">or</span> <span class="n">DefaultLLMJudge</span><span class="p">()</span>
 
 <div class="viewcode-block" id="LLMasJudge.compute">
 <a class="viewcode-back" href="../../apis/eval/index.html#eval.llm_as_judge.LLMasJudge.compute">[docs]</a>
     <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">questions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">gt_answers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
         <span class="n">pred_answers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">judgement_query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+        <span class="n">questions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">gt_answers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="c1"># judgement_query: Optional[str] = None,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LLMJudgeEvalResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the judgement of the predicted answer for a list of questions.</span>
 
@@ -618,42 +664,34 @@
 <span class="sd">            judgement_query (str): Judgement query string.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            tuple:</span>
-<span class="sd">                - float: Average judgement score.</span>
-<span class="sd">                - List[bool]: Judgement results for each query.</span>
+<span class="sd">            LLMEvalResult: The evaluation result.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">judgement_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">question</span><span class="p">,</span> <span class="n">gt_answer</span><span class="p">,</span> <span class="n">pred_answer</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-            <span class="n">questions</span><span class="p">,</span> <span class="n">gt_answers</span><span class="p">,</span> <span class="n">pred_answers</span>
+        <span class="n">questions</span> <span class="o">=</span> <span class="n">questions</span> <span class="ow">or</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">pred_answers</span><span class="p">)</span>
+        <span class="n">gt_answers</span> <span class="o">=</span> <span class="n">gt_answers</span> <span class="ow">or</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">pred_answers</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">question</span><span class="p">,</span> <span class="n">gt_answer</span><span class="p">,</span> <span class="n">pred_answer</span> <span class="ow">in</span> <span class="n">zip_longest</span><span class="p">(</span>
+            <span class="n">questions</span><span class="p">,</span> <span class="n">gt_answers</span><span class="p">,</span> <span class="n">pred_answers</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=</span><span class="kc">None</span>
         <span class="p">):</span>
-            <span class="n">judgement</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_evaluator</span><span class="p">(</span>
-                <span class="n">question</span><span class="p">,</span> <span class="n">gt_answer</span><span class="p">,</span> <span class="n">pred_answer</span><span class="p">,</span> <span class="n">judgement_query</span>
+            <span class="n">judgement</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_judge</span><span class="p">(</span>
+                <span class="n">question</span><span class="p">,</span>
+                <span class="n">gt_answer</span><span class="p">,</span>
+                <span class="n">pred_answer</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">judgement_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">judgement</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">judgement_list</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">judgement_list</span><span class="p">),</span> <span class="n">judgement_list</span></div>
-</div>
+        <span class="n">avg_score</span> <span class="o">=</span> <span class="n">judgement_list</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">judgement_list</span><span class="p">)</span>
+
+        <span class="n">judgement_score_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">if</span> <span class="n">judgement</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">judgement</span> <span class="ow">in</span> <span class="n">judgement_list</span><span class="p">]</span>
+        <span class="n">confidence</span> <span class="o">=</span> <span class="n">confidence_interval</span><span class="p">(</span><span class="n">judgement_score_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">LLMJudgeEvalResult</span><span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">judgement_score_list</span><span class="p">,</span> <span class="n">confidence</span><span class="p">)</span></div>
 
 
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;llm_judge=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llm_judge</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">s</span></div>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-
-    <span class="n">questions</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;Is Beijing in China?&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Is Apple founded before Google?&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Is earth flat?&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
-    <span class="n">pred_answers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;Yes, Appled is founded before Google&quot;</span><span class="p">,</span> <span class="s2">&quot;Yes&quot;</span><span class="p">]</span>
-    <span class="n">gt_answers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;No&quot;</span><span class="p">]</span>
-    <span class="n">judgement_query</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;For the question, does the predicted answer contain the ground truth answer?&quot;</span>
-    <span class="p">)</span>
-    <span class="n">llm_judge</span> <span class="o">=</span> <span class="n">LLMasJudge</span><span class="p">()</span>
-    <span class="n">avg_judgement</span><span class="p">,</span> <span class="n">judgement_list</span> <span class="o">=</span> <span class="n">llm_judge</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
-        <span class="n">questions</span><span class="p">,</span> <span class="n">gt_answers</span><span class="p">,</span> <span class="n">pred_answers</span><span class="p">,</span> <span class="n">judgement_query</span>
-    <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">avg_judgement</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">judgement_list</span><span class="p">)</span>
 </pre></div>
 
                 </article>

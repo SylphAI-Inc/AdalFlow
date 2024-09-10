@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Evaluating a RAG Pipeline &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+    <title>Evaluating RAG &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
   
   
   
@@ -409,7 +409,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Evaluating...</li>
+    <li class="breadcrumb-item active" aria-current="page">Evaluating RAG</li>
   </ul>
 </nav>
 </div>
@@ -426,9 +426,21 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="evaluating-a-rag-pipeline">
-<h1>Evaluating a RAG Pipeline<a class="headerlink" href="#evaluating-a-rag-pipeline" title="Link to this heading">#</a></h1>
+  <section id="evaluating-rag">
+<h1>Evaluating RAG<a class="headerlink" href="#evaluating-rag" title="Link to this heading">#</a></h1>
+<p>As RAG admits so many design choices, it is difficult to build a traditional benchmark dataset from scratch.
+When it comes to evaluating RAG, we have to define the metrics, the evaluation datasets, and to annotate such datasets and ensure the metrics can reflect</p>
 <p>In LightRAG, we provide a set of metrics in <span class="xref std std-ref">our evaluators</span>. In this tutorial, we will show how to use them to evaluate the performance of the retriever and generator components of a RAG pipeline</p>
+<p>As RAG consists of two stages:</p>
+<ol class="arabic simple">
+<li><p>Retrieval: The retriever fetches relevant context from a knowledge base.
+The metrics used here are nothing new but from the standard information retrieval literature.
+Often, we have Mean Reciprocal Rank(MRR&#64;k), Recall&#64;k, Precision&#64;k, F1&#64;k, MAP&#64;k, NDCG&#64;k, etc.
+Please read our <a class="reference internal" href="../tutorials/retriever.html#tutorials-retriever"><span class="std std-ref">Retriever</span></a> for more details on the retrieval itself.
+All of these metrics, you can find at <a class="reference external" href="https://lightning.ai/docs/torchmetrics/stable/">TorchMetrics</a>.</p></li>
+<li><p>Generation: The metrics used for evaluating the response is more diverse and highly dependent on the tasks.
+You can refer to our <a class="reference internal" href="../tutorials/evaluation.html#tutorials-llm-evaluation"><span class="std std-ref">Evaluation guidelines</span></a> for more details.</p></li>
+</ol>
 <p>The full code for this tutorial can be found in <a class="reference external" href="https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/rag_hotpotqa.py">use_cases/rag_hotpotqa.py</a>.</p>
 <p>RAG (Retrieval-Augmented Generation) pipelines leverage a retriever to fetch relevant context from a knowledge base (e.g., a document database) which is then fed to an LLM generator with the query to produce the answer. This allows the model to generate more contextually relevant answers.</p>
 <p>Thus, to evaluate a RAG pipeline, we can assess both the quality of the retrieved context and the quality of the final generated answer. Speciafically, in this tutorial, we will use the following evaluators and their corresponding metrics.</p>
@@ -590,6 +602,15 @@ We first evaluate the performance of the retriever component of the RAG pipeline
 </div>
 <p><strong>Conclusion.</strong>
 In this tutorial, we learned how to evaluate a RAG pipeline using the HotpotQA dataset. We walked through the code and explained each step of the evaluation process. You can use this tutorial as a starting point to evaluate your own RAG pipelines and customize the evaluation metrics based on your requirements.</p>
+<div class="highlight admonition">
+<p class="admonition-title">References</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Finardi, Paulo, et al. “The Chronicles of RAG: The Retriever, the Chunk and the Generator.” arXiv preprint arXiv:2401.07883 (2024).</p>
+</aside>
+</aside>
+</div>
 </section>
 
 

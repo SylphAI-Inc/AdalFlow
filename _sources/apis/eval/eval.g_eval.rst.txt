@@ -1,0 +1,20 @@
+.. _eval-g_eval:
+
+g_eval
+===================
+
+.. automodule:: eval.g_eval
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      GEvalJudgeEvaluator
+      GEvalLLMJudge
+      GEvalMetric
+      NLGTask
+

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Data (Database/Pipeline) &amp; RAG &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+    <title>Data (Database/Pipeline) &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
   
   
   
@@ -406,7 +406,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Data (Database/Pipeline) &amp; RAG</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Data (Database/Pipeline)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -479,9 +479,9 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="data-database-pipeline-rag">
-<h1>Data (Database/Pipeline) &amp; RAG<a class="headerlink" href="#data-database-pipeline-rag" title="Link to this heading">#</a></h1>
-<p>The purpose of this note is to provide an overview on data, data modeling, and data storage in LLM applications along with how LightRAG works with data.
+  <section id="data-database-pipeline">
+<h1>Data (Database/Pipeline)<a class="headerlink" href="#data-database-pipeline" title="Link to this heading">#</a></h1>
+<p>The purpose of this note is to provide an overview on data, data modeling, and data storage in LLM applications along with how AdalFlow works with data.
 We will conver:</p>
 <ul class="simple">
 <li><p>Data models on how to represent important data.</p></li>
@@ -495,18 +495,18 @@ We will conver:</p>
 Datasets, including the input and ground truth output loading and dataset will be covered in the optimizing section.</p>
 </div>
 <p>So far, we have seen how our core components like <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>, and <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> work without any data cache/database and enforced data format to read data from and to write data to.
-However, in real-world LLM applications, we can not avoid to deal with data storage:</p>
+However, in real-world LLM applications, we can not avoid dealing with data storage.</p>
 <ol class="arabic simple">
 <li><p>Our documents to retrieve context from can be large and be stored in a file system or in a database in forms of tables or graphs.</p></li>
 <li><p>We often need to pre-process a large amount of data (like text splitting and embedding and idf in BM25) in a datapipline into a cloud database.</p></li>
 <li><p>We need to write records, logs to files or databases for monitoring and debugging, such as the failed llm calls.</p></li>
 <li><p>When it comes to applications where states matter, like games and chatbots, we need to store the states and conversational history.</p></li>
 </ol>
-<figure class="align-center" id="id1">
+<figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="../_images/database.png"><img alt="Data model and database" src="../_images/database.png" style="width: 620px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Data model and database</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+<p><span class="caption-text">Data model and database</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="data-models">
@@ -621,7 +621,7 @@ we simplify just need to add a mapping function to convert the original data to 
 Here is the code to form a data pipeline:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.data_process</span> <span class="kn">import</span> <span class="n">DocumentSplitter</span><span class="p">,</span> <span class="n">ToEmbeddings</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.data_process</span> <span class="kn">import</span> <span class="n">TextSplitter</span><span class="p">,</span> <span class="n">ToEmbeddings</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Sequential</span>
 
 
@@ -637,7 +637,7 @@ Here is the code to form a data pipeline:</p>
     <span class="s2">&quot;split_overlap&quot;</span><span class="p">:</span> <span class="mi">10</span>
 <span class="p">}</span>
 
-<span class="n">splitter</span> <span class="o">=</span> <span class="n">DocumentSplitter</span><span class="p">(</span><span class="o">**</span><span class="n">splitter_config</span><span class="p">)</span>
+<span class="n">splitter</span> <span class="o">=</span> <span class="n">TextSplitter</span><span class="p">(</span><span class="o">**</span><span class="n">splitter_config</span><span class="p">)</span>
 <span class="n">embedder</span> <span class="o">=</span> <span class="n">Embedder</span><span class="p">(</span><span class="n">model_client</span> <span class="o">=</span><span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">(),</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">)</span>
 <span class="n">embedder_transformer</span> <span class="o">=</span> <span class="n">ToEmbeddings</span><span class="p">(</span><span class="n">embedder</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">data_transformer</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">splitter</span><span class="p">,</span> <span class="n">embedder_transformer</span><span class="p">)</span>
@@ -646,7 +646,7 @@ Here is the code to form a data pipeline:</p>
 </div>
 <p>The printout will be:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Sequential</span><span class="p">(</span>
-<span class="p">(</span><span class="mi">0</span><span class="p">):</span> <span class="n">DocumentSplitter</span><span class="p">(</span><span class="n">split_by</span><span class="o">=</span><span class="n">word</span><span class="p">,</span> <span class="n">split_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">split_overlap</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">):</span> <span class="n">TextSplitter</span><span class="p">(</span><span class="n">split_by</span><span class="o">=</span><span class="n">word</span><span class="p">,</span> <span class="n">split_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">split_overlap</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="p">(</span><span class="mi">1</span><span class="p">):</span> <span class="n">ToEmbeddings</span><span class="p">(</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span>
     <span class="p">(</span><span class="n">embedder</span><span class="p">):</span> <span class="n">Embedder</span><span class="p">(</span>
@@ -795,7 +795,7 @@ Batch embedding documents: 100%|██████████| 2/2 [00:00&lt;00
 Adding embeddings to documents from batch: 2it [00:00, 63072.24it/s]
 [Document(id=64987b2b-b6c6-4eb4-9122-02448e3fd394, text=&#39;What are the benefits of renewable energy? I can see you are interested in renewable energy. Renewab...&#39;, meta_data=None, vector=&#39;len: 256&#39;, parent_doc_id=f2eddc77-4667-43f5-87e0-fd11f12958b3, order=0, score=None), Document(id=9a424d4c-4bd0-48ce-aba9-7a4f86892556, text=&#39;and installation sectors. The growth in renewable energy usage boosts local economies through increa...&#39;, meta_data=None, vector=&#39;len: 256&#39;, parent_doc_id=f2eddc77-4667-43f5-87e0-fd11f12958b3, order=1, score=None), Document(id=45efa517-8e52-4780-bdbd-2329ffa8d4b6, text=&#39;How do solar panels impact the environment? Solar panels convert sunlight into electricity by allowi...&#39;, meta_data=None, vector=&#39;len: 256&#39;, parent_doc_id=b2dbdf2f-f513-493d-aaa8-c77c98ac260f, order=0, score=None), Document(id=bc0ff7f6-27cc-4e24-8c3e-9435ed755e20, text=&#39;has been found to have a significant positive effect on the environment by reducing the reliance on ...&#39;, meta_data=None, vector=&#39;len: 256&#39;, parent_doc_id=b2dbdf2f-f513-493d-aaa8-c77c98ac260f, order=1, score=None)]
 Sequential(
-(0): DocumentSplitter(split_by=word, split_length=50, split_overlap=10)
+(0): TextSplitter(split_by=word, split_length=50, split_overlap=10)
 (1): ToEmbeddings(
     batch_size=2
     (embedder): Embedder(
@@ -933,21 +933,25 @@ Here is the code to prepare the relevant dialog turns.</p>
 </section>
 <section id="cloud-database">
 <h2>Cloud database<a class="headerlink" href="#cloud-database" title="Link to this heading">#</a></h2>
+<p>Please check out the <a class="reference internal" href="retriever.html#tutorials-retriever"><span class="std std-ref">Retriever</span></a> for using Cloud database as a storage and a retriever.</p>
 </section>
-<section id="suggestion-on-file-reading-and-writing">
-<h2>Suggestion on File reading and writing<a class="headerlink" href="#suggestion-on-file-reading-and-writing" title="Link to this heading">#</a></h2>
-<p>We dont provide integration on using <code class="docutils literal notranslate"><span class="pre">fsspec</span></code>, but here we can give you some suggestions on how to use it.</p>
-</section>
-<section id="graph-database">
-<h2>Graph database<a class="headerlink" href="#graph-database" title="Link to this heading">#</a></h2>
+<section id="file-reading">
+<h2>File Reading<a class="headerlink" href="#file-reading" title="Link to this heading">#</a></h2>
+<p>We dont provide integration currently, but using file reading packages like <a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/">fsspec</a> should be fairly easy to use with our data processing pipeline.</p>
 <div class="highlight admonition">
 <p class="admonition-title">API References</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.db.html#core.db.LocalDB" title="core.db.LocalDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.db.LocalDB</span></code></a></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.data_process.DocumentSplitter</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter" title="components.data_process.text_splitter.TextSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.data_process.text_splitter.TextSplitter</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.data_process.html#components.data_process.ToEmbeddings" title="components.data_process.ToEmbeddings"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.data_process.ToEmbeddings</span></code></a></p></li>
+</ul>
+</div>
+<div class="admonition-additional-resources admonition">
+<p class="admonition-title">Additional Resources</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/">fsspec</a></p></li>
 </ul>
 </div>
 </section>
@@ -1007,8 +1011,7 @@ Here is the code to prepare the relevant dialog turns.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pipeline">Data Pipeline</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#local-database">Local database</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cloud-database">Cloud database</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#suggestion-on-file-reading-and-writing">Suggestion on File reading and writing</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-database">Graph database</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-reading">File Reading</a></li>
 </ul>
   </nav></div>
 

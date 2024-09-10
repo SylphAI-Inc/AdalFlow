@@ -1,0 +1,18 @@
+.. _eval-functional:
+
+functional
+======================
+
+.. automodule:: eval.functional
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      confidence_interval
+      longest_common_substring
+

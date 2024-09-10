@@ -462,8 +462,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.base.html">base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_relevance.html">retriever_relevance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.g_eval.html">g_eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -583,7 +583,7 @@
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="core.db.LocalDB">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LocalDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">items:</span> <span class="pre">~typing.List[~core.db.T]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">transformed_items:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">~typing.List[~core.db.U]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">transformer_setups:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">~adalflow.core.component.Component]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">mapper_setups:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">~typing.Callable[[~core.db.T],</span> <span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/db.html#LocalDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.db.LocalDB" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LocalDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">items:</span> <span class="pre">~typing.List[~core.db.T]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">transformed_items:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">~typing.List[~core.db.U]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">transformer_setups:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">~adalflow.core.component.Component]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">mapper_setups:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">~typing.Callable[[~core.db.T],</span> <span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">index_path:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">'index.faiss'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/db.html#LocalDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.db.LocalDB" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
 <p>LocalDB with in-memory CRUD operations, data transformation/processing pipelines, and persistence.</p>
 <p>LocalDB is highly flexible.
@@ -689,6 +689,11 @@ It is used to save the transformer setup for later use.</p></li>
 <span class="sig-name descname"><span class="pre">mapper_setups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#core.db.LocalDB.mapper_setups" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.db.LocalDB.index_path">
+<span class="sig-name descname"><span class="pre">index_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'index.faiss'</span></em><a class="headerlink" href="#core.db.LocalDB.index_path" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="core.db.LocalDB.length">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">length</span></span><a class="headerlink" href="#core.db.LocalDB.length" title="Link to this definition">#</a></dt>
@@ -701,8 +706,22 @@ It is used to save the transformer setup for later use.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.db.LocalDB.get_transformed_data">
-<span class="sig-name descname"><span class="pre">get_transformed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">U</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/db.html#LocalDB.get_transformed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.db.LocalDB.get_transformed_data" title="Link to this definition">#</a></dt>
-<dd><p>Get the transformed items by key.</p>
+<span class="sig-name descname"><span class="pre">get_transformed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">str,</span> <span class="pre">filter_fn:</span> <span class="pre">~typing.Callable[[~typing.Any],</span> <span class="pre">bool]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">LocalDB.&lt;lambda&gt;&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">U</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/db.html#LocalDB.get_transformed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.db.LocalDB.get_transformed_data" title="Link to this definition">#</a></dt>
+<dd><p>Get the transformed items by key after applying a filter on metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The key to identify which transformed items to retrieve.</p></li>
+<li><p><strong>filter_fn</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><em>bool</em><em>]</em><em>, </em><em>optional</em>) – The filter function to apply on the metadata. Defaults to lambda x: True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filtered and transformed items.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[U]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -815,7 +834,7 @@ Only if the transformed data keeps the same length as the original data, the <co
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.db.LocalDB.save_state">
-<span class="sig-name descname"><span class="pre">save_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/db.html#LocalDB.save_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.db.LocalDB.save_state" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">save_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/db.html#LocalDB.save_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.db.LocalDB.save_state" title="Link to this definition">#</a></dt>
 <dd><p>Save the current state (attributes) of the DB using pickle.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -885,6 +904,7 @@ Only if the transformed data keeps the same length as the original data, the <co
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.db.LocalDB.transformed_items"><code class="docutils literal notranslate"><span class="pre">LocalDB.transformed_items</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.db.LocalDB.transformer_setups"><code class="docutils literal notranslate"><span class="pre">LocalDB.transformer_setups</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.db.LocalDB.mapper_setups"><code class="docutils literal notranslate"><span class="pre">LocalDB.mapper_setups</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.db.LocalDB.index_path"><code class="docutils literal notranslate"><span class="pre">LocalDB.index_path</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.db.LocalDB.length"><code class="docutils literal notranslate"><span class="pre">LocalDB.length</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.db.LocalDB.get_transformer_keys"><code class="docutils literal notranslate"><span class="pre">LocalDB.get_transformer_keys()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.db.LocalDB.get_transformed_data"><code class="docutils literal notranslate"><span class="pre">LocalDB.get_transformed_data()</span></code></a></li>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>eval.retriever_relevance &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+    <title>eval.functional &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
   
   
   
@@ -47,7 +47,7 @@
     <script src="../../_static/js/rtd_search_config.js"></script>
     <script src="../../_static/js/rtd_sphinx_search.min.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/eval/retriever_relevance';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/eval/functional';</script>
     <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -411,7 +411,7 @@
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">eval.retriev...</li>
+    <li class="breadcrumb-item active" aria-current="page">eval.functional</li>
   </ul>
 </nav>
 </div>
@@ -428,96 +428,94 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for eval.retriever_relevance</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;This is the metric for evaluating the relevance of the retrieved context.&quot;&quot;&quot;</span>
-
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.tokenizer</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+  <h1>Source code for eval.functional</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="RetrieverRelevance">
-<a class="viewcode-back" href="../../apis/eval/index.html#eval.retriever_relevance.RetrieverRelevance">[docs]</a>
-<span class="k">class</span> <span class="nc">RetrieverRelevance</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Metric for evaluating the relevance of the retrieved context. The context relevance is the ratio of the number of relevant context tokens in the retrieved context to the total number of tokens in the retrieved context.</span>
+<div class="viewcode-block" id="confidence_interval">
+<a class="viewcode-back" href="../../apis/eval/eval.functional.html#eval.functional.confidence_interval">[docs]</a>
+<span class="k">def</span> <span class="nf">confidence_interval</span><span class="p">(</span>
+    <span class="n">judgements</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">confidence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the confidence interval for a list of binary judgments.</span>
 
-<span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; retrieved_contexts = [</span>
-<span class="sd">        &quot;Apple is founded before Google.&quot;,</span>
-<span class="sd">        &quot;Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.&quot;,</span>
-<span class="sd">        ]</span>
-<span class="sd">        &gt;&gt;&gt; gt_contexts = [</span>
-<span class="sd">            [</span>
-<span class="sd">                &quot;Apple is founded in 1976.&quot;,</span>
-<span class="sd">                &quot;Google is founded in 1998.&quot;,</span>
-<span class="sd">                &quot;Apple is founded before Google.&quot;,</span>
-<span class="sd">            ],</span>
-<span class="sd">            [&quot;Feburary has 28 days in common years&quot;, &quot;Feburary has 29 days in leap years&quot;],</span>
-<span class="sd">        ]</span>
-<span class="sd">        &gt;&gt;&gt; retriever_relevance = RetrieverRelevance()</span>
-<span class="sd">        &gt;&gt;&gt; avg_relevance, relevance_list = retriever_relevance.compute(all_retrieved_context, all_gt_context)</span>
-<span class="sd">        &gt;&gt;&gt; avg_relevance</span>
-<span class="sd">        0.803030303030303</span>
-<span class="sd">        &gt;&gt;&gt; relevance_list</span>
-<span class="sd">        [1.0, 0.6060606060606061]</span>
+<span class="sd">    Args:</span>
+<span class="sd">        judgements (List[float]): List of binary judgments (1/0).</span>
+<span class="sd">        confidence (float): Confidence level (default 0.95).</span>
 
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: Lower and upper bounds of the confidence interval.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Step 1: Calculate the mean</span>
+    <span class="n">mean_score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">judgements</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
+    <span class="c1"># Step 2: Calculate the standard error (SE)</span>
+    <span class="n">standard_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">judgements</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">judgements</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_compute_single_item</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">retrieved_context</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gt_context</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute the context relevance of the retrieved context for a single query. The context relevance is the ratio of the number of relevant context tokens in the retrieved context to the total number of tokens in the retrieved context.</span>
+    <span class="c1"># Step 3: Use the Z-critical value for the confidence interval</span>
+    <span class="n">z_critical</span> <span class="o">=</span> <span class="mf">1.96</span>  <span class="c1"># For a 95% CI with a normal distribution</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            retrieved_context (str): Retrieved context string.</span>
-<span class="sd">            gt_context (Union[str, List[str]]): Context string or list of context strings to compare against.</span>
+    <span class="c1"># Step 4: Calculate the margin of error (MoE)</span>
+    <span class="n">margin_of_error</span> <span class="o">=</span> <span class="n">z_critical</span> <span class="o">*</span> <span class="n">standard_error</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            float: Context relevance value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gt_context</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">gt_context</span> <span class="o">=</span> <span class="p">[</span><span class="n">gt_context</span><span class="p">]</span>
-        <span class="n">relevant_tokens</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">gt_context_sentence</span> <span class="ow">in</span> <span class="n">gt_context</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">gt_context_sentence</span> <span class="ow">in</span> <span class="n">retrieved_context</span><span class="p">:</span>
-                <span class="n">relevant_tokens</span> <span class="o">+=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">count_tokens</span><span class="p">(</span><span class="n">gt_context_sentence</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">relevant_tokens</span> <span class="o">/</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">count_tokens</span><span class="p">(</span><span class="n">retrieved_context</span><span class="p">)</span>
+    <span class="c1"># Step 5: Calculate the confidence interval</span>
+    <span class="c1"># Confidence interval (clipped to [0, 1])</span>
+    <span class="n">lower_bound</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">mean_score</span> <span class="o">-</span> <span class="n">margin_of_error</span><span class="p">)</span>
+    <span class="n">upper_bound</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">mean_score</span> <span class="o">+</span> <span class="n">margin_of_error</span><span class="p">)</span>
 
-<div class="viewcode-block" id="RetrieverRelevance.compute">
-<a class="viewcode-back" href="../../apis/eval/index.html#eval.retriever_relevance.RetrieverRelevance.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">retrieved_contexts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">gt_contexts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute the context relevance of the retrieved context for a list of queries.</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">lower_bound</span><span class="p">,</span> <span class="n">upper_bound</span><span class="p">)</span></div>
 
-<span class="sd">        Args:</span>
-<span class="sd">            retrieved_contexts (List[str]): List of retrieved context strings.</span>
-<span class="sd">            gt_contexts (Union[List[str], List[List[str]]]): List of ground truth context strings and each of them can be a string or a list of strings.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            tuple:</span>
-<span class="sd">                - float: Average context relevance value.</span>
-<span class="sd">                - List[float]: Context relevance values for each query.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">context_relevance_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">retrieved_context</span><span class="p">,</span> <span class="n">gt_context</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">retrieved_contexts</span><span class="p">,</span> <span class="n">gt_contexts</span><span class="p">):</span>
-            <span class="n">context_relevance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_single_item</span><span class="p">(</span><span class="n">retrieved_context</span><span class="p">,</span> <span class="n">gt_context</span><span class="p">)</span>
-            <span class="n">context_relevance_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">context_relevance</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="nb">sum</span><span class="p">(</span><span class="n">context_relevance_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">context_relevance_list</span><span class="p">),</span>
-            <span class="n">context_relevance_list</span><span class="p">,</span>
-        <span class="p">)</span></div>
-</div>
+<div class="viewcode-block" id="longest_common_substring">
+<a class="viewcode-back" href="../../apis/eval/eval.functional.html#eval.functional.longest_common_substring">[docs]</a>
+<span class="k">def</span> <span class="nf">longest_common_substring</span><span class="p">(</span><span class="n">s1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">s2</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the longest common substring between two strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create a matrix to store lengths of longest common suffixes of substrings</span>
+    <span class="c1"># Initialize all values to 0</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+    <span class="n">lcs_matrix</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
 
+    <span class="c1"># Variable to store the length of the longest common substring</span>
+    <span class="n">longest_length</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Variable to store the ending index of the longest common substring in s1</span>
+    <span class="n">ending_index_s1</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Build the matrix in a bottom-up manner</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">s1</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">s2</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+                <span class="n">lcs_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">lcs_matrix</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">lcs_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">longest_length</span><span class="p">:</span>
+                    <span class="n">longest_length</span> <span class="o">=</span> <span class="n">lcs_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                    <span class="n">ending_index_s1</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lcs_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># The longest common substring</span>
+    <span class="n">longest_common_substring</span> <span class="o">=</span> <span class="n">s1</span><span class="p">[</span>
+        <span class="n">ending_index_s1</span> <span class="o">-</span> <span class="n">longest_length</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">ending_index_s1</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">longest_common_substring</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Example binary judgments (True/False as 1/0)</span>
+    <span class="n">judgements</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># Convert to 1/0</span>
+    <span class="n">score_range</span> <span class="o">=</span> <span class="n">confidence_interval</span><span class="p">(</span><span class="n">judgements</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">score_range</span><span class="p">)</span>
+
+    <span class="c1"># Example longest common substring</span>
+    <span class="n">s1</span> <span class="o">=</span> <span class="s2">&quot;abcdfghijk&quot;</span>
+    <span class="n">s2</span> <span class="o">=</span> <span class="s2">&quot;abedfghxyz&quot;</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">longest_common_substring</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
 </pre></div>
 
                 </article>

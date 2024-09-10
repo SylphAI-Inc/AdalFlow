@@ -464,8 +464,8 @@
 <li class="toctree-l2"><a class="reference internal" href="eval/eval.base.html">base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eval/eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eval/eval.retriever_recall.html">retriever_recall</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eval/eval.retriever_relevance.html">retriever_relevance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eval/eval.llm_as_judge.html">llm_as_judge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eval/eval.g_eval.html">g_eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="optim/index.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -714,16 +714,16 @@ The API reference is organized by subdirectories.</p>
 <td><p>Abstract base class for evaluation metrics.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="eval/eval.answer_match_acc.html#module-eval.answer_match_acc" title="eval.answer_match_acc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.answer_match_acc</span></code></a></p></td>
-<td><p>This is the metric for answer matching.</p></td>
+<td><p>This is the metric for QA generation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="eval/eval.retriever_recall.html#module-eval.retriever_recall" title="eval.retriever_recall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.retriever_recall</span></code></a></p></td>
-<td><p>This is the metric to evaluate the recall of the retriever.</p></td>
+<td><p>Retriever Recall &#64;k metric.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="eval/eval.retriever_relevance.html#module-eval.retriever_relevance" title="eval.retriever_relevance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.retriever_relevance</span></code></a></p></td>
-<td><p>This is the metric for evaluating the relevance of the retrieved context.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="eval/eval.llm_as_judge.html#module-eval.llm_as_judge" title="eval.llm_as_judge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.llm_as_judge</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="eval/eval.llm_as_judge.html#module-eval.llm_as_judge" title="eval.llm_as_judge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.llm_as_judge</span></code></a></p></td>
 <td><p>This is the metric to use an LLM as a judge for evaluating the performance of predicted answers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="eval/eval.g_eval.html#module-eval.g_eval" title="eval.g_eval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.g_eval</span></code></a></p></td>
+<td><p>Implementation of G-Eval: G-eval &lt;<a class="reference external" href="https://arxiv.org/abs/2303.08774">https://arxiv.org/abs/2303.08774</a>, <a class="github reference external" href="https://github.com/nlpyang/geval">nlpyang/geval</a>&gt; Instead of getting 1/5 as the score, AdalFlow will use 0.2 as the score, so that we can have a score in range [0, 1] for all metrics.</p></td>
 </tr>
 </tbody>
 </table>

@@ -14,5 +14,6 @@ llm_as_judge
    .. autosummary::
 
       DefaultLLMJudge
+      LLMJudgeEvalResult
       LLMasJudge
 

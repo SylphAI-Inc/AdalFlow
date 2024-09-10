@@ -406,7 +406,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -594,7 +594,7 @@ Components work on a sequence of <code class="docutils literal notranslate"><spa
 <tr class="row-even"><td><p><a class="reference internal" href="text_splitter.html"><span class="doc">Text Splitter</span></a></p></td>
 <td><p>To split long text into smaller chunks to fit into the token limits of embedder and generator or to ensure more relevant context while being used in RAG.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="db.html"><span class="doc">Data (Database/Pipeline) &amp; RAG</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="db.html"><span class="doc">Data (Database/Pipeline)</span></a></p></td>
 <td><p>Understanding the <strong>data modeling, processing, and storage</strong> as a whole. We will build a chatbot with enhanced memory and memoy retrieval in this note (RAG).</p></td>
 </tr>
 </tbody>
@@ -631,14 +631,14 @@ Components work on a sequence of <code class="docutils literal notranslate"><spa
 </div>
 </section>
 </section>
-<section id="optimizing">
-<h2>Optimizing<a class="headerlink" href="#optimizing" title="Link to this heading">#</a></h2>
+<section id="optimization">
+<h2>Optimization<a class="headerlink" href="#optimization" title="Link to this heading">#</a></h2>
 <p>AdalFlow auto-optimization provides a powerful and unified framework to optimize every single part of the prompt: (1) instruction, (2) few-shot examples, and (3) the prompt template,
 for any task pipeline you have just built. We leverage all SOTA prompt optimization from Dspy, Text-grad, ORPO, to our own research in the library.</p>
 <p>The optimization requires users to have at least one dataset, an evaluator, and define optimizor to use.
 This section we will briefly cover the datasets and evaluation metrics supported in the library.</p>
-<section id="evaluating">
-<h3>Evaluating<a class="headerlink" href="#evaluating" title="Link to this heading">#</a></h3>
+<section id="evaluation">
+<h3>Evaluation<a class="headerlink" href="#evaluation" title="Link to this heading">#</a></h3>
 <p>You can not optimize what you can not meature.
 In this section, we provide a general guide to the evaluation datasets, metrics, and methods to productionize your LLM tasks and to publish your research.</p>
 <div class="pst-scrollable-table-container"><table class="table">
@@ -797,8 +797,8 @@ In this section, we provide a general guide to the evaluation datasets, metrics,
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agent-essentials">Agent Essentials</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimizing">Optimizing</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating">Evaluating</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimization">Optimization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation">Evaluation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training">Training</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
 </ul>

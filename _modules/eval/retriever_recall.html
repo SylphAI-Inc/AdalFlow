@@ -429,40 +429,52 @@
                 <article class="bd-article">
                   
   <h1>Source code for eval.retriever_recall</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;This is the metric to evaluate the recall of the retriever.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Retriever Recall @k metric.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">adalflow.eval.base</span> <span class="kn">import</span> <span class="n">BaseEvaluator</span><span class="p">,</span> <span class="n">EvaluationResult</span>
 
 
 <div class="viewcode-block" id="RetrieverRecall">
 <a class="viewcode-back" href="../../apis/eval/index.html#eval.retriever_recall.RetrieverRecall">[docs]</a>
-<span class="k">class</span> <span class="nc">RetrieverRecall</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Metric to evaluate the recall of the retriever. The recall is the ratio of the number of relevant context strings in the retrieved context to the total number of ground truth relevant context strings.</span>
+<span class="k">class</span> <span class="nc">RetrieverRecall</span><span class="p">(</span><span class="n">BaseEvaluator</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Recall@k measures the ratio of the number of relevant context strings in the top-k retrieved context to the total number of ground truth relevant context strings.</span>
 
-<span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; all_retrieved_context = [</span>
-<span class="sd">        &quot;Apple is founded before Google.&quot;,</span>
-<span class="sd">        &quot;Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.&quot;,</span>
-<span class="sd">        ]</span>
-<span class="sd">        &gt;&gt;&gt; all_gt_context = [</span>
-<span class="sd">            [</span>
-<span class="sd">                &quot;Apple is founded in 1976.&quot;,</span>
-<span class="sd">                &quot;Google is founded in 1998.&quot;,</span>
-<span class="sd">                &quot;Apple is founded before Google.&quot;,</span>
-<span class="sd">            ],</span>
-<span class="sd">            [&quot;Feburary has 28 days in common years&quot;, &quot;Feburary has 29 days in leap years&quot;],</span>
-<span class="sd">        ]</span>
-<span class="sd">        &gt;&gt;&gt; retriever_recall = RetrieverRecall()</span>
-<span class="sd">        &gt;&gt;&gt; avg_recall, recall_list = retriever_recall.compute(all_retrieved_context, all_gt_context)</span>
-<span class="sd">        &gt;&gt;&gt; avg_recall</span>
-<span class="sd">        2 / 3</span>
-<span class="sd">        &gt;&gt;&gt; recall_list</span>
-<span class="sd">        [1 / 3, 1.0]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="s2">    In our implementation, we use exact string matching between each gt context and the joined retrieved context string.</span>
+<span class="s2">    You can use the longest common subsequence (LCS) or other similarity metrics(or embedding based) to decide if it is a match or not.</span>
+
+<span class="s2">    If you do not even have the ground truth context, but only grounth truth answers, you can consider using</span>
+<span class="s2">    RAGAS framework for now. It computes the recall as:</span>
+
+<span class="s2">    Recall = [GT statements that can be attributed to the retrieved context] / [GT statements]</span>
+
+<span class="s2">    Examples:</span>
+<span class="s2">        &gt;&gt;&gt; all_retrieved_context = [</span>
+<span class="s2">        [&quot;Apple is founded before Google.&quot;,</span>
+<span class="s2">        &quot;Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.&quot;,</span>
+<span class="s2">        ]</span>
+<span class="s2">        &gt;&gt;&gt; all_gt_context = [</span>
+<span class="s2">            [</span>
+<span class="s2">                &quot;Apple is founded in 1976.&quot;,</span>
+<span class="s2">                &quot;Google is founded in 1998.&quot;,</span>
+<span class="s2">                &quot;Apple is founded before Google.&quot;,</span>
+<span class="s2">            ],</span>
+<span class="s2">            [&quot;Feburary has 28 days in common years&quot;, &quot;Feburary has 29 days in leap years&quot;],</span>
+<span class="s2">        ]</span>
+<span class="s2">        &gt;&gt;&gt; retriever_recall = RetrieverRecall()</span>
+<span class="s2">        &gt;&gt;&gt; avg_recall, recall_list = retriever_recall.compute(all_retrieved_context, all_gt_context)</span>
+<span class="s2">        &gt;&gt;&gt; avg_recall</span>
+<span class="s2">        2 / 3</span>
+<span class="s2">        &gt;&gt;&gt; recall_list</span>
+<span class="s2">        [1 / 3, 1.0]</span>
+
+<span class="s2">    References:</span>
+<span class="s2">        - RAGAS: https://docs.ragas.io/en/stable/concepts/metrics/context_recall.html</span>
+<span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_compute_single_item</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">retrieved_context</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gt_context</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
@@ -489,26 +501,36 @@
 <a class="viewcode-back" href="../../apis/eval/index.html#eval.retriever_recall.RetrieverRecall.compute">[docs]</a>
     <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">retrieved_contexts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">gt_contexts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+        <span class="n">retrieved_contexts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
+        <span class="n">gt_contexts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EvaluationResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the recall of the retrieved context for a list of queries.</span>
 <span class="sd">        Args:</span>
-<span class="sd">            retrieved_contexts (List[str]): List of retrieved context strings.</span>
-<span class="sd">            gt_contexts (Union[List[str], List[List[str]]]: List of ground truth context strings and each of them can be a string or a list of strings.</span>
+<span class="sd">            retrieved_contexts (Union[List[str], List[List[str]]): List of retrieved context strings. Using List[str] we assume you have joined all the context sentences into one string.</span>
+<span class="sd">            gt_contexts ( List[List[str]]): List of ground truth context strings.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple:</span>
 <span class="sd">                - float: Average recall value.</span>
 <span class="sd">                - List[float]: Recall values for each query.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">retrieved_contexts</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gt_contexts</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The number of retrieved context lists and ground truth context lists should be the same.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">retrieved_contexts</span><span class="p">)</span>
         <span class="n">recall_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">retrieved_context</span><span class="p">,</span> <span class="n">gt_context</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">retrieved_contexts</span><span class="p">,</span> <span class="n">gt_contexts</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">retrieved_context</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">retrieved_context</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">retrieved_context</span><span class="p">)</span>
             <span class="n">recall</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_single_item</span><span class="p">(</span><span class="n">retrieved_context</span><span class="p">,</span> <span class="n">gt_context</span><span class="p">)</span>
             <span class="n">recall_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">recall</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">recall_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">recall_list</span><span class="p">),</span> <span class="n">recall_list</span></div>
+        <span class="n">avg_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">recall_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">recall_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">EvaluationResult</span><span class="p">(</span>
+            <span class="n">avg_score</span><span class="p">,</span> <span class="n">recall_list</span><span class="p">,</span> <span class="n">additional_info</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;RetrieverRecall@</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+        <span class="p">)</span></div>
 </div>
 
 </pre></div>

@@ -462,8 +462,8 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eval.retriever_recall.html">retriever_recall</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eval.retriever_relevance.html">retriever_relevance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eval.llm_as_judge.html">llm_as_judge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eval.g_eval.html">g_eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -618,7 +618,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eval.base.BaseEvaluator.compute">
-<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#eval.base.EvaluationResult" title="eval.base.EvaluationResult"><span class="pre">EvaluationResult</span></a></span></span><a class="reference internal" href="../../_modules/eval/base.html#BaseEvaluator.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.base.BaseEvaluator.compute" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/eval/base.html#BaseEvaluator.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.base.BaseEvaluator.compute" title="Link to this definition">#</a></dt>
 <dd><p>Evaluate a list of predictions and ground truth values. and return overall score and per-item scores.</p>
 </dd></dl>
 
