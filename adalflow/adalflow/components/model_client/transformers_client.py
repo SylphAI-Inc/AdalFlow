@@ -6,7 +6,6 @@ from functools import lru_cache
 import re
 import warnings
 
-
 from adalflow.core.model_client import ModelClient
 from adalflow.core.types import GeneratorOutput, ModelType, Embedding, EmbedderOutput
 from adalflow.core.functional import get_top_k_indices_scores
@@ -14,26 +13,28 @@ from adalflow.core.functional import get_top_k_indices_scores
 # optional import
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
-
-transformers = safe_import(
-    OptionalPackages.TRANSFORMERS.value[0], OptionalPackages.TRANSFORMERS.value[1]
-)
-torch = safe_import(OptionalPackages.TORCH.value[0], OptionalPackages.TORCH.value[1])
-
-import torch
-
 import torch.nn.functional as F
 from torch import Tensor
+import torch
 
 from transformers import (
+    PreTrainedModel,
+    PreTrainedTokenizer,
+    PreTrainedTokenizerFast,
     AutoTokenizer,
     AutoModel,
     AutoModelForCausalLM,
     AutoModelForSequenceClassification,
     pipeline
 )
-
 from os import getenv as get_env_variable
+
+transformers = safe_import(
+    OptionalPackages.TRANSFORMERS.value[0],
+    OptionalPackages.TRANSFORMERS.value[1]
+)
+torch = safe_import(OptionalPackages.TORCH.value[0], OptionalPackages.TORCH.value[1])
+
 
 log = logging.getLogger(__name__)
 
@@ -43,12 +44,11 @@ def average_pool(last_hidden_states: Tensor, attention_mask: list) -> Tensor:
     return last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]
 
 
-from transformers import PreTrainedModel, PreTrainedTokenizer, PreTrainedTokenizerFast
-
 def mean_pooling(model_output: dict, attention_mask) -> Tensor:
     token_embeddings = model_output[0] #First element of model_output contains all token embeddings
     input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
     return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+
 
 def get_device():
     # Check device availability and set the device
@@ -131,6 +131,7 @@ class TransformerEmbeddingModelClient(ModelClient):
 
         self.init_sync_client()
 
+
     def init_sync_client(self):
         self.init_model(
             model_name=self.model_name,
@@ -139,6 +140,7 @@ class TransformerEmbeddingModelClient(ModelClient):
             custom_model=self.custom_model,
             custom_tokenizer=self.custom_tokenizer
             )
+
 
     @lru_cache(None)
     def init_model(
@@ -188,19 +190,23 @@ class TransformerEmbeddingModelClient(ModelClient):
             embeddings = embeddings.tolist()
         return embeddings
 
+
     def handle_input(self, input: Union[str, List[str], List[List[str]]]) -> Union[List[str], List[List[str]]]:
         if isinstance(input, str):
             input = [input]
         return input
      
+
     def tokenize_inputs(self, input: Union[str, List[str], List[List[str]]], kwargs: Optional[dict] = dict()) -> dict:
         batch_dict = self.tokenizer(input, **kwargs)
         return batch_dict
+
 
     def compute_model_outputs(self, batch_dict: dict, model: PreTrainedModel) -> dict:
         with torch.no_grad():
             outputs = model(**batch_dict)
         return outputs
+
 
     def compute_embeddings(self, outputs: dict, batch_dict: dict):
         embeddings = mean_pooling(
@@ -229,12 +235,14 @@ class TransformerEmbeddingModelClient(ModelClient):
         # inference the model
         return self.infer_embedding(api_kwargs["input"])
 
+
     def parse_embedding_response(self, response: Union[List, Tensor]) -> EmbedderOutput:
         embeddings: List[Embedding] = []
         for idx, emb in enumerate(response):
             embeddings.append(Embedding(index=idx, embedding=emb))
         response = EmbedderOutput(data=embeddings)
         return response
+
 
     def convert_inputs_to_api_kwargs(
         self,
@@ -289,11 +297,13 @@ class TransformerLLMModelClient(ModelClient):
         if model_name is not None:
             self.init_model(model_name=model_name)
 
+
     def _check_token(self, token: str):
         if get_env_variable(token) is None:
             warnings.warn(
                 f"{token} is not set. You may not be able to access the model."
             )
+
 
     def _get_token_if_relevant(self) -> Union[str, bool]:
         if self.use_token:
@@ -302,6 +312,7 @@ class TransformerLLMModelClient(ModelClient):
         else:
             token = False      
         return token
+
 
     def _init_from_pipeline(self):
 
@@ -314,6 +325,7 @@ class TransformerLLMModelClient(ModelClient):
             device=get_device(),
             token=token
         )
+
 
     def _init_from_automodelcasual_lm(self):
 
@@ -414,6 +426,7 @@ class TransformerLLMModelClient(ModelClient):
         log.info(f"Outputs: {outputs}")
         return outputs
 
+
     def _infer_from_automodelcasual_lm(
         self,
         *,
@@ -447,6 +460,7 @@ class TransformerLLMModelClient(ModelClient):
             outputs.append(self.tokenizer.decode(output))
         return outputs
 
+
     def _handle_input(
             self,
             messages: Sequence[Dict[str, str]],
@@ -469,6 +483,7 @@ class TransformerLLMModelClient(ModelClient):
         else:
             text = messages[-1]["content"]
             return text
+
 
     def infer_llm(
         self,
@@ -523,12 +538,11 @@ class TransformerLLMModelClient(ModelClient):
         output = self.infer_llm(**api_kwargs)
         return output
 
+
     def _parse_chat_completion_from_pipeline(self, completion: Any) -> str:
 
         text = completion[0]["generated_text"]
-
         pattern = r"(?<=\|assistant\|>).*"
-
         match = re.search(pattern, text)
 
         if match:
@@ -537,9 +551,11 @@ class TransformerLLMModelClient(ModelClient):
         else:
             return ""
 
+
     def _parse_chat_completion_from_automodelcasual_lm(self, completion: Any) -> GeneratorOutput:
         print(f"completion: {completion}")
         return completion[0]
+
 
     def parse_chat_completion(self, completion: Any) -> str:
         try:
@@ -551,6 +567,7 @@ class TransformerLLMModelClient(ModelClient):
         except Exception as e:
             log.error(f"Error parsing chat completion: {e}")
             return GeneratorOutput(data=None, raw_response=str(completion), error=e)
+
 
     def convert_inputs_to_api_kwargs(
         self,
@@ -595,6 +612,7 @@ class TransformerRerankerModelClient(ModelClient):
         self.local_files_only = local_files_only
         if model_name is not None:
             self.init_model(model_name=model_name)
+
 
     def init_model(self, model_name: str):
         try:
@@ -686,6 +704,7 @@ class TransformerRerankerModelClient(ModelClient):
         )
         log.warning(f"output: ({top_k_indices}, {top_k_scores})")
         return top_k_indices, top_k_scores
+
 
     def convert_inputs_to_api_kwargs(
         self,
