@@ -280,6 +280,7 @@ class TransformerLLMModelClient(ModelClient):
         self,
         model_name: Optional[str] = None,
         tokenizer_decode_kwargs: Optional[dict] = {},
+        tokenizer_kwargs: Optional[dict] = {},
         auto_model_kwargs: Optional[dict] = dict(),
         auto_tokenizer_kwargs: Optional[dict] = dict(),
         init_from: Optional[str] = "autoclass",
@@ -294,6 +295,7 @@ class TransformerLLMModelClient(ModelClient):
 
         self.model_name = model_name  # current model to use
         self.tokenizer_decode_kwargs = tokenizer_decode_kwargs
+        self.tokenizer_kwargs = tokenizer_kwargs
         self.auto_model_kwargs = auto_model_kwargs
         self.auto_tokenizer_kwargs = auto_tokenizer_kwargs
         if "return_tensors" not in self.tokenizer_kwargs:
@@ -463,7 +465,7 @@ class TransformerLLMModelClient(ModelClient):
                 )
         else:
            model_input = self._handle_input(messages) 
-        input_ids = self.tokenizer(model_input, return_tensors="pt").to(
+        input_ids = self.tokenizer(model_input, **self.tokenizer_kwargs).to(
             get_device()
         )
         outputs_tokens = self.model.generate(**input_ids, max_length=max_length, max_new_tokens=max_tokens, **kwargs)
