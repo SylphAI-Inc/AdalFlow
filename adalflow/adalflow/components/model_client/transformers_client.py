@@ -94,6 +94,7 @@ class TransformerEmbeddingModelClient(ModelClient):
             auto_tokenizer_kwargs: Optional[dict] = dict(),
             auto_model: Optional[type] = AutoModel,
             auto_tokenizer: Optional[type] = AutoTokenizer,
+            local_files_only: Optional[bool] = False,
             custom_model: Optional[PreTrainedModel] = None,
             custom_tokenizer: Optional[Union[PreTrainedTokenizer, PreTrainedTokenizerFast]] = None
             ):
@@ -107,6 +108,7 @@ class TransformerEmbeddingModelClient(ModelClient):
             self.tokenizer_kwargs["return_tensors"]= "pt"
         self.auto_model=auto_model
         self.auto_tokenizer=auto_tokenizer
+        self.local_files_only = local_files_only
         self.custom_model=custom_model
         self.custom_tokenizer=custom_tokenizer
 
@@ -162,12 +164,20 @@ class TransformerEmbeddingModelClient(ModelClient):
 
         try:
             if self.use_auto_model:
-                self.model = auto_model.from_pretrained(model_name, **auto_model_kwargs)
+                self.model = auto_model.from_pretrained(
+                    model_name,
+                    local_files_only=self.local_files_only,
+                    **auto_model_kwargs
+                    )
             else:
                 self.model = custom_model
 
             if self.use_auto_tokenizer:
-                self.tokenizer = auto_tokenizer.from_pretrained(model_name, **auto_tokenizer_kwargs)
+                self.tokenizer = auto_tokenizer.from_pretrained(
+                    model_name,
+                    local_files_only=self.local_files_only,
+                    **auto_tokenizer_kwargs
+                    )
             else:
                 self.tokenizer = custom_tokenizer
 
