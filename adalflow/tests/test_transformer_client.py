@@ -165,7 +165,7 @@ class TestTransformerLLMModelClient(unittest.TestCase):
         output = generator(prompt_kwargs=self.prompt_kwargs)
         print(output)
 
-class TransformerRerankerModelClient(unittest.TestCase):
+class TestTransformerRerankerModelClient(unittest.TestCase):
     def setUp(self) -> None:
 
         self.query = "what is panda?"
