@@ -25,13 +25,12 @@ from transformers import (
     AutoModel,
     AutoModelForCausalLM,
     AutoModelForSequenceClassification,
-    pipeline
+    pipeline,
 )
 from os import getenv as get_env_variable
 
 transformers = safe_import(
-    OptionalPackages.TRANSFORMERS.value[0],
-    OptionalPackages.TRANSFORMERS.value[1]
+    OptionalPackages.TRANSFORMERS.value[0], OptionalPackages.TRANSFORMERS.value[1]
 )
 torch = safe_import(OptionalPackages.TORCH.value[0], OptionalPackages.TORCH.value[1])
 
@@ -45,9 +44,15 @@ def average_pool(last_hidden_states: Tensor, attention_mask: list) -> Tensor:
 
 
 def mean_pooling(model_output: dict, attention_mask) -> Tensor:
-    token_embeddings = model_output[0] #First element of model_output contains all token embeddings
-    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
-    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+    token_embeddings = model_output[
+        0
+    ]  # First element of model_output contains all token embeddings
+    input_mask_expanded = (
+        attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+    )
+    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(
+        input_mask_expanded.sum(1), min=1e-9
+    )
 
 
 def get_device():
@@ -83,21 +88,24 @@ class TransformerEmbeddingModelClient(ModelClient):
     Find how to apply tokens here: https://huggingface.co/docs/hub/security-tokens
     Once you have a token and have access, put the token in the environment variable HF_TOKEN.
     """
+
     #
     #   Model initialisation
     #
     def __init__(
-            self,
-            model_name: Optional[str] = None,
-            tokenizer_kwargs: Optional[dict] = None,
-            auto_model_kwargs: Optional[dict] = None,
-            auto_tokenizer_kwargs: Optional[dict] = None,
-            auto_model: Optional[type] = AutoModel,
-            auto_tokenizer: Optional[type] = AutoTokenizer,
-            local_files_only: Optional[bool] = False,
-            custom_model: Optional[PreTrainedModel] = None,
-            custom_tokenizer: Optional[Union[PreTrainedTokenizer, PreTrainedTokenizerFast]] = None
-            ):
+        self,
+        model_name: Optional[str] = None,
+        tokenizer_kwargs: Optional[dict] = None,
+        auto_model_kwargs: Optional[dict] = None,
+        auto_tokenizer_kwargs: Optional[dict] = None,
+        auto_model: Optional[type] = AutoModel,
+        auto_tokenizer: Optional[type] = AutoTokenizer,
+        local_files_only: Optional[bool] = False,
+        custom_model: Optional[PreTrainedModel] = None,
+        custom_tokenizer: Optional[
+            Union[PreTrainedTokenizer, PreTrainedTokenizerFast]
+        ] = None,
+    ):
 
         super().__init__()
         self.model_name = model_name
@@ -105,12 +113,12 @@ class TransformerEmbeddingModelClient(ModelClient):
         self.auto_model_kwargs = auto_model_kwargs or dict()
         self.auto_tokenizer_kwargs = auto_tokenizer_kwargs or dict()
         if "return_tensors" not in self.tokenizer_kwargs:
-            self.tokenizer_kwargs["return_tensors"]= "pt"
-        self.auto_model=auto_model
-        self.auto_tokenizer=auto_tokenizer
+            self.tokenizer_kwargs["return_tensors"] = "pt"
+        self.auto_model = auto_model
+        self.auto_tokenizer = auto_tokenizer
         self.local_files_only = local_files_only
-        self.custom_model=custom_model
-        self.custom_tokenizer=custom_tokenizer
+        self.custom_model = custom_model
+        self.custom_tokenizer = custom_tokenizer
 
         # Check if there is conflicting arguments
         self.use_auto_model = auto_model is not None
@@ -125,18 +133,23 @@ class TransformerEmbeddingModelClient(ModelClient):
         elif (not self.use_auto_model) and (not self.use_cusom_model):
             raise ValueError("Need to specify either 'auto_model' or 'custom_model'.")
         elif self.use_auto_model and (not self.model_name_exit):
-            raise ValueError("When 'auto_model' is specified 'model_name' must be specified too.")
-        
+            raise ValueError(
+                "When 'auto_model' is specified 'model_name' must be specified too."
+            )
+
         ## arguments related to tokenizer
         if self.use_auto_tokenizer and self.use_cusom_tokenizer:
             raise Exception("Cannot specify 'auto_tokenizer' and 'custom_tokenizer'.")
         elif (not self.use_auto_tokenizer) and (not self.use_cusom_tokenizer):
-            raise Exception("Need to specify either'auto_tokenizer' and 'custom_tokenizer'.")
+            raise Exception(
+                "Need to specify either'auto_tokenizer' and 'custom_tokenizer'."
+            )
         elif self.use_auto_tokenizer and (not self.model_name_exit):
-            raise ValueError("When 'auto_tokenizer' is specified 'model_name' must be specified too.")
+            raise ValueError(
+                "When 'auto_tokenizer' is specified 'model_name' must be specified too."
+            )
 
         self.init_sync_client()
-
 
     def init_sync_client(self):
         self.init_model(
@@ -144,9 +157,8 @@ class TransformerEmbeddingModelClient(ModelClient):
             auto_model=self.auto_model,
             auto_tokenizer=self.auto_tokenizer,
             custom_model=self.custom_model,
-            custom_tokenizer=self.custom_tokenizer
-            )
-
+            custom_tokenizer=self.custom_tokenizer,
+        )
 
     @lru_cache(None)
     def init_model(
@@ -155,16 +167,18 @@ class TransformerEmbeddingModelClient(ModelClient):
         auto_model: Optional[type] = AutoModel,
         auto_tokenizer: Optional[type] = AutoTokenizer,
         custom_model: Optional[PreTrainedModel] = None,
-        custom_tokenizer: Optional[PreTrainedTokenizer | PreTrainedTokenizerFast] = None
-        ):
+        custom_tokenizer: Optional[
+            PreTrainedTokenizer | PreTrainedTokenizerFast
+        ] = None,
+    ):
 
         try:
             if self.use_auto_model:
                 self.model = auto_model.from_pretrained(
                     model_name,
                     local_files_only=self.local_files_only,
-                    **self.auto_model_kwargs
-                    )
+                    **self.auto_model_kwargs,
+                )
             else:
                 self.model = custom_model
 
@@ -172,8 +186,8 @@ class TransformerEmbeddingModelClient(ModelClient):
                 self.tokenizer = auto_tokenizer.from_pretrained(
                     model_name,
                     local_files_only=self.local_files_only,
-                    **self.auto_tokenizer_kwargs
-                    )
+                    **self.auto_tokenizer_kwargs,
+                )
             else:
                 self.tokenizer = custom_tokenizer
 
@@ -204,35 +218,39 @@ class TransformerEmbeddingModelClient(ModelClient):
             embeddings = embeddings.tolist()
         return embeddings
 
-
-    def handle_input(self, input: Union[str, List[str], List[List[str]]]) -> Union[List[str], List[List[str]]]:
+    def handle_input(
+        self, input: Union[str, List[str], List[List[str]]]
+    ) -> Union[List[str], List[List[str]]]:
         if isinstance(input, str):
             input = [input]
         return input
-     
 
-    def tokenize_inputs(self, input: Union[str, List[str], List[List[str]]], kwargs: Optional[dict] = None) -> dict:
+    def tokenize_inputs(
+        self,
+        input: Union[str, List[str], List[List[str]]],
+        kwargs: Optional[dict] = None,
+    ) -> dict:
         kwargs = kwargs or dict()
         batch_dict = self.tokenizer(input, **kwargs)
         return batch_dict
-
 
     def compute_model_outputs(self, batch_dict: dict, model: PreTrainedModel) -> dict:
         with torch.no_grad():
             outputs = model(**batch_dict)
         return outputs
 
-
     def compute_embeddings(self, outputs: dict, batch_dict: dict):
-        embeddings = mean_pooling(
-            outputs, batch_dict["attention_mask"]
-        )
+        embeddings = mean_pooling(outputs, batch_dict["attention_mask"])
         return embeddings
 
     #
     # Preprocessing, postprocessing and call for inference code
     #
-    def call(self, api_kwargs: Dict = None, model_type: Optional[ModelType]= ModelType.UNDEFINED) -> Union[List, Tensor]:
+    def call(
+        self,
+        api_kwargs: Dict = None,
+        model_type: Optional[ModelType] = ModelType.UNDEFINED,
+    ) -> Union[List, Tensor]:
 
         api_kwargs = api_kwargs or dict()
         if "model" not in api_kwargs:
@@ -251,7 +269,6 @@ class TransformerEmbeddingModelClient(ModelClient):
         # inference the model
         return self.infer_embedding(api_kwargs["input"])
 
-
     def parse_embedding_response(self, response: Union[List, Tensor]) -> EmbedderOutput:
         embeddings: List[Embedding] = []
         for idx, emb in enumerate(response):
@@ -259,12 +276,11 @@ class TransformerEmbeddingModelClient(ModelClient):
         response = EmbedderOutput(data=embeddings)
         return response
 
-
     def convert_inputs_to_api_kwargs(
         self,
         input: Any,  # for retriever, it is a single query,
         model_kwargs: dict = {},
-        model_type: Optional[ModelType]= ModelType.UNDEFINED
+        model_type: Optional[ModelType] = ModelType.UNDEFINED,
     ) -> dict:
         final_model_kwargs = model_kwargs.copy()
         # if model_type == ModelType.EMBEDDER:
@@ -281,6 +297,7 @@ class TransformerLLMModelClient(ModelClient):
     Find how to apply tokens here: https://huggingface.co/docs/hub/security-tokens
     Once you have a token and have access, put the token in the environment variable HF_TOKEN.
     """
+
     #
     #   Model initialisation
     #
@@ -297,7 +314,7 @@ class TransformerLLMModelClient(ModelClient):
         chat_template_kwargs: Optional[dict] = None,
         use_token: bool = False,
         torch_dtype: Optional[Any] = torch.bfloat16,
-        local_files_only: Optional[bool] = False
+        local_files_only: Optional[bool] = False,
     ):
         super().__init__()
 
@@ -307,18 +324,19 @@ class TransformerLLMModelClient(ModelClient):
         self.auto_model_kwargs = auto_model_kwargs or dict()
         self.auto_tokenizer_kwargs = auto_tokenizer_kwargs or dict()
         if "return_tensors" not in self.tokenizer_kwargs:
-            self.tokenizer_kwargs["return_tensors"]= "pt"
+            self.tokenizer_kwargs["return_tensors"] = "pt"
         self.use_token = use_token
         self.torch_dtype = torch_dtype
         self.init_from = init_from
         self.apply_chat_template = apply_chat_template
         self.chat_template = chat_template
-        self.chat_template_kwargs = chat_template_kwargs or dict(tokenize=False, add_generation_prompt=True)
+        self.chat_template_kwargs = chat_template_kwargs or dict(
+            tokenize=False, add_generation_prompt=True
+        )
         self.local_files_only = local_files_only
         self.model = None
         if model_name is not None:
             self.init_model(model_name=model_name)
-
 
     def _check_token(self, token: str):
         if get_env_variable(token) is None:
@@ -326,38 +344,35 @@ class TransformerLLMModelClient(ModelClient):
                 f"{token} is not set. You may not be able to access the model."
             )
 
-
     def _get_token_if_relevant(self) -> Union[str, bool]:
         if self.use_token:
             self._check_token("HF_TOKEN")
             token = get_env_variable("HF_TOKEN")
         else:
-            token = False      
+            token = False
         return token
-
 
     def _init_from_pipeline(self):
 
         clean_device_cache()
-        token = self._get_token_if_relevant() # return a token string or False
+        token = self._get_token_if_relevant()  # return a token string or False
         self.model = pipeline(
             "text-generation",
             model=self.model_name,
             torch_dtype=self.torch_dtype,
             device=get_device(),
-            token=token
+            token=token,
         )
-
 
     def _init_from_automodelcasual_lm(self):
 
-        token = self._get_token_if_relevant() # return a token str or False
+        token = self._get_token_if_relevant()  # return a token str or False
 
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.model_name,
             token=token,
             local_files_only=self.local_files_only,
-            **self.auto_tokenizer_kwargs
+            **self.auto_tokenizer_kwargs,
         )
         self.model = AutoModelForCausalLM.from_pretrained(
             self.model_name,
@@ -365,7 +380,7 @@ class TransformerLLMModelClient(ModelClient):
             device_map="auto",
             token=token,
             local_files_only=self.local_files_only,
-            **self.auto_model_kwargs
+            **self.auto_model_kwargs,
         )
         # Set pad token if it's not already set
         if self.tokenizer.pad_token is None:
@@ -374,18 +389,19 @@ class TransformerLLMModelClient(ModelClient):
                 self.tokenizer.eos_token_id
             )  # ensure consistency in the model config
 
-
     @lru_cache(None)
     def init_model(self, model_name: str):
 
-        log.debug(f"Loading model {model_name}") 
+        log.debug(f"Loading model {model_name}")
         try:
             if self.init_from == "autoclass":
                 self._init_from_automodelcasual_lm()
             elif self.init_from == "pipeline":
                 self._init_from_pipeline()
             else:
-                raise ValueError("argument 'init_from' must be one of 'autoclass' or 'pipeline'.")
+                raise ValueError(
+                    "argument 'init_from' must be one of 'autoclass' or 'pipeline'."
+                )
         except Exception as e:
             log.error(f"Error loading model {model_name}: {e}")
             raise e
@@ -437,7 +453,7 @@ class TransformerLLMModelClient(ModelClient):
                 apply_chat_template=True,
                 chat_template=chat_template,
                 chat_template_kwargs=chat_template_kwargs,
-                )
+            )
         else:
             model_input = self._handle_input(messages)
 
@@ -447,7 +463,6 @@ class TransformerLLMModelClient(ModelClient):
         )
         log.info(f"Outputs: {outputs}")
         return outputs
-
 
     def _infer_from_automodelcasual_lm(
         self,
@@ -469,27 +484,28 @@ class TransformerLLMModelClient(ModelClient):
                 messages,
                 apply_chat_template=True,
                 chat_template_kwargs=chat_template_kwargs,
-                chat_template=chat_template
-                )
+                chat_template=chat_template,
+            )
         else:
-           model_input = self._handle_input(messages) 
+            model_input = self._handle_input(messages)
         input_ids = self.tokenizer(model_input, **self.tokenizer_kwargs).to(
             get_device()
         )
-        outputs_tokens = self.model.generate(**input_ids, max_length=max_length, max_new_tokens=max_tokens, **kwargs)
+        outputs_tokens = self.model.generate(
+            **input_ids, max_length=max_length, max_new_tokens=max_tokens, **kwargs
+        )
         outputs = []
         for output in outputs_tokens:
             outputs.append(self.tokenizer.decode(output))
         return outputs
 
-
     def _handle_input(
-            self,
-            messages: Sequence[Dict[str, str]],
-            apply_chat_template: bool = False,
-            chat_template_kwargs: dict = None,
-            chat_template: Optional[str] = None,
-            ) -> str:
+        self,
+        messages: Sequence[Dict[str, str]],
+        apply_chat_template: bool = False,
+        chat_template_kwargs: dict = None,
+        chat_template: Optional[str] = None,
+    ) -> str:
 
         if apply_chat_template:
             if chat_template is not None:
@@ -497,7 +513,9 @@ class TransformerLLMModelClient(ModelClient):
             prompt = self.tokenizer.apply_chat_template(
                 messages, **chat_template_kwargs
             )
-            if ("tokenize" in chat_template_kwargs) and (chat_template_kwargs["tokenize"] == True):
+            if ("tokenize" in chat_template_kwargs) and (
+                chat_template_kwargs["tokenize"] == True
+            ):
                 prompt = self.tokenizer.decode(prompt, **self.tokenizer_decode_kwargs)
                 return prompt
             else:
@@ -505,7 +523,6 @@ class TransformerLLMModelClient(ModelClient):
         else:
             text = messages[-1]["content"]
             return text
-
 
     def infer_llm(
         self,
@@ -524,7 +541,7 @@ class TransformerLLMModelClient(ModelClient):
                 apply_chat_template=self.apply_chat_template,
                 chat_template=self.chat_template,
                 chat_template_kwargs=self.chat_template_kwargs,
-                **kwargs
+                **kwargs,
             )
         else:
             return self._infer_from_automodelcasual_lm(
@@ -534,13 +551,17 @@ class TransformerLLMModelClient(ModelClient):
                 apply_chat_template=self.apply_chat_template,
                 chat_template=self.chat_template,
                 chat_template_kwargs=self.chat_template_kwargs,
-                **kwargs
+                **kwargs,
             )
 
     #
     # Preprocessing, postprocessing and call for inference code
     #
-    def call(self, api_kwargs: Dict = None, model_type: Optional[ModelType]= ModelType.UNDEFINED):
+    def call(
+        self,
+        api_kwargs: Dict = None,
+        model_type: Optional[ModelType] = ModelType.UNDEFINED,
+    ):
         api_kwargs = api_kwargs or dict()
         if "model" not in api_kwargs:
             raise ValueError("model must be specified in api_kwargs")
@@ -548,7 +569,9 @@ class TransformerLLMModelClient(ModelClient):
         model_name = api_kwargs["model"]
         if (model_name != self.model_name) and (self.model_name is not None):
             # need to update the model_name
-            log.warning(f"The model passed in 'model_kwargs' is different that the one that has been previously initialised: Updating model from {self.model_name} to {model_name}.")
+            log.warning(
+                f"The model passed in 'model_kwargs' is different that the one that has been previously initialised: Updating model from {self.model_name} to {model_name}."
+            )
             self.model_name = model_name
             self.init_model(model_name=model_name)
         elif (model_name != self.model_name) and (self.model_name is None):
@@ -556,10 +579,8 @@ class TransformerLLMModelClient(ModelClient):
             self.model_name = model_name
             self.init_model(model_name=model_name)
 
-
         output = self.infer_llm(**api_kwargs)
         return output
-
 
     def _parse_chat_completion_from_pipeline(self, completion: Any) -> str:
 
@@ -573,11 +594,11 @@ class TransformerLLMModelClient(ModelClient):
         else:
             return ""
 
-
-    def _parse_chat_completion_from_automodelcasual_lm(self, completion: Any) -> GeneratorOutput:
+    def _parse_chat_completion_from_automodelcasual_lm(
+        self, completion: Any
+    ) -> GeneratorOutput:
         print(f"completion: {completion}")
         return completion[0]
-
 
     def parse_chat_completion(self, completion: Any) -> str:
         try:
@@ -590,18 +611,19 @@ class TransformerLLMModelClient(ModelClient):
             log.error(f"Error parsing chat completion: {e}")
             return GeneratorOutput(data=None, raw_response=str(completion), error=e)
 
-
     def convert_inputs_to_api_kwargs(
         self,
         input: Any,  # for retriever, it is a single query,
         model_kwargs: dict = None,
-        model_type: Optional[ModelType]= ModelType.UNDEFINED
+        model_type: Optional[ModelType] = ModelType.UNDEFINED,
     ) -> dict:
         model_kwargs = model_kwargs or dict()
         final_model_kwargs = model_kwargs.copy()
         assert "model" in final_model_kwargs, "model must be specified"
-        #messages = [{"role": "system", "content": input}]
-        messages = [{"role": "user", "content": input}] # Not sure, but it seems to make more sense
+        # messages = [{"role": "system", "content": input}]
+        messages = [
+            {"role": "user", "content": input}
+        ]  # Not sure, but it seems to make more sense
         final_model_kwargs["messages"] = messages
         return final_model_kwargs
 
@@ -615,6 +637,7 @@ class TransformerRerankerModelClient(ModelClient):
     Find how to apply tokens here: https://huggingface.co/docs/hub/security-tokens
     Once you have a token and have access, put the token in the environment variable HF_TOKEN.
     """
+
     #
     #   Model initialisation
     #
@@ -626,32 +649,31 @@ class TransformerRerankerModelClient(ModelClient):
         auto_tokenizer_kwargs: Optional[dict] = None,
         auto_model: Optional[type] = AutoModelForSequenceClassification,
         auto_tokenizer: Optional[type] = AutoTokenizer,
-        local_files_only: Optional[bool] = False
+        local_files_only: Optional[bool] = False,
     ):
         self.auto_model = auto_model
         self.auto_model_kwargs = auto_model_kwargs or dict()
         self.auto_tokenizer_kwargs = auto_tokenizer_kwargs or dict()
-        self.auto_tokenizer= auto_tokenizer
+        self.auto_tokenizer = auto_tokenizer
         self.model_name = model_name
         self.tokenizer_kwargs = tokenizer_kwargs or dict()
         if "return_tensors" not in self.tokenizer_kwargs:
-            self.tokenizer_kwargs["return_tensors"]= "pt"
+            self.tokenizer_kwargs["return_tensors"] = "pt"
         self.local_files_only = local_files_only
         if model_name is not None:
             self.init_model(model_name=model_name)
 
-
     def init_model(self, model_name: str):
         try:
             self.tokenizer = self.auto_tokenizer.from_pretrained(
-            self.model_name,
-            local_files_only=self.local_files_only,
-            **self.auto_tokenizer_kwargs
+                self.model_name,
+                local_files_only=self.local_files_only,
+                **self.auto_tokenizer_kwargs,
             )
             self.model = self.auto_model.from_pretrained(
-            self.model_name,
-            local_files_only=self.local_files_only,
-            **self.auto_model_kwargs
+                self.model_name,
+                local_files_only=self.local_files_only,
+                **self.auto_model_kwargs,
             )
             # Check device availability and set the device
             device = get_device()
@@ -684,10 +706,7 @@ class TransformerRerankerModelClient(ModelClient):
 
         with torch.no_grad():
 
-            inputs = self.tokenizer(
-                input,
-                **self.tokenizer_kwargs
-            )
+            inputs = self.tokenizer(input, **self.tokenizer_kwargs)
             inputs = {k: v.to(self.device) for k, v in inputs.items()}
             scores = (
                 self.model(**inputs, return_dict=True)
@@ -713,7 +732,9 @@ class TransformerRerankerModelClient(ModelClient):
         model_name = api_kwargs["model"]
         if (model_name != self.model_name) and (self.model_name is not None):
             # need to update the model_name
-            log.warning(f"The model passed in 'model_kwargs' is different that the one that has been previously initialised: Updating model from {self.model_name} to {model_name}.")
+            log.warning(
+                f"The model passed in 'model_kwargs' is different that the one that has been previously initialised: Updating model from {self.model_name} to {model_name}."
+            )
             self.model_name = model_name
             self.init_model(model_name=model_name)
         elif (model_name != self.model_name) and (self.model_name is None):
@@ -727,12 +748,9 @@ class TransformerRerankerModelClient(ModelClient):
 
         top_k = api_kwargs.pop("top_k")
         scores = self.infer_reranker(**api_kwargs)
-        top_k_indices, top_k_scores = get_top_k_indices_scores(
-            scores, top_k
-        )
+        top_k_indices, top_k_scores = get_top_k_indices_scores(scores, top_k)
         log.warning(f"output: ({top_k_indices}, {top_k_scores})")
         return top_k_indices, top_k_scores
-
 
     def convert_inputs_to_api_kwargs(
         self,
