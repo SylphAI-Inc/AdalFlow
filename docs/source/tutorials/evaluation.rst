@@ -544,6 +544,7 @@ There is one new way is to indirectly use the ground truth answers from the gene
 
     Recall = [GT statements that can be attributed to the retrieved context] / [GT statements]
 
+There is also **Context Relevance** and **Context Precision** metrics in RAGAS.
 
 LLM or model based judge for Retriever Recall
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -576,6 +577,10 @@ RAGEVal [21]_ proposed a framework to synthesize vertical domain evaluation data
 See the evaluation on datasets at :doc:`Evaluating a RAG Pipeline <../tutorials/eval_a_rag>`.
 
 Additionally, there are more research for RAG evaluation, such as SemScore [13]_, ARES [14]_, RGB [15]_, etc.
+
+.. note::
+
+    GovTech Singapore provides a well-explained evaluation guideline [22]_ that aligns with our guideline but with more thereotical explanation on some metrics.
 
 
 For Contributors
@@ -614,6 +619,7 @@ References
 .. [19] Liu, Yang, et al. "Datasets for large language models: A comprehensive survey." arXiv preprint arXiv:2402.18041 (2024).
 .. [20] ROUGE Deep dive: https://medium.com/nlplanet/two-minutes-nlp-learn-the-rouge-metric-by-examples-f179cc285499
 .. [21] Zhu, Kunlun, et al. "RAGEval: Scenario Specific RAG Evaluation Dataset Generation Framework." arXiv preprint arXiv:2408.01262 (2024).
+.. [22] https://playbooks.capdev.govtext.gov.sg/evaluation/
 
 .. admonition:: AdalFlow Eval API Reference
    :class: highlight

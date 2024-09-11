@@ -48,6 +48,14 @@ For each use case, we need to answer:
 
 8. What about finetuning? How to do it and would it be more token efficient or more effective?
 
+First RAG Paper
+------------------
+RAG was introduced in 2020 by Lewis et al. [1]_ which is an architecture that finetunes both the query encoder (bi-encoder like most embedding models) and the generator (LLM) jointly with only final answer supervision.
+It did not mention document chunking as most of the time, their text length is usally short and also fits into the context length of the embedding models.
+As both the embedding model and LLM model scales up in terms of knowledge and parameters (400M LLM model used in the paper), RAG can achieve high performance in few-shot (prompt engineering) setup without the finetune.
+
+RAG Playbook
+------------------
 
 References
 ------------------------------------------

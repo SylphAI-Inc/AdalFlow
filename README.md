@@ -242,3 +242,8 @@ Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive 
   url = {https://github.com/SylphAI-Inc/LightRAG}
 }
 ```
+
+# Star History
+
+
+[![Star History Chart](https://api.star-history.com/svg?repos=SylphAI-Inc/AdalFlow&type=Date)](https://star-history.com/#SylphAI-Inc/AdalFlow&Date)
