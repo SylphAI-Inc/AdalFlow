@@ -141,8 +141,6 @@ class TransformerEmbeddingModelClient(ModelClient):
     def init_sync_client(self):
         self.init_model(
             model_name=self.model_name,
-            auto_model_kwargs=self.auto_model_kwargs,
-            auto_tokenizer_kwargs=self.auto_tokenizer_kwargs,
             auto_model=self.auto_model,
             auto_tokenizer=self.auto_tokenizer,
             custom_model=self.custom_model,
@@ -154,22 +152,18 @@ class TransformerEmbeddingModelClient(ModelClient):
     def init_model(
         self,
         model_name: Optional[str] = None,
-        auto_model_kwargs: Optional[dict] = None,
-        auto_tokenizer_kwargs: Optional[dict] = None,
         auto_model: Optional[type] = AutoModel,
         auto_tokenizer: Optional[type] = AutoTokenizer,
         custom_model: Optional[PreTrainedModel] = None,
         custom_tokenizer: Optional[PreTrainedTokenizer | PreTrainedTokenizerFast] = None
         ):
 
-        self.auto_model_kwargs = auto_model_kwargs or dict()
-        self.auto_tokenizer_kwargs = auto_tokenizer_kwargs or dict()
         try:
             if self.use_auto_model:
                 self.model = auto_model.from_pretrained(
                     model_name,
                     local_files_only=self.local_files_only,
-                    **auto_model_kwargs
+                    **self.auto_model_kwargs
                     )
             else:
                 self.model = custom_model
@@ -178,7 +172,7 @@ class TransformerEmbeddingModelClient(ModelClient):
                 self.tokenizer = auto_tokenizer.from_pretrained(
                     model_name,
                     local_files_only=self.local_files_only,
-                    **auto_tokenizer_kwargs
+                    **self.auto_tokenizer_kwargs
                     )
             else:
                 self.tokenizer = custom_tokenizer
