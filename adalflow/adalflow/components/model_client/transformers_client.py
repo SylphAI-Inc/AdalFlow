@@ -90,7 +90,7 @@ class TransformerEmbeddingModelClient(ModelClient):
             self,
             model_name: Optional[str] = None,
             tokenizer_kwargs: Optional[dict] = dict(),
-            auto_model_kargs: Optional[dict] = dict(),
+            auto_model_kwargs: Optional[dict] = dict(),
             auto_tokenizer_kwargs: Optional[dict] = dict(),
             auto_model: Optional[type] = AutoModel,
             auto_tokenizer: Optional[type] = AutoTokenizer,
@@ -101,7 +101,7 @@ class TransformerEmbeddingModelClient(ModelClient):
         super().__init__()
         self.model_name = model_name
         self.tokenizer_kwargs = tokenizer_kwargs
-        self.auto_model_kargs = auto_model_kargs
+        self.auto_model_kwargs = auto_model_kwargs
         self.auto_tokenizer_kwargs = auto_tokenizer_kwargs
         if "return_tensors" not in self.tokenizer_kwargs:
             self.tokenizer_kwargs["return_tensors"]= "pt"
@@ -139,7 +139,7 @@ class TransformerEmbeddingModelClient(ModelClient):
     def init_sync_client(self):
         self.init_model(
             model_name=self.model_name,
-            auto_model_kargs=self.auto_model_kargs,
+            auto_model_kwargs=self.auto_model_kwargs,
             auto_tokenizer_kwargs=self.auto_tokenizer_kwargs,
             auto_model=self.auto_model,
             auto_tokenizer=self.auto_tokenizer,
@@ -152,7 +152,7 @@ class TransformerEmbeddingModelClient(ModelClient):
     def init_model(
         self,
         model_name: Optional[str] = None,
-        auto_model_kargs: Optional[dict] = dict(),
+        auto_model_kwargs: Optional[dict] = dict(),
         auto_tokenizer_kwargs: Optional[dict] = dict(),
         auto_model: Optional[type] = AutoModel,
         auto_tokenizer: Optional[type] = AutoTokenizer,
@@ -162,7 +162,7 @@ class TransformerEmbeddingModelClient(ModelClient):
 
         try:
             if self.use_auto_model:
-                self.model = auto_model.from_pretrained(model_name, **auto_model_kargs)
+                self.model = auto_model.from_pretrained(model_name, **auto_model_kwargs)
             else:
                 self.model = custom_model
 
@@ -280,7 +280,7 @@ class TransformerLLMModelClient(ModelClient):
         self,
         model_name: Optional[str] = None,
         tokenizer_decode_kwargs: Optional[dict] = {},
-        auto_model_kargs: Optional[dict] = dict(),
+        auto_model_kwargs: Optional[dict] = dict(),
         auto_tokenizer_kwargs: Optional[dict] = dict(),
         init_from: Optional[str] = "autoclass",
         apply_chat_template: bool = False,
@@ -294,7 +294,7 @@ class TransformerLLMModelClient(ModelClient):
 
         self.model_name = model_name  # current model to use
         self.tokenizer_decode_kwargs = tokenizer_decode_kwargs
-        self.auto_model_kargs = auto_model_kargs
+        self.auto_model_kwargs = auto_model_kwargs
         self.auto_tokenizer_kwargs = auto_tokenizer_kwargs
         if "return_tensors" not in self.tokenizer_kwargs:
             self.tokenizer_kwargs["return_tensors"]= "pt"
@@ -355,7 +355,7 @@ class TransformerLLMModelClient(ModelClient):
             device_map="auto",
             token=token,
             local_files_only=self.local_files_only,
-            **self.auto_model_kargs
+            **self.auto_model_kwargs
         )
         # Set pad token if it's not already set
         if self.tokenizer.pad_token is None:
@@ -611,14 +611,14 @@ class TransformerRerankerModelClient(ModelClient):
         self,
         model_name: Optional[str] = None,
         tokenizer_kwargs: Optional[dict] = {},
-        auto_model_kargs: Optional[dict] = dict(),
+        auto_model_kwargs: Optional[dict] = dict(),
         auto_tokenizer_kwargs: Optional[dict] = dict(),
         auto_model: Optional[type] = AutoModelForSequenceClassification,
         auto_tokenizer: Optional[type] = AutoTokenizer,
         local_files_only: Optional[bool] = False
     ):
         self.auto_model = auto_model
-        self.auto_model_kargs = auto_model_kargs
+        self.auto_model_kwargs = auto_model_kwargs
         self.auto_tokenizer_kwargs = auto_tokenizer_kwargs
         self.auto_tokenizer= auto_tokenizer
         self.model_name = model_name
@@ -640,7 +640,7 @@ class TransformerRerankerModelClient(ModelClient):
             self.model = self.auto_model.from_pretrained(
             self.model_name,
             local_files_only=self.local_files_only,
-            **self.auto_model_kargs
+            **self.auto_model_kwargs
             )
             # Check device availability and set the device
             device = get_device()
