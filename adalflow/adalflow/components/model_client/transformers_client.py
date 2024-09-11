@@ -89,9 +89,9 @@ class TransformerEmbeddingModelClient(ModelClient):
     def __init__(
             self,
             model_name: Optional[str] = None,
-            tokenizer_kwargs: Optional[dict] = dict(),
-            auto_model_kwargs: Optional[dict] = dict(),
-            auto_tokenizer_kwargs: Optional[dict] = dict(),
+            tokenizer_kwargs: Optional[dict] = None,
+            auto_model_kwargs: Optional[dict] = None,
+            auto_tokenizer_kwargs: Optional[dict] = None,
             auto_model: Optional[type] = AutoModel,
             auto_tokenizer: Optional[type] = AutoTokenizer,
             local_files_only: Optional[bool] = False,
@@ -101,9 +101,9 @@ class TransformerEmbeddingModelClient(ModelClient):
 
         super().__init__()
         self.model_name = model_name
-        self.tokenizer_kwargs = tokenizer_kwargs
-        self.auto_model_kwargs = auto_model_kwargs
-        self.auto_tokenizer_kwargs = auto_tokenizer_kwargs
+        self.tokenizer_kwargs = tokenizer_kwargs or dict()
+        self.auto_model_kwargs = auto_model_kwargs or dict()
+        self.auto_tokenizer_kwargs = auto_tokenizer_kwargs or dict()
         if "return_tensors" not in self.tokenizer_kwargs:
             self.tokenizer_kwargs["return_tensors"]= "pt"
         self.auto_model=auto_model
@@ -154,14 +154,16 @@ class TransformerEmbeddingModelClient(ModelClient):
     def init_model(
         self,
         model_name: Optional[str] = None,
-        auto_model_kwargs: Optional[dict] = dict(),
-        auto_tokenizer_kwargs: Optional[dict] = dict(),
+        auto_model_kwargs: Optional[dict] = None,
+        auto_tokenizer_kwargs: Optional[dict] = None,
         auto_model: Optional[type] = AutoModel,
         auto_tokenizer: Optional[type] = AutoTokenizer,
         custom_model: Optional[PreTrainedModel] = None,
         custom_tokenizer: Optional[PreTrainedTokenizer | PreTrainedTokenizerFast] = None
         ):
 
+        self.auto_model_kwargs = auto_model_kwargs or dict()
+        self.auto_tokenizer_kwargs = auto_tokenizer_kwargs or dict()
         try:
             if self.use_auto_model:
                 self.model = auto_model.from_pretrained(
@@ -215,7 +217,8 @@ class TransformerEmbeddingModelClient(ModelClient):
         return input
      
 
-    def tokenize_inputs(self, input: Union[str, List[str], List[List[str]]], kwargs: Optional[dict] = dict()) -> dict:
+    def tokenize_inputs(self, input: Union[str, List[str], List[List[str]]], kwargs: Optional[dict] = None) -> dict:
+        kwargs = kwargs or dict()
         batch_dict = self.tokenizer(input, **kwargs)
         return batch_dict
 
@@ -235,8 +238,9 @@ class TransformerEmbeddingModelClient(ModelClient):
     #
     # Preprocessing, postprocessing and call for inference code
     #
-    def call(self, api_kwargs: Dict = {}, model_type: Optional[ModelType]= ModelType.UNDEFINED) -> Union[List, Tensor]:
-        
+    def call(self, api_kwargs: Dict = None, model_type: Optional[ModelType]= ModelType.UNDEFINED) -> Union[List, Tensor]:
+
+        api_kwargs = api_kwargs or dict()
         if "model" not in api_kwargs:
             raise ValueError("model must be specified in api_kwargs")
         # I don't think it is useful anymore
@@ -289,14 +293,14 @@ class TransformerLLMModelClient(ModelClient):
     def __init__(
         self,
         model_name: Optional[str] = None,
-        tokenizer_decode_kwargs: Optional[dict] = {},
-        tokenizer_kwargs: Optional[dict] = {},
-        auto_model_kwargs: Optional[dict] = dict(),
-        auto_tokenizer_kwargs: Optional[dict] = dict(),
+        tokenizer_decode_kwargs: Optional[dict] = None,
+        tokenizer_kwargs: Optional[dict] = None,
+        auto_model_kwargs: Optional[dict] = None,
+        auto_tokenizer_kwargs: Optional[dict] = None,
         init_from: Optional[str] = "autoclass",
         apply_chat_template: bool = False,
         chat_template: Optional[str] = None,
-        chat_template_kwargs: Optional[dict] = dict(tokenize=False, add_generation_prompt=True),
+        chat_template_kwargs: Optional[dict] = None,
         use_token: bool = False,
         torch_dtype: Optional[Any] = torch.bfloat16,
         local_files_only: Optional[bool] = False
@@ -304,10 +308,10 @@ class TransformerLLMModelClient(ModelClient):
         super().__init__()
 
         self.model_name = model_name  # current model to use
-        self.tokenizer_decode_kwargs = tokenizer_decode_kwargs
-        self.tokenizer_kwargs = tokenizer_kwargs
-        self.auto_model_kwargs = auto_model_kwargs
-        self.auto_tokenizer_kwargs = auto_tokenizer_kwargs
+        self.tokenizer_decode_kwargs = tokenizer_decode_kwargs or dict()
+        self.tokenizer_kwargs = tokenizer_kwargs or dict()
+        self.auto_model_kwargs = auto_model_kwargs or dict()
+        self.auto_tokenizer_kwargs = auto_tokenizer_kwargs or dict()
         if "return_tensors" not in self.tokenizer_kwargs:
             self.tokenizer_kwargs["return_tensors"]= "pt"
         self.use_token = use_token
@@ -315,7 +319,7 @@ class TransformerLLMModelClient(ModelClient):
         self.init_from = init_from
         self.apply_chat_template = apply_chat_template
         self.chat_template = chat_template
-        self.chat_template_kwargs = chat_template_kwargs
+        self.chat_template_kwargs = chat_template_kwargs or dict(tokenize=False, add_generation_prompt=True)
         self.local_files_only = local_files_only
         self.model = None
         if model_name is not None:
@@ -403,7 +407,7 @@ class TransformerLLMModelClient(ModelClient):
         max_tokens: Optional[int] = None,
         apply_chat_template: bool = False,
         chat_template: Optional[str] = None,
-        chat_template_kwargs: Optional[dict] = dict(tokenize=False, add_generation_prompt=True),
+        chat_template_kwargs: Optional[dict] = None,
         **kwargs,
     ):
 
@@ -460,7 +464,7 @@ class TransformerLLMModelClient(ModelClient):
         max_length: Optional[int] = 8192,  # model-agnostic
         apply_chat_template: bool = False,
         chat_template: Optional[str] = None,
-        chat_template_kwargs: Optional[dict] = dict(tokenize=False, add_generation_prompt=True),
+        chat_template_kwargs: Optional[dict] = None,
         **kwargs,
     ):
         if not self.model:
@@ -542,8 +546,8 @@ class TransformerLLMModelClient(ModelClient):
     #
     # Preprocessing, postprocessing and call for inference code
     #
-    def call(self, api_kwargs: Dict = {}, model_type: Optional[ModelType]= ModelType.UNDEFINED):
-
+    def call(self, api_kwargs: Dict = None, model_type: Optional[ModelType]= ModelType.UNDEFINED):
+        api_kwargs = api_kwargs or dict()
         if "model" not in api_kwargs:
             raise ValueError("model must be specified in api_kwargs")
 
@@ -596,9 +600,10 @@ class TransformerLLMModelClient(ModelClient):
     def convert_inputs_to_api_kwargs(
         self,
         input: Any,  # for retriever, it is a single query,
-        model_kwargs: dict = {},
+        model_kwargs: dict = None,
         model_type: Optional[ModelType]= ModelType.UNDEFINED
     ) -> dict:
+        model_kwargs = model_kwargs or dict()
         final_model_kwargs = model_kwargs.copy()
         assert "model" in final_model_kwargs, "model must be specified"
         #messages = [{"role": "system", "content": input}]
@@ -622,19 +627,19 @@ class TransformerRerankerModelClient(ModelClient):
     def __init__(
         self,
         model_name: Optional[str] = None,
-        tokenizer_kwargs: Optional[dict] = {},
-        auto_model_kwargs: Optional[dict] = dict(),
-        auto_tokenizer_kwargs: Optional[dict] = dict(),
+        tokenizer_kwargs: Optional[dict] = None,
+        auto_model_kwargs: Optional[dict] = None,
+        auto_tokenizer_kwargs: Optional[dict] = None,
         auto_model: Optional[type] = AutoModelForSequenceClassification,
         auto_tokenizer: Optional[type] = AutoTokenizer,
         local_files_only: Optional[bool] = False
     ):
         self.auto_model = auto_model
-        self.auto_model_kwargs = auto_model_kwargs
-        self.auto_tokenizer_kwargs = auto_tokenizer_kwargs
+        self.auto_model_kwargs = auto_model_kwargs or dict()
+        self.auto_tokenizer_kwargs = auto_tokenizer_kwargs or dict()
         self.auto_tokenizer= auto_tokenizer
         self.model_name = model_name
-        self.tokenizer_kwargs = tokenizer_kwargs
+        self.tokenizer_kwargs = tokenizer_kwargs or dict()
         if "return_tensors" not in self.tokenizer_kwargs:
             self.tokenizer_kwargs["return_tensors"]= "pt"
         self.local_files_only = local_files_only
@@ -706,8 +711,8 @@ class TransformerRerankerModelClient(ModelClient):
     #
     # Preprocessing, postprocessing and call for inference code
     #
-    def call(self, api_kwargs: Dict = {}):
-
+    def call(self, api_kwargs: Dict = None):
+        api_kwargs = api_kwargs or dict()
         if "model" not in api_kwargs:
             raise ValueError("model must be specified in api_kwargs")
 
@@ -738,9 +743,10 @@ class TransformerRerankerModelClient(ModelClient):
     def convert_inputs_to_api_kwargs(
         self,
         input: Any,  # for retriever, it is a single query,
-        model_kwargs: dict = {},
+        model_kwargs: dict = None,
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> dict:
+        model_kwargs = model_kwargs or dict()
         final_model_kwargs = model_kwargs.copy()
 
         assert "model" in final_model_kwargs, "model must be specified"
