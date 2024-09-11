@@ -632,3 +632,4 @@ References
    - `Hugging Face Metrics <https://huggingface.co/metrics>`_
    - `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_
    - `G-eval <https://arxiv.org/abs/2303.08774>`_
+   -  `Sklearn <https://scikit-learn.org/stable/modules/model_evaluation.html>`_

@@ -15,6 +15,14 @@
 Designing RAG
 ================
 
+
+.. figure:: /_static/images/generator.png
+    :align: center
+    :alt: AdalFlow generator design
+    :width: 700px
+
+    Generator - The Orchestrator for LLM Prediction
+
 Retrieval-Augmented Generation (RAG) is a paradigm that combines the strengths of retrieval and generation models.
 Given a user query, RAG retrieves relevant passages from a large corpus and then generates a response based on the retrieved passages.
 This formulation opens up a wide range of use cases such as conversational search engine, question answering on a customized knowledge base,
@@ -39,3 +47,9 @@ For each use case, we need to answer:
 7. How do I auto-optimize the RAG pipeline with In-context learning(ICLs) with zero-shot prompting and few-shot prompting?
 
 8. What about finetuning? How to do it and would it be more token efficient or more effective?
+
+
+References
+------------------------------------------
+.. [1] Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks:https://arxiv.org/abs/2005.11401
+.. [2] RAG playbook: https://playbooks.capdev.govtext.gov.sg/
