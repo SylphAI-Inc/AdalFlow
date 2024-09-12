@@ -238,6 +238,6 @@ Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive 
   month = {7},
   year = {2024},
   doi = {10.5281/zenodo.12639531},
-  url = {https://github.com/SylphAI-Inc/LightRAG}
+  url = {https://github.com/SylphAI-Inc/AdalFlow}
 }
 ```
