@@ -247,3 +247,5 @@ Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive 
 
 
 [![Star History Chart](https://api.star-history.com/svg?repos=SylphAI-Inc/AdalFlow&type=Date)](https://star-history.com/#SylphAI-Inc/AdalFlow&Date)
+
+<a href="https://trendshift.io/repositories/11559" target="_blank"><img src="https://trendshift.io/api/badge/repositories/11559" alt="SylphAI-Inc%2FAdalFlow | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>

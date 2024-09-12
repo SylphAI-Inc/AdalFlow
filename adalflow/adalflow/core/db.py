@@ -126,10 +126,7 @@ class LocalDB(Generic[T], Component):
     def get_transformer_keys(self) -> List[str]:
         return list(self.transformed_items.keys())
 
-    # def get_transformed_data(self, key: str) -> List[U]:
-    #     """Get the transformed items by key."""
-    #     return self.transformed_items[key]
-
+    # TODO: combine this to fetch_transformed_items
     def get_transformed_data(
         self, key: str, filter_fn: Callable[[Any], bool] = lambda x: True
     ) -> List[U]:

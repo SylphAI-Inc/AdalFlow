@@ -48,6 +48,12 @@ For each use case, we need to answer:
 
 8. What about finetuning? How to do it and would it be more token efficient or more effective?
 
+In this tutorial, we will cover:
+
+- We will provide resource links to form a comprehensive RAG playbook according the sota research and the best practices in the industry.
+- Build a local and model-agnostic RAG pipeline and data processing pipeline with AdalFlow library.
+- Add Query Expansion.
+
 First RAG Paper
 ------------------
 RAG was introduced in 2020 by Lewis et al. [1]_ which is an architecture that finetunes both the query encoder (bi-encoder like most embedding models) and the generator (LLM) jointly with only final answer supervision.
@@ -56,6 +62,34 @@ As both the embedding model and LLM model scales up in terms of knowledge and pa
 
 RAG Playbook
 ------------------
+
+========================  =========================  =========================================
+RAG Pipeline Component     Improvement Techniques     Evaluation Metric
+========================  =========================  =========================================
+Data Preparation           - Text preprocessing       -
+                           - Chunking Strategy
+
+Embedding                 - Embedding Fine-tuning     -
+
+Indexing                   -                          -
+
+Retrieval                  - Retrieval Optimization    - HIT@K
+                           - Query Enhancement         - MRR@K
+                           - Reranking                 - MAP@K
+                                                       - NDCG@K
+                                                       - Ragas context relevancy, precision, recall
+
+Completion                 - Prompt Engineering        - Ragas answer relevancy
+                           - LLM Fine-tuning           - AutoAIS
+                                                       - ROUGE
+                                                       - BLEU
+                                                       - METEOR
+                                                       - F1 Score
+                                                       - BERTScore
+                                                       - UniEval
+                                                       - G-Eval
+========================  =========================  =========================================
+
 
 References
 ------------------------------------------

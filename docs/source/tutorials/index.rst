@@ -3,7 +3,7 @@
 .. _developer_notes:
 
 
-Developer Notes
+Tutorials
 =============================
 
 .. *Why and How Each Part works*
