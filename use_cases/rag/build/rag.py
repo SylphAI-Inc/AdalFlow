@@ -77,6 +77,15 @@ def prepare_database_with_index(
     db.save_state(index_path)
 
 
+RAG_PROMPT_TEMPLATE = r"""<START_OF_SYSTEM_MESSAGE>
+{{task_desc}}
+<END_OF_SYSTEM_MESSAGE>
+<START_OF_USER>
+{{input_str}}
+{{context_str}}
+<END_OF_USER>
+"""
+
 rag_prompt_task_desc = r"""
 You are a helpful assistant.
 
