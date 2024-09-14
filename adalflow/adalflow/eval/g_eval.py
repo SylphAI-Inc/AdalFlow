@@ -258,5 +258,5 @@ class GEvalJudgeEvaluator(BaseEvaluator):
         return final_output, output
 
     def __str__(self) -> str:
-        s = f"llm_judge={self.llm_evaluator}, prompt_kwargs={self.llm_judge.prompt_kwargs}"
+        s = f"llm_judge={self.llm_judge}, prompt_kwargs={self.llm_judge.prompt_kwargs}"
         return s
