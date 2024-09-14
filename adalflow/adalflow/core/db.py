@@ -23,7 +23,7 @@ U = TypeVar("U")  # U will be the type after transformation
 # TODO: DB clarity can be further improved
 @dataclass
 class LocalDB(Generic[T], Component):
-    __doc__ = r"""LocalDB with in-memory CRUD operations, data transformation/processing pipelines, and persistence.
+    __doc__ = """LocalDB with in-memory CRUD operations, data transformation/processing pipelines, and persistence.
 
     LocalDB is highly flexible.
     1. It can store any type of data items in the `items` attribute.
