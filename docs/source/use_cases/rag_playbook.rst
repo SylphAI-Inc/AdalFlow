@@ -215,15 +215,27 @@ Generator optimization
 Self-RAG
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-# TODO: self-rag summarization
-Self-RAG is interesting as it handles the retrieved passages separately in parallel to generate y_t for each query x and passage d_t.
+.. figure:: /_static/images/self_rag.png
+    :align: center
+    :alt: Self-RAG architecture
+    :width: 700px
+
+    Self-RAG architecture [11]_.
+
+
+Self-RAG is interesting as it is programmed to decide if retrieval is needed, it handles the retrieved passages separately in parallel to generate y_t for each query x and passage d_t.
 For each (x, d_t, y_t) pair it "reflects" on three metrics:
 
 - ISREL: use (x, d_t) to check if d_t provides useful information to solve x by outputing two labels (is_relevant, is_irrelevant).
 - ISSUP: use (x, d_t, y_t) to check if all of the worthy statements(answers the question) in y_t is supported by d_t by outputing three labels (is_supported, partically_supported, not_supported).
 - ISUSE: use (x, y_t) to check if y_t is useful to solve x by outputing 5 labels (5, 4, 3, 2, 1).
 
-Additionally, it predicts if another "Retrieval" is needed to generate the next y_t.
+It computes a single segment score unifying the three metrics and uses it to rerank the answer and pick the answer with the highest score as the final answer.
+The paper also mentioned how to create synthesized training dataset and train the `critic` and `generator` model.
+Good thing is Self-RAG can be used with or without finetune.
+
+Self-RAG can be applied on complicated tasks that require high accuracy, but it is way more complicated than a vanila RAG.
+
 
 
 
@@ -239,7 +251,7 @@ References
 .. [8] Retrieval-Augmented Generation for AI-Generated Content: A Survey
 .. [9] OpenAI logprobs cookbook: https://cookbook.openai.com/examples/using_logprobs
 .. [10] C-RAG: Corrective retrieval augmented generation.arXiv preprint arXiv:2401.15884.
-.. [11] Akari Asai, Zeqiu Wu, Yizhong Wang, Avirup Sil, andHannaneh Hajishirzi. 2023. Self-rag: Learning toretrieve, generate, and critique through self-reflection.CoRR, abs/2310.11511.
+.. [11] Self-RAG: Akari Asai, Zeqiu Wu, Yizhong Wang, Avirup Sil, andHannaneh Hajishirzi. 2023. Self-rag: Learning toretrieve, generate, and critique through self-reflection.CoRR, abs/2310.11511.
 .. [12] Replug implemented: https://github.com/IntelLabs/fastRAG/blob/main/examples/replug_parallel_reader.ipynb
 .. [13] FastRAG: https://github.com/IntelLabs/fastRAG
 
@@ -248,6 +260,6 @@ References
 ..
     TODO:
      - replug generator implementation(current fast rag implemented it with haystack)
-     - self-RAG implementation
+     - self-RAG implementation (raw response, and we might need to add a api response to save logprobs and everything that user can customize)
      - opensource the embedder finetune.
      - extend: all these research can be provided as extend and we need to think of a way to organize it.
