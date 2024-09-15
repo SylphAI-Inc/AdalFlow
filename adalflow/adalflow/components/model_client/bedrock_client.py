@@ -86,7 +86,7 @@ class BedrockAPIClient(ModelClient):
         return bedrock_runtime
 
     def init_async_client(self):
-        raise NotImplementedError()
+        raise NotImplementedError("Async call not implemented yet.")
 
     def parse_chat_completion(self, completion):
         log.debug(f"completion: {completion}")
@@ -149,4 +149,4 @@ class BedrockAPIClient(ModelClient):
             raise ValueError(f"model_type {model_type} is not supported")
 
     async def acall(self):
-        raise NotImplementedError()
+        raise NotImplementedError("Async call not implemented yet.")
