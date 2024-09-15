@@ -32,6 +32,10 @@ AnthropicAPIClient = LazyImport(
     "adalflow.components.model_client.anthropic_client.AnthropicAPIClient",
     OptionalPackages.ANTHROPIC,
 )
+BedrockAPIClient = LazyImport(
+    "adalflow.components.model_client.bedrock_client.BedrockAPIClient",
+    OptionalPackages.BEDROCK,
+)
 GroqAPIClient = LazyImport(
     "adalflow.components.model_client.groq_client.GroqAPIClient",
     OptionalPackages.GROQ,
@@ -61,7 +65,6 @@ get_probabilities = LazyImport(
     OptionalPackages.OPENAI,
 )
 
-
 __all__ = [
     "CohereAPIClient",
     "TransformerReranker",
@@ -69,6 +72,7 @@ __all__ = [
     "TransformerLLM",
     "TransformersClient",
     "AnthropicAPIClient",
+    "BedrockAPIClient",
     "GroqAPIClient",
     "OpenAIClient",
     "GoogleGenAIClient",

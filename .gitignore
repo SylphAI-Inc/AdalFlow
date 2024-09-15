@@ -36,3 +36,4 @@ index.faiss
 *.svg
 # ignore the softlink to adalflow cache
 *.adalflow
+.idea
