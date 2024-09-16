@@ -12,11 +12,24 @@ from adalflow.core import DataClass
 class ParameterType(Enum):
     __doc__ = """Enum for the type of parameter to compute the loss with, and to inform the optimizer."""
 
+    # trainable parameters with optimizers
     PROMPT = (
         "prompt",
         "Instruction to the language model on task, data, and format.",
-    )
-    DEMOS = ("demos", "A few examples to guide the language model.")
+    )  # optimized by tgd_optimizer
+    DEMOS = (
+        "demos",
+        "A few examples to guide the language model.",
+    )  # optimized by demo_optimizer
+
+    # input and output parameters (similar to tensor, can have grad_opt true, but not trainable)
+    INPUT = ("input", "The input to the component.")
+    OUTPUT = ("output", "The output of the component.")
+
+    # gradient paramters for each predecessor of dag.
+    GRADIENT = ("gradient", "A gradient parameter.")
+
+    # the following is a subtype of the output type
     # INSTANCE = ("instance", "Focus on fixing issues of this specific example.")
     GENERATOR_OUTPUT = (
         "generator_output",
@@ -25,8 +38,6 @@ class ParameterType(Enum):
     RETRIEVER_OUTPUT = ("retriever_output", "The output of the retriever.")
     LOSS_OUTPUT = ("loss", "The loss value.")
     SUM_OUTPUT = ("sum", "The sum of the losses.")
-    OUTPUT = ("output", "The output of the component.")
-    GRADIENT = ("gradient", "A gradient parameter.")
     NONE = ("none", "")
 
     def __init__(self, value, description):

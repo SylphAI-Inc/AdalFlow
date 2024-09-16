@@ -403,7 +403,9 @@ class Parameter(Generic[T]):
         build_graph(root)
         return nodes, edges
 
-    def backward(self):  # engine should be the llm
+    def backward(
+        self,
+    ):  # engine should be the llm or customized backwards function to pass feedback
 
         # topological sort of all the predecessors of the current parameter in the graph
         log.debug(f"Backward pass for {self.data}, backward function: {self.grad_fn}")

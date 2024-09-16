@@ -1,8 +1,65 @@
-Auto Text-Diff
+Auto Text-Grad
 ===============================================
 Show a DAG with parameter nodes and edges.
 
 To make a task pipeline trainable.
+
+Auto text grad system is similr to pytorch autograd. Here are how we also differs:
+
+1. Torch.Tensor & Torch.Parameter vs AdalFlow.Parameter : AdalFlow.Tensor can save any type of data and Tensor is mainly numerical array and matrices.
+This means that the backward is not the gradient function from the math operations applied on the tensor, but customized towards the operators.
+The operators here are components like Generator, Retriever, Loss function, etc.
+We have defined the backward function for the generator which genreates the textual feedback for Parameter of prompt type.
+For Retriever, right now, it does not have its parameter types that we optimize but it can very much change and be improved in the future.
+
+In adalflow, we use the parameter types to differentiate instead of separately create a Tensor and its subclass Parameter.
+We have the follow parameter type:
+
+- trainable parameters to generator
+   prompt
+   demos
+
+- intermediate parameters
+  - input to the component
+  - output from the component
+
+- gradient
+
+
+Torch.no_grad() vs AdalFlow.GradComponent.
+
+Torch.no_grad() is a context manager that disables gradient calculation.
+(1) It stops tracking the operations that are performed to build the computation-graph. In AdalFlow, we use Adal.Component call or the subclass adal.GradComponent
+(2) Save and handles intermediate values(eg. activations, inputs) needed for the backward pass.
+(3) Stores the computation graph for later backpropagation.
+
+In pytorch you do this for inference:
+
+.. code-block:: python
+
+    import torch
+
+    model = MyModel()
+    model.eval()  # Set model to evaluation mode
+
+    with torch.no_grad():  # Disable gradient tracking
+        output = model(input_data)  # Forward pass only
+
+In AdalFlow, you do this for inference:
+
+.. code-block:: python
+
+    import adalflow as adal
+
+    task_pipeline = MyTaskPipeline()
+    task_pipeline.eval()  # Set model to evaluation mode
+    task_pipeline(input_data)  # similar to torch.no_grad() or
+    # task_pipeline.call(input_data)  # Forward pass only
+    # task_pipeline.acall(input_data)  # Forward pass only
+
+Just like pytorch has tensor and parameter, which are a special type of tensor, the gradcomponent is a special type of component capable of auto-text-grad.
+
+
 
 Textual Gradient Operators
 --------------------------
@@ -10,8 +67,11 @@ Textual Gradient Operators
 Think of the LLM calls as model layer in pytorch, such as nn.Linear, nn.Conv2d, or transformer layers.
 Think of the evaluation function (normally you have gt) and LLM as judge (normall you have no gt reference but you rely on llm to give an evaluation score) as
 a loss function in pytorch, such as nn.CrossEntropyLoss, nn.MSELoss, or nn.BCELoss.
+
+
 These operators need to be capable of backpropagation to get "feedback"/"gradients" for the auto-diff optimizer.
 We introduce ``GradComponent`` class which consists of two must-have abstract methods: ``forward`` and ``backward``.
+``GradComponent`` has default ``forward`` that wraps a normal function call inside of the ``forward`` method to return a Parameter and builds the computation graph.
 
 - ``forward``: The forward pass of the operator. It will return a `Prameter` with the backward function set to the backward function of the operator.
 - ``backward``: The backward pass of the operator. It will compute the response's predecessor's gradient with regard to the response. (The ``Parameter`` object returned by the ``forward`` method)
