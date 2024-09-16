@@ -152,6 +152,21 @@ Components work on a sequence of ``Document`` and return a sequence of ``Documen
 
 .. Let us put all of these components together to build a :doc:`rag` (Retrieval Augmented Generation), which requires data processing pipeline along with a task pipeline to run user queries.
 
+
+
+
+Putting it all together
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. list-table::
+    :widths: 20 80
+
+    * - Part
+      - Description
+    - :doc:`rag_playbook`
+      - Comprehensive RAG playbook according to the sota research and the best practices in the industry.
+
+
 .. toctree::
    :maxdepth: 1
    :caption: RAG Essentials
@@ -165,6 +180,7 @@ Components work on a sequence of ``Document`` and return a sequence of ``Documen
    retriever
    text_splitter
    db
+   rag_playbook
 
 
 
