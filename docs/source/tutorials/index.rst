@@ -272,17 +272,17 @@ Note: Documentation is work in progress for this section.
 
    * - Part
      - Description
-   * - :doc:`parameter_`
-     - The `Parameter` class stores the text, textual gradidents(feedback), and manage the states and applies the backpropagation in auto-diff.
-   * - :doc:`optimizer_`
+   * - :doc:`parameter`
+     - The `Parameter` class stores the text, textual gradidents(feedback), and managed the states and applies the backpropagation in auto-diff.
+   * - :doc:`optimizer`
      - The  `Optimizer` to define a structure and to manage `propose`, `revert`, and `step` methods. We defined two variants: `DemoOptimizer` and `TextOptimizer` to cover the prompt optimization and the few-shot optimization.
-   * - :doc:`few_shot_optimizer_`
+   * - :doc:`few_shot_optimizer`
      - Subclassed from ``DemoOptimizer``, the few-shot optimizer to optimize the few-shot in-context learning.
-   * - :doc:`auto_text_grad_`
+   * - :doc:`auto_text_grad`
      - Subclassed from ``TextOptimizer``, Auto textual gradient for prompt optimization. It is the most capable and general optimizer in the library to optimize instructions or generator output.
-   * - :doc:`adalcomponent_`
+   * - :doc:`adalcomponent`
      - The ``intepreter`` between task pipeline and the trainer, defining train, validate steps, optimizers, evaluator, loss function, and backward engine.
-   * - :doc:`trainer_`
+   * - :doc:`trainer`
      - The ``Trainer`` will take the ``AdalComponent`` and run the training and validation steps on either data loaders or datasets.
 
 .. toctree::

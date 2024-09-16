@@ -25,6 +25,9 @@ We have the follow parameter type:
 
 - gradient
 
+To be able to pass parameters around to the whole pipeline.
+
+
 
 Torch.no_grad() vs AdalFlow.GradComponent.
 
