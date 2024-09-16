@@ -14,7 +14,7 @@ from adalflow.optim.grad_component import GradComponent
 
 if TYPE_CHECKING:
     from adalflow.core.generator import Generator
-from adalflow.optim.parameter import Parameter, ParameterType
+from adalflow.optim.parameter import Parameter
 from adalflow.optim.function import BackwardContext
 
 log = logging.getLogger(__name__)
@@ -41,6 +41,7 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
 
     indexed: bool = False
     index_keys: List[str] = []  # attributes that define the index
+    name: str = "Retriever"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -142,23 +143,26 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
     ):
         r"""Backward the response to pass the score to predecessors"""
         log.info(f"Retriever backward: {response}")
-        children_params = response.predecessors
-        if not self.tracing:
-            return
+        pass
+        # children_params = response.predecessors
+        # if not self.tracing:
+        #     return
         # backward score to the demo parameter
-        for pred in children_params:
-            if pred.requires_opt:
-                # pred._score = float(response._score)
-                pred.set_score(response._score)
-                log.debug(
-                    f"backpropagate the score {response._score} to {pred.name}, is_teacher: {self.teacher_mode}"
-                )
-                if pred.param_type == ParameterType.DEMOS:
-                    # Accumulate the score to the demo
-                    pred.add_score_to_trace(
-                        trace_id=id, score=response._score, is_teacher=self.teacher_mode
-                    )
-                    log.debug(f"Pred: {pred.name}, traces: {pred._traces}")
+        # TODO: this is not necessary as the demo optimizer will
+        # update the score in the demo tracing.
+        # for pred in children_params:
+        #     if pred.requires_opt:
+        #         # pred._score = float(response._score)
+        #         pred.set_score(response._score)
+        #         log.debug(
+        #             f"backpropagate the score {response._score} to {pred.name}, is_teacher: {self.teacher_mode}"
+        #         )
+        #         if pred.param_type == ParameterType.DEMOS:
+        #             # Accumulate the score to the demo
+        #             pred.add_score_to_trace(
+        #                 trace_id=id, score=response._score, is_teacher=self.teacher_mode
+        #             )
+        #             log.debug(f"Pred: {pred.name}, traces: {pred._traces}")
 
     # def __call__(self, *args, **kwargs) -> Union[RetrieverOutputType, Any]:
     #     if self.training:

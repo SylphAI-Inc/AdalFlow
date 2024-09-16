@@ -6,7 +6,7 @@ Parameter
 
 There are two types of parameters:
 
-* once-off, such as loss, y_pred, intermedia response where each run it will create a new one, and they are temporary and will be released after the run.
+* once-off, such as loss, y_pred, intermediate response where each run it will create a new one, and they are temporary and will be released after the run.
 * persistent, the parameters that we are optimizing, such as those with an actual type assigned `param_type` in the `Parameter` class.
    For the persistent parameters, the data type will be string.
 

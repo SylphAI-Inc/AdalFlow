@@ -1,6 +1,17 @@
 """Parameter is used by Optimizer, Trainers, AdalComponent to auto-optimizations"""
 
-from typing import Generic, TypeVar, Any, List, Set, Dict, Tuple, Optional, Literal
+from typing import (
+    Generic,
+    TypeVar,
+    Any,
+    List,
+    Set,
+    Dict,
+    Tuple,
+    Optional,
+    Literal,
+    Callable,
+)
 from collections import defaultdict
 import logging
 from dataclasses import dataclass, field
@@ -85,6 +96,9 @@ class Parameter(Generic[T]):
     input_args: Dict[str, Any] = None  # Input arguments of the GradComponent forward
     full_response: object = None  # Full response of the GradComponent output
     eval_input: object = None  # Eval input passing to the eval_fn or evaluator you use
+    successor_map_fn: Callable = (
+        lambda x: x.data
+    )  # Map function to get the data from the parameter
     from_response_id: str = (
         None  # for parameterType GRADIENT, the id of the response parameter
     )
@@ -108,6 +122,7 @@ class Parameter(Generic[T]):
         score: Optional[float] = None,
         eval_input: object = None,
         from_response_id: Optional[str] = None,
+        successor_map_fn: Optional[Callable] = None,
     ):
         self.id = id or str(uuid.uuid4())
 
@@ -155,6 +170,7 @@ class Parameter(Generic[T]):
         self.eval_input = eval_input
 
         self.from_response_id = from_response_id  # for gradient parameter
+        self.successor_map_fn = successor_map_fn
 
     def check_if_already_computed_gradient_respect_to(self, response_id: str) -> bool:
         from_response_ids = [g.from_response_id for g in self.gradients]

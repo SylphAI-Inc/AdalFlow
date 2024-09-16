@@ -24,6 +24,7 @@ from adalflow.core.string_parser import (
     ListParser,
     BooleanParser,
 )
+from adalflow.core.retriever import Retriever
 from adalflow.components.output_parsers import (
     YamlOutputParser,
     JsonOutputParser,
@@ -70,6 +71,7 @@ __all__ = [
     "ModelClient",
     "Generator",
     "Embedder",
+    "Retriever",
     "Parameter",
     "AdalComponent",
     "Trainer",
