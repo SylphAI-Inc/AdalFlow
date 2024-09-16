@@ -59,6 +59,8 @@ A user subclass GradComponent will automatically make the component trainable (a
 Just like in pytorch, if you subclass nn.Module, you can use the model to train.
 
 
+
+
 Question: there might no need to have the concept of Component, so we have simplier library apis and one less abstract layer.
 
 

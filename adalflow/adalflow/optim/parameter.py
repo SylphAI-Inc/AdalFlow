@@ -90,9 +90,16 @@ class Parameter(Generic[T]):
     1. https://github.com/karpathy/micrograd/blob/master/micrograd/engine.py
     """
 
+    id: str = None  # Unique id of the parameter
+    name: str = None  # Name of the parameter, easier to read for humans
+    role_desc: str = ""  # Description of the role of the parameter
+    data: T = None  # Data of the parameter
+    param_type: ParameterType
+
     proposing: bool = False  # State of the parameter
     predecessors: Set["Parameter"] = set()  # Predecessors of the parameter
     peers: Set["Parameter"] = set()  # Peers of the parameter
+    # TODO: input_args should be OrderedDict to keep the order of args
     input_args: Dict[str, Any] = None  # Input arguments of the GradComponent forward
     full_response: object = None  # Full response of the GradComponent output
     eval_input: object = None  # Eval input passing to the eval_fn or evaluator you use

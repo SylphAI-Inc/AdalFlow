@@ -56,6 +56,8 @@ class GradComponent(Component):
         For now, just check if id is in kwargs.
         """
 
+        from adalflow.optim.parameter import Parameter
+
         if "id" not in kwargs:
             raise ValueError(
                 "id must be provided in the kwargs of a GradComponent for tracing."
@@ -69,26 +71,25 @@ class GradComponent(Component):
             input_args[f"arg_{idx}"] = arg
 
         # Add keyword args to the ordered dict, preserving order
-        # input_args.update(kwargs)
         predecessors = []
         for v in input_args.values():
-            if isinstance(v, "Parameter"):
+            if isinstance(v, Parameter):
                 predecessors.append(v)
         for v in kwargs.values():
-            if isinstance(v, "Parameter"):
+            if isinstance(v, Parameter):
                 predecessors.append(v)
 
         # 2. unwrap the parameter object to take only the data, successor_map_fn: lambda x: x.data in default
         # unwrap args
         unwrapped_args = []
         for k, v in input_args.items():
-            if isinstance(v, "Parameter"):
+            if isinstance(v, Parameter):
                 unwrapped_args.append(v.successor_map_fn(v))
 
         unwrapped_kwargs = {}
         # unwrap kwargs
         for k, v in kwargs.items():
-            if isinstance(v, "Parameter"):
+            if isinstance(v, Parameter):
                 unwrapped_kwargs[k] = v.successor_map_fn(v)
 
         # 3. call the function with unwrapped args and kwargs
@@ -96,12 +97,10 @@ class GradComponent(Component):
 
         # 4. Create a Parameter object to trace the forward pass
         input_args.update(kwargs)
-        response = "Parameter"(
+        response = Parameter(
             data=call_response,
             name=self.name + "_output",
             role_desc=self.name + " response",
-            input_args=input_args,  # TODO: for now this is not used and we can simplify how many parameters we want to track
-            full_response=call_response,
         )
         response.set_predecessors(predecessors)
         response.trace_forward_pass(input_args=input_args, full_response=call_response)
@@ -112,6 +111,7 @@ class GradComponent(Component):
                 id=kwargs.get("id"),
             )
         )
+        return response
 
     def backward(self, *args, **kwargs):
         pass

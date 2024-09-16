@@ -10,6 +10,11 @@ There are two types of parameters:
 * persistent, the parameters that we are optimizing, such as those with an actual type assigned `param_type` in the `Parameter` class.
    For the persistent parameters, the data type will be string.
 
+
+Each parameter has a:
+id: unique identifier
+name:
+
 Intermediate parameters
 ------------------------
 intermediate parameters data = Componnet.call output.
