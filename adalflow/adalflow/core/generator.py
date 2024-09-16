@@ -267,6 +267,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             combined_model_kwargs.update(model_kwargs)
         return combined_model_kwargs
 
+    # TODO: use prompt_kwargs as users are already familiar with it
     def print_prompt(self, **kwargs) -> str:
         return self.prompt.print_prompt(**kwargs)
 

@@ -7,6 +7,8 @@ if TYPE_CHECKING:
     from adalflow.core.generator import BackwardEngine
     from adalflow.optim.parameter import Parameter
 
+from adalflow.optim.types import ParameterType
+
 from adalflow.core.component import Component
 from adalflow.optim.function import BackwardContext
 
@@ -58,10 +60,13 @@ class GradComponent(Component):
 
         from adalflow.optim.parameter import Parameter
 
-        if "id" not in kwargs:
-            raise ValueError(
-                "id must be provided in the kwargs of a GradComponent for tracing."
-            )
+        print("kwargs", kwargs)
+        print("args", args)
+
+        # if "id" not in kwargs:
+        #     raise ValueError(
+        #         "id must be provided in the kwargs of a GradComponent for tracing."
+        #     )
 
         # 1. get all predecessors from all args and kwargs
         input_args = OrderedDict()
@@ -85,14 +90,21 @@ class GradComponent(Component):
         for k, v in input_args.items():
             if isinstance(v, Parameter):
                 unwrapped_args.append(v.successor_map_fn(v))
+            else:
+                unwrapped_args.append(v)
 
         unwrapped_kwargs = {}
         # unwrap kwargs
         for k, v in kwargs.items():
             if isinstance(v, Parameter):
                 unwrapped_kwargs[k] = v.successor_map_fn(v)
+            else:
+                unwrapped_kwargs[k] = v
 
         # 3. call the function with unwrapped args and kwargs
+        unwrapped_args = tuple(unwrapped_args)
+        print("unwrapped_args", unwrapped_args)
+        print("unwrapped_kwargs", unwrapped_kwargs)
         call_response = self.call(*unwrapped_args, **unwrapped_kwargs)
 
         # 4. Create a Parameter object to trace the forward pass
@@ -101,6 +113,7 @@ class GradComponent(Component):
             data=call_response,
             name=self.name + "_output",
             role_desc=self.name + " response",
+            param_type=ParameterType.OUTPUT,
         )
         response.set_predecessors(predecessors)
         response.trace_forward_pass(input_args=input_args, full_response=call_response)

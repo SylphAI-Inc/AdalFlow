@@ -25,6 +25,7 @@ class ParameterType(Enum):
     RETRIEVER_OUTPUT = ("retriever_output", "The output of the retriever.")
     LOSS_OUTPUT = ("loss", "The loss value.")
     SUM_OUTPUT = ("sum", "The sum of the losses.")
+    OUTPUT = ("output", "The output of the component.")
     GRADIENT = ("gradient", "A gradient parameter.")
     NONE = ("none", "")
 

@@ -1,6 +1,6 @@
 r"""The base class for all retrievers who in particular retrieve documents from a given database."""
 
-from typing import List, Optional, Generic, Any, Callable, Union, TYPE_CHECKING
+from typing import List, Optional, Generic, Any, Callable, TYPE_CHECKING
 import logging
 
 from adalflow.core.types import (
@@ -15,7 +15,6 @@ from adalflow.optim.grad_component import GradComponent
 if TYPE_CHECKING:
     from adalflow.core.generator import Generator
 from adalflow.optim.parameter import Parameter
-from adalflow.optim.function import BackwardContext
 
 log = logging.getLogger(__name__)
 
@@ -93,45 +92,45 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
     ) -> RetrieverOutputType:
         raise NotImplementedError("Async retrieve is not implemented")
 
-    def forward(
-        self,
-        input: Union[RetrieverQueriesType, Parameter],
-        top_k: Optional[
-            int
-        ] = None,  # TODO: top_k can be trained in the future if its formulated as a parameter
-        id: Optional[str] = None,
-        **kwargs,
-    ) -> Parameter:
-        r"""Training mode which will deal with parameter as predecessors"""
-        input_args = {"input": input, "top_k": top_k, "id": id}
-        predecessors = [p for p in [input, top_k, id] if isinstance(p, Parameter)]
+    # def forward(
+    #     self,
+    #     input: Union[RetrieverQueriesType, Parameter],
+    #     top_k: Optional[
+    #         int
+    #     ] = None,  # TODO: top_k can be trained in the future if its formulated as a parameter
+    #     id: Optional[str] = None,
+    #     **kwargs,
+    # ) -> Parameter:
+    #     r"""Training mode which will deal with parameter as predecessors"""
+    #     input_args = {"input": input, "top_k": top_k, "id": id}
+    #     predecessors = [p for p in [input, top_k, id] if isinstance(p, Parameter)]
 
-        input_args_values = {}
-        for k, v in input_args.items():
-            if isinstance(v, Parameter):
-                input_args_values[k] = v.data
-            else:
-                input_args_values[k] = v
+    #     input_args_values = {}
+    #     for k, v in input_args.items():
+    #         if isinstance(v, Parameter):
+    #             input_args_values[k] = v.data
+    #         else:
+    #             input_args_values[k] = v
 
-        retriever_reponse = self.call(**input_args_values)
+    #     retriever_reponse = self.call(**input_args_values)
 
-        response = Parameter(
-            data=retriever_reponse,
-            name=self.name + "_output",
-            role_desc="Retriever response",
-        )
-        response.set_predecessors(predecessors)
-        response.trace_forward_pass(
-            input_args=input_args, full_response=retriever_reponse
-        )
-        response.set_grad_fn(
-            BackwardContext(
-                backward_fn=self.backward,
-                response=response,
-                id=id,
-            )
-        )
-        return response
+    #     response = Parameter(
+    #         data=retriever_reponse,
+    #         name=self.name + "_output",
+    #         role_desc="Retriever response",
+    #     )
+    #     response.set_predecessors(predecessors)
+    #     response.trace_forward_pass(
+    #         input_args=input_args, full_response=retriever_reponse
+    #     )
+    #     response.set_grad_fn(
+    #         BackwardContext(
+    #             backward_fn=self.backward,
+    #             response=response,
+    #             id=id,
+    #         )
+    #     )
+    #     return response
 
     def backward(
         self,

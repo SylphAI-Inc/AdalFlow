@@ -18,6 +18,10 @@ We introduce ``GradComponent`` class which consists of two must-have abstract me
 
 We currently have the following operators:
 - ``Generator`` is adapted as a ``GradComponent``.
+.. TODO:
+  - remove the __call__ and call method, use only forward and backward to simplify the understanding
+  - forward will be able to track the predecessors to form a DAG of parameters, this will always be helpful.
+  - # a forward will
 
 Generator Adaptation
 ~~~~~~~~~~~~~~~~~~~~~~
