@@ -15,8 +15,10 @@
 RAG Playbook
 ================
 
-
-
+.. note::
+    This tutorial is still a work in progress. We will continue updating and improving it.
+    If you have any feedback, feel free to reach out to us in any of the following ways:
+    `Community <https://adalflow.sylph.ai/get_started/community.html>`_.
 
 In this playbook, we will provide a comprehensive RAG playbook according the sota research and the best practices in the industry.
 The outline of the playbook is as follows:
