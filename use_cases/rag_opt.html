@@ -48,6 +48,8 @@
     <script src="../_static/js/rtd_search_config.js"></script>
     <script src="../_static/js/rtd_sphinx_search.min.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'use_cases/rag_opt';</script>
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -265,6 +267,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -444,8 +450,344 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="rag-optimization">
+  <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+
+   <a href="https://github.com/SylphAI-Inc/AdalFlow/tree/main/benchmarks/hotpot_qa/" target="_blank" style="display: flex; align-items: center;">
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+      <span style="vertical-align: middle;"> Open Source Code</span>
+   </a>
+</div><section id="rag-optimization">
 <h1>RAG optimization<a class="headerlink" href="#rag-optimization" title="Link to this heading">#</a></h1>
+<p>In this tutorial, we will cover the auto-optimization of a standard RAG:</p>
+<ul class="simple">
+<li><p>Introducing <cite>HotPotQA</cite> dataset and <cite>HotPotQAData</cite> class.</p></li>
+<li><p>Convert <cite>Dspy</cite>’s Retriever to AdalFlow’s <cite>Retriever</cite> to easy comparison.</p></li>
+<li><p>Build the standard RAG with <cite>Retriever</cite> and <cite>Generator</cite> components.</p></li>
+<li><p>Learn how to connect the output-input between components to enable auto-text-grad optimization.</p></li>
+</ul>
+<section id="hotpotqa-dataset">
+<h2>HotPotQA dataset<a class="headerlink" href="#hotpotqa-dataset" title="Link to this heading">#</a></h2>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">datasets.hotpotqa.HotPotQA</span></code> dataset is widely used in research community to benchmark QA and RAG tasks.
+Here is one example of the dataset:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.datasets.hotpot_qa</span> <span class="kn">import</span> <span class="n">HotPotQA</span><span class="p">,</span> <span class="n">HotPotQAData</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">HotPotQA</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">type</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>The output will be:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">HotPotQAData</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;5a8b57f25542995d1e6f1371&#39;</span><span class="p">,</span> <span class="n">question</span><span class="o">=</span><span class="s1">&#39;Were Scott Derrickson and Ed Wood of the same nationality?&#39;</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="n">gold_titles</span><span class="o">=</span><span class="s2">&quot;{&#39;Scott Derrickson&#39;, &#39;Ed Wood&#39;}&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The dataset comes with more text that you can retrieve from. But in this tutorial,
+we will use the <cite>retriever</cite> from DsPy library which allows you to retrieve relevant passages from a large wikipedia corpus using BERT embedding model.</p>
+</section>
+<section id="retriever">
+<h2>Retriever<a class="headerlink" href="#retriever" title="Link to this heading">#</a></h2>
+<p>With the following code, we can easily convert the <cite>Dspy</cite>’s Retriever to AdalFlow’s <cite>Retriever</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">adaflow</span> <span class="k">as</span> <span class="nn">adal</span>
+<span class="kn">import</span> <span class="nn">dspy</span>
+
+<span class="k">class</span> <span class="nc">DspyRetriever</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">Retriever</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">top_k</span> <span class="o">=</span> <span class="n">top_k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dspy_retriever</span> <span class="o">=</span> <span class="n">dspy</span><span class="o">.</span><span class="n">Retrieve</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">top_k</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">adal</span><span class="o">.</span><span class="n">RetrieverOutput</span><span class="p">]:</span>
+
+        <span class="n">k</span> <span class="o">=</span> <span class="n">top_k</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_k</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dspy_retriever</span><span class="p">(</span><span class="n">query_or_queries</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">final_output</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">documents</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">passages</span>
+
+        <span class="n">final_output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">RetrieverOutput</span><span class="p">(</span>
+                <span class="n">query</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>
+                <span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span>
+                <span class="n">doc_indices</span><span class="o">=</span><span class="p">[],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">final_output</span>
+</pre></div>
+</div>
+<p>Let’s try one example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_retriever</span><span class="p">():</span>
+    <span class="n">question</span> <span class="o">=</span> <span class="s2">&quot;How many storeys are in the castle that David Gregory inherited?&quot;</span>
+    <span class="n">retriever</span> <span class="o">=</span> <span class="n">DspyRetriever</span><span class="p">(</span><span class="n">top_k</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">retriever_out</span> <span class="o">=</span> <span class="n">retriever</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">question</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;retriever_out: </span><span class="si">{</span><span class="n">retriever_out</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output will be:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;How many storeys are in the castle that David Gregory inherited?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;David Gregory (physician) | David Gregory (20 December 1625 – 1720) was a Scottish physician and inventor. His surname is sometimes spelt as Gregorie, the original Scottish spelling. He inherited Kinnairdy Castle in 1664. Three of his twenty-nine children became mathematics professors. He is credited with inventing a military cannon that Isaac Newton described as &quot;being destructive to the human species&quot;. Copies and details of the model no longer exist. Gregory</span><span class="se">\&#39;</span><span class="s1">s use of a barometer to predict farming-related weather conditions led him to be accused of witchcraft by Presbyterian ministers from Aberdeen, although he was never convicted.&#39;</span><span class="p">,</span> <span class="s1">&#39;St. Gregory Hotel | The St. Gregory Hotel is a boutique hotel located in downtown Washington, D.C., in the United States. Established in 2000, the nine-floor hotel has 155 rooms, which includes 54 deluxe rooms, 85 suites with kitchens, and 16 top-floor suites with balconies. The hotel, which changed hands in June 2015, has a life-size statue of Marilyn Monroe in the lobby.&#39;</span><span class="p">,</span> <span class="s1">&#39;Karl D. Gregory Cooperative House | Karl D. Gregory Cooperative House is a member of the Inter-Cooperative Council at the University of Michigan. The structure that stands at 1617 Washtenaw was originally built in 1909 for the Tau Gamma Nu fraternity, but was purchased by the ICC in 1995. Gregory House is the only house in the organization that is expressly substance free. No tobacco, alcohol, or illicit drugs are allowed on the property. Gregory House has a maximum capacity of 29 members (by way of 13 single and 8 double capacity rooms) as of June 2008.&#39;</span><span class="p">])]</span>
+</pre></div>
+</div>
+</section>
+<section id="trainable-rag">
+<h2>Trainable RAG<a class="headerlink" href="#trainable-rag" title="Link to this heading">#</a></h2>
+<p>In other tutorials, we used only one component - <cite>Generator</cite>, so there is no need to connect the output-input between components.
+That was why we had written our task pipeline with a single <cite>call</cite> method that has both <cite>training</cite> and <cite>inference</cite> mode.</p>
+<p>The previous task pipeline <cite>call</cite> method will return <cite>GeneratorOutput</cite> in inference mode and <cite>Parameter</cite> in training mode.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+     <span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+ <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span><span class="p">,</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+     <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_input</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
+     <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+     <span class="k">return</span> <span class="n">output</span>
+</pre></div>
+</div>
+<p>The above code works as the <cite>__call__</cite> method of the <cite>Generator</cite> component supports <cite>training</cite> and <cite>inference</cite> mode already.</p>
+<p><strong>Inference mode</strong></p>
+<p>We can separate the <cite>inference mode</cite> and <cite>training mode</cite> by using <cite>call</cite> and <cite>forward</cite> methods separately.
+Implementing <cite>call</cite> method is just free-form pythonic coding.
+Assume this class already have <cite>retriever</cite> and <cite>llm</cite> configured in the <cite>__init__</cite> method.</p>
+<p>Here is our call method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span><span class="p">:</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;This component is not supposed to be called in training mode&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">retriever_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retriever</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">question</span><span class="p">)</span>
+
+    <span class="n">successor_map_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span>  <span class="c1"># noqa E731</span>
+        <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">documents</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">documents</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">)</span>
+    <span class="n">retrieved_context</span> <span class="o">=</span> <span class="n">successor_map_fn</span><span class="p">(</span><span class="n">retriever_out</span><span class="p">)</span>
+
+    <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="n">retrieved_context</span><span class="p">,</span>
+        <span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">question</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+        <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+        <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">output</span>
+</pre></div>
+</div>
+<p>Between the <cite>retriever</cite> and <cite>llm</cite> components, we converted the retriever output to a string and passed it to the <cite>llm</cite> component via the <cite>prompt_kwargs</cite>.</p>
+<p><strong>Training mode</strong></p>
+<p>In this case, we need to create a trainable RAG pipeline with both <cite>Retriever</cite> and <cite>Generator</cite> components.
+Here in particular, we show how to write the <cite>forward`(training) method of the `RAG</cite> component.
+To make a pipeline trainable, we need to pass <cite>Parameter</cite> as input and output between components.</p>
+<p>The <cite>foward</cite> method of <cite>Generator</cite> will use <cite>Parameter</cite> to build a dynamic computation graph, and we need a way to convert the output of the <cite>Retriever</cite> to the input of the <cite>Generator</cite>.
+We achieve this via using the <cite>successor_map_fn</cite> of <cite>Parameter</cite> class.
+In this case, the <cite>data</cite> field of the <cite>Parameter</cite> saved the output of the <cite>Retriever</cite>.
+The <cite>successor_map_fn</cite> will apply a mapping function to convert the <cite>Parameter</cite> output from the Retriever to the string format used in the <cite>Generator</cite> prompt.</p>
+<p>Here is our <cite>RAG</cite> component’s <cite>forward</cite> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;This component is not supposed to be called in eval mode&quot;</span><span class="p">)</span>
+    <span class="n">retriever_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retriever</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">question</span><span class="p">)</span>
+    <span class="n">successor_map_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span>  <span class="c1"># noqa E731</span>
+        <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">documents</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">documents</span>
+        <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">)</span>
+    <span class="n">retriever_out</span><span class="o">.</span><span class="n">add_successor_map_fn</span><span class="p">(</span><span class="n">successor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="p">,</span> <span class="n">map_fn</span><span class="o">=</span><span class="n">successor_map_fn</span><span class="p">)</span>
+    <span class="n">generator_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span>
+        <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">question</span><span class="p">,</span> <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="n">retriever_out</span><span class="p">},</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">generator_out</span>
+</pre></div>
+</div>
+<p><strong>Both modes in the same method</strong></p>
+<p>You also still has the option to put two methods together. Here is one example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">bicall</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span><span class="p">,</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;You can also combine both the forward and call in the same function.</span>
+<span class="sd">    Supports both training and eval mode by using __call__ for GradComponents</span>
+<span class="sd">    like Retriever and Generator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">retriever_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retriever</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">question</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">retriever_out</span><span class="p">,</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">):</span>
+        <span class="n">successor_map_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span>  <span class="c1"># noqa E731</span>
+            <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">documents</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">documents</span>
+            <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">retriever_out</span><span class="o">.</span><span class="n">add_successor_map_fn</span><span class="p">(</span>
+            <span class="n">successor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="p">,</span> <span class="n">map_fn</span><span class="o">=</span><span class="n">successor_map_fn</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">successor_map_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span>  <span class="c1"># noqa E731</span>
+            <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">documents</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">documents</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">retrieved_context</span> <span class="o">=</span> <span class="n">successor_map_fn</span><span class="p">(</span><span class="n">retriever_out</span><span class="p">)</span>
+    <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="n">retrieved_context</span><span class="p">,</span>
+        <span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">question</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output</span>
+</pre></div>
+</div>
+<p><strong>Trainable Parameters</strong></p>
+<p>In this task, we will define two trainable parameters: one to optimize the task description and one to do few-shot learning.</p>
+<p>Here is our <cite>Task</cite> class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">task_desc_str</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Answer questions with short factoid answers.</span>
+
+<span class="s2">You will receive context(may contain relevant facts) and a question.</span>
+<span class="s2">Think step by step.&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">VanillaRAG</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">GradComponent</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">passages_per_hop</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">model_client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">passages_per_hop</span> <span class="o">=</span> <span class="n">passages_per_hop</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">retriever</span> <span class="o">=</span> <span class="n">DspyRetriever</span><span class="p">(</span><span class="n">top_k</span><span class="o">=</span><span class="n">passages_per_hop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">llm_parser</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">DataClassParser</span><span class="p">(</span>
+            <span class="n">data_class</span><span class="o">=</span><span class="n">AnswerData</span><span class="p">,</span> <span class="n">return_data_class</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">format_type</span><span class="o">=</span><span class="s2">&quot;json&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">llm</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+            <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;task_desc_str&quot;</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">task_desc_str</span><span class="p">,</span>
+                    <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;Task description for the language model&quot;</span><span class="p">,</span>
+                    <span class="n">param_type</span><span class="o">=</span><span class="n">adal</span><span class="o">.</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">PROMPT</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;few_shot_demos&quot;</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+                    <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;To provide few shot demos to the language model&quot;</span><span class="p">,</span>
+                    <span class="n">param_type</span><span class="o">=</span><span class="n">adal</span><span class="o">.</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">DEMOS</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;output_format_str&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_parser</span><span class="o">.</span><span class="n">get_output_format_str</span><span class="p">(),</span>
+            <span class="p">},</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">answer_template</span><span class="p">,</span>
+            <span class="n">output_processors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">llm_parser</span><span class="p">,</span>
+            <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="prepare-for-training">
+<h2>Prepare for Training<a class="headerlink" href="#prepare-for-training" title="Link to this heading">#</a></h2>
+<p>First, we need to create a <cite>AdalComponent</cite> to help configs the <cite>Trainer</cite>.</p>
+<ul class="simple">
+<li><p>In the <cite>__init__:  `eval_fn</cite> and <cite>loss_fn</cite>, <cite>task</cite>, and configure <cite>teacher generator</cite> for few-shot learning,</p></li>
+</ul>
+<p>and <cite>backward_engine</cite> and <cite>optimizer</cite> for text_grad optimization.</p>
+<ul class="simple">
+<li><p>Minimumly, we need to let the <cite>Trainer</cite> know (1) how to call the task pipeline in both modes.</p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p>in inference/eval mode, how to parse the last output (GenereratorOutput) to the input of the <cite>eval_fn</cite>.</p></li>
+<li><p>in training mode, how to parse the last output (Parameter) to the input of the <cite>loss_fn</cite>.</p></li>
+</ol>
+<p>Here is the <cite>AdalComponent</cite> class for the <cite>VanillaRAG</cite> task:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">VallinaRAGAdal</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">AdalComponent</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">backward_engine_model_config</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">teacher_model_config</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">text_optimizer_model_config</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">VanillaRAG</span><span class="p">(</span>
+            <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+            <span class="n">passages_per_hop</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">eval_fn</span> <span class="o">=</span> <span class="n">AnswerMatchAcc</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;fuzzy_match&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">compute_single_item</span>
+        <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">EvalFnToTextLoss</span><span class="p">(</span>
+            <span class="n">eval_fn</span><span class="o">=</span><span class="n">eval_fn</span><span class="p">,</span> <span class="n">eval_fn_desc</span><span class="o">=</span><span class="s2">&quot;fuzzy_match: 1 if str(y) in str(y_gt) else 0&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
+            <span class="n">eval_fn</span><span class="o">=</span><span class="n">eval_fn</span><span class="p">,</span>
+            <span class="n">loss_fn</span><span class="o">=</span><span class="n">loss_fn</span><span class="p">,</span>
+            <span class="n">backward_engine_model_config</span><span class="o">=</span><span class="n">backward_engine_model_config</span><span class="p">,</span>
+            <span class="n">teacher_model_config</span><span class="o">=</span><span class="n">teacher_model_config</span><span class="p">,</span>
+            <span class="n">text_optimizer_model_config</span><span class="o">=</span><span class="n">text_optimizer_model_config</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># tell the trainer how to call the task</span>
+    <span class="k">def</span> <span class="nf">handle_one_task_sample</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">HotPotQAData</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">forward</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">question</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">call</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">question</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
+
+
+    <span class="c1"># eval mode: get the generator output, directly engage with the eval_fn</span>
+    <span class="k">def</span> <span class="nf">evaluate_one_sample</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">HotPotQAData</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">y_label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">y_pred</span> <span class="ow">and</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span> <span class="ow">and</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">answer</span><span class="p">:</span>
+            <span class="n">y_label</span> <span class="o">=</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">answer</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_fn</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_label</span><span class="p">,</span> <span class="n">y_gt</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">answer</span><span class="p">)</span>
+
+    <span class="c1"># train mode: get the loss and get the data from the full_response</span>
+    <span class="k">def</span> <span class="nf">handle_one_loss_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">HotPotQAData</span><span class="p">,</span> <span class="n">pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">):</span>
+        <span class="n">y_gt</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;y_gt&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>
+            <span class="n">eval_input</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>
+            <span class="n">requires_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">pred</span><span class="o">.</span><span class="n">eval_input</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pred</span><span class="o">.</span><span class="n">full_response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">answer</span>
+            <span class="k">if</span> <span class="n">pred</span><span class="o">.</span><span class="n">full_response</span>
+            <span class="ow">and</span> <span class="n">pred</span><span class="o">.</span><span class="n">full_response</span><span class="o">.</span><span class="n">data</span>
+            <span class="ow">and</span> <span class="n">pred</span><span class="o">.</span><span class="n">full_response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">answer</span>
+            <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">pred</span><span class="p">,</span> <span class="s2">&quot;y_gt&quot;</span><span class="p">:</span> <span class="n">y_gt</span><span class="p">}}</span>
+</pre></div>
+</div>
+</section>
+<section id="diagnose">
+<h2>Diagnose<a class="headerlink" href="#diagnose" title="Link to this heading">#</a></h2>
+<p>Before we start training, we decided to diagnose the pipeline and to analyze the current performance before the optimization.
+Here is the code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train_diagnose</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span>
+    <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+
+    <span class="n">trainset</span><span class="p">,</span> <span class="n">valset</span><span class="p">,</span> <span class="n">testset</span> <span class="o">=</span> <span class="n">load_datasets</span><span class="p">()</span>
+
+    <span class="n">adal_component</span> <span class="o">=</span> <span class="n">VallinaRAGAdal</span><span class="p">(</span>
+        <span class="n">model_client</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">,</span>
+        <span class="n">backward_engine_model_config</span><span class="o">=</span><span class="n">gpt_4o_model</span><span class="p">,</span>
+        <span class="n">teacher_model_config</span><span class="o">=</span><span class="n">gpt_3_model</span><span class="p">,</span>
+        <span class="n">text_optimizer_model_config</span><span class="o">=</span><span class="n">gpt_3_model</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">trainer</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="n">adaltask</span><span class="o">=</span><span class="n">adal_component</span><span class="p">)</span>
+    <span class="n">trainer</span><span class="o">.</span><span class="n">diagnose</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">trainset</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+    <span class="c1"># trainer.diagnose(dataset=valset, split=&quot;val&quot;)</span>
+    <span class="c1"># trainer.diagnose(dataset=testset, split=&quot;test&quot;)</span>
+</pre></div>
+</div>
+<p>From this, I have discovered that the inital evaluation will think <cite>Yes</cite> and <cite>yes</cite> are different answers.
+We fixed the evaluator to use the lower case of the prediction and the ground truth to compare.
+The pipeline without optimizaton achieved around <span class="math notranslate nohighlight">\(0.6\)</span> accuracy on the test set.</p>
+</section>
+<section id="training">
+<h2>Training<a class="headerlink" href="#training" title="Link to this heading">#</a></h2>
+<div class="highlight admonition">
+<p class="admonition-title">API reference</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">datasets.hotpotqa.HotPotQA</span></code></p></li>
+</ul>
+</div>
+</section>
 </section>
 
 
@@ -482,6 +824,28 @@
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hotpotqa-dataset">HotPotQA dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever">Retriever</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trainable-rag">Trainable RAG</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-for-training">Prepare for Training</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diagnose">Diagnose</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training">Training</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

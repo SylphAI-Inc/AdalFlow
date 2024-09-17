@@ -48,6 +48,8 @@
     <script src="../_static/js/rtd_search_config.js"></script>
     <script src="../_static/js/rtd_sphinx_search.min.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'use_cases/index';</script>
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -471,7 +473,7 @@
 <td><p>Classification with <cite>gpt-3.5-turbo</cite>. The optimized task pipeline performs on-par with <cite>gpt-4o</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="rag_opt.html"><span class="doc">RAG optimization</span></a></p></td>
-<td><p>RAG and multi-hop question answering with hotpotqa dataset, two generators, and one retriever, optimizing zero-shot and few-shot learning (coming soon).</p></td>
+<td><p>Different from previous tasks where we only used one generator component, in this of hotpotqa dataset, we will demonstrates how to optimize a pipeline composed of multiple <cite>GradComponent`(`Retriever</cite> &amp; <cite>Generator</cite>) with a standard RAG architectures</p></td>
 </tr>
 </tbody>
 </table>
