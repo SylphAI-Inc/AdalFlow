@@ -25,58 +25,6 @@ if TYPE_CHECKING:
 
 log = logging.getLogger(__name__)
 
-GLOSSARY_TEXT = r"""
-### Glossary of tags that will be sent to you:
-{# # - <LM_SYSTEM_PROMPT>: The system prompt for the language model.
-# - <LM_INPUT>: The input to the language model.
-# - <LM_OUTPUT>: The output of the language model. #}
-# - <FEEDBACK>: The feedback to the variable.
-# - <CONVERSATION>: The conversation history.
-# - <FOCUS>: The focus of the optimization.
-# - <ROLE>: The role description of the variable."""
-
-# customize the system prompt
-# prompts, solutions to problems, code, or any other text-based variable. -> to the variable type.
-# The optimizer will have an understanding of different variable types.
-
-# Tips:
-# - DO NOT address concerns on the peer variables. The peer variables will be optimized separately.
-# - The instruction needs to be on point, clear, and accurate.
-# You can take the following actions:
-# - You can delete words or phrases that you think are not necessary or you find misleading.
-# - You can add new words or phrases that you think can address the feedback.
-# - You can add sections like "Tips" or "Remember" to fix the issue.
-# - You can be creative and write the variable in a different way.#}
-
-# Think step by step. But keep the reasoning concise!!!
-# Start response with "because" and "since" to provide reasoning.
-# The last line of your response will be the new variable value put in between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.
-
-# {#You are part of an optimization system that improves the exsiting variable value according to feedback.
-
-# You will be asked to creatively and critically at proposing new variable value.
-# The feedback may be noisy, focus on what is important.
-# {# output format #}
-# You MUST ONLY output the new variable value in the response between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.
-# {% if instruction_to_optimizer %}
-# USER INSTRUCTION: {{instruction_to_optimizer}}
-# {% endif %}
-# Remember:
-# - Pay attention to role description, and most importantly, the feedback.
-# - Must provide a different value that addresses the feedback.
-# - If <HISTORY_PERFORMANCE> is provided, observe the patterns of the past iterations, pay close attention to high-performing value and aim to improve the variable value.
-# - The new value better not overlap with the scope of peer variables.
-# - Make your best judgment and be creative.
-# TIPS:
-# - Delete words or phrases that you think are not necessary or you find misleading.
-# - Add new words or phrases that you think can address the feedback.
-# - Add sections like "Tips" or "Remember" to fix the issue.
-# - Be eative and write the variable in a different way.#}
-
-# Your task: Propose a new variable value in response to the feedback.
-# 1. Focus on what is essential, even if feedback is noisy.
-# 2. Observe past performance patterns when provided and aim to improve upon high-performing values.
-# 3. Avoid overlap with peer variables' scope.
 
 # Tips:
 # 1. Eliminate unnecessary words or phrases.

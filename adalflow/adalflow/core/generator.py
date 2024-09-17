@@ -41,6 +41,9 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
     OBJECTIVE_INSTRUCTION_CHAIN,
 )
 
+__all__ = ["Generator", "BackwardEngine", "create_teacher_generator"]
+
+
 log = logging.getLogger(__name__)
 
 PromptArgType = Dict[str, Union[str, Parameter]]
@@ -66,7 +69,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         trainable_params (Optional[List[str]], optional): The list of trainable parameters. Defaults to [].
 
     Note:
-        The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output. And we encourage you to only use it to parse the response to data format you will use later.
+        The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output.
+        And we encourage you to only use it to parse the response to data format you will use later.
     """
 
     model_type: ModelType = ModelType.LLM
@@ -264,6 +268,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             combined_model_kwargs.update(model_kwargs)
         return combined_model_kwargs
 
+    # TODO: use prompt_kwargs as users are already familiar with it
     def print_prompt(self, **kwargs) -> str:
         return self.prompt.print_prompt(**kwargs)
 
@@ -334,7 +339,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             raise e
 
     ##############################################################################################################
-    ### Forward and backwards, and teacher generator are for training
+    ### Forward, backwards, teacher generator, create demo data instance,
+    # are for training and backpropagation
     ##############################################################################################################
 
     def create_demo_data_instance(
@@ -343,6 +349,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         output: GeneratorOutput,
         id: Optional[str] = None,
     ):
+        r"""Automatically create a demo data instance from the input and output of the generator.
+        Used to trace the demos for the demo paramter in the prompt_kwargs.
+        Part of the few-shot learning.
+        """
         from adalflow.core.base_data_class import DynamicDataClassFactory
 
         # map the input fields
@@ -352,7 +362,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         )
 
         for k, v in input_prompt_kwargs.items():
-            demo_data[k] = v
+            if isinstance(v, Parameter):
+                demo_data[k] = v.map_to_successor(self)
+            else:
+                demo_data[k] = v
         # map the output fields
         for key, value in demo_data_class_output_mapping.items():
             demo_data[key] = value(output)
@@ -473,15 +486,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 raise ValueError(
                     "ID is required for tracing. Please pass it to your Geneartor call."
                 )
-            input_prompt_kwargs = {
-                k: v.data if isinstance(v, Parameter) else v
-                for k, v in prompt_kwargs.items()
-            }
 
             demo = self.create_demo_data_instance(
-                input_prompt_kwargs,
+                prompt_kwargs,
                 output,
-                # self._demo_data_class_output_mapping,
                 id=id,
             )
             demo_param.add_to_trace(demo, is_teacher=self.teacher_mode)
@@ -842,7 +850,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
     def to_dict(self) -> Dict[str, Any]:
         r"""Convert the generator to a dictionary."""
-        # exclude default functions
+        # TODO: exclude default functions
+        return super().to_dict()
 
     @staticmethod
     def failure_message_to_backward_engine(

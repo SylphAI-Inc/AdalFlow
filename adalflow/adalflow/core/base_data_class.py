@@ -27,7 +27,15 @@ from adalflow.core.functional import (
     represent_ordereddict,
 )
 
-
+__all__ = [
+    "DataClass",
+    "DataClassFormatType",
+    "required_field",
+    "ExcludeType",
+    "IncludeType",
+    "check_adal_dataclass",
+    "DynamicDataClassFactory",
+]
 logger = logging.getLogger(__name__)
 
 
@@ -125,7 +133,8 @@ class DataClass:
     Overall, we have a unified class method :meth:`format_str` to generate formatted output based on the type of operation and class/instance context.
 
     note::
-        You do not need to use our format, overwrite any method in the subclass to fit in your needs.
+        1. Avoid using Optional[Type] for the type of fields, as dataclass already distingushes between optional and required fields using default value.
+        2. If you need to customize, you can subclass and overwrite any method to fit your needs.
 
     Loading data:
 
@@ -176,8 +185,8 @@ class DataClass:
         # name: John Doe
 
     """
-    __input_fields__ = []
-    __output_fields__ = []
+    __input_fields__: List[str] = []
+    __output_fields__: List[str] = []
 
     def __post_init__(self):
 
@@ -686,9 +695,6 @@ class DataClass:
             return self.to_yaml(exclude=exclude, include=include)
         else:
             raise ValueError(f"Unsupported format type: {format_type}")
-
-    # TODO:support Generic[Type[T]] for the type of fields
-    # it will automatically use __type_var_map__ attribute
 
 
 def check_adal_dataclass(data_class: Type) -> None:

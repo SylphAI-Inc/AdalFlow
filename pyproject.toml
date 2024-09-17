@@ -45,24 +45,10 @@ tensorboard = "^2.17.0"
 dspy-ai = "^2.4.13"
 
 
-# [tool.poetry.group.doc.dependencies]
-# pydata-sphinx-theme = "^0.15.3"
-# sphinx-design = "^0.6.0"
-# sphinx-copybutton = "^0.5.2"
-# sphinx = "^7.3.7"
-# nbsphinx = "^0.9.4"
-# nbconvert = "^7.16.4"
-# pandoc = "^2.3"
-# readthedocs-sphinx-search = "^0.3.2"
-# sqlalchemy = "^2.0.31"
-# google-generativeai = "^0.7.1"
-# faiss-cpu = "^1.8.0.post1"
-# lightrag = { path = "lightrag", develop = true }
 transformers = "^4.44.0"
 accelerate = "^0.33.0"
 faiss-cpu = "^1.8.0.post1"
 nltk = "^3.9.1"
-deepeval = "^1.1.6"
 ragas = "^0.1.16"
 
 

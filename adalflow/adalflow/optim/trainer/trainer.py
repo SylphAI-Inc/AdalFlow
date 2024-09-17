@@ -35,7 +35,7 @@ log = logging.getLogger(__name__)
 
 
 class Trainer(Component):
-    r"""We make trainer a component to as a trainer itself is an LLM task pipeline too.
+    __doc__ = r"""Ready to use trainer for LLM task pipeline to optimize all types of parameters.
 
 
     Training set: can be used for passing initial proposed prompt or for few-shot sampling.
@@ -243,6 +243,7 @@ class Trainer(Component):
             }
             save_json(stats, os.path.join(log_dir, "stats.json"))
             print(f"Total error samples: {len(diagnose_items)}")
+            print(f"Saved diagnose to {diagnose_file}")
 
         return acc_score, acc_per_item_scores, log_paths
 
@@ -339,7 +340,6 @@ class Trainer(Component):
                 )
             self.adaltask.configure_teacher_generator()
             print("Configured demo optimizers")
-            # return
         else:
             print("No trainable demo params to optimize")
             self.demo_optimizers = []

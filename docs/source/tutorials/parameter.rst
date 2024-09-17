@@ -3,12 +3,30 @@
 Parameter
 ====================
 
+.. figure:: /_static/images/tensor_parameter.png
+    :align: center
+    :alt: AdalFlow Tensor and Parameter
+    :width: 620px
+
+
+    AdalFlow Tensor and Parameter
+
+Designing an auto-diff system for LLM task pipeline is actually quite challenging.
+First we made effort to make everything a component and it made the interactions between each components easier and more transparent at visualization.
+But every component takes in any type of data as input, just as in pytorch, input to compute in the auto-diff needs to be a tensor, and trinable parameters will be Parametr (a type of mutable tensor),
+this can be applied to the LLM task pipeline as well.
+LLM task pipeline and in-context learning will add new trainable parameters such as few-shot demos and instruction tuning.
 
 There are two types of parameters:
 
-* once-off, such as loss, y_pred, intermedia response where each run it will create a new one, and they are temporary and will be released after the run.
+* once-off, such as loss, y_pred, intermediate response where each run it will create a new one, and they are temporary and will be released after the run.
 * persistent, the parameters that we are optimizing, such as those with an actual type assigned `param_type` in the `Parameter` class.
    For the persistent parameters, the data type will be string.
+
+
+Each parameter has a:
+id: unique identifier
+name:
 
 Intermediate parameters
 ------------------------

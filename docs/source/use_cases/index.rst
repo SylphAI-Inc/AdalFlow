@@ -17,6 +17,8 @@ We will build use cases end-to-end, ranging from classification (classical NLP t
 
     * - Part
       - Description
+    * - :doc:`rag_playbook`
+      - Comprehensive RAG playbook according to the sota research and the best practices in the industry.
     * - :doc:`build_a_rag`
       - Designing a RAG pipeline, from offline data processing to online inference.
     * - :doc:`eval_a_rag`
@@ -27,6 +29,7 @@ We will build use cases end-to-end, ranging from classification (classical NLP t
     :caption: RAG vibe
     :hidden:
 
+    rag_playbook
     build_a_rag
     eval_a_rag
 
