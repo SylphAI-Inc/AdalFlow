@@ -2,6 +2,7 @@
 
 from typing import TYPE_CHECKING
 from collections import OrderedDict
+import logging
 
 if TYPE_CHECKING:
     from adalflow.core.generator import BackwardEngine
@@ -11,6 +12,9 @@ from adalflow.optim.types import ParameterType
 
 from adalflow.core.component import Component
 from adalflow.optim.function import BackwardContext
+
+__all__ = ["GradComponent"]
+log = logging.getLogger(__name__)
 
 
 class GradComponent(Component):
@@ -60,8 +64,9 @@ class GradComponent(Component):
 
         from adalflow.optim.parameter import Parameter
 
-        print("kwargs", kwargs)
-        print("args", args)
+        log.debug(
+            f"Forwarding through {self.name} with args: {args} and kwargs: {kwargs}"
+        )
 
         # if "id" not in kwargs:
         #     raise ValueError(
@@ -103,8 +108,10 @@ class GradComponent(Component):
 
         # 3. call the function with unwrapped args and kwargs
         unwrapped_args = tuple(unwrapped_args)
-        print("unwrapped_args", unwrapped_args)
-        print("unwrapped_kwargs", unwrapped_kwargs)
+
+        log.debug(f"Unwrapped args: {unwrapped_args}")
+        log.debug(f"Unwrapped kwargs: {unwrapped_kwargs}")
+
         call_response = self.call(*unwrapped_args, **unwrapped_kwargs)
 
         # 4. Create a Parameter object to trace the forward pass
@@ -121,7 +128,7 @@ class GradComponent(Component):
             BackwardContext(
                 backward_fn=self.backward,
                 response=response,
-                id=kwargs.get("id"),
+                id=kwargs.get("id", None),
             )
         )
         return response

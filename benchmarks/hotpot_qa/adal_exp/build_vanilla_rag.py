@@ -1,15 +1,16 @@
 """We will use dspy's retriever to keep that the same and only use our generator and optimizer"""
 
-import dspy
-from typing import List, Union, Optional
+from typing import List, Optional
 from dataclasses import dataclass, field
+import dspy
 
 import adalflow as adal
 
 from adalflow.datasets.hotpot_qa import HotPotQA
-from adalflow.datasets.types import Example
 
 from adalflow.core.retriever import Retriever
+from adalflow.core.types import RetrieverOutput
+from adalflow.core import Generator
 
 
 colbertv2_wiki17_abstracts = dspy.ColBERTv2(
@@ -29,8 +30,6 @@ def load_datasets():
 
 
 # task pipeline
-
-from adalflow.core import Generator
 
 
 # dspy format
@@ -84,10 +83,8 @@ Question: {{question}}
 
 # Library gives a standard template for easy prompt
 answer_template = """<START_OF_SYSTEM_PROMPT>
-Answer questions with short factoid answers.
+{{task_desc_str}}
 
-You will receive context(may contain relevabt facts) and a question.
-Think step by step.
 {{output_format_str}}
 {# Few shot demos #}
 {% if few_shot_demos is not none %}
@@ -100,34 +97,6 @@ Context: {{context}}
 Question: {{question}}
 <END_OF_USER>
 """
-
-
-# @fun_to_component
-# def parse_string_query(text: str) -> str:
-#     return re.search(r"Query: (.*)", text).group(1)
-
-
-# @fun_to_component
-# def parse_string_answer(text: str) -> str:
-#     return re.search(r"Answer: (.*)", text).group(1)
-
-
-from dataclasses import dataclass, field
-
-
-@dataclass
-class HotPotQADemoData(Example):
-    context: List[str] = field(
-        metadata={"desc": "The context to be used for answering the question"},
-        default_factory=list,
-    )
-    score: float = field(
-        metadata={"desc": "The score of the answer"},
-        default=None,
-    )
-
-
-from adalflow.core.types import RetrieverOutput
 
 
 # Demonstrating how to wrap other retriever to adalflow retriever and be applied in training pipeline
@@ -144,7 +113,7 @@ class DspyRetriever(Retriever):
         k = top_k or self.top_k
 
         output = self.dspy_retriever(query_or_queries=input, k=k)
-        print(f"dsy_retriever output: {output}")
+        # print(f"dsy_retriever output: {output}")
         final_output: List[RetrieverOutput] = []
         documents = output.passages
 
@@ -155,14 +124,17 @@ class DspyRetriever(Retriever):
                 doc_indices=[],
             )
         )
-        print(f"final_output: {final_output}")
+        # print(f"final_output: {final_output}")
         return final_output
 
 
-import adalflow as adal
+task_desc_str = r"""Answer questions with short factoid answers.
+
+You will receive context(may contain relevant facts) and a question.
+Think step by step."""
 
 
-class VanilaRAG(adal.GradComponent):
+class VanillaRAG(adal.GradComponent):
     def __init__(self, passages_per_hop=3, model_client=None, model_kwargs=None):
         super().__init__()
 
@@ -170,12 +142,17 @@ class VanilaRAG(adal.GradComponent):
 
         self.retriever = DspyRetriever(top_k=passages_per_hop)
         self.llm_parser = adal.DataClassParser(
-            data_class=AnswerData, return_data_class=True, format_type="yaml"
+            data_class=AnswerData, return_data_class=True, format_type="json"
         )
         self.llm = Generator(
             model_client=model_client,
             model_kwargs=model_kwargs,
             prompt_kwargs={
+                "task_desc_str": adal.Parameter(
+                    data=task_desc_str,
+                    role_desc="Task description for the language model",
+                    param_type=adal.ParameterType.PROMPT,
+                ),
                 "few_shot_demos": adal.Parameter(
                     data=None,
                     requires_opt=True,
@@ -189,9 +166,11 @@ class VanilaRAG(adal.GradComponent):
             use_cache=True,
         )
 
-    def call(
-        self, question: str, id: str = None
-    ) -> Union[adal.GeneratorOutput, adal.Parameter]:
+    def call(self, question: str, id: str = None) -> adal.GeneratorOutput:
+        if self.training:
+            raise ValueError(
+                "This component is not supposed to be called in training mode"
+            )
         # user should just treat it as a call function
         # and we will handle the connection between the components
         # they should directly pass the retriever_output along with
@@ -205,8 +184,8 @@ class VanilaRAG(adal.GradComponent):
         )
         retrieved_context = successor_map_fn(retriever_out)
 
-        print(f"retrieved_context: {retrieved_context}")
-        print(f"retriever_out: {retriever_out}")
+        # print(f"retrieved_context: {retrieved_context}")
+        # print(f"retriever_out: {retriever_out}")
         prompt_kwargs = {
             "context": retrieved_context,
             "question": question,
@@ -216,10 +195,13 @@ class VanilaRAG(adal.GradComponent):
             prompt_kwargs=prompt_kwargs,
             id=id,
         )
-        self.llm.print_prompt(**prompt_kwargs)
+        # self.llm.print_prompt(**prompt_kwargs)
         return output
 
     def forward(self, question: str, id: str = None) -> adal.Parameter:
+        if not self.training:
+            raise ValueError("This component is not supposed to be called in eval mode")
+        # TODO: add id in the retriever output
         retriever_out = self.retriever.forward(input=question)
         successor_map_fn = lambda x: (  # noqa E731
             "\n\n".join(x.data[0].documents)
@@ -239,7 +221,7 @@ def test_vailla_rag():
         gpt_3_model,
     )
 
-    task = VanilaRAG(
+    task = VanillaRAG(
         **gpt_3_model,
         passages_per_hop=3,
     )

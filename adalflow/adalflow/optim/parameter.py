@@ -185,10 +185,8 @@ class Parameter(Generic[T]):
         if successor_id not in self.successor_map_fn:
             default_map_fn = lambda x: x.data  # noqa: E731
             return default_map_fn(self)
-            # raise ValueError(
-            #     f"Successor {successor_id} not found in the successor_map_fn"
-            # )
-        return self.successor_map_fn[successor_id](successor)
+
+        return self.successor_map_fn[successor_id](self)
 
     def add_successor_map_fn(self, successor: object, map_fn: Callable):
         """Add or update a map function for a specific successor using its id."""

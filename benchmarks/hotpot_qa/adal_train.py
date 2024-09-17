@@ -21,12 +21,10 @@ dspy.settings.configure(rm=colbertv2_wiki17_abstracts)
 
 
 def load_datasets():
-    # trainset = HotPotQA(split="train", size=2)
-    # valset = HotPotQA(split="val", size=5)
-    # testset = HotPotQA(split="test", size=5)
-    trainset = HotPotQA(split="train", size=20)
+
+    trainset = HotPotQA(split="train", size=50)
     valset = HotPotQA(split="val", size=50)
-    testset = HotPotQA(split="test", size=50)
+    testset = HotPotQA(split="test", size=100)
     print(f"trainset, valset: {len(trainset)}, {len(valset)}, example: {trainset[0]}")
     return trainset, valset, testset
 

@@ -1,15 +1,17 @@
 from typing import Any, Callable, Dict, Tuple
+
 import adalflow as adal
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
-from benchmarks.hotpot_qa.adal_exp.build_vanila_rag import VanilaRAG
-from use_cases.config import gpt_3_model, gpt_4o_model
 from adalflow.datasets.types import HotPotQAData
 
 from benchmarks.hotpot_qa.adal_train import load_datasets
+from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import VanillaRAG
+from use_cases.config import gpt_3_model, gpt_4o_model
 
 
 # TODO: look more into the loss function
-class ValinaRAGAdal(adal.AdalComponent):
+# TODO: test LLM judge too.
+class VallinaRAGAdal(adal.AdalComponent):
     def __init__(
         self,
         model_client: adal.ModelClient,
@@ -18,7 +20,7 @@ class ValinaRAGAdal(adal.AdalComponent):
         teacher_model_config: Dict | None = None,
         text_optimizer_model_config: Dict | None = None,
     ):
-        task = VanilaRAG(
+        task = VanillaRAG(
             model_client=model_client,
             model_kwargs=model_kwargs,
             passages_per_hop=3,
@@ -36,6 +38,7 @@ class ValinaRAGAdal(adal.AdalComponent):
             text_optimizer_model_config=text_optimizer_model_config,
         )
 
+    # tell the trainer how to call the task
     def handle_one_task_sample(
         self, sample: HotPotQAData
     ) -> Tuple[Callable[..., Any], Dict]:
@@ -76,6 +79,9 @@ class ValinaRAGAdal(adal.AdalComponent):
         return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}}
 
 
+# Note: diagnose is quite helpful, it helps you to quickly check if the evalfunction is the right metrics
+# i checked the eval which does fuzzy match, and found some yes and Yes are not matched, then converted both strings to lower and
+# the performances have gone up from 0.15 to 0.4
 def train_diagnose(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
@@ -83,7 +89,7 @@ def train_diagnose(
 
     trainset, valset, testset = load_datasets()
 
-    adal_component = ValinaRAGAdal(
+    adal_component = VallinaRAGAdal(
         model_client,
         model_kwargs,
         backward_engine_model_config=gpt_4o_model,
@@ -96,14 +102,66 @@ def train_diagnose(
     # trainer.diagnose(dataset=testset, split="test")
 
 
+def train(
+    train_batch_size=4,  # larger batch size is not that effective, probably because of llm's lost in the middle
+    raw_shots: int = 0,
+    bootstrap_shots: int = 1,
+    max_steps=1,
+    num_workers=4,
+    strategy="constrained",
+    optimization_order="sequential",
+    debug=False,
+    resume_from_ckpt=None,
+    exclude_input_fields_from_bootstrap_demos=False,
+):
+    adal_component = VallinaRAGAdal(
+        **gpt_3_model,
+        teacher_model_config=gpt_4o_model,
+        text_optimizer_model_config=gpt_4o_model,
+        backward_engine_model_config=gpt_4o_model
+    )
+    print(adal_component)
+    trainer = adal.Trainer(
+        train_batch_size=train_batch_size,
+        adaltask=adal_component,
+        strategy=strategy,
+        max_steps=max_steps,
+        num_workers=num_workers,
+        raw_shots=raw_shots,
+        bootstrap_shots=bootstrap_shots,
+        debug=debug,
+        weighted_sampling=True,
+        optimization_order=optimization_order,
+        exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
+    )
+    print(trainer)
+
+    train_dataset, val_dataset, test_dataset = load_datasets()
+    trainer.fit(
+        train_dataset=train_dataset,
+        val_dataset=val_dataset,
+        test_dataset=test_dataset,
+        resume_from_ckpt=resume_from_ckpt,
+    )
+
+
 if __name__ == "__main__":
     from use_cases.config import gpt_3_model
 
     adal.setup_env()
 
-    task = ValinaRAGAdal(**gpt_3_model)
-    print(task)
+    # task = VallinaRAGAdal(**gpt_3_model)
+    # print(task)
 
-    train_diagnose(**gpt_3_model)
+    # train_diagnose(**gpt_3_model)
 
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
+    # TODO: test debug mode
+    train(
+        debug=False,
+        max_steps=12,
+        resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
+    )
+    # random_max_steps_12_ecf16_run_9.json, demo only, val 0.6 to 0.68,  test: 0.58-0.61
+    # random_max_steps_12_7c091_run_1.json,  prompt + demo, 0.58 -0.62, test: 0.55 - 0.58
+    # resume from random_max_steps_12_7c091_run_1.json

@@ -706,9 +706,8 @@ class AdalComponent(Component):
                 continue
             parameters.append(param)
         if not parameters:
-            raise ValueError(
-                "No text parameters found. Please define a demo parameter for your generator."
-            )
+            return []
+
         to = TGDOptimizer(
             params=parameters, model_client=model_client, model_kwargs=model_kwargs
         )
