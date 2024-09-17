@@ -20,6 +20,7 @@ from adalflow.optim.types import ParameterType
 log = logging.getLogger(__name__)
 
 
+# TODO: tracing retriever in the diagnose files using callback manager
 class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType]):
     __doc__ = r"""The base class for all retrievers.
 
@@ -103,7 +104,10 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
         ] = None,  # TODO: top_k can be trained in the future if its formulated as a parameter
         **kwargs,
     ) -> Parameter:
-        r"""Training mode which will deal with parameter as predecessors"""
+        r"""Customized forward on top of the GradComponent forward method.
+
+        To track the input as Parameters and set the parameter type as RETRIEVER_OUTPUT in the response.
+        """
         # convert input to parameter if it is not
         if not isinstance(input, Parameter):
             input = Parameter(
@@ -134,30 +138,3 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
         r"""Backward the response to pass the score to predecessors"""
         log.info(f"Retriever backward: {response}")
         pass
-        # children_params = response.predecessors
-        # if not self.tracing:
-        #     return
-        # backward score to the demo parameter
-        # TODO: this is not necessary as the demo optimizer will
-        # update the score in the demo tracing.
-        # for pred in children_params:
-        #     if pred.requires_opt:
-        #         # pred._score = float(response._score)
-        #         pred.set_score(response._score)
-        #         log.debug(
-        #             f"backpropagate the score {response._score} to {pred.name}, is_teacher: {self.teacher_mode}"
-        #         )
-        #         if pred.param_type == ParameterType.DEMOS:
-        #             # Accumulate the score to the demo
-        #             pred.add_score_to_trace(
-        #                 trace_id=id, score=response._score, is_teacher=self.teacher_mode
-        #             )
-        #             log.debug(f"Pred: {pred.name}, traces: {pred._traces}")
-
-    # def __call__(self, *args, **kwargs) -> Union[RetrieverOutputType, Any]:
-    #     if self.training:
-    #         log.debug("Training mode")
-    #         return self.forward(*args, **kwargs)
-    #     else:
-    #         log.debug("Inference mode")
-    #         return self.call(*args, **kwargs)
