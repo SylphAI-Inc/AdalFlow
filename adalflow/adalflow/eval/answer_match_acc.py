@@ -64,6 +64,8 @@ class AnswerMatchAcc(BaseEvaluator):
         if self.type == "exact_match":
             return 1.0 if y == y_gt else 0.0
         elif self.type == "fuzzy_match":
+            y = y.lower()
+            y_gt = y_gt.lower()
             return 1.0 if y_gt in y else 0.0
         else:
             raise NotImplementedError

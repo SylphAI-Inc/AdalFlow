@@ -1,6 +1,6 @@
 r"""The base class for all retrievers who in particular retrieve documents from a given database."""
 
-from typing import List, Optional, Generic, Any, Callable, Union, TYPE_CHECKING
+from typing import List, Optional, Generic, Any, Callable, TYPE_CHECKING, Union
 import logging
 
 from adalflow.core.types import (
@@ -14,12 +14,13 @@ from adalflow.optim.grad_component import GradComponent
 
 if TYPE_CHECKING:
     from adalflow.core.generator import Generator
-from adalflow.optim.parameter import Parameter, ParameterType
-from adalflow.optim.function import BackwardContext
+from adalflow.optim.parameter import Parameter
+from adalflow.optim.types import ParameterType
 
 log = logging.getLogger(__name__)
 
 
+# TODO: tracing retriever in the diagnose files using callback manager
 class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType]):
     __doc__ = r"""The base class for all retrievers.
 
@@ -41,6 +42,8 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
 
     indexed: bool = False
     index_keys: List[str] = []  # attributes that define the index
+    name: str = "Retriever"
+    top_k: int
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -92,46 +95,38 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
     ) -> RetrieverOutputType:
         raise NotImplementedError("Async retrieve is not implemented")
 
+    # TODO: adapt the generator to auto-track the prompt_kwargs as parameters
     def forward(
         self,
         input: Union[RetrieverQueriesType, Parameter],
         top_k: Optional[
             int
         ] = None,  # TODO: top_k can be trained in the future if its formulated as a parameter
-        id: Optional[str] = None,
         **kwargs,
     ) -> Parameter:
-        r"""Training mode which will deal with parameter as predecessors"""
-        input_args = {"input": input, "top_k": top_k, "id": id}
-        predecessors = [p for p in [input, top_k, id] if isinstance(p, Parameter)]
+        r"""Customized forward on top of the GradComponent forward method.
 
-        input_args_values = {}
-        for k, v in input_args.items():
-            if isinstance(v, Parameter):
-                input_args_values[k] = v.data
-            else:
-                input_args_values[k] = v
-
-        retriever_reponse = self.call(**input_args_values)
-
-        response = Parameter(
-            data=retriever_reponse,
-            name=self.name + "_output",
-            role_desc="Retriever response",
-            input_args=input_args,
-            full_response=retriever_reponse,
-        )
-        response.set_predecessors(predecessors)
-        response.trace_forward_pass(
-            input_args=input_args, full_response=retriever_reponse
-        )
-        response.set_grad_fn(
-            BackwardContext(
-                backward_fn=self.backward,
-                response=response,
-                id=id,
+        To track the input as Parameters and set the parameter type as RETRIEVER_OUTPUT in the response.
+        """
+        # convert input to parameter if it is not
+        if not isinstance(input, Parameter):
+            input = Parameter(
+                data=input,
+                name="input",
+                requires_opt=True,
+                param_type=ParameterType.INPUT,
             )
+        # trace the top_k in the DAG graph
+        top_k = Parameter(
+            data=top_k or self.top_k,
+            name="top_k",
+            requires_opt=True,
+            param_type=ParameterType.HYPERPARAM,
         )
+        response = super().forward(input, top_k=top_k, **kwargs)
+        response.param_type = (
+            ParameterType.RETRIEVER_OUTPUT
+        )  # be more specific about the type
         return response
 
     def backward(
@@ -142,28 +137,4 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
     ):
         r"""Backward the response to pass the score to predecessors"""
         log.info(f"Retriever backward: {response}")
-        children_params = response.predecessors
-        if not self.tracing:
-            return
-        # backward score to the demo parameter
-        for pred in children_params:
-            if pred.requires_opt:
-                # pred._score = float(response._score)
-                pred.set_score(response._score)
-                log.debug(
-                    f"backpropagate the score {response._score} to {pred.name}, is_teacher: {self.teacher_mode}"
-                )
-                if pred.param_type == ParameterType.DEMOS:
-                    # Accumulate the score to the demo
-                    pred.add_score_to_trace(
-                        trace_id=id, score=response._score, is_teacher=self.teacher_mode
-                    )
-                    log.debug(f"Pred: {pred.name}, traces: {pred._traces}")
-
-    # def __call__(self, *args, **kwargs) -> Union[RetrieverOutputType, Any]:
-    #     if self.training:
-    #         log.debug("Training mode")
-    #         return self.forward(*args, **kwargs)
-    #     else:
-    #         log.debug("Inference mode")
-    #         return self.call(*args, **kwargs)
+        pass

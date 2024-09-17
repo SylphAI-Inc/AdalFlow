@@ -26,11 +26,12 @@ log = log.getLogger(__name__)
 
 
 class AdalComponent(Component):
-    """Define a train, eval, and test step for a task pipeline.
+    __doc__ = """Define a train, eval, and test step for a task pipeline.
 
     This serves the following purposes:
-    1. Organize all parts for training a task pipeline organized in one place.
+    1. Organize all parts for training a task pipeline in one place.
     2. Help with debugging and testing before the actual training.
+    3. Adds multi-threading support for training and evaluation.
     """
 
     task: Component
@@ -705,9 +706,8 @@ class AdalComponent(Component):
                 continue
             parameters.append(param)
         if not parameters:
-            raise ValueError(
-                "No text parameters found. Please define a demo parameter for your generator."
-            )
+            return []
+
         to = TGDOptimizer(
             params=parameters, model_client=model_client, model_kwargs=model_kwargs
         )

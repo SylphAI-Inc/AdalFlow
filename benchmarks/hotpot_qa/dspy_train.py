@@ -147,7 +147,7 @@ def validate(devset, compiled_baleen, uncompiled_baleen):
 
 
 if __name__ == "__main__":
-    from lightrag.utils import setup_env
+    from adalflow.utils import setup_env
 
     setup_env()
     # Ask any question you like to this simple RAG program.
