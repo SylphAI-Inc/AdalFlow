@@ -155,7 +155,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -298,7 +298,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -459,12 +459,13 @@
 <div class="viewcode-block" id="AdalComponent">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent">[docs]</a>
 <span class="k">class</span> <span class="nc">AdalComponent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Define a train, eval, and test step for a task pipeline.</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Define a train, eval, and test step for a task pipeline.</span>
 
-<span class="sd">    This serves the following purposes:</span>
-<span class="sd">    1. Organize all parts for training a task pipeline organized in one place.</span>
-<span class="sd">    2. Help with debugging and testing before the actual training.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="s2">    This serves the following purposes:</span>
+<span class="s2">    1. Organize all parts for training a task pipeline in one place.</span>
+<span class="s2">    2. Help with debugging and testing before the actual training.</span>
+<span class="s2">    3. Adds multi-threading support for training and evaluation.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="n">task</span><span class="p">:</span> <span class="n">Component</span>
     <span class="c1"># evaluator: Optional[BaseEvaluator]</span>
@@ -1194,9 +1195,8 @@
                 <span class="k">continue</span>
             <span class="n">parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">parameters</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;No text parameters found. Please define a demo parameter for your generator.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
         <span class="n">to</span> <span class="o">=</span> <span class="n">TGDOptimizer</span><span class="p">(</span>
             <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span>
         <span class="p">)</span>

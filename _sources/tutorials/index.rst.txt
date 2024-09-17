@@ -3,7 +3,7 @@
 .. _developer_notes:
 
 
-Developer Notes
+Tutorials
 =============================
 
 .. *Why and How Each Part works*
@@ -152,6 +152,22 @@ Components work on a sequence of ``Document`` and return a sequence of ``Documen
 
 .. Let us put all of these components together to build a :doc:`rag` (Retrieval Augmented Generation), which requires data processing pipeline along with a task pipeline to run user queries.
 
+
+
+
+Putting it all together
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. list-table::
+    :widths: 20 80
+    :header-rows: 1
+
+    * - Part
+      - Description
+    * - :doc:`rag_playbook`
+      - Comprehensive RAG playbook according to the sota research and the best practices in the industry.
+
+
 .. toctree::
    :maxdepth: 1
    :caption: RAG Essentials
@@ -165,6 +181,7 @@ Components work on a sequence of ``Document`` and return a sequence of ``Documen
    retriever
    text_splitter
    db
+   rag_playbook
 
 
 
@@ -273,7 +290,7 @@ Note: Documentation is work in progress for this section.
    * - Part
      - Description
    * - :doc:`parameter_`
-     - The `Parameter` class stores the text, textual gradidents(feedback), and manage the states and applies the backpropagation in auto-diff.
+     - The `Parameter` class stores the text, textual gradidents(feedback), and managed the states and applies the backpropagation in auto-diff.
    * - :doc:`optimizer_`
      - The  `Optimizer` to define a structure and to manage `propose`, `revert`, and `step` methods. We defined two variants: `DemoOptimizer` and `TextOptimizer` to cover the prompt optimization and the few-shot optimization.
    * - :doc:`few_shot_optimizer_`

@@ -155,7 +155,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -298,7 +298,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -431,7 +431,7 @@
   <h1>Source code for core.retriever</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The base class for all retrievers who in particular retrieve documents from a given database.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
@@ -445,12 +445,13 @@
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">ParameterType</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.function</span> <span class="kn">import</span> <span class="n">BackwardContext</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.types</span> <span class="kn">import</span> <span class="n">ParameterType</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
+<span class="c1"># TODO: tracing retriever in the diagnose files using callback manager</span>
 <div class="viewcode-block" id="Retriever">
 <a class="viewcode-back" href="../../apis/core/core.retriever.html#core.retriever.Retriever">[docs]</a>
 <span class="k">class</span> <span class="nc">Retriever</span><span class="p">(</span><span class="n">GradComponent</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">RetrieverDocumentType</span><span class="p">,</span> <span class="n">RetrieverQueryType</span><span class="p">]):</span>
@@ -474,6 +475,8 @@
 
     <span class="n">indexed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">index_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># attributes that define the index</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Retriever&quot;</span>
+    <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -543,6 +546,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Async retrieve is not implemented&quot;</span><span class="p">)</span></div>
 
 
+    <span class="c1"># TODO: adapt the generator to auto-track the prompt_kwargs as parameters</span>
 <div class="viewcode-block" id="Retriever.forward">
 <a class="viewcode-back" href="../../apis/core/core.retriever.html#core.retriever.Retriever.forward">[docs]</a>
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
@@ -551,40 +555,31 @@
         <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="nb">int</span>
         <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># TODO: top_k can be trained in the future if its formulated as a parameter</span>
-        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Training mode which will deal with parameter as predecessors&quot;&quot;&quot;</span>
-        <span class="n">input_args</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">,</span> <span class="s2">&quot;top_k&quot;</span><span class="p">:</span> <span class="n">top_k</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">}</span>
-        <span class="n">predecessors</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">input</span><span class="p">,</span> <span class="n">top_k</span><span class="p">,</span> <span class="nb">id</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)]</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Customized forward on top of the GradComponent forward method.</span>
 
-        <span class="n">input_args_values</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_args</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
-                <span class="n">input_args_values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">data</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">input_args_values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-
-        <span class="n">retriever_reponse</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">**</span><span class="n">input_args_values</span><span class="p">)</span>
-
-        <span class="n">response</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">retriever_reponse</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_output&quot;</span><span class="p">,</span>
-            <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;Retriever response&quot;</span><span class="p">,</span>
-            <span class="n">input_args</span><span class="o">=</span><span class="n">input_args</span><span class="p">,</span>
-            <span class="n">full_response</span><span class="o">=</span><span class="n">retriever_reponse</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">response</span><span class="o">.</span><span class="n">set_predecessors</span><span class="p">(</span><span class="n">predecessors</span><span class="p">)</span>
-        <span class="n">response</span><span class="o">.</span><span class="n">trace_forward_pass</span><span class="p">(</span>
-            <span class="n">input_args</span><span class="o">=</span><span class="n">input_args</span><span class="p">,</span> <span class="n">full_response</span><span class="o">=</span><span class="n">retriever_reponse</span>
-        <span class="p">)</span>
-        <span class="n">response</span><span class="o">.</span><span class="n">set_grad_fn</span><span class="p">(</span>
-            <span class="n">BackwardContext</span><span class="p">(</span>
-                <span class="n">backward_fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="p">,</span>
-                <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
-                <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
+<span class="sd">        To track the input as Parameters and set the parameter type as RETRIEVER_OUTPUT in the response.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># convert input to parameter if it is not</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;input&quot;</span><span class="p">,</span>
+                <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">INPUT</span><span class="p">,</span>
             <span class="p">)</span>
+        <span class="c1"># trace the top_k in the DAG graph</span>
+        <span class="n">top_k</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">top_k</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_k</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;top_k&quot;</span><span class="p">,</span>
+            <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">HYPERPARAM</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="n">top_k</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">param_type</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">ParameterType</span><span class="o">.</span><span class="n">RETRIEVER_OUTPUT</span>
+        <span class="p">)</span>  <span class="c1"># be more specific about the type</span>
         <span class="k">return</span> <span class="n">response</span></div>
 
 
@@ -598,33 +593,9 @@
     <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Backward the response to pass the score to predecessors&quot;&quot;&quot;</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Retriever backward: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">children_params</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">predecessors</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracing</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="c1"># backward score to the demo parameter</span>
-        <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">children_params</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">pred</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
-                <span class="c1"># pred._score = float(response._score)</span>
-                <span class="n">pred</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">_score</span><span class="p">)</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;backpropagate the score </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">_score</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">pred</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, is_teacher: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">teacher_mode</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-                <span class="k">if</span> <span class="n">pred</span><span class="o">.</span><span class="n">param_type</span> <span class="o">==</span> <span class="n">ParameterType</span><span class="o">.</span><span class="n">DEMOS</span><span class="p">:</span>
-                    <span class="c1"># Accumulate the score to the demo</span>
-                    <span class="n">pred</span><span class="o">.</span><span class="n">add_score_to_trace</span><span class="p">(</span>
-                        <span class="n">trace_id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">_score</span><span class="p">,</span> <span class="n">is_teacher</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">teacher_mode</span>
-                    <span class="p">)</span>
-                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pred: </span><span class="si">{</span><span class="n">pred</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, traces: </span><span class="si">{</span><span class="n">pred</span><span class="o">.</span><span class="n">_traces</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">pass</span></div>
 </div>
 
-
-    <span class="c1"># def __call__(self, *args, **kwargs) -&gt; Union[RetrieverOutputType, Any]:</span>
-    <span class="c1">#     if self.training:</span>
-    <span class="c1">#         log.debug(&quot;Training mode&quot;)</span>
-    <span class="c1">#         return self.forward(*args, **kwargs)</span>
-    <span class="c1">#     else:</span>
-    <span class="c1">#         log.debug(&quot;Inference mode&quot;)</span>
-    <span class="c1">#         return self.call(*args, **kwargs)</span>
 </pre></div>
 
                 </article>

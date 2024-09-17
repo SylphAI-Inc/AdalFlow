@@ -155,7 +155,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -298,7 +298,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -468,30 +468,30 @@
 <div class="viewcode-block" id="Trainer">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer">[docs]</a>
 <span class="k">class</span> <span class="nc">Trainer</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;We make trainer a component to as a trainer itself is an LLM task pipeline too.</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Ready to use trainer for LLM task pipeline to optimize all types of parameters.</span>
 
 
-<span class="sd">    Training set: can be used for passing initial proposed prompt or for few-shot sampling.</span>
-<span class="sd">    Validation set: Will be used to select the final prompt or samples.</span>
-<span class="sd">    Test set: Will be used to evaluate the final prompt or samples.</span>
+<span class="s2">    Training set: can be used for passing initial proposed prompt or for few-shot sampling.</span>
+<span class="s2">    Validation set: Will be used to select the final prompt or samples.</span>
+<span class="s2">    Test set: Will be used to evaluate the final prompt or samples.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        adaltask: AdalComponent: AdalComponent instance</span>
-<span class="sd">        strategy: Literal[&quot;random&quot;, &quot;constrained&quot;]: Strategy to use for the optimizer</span>
-<span class="sd">        max_steps: int: Maximum number of steps to run the optimizer</span>
-<span class="sd">        num_workers: int: Number of workers to use for parallel processing</span>
-<span class="sd">        ckpt_path: str: Path to save the checkpoint files, default to ~/.adalflow/ckpt.</span>
-<span class="sd">        batch_val_score_threshold: Optional[float]: Threshold for skipping a batch</span>
-<span class="sd">        max_error_samples: Optional[int]: Maximum number of error samples to keep</span>
-<span class="sd">        max_correct_samples: Optional[int]: Maximum number of correct samples to keep</span>
-<span class="sd">        max_proposals_per_step: int: Maximum number of proposals to generate per step</span>
-<span class="sd">        train_loader: Any: DataLoader instance for training</span>
-<span class="sd">        train_dataset: Any: Training dataset</span>
-<span class="sd">        val_dataset: Any: Validation dataset</span>
-<span class="sd">        test_dataset: Any: Test dataset</span>
-<span class="sd">        few_shots_config: Optional[FewShotConfig]: Few shot configuration</span>
-<span class="sd">        save_traces: bool: Save traces for for synthetic data generation or debugging</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="s2">    Args:</span>
+<span class="s2">        adaltask: AdalComponent: AdalComponent instance</span>
+<span class="s2">        strategy: Literal[&quot;random&quot;, &quot;constrained&quot;]: Strategy to use for the optimizer</span>
+<span class="s2">        max_steps: int: Maximum number of steps to run the optimizer</span>
+<span class="s2">        num_workers: int: Number of workers to use for parallel processing</span>
+<span class="s2">        ckpt_path: str: Path to save the checkpoint files, default to ~/.adalflow/ckpt.</span>
+<span class="s2">        batch_val_score_threshold: Optional[float]: Threshold for skipping a batch</span>
+<span class="s2">        max_error_samples: Optional[int]: Maximum number of error samples to keep</span>
+<span class="s2">        max_correct_samples: Optional[int]: Maximum number of correct samples to keep</span>
+<span class="s2">        max_proposals_per_step: int: Maximum number of proposals to generate per step</span>
+<span class="s2">        train_loader: Any: DataLoader instance for training</span>
+<span class="s2">        train_dataset: Any: Training dataset</span>
+<span class="s2">        val_dataset: Any: Validation dataset</span>
+<span class="s2">        test_dataset: Any: Test dataset</span>
+<span class="s2">        few_shots_config: Optional[FewShotConfig]: Few shot configuration</span>
+<span class="s2">        save_traces: bool: Save traces for for synthetic data generation or debugging</span>
+<span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="n">adaltask</span><span class="p">:</span> <span class="n">AdalComponent</span>  <span class="c1"># task pipeline</span>
     <span class="n">train_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
@@ -678,6 +678,7 @@
             <span class="p">}</span>
             <span class="n">save_json</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log_dir</span><span class="p">,</span> <span class="s2">&quot;stats.json&quot;</span><span class="p">))</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total error samples: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">diagnose_items</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved diagnose to </span><span class="si">{</span><span class="n">diagnose_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">acc_score</span><span class="p">,</span> <span class="n">acc_per_item_scores</span><span class="p">,</span> <span class="n">log_paths</span></div>
 
@@ -777,7 +778,6 @@
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">configure_teacher_generator</span><span class="p">()</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Configured demo optimizers&quot;</span><span class="p">)</span>
-            <span class="c1"># return</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No trainable demo params to optimize&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span> <span class="o">=</span> <span class="p">[]</span>

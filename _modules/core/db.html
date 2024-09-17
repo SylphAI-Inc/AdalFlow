@@ -155,7 +155,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -298,7 +298,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -456,7 +456,7 @@
 <a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">LocalDB</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Component</span><span class="p">):</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;LocalDB with in-memory CRUD operations, data transformation/processing pipelines, and persistence.</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;LocalDB with in-memory CRUD operations, data transformation/processing pipelines, and persistence.</span>
 
 <span class="s2">    LocalDB is highly flexible.</span>
 <span class="s2">    1. It can store any type of data items in the `items` attribute.</span>
@@ -562,10 +562,7 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transformed_items</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
 
-    <span class="c1"># def get_transformed_data(self, key: str) -&gt; List[U]:</span>
-    <span class="c1">#     &quot;&quot;&quot;Get the transformed items by key.&quot;&quot;&quot;</span>
-    <span class="c1">#     return self.transformed_items[key]</span>
-
+    <span class="c1"># TODO: combine this to fetch_transformed_items</span>
 <div class="viewcode-block" id="LocalDB.get_transformed_data">
 <a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.get_transformed_data">[docs]</a>
     <span class="k">def</span> <span class="nf">get_transformed_data</span><span class="p">(</span>

@@ -24,3 +24,8 @@ base_data_class
       DataClassFormatType
       DynamicDataClassFactory
 
+   .. rubric:: Constants
+
+   .. autodata:: core.base_data_class.ExcludeType
+   .. autodata:: core.base_data_class.IncludeType
+

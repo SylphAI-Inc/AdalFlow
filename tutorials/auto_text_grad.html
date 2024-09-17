@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Auto Text-Diff &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+    <title>Auto Text-Grad &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
   
   
   
@@ -156,7 +156,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -303,7 +303,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -413,7 +413,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Auto Text-Diff</li>
+    <li class="breadcrumb-item active" aria-current="page">Auto Text-Grad</li>
   </ul>
 </nav>
 </div>
@@ -430,27 +430,131 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="auto-text-diff">
-<h1>Auto Text-Diff<a class="headerlink" href="#auto-text-diff" title="Link to this heading">#</a></h1>
+  <section id="auto-text-grad">
+<h1>Auto Text-Grad<a class="headerlink" href="#auto-text-grad" title="Link to this heading">#</a></h1>
 <p>Show a DAG with parameter nodes and edges.</p>
+<p>To make a task pipeline trainable.</p>
+<p>Auto text grad system is similr to pytorch autograd. Here are how we also differs:</p>
+<p>1. Torch.Tensor &amp; Torch.Parameter vs AdalFlow.Parameter : AdalFlow.Tensor can save any type of data and Tensor is mainly numerical array and matrices.
+This means that the backward is not the gradient function from the math operations applied on the tensor, but customized towards the operators.
+The operators here are components like Generator, Retriever, Loss function, etc.
+We have defined the backward function for the generator which genreates the textual feedback for Parameter of prompt type.
+For Retriever, right now, it does not have its parameter types that we optimize but it can very much change and be improved in the future.</p>
+<p>In adalflow, we use the parameter types to differentiate instead of separately create a Tensor and its subclass Parameter.
+We have the follow parameter type:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>trainable parameters to generator</dt><dd><p>prompt
+demos</p>
+</dd>
+</dl>
+</li>
+<li><p>intermediate parameters
+- input to the component
+- output from the component</p></li>
+<li><p>gradient</p></li>
+</ul>
+<p>To be able to pass parameters around to the whole pipeline.</p>
+<p>Torch.no_grad() vs AdalFlow.GradComponent.</p>
+<p>Torch.no_grad() is a context manager that disables gradient calculation.
+(1) It stops tracking the operations that are performed to build the computation-graph. In AdalFlow, we use Adal.Component call or the subclass adal.GradComponent
+(2) Save and handles intermediate values(eg. activations, inputs) needed for the backward pass.
+(3) Stores the computation graph for later backpropagation.</p>
+<p>In pytorch you do this for inference:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>  <span class="c1"># Set model to evaluation mode</span>
+
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>  <span class="c1"># Disable gradient tracking</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>  <span class="c1"># Forward pass only</span>
+</pre></div>
+</div>
+<p>In AdalFlow, you do this for inference:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">adalflow</span> <span class="k">as</span> <span class="nn">adal</span>
+
+<span class="n">task_pipeline</span> <span class="o">=</span> <span class="n">MyTaskPipeline</span><span class="p">()</span>
+<span class="n">task_pipeline</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>  <span class="c1"># Set model to evaluation mode</span>
+<span class="n">task_pipeline</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>  <span class="c1"># similar to torch.no_grad() or</span>
+<span class="c1"># task_pipeline.call(input_data)  # Forward pass only</span>
+<span class="c1"># task_pipeline.acall(input_data)  # Forward pass only</span>
+</pre></div>
+</div>
+<p>Just like pytorch has tensor and parameter, which are a special type of tensor, the gradcomponent is a special type of component capable of auto-text-grad.</p>
+<p><strong>How to connect the output-input between components?</strong></p>
+<p>In pytorch, this is a earsier problem as they are all matrices within tensors.
+But in LLM applications, (1) each component’s output can be very different in terms of form.
+For generator we have <code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code> and for retriever, we have <code class="docutils literal notranslate"><span class="pre">List[RetrieverOutput]</span></code>
+. To connect retriever output to generator output, we need special handling of the <cite>(”nn”.join(ro.[0].documents)</cite> .
+For langgraph, this is done inside of each manually defined node. And the whole pipeline uses GraphState (global accessible) to the whole graph to access and to store the data.
+(2) we need robust error handling in our output structure too.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">GraphState</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+
+    <span class="n">question</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">generation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">def</span> <span class="nf">retriever_node</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">GraphState</span><span class="p">):</span>
+    <span class="n">new_documents</span> <span class="o">=</span> <span class="n">retriever</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">question</span><span class="p">)</span>
+    <span class="n">new_documents</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">page_content</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">new_documents</span><span class="p">]</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_documents</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;documents&quot;</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">documents</span><span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">generation_node</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">GraphState</span><span class="p">):</span>
+    <span class="n">generation</span> <span class="o">=</span> <span class="n">rag_chain</span><span class="o">.</span><span class="n">invoke</span><span class="p">({</span>
+        <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">documents</span><span class="p">),</span>
+        <span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">question</span><span class="p">,</span>
+    <span class="p">})</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;generation&quot;</span><span class="p">:</span> <span class="n">generation</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>When we are doing training, both outputs are parameters, but the way to connect data is the same.
+We use a successor_map_fn of type <cite>Dict[str, Callable]</cite> to connect the output of one component to the input of another component.
+str will be <cite>id(successor)</cite>. This is only needed in the forward function of any Component or GradComponent.</p>
+<p>Here is our example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">:</span>
+    <span class="n">retriever_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retriever</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">question</span><span class="p">)</span>
+    <span class="n">successor_map_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span>
+        <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">documents</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">documents</span>
+        <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">)</span>
+    <span class="n">retriever_out</span><span class="o">.</span><span class="n">add_successor_map_fn</span><span class="p">(</span><span class="n">successor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="p">,</span> <span class="n">map_fn</span><span class="o">=</span><span class="n">successor_map_fn</span><span class="p">)</span>
+    <span class="n">generator_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span>
+        <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">question</span><span class="p">,</span> <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="n">retriever_out</span><span class="p">},</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">generator_out</span>
+</pre></div>
+</div>
+<p>#TODO: save the trace_graph
+And here is our trace_graph:</p>
 <section id="textual-gradient-operators">
 <h2>Textual Gradient Operators<a class="headerlink" href="#textual-gradient-operators" title="Link to this heading">#</a></h2>
 <p>“Textual gradient Operators” are the operators that are capable of backpropagation, this including operator for LLM calls, for evaluate function, and for llm as a judge function.
 Think of the LLM calls as model layer in pytorch, such as nn.Linear, nn.Conv2d, or transformer layers.
 Think of the evaluation function (normally you have gt) and LLM as judge (normall you have no gt reference but you rely on llm to give an evaluation score) as
-a loss function in pytorch, such as nn.CrossEntropyLoss, nn.MSELoss, or nn.BCELoss.
-These operators need to be capable of backpropagation to get “feedback”/”gradients” for the auto-diff optimizer.
-We introduce <code class="docutils literal notranslate"><span class="pre">GradFunction</span></code> class which consists of two must-have abstract methods: <code class="docutils literal notranslate"><span class="pre">forward</span></code> and <code class="docutils literal notranslate"><span class="pre">backward</span></code>.</p>
+a loss function in pytorch, such as nn.CrossEntropyLoss, nn.MSELoss, or nn.BCELoss.</p>
+<p>These operators need to be capable of backpropagation to get “feedback”/”gradients” for the auto-diff optimizer.
+We introduce <code class="docutils literal notranslate"><span class="pre">GradComponent</span></code> class which consists of two must-have abstract methods: <code class="docutils literal notranslate"><span class="pre">forward</span></code> and <code class="docutils literal notranslate"><span class="pre">backward</span></code>.
+<code class="docutils literal notranslate"><span class="pre">GradComponent</span></code> has default <code class="docutils literal notranslate"><span class="pre">forward</span></code> that wraps a normal function call inside of the <code class="docutils literal notranslate"><span class="pre">forward</span></code> method to return a Parameter and builds the computation graph.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">forward</span></code>: The forward pass of the operator. It will return a <cite>Prameter</cite> with the backward function set to the backward function of the operator.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">backward</span></code>: The backward pass of the operator. It will compute the response’s predecessor’s gradient with regard to the response. (The <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> object returned by the <code class="docutils literal notranslate"><span class="pre">forward</span></code> method)</p></li>
 </ul>
 <p>We currently have the following operators:
-- <code class="docutils literal notranslate"><span class="pre">Generator</span></code> is adapted as a <code class="docutils literal notranslate"><span class="pre">GradFunction</span></code>.</p>
+- <code class="docutils literal notranslate"><span class="pre">Generator</span></code> is adapted as a <code class="docutils literal notranslate"><span class="pre">GradComponent</span></code>.
+.. TODO:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>remove the __call__ and call method, use only forward and backward to simplify the understanding</p></li>
+<li><p>forward will be able to track the predecessors to form a DAG of parameters, this will always be helpful.</p></li>
+<li><p># a forward will</p></li>
+</ul>
+</div></blockquote>
 <section id="generator-adaptation">
 <h3>Generator Adaptation<a class="headerlink" href="#generator-adaptation" title="Link to this heading">#</a></h3>
 <p>In auto-text grad, generator needs to be adapted as an operator that supports backpropagation to get “feedback”/”gradients” for the auto-diff optimizer.
-So, it inherits from <code class="docutils literal notranslate"><span class="pre">GradFunction</span></code> class, adding <code class="docutils literal notranslate"><span class="pre">forward</span></code>, <code class="docutils literal notranslate"><span class="pre">backward</span></code> and <code class="docutils literal notranslate"><span class="pre">set_backward_engine</span></code> methods.</p>
+So, it inherits from <code class="docutils literal notranslate"><span class="pre">GradComponent</span></code> class, adding <code class="docutils literal notranslate"><span class="pre">forward</span></code>, <code class="docutils literal notranslate"><span class="pre">backward</span></code> and <code class="docutils literal notranslate"><span class="pre">set_backward_engine</span></code> methods.</p>
 <p>Note:</p>
 <blockquote>
 <div><p>(1) When in forward mode, we need to parse the <code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code> to <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> object. Often we can use <code class="docutils literal notranslate"><span class="pre">data</span></code> to be <code class="docutils literal notranslate"><span class="pre">data</span></code> of the <code class="docutils literal notranslate"><span class="pre">Parameter</span></code>.
@@ -459,6 +563,29 @@ But if the generator is structured output, we might need to do a data map.</p>
 Here is one failure example: <cite>data=Error: None, Raw response: Sure, I’m ready to help. What’s the reasoning question?</cite>.</p>
 </div></blockquote>
 </section>
+<section id="retriever-adaptation">
+<h3>Retriever Adaptation<a class="headerlink" href="#retriever-adaptation" title="Link to this heading">#</a></h3>
+<p>For now, we dont set up persistent parameters for retriever, the role of the retriever is to relay  any intermediate parameters back to its predecessors if they happen to be a generator.
+The backward function for now has no effect, but it is a placeholder for future implementation.</p>
+<p>For demo optimizer, it does not need the whole pipeline to be propogatable, which means it can be a
+DAG of parameters. And the later is the condition to do text-grad for any generator in a task pipeline.
+..</p>
+<blockquote>
+<div><p>TODO: if we set the top_k as a parameter (hyperparameter along with the data type int)
+text_grad can be used to optimize the hyperparametr to replace the human intelligence.
+will it work better than hyperparameter sweep? This is a future research project.</p>
+</div></blockquote>
+</section>
+</section>
+<section id="to-optimize-any-task-pipeline">
+<h2>To optimize any task pipeline<a class="headerlink" href="#to-optimize-any-task-pipeline" title="Link to this heading">#</a></h2>
+<p>For generators: prompt_kwargs are the leaf nodes to optimize.
+It takes [str, Parameter] as value.</p>
+<p>GradComponent handles the predecessors which form a DAG of parameters.
+So all arguments in the input_args if they are of type parameters, they are all predecessors.</p>
+<p>A user subclass GradComponent will automatically make the component trainable (at least for the default behaviors).
+Just like in pytorch, if you subclass nn.Module, you can use the model to train.</p>
+<p>Question: there might no need to have the concept of Component, so we have simplier library apis and one less abstract layer.</p>
 <section id="evalfunction-as-loss">
 <h3>EvalFunction As Loss<a class="headerlink" href="#evalfunction-as-loss" title="Link to this heading">#</a></h3>
 <p><strong>Gradient engine template</strong></p>
@@ -510,6 +637,10 @@ There is no need for improvement as the generator’s output was correct.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#textual-gradient-operators">Textual Gradient Operators</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generator-adaptation">Generator Adaptation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-adaptation">Retriever Adaptation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#to-optimize-any-task-pipeline">To optimize any task pipeline</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evalfunction-as-loss">EvalFunction As Loss</a></li>
 </ul>
 </li>

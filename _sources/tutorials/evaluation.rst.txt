@@ -197,6 +197,15 @@ Labeling, such as creating a reference text, can be quite challenging in many NL
 LLM as Judge
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+    Just as how LLM has made the AI tasks easier, it has made the evaluation of AI tasks easier too.
+
+The real power of using LLM as judge is:
+
+1. its **adaptatibility** compared with all the above metrics, it can be adapted to any task out of the box.
+2. its **flexibility** and **robustness** at measuring. For many NLG tasks, there can only have multiple references or even countless correct reponses. Using traditional metrics can be very limiting.
+
+3. **Less training data**. Align an LLM judge to your task using (question, ground truth, generated text, gt_score) tuples takes less data than finetune a model like BERTScore.
+
 Evaluating an LLM application using an LLM as a judge is similar to building an LLM task pipeline.
 Developers need to understand the underlying prompt used by the LLM judge to determine whether the default judge is sufficient or if customization is required.
 
@@ -544,6 +553,7 @@ There is one new way is to indirectly use the ground truth answers from the gene
 
     Recall = [GT statements that can be attributed to the retrieved context] / [GT statements]
 
+There is also **Context Relevance** and **Context Precision** metrics in RAGAS.
 
 LLM or model based judge for Retriever Recall
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -576,6 +586,10 @@ RAGEVal [21]_ proposed a framework to synthesize vertical domain evaluation data
 See the evaluation on datasets at :doc:`Evaluating a RAG Pipeline <../tutorials/eval_a_rag>`.
 
 Additionally, there are more research for RAG evaluation, such as SemScore [13]_, ARES [14]_, RGB [15]_, etc.
+
+.. note::
+
+    GovTech Singapore provides a well-explained evaluation guideline [22]_ that aligns with our guideline but with more thereotical explanation on some metrics.
 
 
 For Contributors
@@ -614,6 +628,7 @@ References
 .. [19] Liu, Yang, et al. "Datasets for large language models: A comprehensive survey." arXiv preprint arXiv:2402.18041 (2024).
 .. [20] ROUGE Deep dive: https://medium.com/nlplanet/two-minutes-nlp-learn-the-rouge-metric-by-examples-f179cc285499
 .. [21] Zhu, Kunlun, et al. "RAGEval: Scenario Specific RAG Evaluation Dataset Generation Framework." arXiv preprint arXiv:2408.01262 (2024).
+.. [22] https://playbooks.capdev.govtext.gov.sg/evaluation/
 
 .. admonition:: AdalFlow Eval API Reference
    :class: highlight
@@ -632,3 +647,4 @@ References
    - `Hugging Face Metrics <https://huggingface.co/metrics>`_
    - `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_
    - `G-eval <https://arxiv.org/abs/2303.08774>`_
+   - `Sklearn <https://scikit-learn.org/stable/modules/model_evaluation.html>`_

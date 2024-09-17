@@ -158,7 +158,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -303,7 +303,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -439,10 +439,6 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.data_components.html">data_components</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.text_splitter.html">text_splitter</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.reasoning.html">reasoning</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.memory.html">memory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -612,6 +608,26 @@
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="optim.types.ParameterType.INPUT">
+<span class="sig-name descname"><span class="pre">INPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'input'</span></em><a class="headerlink" href="#optim.types.ParameterType.INPUT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.types.ParameterType.OUTPUT">
+<span class="sig-name descname"><span class="pre">OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'output'</span></em><a class="headerlink" href="#optim.types.ParameterType.OUTPUT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.types.ParameterType.HYPERPARAM">
+<span class="sig-name descname"><span class="pre">HYPERPARAM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'hyperparam'</span></em><a class="headerlink" href="#optim.types.ParameterType.HYPERPARAM" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.types.ParameterType.GRADIENT">
+<span class="sig-name descname"><span class="pre">GRADIENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gradient'</span></em><a class="headerlink" href="#optim.types.ParameterType.GRADIENT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="optim.types.ParameterType.GENERATOR_OUTPUT">
 <span class="sig-name descname"><span class="pre">GENERATOR_OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'generator_output'</span></em><a class="headerlink" href="#optim.types.ParameterType.GENERATOR_OUTPUT" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
@@ -629,11 +645,6 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="optim.types.ParameterType.SUM_OUTPUT">
 <span class="sig-name descname"><span class="pre">SUM_OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sum'</span></em><a class="headerlink" href="#optim.types.ParameterType.SUM_OUTPUT" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.ParameterType.GRADIENT">
-<span class="sig-name descname"><span class="pre">GRADIENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gradient'</span></em><a class="headerlink" href="#optim.types.ParameterType.GRADIENT" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -846,11 +857,14 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.types.ParameterType"><code class="docutils literal notranslate"><span class="pre">ParameterType</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.types.ParameterType.PROMPT"><code class="docutils literal notranslate"><span class="pre">ParameterType.PROMPT</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.types.ParameterType.DEMOS"><code class="docutils literal notranslate"><span class="pre">ParameterType.DEMOS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.types.ParameterType.INPUT"><code class="docutils literal notranslate"><span class="pre">ParameterType.INPUT</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.types.ParameterType.OUTPUT"><code class="docutils literal notranslate"><span class="pre">ParameterType.OUTPUT</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.types.ParameterType.HYPERPARAM"><code class="docutils literal notranslate"><span class="pre">ParameterType.HYPERPARAM</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.types.ParameterType.GRADIENT"><code class="docutils literal notranslate"><span class="pre">ParameterType.GRADIENT</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.types.ParameterType.GENERATOR_OUTPUT"><code class="docutils literal notranslate"><span class="pre">ParameterType.GENERATOR_OUTPUT</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.types.ParameterType.RETRIEVER_OUTPUT"><code class="docutils literal notranslate"><span class="pre">ParameterType.RETRIEVER_OUTPUT</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.types.ParameterType.LOSS_OUTPUT"><code class="docutils literal notranslate"><span class="pre">ParameterType.LOSS_OUTPUT</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.types.ParameterType.SUM_OUTPUT"><code class="docutils literal notranslate"><span class="pre">ParameterType.SUM_OUTPUT</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.types.ParameterType.GRADIENT"><code class="docutils literal notranslate"><span class="pre">ParameterType.GRADIENT</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.types.ParameterType.NONE"><code class="docutils literal notranslate"><span class="pre">ParameterType.NONE</span></code></a></li>
 </ul>
 </li>

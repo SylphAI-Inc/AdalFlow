@@ -158,7 +158,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -303,7 +303,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -439,10 +439,6 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.data_components.html">data_components</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.text_splitter.html">text_splitter</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.reasoning.html">reasoning</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.memory.html">memory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -589,7 +585,7 @@
 <p>Compared with <cite>Component</cite>, <cite>GradComponent</cite> defines three important interfaces:
 - <cite>forward</cite>: the forward pass of the function, returns a <cite>Parameter</cite> object that can be traced and backpropagated.
 - <cite>backward</cite>: the backward pass of the function, updates the gradients/prediction score backpropagated from a “loss” parameter.
-- <cite>set_backward_engine</cite>: set the backward engine(a form of generator) to the component, which is used to backpropagate the gradients.</p>
+- <cite>set_backward_engine</cite>: set the backward engine(a form of generator) to the component, which is used to backpropagate the gradients using LLM.</p>
 <p>The __call__ method will check if the component is in training mode,
 and call the <cite>forward</cite> method to return a <cite>Parameter</cite> object if it is in training mode,
 otherwise, it will call the <cite>call</cite> method to return the output such as “GeneratorOutput”, “RetrieverOutput”, etc.</p>
@@ -609,9 +605,20 @@ otherwise, it will call the <cite>call</cite> method to return the output such a
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="optim.grad_component.GradComponent.acall">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/grad_component.html#GradComponent.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.grad_component.GradComponent.acall" title="Link to this definition">#</a></dt>
+<dd><p>Implement this for your async call.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="optim.grad_component.GradComponent.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a></span></span><a class="reference internal" href="../../_modules/optim/grad_component.html#GradComponent.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.grad_component.GradComponent.forward" title="Link to this definition">#</a></dt>
-<dd><p>Default just wraps the call method.</p>
+<dd><p>Default forward method for training:
+1. for all args and kwargs, if it is a <cite>Parameter</cite> object, it will be tracked as <cite>Predecessor</cite>.
+2. Trace input_args and full_response in the parameter object.
+3. Return the parameter object.</p>
+<p>TODO: all Gradcomponent should not allow args but only kwargs.
+For now, just check if id is in kwargs.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -673,6 +680,7 @@ otherwise, it will call the <cite>call</cite> method to return the output such a
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.grad_component.GradComponent.backward_engine"><code class="docutils literal notranslate"><span class="pre">GradComponent.backward_engine</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.grad_component.GradComponent.set_backward_engine"><code class="docutils literal notranslate"><span class="pre">GradComponent.set_backward_engine()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.grad_component.GradComponent.call"><code class="docutils literal notranslate"><span class="pre">GradComponent.call()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.grad_component.GradComponent.acall"><code class="docutils literal notranslate"><span class="pre">GradComponent.acall()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.grad_component.GradComponent.forward"><code class="docutils literal notranslate"><span class="pre">GradComponent.forward()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.grad_component.GradComponent.backward"><code class="docutils literal notranslate"><span class="pre">GradComponent.backward()</span></code></a></li>
 </ul>

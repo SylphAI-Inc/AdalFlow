@@ -155,7 +155,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -298,7 +298,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -499,6 +499,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;exact_match&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">y_gt</span> <span class="k">else</span> <span class="mf">0.0</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;fuzzy_match&quot;</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">y_gt</span> <span class="o">=</span> <span class="n">y_gt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
             <span class="k">return</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">y_gt</span> <span class="ow">in</span> <span class="n">y</span> <span class="k">else</span> <span class="mf">0.0</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>

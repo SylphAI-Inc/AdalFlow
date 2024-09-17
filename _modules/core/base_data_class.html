@@ -155,7 +155,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -298,7 +298,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -458,7 +458,15 @@
     <span class="n">represent_ordereddict</span><span class="p">,</span>
 <span class="p">)</span>
 
-
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;DataClass&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DataClassFormatType&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;required_field&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ExcludeType&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;IncludeType&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;check_adal_dataclass&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DynamicDataClassFactory&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
@@ -564,7 +572,8 @@
 <span class="s2">    Overall, we have a unified class method :meth:`format_str` to generate formatted output based on the type of operation and class/instance context.</span>
 
 <span class="s2">    note::</span>
-<span class="s2">        You do not need to use our format, overwrite any method in the subclass to fit in your needs.</span>
+<span class="s2">        1. Avoid using Optional[Type] for the type of fields, as dataclass already distingushes between optional and required fields using default value.</span>
+<span class="s2">        2. If you need to customize, you can subclass and overwrite any method to fit your needs.</span>
 
 <span class="s2">    Loading data:</span>
 
@@ -615,8 +624,8 @@
 <span class="s2">        # name: John Doe</span>
 
 <span class="s2">    &quot;&quot;&quot;</span>
-    <span class="n">__input_fields__</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">__output_fields__</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">__input_fields__</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">__output_fields__</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -1192,9 +1201,6 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported format type: </span><span class="si">{</span><span class="n">format_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 </div>
 
-
-    <span class="c1"># TODO:support Generic[Type[T]] for the type of fields</span>
-    <span class="c1"># it will automatically use __type_var_map__ attribute</span>
 
 
 <div class="viewcode-block" id="check_adal_dataclass">

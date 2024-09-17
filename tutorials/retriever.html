@@ -158,7 +158,7 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -303,7 +303,7 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -407,6 +407,7 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -460,7 +461,7 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer Notes</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
     
     <li class="breadcrumb-item active" aria-current="page">Retriever</li>
   </ul>
@@ -625,12 +626,8 @@ As an example, <a class="reference internal" href="../apis/components/components
 </div>
 </section>
 </section>
-<section id="retriever-in-action">
-<h2>Retriever in Action<a class="headerlink" href="#retriever-in-action" title="Link to this heading">#</a></h2>
-<p>All of our retrievers are  subclassed from the base retriever, and they are located in the <code class="docutils literal notranslate"><span class="pre">components.retriever</span></code> module.
-You can skim through their implementations here: <a class="reference internal" href="../apis/components/components.retriever.html#components-retriever"><span class="std std-ref">retriever</span></a>.
-Currently only <code class="xref py py-class docutils literal notranslate"><span class="pre">BM25Retriever</span></code> needs to have its own <code class="docutils literal notranslate"><span class="pre">save_to_file</span></code> and <code class="docutils literal notranslate"><span class="pre">load_from_file</span></code> to avoid recomputation again.
-The <code class="docutils literal notranslate"><span class="pre">FAISSRetriever</span></code> will work with a database instead to store the embeddings and it alleviates the need for the retriever to deal with states saving.</p>
+<section id="experiment-data">
+<h2>Experiment data<a class="headerlink" href="#experiment-data" title="Link to this heading">#</a></h2>
 <p>In this note, we will use the following documents and queries for demonstration:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query_1</span> <span class="o">=</span> <span class="s2">&quot;What are the benefits of renewable energy?&quot;</span> <span class="c1"># gt is [0, 3]</span>
 <span class="n">query_2</span> <span class="o">=</span> <span class="s2">&quot;How do solar panels impact the environment?&quot;</span> <span class="c1"># gt is [1, 2]</span>
@@ -656,6 +653,37 @@ The <code class="docutils literal notranslate"><span class="pre">FAISSRetriever<
 </pre></div>
 </div>
 <p>The first query should retrieve the first and the last document, and the second query should retrieve the second and the third document.</p>
+</section>
+<section id="documents-filtering">
+<h2>Documents filtering<a class="headerlink" href="#documents-filtering" title="Link to this heading">#</a></h2>
+<p>Before using more advanced retrieval methods, it is common to filter the documents first.
+Document filtering is dependent on your data storage, whether it is in memory, local disk, or cloud database.
+For the cloud database, it is highly dependent on the database’s search and filter methods. And SQL-based search is common, scalable, and efficient.</p>
+<p>If you are using <cite>LocalDB</cite> and <cite>Document</cite> as the data item, you can use the <cite>filter</cite> method to filter the documents.</p>
+<p>Before you pass the documents or processed document chunks and embeddings to the retriever, you can filter the documents first.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.db</span> <span class="kn">import</span> <span class="n">LocalDB</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">LocalDB</span><span class="p">()</span>
+<span class="n">db</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+<span class="c1"># Add the documents to the database</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="o">**</span><span class="n">doc</span><span class="p">))</span>
+
+<span class="c1"># Filter the documents</span>
+<span class="n">filtered_documents</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Document</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Solar Panels&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">filtered_documents</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="retriever-in-action">
+<h2>Retriever in Action<a class="headerlink" href="#retriever-in-action" title="Link to this heading">#</a></h2>
+<p>All of our retrievers are  subclassed from the base retriever, and they are located in the <code class="docutils literal notranslate"><span class="pre">components.retriever</span></code> module.
+You can skim through their implementations here: <a class="reference internal" href="../apis/components/components.retriever.html#components-retriever"><span class="std std-ref">retriever</span></a>.
+Currently only <code class="xref py py-class docutils literal notranslate"><span class="pre">BM25Retriever</span></code> needs to have its own <code class="docutils literal notranslate"><span class="pre">save_to_file</span></code> and <code class="docutils literal notranslate"><span class="pre">load_from_file</span></code> to avoid recomputation again.
+The <code class="docutils literal notranslate"><span class="pre">FAISSRetriever</span></code> will work with a database instead to store the embeddings and it alleviates the need for the retriever to deal with states saving.</p>
 <section id="faissretriever">
 <h3>FAISSRetriever<a class="headerlink" href="#faissretriever" title="Link to this heading">#</a></h3>
 <p>First, let’s do semantic search, here we will use in-memory <a class="reference internal" href="../apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever" title="components.retriever.faiss_retriever.FAISSRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">FAISSRetriever</span></code></a>.
@@ -1134,6 +1162,8 @@ Additionally, <code class="docutils literal notranslate"><span class="pre">Local
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-base-class">Retriever Base Class</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#experiment-data">Experiment data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documents-filtering">Documents filtering</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-in-action">Retriever in Action</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#faissretriever">FAISSRetriever</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bm25retriever">BM25Retriever</a></li>

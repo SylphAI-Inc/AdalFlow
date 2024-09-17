@@ -158,7 +158,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -303,7 +303,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -439,10 +439,6 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.data_components.html">data_components</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.text_splitter.html">text_splitter</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.reasoning.html">reasoning</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.memory.html">memory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -619,7 +615,8 @@ it enables any LLM prediction with required task output format.
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output. And we encourage you to only use it to parse the response to data format you will use later.</p>
+<p>The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output.
+And we encourage you to only use it to parse the response to data format you will use later.</p>
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.generator.Generator.model_type">
@@ -685,7 +682,10 @@ for optimizers and other components.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="core.generator.Generator.create_demo_data_instance">
 <span class="sig-name descname"><span class="pre">create_demo_data_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeneratorOutput</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/generator.html#Generator.create_demo_data_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.create_demo_data_instance" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Automatically create a demo data instance from the input and output of the generator.
+Used to trace the demos for the demo paramter in the prompt_kwargs.
+Part of the few-shot learning.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.generator.Generator.set_backward_engine">
@@ -710,7 +710,12 @@ for optimizers and other components.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="core.generator.Generator.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Parameter</span></span></span><a class="reference internal" href="../../_modules/core/generator.html#Generator.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.forward" title="Link to this definition">#</a></dt>
-<dd><p>Default just wraps the call method.</p>
+<dd><p>Default forward method for training:
+1. for all args and kwargs, if it is a <cite>Parameter</cite> object, it will be tracked as <cite>Predecessor</cite>.
+2. Trace input_args and full_response in the parameter object.
+3. Return the parameter object.</p>
+<p>TODO: all Gradcomponent should not allow args but only kwargs.
+For now, just check if id is in kwargs.</p>
 </dd></dl>
 
 <dl class="py method">

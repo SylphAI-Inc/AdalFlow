@@ -156,7 +156,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -303,7 +303,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -432,15 +432,30 @@
                   
   <section id="parameter">
 <span id="id1"></span><h1>Parameter<a class="headerlink" href="#parameter" title="Link to this heading">#</a></h1>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/tensor_parameter.png"><img alt="AdalFlow Tensor and Parameter" src="../_images/tensor_parameter.png" style="width: 620px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">AdalFlow Tensor and Parameter</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Designing an auto-diff system for LLM task pipeline is actually quite challenging.
+First we made effort to make everything a component and it made the interactions between each components easier and more transparent at visualization.
+But every component takes in any type of data as input, just as in pytorch, input to compute in the auto-diff needs to be a tensor, and trinable parameters will be Parametr (a type of mutable tensor),
+this can be applied to the LLM task pipeline as well.
+LLM task pipeline and in-context learning will add new trainable parameters such as few-shot demos and instruction tuning.</p>
 <p>There are two types of parameters:</p>
 <ul class="simple">
-<li><p>once-off, such as loss, y_pred, intermedia response where each run it will create a new one, and they are temporary and will be released after the run.</p></li>
+<li><p>once-off, such as loss, y_pred, intermediate response where each run it will create a new one, and they are temporary and will be released after the run.</p></li>
 <li><dl class="simple">
 <dt>persistent, the parameters that we are optimizing, such as those with an actual type assigned <cite>param_type</cite> in the <cite>Parameter</cite> class.</dt><dd><p>For the persistent parameters, the data type will be string.</p>
 </dd>
 </dl>
 </li>
 </ul>
+<p>Each parameter has a:
+id: unique identifier
+name:</p>
 <section id="intermediate-parameters">
 <h2>Intermediate parameters<a class="headerlink" href="#intermediate-parameters" title="Link to this heading">#</a></h2>
 <p>intermediate parameters data = Componnet.call output.</p>

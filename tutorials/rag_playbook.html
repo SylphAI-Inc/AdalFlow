@@ -1,0 +1,978 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>RAG Playbook &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5422b685" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/rtd_search_config.js"></script>
+    <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/rag_playbook';</script>
+    <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Function calls" href="tool_helper.html" />
+    <link rel="prev" title="Data (Database/Pipeline)" href="db.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/adalflow-logo.png" class="logo__image only-light" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>
+    <script>document.write(`<img src="../_static/adalflow-logo.png" class="logo__image only-dark" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="lightrag_design_philosophy.html">Design Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="class_hierarchy.html">Class Hierarchy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trace_graph.html">AdalFlow Trace Graph</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Base Classes</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="component.html">Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_data_class.html">DataClass</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">RAG Essentials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output_parsers.html">Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
+<li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">RAG Playbook</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agent.html">Agent</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluating</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">RAG Playbook</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+
+   <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/use_cases/rag/build" target="_blank" style="display: flex; align-items: center;">
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+      <span style="vertical-align: middle;"> Open Source Code</span>
+   </a>
+</div><section id="rag-playbook">
+<h1>RAG Playbook<a class="headerlink" href="#rag-playbook" title="Link to this heading">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This tutorial is still a work in progress. We will continue updating and improving it.
+If you have any feedback, feel free to reach out to us in any of the following ways:
+<a class="reference external" href="https://adalflow.sylph.ai/get_started/community.html">Community</a>.</p>
+</div>
+<p>In this playbook, we will provide a comprehensive RAG playbook according the sota research and the best practices in the industry.
+The outline of the playbook is as follows:</p>
+<ul class="simple">
+<li><p>RAG Overview</p></li>
+<li><p>From First RAG Paper to the diverse RAG design architecture</p></li>
+<li><p>RAG design and tuning strategies for each component</p></li>
+</ul>
+<section id="rag-overview">
+<h2>RAG Overview<a class="headerlink" href="#rag-overview" title="Link to this heading">#</a></h2>
+<figure class="align-center" id="id33">
+<a class="reference internal image-reference" href="../_images/RAG_architecture.png"><img alt="Three ways retriever interacts with the generator" src="../_images/RAG_architecture.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Three ways retriever interacts with the generator <a class="footnote-reference brackets" href="#id19" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>.</span><a class="headerlink" href="#id33" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Retrieval-Augmented Generation (RAG) is a paradigm that combines the strengths of retrieval to eliminate hallucination, knowledge cut-off problem of LLMs, and as a way to adapt to any doman-specific knowledge base.
+Moreover, being able to cite the source of knowledge is a big plus for the transparency and interpretability of any AI use case.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RAG_PROMPT_TEMPLATE</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;START_OF_SYSTEM_MESSAGE&gt;</span>
+<span class="s2">{{task_desc}}</span>
+<span class="s2">&lt;END_OF_SYSTEM_MESSAGE&gt;</span>
+<span class="s2">&lt;START_OF_USER&gt;</span>
+<span class="s2">{{input_str}}</span>
+<span class="s2">{{context_str}}</span>
+<span class="s2">&lt;END_OF_USER&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>Given a user query, RAG retrieves relevant passages from a large corpus and then generates a response based on the retrieved passages.
+This formulation opens up a wide range of use cases such as conversational search engine, question answering on a customized knowledge base,
+customer support, fact-checking.
+The template above shows the most commonly used format of RAG, where we pass a task description, concatenate the input string, and retrieve passages into a context string, which is then passed to an LLM model for generation.</p>
+<p>But, RAG is way more than that. Let’s dive in.</p>
+<p><strong>First RAG Papers</strong></p>
+<p>RAG was introduced in 2020 by Lewis et al. from Meta <a class="footnote-reference brackets" href="#id16" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> which is an architecture that finetunes both the query encoder (bi-encoder like most embedding models) and the generator (LLM) jointly with only final answer supervision.</p>
+<p>REALM <a class="footnote-reference brackets" href="#id22" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a> is another RAG model introduced the same year by Google not only finetunes both the retriever and the generator on the downstream tasks but also pretrained these two models jointly by randomly masking tokens in a simpled piece of text using masked langage model (MLM).</p>
+<p>The intial papers did not mention document chunking as most of the time, their text length is usally short and also fits into the context length of the embedding models.
+As both the embedding model and LLM model scales up in terms of knowledge and parameters (400M LLM model used in the paper), RAG can achieve high performance in few-shot (prompt engineering) setup without the finetune.</p>
+<p>However, the flexibility of the RAG also means that it requires careful design and tuning to achieve optimal performance.
+For each use case, we need to consider the following questions:</p>
+<ol class="arabic simple">
+<li><p>What retrieval to use? And how many stages it should be? Do we need a reranker or even LLM to help with the retrieval stages?</p></li>
+<li><p>Which cloud-database can go well with the retrieval strategy and be able to scale?</p></li>
+<li><p>How do I evaluate the performance of the RAG as a whole? And what metrics can help me understand the retrieval stage in particular so that I know it is not hurting the overall performance?</p></li>
+<li><p>Do I need query expansion or any other techniques to improve the retrieval performance? How to avoid the performance degradation due to feeding the LLM irrelevant passages?</p></li>
+<li><p>How do I optimize the RAG hyperparameters such as the number of retrieved passages, the size of the chunk, and the overlap between chunks, or even the chunking strategy?</p></li>
+<li><p>Sometimes you need to even create your own customized/finetuned embedding/retriever models. How do I do that?</p></li>
+<li><p>How do I auto-optimize the RAG pipeline with In-context learning(ICLs) with zero-shot prompting and few-shot prompting?</p></li>
+<li><p>What about finetuning? How to do it and would it be more token efficient or more effective?</p></li>
+</ol>
+</section>
+<section id="designing-rag">
+<h2>Designing RAG<a class="headerlink" href="#designing-rag" title="Link to this heading">#</a></h2>
+<figure class="align-center" id="id34">
+<a class="reference internal image-reference" href="../_images/RAG_Enhancements.png"><img alt="RAG Enhancements" src="../_images/RAG_Enhancements.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">RAG Enhancements from <a class="footnote-reference brackets" href="#id23" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>. Click to view the full image.</span><a class="headerlink" href="#id34" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>RAG Component</p></th>
+<th class="head"><p>Techniques</p></th>
+<th class="head"><p>Metrics</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Data Preparation</p></td>
+<td><ul class="simple">
+<li><p>Text preprocessing</p></li>
+<li><p>Chunking Strategy</p></li>
+</ul>
+</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Data Storage</p></td>
+<td><ul class="simple">
+<li><p>AdalFlow LocalDB</p></li>
+<li><p>Cloud Database</p></li>
+<li><p>Postgres + PgVector</p></li>
+<li><p>qdrant</p></li>
+<li><p>…</p></li>
+</ul>
+</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Embedding</p></td>
+<td><ul class="simple">
+<li><p>Embedding Fine-tuning</p></li>
+</ul>
+</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Indexing</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Retrieval</p></td>
+<td><ul class="simple">
+<li><p>Retrieval Optimization</p></li>
+<li><p>Query Enhancement</p></li>
+<li><p>Reranking</p></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li><p>HIT&#64;K</p></li>
+<li><p>MRR&#64;K</p></li>
+<li><p>MAP&#64;K</p></li>
+<li><p>NDCG&#64;K</p></li>
+<li><p>AdalFlow context recall</p></li>
+<li><p>Ragas context relevancy, precision, recall</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>Generator</p></td>
+<td><ul class="simple">
+<li><p>Manual Prompt Engineering</p></li>
+<li><p>Auto Prompt Engineering</p></li>
+<li><p>LLM Fine-tuning</p></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li><p>Ragas answer relevancy</p></li>
+<li><p>ROUGE</p></li>
+<li><p>BLEU</p></li>
+<li><p>METEOR</p></li>
+<li><p>F1 Score</p></li>
+<li><p>BERTScore</p></li>
+<li><p>AdalFlow AnswerMatchAcc</p></li>
+<li><p>AdalFlow LLM judge</p></li>
+<li><p>AdalFlow G-Eval</p></li>
+<li><p>UniEval</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>TODO: make this a table that i can put in links. so that i can link together other tutorials to form a comprehensive playbook.
+- move this in the tutorial section.</p>
+<p>For benchmarking datasets and metrics, please refer to <a class="reference internal" href="evaluation.html#tutorials-llm-evaluation"><span class="std std-ref">Evaluation Guideline</span></a>.
+Additionally, FlashRAG <a class="footnote-reference brackets" href="#id18" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> provides more references to RAG datasets and research.</p>
+<section id="data-preparation-pipeline">
+<h3>Data Preparation Pipeline<a class="headerlink" href="#data-preparation-pipeline" title="Link to this heading">#</a></h3>
+</section>
+<section id="document-retrieval-reranking">
+<h3>Document Retrieval &amp; Reranking<a class="headerlink" href="#document-retrieval-reranking" title="Link to this heading">#</a></h3>
+<p>Multi-stage retrieval from the cheapest, fastest, and least accurate to the most expensive, slowest, and most accurate is introduced in <a class="reference internal" href="retriever.html#tutorials-retriever"><span class="std std-ref">Retriever</span></a>.</p>
+</section>
+<section id="rag-optimization">
+<h3>RAG optimization<a class="headerlink" href="#rag-optimization" title="Link to this heading">#</a></h3>
+<p>We can either optimize each component separately such as retriever or the generator drawing research that was designed for each, or optimize them jointly in the context of RAG.
+Sometimes we can use an agentic approach, such as Self-RAG <a class="footnote-reference brackets" href="#id26" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></a>.</p>
+<p>#TODO: fit hydro</p>
+<p><strong>Retrieval Optimization</strong></p>
+<p>As irrelevant passages, especially those positioned on top of the context can degrade the final performance, it is important to optimize the retrieval performance in particular:
+We have the following options:</p>
+<ol class="arabic simple">
+<li><p>Hyperparmeters optimization: optimize the number of retrieved passages, the size of the chunk, and the overlap between chunks, or even the chunking strategy using retriever evaluation metrics or the final generator performance.</p></li>
+<li><p>Query expansion: improve the recall by expanding the query.</p></li>
+<li><p>Adapt the embedder with LLM supervision: adapt the embedder with LLM supervision to improve the retrieval recall and precision.</p></li>
+<li><p>Reranking: use a reranker as an additional stage to improve the retrieval accuracy.</p></li>
+<li><p>Use Retrieval Evaluator: use a retrieval evaluator to evaluate the relevance of the retrieved passages.</p></li>
+</ol>
+<p><strong>Generator Optimization</strong></p>
+<p>Ever since the first RAG papers, many LLMs with high parameters count and performance have been released.
+<strong>In-context learning (ICL) or prompt engineering</strong> has become the first choice over <strong>model finetuning</strong> to optimize the generator’s performance on any task.
+You can use any optimization methods designed to improve the reasoning ability of the generator, such as chain-of-thought, reflection, etc.</p>
+<p>When Generator is used in the context of RAG, however, we need to consider the relation between (retrieved context, query, and generated response).
+And we need to optimize the generator on:</p>
+<ol class="arabic simple">
+<li><p>How well can it use the relevant context to generate the response? Was it mislead by irrelevant passages?</p></li>
+</ol>
+<p>For generator, we have three popular options:</p>
+<ol class="arabic simple">
+<li><p>Prompt-engineering: use zero-shot or few-shot learning to optimize the generator, or improve the generator response via more test-time tokens (e.g., chain-of-thought, reflection).</p></li>
+<li><p>Finetune the generator with instruction learning</p></li>
+<li><p>Finetune the generator in particular with the format of using context.</p></li>
+</ol>
+<p>In the future, we will provide a prompt engineering/ICL playbook and we will skip this part for now.</p>
+<section id="retrieval-optimization">
+<h4>Retrieval optimization<a class="headerlink" href="#retrieval-optimization" title="Link to this heading">#</a></h4>
+<p><strong>Query Transformation</strong></p>
+<p>Query Expansion (QE) <a class="footnote-reference brackets" href="#id31" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>16<span class="fn-bracket">]</span></a> is a common technique used in search engine to expand the user’s search query to include additional documents.</p>
+<p>In this new age of LLM, query can be rewritten/expanded via LLM.</p>
+<p><strong>Query Rewriting</strong></p>
+<p>By prompt-engineering the LLM to rewrite the initial query <span class="math notranslate nohighlight">\(x\)</span> to <span class="math notranslate nohighlight">\(x' = LLM(Prompt(x))\)</span>, we end up optimize the retriever performance without retraining the retriever as the paper Lewis et al. <a class="footnote-reference brackets" href="#id16" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> did.
+By leveraging AdalFlow’s in-context trainer, we can auto-optimize the RAG pipeline end to end.
+The only downside is to use more token bugets of the LLM model which will end up to be more expensive.</p>
+<p>Here we summarize a few methods and introduce AdalFlow’s API.</p>
+<p>Query Rewriting paper <a class="footnote-reference brackets" href="#id32" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>17<span class="fn-bracket">]</span></a> propose two ways to do the rewriting with LLM:</p>
+<ul class="simple">
+<li><p>Few-shot prompt: to encourage the LLM to “reason” and output none, one or multiple queries that are relevant to the input query.</p></li>
+<li><p>Trainable scheme: Use a smaller rewriter model to rewrite the query instead of a black-box LLM, to reduce the cost.</p></li>
+</ul>
+<p>The rewritter is trained using the feedback of the generator by reinforcement learning.
+It has two stages of training: warm-up where a synthetic dataset of <span class="math notranslate nohighlight">\((x, x')\)</span> pairs which has led to correct generator response is used to finetune the rewriter.
+Then, the rewriter is trained with reinforcement learning to align to the retriever and the genearator.</p>
+<p><strong>Adapt the embedder with LLM supervision</strong></p>
+<p>To improve the retrieval recall and precision, we can adapt the embedder with LLM supervision.
+The cheapest solutions requires only a linear layer on top of the embedding model along with a synthesized dataset of query-passage pairs generated from the data source using LLM models.
+This approach also applys to black-box embedding models. AdalFlow will consider to open-source this technique in the future.</p>
+<p>A second approach is to finetune the embedder directly. Replug <a class="footnote-reference brackets" href="#id21" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a> is a good example of this approach.
+Replug can be used with or without finetune.</p>
+<figure class="align-center" id="id35">
+<a class="reference internal image-reference" href="../_images/replug.png"><img alt="Replug inference pipeline" src="../_images/replug.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Replug inference pipeline <a class="footnote-reference brackets" href="#id21" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>.</span><a class="headerlink" href="#id35" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>When we do Replug, it computes the LLM output of each query and document pair separately in parallel and ensembles all the outputs to get the final score.
+This is especially helpful for inference speed and surpass the context length limitation of the LLM model.</p>
+<p><strong>Reranking</strong></p>
+<p>Rerankers are often cross-encoder between the query and documents. It is computationally more expensive but also more accurate. Cohere and Transformers both offer sota rerankers.</p>
+<p><strong>Use Retrieval Evaluator</strong></p>
+<p>C-RAG <a class="footnote-reference brackets" href="#id25" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a> proposed a lightweight retrieval evaluator that was finetuned on the training split of the testing datasets.
+More expensively, but without the need to train a model, we can use  LLM to classify the relevance of the retrieved passages, using labels such as “correct”, “incorrect”, “ambiguous”, etc.</p>
+</section>
+<section id="generator-optimization">
+<h4>Generator optimization<a class="headerlink" href="#generator-optimization" title="Link to this heading">#</a></h4>
+<p>Besides of the three popular options mentioned above, there is a branch of research where the retrieved context is combined in the generator (enhanced generator) as a part of the model to integrate the context instead of simply combining it from the prompt.</p>
+</section>
+<section id="rag-pipeline-optimization">
+<h4>RAG pipeline optimization<a class="headerlink" href="#rag-pipeline-optimization" title="Link to this heading">#</a></h4>
+<p>We introduce three popular overall optimization strategies for the RAG pipeline.</p>
+</section>
+</section>
+<section id="self-rag">
+<h3>Self-RAG<a class="headerlink" href="#self-rag" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="id36">
+<a class="reference internal image-reference" href="../_images/self_rag.png"><img alt="Self-RAG architecture" src="../_images/self_rag.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Self-RAG architecture <a class="footnote-reference brackets" href="#id26" id="id13" role="doc-noteref"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></a>.</span><a class="headerlink" href="#id36" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Self-RAG is interesting as it is programmed to decide if retrieval is needed, it handles the retrieved passages separately in parallel to generate y_t for each query x and passage d_t.
+For each (x, d_t, y_t) pair it “reflects” on three metrics:</p>
+<ul class="simple">
+<li><p>ISREL: use (x, d_t) to check if d_t provides useful information to solve x by outputing two labels (is_relevant, is_irrelevant).</p></li>
+<li><p>ISSUP: use (x, d_t, y_t) to check if all of the worthy statements(answers the question) in y_t is supported by d_t by outputing three labels (is_supported, partically_supported, not_supported).</p></li>
+<li><p>ISUSE: use (x, y_t) to check if y_t is useful to solve x by outputing 5 labels (5, 4, 3, 2, 1).</p></li>
+</ul>
+<p>It computes a single segment score unifying the three metrics and uses it to rerank the answer and pick the answer with the highest score as the final answer.
+The paper also mentioned how to create synthesized training dataset and train the <cite>critic</cite> and <cite>generator</cite> model.
+Good thing is Self-RAG can be used with or without finetune.</p>
+<p>Self-RAG can be applied on complicated tasks that require high accuracy, but it is way more complicated than a vanila RAG.</p>
+</section>
+<section id="realm">
+<h3>REALM<a class="headerlink" href="#realm" title="Link to this heading">#</a></h3>
+<p>REALM <a class="footnote-reference brackets" href="#id22" id="id14" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a> is quite interesting and it has a clear optimization objective.</p>
+<figure class="align-center" id="id37">
+<a class="reference internal image-reference" href="../_images/REALM_train_architecture.png"><img alt="REALM Train Architecture" src="../_images/REALM_train_architecture.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">REALM <a class="footnote-reference brackets" href="#id22" id="id15" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a> Framework.</span><a class="headerlink" href="#id37" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p><strong>Retrieve-Then-Predict Process</strong></p>
+<p>REALM models the task as a “retrieve-then-predict” process:</p>
+<p>First, the retriever samples documents <span class="math notranslate nohighlight">\(z\)</span> from a large knowledge corpus <span class="math notranslate nohighlight">\(Z\)</span> based on the input <span class="math notranslate nohighlight">\(x\)</span>. This retrieval is modeled by <span class="math notranslate nohighlight">\(p(z | x)\)</span>, the probability of retrieving document <span class="math notranslate nohighlight">\(z\)</span> given input <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p>Then, the model predicts the missing words or answers based on both the input <span class="math notranslate nohighlight">\(x\)</span> and the retrieved document <span class="math notranslate nohighlight">\(z\)</span>, modeled as <span class="math notranslate nohighlight">\(p(y | z, x)\)</span>, where <span class="math notranslate nohighlight">\(y\)</span> is the prediction (e.g., masked tokens or answers).</p>
+<p><strong>Marginalizing Over All Possible Documents</strong></p>
+<p>The probability of correctly predicting the target output <span class="math notranslate nohighlight">\(y\)</span> given input <span class="math notranslate nohighlight">\(x\)</span> is computed by marginalizing over all possible documents in the knowledge corpus <span class="math notranslate nohighlight">\(Z\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[p(y | x) = \sum_{z \in Z} p(y | z, x) \cdot p(z | x)\]</div>
+<p>This means that the overall probability is a weighted sum of how well each document <span class="math notranslate nohighlight">\(z\)</span> helps predict <span class="math notranslate nohighlight">\(y\)</span>, weighted by the retriever’s belief <span class="math notranslate nohighlight">\(p(z | x)\)</span> in that document.</p>
+<p><strong>Loss Function and Gradient Optimization</strong></p>
+<p>The key to optimizing the retriever is to maximize the likelihood of the correct prediction  <span class="math notranslate nohighlight">\(y\)</span> by adjusting the probability <span class="math notranslate nohighlight">\(p(z | x)\)</span> of retrieving relevant documents.
+The log-likelihood of the correct prediction <span class="math notranslate nohighlight">\(y\)</span> is the training objective:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{L} = \log p(y | x) = \log \left( \sum_{z \in Z} p(y | z, x) \cdot p(z | x) \right)\]</div>
+<p><strong>Rewarding Relevant Documents</strong></p>
+<p>To see how the retriever is rewarded or punished, consider the gradient of the log-likelihood with respect to the retriever’s scoring function  <span class="math notranslate nohighlight">\(f(x, z)\)</span> (which measures how relevant document <span class="math notranslate nohighlight">\(z\)</span> is to input <span class="math notranslate nohighlight">\(x\)</span>):</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial \log p(y | x)}{\partial f(x, z)} = \left[ \frac{p(y | z, x)}{p(y | x)} - 1 \right] p(z | x)\]</div>
+<p>Here’s how this works:</p>
+<ul class="simple">
+<li><p>If the document <span class="math notranslate nohighlight">\(z\)</span> improves the prediction of <span class="math notranslate nohighlight">\(y\)</span> (i.e., <span class="math notranslate nohighlight">\(p(y | z, x) &gt; p(y | x)\)</span>), the gradient is positive, and the retriever is encouraged to increase the score <span class="math notranslate nohighlight">\(f(x, z)\)</span>, making it more likely to retrieve that document in the future.</p></li>
+<li><p>If the document <span class="math notranslate nohighlight">\(z\)</span> does not help (i.e., <span class="math notranslate nohighlight">\(p(y | z, x) &lt; p(y | x)\)</span>), the gradient is negative, and the retriever is encouraged to decrease the score <span class="math notranslate nohighlight">\(f(x, z)\)</span>, making it less likely to retrieve that document.</p></li>
+</ul>
+</section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id16" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id8">2</a>)</span>
+<p>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks:https://arxiv.org/abs/2005.11401</p>
+</aside>
+<aside class="footnote brackets" id="id17" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<p>GOVTech Singapore’s RAG playbook: <a class="reference external" href="https://playbooks.capdev.govtext.gov.sg/improving_rag/">https://playbooks.capdev.govtext.gov.sg/improving_rag/</a></p>
+</aside>
+<aside class="footnote brackets" id="id18" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">3</a><span class="fn-bracket">]</span></span>
+<p>FlashRAG: Python toolkit for the reproduction and development of RAG research: <a class="github reference external" href="https://github.com/RUC-NLPIR/FlashRAG">RUC-NLPIR/FlashRAG</a></p>
+</aside>
+<aside class="footnote brackets" id="id19" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">4</a><span class="fn-bracket">]</span></span>
+<p>RAG and RAU: A Survey on Retrieval-Augmented Language Model inNatural Language Processing: <a class="github reference external" href="https://github.com/2471023025/RALM_Survey">2471023025/RALM_Survey</a></p>
+</aside>
+<aside class="footnote brackets" id="id20" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></span>
+<p>Ruochen Zhao, Hailin Chen, Weishi Wang, FangkaiJiao, Xuan Long Do, Chengwei Qin, BoshengDing, Xiaobao Guo, Minzhi Li, Xingxuan Li, et al.2023. Retrieving multimodal information for aug-mented generation: A survey. arXiv preprintarXiv:2303.10868.</p>
+</aside>
+<aside class="footnote brackets" id="id21" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id10">1</a>,<a role="doc-backlink" href="#id11">2</a>)</span>
+<p>Replug: Retrieval-augmented black-box language models. arXivpreprint arXiv:2301.12652</p>
+</aside>
+<aside class="footnote brackets" id="id22" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id14">2</a>,<a role="doc-backlink" href="#id15">3</a>)</span>
+<p>REALM: Kelvin Guu, Kenton Lee, Zora Tung, Panupong Pasu-pat, and Mingwei Chang. 2020. Retrieval augmentedlanguage model pre-training. In International confer-ence on machine learning, pages 3929–3938. PMLR.</p>
+</aside>
+<aside class="footnote brackets" id="id23" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">8</a><span class="fn-bracket">]</span></span>
+<p>Retrieval-Augmented Generation for AI-Generated Content: A Survey</p>
+</aside>
+<aside class="footnote brackets" id="id24" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></span>
+<p>OpenAI logprobs cookbook: <a class="reference external" href="https://cookbook.openai.com/examples/using_logprobs">https://cookbook.openai.com/examples/using_logprobs</a></p>
+</aside>
+<aside class="footnote brackets" id="id25" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">10</a><span class="fn-bracket">]</span></span>
+<p>C-RAG: Corrective retrieval augmented generation.arXiv preprint arXiv:2401.15884.</p>
+</aside>
+<aside class="footnote brackets" id="id26" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id6">1</a>,<a role="doc-backlink" href="#id13">2</a>)</span>
+<p>Self-RAG: Akari Asai, Zeqiu Wu, Yizhong Wang, Avirup Sil, andHannaneh Hajishirzi. 2023. Self-rag: Learning toretrieve, generate, and critique through self-reflection.CoRR, abs/2310.11511.</p>
+</aside>
+<aside class="footnote brackets" id="id27" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>12<span class="fn-bracket">]</span></span>
+<p>Replug implemented: <a class="github reference external" href="https://github.com/IntelLabs/fastRAG/blob/main/examples/replug_parallel_reader.ipynb">IntelLabs/fastRAG</a></p>
+</aside>
+<aside class="footnote brackets" id="id28" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>13<span class="fn-bracket">]</span></span>
+<p>FastRAG: <a class="github reference external" href="https://github.com/IntelLabs/fastRAG">IntelLabs/fastRAG</a></p>
+</aside>
+<aside class="footnote brackets" id="id29" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>14<span class="fn-bracket">]</span></span>
+<p>FLARE: Zhengbao Jiang, Frank F Xu, Luyu Gao, ZhiqingSun, Qian Liu, Jane Dwivedi-Yu, Yiming Yang,Jamie Callan, and Graham Neubig. 2023c. Ac-tive retrieval augmented generation. arXiv preprintarXiv:2305.06983.</p>
+</aside>
+<aside class="footnote brackets" id="id30" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>15<span class="fn-bracket">]</span></span>
+<p>Yuning Mao, Pengcheng He, Xiaodong Liu, Ye-long Shen, Jianfeng Gao, Jiawei Han, and WeizhuChen. 2020. Generation-augmented retrieval for open-domain question answering. arXiv preprintarXiv:2009.08553.</p>
+</aside>
+<aside class="footnote brackets" id="id31" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">16</a><span class="fn-bracket">]</span></span>
+<p>Query Expansion: <a class="reference external" href="https://en.wikipedia.org/wiki/Query_expansion">https://en.wikipedia.org/wiki/Query_expansion</a></p>
+</aside>
+<aside class="footnote brackets" id="id32" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">17</a><span class="fn-bracket">]</span></span>
+<p>Ma, Xinbei, et al. “Query rewriting for retrieval-augmented large language models.” arXiv preprint arXiv:2305.14283 (2023).</p>
+</aside>
+</aside>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="db.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Data (Database/Pipeline)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tool_helper.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Function calls</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rag-overview">RAG Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#designing-rag">Designing RAG</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-preparation-pipeline">Data Preparation Pipeline</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#document-retrieval-reranking">Document Retrieval &amp; Reranking</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rag-optimization">RAG optimization</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#retrieval-optimization">Retrieval optimization</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#generator-optimization">Generator optimization</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#rag-pipeline-optimization">RAG pipeline optimization</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#self-rag">Self-RAG</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#realm">REALM</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -155,7 +155,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -298,7 +298,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -442,6 +442,8 @@
 <span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
 <span class="kn">from</span> <span class="nn">adalflow.eval.llm_as_judge</span> <span class="kn">import</span> <span class="n">DEFAULT_LLM_EVALUATOR_MODEL_KWARGS</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">FloatParser</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;GEvalMetric&quot;</span><span class="p">,</span> <span class="s2">&quot;NLGTask&quot;</span><span class="p">,</span> <span class="s2">&quot;GEvalLLMJudge&quot;</span><span class="p">,</span> <span class="s2">&quot;GEvalJudgeEvaluator&quot;</span><span class="p">]</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -707,7 +709,7 @@
 
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;llm_judge=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llm_evaluator</span><span class="si">}</span><span class="s2">, prompt_kwargs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llm_judge</span><span class="o">.</span><span class="n">prompt_kwargs</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;llm_judge=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llm_judge</span><span class="si">}</span><span class="s2">, prompt_kwargs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llm_judge</span><span class="o">.</span><span class="n">prompt_kwargs</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">s</span></div>
 
 </pre></div>

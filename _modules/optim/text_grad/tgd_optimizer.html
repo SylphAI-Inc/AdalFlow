@@ -155,7 +155,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -298,7 +298,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -456,58 +456,6 @@
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">GLOSSARY_TEXT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">### Glossary of tags that will be sent to you:</span>
-<span class="s2">{# # - &lt;LM_SYSTEM_PROMPT&gt;: The system prompt for the language model.</span>
-<span class="s2"># - &lt;LM_INPUT&gt;: The input to the language model.</span>
-<span class="s2"># - &lt;LM_OUTPUT&gt;: The output of the language model. #}</span>
-<span class="s2"># - &lt;FEEDBACK&gt;: The feedback to the variable.</span>
-<span class="s2"># - &lt;CONVERSATION&gt;: The conversation history.</span>
-<span class="s2"># - &lt;FOCUS&gt;: The focus of the optimization.</span>
-<span class="s2"># - &lt;ROLE&gt;: The role description of the variable.&quot;&quot;&quot;</span>
-
-<span class="c1"># customize the system prompt</span>
-<span class="c1"># prompts, solutions to problems, code, or any other text-based variable. -&gt; to the variable type.</span>
-<span class="c1"># The optimizer will have an understanding of different variable types.</span>
-
-<span class="c1"># Tips:</span>
-<span class="c1"># - DO NOT address concerns on the peer variables. The peer variables will be optimized separately.</span>
-<span class="c1"># - The instruction needs to be on point, clear, and accurate.</span>
-<span class="c1"># You can take the following actions:</span>
-<span class="c1"># - You can delete words or phrases that you think are not necessary or you find misleading.</span>
-<span class="c1"># - You can add new words or phrases that you think can address the feedback.</span>
-<span class="c1"># - You can add sections like &quot;Tips&quot; or &quot;Remember&quot; to fix the issue.</span>
-<span class="c1"># - You can be creative and write the variable in a different way.#}</span>
-
-<span class="c1"># Think step by step. But keep the reasoning concise!!!</span>
-<span class="c1"># Start response with &quot;because&quot; and &quot;since&quot; to provide reasoning.</span>
-<span class="c1"># The last line of your response will be the new variable value put in between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.</span>
-
-<span class="c1"># {#You are part of an optimization system that improves the exsiting variable value according to feedback.</span>
-
-<span class="c1"># You will be asked to creatively and critically at proposing new variable value.</span>
-<span class="c1"># The feedback may be noisy, focus on what is important.</span>
-<span class="c1"># {# output format #}</span>
-<span class="c1"># You MUST ONLY output the new variable value in the response between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.</span>
-<span class="c1"># {% if instruction_to_optimizer %}</span>
-<span class="c1"># USER INSTRUCTION: {{instruction_to_optimizer}}</span>
-<span class="c1"># {% endif %}</span>
-<span class="c1"># Remember:</span>
-<span class="c1"># - Pay attention to role description, and most importantly, the feedback.</span>
-<span class="c1"># - Must provide a different value that addresses the feedback.</span>
-<span class="c1"># - If &lt;HISTORY_PERFORMANCE&gt; is provided, observe the patterns of the past iterations, pay close attention to high-performing value and aim to improve the variable value.</span>
-<span class="c1"># - The new value better not overlap with the scope of peer variables.</span>
-<span class="c1"># - Make your best judgment and be creative.</span>
-<span class="c1"># TIPS:</span>
-<span class="c1"># - Delete words or phrases that you think are not necessary or you find misleading.</span>
-<span class="c1"># - Add new words or phrases that you think can address the feedback.</span>
-<span class="c1"># - Add sections like &quot;Tips&quot; or &quot;Remember&quot; to fix the issue.</span>
-<span class="c1"># - Be eative and write the variable in a different way.#}</span>
-
-<span class="c1"># Your task: Propose a new variable value in response to the feedback.</span>
-<span class="c1"># 1. Focus on what is essential, even if feedback is noisy.</span>
-<span class="c1"># 2. Observe past performance patterns when provided and aim to improve upon high-performing values.</span>
-<span class="c1"># 3. Avoid overlap with peer variables&#39; scope.</span>
 
 <span class="c1"># Tips:</span>
 <span class="c1"># 1. Eliminate unnecessary words or phrases.</span>

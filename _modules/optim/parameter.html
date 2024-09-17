@@ -155,7 +155,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -298,7 +298,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -431,7 +431,18 @@
   <h1>Source code for optim.parameter</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Parameter is used by Optimizer, Trainers, AdalComponent to auto-optimizations&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Generic</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Set</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Literal</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
@@ -515,12 +526,22 @@
 <span class="sd">    1. https://github.com/karpathy/micrograd/blob/master/micrograd/engine.py</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Unique id of the parameter</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Name of the parameter, easier to read for humans</span>
+    <span class="n">role_desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># Description of the role of the parameter</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Data of the parameter</span>
+    <span class="n">param_type</span><span class="p">:</span> <span class="n">ParameterType</span>
+
     <span class="n">proposing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># State of the parameter</span>
     <span class="n">predecessors</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># Predecessors of the parameter</span>
     <span class="n">peers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># Peers of the parameter</span>
+    <span class="c1"># TODO: input_args should be OrderedDict to keep the order of args</span>
     <span class="n">input_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Input arguments of the GradComponent forward</span>
     <span class="n">full_response</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Full response of the GradComponent output</span>
     <span class="n">eval_input</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Eval input passing to the eval_fn or evaluator you use</span>
+    <span class="n">successor_map_fn</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="kc">None</span>  <span class="c1"># Map function to get the data from the output</span>
+    <span class="p">)</span>
     <span class="n">from_response_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
         <span class="kc">None</span>  <span class="c1"># for parameterType GRADIENT, the id of the response parameter</span>
     <span class="p">)</span>
@@ -544,6 +565,7 @@
         <span class="n">score</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">eval_input</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">from_response_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">successor_map_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
 
@@ -591,6 +613,26 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">eval_input</span> <span class="o">=</span> <span class="n">eval_input</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">from_response_id</span> <span class="o">=</span> <span class="n">from_response_id</span>  <span class="c1"># for gradient parameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">successor_map_fn</span> <span class="o">=</span> <span class="n">successor_map_fn</span> <span class="ow">or</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="Parameter.map_to_successor">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.map_to_successor">[docs]</a>
+    <span class="k">def</span> <span class="nf">map_to_successor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">successor</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the map function to the successor based on the successor&#39;s id.&quot;&quot;&quot;</span>
+        <span class="n">successor_id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="n">successor</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">successor_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">successor_map_fn</span><span class="p">:</span>
+            <span class="n">default_map_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># noqa: E731</span>
+            <span class="k">return</span> <span class="n">default_map_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">successor_map_fn</span><span class="p">[</span><span class="n">successor_id</span><span class="p">](</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Parameter.add_successor_map_fn">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.add_successor_map_fn">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_successor_map_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">successor</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">map_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add or update a map function for a specific successor using its id.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">successor_map_fn</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">successor</span><span class="p">)]</span> <span class="o">=</span> <span class="n">map_fn</span></div>
+
 
 <div class="viewcode-block" id="Parameter.check_if_already_computed_gradient_respect_to">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.check_if_already_computed_gradient_respect_to">[docs]</a>
@@ -884,7 +926,9 @@
 
 <div class="viewcode-block" id="Parameter.backward">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.backward">[docs]</a>
-    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># engine should be the llm</span>
+    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">):</span>  <span class="c1"># engine should be the llm or customized backwards function to pass feedback</span>
 
         <span class="c1"># topological sort of all the predecessors of the current parameter in the graph</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Backward pass for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">, backward function: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">grad_fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1012,6 +1056,8 @@
                 <span class="n">node_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Previous Value: &lt;/font&gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">wrap_and_escape</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">previous_data</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
             <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
                 <span class="n">node_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Requires Optimization: &lt;/font &gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="se">{{</span><span class="s2">&#39;Yes&#39;</span><span class="se">}}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">param_type</span><span class="p">:</span>
+                <span class="n">node_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Type: &lt;/font&gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">wrap_and_escape</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">param_type</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
             <span class="k">if</span> <span class="n">add_grads</span><span class="p">:</span>
                 <span class="n">node_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Gradients: &lt;/font&gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">wrap_and_escape</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">get_gradients_names</span><span class="p">())</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
                 <span class="c1"># add a list of each gradient with short value</span>

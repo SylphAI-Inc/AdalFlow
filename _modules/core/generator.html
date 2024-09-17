@@ -155,7 +155,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -298,7 +298,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -472,6 +472,9 @@
     <span class="n">OBJECTIVE_INSTRUCTION_CHAIN</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Generator&quot;</span><span class="p">,</span> <span class="s2">&quot;BackwardEngine&quot;</span><span class="p">,</span> <span class="s2">&quot;create_teacher_generator&quot;</span><span class="p">]</span>
+
+
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">PromptArgType</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]]</span>
@@ -499,7 +502,8 @@
 <span class="s2">        trainable_params (Optional[List[str]], optional): The list of trainable parameters. Defaults to [].</span>
 
 <span class="s2">    Note:</span>
-<span class="s2">        The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output. And we encourage you to only use it to parse the response to data format you will use later.</span>
+<span class="s2">        The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output.</span>
+<span class="s2">        And we encourage you to only use it to parse the response to data format you will use later.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span>
@@ -712,6 +716,7 @@
             <span class="n">combined_model_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">model_kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">combined_model_kwargs</span>
 
+    <span class="c1"># TODO: use prompt_kwargs as users are already familiar with it</span>
 <div class="viewcode-block" id="Generator.print_prompt">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.print_prompt">[docs]</a>
     <span class="k">def</span> <span class="nf">print_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -788,7 +793,8 @@
             <span class="k">raise</span> <span class="n">e</span>
 
     <span class="c1">##############################################################################################################</span>
-    <span class="c1">### Forward and backwards, and teacher generator are for training</span>
+    <span class="c1">### Forward, backwards, teacher generator, create demo data instance,</span>
+    <span class="c1"># are for training and backpropagation</span>
     <span class="c1">##############################################################################################################</span>
 
 <div class="viewcode-block" id="Generator.create_demo_data_instance">
@@ -799,6 +805,10 @@
         <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">,</span>
         <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Automatically create a demo data instance from the input and output of the generator.</span>
+<span class="sd">        Used to trace the demos for the demo paramter in the prompt_kwargs.</span>
+<span class="sd">        Part of the few-shot learning.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DynamicDataClassFactory</span>
 
         <span class="c1"># map the input fields</span>
@@ -808,7 +818,10 @@
         <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_prompt_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">demo_data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                <span class="n">demo_data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">map_to_successor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">demo_data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="c1"># map the output fields</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">demo_data_class_output_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">demo_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
@@ -944,15 +957,10 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;ID is required for tracing. Please pass it to your Geneartor call.&quot;</span>
                 <span class="p">)</span>
-            <span class="n">input_prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span>
-                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">prompt_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="p">}</span>
 
             <span class="n">demo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_demo_data_instance</span><span class="p">(</span>
-                <span class="n">input_prompt_kwargs</span><span class="p">,</span>
+                <span class="n">prompt_kwargs</span><span class="p">,</span>
                 <span class="n">output</span><span class="p">,</span>
-                <span class="c1"># self._demo_data_class_output_mapping,</span>
                 <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">demo_param</span><span class="o">.</span><span class="n">add_to_trace</span><span class="p">(</span><span class="n">demo</span><span class="p">,</span> <span class="n">is_teacher</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">teacher_mode</span><span class="p">)</span>
@@ -1324,9 +1332,10 @@
 <div class="viewcode-block" id="Generator.to_dict">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.to_dict">[docs]</a>
     <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the generator to a dictionary.&quot;&quot;&quot;</span></div>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the generator to a dictionary.&quot;&quot;&quot;</span>
+        <span class="c1"># TODO: exclude default functions</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div>
 
-        <span class="c1"># exclude default functions</span>
 
 <div class="viewcode-block" id="Generator.failure_message_to_backward_engine">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.failure_message_to_backward_engine">[docs]</a>

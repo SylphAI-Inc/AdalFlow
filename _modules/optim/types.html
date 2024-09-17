@@ -155,7 +155,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -298,7 +298,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -445,11 +445,25 @@
 <span class="k">class</span> <span class="nc">ParameterType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Enum for the type of parameter to compute the loss with, and to inform the optimizer.&quot;&quot;&quot;</span>
 
+    <span class="c1"># trainable parameters with optimizers</span>
     <span class="n">PROMPT</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;prompt&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Instruction to the language model on task, data, and format.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">DEMOS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;demos&quot;</span><span class="p">,</span> <span class="s2">&quot;A few examples to guide the language model.&quot;</span><span class="p">)</span>
+    <span class="p">)</span>  <span class="c1"># optimized by tgd_optimizer</span>
+    <span class="n">DEMOS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;demos&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;A few examples to guide the language model.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>  <span class="c1"># optimized by demo_optimizer</span>
+
+    <span class="c1"># input and output parameters (similar to tensor, can have grad_opt true, but not trainable)</span>
+    <span class="n">INPUT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="s2">&quot;The input to the component.&quot;</span><span class="p">)</span>
+    <span class="n">OUTPUT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="s2">&quot;The output of the component.&quot;</span><span class="p">)</span>
+    <span class="n">HYPERPARAM</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;hyperparam&quot;</span><span class="p">,</span> <span class="s2">&quot;Hyperparameters/args for the component.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># gradient paramters for each predecessor of dag.</span>
+    <span class="n">GRADIENT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;gradient&quot;</span><span class="p">,</span> <span class="s2">&quot;A gradient parameter.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># the following is a subtype of the output type</span>
     <span class="c1"># INSTANCE = (&quot;instance&quot;, &quot;Focus on fixing issues of this specific example.&quot;)</span>
     <span class="n">GENERATOR_OUTPUT</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;generator_output&quot;</span><span class="p">,</span>
@@ -458,7 +472,6 @@
     <span class="n">RETRIEVER_OUTPUT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;retriever_output&quot;</span><span class="p">,</span> <span class="s2">&quot;The output of the retriever.&quot;</span><span class="p">)</span>
     <span class="n">LOSS_OUTPUT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;loss&quot;</span><span class="p">,</span> <span class="s2">&quot;The loss value.&quot;</span><span class="p">)</span>
     <span class="n">SUM_OUTPUT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="s2">&quot;The sum of the losses.&quot;</span><span class="p">)</span>
-    <span class="n">GRADIENT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;gradient&quot;</span><span class="p">,</span> <span class="s2">&quot;A gradient parameter.&quot;</span><span class="p">)</span>
     <span class="n">NONE</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>

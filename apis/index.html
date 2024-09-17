@@ -160,7 +160,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -305,7 +305,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -441,10 +441,6 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="components/components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="components/components.data_process.data_components.html">data_components</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components/components.data_process.text_splitter.html">text_splitter</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="components/components.reasoning.html">reasoning</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="components/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="components/components.memory.html">memory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -661,25 +657,22 @@ The API reference is organized by subdirectories.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="components/components.data_process.text_splitter.html#module-components.data_process.text_splitter" title="components.data_process.text_splitter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.text_splitter</span></code></a></p></td>
 <td><p>Splitting texts is commonly used as a preprocessing step before embedding and retrieving texts.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.reasoning.chain_of_thought.html#module-components.reasoning.chain_of_thought" title="components.reasoning.chain_of_thought"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.reasoning.chain_of_thought</span></code></a></p></td>
-<td><p>Chain of the thought(CoT) is to mimic a step-by-step thought process for arriving at the answer.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever" title="components.retriever.bm25_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever" title="components.retriever.bm25_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever</span></code></a></p></td>
 <td><p>BM25 retriever implementation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever" title="components.retriever.faiss_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.faiss_retriever</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever" title="components.retriever.faiss_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.faiss_retriever</span></code></a></p></td>
 <td><p>Semantic search/embedding-based retriever using FAISS.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
 <td><p>LLM as retriever module.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever" title="components.retriever.postgres_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.postgres_retriever</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever" title="components.retriever.postgres_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.postgres_retriever</span></code></a></p></td>
 <td><p>Leverage a postgres database to store and retrieve documents.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
 <td><p>Reranking model using modelclient as a retriever.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
 <td><p>The most commonly used output parsers for the Generator.</p></td>
 </tr>
 </tbody>

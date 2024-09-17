@@ -15,6 +15,14 @@
 Designing RAG
 ================
 
+
+.. figure:: /_static/images/generator.png
+    :align: center
+    :alt: AdalFlow generator design
+    :width: 700px
+
+    Generator - The Orchestrator for LLM Prediction
+
 Retrieval-Augmented Generation (RAG) is a paradigm that combines the strengths of retrieval and generation models.
 Given a user query, RAG retrieves relevant passages from a large corpus and then generates a response based on the retrieved passages.
 This formulation opens up a wide range of use cases such as conversational search engine, question answering on a customized knowledge base,
@@ -39,3 +47,51 @@ For each use case, we need to answer:
 7. How do I auto-optimize the RAG pipeline with In-context learning(ICLs) with zero-shot prompting and few-shot prompting?
 
 8. What about finetuning? How to do it and would it be more token efficient or more effective?
+
+In this tutorial, we will cover:
+
+- We will provide resource links to form a comprehensive RAG playbook according the sota research and the best practices in the industry.
+- Build a local and model-agnostic RAG pipeline and data processing pipeline with AdalFlow library.
+- Add Query Expansion.
+
+First RAG Paper
+------------------
+RAG was introduced in 2020 by Lewis et al. [1]_ which is an architecture that finetunes both the query encoder (bi-encoder like most embedding models) and the generator (LLM) jointly with only final answer supervision.
+It did not mention document chunking as most of the time, their text length is usally short and also fits into the context length of the embedding models.
+As both the embedding model and LLM model scales up in terms of knowledge and parameters (400M LLM model used in the paper), RAG can achieve high performance in few-shot (prompt engineering) setup without the finetune.
+
+RAG Playbook
+------------------
+
+========================  =========================  =========================================
+RAG Pipeline Component     Improvement Techniques     Evaluation Metric
+========================  =========================  =========================================
+Data Preparation           - Text preprocessing       -
+                           - Chunking Strategy
+
+Embedding                 - Embedding Fine-tuning     -
+
+Indexing                   -                          -
+
+Retrieval                  - Retrieval Optimization    - HIT@K
+                           - Query Enhancement         - MRR@K
+                           - Reranking                 - MAP@K
+                                                       - NDCG@K
+                                                       - Ragas context relevancy, precision, recall
+
+Completion                 - Prompt Engineering        - Ragas answer relevancy
+                           - LLM Fine-tuning           - AutoAIS
+                                                       - ROUGE
+                                                       - BLEU
+                                                       - METEOR
+                                                       - F1 Score
+                                                       - BERTScore
+                                                       - UniEval
+                                                       - G-Eval
+========================  =========================  =========================================
+
+
+References
+------------------------------------------
+.. [1] Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks:https://arxiv.org/abs/2005.11401
+.. [2] RAG playbook: https://playbooks.capdev.govtext.gov.sg/

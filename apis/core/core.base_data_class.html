@@ -158,7 +158,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -303,7 +303,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -439,10 +439,6 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.data_components.html">data_components</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.text_splitter.html">text_splitter</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.reasoning.html">reasoning</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.memory.html">memory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -599,64 +595,17 @@
 </tbody>
 </table>
 </div>
-<dl class="py class">
-<dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DataClassFormatType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/base_data_class.html#DataClassFormatType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.base_data_class.DataClassFormatType" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>The format type for the DataClass schema.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType.SCHEMA">
-<span class="sig-name descname"><span class="pre">SCHEMA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'schema'</span></em><a class="headerlink" href="#core.base_data_class.DataClassFormatType.SCHEMA" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType.SIGNATURE_YAML">
-<span class="sig-name descname"><span class="pre">SIGNATURE_YAML</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'signature_yaml'</span></em><a class="headerlink" href="#core.base_data_class.DataClassFormatType.SIGNATURE_YAML" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType.SIGNATURE_JSON">
-<span class="sig-name descname"><span class="pre">SIGNATURE_JSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'signature_json'</span></em><a class="headerlink" href="#core.base_data_class.DataClassFormatType.SIGNATURE_JSON" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType.EXAMPLE_YAML">
-<span class="sig-name descname"><span class="pre">EXAMPLE_YAML</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'example_yaml'</span></em><a class="headerlink" href="#core.base_data_class.DataClassFormatType.EXAMPLE_YAML" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType.EXAMPLE_JSON">
-<span class="sig-name descname"><span class="pre">EXAMPLE_JSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'example_json'</span></em><a class="headerlink" href="#core.base_data_class.DataClassFormatType.EXAMPLE_JSON" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
+<p class="rubric">Constants</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="core.base_data_class.ExcludeType">
+<span class="sig-name descname"><span class="pre">ExcludeType</span></span><a class="headerlink" href="#core.base_data_class.ExcludeType" title="Link to this definition">#</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="core.base_data_class.required_field">
-<span class="sig-name descname"><span class="pre">required_field</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/base_data_class.html#required_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.base_data_class.required_field" title="Link to this definition">#</a></dt>
-<dd><p>A factory function to create a required field in a dataclass.
-The returned callable raises a TypeError when invoked, indicating a required field was not provided.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The name of the required field. Defaults to None</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A callable that raises TypeError when called, indicating a missing required field.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Callable[[], Any]</p>
-</dd>
-</dl>
-<p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">required_field</span><span class="p">,</span> <span class="n">DataClass</span>
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">required_field</span><span class="p">())</span><span class="c1"># allow required field after optional field</span>
-</pre></div>
-</div>
+<dl class="py data">
+<dt class="sig sig-object py" id="core.base_data_class.IncludeType">
+<span class="sig-name descname"><span class="pre">IncludeType</span></span><a class="headerlink" href="#core.base_data_class.IncludeType" title="Link to this definition">#</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd></dl>
 
 <dl class="py class">
@@ -693,7 +642,10 @@ as input or output in LLM prompt.</p>
 - DataClassFormatType.EXAMPLE_YAML: the yaml representation of the instance, <a class="reference internal" href="#core.base_data_class.DataClass.to_yaml" title="core.base_data_class.DataClass.to_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_yaml()</span></code></a> as string.</p>
 <p>Overall, we have a unified class method <code class="xref py py-meth docutils literal notranslate"><span class="pre">format_str()</span></code> to generate formatted output based on the type of operation and class/instance context.</p>
 <dl class="simple">
-<dt>note::</dt><dd><p>You do not need to use our format, overwrite any method in the subclass to fit in your needs.</p>
+<dt>note::</dt><dd><ol class="arabic simple">
+<li><p>Avoid using Optional[Type] for the type of fields, as dataclass already distingushes between optional and required fields using default value.</p></li>
+<li><p>If you need to customize, you can subclass and overwrite any method to fit your needs.</p></li>
+</ol>
 </dd>
 </dl>
 <p>Loading data:</p>
@@ -1046,6 +998,66 @@ Use this to save states of the class in serialization, not advised to use in LLM
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DataClassFormatType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/base_data_class.html#DataClassFormatType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.base_data_class.DataClassFormatType" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>The format type for the DataClass schema.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType.SCHEMA">
+<span class="sig-name descname"><span class="pre">SCHEMA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'schema'</span></em><a class="headerlink" href="#core.base_data_class.DataClassFormatType.SCHEMA" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType.SIGNATURE_YAML">
+<span class="sig-name descname"><span class="pre">SIGNATURE_YAML</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'signature_yaml'</span></em><a class="headerlink" href="#core.base_data_class.DataClassFormatType.SIGNATURE_YAML" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType.SIGNATURE_JSON">
+<span class="sig-name descname"><span class="pre">SIGNATURE_JSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'signature_json'</span></em><a class="headerlink" href="#core.base_data_class.DataClassFormatType.SIGNATURE_JSON" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType.EXAMPLE_YAML">
+<span class="sig-name descname"><span class="pre">EXAMPLE_YAML</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'example_yaml'</span></em><a class="headerlink" href="#core.base_data_class.DataClassFormatType.EXAMPLE_YAML" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType.EXAMPLE_JSON">
+<span class="sig-name descname"><span class="pre">EXAMPLE_JSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'example_json'</span></em><a class="headerlink" href="#core.base_data_class.DataClassFormatType.EXAMPLE_JSON" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.base_data_class.required_field">
+<span class="sig-name descname"><span class="pre">required_field</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/base_data_class.html#required_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.base_data_class.required_field" title="Link to this definition">#</a></dt>
+<dd><p>A factory function to create a required field in a dataclass.
+The returned callable raises a TypeError when invoked, indicating a required field was not provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The name of the required field. Defaults to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A callable that raises TypeError when called, indicating a missing required field.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable[[], Any]</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">required_field</span><span class="p">,</span> <span class="n">DataClass</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">required_field</span><span class="p">())</span><span class="c1"># allow required field after optional field</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="core.base_data_class.check_adal_dataclass">
 <span class="sig-name descname"><span class="pre">check_adal_dataclass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/core/base_data_class.html#check_adal_dataclass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.base_data_class.check_adal_dataclass" title="Link to this definition">#</a></dt>
@@ -1138,15 +1150,8 @@ Use this to save states of the class in serialization, not advised to use in LLM
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClassFormatType"><code class="docutils literal notranslate"><span class="pre">DataClassFormatType</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClassFormatType.SCHEMA"><code class="docutils literal notranslate"><span class="pre">DataClassFormatType.SCHEMA</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClassFormatType.SIGNATURE_YAML"><code class="docutils literal notranslate"><span class="pre">DataClassFormatType.SIGNATURE_YAML</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClassFormatType.SIGNATURE_JSON"><code class="docutils literal notranslate"><span class="pre">DataClassFormatType.SIGNATURE_JSON</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClassFormatType.EXAMPLE_YAML"><code class="docutils literal notranslate"><span class="pre">DataClassFormatType.EXAMPLE_YAML</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClassFormatType.EXAMPLE_JSON"><code class="docutils literal notranslate"><span class="pre">DataClassFormatType.EXAMPLE_JSON</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.required_field"><code class="docutils literal notranslate"><span class="pre">required_field()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.ExcludeType"><code class="docutils literal notranslate"><span class="pre">ExcludeType</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.IncludeType"><code class="docutils literal notranslate"><span class="pre">IncludeType</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClass"><code class="docutils literal notranslate"><span class="pre">DataClass</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClass.get_task_desc"><code class="docutils literal notranslate"><span class="pre">DataClass.get_task_desc()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClass.set_task_desc"><code class="docutils literal notranslate"><span class="pre">DataClass.set_task_desc()</span></code></a></li>
@@ -1172,6 +1177,15 @@ Use this to save states of the class in serialization, not advised to use in LLM
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClass.format_example_str"><code class="docutils literal notranslate"><span class="pre">DataClass.format_example_str()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClassFormatType"><code class="docutils literal notranslate"><span class="pre">DataClassFormatType</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClassFormatType.SCHEMA"><code class="docutils literal notranslate"><span class="pre">DataClassFormatType.SCHEMA</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClassFormatType.SIGNATURE_YAML"><code class="docutils literal notranslate"><span class="pre">DataClassFormatType.SIGNATURE_YAML</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClassFormatType.SIGNATURE_JSON"><code class="docutils literal notranslate"><span class="pre">DataClassFormatType.SIGNATURE_JSON</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClassFormatType.EXAMPLE_YAML"><code class="docutils literal notranslate"><span class="pre">DataClassFormatType.EXAMPLE_YAML</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DataClassFormatType.EXAMPLE_JSON"><code class="docutils literal notranslate"><span class="pre">DataClassFormatType.EXAMPLE_JSON</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.required_field"><code class="docutils literal notranslate"><span class="pre">required_field()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.check_adal_dataclass"><code class="docutils literal notranslate"><span class="pre">check_adal_dataclass()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DynamicDataClassFactory"><code class="docutils literal notranslate"><span class="pre">DynamicDataClassFactory</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.base_data_class.DynamicDataClassFactory.from_dict"><code class="docutils literal notranslate"><span class="pre">DynamicDataClassFactory.from_dict()</span></code></a></li>

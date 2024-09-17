@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Developer Notes &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+    <title>Tutorials &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
   
   
   
@@ -48,6 +48,8 @@
     <script src="../_static/js/rtd_search_config.js"></script>
     <script src="../_static/js/rtd_sphinx_search.min.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/index';</script>
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -158,7 +160,7 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -303,7 +305,7 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -407,6 +409,7 @@
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -459,7 +462,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Developer Notes</li>
+    <li class="breadcrumb-item active" aria-current="page">Tutorials</li>
   </ul>
 </nav>
 </div>
@@ -476,15 +479,15 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="developer-notes">
-<span id="source-tutorials"></span><span id="id1"></span><h1>Developer Notes<a class="headerlink" href="#developer-notes" title="Link to this heading">#</a></h1>
+  <section id="tutorials">
+<span id="developer-notes"></span><span id="source-tutorials"></span><h1>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading">#</a></h1>
 <p>Learn the <cite>why</cite> and <cite>how-to</cite> (customize and integrate) behind each core part within the <cite>AdalFlow</cite> library.
 These are our most important tutorials before you move ahead to build your use cases end to end.</p>
-<figure class="align-center" id="id2">
+<figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../_images/LLM_arch.png"><img alt="LLM application is no different from a mode training/eval workflow" src="../_images/LLM_arch.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">LLM application is no different from a mode training/evaluation workflow</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+<p><span class="caption-text">LLM application is no different from a mode training/evaluation workflow</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
 <div class="legend">
 </div>
 </figcaption>
@@ -600,6 +603,26 @@ Components work on a sequence of <code class="docutils literal notranslate"><spa
 </tbody>
 </table>
 </div>
+</section>
+<section id="putting-it-all-together">
+<h4>Putting it all together<a class="headerlink" href="#putting-it-all-together" title="Link to this heading">#</a></h4>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Part</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="rag_playbook.html"><span class="doc">RAG Playbook</span></a></p></td>
+<td><p>Comprehensive RAG playbook according to the sota research and the best practices in the industry.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="toctree-wrapper compound">
 </div>
 </section>
@@ -685,7 +708,7 @@ In this section, we provide a general guide to the evaluation datasets, metrics,
 </thead>
 <tbody>
 <tr class="row-even"><td><p><span class="xref std std-doc">parameter_</span></p></td>
-<td><p>The <cite>Parameter</cite> class stores the text, textual gradidents(feedback), and manage the states and applies the backpropagation in auto-diff.</p></td>
+<td><p>The <cite>Parameter</cite> class stores the text, textual gradidents(feedback), and managed the states and applies the backpropagation in auto-diff.</p></td>
 </tr>
 <tr class="row-odd"><td><p><span class="xref std std-doc">optimizer_</span></p></td>
 <td><p>The  <cite>Optimizer</cite> to define a structure and to manage <cite>propose</cite>, <cite>revert</cite>, and <cite>step</cite> methods. We defined two variants: <cite>DemoOptimizer</cite> and <cite>TextOptimizer</cite> to cover the prompt optimization and the few-shot optimization.</p></td>
@@ -792,6 +815,7 @@ In this section, we provide a general guide to the evaluation datasets, metrics,
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rag-essentials">RAG Essentials</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#rag-components">RAG components</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pipeline-and-storage">Data Pipeline and Storage</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#putting-it-all-together">Putting it all together</a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agent-essentials">Agent Essentials</a></li>

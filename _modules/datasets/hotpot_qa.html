@@ -155,7 +155,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -298,7 +298,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -438,7 +438,6 @@
 
 
 <span class="kn">from</span> <span class="nn">adalflow.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils.global_config</span> <span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
 <span class="kn">from</span> <span class="nn">adalflow.utils.file_io</span> <span class="kn">import</span> <span class="n">save_csv</span>
 <span class="kn">from</span> <span class="nn">adalflow.datasets.utils</span> <span class="kn">import</span> <span class="n">prepare_dataset_path</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span>
@@ -463,15 +462,16 @@
         <span class="k">if</span> <span class="n">keep_details</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;dev_titles&quot;</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Keep details must be one of &#39;all&#39;, &#39;dev_titles&#39;, &#39;none&#39;&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">root</span> <span class="o">=</span> <span class="n">get_adalflow_default_root_path</span><span class="p">()</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saving dataset to </span><span class="si">{</span><span class="n">root</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># if root is None:</span>
+        <span class="c1">#     root = get_adalflow_default_root_path()</span>
+        <span class="c1">#     print(f&quot;Saving dataset to {root}&quot;)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
-        <span class="n">task_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;hotpot_qa_</span><span class="si">{</span><span class="n">keep_details</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">data_path</span> <span class="o">=</span> <span class="n">prepare_dataset_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">task_name</span><span class="p">,</span> <span class="n">split</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;hotpot_qa_</span><span class="si">{</span><span class="n">keep_details</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="n">prepare_dataset_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_name</span><span class="p">)</span>
         <span class="c1"># download and save</span>
+        <span class="n">split_csv_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_or_download_dataset</span><span class="p">(</span>
-            <span class="n">task_name</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">only_hard_examples</span><span class="p">,</span> <span class="n">keep_details</span>
+            <span class="n">split_csv_path</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">only_hard_examples</span><span class="p">,</span> <span class="n">keep_details</span>
         <span class="p">)</span>
 
         <span class="c1"># load from csv</span>
@@ -479,7 +479,7 @@
         <span class="c1"># created_data_class = DynamicDataClassFactory.from_dict(</span>
         <span class="c1">#  &quot;HotPotQAData&quot;, {&quot;id&quot;: &quot;str&quot;, &quot;question&quot;: &quot;str&quot;, &quot;answer&quot;: &quot;str&quot;}</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">split_csv_path</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
             <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reader</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">size</span><span class="p">:</span>
@@ -488,12 +488,21 @@
 
     <span class="k">def</span> <span class="nf">_check_or_download_dataset</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">task_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">split</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">,</span>
         <span class="n">only_hard_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">keep_details</span><span class="o">=</span><span class="s2">&quot;dev_titles&quot;</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;It will download data from huggingface datasets and split it and save it into three csv files.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            data_path (str): The path to save the data. In particular with split name appended.</span>
+<span class="sd">            split (str): The dataset split, supports ``&quot;train&quot;`` (default), ``&quot;val&quot;`` and ``&quot;test&quot;``. Decides which split to return.</span>
+<span class="sd">            only_hard_examples (bool): If True, only hard examples will be downloaded.</span>
+<span class="sd">            keep_details (str): If &quot;all&quot;, all details will be kept. If &quot;dev_titles&quot;, only dev titles will be kept.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">data_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;data_path must be specified&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_path</span><span class="p">):</span>
             <span class="k">return</span>
@@ -569,8 +578,8 @@
             <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">],</span>
             <span class="p">[</span><span class="n">sampled_trainset</span><span class="p">,</span> <span class="n">sampled_valset</span><span class="p">,</span> <span class="n">test</span><span class="p">],</span>
         <span class="p">):</span>
-            <span class="n">target_path</span> <span class="o">=</span> <span class="n">prepare_dataset_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">task_name</span><span class="p">,</span> <span class="n">split</span><span class="p">)</span>
-            <span class="n">save_csv</span><span class="p">(</span><span class="n">examples</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="n">target_path</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="n">keys</span><span class="p">)</span>
+            <span class="c1"># target_path = prepare_dataset_path(self.root, task_name, split)</span>
+            <span class="n">save_csv</span><span class="p">(</span><span class="n">examples</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="n">keys</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">sampled_trainset</span>

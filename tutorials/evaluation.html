@@ -158,7 +158,7 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -303,7 +303,7 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Developer Notes
+    Tutorials
   </a>
 </li>
 
@@ -407,6 +407,7 @@
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -460,7 +461,7 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer Notes</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
     
     <li class="breadcrumb-item active" aria-current="page">LLM Evaluation</li>
   </ul>
@@ -494,7 +495,7 @@
 <p>This is especially true in the context of LLMs, which have become increasingly popular due to their impressive performance on a wide range of tasks.
 Evaluating LLMs and their applications is crucial in both research and production to understand their capabilities and limitations.
 Overall, such evaluation is a complex and multifaceted process.
-Below, we provide a guideline for evaluating LLMs and their applications, incorporating aspects outlined by <em>Chang et al.</em> <a class="footnote-reference brackets" href="#id38" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and more for RAG evaluation.</p>
+Below, we provide a guideline for evaluating LLMs and their applications, incorporating aspects outlined by <em>Chang et al.</em> <a class="footnote-reference brackets" href="#id39" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and more for RAG evaluation.</p>
 <ul class="simple">
 <li><p><strong>What to evaluate</strong>: the tasks and capabilities that LLMs are evaluated on.</p></li>
 <li><p><strong>Where to evaluate</strong>: the datasets and benchmarks that are used for evaluation.</p></li>
@@ -502,7 +503,7 @@ Below, we provide a guideline for evaluating LLMs and their applications, incorp
 </ul>
 <section id="tasks-and-capabilities">
 <h2>Tasks and Capabilities<a class="headerlink" href="#tasks-and-capabilities" title="Link to this heading">#</a></h2>
-<p>Below are some commonly evaluated tasks and capabilities of LLMs summarized in <a class="footnote-reference brackets" href="#id38" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+<p>Below are some commonly evaluated tasks and capabilities of LLMs summarized in <a class="footnote-reference brackets" href="#id39" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
 <ul class="simple">
 <li><p><em>Natural language understanding</em> (NLU) tasks, such as text classification and sentiment analysis, which evaluate the LLM’s ability to understand natural language.</p></li>
 <li><p><em>Natural language generation</em> (NLG) tasks, such as text summarization, translation, and question answering, which evaluate the LLM’s ability to generate natural language.</p></li>
@@ -512,21 +513,21 @@ Below, we provide a guideline for evaluating LLMs and their applications, incorp
 <li><p><em>Domain adaptation</em>, which evaluate the LLM’s ability to adapt from general language to specific new domains, such as medical or legal texts, coding, etc.</p></li>
 <li><p><em>Agent applications</em>, which evaluate the LLM’s ability to use external tools and APIs to perform tasks, such as web search.</p></li>
 </ul>
-<p>For a more detailed and comprehensive description of the tasks and capabilities that LLMs are evaluated on, please refer to the review papers by <em>Chang et al.</em> <a class="footnote-reference brackets" href="#id38" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and <em>Guo et al.</em> <a class="footnote-reference brackets" href="#id39" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.
-RRAG <a class="footnote-reference brackets" href="#id58" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>21<span class="fn-bracket">]</span></a> evaluation differs as it introduces a retrieval component to the pipeline, which we will discuss in the next section.</p>
+<p>For a more detailed and comprehensive description of the tasks and capabilities that LLMs are evaluated on, please refer to the review papers by <em>Chang et al.</em> <a class="footnote-reference brackets" href="#id39" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and <em>Guo et al.</em> <a class="footnote-reference brackets" href="#id40" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.
+RRAG <a class="footnote-reference brackets" href="#id59" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>21<span class="fn-bracket">]</span></a> evaluation differs as it introduces a retrieval component to the pipeline, which we will discuss in the next section.</p>
 </section>
 <section id="datasets-and-benchmarks">
 <h2>Datasets and Benchmarks<a class="headerlink" href="#datasets-and-benchmarks" title="Link to this heading">#</a></h2>
-<p>The selection of datasets and benchmarks <a class="footnote-reference brackets" href="#id56" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>19<span class="fn-bracket">]</span></a> is important, as it determines the quality and relevance of the evaluation.</p>
-<p>To comprehensively assess the capabilities of LLMs, researchers typically utilize benchmarks and datasets that span a broad spectrum of tasks. For example, in the GPT-4 technical report <a class="footnote-reference brackets" href="#id40" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, the authors employed a variety of general language benchmarks, such as MMLU <a class="footnote-reference brackets" href="#id41" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>, and academic exams, such as the SAT, GRE, and AP courses, to evaluate the diverse capabilities of GPT-4. Below are some commonly used datasets and benchmarks for evaluating LLMs.</p>
+<p>The selection of datasets and benchmarks <a class="footnote-reference brackets" href="#id57" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>19<span class="fn-bracket">]</span></a> is important, as it determines the quality and relevance of the evaluation.</p>
+<p>To comprehensively assess the capabilities of LLMs, researchers typically utilize benchmarks and datasets that span a broad spectrum of tasks. For example, in the GPT-4 technical report <a class="footnote-reference brackets" href="#id41" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, the authors employed a variety of general language benchmarks, such as MMLU <a class="footnote-reference brackets" href="#id42" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>, and academic exams, such as the SAT, GRE, and AP courses, to evaluate the diverse capabilities of GPT-4. Below are some commonly used datasets and benchmarks for evaluating LLMs.</p>
 <ul class="simple">
-<li><p><em>MMLU</em> <a class="footnote-reference brackets" href="#id41" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>, which evaluates the LLM’s ability to perform a wide range of language understanding tasks.</p></li>
-<li><p><em>HumanEval</em> <a class="footnote-reference brackets" href="#id42" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>, which measures the LLM’s capability in writing Python code.</p></li>
+<li><p><em>MMLU</em> <a class="footnote-reference brackets" href="#id42" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>, which evaluates the LLM’s ability to perform a wide range of language understanding tasks.</p></li>
+<li><p><em>HumanEval</em> <a class="footnote-reference brackets" href="#id43" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>, which measures the LLM’s capability in writing Python code.</p></li>
 <li><p><a class="reference external" href="https://crfm.stanford.edu/helm/">HELM</a>, which evaluates LLMs across diverse aspects such as language understanding, generation, common-sense reasoning, and domain adaptation.</p></li>
 <li><p><a class="reference external" href="https://arena.lmsys.org/">Chatbot Arena</a>, which is an open platform to evaluate LLMs through human voting.</p></li>
 <li><p><a class="reference external" href="https://github.com/AlibabaResearch/DAMO-ConvAI/tree/main/api-bank">API-Bank</a>, which evaluates LLMs’ ability to use external tools and APIs to perform tasks.</p></li>
 </ul>
-<p>Please refer to the review papers (<em>Chang et al.</em> <a class="footnote-reference brackets" href="#id38" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, <em>Guo et al.</em> <a class="footnote-reference brackets" href="#id39" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, and <em>Liu et al.</em> <a class="footnote-reference brackets" href="#id43" id="id13" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>) for a more comprehensive overview of the datasets and benchmarks used in LLM evaluations. Additionally, a lot of datasets are readily accessible via the <a class="reference external" href="https://huggingface.co/datasets">Hugging Face Datasets</a> library. For instance, the MMLU dataset can be easily loaded from the Hub using the following code snippet.</p>
+<p>Please refer to the review papers (<em>Chang et al.</em> <a class="footnote-reference brackets" href="#id39" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, <em>Guo et al.</em> <a class="footnote-reference brackets" href="#id40" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, and <em>Liu et al.</em> <a class="footnote-reference brackets" href="#id44" id="id13" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>) for a more comprehensive overview of the datasets and benchmarks used in LLM evaluations. Additionally, a lot of datasets are readily accessible via the <a class="reference external" href="https://huggingface.co/datasets">Hugging Face Datasets</a> library. For instance, the MMLU dataset can be easily loaded from the Hub using the following code snippet.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_dataset</span>
 <span class="linenos">2</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;cais/mmlu&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;abstract_algebra&#39;</span><span class="p">)</span>
 <span class="linenos">3</span><span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">])</span>
@@ -534,7 +535,7 @@ RRAG <a class="footnote-reference brackets" href="#id58" id="id5" role="doc-note
 </div>
 <p>The output will be a Dataset object containing the test set of the MMLU dataset.</p>
 <p><strong>Datasets for RAG Evaluation</strong></p>
-<p>According to RAGEval <a class="footnote-reference brackets" href="#id58" id="id14" role="doc-noteref"><span class="fn-bracket">[</span>21<span class="fn-bracket">]</span></a>, the evaluation dataset can be categorized into two types: traditional open-domain QA datasets and scenario-specific RAG evaluation datasets.</p>
+<p>According to RAGEval <a class="footnote-reference brackets" href="#id59" id="id14" role="doc-noteref"><span class="fn-bracket">[</span>21<span class="fn-bracket">]</span></a>, the evaluation dataset can be categorized into two types: traditional open-domain QA datasets and scenario-specific RAG evaluation datasets.</p>
 <p>Traditional open-domain QA datasets include:</p>
 <ul class="simple">
 <li><p>HotPotQA: A dataset for multi-hop question answering.</p></li>
@@ -551,7 +552,7 @@ RRAG <a class="footnote-reference brackets" href="#id58" id="id5" role="doc-note
 </section>
 <section id="evaluation-metrics">
 <h2>Evaluation Metrics<a class="headerlink" href="#evaluation-metrics" title="Link to this heading">#</a></h2>
-<p>Evaluation methods can be divided into <em>automated evaluation</em> and <em>human evaluation</em> (<em>Chang et al.</em> <a class="footnote-reference brackets" href="#id38" id="id15" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and <em>Liu et al.</em> <a class="footnote-reference brackets" href="#id43" id="id16" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>).</p>
+<p>Evaluation methods can be divided into <em>automated evaluation</em> and <em>human evaluation</em> (<em>Chang et al.</em> <a class="footnote-reference brackets" href="#id39" id="id15" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and <em>Liu et al.</em> <a class="footnote-reference brackets" href="#id44" id="id16" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>).</p>
 <p>Automated evaluation typically involves using metrics such as accuracy and BERTScore or employing an LLM as the judge, to quantitatively assess the performance of LLMs on specific tasks.
 Human evaluation, on the other hand, involves human in the loop to evaluate the quality of the generated text or the performance of the LLM.</p>
 <p>Here, we categorize the automated evaluation methods as follows:</p>
@@ -568,8 +569,8 @@ Or using <a class="reference internal" href="../apis/eval/eval.g_eval.html#modul
 <section id="classicial-string-metrics">
 <h3>Classicial String Metrics<a class="headerlink" href="#classicial-string-metrics" title="Link to this heading">#</a></h3>
 <p>The simplest metric would be EM <a class="reference internal" href="../apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc" title="eval.answer_match_acc"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnswerMatchAcc</span></code></a>: This calculates the exact match accuracy or fuzzy match accuracy of the generated answers by comparing them to the ground truth answers.</p>
-<p>More advanced traditional metrics, such as F1, BLEU <a class="footnote-reference brackets" href="#id45" id="id18" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>, ROUGE <a class="footnote-reference brackets" href="#id46" id="id19" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id57" id="id20" role="doc-noteref"><span class="fn-bracket">[</span>20<span class="fn-bracket">]</span></a>, and METEOR <a class="footnote-reference brackets" href="#id49" id="id21" role="doc-noteref"><span class="fn-bracket">[</span>12<span class="fn-bracket">]</span></a>, may fail to capture the semantic similarity between the reference text and the generated text, resulting in low correlation with human judgment.</p>
-<p>You can use <cite>TorchMetrics</cite> <a class="footnote-reference brackets" href="#id47" id="id22" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a> or <a class="reference external" href="https://huggingface.co/metrics">Hugging Face Metrics</a> to compute these metrics. For instance,</p>
+<p>More advanced traditional metrics, such as F1, BLEU <a class="footnote-reference brackets" href="#id46" id="id18" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>, ROUGE <a class="footnote-reference brackets" href="#id47" id="id19" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id58" id="id20" role="doc-noteref"><span class="fn-bracket">[</span>20<span class="fn-bracket">]</span></a>, and METEOR <a class="footnote-reference brackets" href="#id50" id="id21" role="doc-noteref"><span class="fn-bracket">[</span>12<span class="fn-bracket">]</span></a>, may fail to capture the semantic similarity between the reference text and the generated text, resulting in low correlation with human judgment.</p>
+<p>You can use <cite>TorchMetrics</cite> <a class="footnote-reference brackets" href="#id48" id="id22" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a> or <a class="reference external" href="https://huggingface.co/metrics">Hugging Face Metrics</a> to compute these metrics. For instance,</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gt</span> <span class="o">=</span> <span class="s2">&quot;Brazil has won 5 FIFA World Cup titles&quot;</span>
 <span class="n">pred</span> <span class="o">=</span> <span class="s2">&quot;Brazil is the five-time champion of the FIFA WorldCup.&quot;</span>
 
@@ -619,6 +620,15 @@ Labeling, such as creating a reference text, can be quite challenging in many NL
 </section>
 <section id="llm-as-judge">
 <h3>LLM as Judge<a class="headerlink" href="#llm-as-judge" title="Link to this heading">#</a></h3>
+<blockquote>
+<div><p>Just as how LLM has made the AI tasks easier, it has made the evaluation of AI tasks easier too.</p>
+</div></blockquote>
+<p>The real power of using LLM as judge is:</p>
+<ol class="arabic simple">
+<li><p>its <strong>adaptatibility</strong> compared with all the above metrics, it can be adapted to any task out of the box.</p></li>
+<li><p>its <strong>flexibility</strong> and <strong>robustness</strong> at measuring. For many NLG tasks, there can only have multiple references or even countless correct reponses. Using traditional metrics can be very limiting.</p></li>
+<li><p><strong>Less training data</strong>. Align an LLM judge to your task using (question, ground truth, generated text, gt_score) tuples takes less data than finetune a model like BERTScore.</p></li>
+</ol>
 <p>Evaluating an LLM application using an LLM as a judge is similar to building an LLM task pipeline.
 Developers need to understand the underlying prompt used by the LLM judge to determine whether the default judge is sufficient or if customization is required.</p>
 <p>After reviewing research papers and existing libraries, we found no solution that provides these evaluators with complete clarity without requiring developers to install numerous additional dependencies.
@@ -684,7 +694,7 @@ Besides of the score, it computes the confidence interval of the scores.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="err">LLMJudgeEvalResul</span><span class="kc">t</span><span class="err">(avg_score=</span><span class="mf">0.6666666666666666</span><span class="p">,</span><span class="w"> </span><span class="err">judgeme</span><span class="kc">nt</span><span class="err">_score_lis</span><span class="kc">t</span><span class="err">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="err">co</span><span class="kc">nf</span><span class="err">ide</span><span class="kc">n</span><span class="err">ce_i</span><span class="kc">nter</span><span class="err">val=(</span><span class="mf">0.013333333333333197</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="err">))</span>
 </pre></div>
 </div>
-<p>This type of LLM judeg is seen in text-grad <a class="footnote-reference brackets" href="#id54" id="id26" role="doc-noteref"><span class="fn-bracket">[</span>17<span class="fn-bracket">]</span></a>.
+<p>This type of LLM judeg is seen in text-grad <a class="footnote-reference brackets" href="#id55" id="id26" role="doc-noteref"><span class="fn-bracket">[</span>17<span class="fn-bracket">]</span></a>.
 You can view the prompt we used simply using <cite>print(llm_judge)</cite>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DefaultLLMJudge</span><span class="p">(</span>
     <span class="n">judgement_query</span><span class="o">=</span> <span class="n">Does</span> <span class="n">the</span> <span class="n">predicted</span> <span class="n">answer</span> <span class="n">contain</span> <span class="n">the</span> <span class="n">ground</span> <span class="n">truth</span> <span class="n">answer</span><span class="err">?</span> <span class="n">Say</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">yes</span><span class="p">,</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">no</span><span class="o">.</span><span class="p">,</span>
@@ -748,14 +758,14 @@ You can view the prompt we used simply using <cite>print(llm_judge)</cite>:</p>
 </section>
 <section id="g-eval">
 <h3>G_Eval<a class="headerlink" href="#g-eval" title="Link to this heading">#</a></h3>
-<figure class="align-center" id="id63">
+<figure class="align-center" id="id65">
 <a class="reference internal image-reference" href="../_images/G_eval_structure.png"><img alt="G-eval structure" src="../_images/G_eval_structure.png" style="width: 700px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">G-eval framework structure</span><a class="headerlink" href="#id63" title="Link to this image">#</a></p>
+<p><span class="caption-text">G-eval framework structure</span><a class="headerlink" href="#id65" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<p>If you have no reference text, you can also use G-eval <a class="footnote-reference brackets" href="#id48" id="id27" role="doc-noteref"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></a> to evaluate the generated text on the fly.
+<p>If you have no reference text, you can also use G-eval <a class="footnote-reference brackets" href="#id49" id="id27" role="doc-noteref"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></a> to evaluate the generated text on the fly.
 G-eval provided a way to evaluate:</p>
 <ul class="simple">
 <li><p><cite>relevance</cite>: evaluates how relevant the summarized text to the source text.</p></li>
@@ -847,7 +857,7 @@ From the printout, you can observe the two trainable_prompt_kwargs in the <code 
 You have various options, such as:</p>
 <ol class="arabic simple">
 <li><p>Pearson Correlation Coefficient</p></li>
-<li><p>Kendallrank correlation coefficient from ARES <a class="footnote-reference brackets" href="#id51" id="id28" role="doc-noteref"><span class="fn-bracket">[</span>14<span class="fn-bracket">]</span></a>, particularly useful for ranking systems (Retrieval).</p></li>
+<li><p>Kendallrank correlation coefficient from ARES <a class="footnote-reference brackets" href="#id52" id="id28" role="doc-noteref"><span class="fn-bracket">[</span>14<span class="fn-bracket">]</span></a>, particularly useful for ranking systems (Retrieval).</p></li>
 </ol>
 </section>
 </section>
@@ -867,7 +877,7 @@ Often, we have</p>
 <li><p>NDCG&#64;k</p></li>
 <li><p>Precision&#64;k, MAP&#64;k etc.</p></li>
 </ol>
-<p>For defails of these metrics, please refer to <a class="footnote-reference brackets" href="#id55" id="id29" role="doc-noteref"><span class="fn-bracket">[</span>18<span class="fn-bracket">]</span></a>.
+<p>For defails of these metrics, please refer to <a class="footnote-reference brackets" href="#id56" id="id29" role="doc-noteref"><span class="fn-bracket">[</span>18<span class="fn-bracket">]</span></a>.
 All of these metrics, you can also find at <a class="reference external" href="https://lightning.ai/docs/torchmetrics/stable/">TorchMetrics</a>.</p>
 <p>For example, you can use the following code snippet to compute the recall&#64;k the retriever component of the RAG pipeline for a single query if
 the ground truth context is provided.
@@ -908,6 +918,7 @@ There are different strategies to handle this problem but we could not dive into
 <blockquote>
 <div><p>Recall = [GT statements that can be attributed to the retrieved context] / [GT statements]</p>
 </div></blockquote>
+<p>There is also <strong>Context Relevance</strong> and <strong>Context Precision</strong> metrics in RAGAS.</p>
 </section>
 <section id="llm-or-model-based-judge-for-retriever-recall">
 <h4>LLM or model based judge for Retriever Recall<a class="headerlink" href="#llm-or-model-based-judge-for-retriever-recall" title="Link to this heading">#</a></h4>
@@ -916,16 +927,20 @@ There are different strategies to handle this problem but we could not dive into
 <p>We can create a subset of query, retrieved chunk pairs and manually label them, and we train an LLM judge to predict the score.
 If the judge can achieve a high accuracy then we are able to annotate any metric in the retriever given the query and the retrieved chunk pairs.</p>
 <p><strong>ARES with finetuned classifier with synthetic data</strong></p>
-<p>ARES <a class="footnote-reference brackets" href="#id51" id="id33" role="doc-noteref"><span class="fn-bracket">[</span>14<span class="fn-bracket">]</span></a> proposed to create a synthetic dataset from an in-domain corpora.
+<p>ARES <a class="footnote-reference brackets" href="#id52" id="id33" role="doc-noteref"><span class="fn-bracket">[</span>14<span class="fn-bracket">]</span></a> proposed to create a synthetic dataset from an in-domain corpora.
 The generated data represent both positive and negative examples of <cite>query–passage–answer triples`</cite> (e.g.,relevant/irrelevant passages and correct/incorrectanswers).</p>
 <p>The synthetic dataset is used to train a classifier consists of  embedding and a classification head.
 It claims to be able to adapt to other domains where the classifier is not trained on.
 The cost of this approach is quite low as you can compute the embedding for only once for each query and each chunk in the corpus.</p>
 <p><strong>RAGEval for vertical domain evaluation</strong></p>
-<p>RAGEVal <a class="footnote-reference brackets" href="#id58" id="id34" role="doc-noteref"><span class="fn-bracket">[</span>21<span class="fn-bracket">]</span></a> proposed a framework to synthesize vertical domain evaluation dataset such as finance, healthcare, legal etc where due to the privacy, it is challenging to create a large real-world dataset.</p>
+<p>RAGEVal <a class="footnote-reference brackets" href="#id59" id="id34" role="doc-noteref"><span class="fn-bracket">[</span>21<span class="fn-bracket">]</span></a> proposed a framework to synthesize vertical domain evaluation dataset such as finance, healthcare, legal etc where due to the privacy, it is challenging to create a large real-world dataset.</p>
 <p><strong>More</strong></p>
 <p>See the evaluation on datasets at <span class="xref std std-doc">Evaluating a RAG Pipeline</span>.</p>
-<p>Additionally, there are more research for RAG evaluation, such as SemScore <a class="footnote-reference brackets" href="#id50" id="id35" role="doc-noteref"><span class="fn-bracket">[</span>13<span class="fn-bracket">]</span></a>, ARES <a class="footnote-reference brackets" href="#id51" id="id36" role="doc-noteref"><span class="fn-bracket">[</span>14<span class="fn-bracket">]</span></a>, RGB <a class="footnote-reference brackets" href="#id52" id="id37" role="doc-noteref"><span class="fn-bracket">[</span>15<span class="fn-bracket">]</span></a>, etc.</p>
+<p>Additionally, there are more research for RAG evaluation, such as SemScore <a class="footnote-reference brackets" href="#id51" id="id35" role="doc-noteref"><span class="fn-bracket">[</span>13<span class="fn-bracket">]</span></a>, ARES <a class="footnote-reference brackets" href="#id52" id="id36" role="doc-noteref"><span class="fn-bracket">[</span>14<span class="fn-bracket">]</span></a>, RGB <a class="footnote-reference brackets" href="#id53" id="id37" role="doc-noteref"><span class="fn-bracket">[</span>15<span class="fn-bracket">]</span></a>, etc.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GovTech Singapore provides a well-explained evaluation guideline <a class="footnote-reference brackets" href="#id60" id="id38" role="doc-noteref"><span class="fn-bracket">[</span>22<span class="fn-bracket">]</span></a> that aligns with our guideline but with more thereotical explanation on some metrics.</p>
+</div>
 </section>
 </section>
 </section>
@@ -943,99 +958,103 @@ This means that:</p>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id38" role="doc-footnote">
+<aside class="footnote brackets" id="id39" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id3">3</a>,<a role="doc-backlink" href="#id11">4</a>,<a role="doc-backlink" href="#id15">5</a>)</span>
 <p>Chang, Yupeng, et al. “A survey on evaluation of large language models.” ACM Transactions on Intelligent Systems and Technology 15.3 (2024): 1-45.</p>
 </aside>
-<aside class="footnote brackets" id="id39" role="doc-footnote">
+<aside class="footnote brackets" id="id40" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id12">2</a>)</span>
 <p>Guo, Zishan, et al. “Evaluating large language models: A comprehensive survey.” arXiv preprint arXiv:2310.19736 (2023).</p>
 </aside>
-<aside class="footnote brackets" id="id40" role="doc-footnote">
+<aside class="footnote brackets" id="id41" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">3</a><span class="fn-bracket">]</span></span>
 <p>Achiam, Josh, et al. “GPT-4 technical report.” arXiv preprint arXiv:2303.08774 (2023).</p>
 </aside>
-<aside class="footnote brackets" id="id41" role="doc-footnote">
+<aside class="footnote brackets" id="id42" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id9">2</a>)</span>
 <p>Hendrycks, Dan, et al. “Measuring massive multitask language understanding.” International Conference on Learning Representations. 2020.</p>
 </aside>
-<aside class="footnote brackets" id="id42" role="doc-footnote">
+<aside class="footnote brackets" id="id43" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">5</a><span class="fn-bracket">]</span></span>
 <p>Chen, Mark, et al. “Evaluating large language models trained on code.” arXiv preprint arXiv:2107.03374 (2021).</p>
 </aside>
-<aside class="footnote brackets" id="id43" role="doc-footnote">
+<aside class="footnote brackets" id="id44" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id13">1</a>,<a role="doc-backlink" href="#id16">2</a>)</span>
 <p>Liu, Yang, et al. “Datasets for Large Language Models: A Comprehensive Survey.” arXiv preprint arXiv:2402.18041 (2024).</p>
 </aside>
-<aside class="footnote brackets" id="id44" role="doc-footnote">
+<aside class="footnote brackets" id="id45" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></span>
 <p>Finardi, Paulo, et al. “The Chronicles of RAG: The Retriever, the Chunk and the Generator.” arXiv preprint arXiv:2401.07883 (2024).</p>
 </aside>
-<aside class="footnote brackets" id="id45" role="doc-footnote">
+<aside class="footnote brackets" id="id46" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id18">8</a><span class="fn-bracket">]</span></span>
 <ol class="upperalpha simple" start="11">
 <li><p>Papineni, S. Roukos, T. Ward, and W.-J. Zhu, “Bleu: a method for automatic evaluation of machine transla-tion,” in Proceedings of the 40th annual meeting on association for computational linguistics. Association for Computational Linguistics, 2002, pp. 311–318.</p></li>
 </ol>
 </aside>
-<aside class="footnote brackets" id="id46" role="doc-footnote">
+<aside class="footnote brackets" id="id47" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id19">9</a><span class="fn-bracket">]</span></span>
 <p>C.-Y. Lin, “Rouge: a package for automatic evaluation of summaries,” 2004.</p>
 </aside>
-<aside class="footnote brackets" id="id47" role="doc-footnote">
+<aside class="footnote brackets" id="id48" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id22">10</a><span class="fn-bracket">]</span></span>
 <p><a class="reference external" href="https://lightning.ai/docs/torchmetrics/stable/text/rouge_score.html">https://lightning.ai/docs/torchmetrics/stable/text/rouge_score.html</a></p>
 </aside>
-<aside class="footnote brackets" id="id48" role="doc-footnote">
+<aside class="footnote brackets" id="id49" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id27">11</a><span class="fn-bracket">]</span></span>
 <ol class="upperalpha simple" start="25">
 <li><p>Liu, D. Iter, Y. Xu, S. Wang, R. Xu, and C. Zhu, “G-eval: Nlg evaluation using gpt-4 with better humanalignment,” 2023.</p></li>
 </ol>
 </aside>
-<aside class="footnote brackets" id="id49" role="doc-footnote">
+<aside class="footnote brackets" id="id50" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id21">12</a><span class="fn-bracket">]</span></span>
 <p>Satanjeev Banerjee and Alon Lavie. 2005. Meteor: Anautomatic metric for mt evaluation with improved cor-relation with human judgments. In Proceedings ofthe acl workshop on intrinsic and extrinsic evaluationmeasures for machine translation and/or summariza-tion, pages 65–72.</p>
 </aside>
-<aside class="footnote brackets" id="id50" role="doc-footnote">
+<aside class="footnote brackets" id="id51" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id35">13</a><span class="fn-bracket">]</span></span>
 <p>SemScore: <a class="reference external" href="https://arxiv.org/abs/2401.17072">https://arxiv.org/abs/2401.17072</a></p>
 </aside>
-<aside class="footnote brackets" id="id51" role="doc-footnote">
+<aside class="footnote brackets" id="id52" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>14<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id28">1</a>,<a role="doc-backlink" href="#id33">2</a>,<a role="doc-backlink" href="#id36">3</a>)</span>
 <p>ARES: <a class="reference external" href="https://arxiv.org/abs/2311.09476">https://arxiv.org/abs/2311.09476</a>, <a class="github reference external" href="https://github.com/stanford-futuredata/ARES">stanford-futuredata/ARES</a></p>
 </aside>
-<aside class="footnote brackets" id="id52" role="doc-footnote">
+<aside class="footnote brackets" id="id53" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id37">15</a><span class="fn-bracket">]</span></span>
 <p>RGB: <a class="reference external" href="https://ojs.aaai.org/index.php/AAAI/article/view/29728">https://ojs.aaai.org/index.php/AAAI/article/view/29728</a></p>
 </aside>
-<aside class="footnote brackets" id="id53" role="doc-footnote">
+<aside class="footnote brackets" id="id54" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>16<span class="fn-bracket">]</span></span>
 <p>G-eval: <a class="github reference external" href="https://github.com/nlpyang/geval">nlpyang/geval</a></p>
 </aside>
-<aside class="footnote brackets" id="id54" role="doc-footnote">
+<aside class="footnote brackets" id="id55" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id26">17</a><span class="fn-bracket">]</span></span>
 <p>Text-grad: <a class="reference external" href="https://arxiv.org/abs/2309.03409">https://arxiv.org/abs/2309.03409</a></p>
 </aside>
-<aside class="footnote brackets" id="id55" role="doc-footnote">
+<aside class="footnote brackets" id="id56" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id29">18</a><span class="fn-bracket">]</span></span>
 <p>Pretrained Transformers for Text Ranking: BERT and Beyond: <a class="reference external" href="https://arxiv.org/pdf/2010.06467">https://arxiv.org/pdf/2010.06467</a></p>
 </aside>
-<aside class="footnote brackets" id="id56" role="doc-footnote">
+<aside class="footnote brackets" id="id57" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">19</a><span class="fn-bracket">]</span></span>
 <p>Liu, Yang, et al. “Datasets for large language models: A comprehensive survey.” arXiv preprint arXiv:2402.18041 (2024).</p>
 </aside>
-<aside class="footnote brackets" id="id57" role="doc-footnote">
+<aside class="footnote brackets" id="id58" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id20">20</a><span class="fn-bracket">]</span></span>
 <p>ROUGE Deep dive: <a class="reference external" href="https://medium.com/nlplanet/two-minutes-nlp-learn-the-rouge-metric-by-examples-f179cc285499">https://medium.com/nlplanet/two-minutes-nlp-learn-the-rouge-metric-by-examples-f179cc285499</a></p>
 </aside>
-<aside class="footnote brackets" id="id58" role="doc-footnote">
+<aside class="footnote brackets" id="id59" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>21<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id5">1</a>,<a role="doc-backlink" href="#id14">2</a>,<a role="doc-backlink" href="#id34">3</a>)</span>
 <p>Zhu, Kunlun, et al. “RAGEval: Scenario Specific RAG Evaluation Dataset Generation Framework.” arXiv preprint arXiv:2408.01262 (2024).</p>
+</aside>
+<aside class="footnote brackets" id="id60" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id38">22</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://playbooks.capdev.govtext.gov.sg/evaluation/">https://playbooks.capdev.govtext.gov.sg/evaluation/</a></p>
 </aside>
 </aside>
 <div class="highlight admonition">
@@ -1055,6 +1074,7 @@ This means that:</p>
 <li><p><a class="reference external" href="https://huggingface.co/metrics">Hugging Face Metrics</a></p></li>
 <li><p><a class="reference external" href="https://docs.ragas.io/en/stable/getstarted/index.html">RAGAS</a></p></li>
 <li><p><a class="reference external" href="https://arxiv.org/abs/2303.08774">G-eval</a></p></li>
+<li><p><a class="reference external" href="https://scikit-learn.org/stable/modules/model_evaluation.html">Sklearn</a></p></li>
 </ul>
 </div>
 </section>
