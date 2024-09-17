@@ -166,7 +166,9 @@ To optimize your pipeline, simply define a ``Parameter`` and pass it to our ``Ge
 Whether you need to optimize task instructions or few-shot demonstrations,
 our unified framework offers an easy way to **diagnose**, **visualize**, **debug**, and **train** your pipeline.
 
-This [Trace Graph](https://adalflow.sylph.ai/tutorials/trace_graph.html) demonstrates how our auto-differentiation works.
+This [Dynamic Computation Graph](https://adalflow.sylph.ai/tutorials/trace_graph.html) demonstrates how our auto-differentiation and the dynamic computation graph work.
+
+No need to manually defined nodes and edges, AdalFlow will automatically trace the computation graph for you.
 
 ### **Trainable Task Pipeline**
 
