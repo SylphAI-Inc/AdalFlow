@@ -42,7 +42,7 @@ class VallinaRAGAdal(adal.AdalComponent):
     def handle_one_task_sample(
         self, sample: HotPotQAData
     ) -> Tuple[Callable[..., Any], Dict]:
-        if self.task.training:  # TODO: make the components more clear
+        if self.task.training:
             return self.task.forward, {"question": sample.question, "id": sample.id}
         else:
             return self.task.call, {"question": sample.question, "id": sample.id}

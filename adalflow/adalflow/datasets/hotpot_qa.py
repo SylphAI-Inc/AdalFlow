@@ -163,12 +163,12 @@ class HotPotQA(Dataset):
 
 
 if __name__ == "__main__":
-    dataset = HotPotQA(root="BBH_object_counting", split="train", size=20)
+    dataset = HotPotQA(split="train", size=20)
     print(dataset[0], type(dataset[0]))
     print(len(dataset))
-    valdataset = HotPotQA(root="BBH_object_counting", split="val", size=50)
+    valdataset = HotPotQA(split="val", size=50)
     print(len(valdataset))
-    testdataset = HotPotQA(root="BBH_object_counting", split="test", size=50)
+    testdataset = HotPotQA(split="test", size=50)
     print(len(testdataset))
     print(f"valdataset[0]: {valdataset[0]}")
     print(f"testdataset[0]: {testdataset[0]}")

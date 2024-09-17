@@ -1,6 +1,6 @@
 """We will use dspy's retriever to keep that the same and only use our generator and optimizer"""
 
-from typing import List, Optional
+from typing import List, Optional, Union
 from dataclasses import dataclass, field
 import dspy
 
@@ -166,17 +166,19 @@ class VanillaRAG(adal.GradComponent):
             use_cache=True,
         )
 
+    # user should just treat it as a call function
+    # and we will handle the connection between the components
+    # they should directly pass the retriever_output along with
+    # each output's successor_map_fn.
+    # what if it is passed to two different componnents?
+    # we can create a copy
+
     def call(self, question: str, id: str = None) -> adal.GeneratorOutput:
         if self.training:
             raise ValueError(
                 "This component is not supposed to be called in training mode"
             )
-        # user should just treat it as a call function
-        # and we will handle the connection between the components
-        # they should directly pass the retriever_output along with
-        # each output's successor_map_fn.
-        # what if it is passed to two different componnents?
-        # we can create a copy
+
         retriever_out = self.retriever.call(input=question)
 
         successor_map_fn = lambda x: (  # noqa E731
@@ -184,8 +186,6 @@ class VanillaRAG(adal.GradComponent):
         )
         retrieved_context = successor_map_fn(retriever_out)
 
-        # print(f"retrieved_context: {retrieved_context}")
-        # print(f"retriever_out: {retriever_out}")
         prompt_kwargs = {
             "context": retrieved_context,
             "question": question,
@@ -196,12 +196,14 @@ class VanillaRAG(adal.GradComponent):
             id=id,
         )
         # self.llm.print_prompt(**prompt_kwargs)
+        # print(f"retrieved_context: {retrieved_context}")
+        # print(f"retriever_out: {retriever_out}")
         return output
 
+    # TODO: add id in the retriever output
     def forward(self, question: str, id: str = None) -> adal.Parameter:
         if not self.training:
             raise ValueError("This component is not supposed to be called in eval mode")
-        # TODO: add id in the retriever output
         retriever_out = self.retriever.forward(input=question)
         successor_map_fn = lambda x: (  # noqa E731
             "\n\n".join(x.data[0].documents)
@@ -213,6 +215,42 @@ class VanillaRAG(adal.GradComponent):
             prompt_kwargs={"question": question, "context": retriever_out}, id=id
         )
         return generator_out
+
+    def bicall(
+        self, question: str, id: str = None
+    ) -> Union[adal.GeneratorOutput, adal.Parameter]:
+        """You can also combine both the forward and call in the same function.
+        Supports both training and eval mode by using __call__ for GradComponents
+        like Retriever and Generator
+        """
+        retriever_out = self.retriever(input=question)
+        if isinstance(retriever_out, adal.Parameter):
+            successor_map_fn = lambda x: (  # noqa E731
+                "\n\n".join(x.data[0].documents)
+                if x.data and x.data[0] and x.data[0].documents
+                else ""
+            )
+            retriever_out.add_successor_map_fn(
+                successor=self.llm, map_fn=successor_map_fn
+            )
+        else:
+            successor_map_fn = lambda x: (  # noqa E731
+                "\n\n".join(x[0].documents) if x and x[0] and x[0].documents else ""
+            )
+            retrieved_context = successor_map_fn(retriever_out)
+        prompt_kwargs = {
+            "context": retrieved_context,
+            "question": question,
+        }
+        output = self.llm(prompt_kwargs=prompt_kwargs, id=id)
+        return output
+
+
+def test_retriever():
+    question = "How many storeys are in the castle that David Gregory inherited?"
+    retriever = DspyRetriever(top_k=3)
+    retriever_out = retriever(input=question)
+    print(f"retriever_out: {retriever_out}")
 
 
 def test_vailla_rag():
@@ -248,4 +286,5 @@ def test_vailla_rag():
 
 
 if __name__ == "__main__":
-    test_vailla_rag()
+    test_retriever()
+    # test_vailla_rag()

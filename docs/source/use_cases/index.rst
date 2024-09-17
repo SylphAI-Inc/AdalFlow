@@ -47,7 +47,9 @@ Optimization
    * - :doc:`classification`
      - Classification with `gpt-3.5-turbo`. The optimized task pipeline performs on-par with `gpt-4o`.
    * - :doc:`rag_opt`
-     - RAG and multi-hop question answering with hotpotqa dataset, two generators, and one retriever, optimizing zero-shot and few-shot learning (coming soon).
+     - Different from previous tasks where we only used one generator component, in this of hotpotqa dataset, we will demonstrates how to optimize a pipeline composed of multiple `GradComponent`(`Retriever` & `Generator`) with a standard RAG architectures
+
+.. - RAG and multi-hop question answering with hotpotqa dataset, two generators, and one retriever, optimizing zero-shot and few-shot learning (coming soon).
 
 
 
