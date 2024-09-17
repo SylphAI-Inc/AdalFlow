@@ -51,7 +51,10 @@ class TestGradComponent(unittest.TestCase):
 
         # Create an actual Parameter instance
         param = Parameter(data="input_data", name="test_param")
-        param.successor_map_fn = MagicMock(side_effect=lambda x: "unwrapped_" + str(x))
+        # param.successor_map_fn = MagicMock(side_effect=lambda x: "unwrapped_" + str(x))
+        param.add_successor_map_fn(
+            successor=self.component, map_fn=lambda x: "unwrapped_" + str(x)
+        )
 
         args = [param]
         kwargs = {"id": 123, "other_param": param}

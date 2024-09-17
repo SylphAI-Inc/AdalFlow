@@ -62,7 +62,60 @@ In AdalFlow, you do this for inference:
 
 Just like pytorch has tensor and parameter, which are a special type of tensor, the gradcomponent is a special type of component capable of auto-text-grad.
 
+**How to connect the output-input between components?**
 
+In pytorch, this is a earsier problem as they are all matrices within tensors.
+But in LLM applications, (1) each component's output can be very different in terms of form.
+For generator we have ``GeneratorOutput`` and for retriever, we have ``List[RetrieverOutput]``
+. To connect retriever output to generator output, we need special handling of the `("\n\n".join(ro.[0].documents)` .
+For langgraph, this is done inside of each manually defined node. And the whole pipeline uses GraphState (global accessible) to the whole graph to access and to store the data.
+(2) we need robust error handling in our output structure too.
+
+
+.. code-block:: python
+
+    class GraphState(BaseModel):
+
+        question: Optional[str] = None
+        generation: Optional[str] = None
+        documents: List[str] = []
+
+    def retriever_node(state: GraphState):
+        new_documents = retriever.invoke(state.question)
+        new_documents = [d.page_content for d in new_documents]
+        state.documents.extend(new_documents)
+        return {"documents": state.documents}
+
+    def generation_node(state: GraphState):
+        generation = rag_chain.invoke({
+            "context": "\n\n".join(state.documents),
+            "question": state.question,
+        })
+        return {"generation": generation}
+
+When we are doing training, both outputs are parameters, but the way to connect data is the same.
+We use a successor_map_fn of type `Dict[str, Callable]` to connect the output of one component to the input of another component.
+str will be `id(successor)`. This is only needed in the forward function of any Component or GradComponent.
+
+Here is our example:
+
+.. code-block:: python
+
+    def foward(self, question: str, id: str = None) -> adal.Parameter:
+        retriever_out = self.retriever.forward(input=question)
+        successor_map_fn = lambda x: (
+            "\n\n".join(x.data[0].documents)
+            if x.data and x.data[0] and x.data[0].documents
+            else ""
+        )
+        retriever_out.add_successor_map_fn(successor=self.llm, map_fn=successor_map_fn)
+        generator_out = self.llm.forward(
+            prompt_kwargs={"question": question, "context": retriever_out}, id=id
+        )
+        return generator_out
+
+#TODO: save the trace_graph
+And here is our trace_graph:
 
 Textual Gradient Operators
 --------------------------

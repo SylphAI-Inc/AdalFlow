@@ -103,9 +103,9 @@ class Parameter(Generic[T]):
     input_args: Dict[str, Any] = None  # Input arguments of the GradComponent forward
     full_response: object = None  # Full response of the GradComponent output
     eval_input: object = None  # Eval input passing to the eval_fn or evaluator you use
-    successor_map_fn: Callable = (
-        lambda x: x.data
-    )  # Map function to get the data from the parameter
+    successor_map_fn: Dict[str, Callable] = (
+        None  # Map function to get the data from the output
+    )
     from_response_id: str = (
         None  # for parameterType GRADIENT, the id of the response parameter
     )
@@ -129,7 +129,7 @@ class Parameter(Generic[T]):
         score: Optional[float] = None,
         eval_input: object = None,
         from_response_id: Optional[str] = None,
-        successor_map_fn: Optional[Callable] = None,
+        successor_map_fn: Optional[Dict[str, Callable]] = None,
     ):
         self.id = id or str(uuid.uuid4())
 
@@ -177,7 +177,22 @@ class Parameter(Generic[T]):
         self.eval_input = eval_input
 
         self.from_response_id = from_response_id  # for gradient parameter
-        self.successor_map_fn = successor_map_fn
+        self.successor_map_fn = successor_map_fn or {}
+
+    def map_to_successor(self, successor: object) -> T:
+        """Apply the map function to the successor based on the successor's id."""
+        successor_id = id(successor)
+        if successor_id not in self.successor_map_fn:
+            default_map_fn = lambda x: x.data  # noqa: E731
+            return default_map_fn(self)
+            # raise ValueError(
+            #     f"Successor {successor_id} not found in the successor_map_fn"
+            # )
+        return self.successor_map_fn[successor_id](successor)
+
+    def add_successor_map_fn(self, successor: object, map_fn: Callable):
+        """Add or update a map function for a specific successor using its id."""
+        self.successor_map_fn[id(successor)] = map_fn
 
     def check_if_already_computed_gradient_respect_to(self, response_id: str) -> bool:
         from_response_ids = [g.from_response_id for g in self.gradients]
@@ -530,6 +545,8 @@ class Parameter(Generic[T]):
                 node_label += f"<tr><td><b><font color='{label_color}'>Previous Value: </font></b></td><td>{wrap_and_escape(n.previous_data)}</td></tr>"
             if n.requires_opt:
                 node_label += f"<tr><td><b><font color='{label_color}'>Requires Optimization: </font ></b></td><td>{{'Yes'}}</td></tr>"
+            if n.param_type:
+                node_label += f"<tr><td><b><font color='{label_color}'>Type: </font></b></td><td>{wrap_and_escape(n.param_type.name)}</td></tr>"
             if add_grads:
                 node_label += f"<tr><td><b><font color='{label_color}'>Gradients: </font></b></td><td>{wrap_and_escape(n.get_gradients_names())}</td></tr>"
                 # add a list of each gradient with short value

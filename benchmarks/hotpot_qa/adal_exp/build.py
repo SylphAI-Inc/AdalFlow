@@ -1,6 +1,7 @@
 """We will use dspy's retriever to keep that the same and only use our generator and optimizer"""
 
 import dspy
+import re
 from typing import List, Union, Optional, Dict, Callable
 from dataclasses import dataclass, field
 
@@ -11,6 +12,7 @@ from adalflow.datasets.hotpot_qa import HotPotQA, HotPotQAData
 from adalflow.datasets.types import Example
 
 from adalflow.core.retriever import Retriever
+from adalflow.core.component import fun_to_component
 
 
 colbertv2_wiki17_abstracts = dspy.ColBERTv2(
@@ -102,13 +104,10 @@ Context: {{context}}
 Question: {{question}}
 """
 
-from adalflow.core.component import fun_to_component
-import re
 
-
-@fun_to_component
-def parse_string_query(text: str) -> str:
-    return re.search(r"Query: (.*)", text).group(1)
+# @fun_to_component
+# def parse_string_query(text: str) -> str:
+#     return re.search(r"Query: (.*)", text).group(1)
 
 
 @fun_to_component

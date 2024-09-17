@@ -160,10 +160,11 @@ Putting it all together
 
 .. list-table::
     :widths: 20 80
+    :header-rows: 1
 
     * - Part
       - Description
-    - :doc:`rag_playbook`
+    * - :doc:`rag_playbook`
       - Comprehensive RAG playbook according to the sota research and the best practices in the industry.
 
 

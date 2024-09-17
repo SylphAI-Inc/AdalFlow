@@ -89,7 +89,7 @@ class GradComponent(Component):
         unwrapped_args = []
         for k, v in input_args.items():
             if isinstance(v, Parameter):
-                unwrapped_args.append(v.successor_map_fn(v))
+                unwrapped_args.append(v.map_to_successor(self))
             else:
                 unwrapped_args.append(v)
 
@@ -97,7 +97,7 @@ class GradComponent(Component):
         # unwrap kwargs
         for k, v in kwargs.items():
             if isinstance(v, Parameter):
-                unwrapped_kwargs[k] = v.successor_map_fn(v)
+                unwrapped_kwargs[k] = v.map_to_successor(self)
             else:
                 unwrapped_kwargs[k] = v
 

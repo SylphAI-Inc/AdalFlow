@@ -25,6 +25,7 @@ class ParameterType(Enum):
     # input and output parameters (similar to tensor, can have grad_opt true, but not trainable)
     INPUT = ("input", "The input to the component.")
     OUTPUT = ("output", "The output of the component.")
+    HYPERPARAM = ("hyperparam", "Hyperparameters/args for the component.")
 
     # gradient paramters for each predecessor of dag.
     GRADIENT = ("gradient", "A gradient parameter.")

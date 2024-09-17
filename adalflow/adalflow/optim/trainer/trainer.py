@@ -243,6 +243,7 @@ class Trainer(Component):
             }
             save_json(stats, os.path.join(log_dir, "stats.json"))
             print(f"Total error samples: {len(diagnose_items)}")
+            print(f"Saved diagnose to {diagnose_file}")
 
         return acc_score, acc_per_item_scores, log_paths
 
