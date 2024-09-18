@@ -495,7 +495,7 @@ class Parameter(Generic[T]):
         # # Set up TensorBoard logging
         # writer = SummaryWriter(log_dir)
 
-        filename = f"trace_graph_{self.name}"
+        filename = f"trace_graph_{self.name}_id_{self.id}"
         filepath = (
             os.path.join(filepath, filename)
             if filepath

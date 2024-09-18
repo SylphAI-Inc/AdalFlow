@@ -88,25 +88,31 @@ class AdalComponent(Component):
             # if p.requires_opt
         ]
 
-    def handle_one_task_sample(
-        self, sample: Any, *args, **kwargs
-    ) -> Tuple[Callable, Dict]:
-        r"""Return a task call and kwargs for one training sample.
+    def prepare_task(self, sample: Any, *args, **kwargs) -> Tuple[Callable, Dict]:
+        r"""Tell Trainer how to call the task in both training and inference mode.
+
+        Return a task call and kwargs for one training sample.
+
+        If you just need to eval, ensure the Callable has the inference mode.
+        If you need to also train, ensure the Callable has the training mode which returns a Parameter and mainly
+        call forward for all subcomponents within the task.
 
         Example:
 
         .. code-block:: python
 
-            def handle_one_task_sample(self, sample: Any, *args, **kwargs) -> Tuple[Callable, Dict]:
+            def prepare_task(self, sample: Any, *args, **kwargs) -> Tuple[Callable, Dict]:
                 return self.task, {"x": sample.x}
         """
 
-        raise NotImplementedError("handle_one_task_sample method is not implemented")
+        raise NotImplementedError("prepare_task method is not implemented")
 
-    def handle_one_loss_sample(
+    def prepare_loss(
         self, sample: Any, y_pred: "Parameter", *args, **kwargs
     ) -> Tuple[Callable, Dict]:
-        r"""Return a loss call and kwargs for one loss sample.
+        r"""Tell Trainer how to calculate the loss in the training mode.
+
+        Return a loss call and kwargs for one loss sample.
 
         Need to ensure y_pred is a Parameter, and the real input to use
         for y_gt and y_pred is `eval_input`.
@@ -119,7 +125,7 @@ class AdalComponent(Component):
             # "y" and "y_gt" are arguments needed
             #by the eval_fn inside of the loss_fn if it is a EvalFnToTextLoss
 
-            def handle_one_loss_sample(self, sample: Example, pred: adal.Parameter) -> Dict:
+            def prepare_loss(self, sample: Example, pred: adal.Parameter) -> Dict:
                 # prepare gt parameter
                 y_gt = adal.Parameter(
                     name="y_gt",
@@ -132,13 +138,17 @@ class AdalComponent(Component):
                 pred.eval_input = pred.full_response.data
                 return self.loss_fn, {"kwargs": {"y": y_gt, "y_pred": pred}}
         """
-        raise NotImplementedError("handle_one_loss_sample method is not implemented")
+        raise NotImplementedError("prepare_loss method is not implemented")
 
     # TODO: support more complicated evaluation
-    def evaluate_one_sample(self, sample: Any, y_pred: Any, *args, **kwargs) -> float:
-        r"""Used to evaluate a single sample. Return a score in range [0, 1].
-        The higher the score the better the prediction."""
-        raise NotImplementedError("evaluate_one_sample method is not implemented")
+    def prepare_eval(self, sample: Any, y_pred: Any, *args, **kwargs) -> float:
+        r"""Tell Trainer how to eval in inference mode.
+        Return the eval_fn and kwargs for one evaluation sample.
+
+        Ensure the eval_fn is a callable that takes the predicted output and the ground truth output.
+        Ensure the kwargs are setup correctly.
+        """
+        raise NotImplementedError("prepare_eval method is not implemented")
 
     # def configure_optimizers(self, *args, **kwargs) -> Optimizer:
     #     r"""Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too."""
@@ -187,7 +197,7 @@ class AdalComponent(Component):
         metadata: Optional[Dict[str, Any]] = None,
         num_workers: int = 2,
     ) -> EvaluationResult:
-        r"""Run evaluation on samples using parallel processing. Utilizes ``evaluate_one_sample`` defined by the user.
+        r"""Run evaluation on samples using parallel processing. Utilizes ``prepare_eval`` defined by the user.
 
         Metadata is used for storing context that you can find from generator input.
 
@@ -217,12 +227,19 @@ class AdalComponent(Component):
             futures = {}
 
             for i, (sample, y_pred) in enumerate(zip(samples, y_preds)):
+
                 if metadata is None:
-                    future = executor.submit(self.evaluate_one_sample, sample, y_pred)
+                    eval_fn, kwargs = self.prepare_eval(sample, y_pred)
+                    future = executor.submit(eval_fn, **kwargs)
+                    # future = executor.submit(self.evaluate_one_sample, sample, y_pred)
                 else:
-                    future = executor.submit(
-                        self.evaluate_one_sample, sample, y_pred, metadata=metadata
+                    eval_fn, kwargs = self.prepare_eval(
+                        sample, y_pred, metadata=metadata
                     )
+                    future = executor.submit(eval_fn, **kwargs)
+                    # future = executor.submit(
+                    #     self.evaluate_one_sample, sample, y_pred, metadata=metadata
+                    # )
                 futures[future] = i
 
             # 2. collect the results, update the progress bar
@@ -300,7 +317,7 @@ class AdalComponent(Component):
             futures = []
             tqdm_loader = tqdm(batch, total=len(batch), desc="Loading Data")
             for i, sample in enumerate(tqdm_loader):
-                task_call, kwargs = self.handle_one_task_sample(sample)
+                task_call, kwargs = self.prepare_task(sample)
                 future = executor.submit(task_call, **kwargs)
                 futures.append((future, i, sample))  # preserve the order of the samples
 
@@ -361,7 +378,7 @@ class AdalComponent(Component):
             futures = []
             tqdm_loader = tqdm(batch, total=len(batch), desc="Loading Data")
             for i, sample in enumerate(tqdm_loader):
-                task_call, kwargs = self.handle_one_task_sample(sample)
+                task_call, kwargs = self.prepare_task(sample)
                 future = executor.submit(task_call, **kwargs)
                 futures.append((future, i, sample))  # preserve the order of the samples
 
@@ -385,7 +402,8 @@ class AdalComponent(Component):
 
                 if running_eval and not isinstance(y_pred, Parameter):
                     # evaluate one sample
-                    score = self.evaluate_one_sample(sample, y_pred)
+                    eval_fn, kwargs = self.prepare_eval(sample, y_pred)
+                    score = eval_fn(**kwargs)
                     index_to_score[i] = score
                     eval_score = np.mean(list(index_to_score.values())).item()
 
@@ -489,7 +507,7 @@ class AdalComponent(Component):
                 zip(batch, y_preds), total=len(batch), desc="Loading Data"
             )
             for i, (sample, y_pred) in enumerate(tqdm_loader):
-                loss_forward, kwargs = self.handle_one_loss_sample(sample, y_pred)
+                loss_forward, kwargs = self.prepare_loss(sample, y_pred)
                 future = executor.submit(loss_forward, **kwargs)
                 futures.append((future, i, sample))
             tqdm_loader = tqdm(
@@ -596,13 +614,13 @@ class AdalComponent(Component):
         training = self.task.training
         # test training
         self.task.train()
-        task_call, kwargs = self.handle_one_task_sample(sample)
+        task_call, kwargs = self.prepare_task(sample)
         output = task_call(**kwargs)
         if not isinstance(output, Parameter):
             warnings.warn(f"Output is not a Parameter in training mode: {output}")
         # eval mode
         self.task.eval()
-        task_call, kwargs = self.handle_one_task_sample(sample)
+        task_call, kwargs = self.prepare_task(sample)
         output = task_call(**kwargs)
         if isinstance(output, Parameter):
             warnings.warn(f"Output is a Parameter in evaluation mode: {output}")
@@ -611,7 +629,7 @@ class AdalComponent(Component):
 
     def run_one_loss_sample(self, sample: Any, y_pred: Any) -> Any:
         r"""Run one loss sample. Used for debugging and testing."""
-        loss_call, kwargs = self.handle_one_loss_sample(sample, y_pred)
+        loss_call, kwargs = self.prepare_loss(sample, y_pred)
         return loss_call(**kwargs)
 
     def _find_all_generators(self) -> List[Tuple[str, "Generator"]]:

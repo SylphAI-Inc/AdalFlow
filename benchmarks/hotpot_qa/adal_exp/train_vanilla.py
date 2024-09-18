@@ -39,9 +39,7 @@ class VallinaRAGAdal(adal.AdalComponent):
         )
 
     # tell the trainer how to call the task
-    def handle_one_task_sample(
-        self, sample: HotPotQAData
-    ) -> Tuple[Callable[..., Any], Dict]:
+    def prepare_task(self, sample: HotPotQAData) -> Tuple[Callable[..., Any], Dict]:
         if self.task.training:
             return self.task.forward, {"question": sample.question, "id": sample.id}
         else:
@@ -50,16 +48,15 @@ class VallinaRAGAdal(adal.AdalComponent):
     # TODO: use two map fn to make the cde even simpler
 
     # eval mode: get the generator output, directly engage with the eval_fn
-    def evaluate_one_sample(
-        self, sample: HotPotQAData, y_pred: adal.GeneratorOutput
-    ) -> float:
+    def prepare_eval(self, sample: HotPotQAData, y_pred: adal.GeneratorOutput) -> float:
         y_label = ""
         if y_pred and y_pred.data and y_pred.data.answer:
             y_label = y_pred.data.answer
-        return self.eval_fn(y=y_label, y_gt=sample.answer)
+        return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
+        # return self.eval_fn(y=y_label, y_gt=sample.answer)
 
     # train mode: get the loss and get the data from the full_response
-    def handle_one_loss_sample(self, sample: HotPotQAData, pred: adal.Parameter):
+    def prepare_loss(self, sample: HotPotQAData, pred: adal.Parameter):
         # prepare gt parameter
         y_gt = adal.Parameter(
             name="y_gt",

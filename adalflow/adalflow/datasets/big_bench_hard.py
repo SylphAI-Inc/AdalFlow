@@ -28,14 +28,14 @@ class BigBenchHard(Dataset):
     - test: 100 examples
 
     Args:
-        task_name (str): The name of the task. "BHH_{task_name}" is the task name in the dataset.
+        task_name (str): The name of the task. "{task_name}" is the task name in the dataset.
         root (str, optional): Root directory of the dataset to save the data. Defaults to ~/.adalflow/cache_datasets/task_name.
         split (str, optional): The dataset split, supports ``"train"`` (default), ``"val"`` and ``"test"``.
     """
 
     def __init__(
         self,
-        task_name: Literal["BBH_object_counting"] = "BBH_object_counting",
+        task_name: Literal["object_counting"] = "object_counting",
         root: str = None,
         split: Literal["train", "val", "test"] = "train",
         *args,
@@ -51,7 +51,7 @@ class BigBenchHard(Dataset):
         self.root = root
         self.split = split
 
-        self.task_name = "_".join(task_name.split("_")[1:])
+        self.task_name = task_name
         data_path = prepare_dataset_path(self.root, self.task_name)
         self._check_or_download_dataset(data_path, split)
 
@@ -74,15 +74,37 @@ class BigBenchHard(Dataset):
             return
 
         print(f"Downloading dataset to {json_path}")
+        try:
+            # Use subprocess and capture the return code
+            result = subprocess.call(
+                [
+                    "wget",
+                    f"https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/main/bbh/{self.task_name}.json",
+                    "-O",
+                    json_path,
+                ]
+            )
 
-        subprocess.call(
-            [
-                "wget",
-                f"https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/main/bbh/{self.task_name}.json",
-                "-O",
-                json_path,
-            ]
-        )
+            # Check if wget failed (non-zero exit code)
+            if result != 0:
+                raise ValueError(
+                    f"Failed to download dataset for task '{self.task_name}'.\n"
+                    "Please verify the task name (the JSON file name) by checking the following link:\n"
+                    "https://github.com/suzgunmirac/BIG-Bench-Hard/tree/main/bbh"
+                )
+
+            # Check if the file is non-empty
+            if not os.path.exists(json_path) or os.path.getsize(json_path) == 0:
+                raise ValueError(
+                    f"Downloaded file is empty. Please check the task name '{self.task_name}' or network issues."
+                )
+
+        except Exception as e:
+            raise ValueError(
+                f"Either network issues or an incorrect task name: '{self.task_name}'.\n"
+                "Please verify the task name (the JSON file name) by checking the following link:\n"
+                "https://github.com/suzgunmirac/BIG-Bench-Hard/tree/main/bbh"
+            ) from e
 
         with open(json_path) as json_file:
             data = json.load(json_file)
@@ -128,7 +150,7 @@ class BigBenchHard(Dataset):
 if __name__ == "__main__":
     from adalflow.datasets.big_bench_hard import BigBenchHard
 
-    dataset = BigBenchHard("BBH_word_sorting", split="train")
+    dataset = BigBenchHard(task_name="word_sorting", split="train")
     print(dataset[0:10])
     print(len(dataset))
     print(dataset.get_default_task_instruction())

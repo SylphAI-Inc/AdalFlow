@@ -94,7 +94,7 @@ def extract_answer(answer: str) -> str:
         return ""
 
 
-def load_datasets(max_samples: int = None, task_name: str = "BBH_object_count"):
+def load_datasets(max_samples: int = None, task_name: str = "object_counting"):
     """Load the dataset"""
     train_data = BigBenchHard(split="train", task_name=task_name)
     val_data = BigBenchHard(split="val", task_name=task_name)

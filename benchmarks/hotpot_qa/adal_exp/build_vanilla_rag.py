@@ -286,5 +286,5 @@ def test_vailla_rag():
 
 
 if __name__ == "__main__":
-    test_retriever()
-    # test_vailla_rag()
+    # test_retriever()
+    test_vailla_rag()

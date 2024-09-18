@@ -373,6 +373,7 @@ The pipeline without optimizaton achieved around :math:`0.6` accuracy on the tes
 
 Training
 ---------------------
+First, we train with only the supervision on the final generation answer, without the retriever supervision.
 
 
 
