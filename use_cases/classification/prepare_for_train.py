@@ -85,7 +85,7 @@ def diagnose_string_output(
 
 
 if __name__ == "__main__":
-    from LightRAG.use_cases.config import (
+    from use_cases.config import (
         gpt_4o_model,
     )
 

@@ -17,6 +17,8 @@ We will build use cases end-to-end, ranging from classification (classical NLP t
 
     * - Part
       - Description
+    * - :doc:`rag_playbook`
+      - Comprehensive RAG playbook according to the sota research and the best practices in the industry.
     * - :doc:`build_a_rag`
       - Designing a RAG pipeline, from offline data processing to online inference.
     * - :doc:`eval_a_rag`
@@ -27,6 +29,7 @@ We will build use cases end-to-end, ranging from classification (classical NLP t
     :caption: RAG vibe
     :hidden:
 
+    rag_playbook
     build_a_rag
     eval_a_rag
 
@@ -44,7 +47,9 @@ Optimization
    * - :doc:`classification`
      - Classification with `gpt-3.5-turbo`. The optimized task pipeline performs on-par with `gpt-4o`.
    * - :doc:`rag_opt`
-     - RAG and multi-hop question answering with hotpotqa dataset, two generators, and one retriever, optimizing zero-shot and few-shot learning (coming soon).
+     - Different from previous tasks where we only used one generator component, in this of hotpotqa dataset, we will demonstrates how to optimize a pipeline composed of multiple `GradComponent`(`Retriever` & `Generator`) with a standard RAG architectures
+
+.. - RAG and multi-hop question answering with hotpotqa dataset, two generators, and one retriever, optimizing zero-shot and few-shot learning (coming soon).
 
 
 

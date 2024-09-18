@@ -1,6 +1,7 @@
 """We will use dspy's retriever to keep that the same and only use our generator and optimizer"""
 
 import dspy
+import re
 from typing import List, Union, Optional, Dict, Callable
 from dataclasses import dataclass, field
 
@@ -11,6 +12,7 @@ from adalflow.datasets.hotpot_qa import HotPotQA, HotPotQAData
 from adalflow.datasets.types import Example
 
 from adalflow.core.retriever import Retriever
+from adalflow.core.component import fun_to_component
 
 
 colbertv2_wiki17_abstracts = dspy.ColBERTv2(
@@ -22,9 +24,9 @@ dspy.settings.configure(rm=colbertv2_wiki17_abstracts)
 
 def load_datasets():
 
-    trainset = HotPotQA(split="train", size=50)
+    trainset = HotPotQA(split="train", size=20)
     valset = HotPotQA(split="val", size=50)
-    testset = HotPotQA(split="test", size=100)
+    testset = HotPotQA(split="test", size=50)
     print(f"trainset, valset: {len(trainset)}, {len(valset)}, example: {trainset[0]}")
     return trainset, valset, testset
 
@@ -102,13 +104,10 @@ Context: {{context}}
 Question: {{question}}
 """
 
-from adalflow.core.component import fun_to_component
-import re
 
-
-@fun_to_component
-def parse_string_query(text: str) -> str:
-    return re.search(r"Query: (.*)", text).group(1)
+# @fun_to_component
+# def parse_string_query(text: str) -> str:
+#     return re.search(r"Query: (.*)", text).group(1)
 
 
 @fun_to_component
@@ -129,34 +128,6 @@ class HotPotQADemoData(Example):
         metadata={"desc": "The score of the answer"},
         default=None,
     )
-
-
-from benchmarks.hotpot_qa.dspy_train import validate_context_and_answer_and_hops
-
-
-def convert_y_pred_to_dataclass(y_pred):
-    # y_pred in both eval and train mode
-    context: List[str] = (
-        y_pred.input_args["prompt_kwargs"]["context"]
-        if hasattr(y_pred, "input_args")
-        else []
-    )
-    # context_str = "\n".join(context)
-    data = y_pred.data if hasattr(y_pred, "data") else y_pred
-    return DynamicDataClassFactory.from_dict(
-        class_name="HotPotQAData",
-        data={
-            "answer": data,
-            "context": context,
-        },
-    )
-
-
-def eval_fn(sample, y_pred, metadata):
-    if isinstance(sample, Parameter):
-        sample = sample.data
-    y_pred_obj = convert_y_pred_to_dataclass(y_pred)
-    return 1 if validate_context_and_answer_and_hops(sample, y_pred_obj) else 0
 
 
 from adalflow.core.types import RetrieverOutput, GeneratorOutput
@@ -185,9 +156,6 @@ class DspyRetriever(Retriever):
         print(f"final_output: {final_output}")
         return final_output
 
-
-# example need to have question,
-# pred needs to have query
 
 import adalflow as adal
 
@@ -490,7 +458,6 @@ from adalflow.optim.trainer.trainer import Trainer
 from adalflow.optim.few_shot.bootstrap_optimizer import BootstrapFewShot
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from adalflow.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
-from adalflow.core.base_data_class import DynamicDataClassFactory
 
 
 class HotPotQARAGAdal(AdalComponent):

@@ -1,6 +1,17 @@
 """Parameter is used by Optimizer, Trainers, AdalComponent to auto-optimizations"""
 
-from typing import Generic, TypeVar, Any, List, Set, Dict, Tuple, Optional, Literal
+from typing import (
+    Generic,
+    TypeVar,
+    Any,
+    List,
+    Set,
+    Dict,
+    Tuple,
+    Optional,
+    Literal,
+    Callable,
+)
 from collections import defaultdict
 import logging
 from dataclasses import dataclass, field
@@ -79,12 +90,22 @@ class Parameter(Generic[T]):
     1. https://github.com/karpathy/micrograd/blob/master/micrograd/engine.py
     """
 
+    id: str = None  # Unique id of the parameter
+    name: str = None  # Name of the parameter, easier to read for humans
+    role_desc: str = ""  # Description of the role of the parameter
+    data: T = None  # Data of the parameter
+    param_type: ParameterType
+
     proposing: bool = False  # State of the parameter
     predecessors: Set["Parameter"] = set()  # Predecessors of the parameter
     peers: Set["Parameter"] = set()  # Peers of the parameter
+    # TODO: input_args should be OrderedDict to keep the order of args
     input_args: Dict[str, Any] = None  # Input arguments of the GradComponent forward
     full_response: object = None  # Full response of the GradComponent output
     eval_input: object = None  # Eval input passing to the eval_fn or evaluator you use
+    successor_map_fn: Dict[str, Callable] = (
+        None  # Map function to get the data from the output
+    )
     from_response_id: str = (
         None  # for parameterType GRADIENT, the id of the response parameter
     )
@@ -108,6 +129,7 @@ class Parameter(Generic[T]):
         score: Optional[float] = None,
         eval_input: object = None,
         from_response_id: Optional[str] = None,
+        successor_map_fn: Optional[Dict[str, Callable]] = None,
     ):
         self.id = id or str(uuid.uuid4())
 
@@ -155,6 +177,20 @@ class Parameter(Generic[T]):
         self.eval_input = eval_input
 
         self.from_response_id = from_response_id  # for gradient parameter
+        self.successor_map_fn = successor_map_fn or {}
+
+    def map_to_successor(self, successor: object) -> T:
+        """Apply the map function to the successor based on the successor's id."""
+        successor_id = id(successor)
+        if successor_id not in self.successor_map_fn:
+            default_map_fn = lambda x: x.data  # noqa: E731
+            return default_map_fn(self)
+
+        return self.successor_map_fn[successor_id](self)
+
+    def add_successor_map_fn(self, successor: object, map_fn: Callable):
+        """Add or update a map function for a specific successor using its id."""
+        self.successor_map_fn[id(successor)] = map_fn
 
     def check_if_already_computed_gradient_respect_to(self, response_id: str) -> bool:
         from_response_ids = [g.from_response_id for g in self.gradients]
@@ -380,7 +416,9 @@ class Parameter(Generic[T]):
         build_graph(root)
         return nodes, edges
 
-    def backward(self):  # engine should be the llm
+    def backward(
+        self,
+    ):  # engine should be the llm or customized backwards function to pass feedback
 
         # topological sort of all the predecessors of the current parameter in the graph
         log.debug(f"Backward pass for {self.data}, backward function: {self.grad_fn}")
@@ -505,6 +543,8 @@ class Parameter(Generic[T]):
                 node_label += f"<tr><td><b><font color='{label_color}'>Previous Value: </font></b></td><td>{wrap_and_escape(n.previous_data)}</td></tr>"
             if n.requires_opt:
                 node_label += f"<tr><td><b><font color='{label_color}'>Requires Optimization: </font ></b></td><td>{{'Yes'}}</td></tr>"
+            if n.param_type:
+                node_label += f"<tr><td><b><font color='{label_color}'>Type: </font></b></td><td>{wrap_and_escape(n.param_type.name)}</td></tr>"
             if add_grads:
                 node_label += f"<tr><td><b><font color='{label_color}'>Gradients: </font></b></td><td>{wrap_and_escape(n.get_gradients_names())}</td></tr>"
                 # add a list of each gradient with short value

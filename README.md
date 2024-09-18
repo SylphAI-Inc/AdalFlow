@@ -29,6 +29,7 @@
         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.html">Models</a> |
         <a href="https://adalflow.sylph.ai/apis/components/components.retriever.html">Retrievers</a> |
         <a href="https://adalflow.sylph.ai/apis/components/components.agent.html">Agents</a> |
+        <a href="https://adalflow.sylph.ai/tutorials/evaluation.html"> LLM evaluation</a> |
         <a href="https://adalflow.sylph.ai/use_cases/question_answering.html">Trainer & Optimizers</a>
     <p>
 </h4>
@@ -165,7 +166,9 @@ To optimize your pipeline, simply define a ``Parameter`` and pass it to AdalFlow
 Whether you need to optimize task instructions or run some few-shot demonstrations,
 AdalFlow's unified framework offers an easy way to **diagnose**, **visualize**, **debug**, and **train** your pipeline.
 
-This [Trace Graph](https://adalflow.sylph.ai/tutorials/trace_graph.html) demonstrates how our auto-differentiation works.
+This [Dynamic Computation Graph](https://adalflow.sylph.ai/tutorials/trace_graph.html) demonstrates how our auto-differentiation and the dynamic computation graph work.
+
+No need to manually defined nodes and edges, AdalFlow will automatically trace the computation graph for you.
 
 ### **Trainable Task Pipeline**
 
@@ -212,7 +215,9 @@ AdalFlow full documentation available at [adalflow.sylph.ai](https://adalflow.sy
 
 # AdalFlow: A Tribute to Ada Lovelace
 
+
 AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could do more than just perform calculations. As a female-led team, we aim to inspire more women to enter the AI field.
+
 
 # Contributors
 
@@ -238,6 +243,12 @@ Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive 
   month = {7},
   year = {2024},
   doi = {10.5281/zenodo.12639531},
-  url = {https://github.com/SylphAI-Inc/LightRAG}
+  url = {https://github.com/SylphAI-Inc/AdalFlow}
 }
 ```
+
+# Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=SylphAI-Inc/AdalFlow&type=Date)](https://star-history.com/#SylphAI-Inc/AdalFlow&Date)
+<!--
+<a href="https://trendshift.io/repositories/11559" target="_blank"><img src="https://trendshift.io/api/badge/repositories/11559" alt="SylphAI-Inc%2FAdalFlow | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a> -->

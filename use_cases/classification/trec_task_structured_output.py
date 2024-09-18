@@ -87,12 +87,18 @@ class TRECClassifierStructuredOutput(adal.Component):
             use_cache=True,
         )
 
+    # TODO: can automatically convert everything to parameter if it is not already
+    # inside of the forward function instead of doing it here.
+    # and this conversion will give input type automatically
     def _prepare_input(self, question: str):
         input_data = self.data_class(question=question)
         input_str = self.parser.get_input_str(input_data)
         prompt_kwargs = {
             "input_str": adal.Parameter(
-                data=input_str, requires_opt=False, role_desc="input to the LLM"
+                data=input_str,
+                requires_opt=True,
+                role_desc="input to the LLM",
+                param_type=adal.ParameterType.INPUT,
             )
         }
         return prompt_kwargs

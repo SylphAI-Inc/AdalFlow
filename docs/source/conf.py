@@ -65,7 +65,7 @@ html_theme_options = {
     #             banner.className = 'announcement-banner';
     #             // Create the content for the announcement
     #             banner.innerHTML = `
-    #                 <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
+    #                 <p>⭐️ If you find AdalFlow helpful, please star us on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
     #                 <button onclick="closeBanner()">×</button>
     #             `;
     #             // Append the banner to the banner header
