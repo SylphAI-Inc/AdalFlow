@@ -357,7 +357,7 @@ Here is the DsPy's Signature (similar to the prompt) where its task description 
         )
 
 
-Here is the peroformance result
+Here is the performance result
 
 .. list-table:: AdalFlow vs DsPy on GPT-3.5-turbo
    :header-rows: 1
