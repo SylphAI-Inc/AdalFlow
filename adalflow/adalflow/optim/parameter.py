@@ -120,7 +120,7 @@ class Parameter(Generic[T]):
         data: T = None,  # for generator output, the data will be set up as raw_response
         requires_opt: bool = True,
         role_desc: str = "",
-        param_type: ParameterType = ParameterType.PROMPT,
+        param_type: ParameterType = ParameterType.NONE,
         name: str = None,  # name is used to refer to the parameter in the prompt, easier to read for humans
         gradient_prompt: str = None,
         raw_response: str = None,  # use this to track the raw response of generator instead of the data (can be parsed)

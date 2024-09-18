@@ -162,6 +162,7 @@ class EvalFnToTextLoss(LossComponent):
             requires_opt=True,
             role_desc=response_desc,
             score=score,
+            param_type=ParameterType.LOSS_OUTPUT,
         )
         eval_param.set_predecessors(predesessors)
 

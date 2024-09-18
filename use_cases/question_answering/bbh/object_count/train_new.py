@@ -139,7 +139,7 @@ def train(
 if __name__ == "__main__":
 
     train(
-        debug=False,
+        debug=True,
         max_steps=12,
         strategy="constrained",
         exclude_input_fields_from_bootstrap_demos=True,
