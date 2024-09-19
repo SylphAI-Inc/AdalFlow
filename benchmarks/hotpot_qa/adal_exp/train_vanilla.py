@@ -102,14 +102,14 @@ def train_diagnose(
 def train(
     train_batch_size=4,  # larger batch size is not that effective, probably because of llm's lost in the middle
     raw_shots: int = 0,
-    bootstrap_shots: int = 1,
+    bootstrap_shots: int = 4,
     max_steps=1,
     num_workers=4,
     strategy="constrained",
     optimization_order="sequential",
     debug=False,
     resume_from_ckpt=None,
-    exclude_input_fields_from_bootstrap_demos=False,
+    exclude_input_fields_from_bootstrap_demos=True,
 ):
     adal_component = VallinaRAGAdal(
         **gpt_3_model,
@@ -157,8 +157,10 @@ if __name__ == "__main__":
     train(
         debug=False,
         max_steps=12,
-        resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )
     # random_max_steps_12_ecf16_run_9.json, demo only, val 0.6 to 0.68,  test: 0.58-0.61
     # random_max_steps_12_7c091_run_1.json,  prompt + demo, 0.58 -0.62, test: 0.55 - 0.58
     # resume from random_max_steps_12_7c091_run_1.json
+
+    # demo only, no input, 4 shots, 0.58-> 0.62, VallinaRAGAdal/constrained_max_steps_12_b0a37_run_1.json
