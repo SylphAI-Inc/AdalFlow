@@ -577,9 +577,7 @@ class Parameter(Generic[T]):
             log.info(f"Node: {n.name}, {n.to_dict()}")
             # track gradients
             for g in n.gradients:
-                # writer.add_text(g.name, str(g.to_dict()))
-                # if g.gradient_prompt:
-                #     writer.add_text(f"{g.name}_prompt", g.gradient_prompt)
+
                 log.info(f"Gradient: {g.name}, {g.to_dict()}")
                 log.info(f"Gradient prompt: {g.gradient_prompt}")
         for n1, n2 in edges:

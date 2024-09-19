@@ -68,7 +68,7 @@ class Trainer(Component):
 
             from adalflow.utils import get_logger
 
-                get_logger(level="DEBUG")
+            get_logger(level="DEBUG")
     """
 
     adaltask: AdalComponent  # task pipeline
