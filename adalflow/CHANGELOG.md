@@ -1,3 +1,11 @@
+## [0.2.3] - 2024-09-20
+
+### Rename
+- three methods within `AdalComponent` are renamed:
+  - `handle_one_loss_sample` to `prepre_loss`
+  - `handle_one_task_sample` to `prepre_task`
+  - `evaluate_one_sample` to `prepre_eval`
+
 ## [0.2.3.beta.1] - 2024-09-17
 ### Removed
 - Removed /reasoning as COT is just too simple to be a separate module.

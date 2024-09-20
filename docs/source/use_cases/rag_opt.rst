@@ -304,9 +304,7 @@ Here is the `AdalComponent` class for the `VanillaRAG` task:
             )
 
         # tell the trainer how to call the task
-        def handle_one_task_sample(
-            self, sample: HotPotQAData
-        ) -> Tuple[Callable[..., Any], Dict]:
+        def prepare_task(self, sample: HotPotQAData) -> Tuple[Callable[..., Any], Dict]:
             if self.task.training:
                 return self.task.forward, {"question": sample.question, "id": sample.id}
             else:
@@ -314,16 +312,16 @@ Here is the `AdalComponent` class for the `VanillaRAG` task:
 
 
         # eval mode: get the generator output, directly engage with the eval_fn
-        def evaluate_one_sample(
-            self, sample: HotPotQAData, y_pred: adal.GeneratorOutput
-        ) -> float:
+        def prepare_eval(self, sample: HotPotQAData, y_pred: adal.GeneratorOutput) -> float:
             y_label = ""
             if y_pred and y_pred.data and y_pred.data.answer:
                 y_label = y_pred.data.answer
-            return self.eval_fn(y=y_label, y_gt=sample.answer)
+            return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
+
 
         # train mode: get the loss and get the data from the full_response
-        def handle_one_loss_sample(self, sample: HotPotQAData, pred: adal.Parameter):
+        def prepare_loss(self, sample: HotPotQAData, pred: adal.Parameter):
+            # prepare gt parameter
             y_gt = adal.Parameter(
                 name="y_gt",
                 data=sample.answer,
@@ -331,6 +329,7 @@ Here is the `AdalComponent` class for the `VanillaRAG` task:
                 requires_opt=False,
             )
 
+            # pred's full_response is the output of the task pipeline which is GeneratorOutput
             pred.eval_input = (
                 pred.full_response.data.answer
                 if pred.full_response
@@ -339,6 +338,7 @@ Here is the `AdalComponent` class for the `VanillaRAG` task:
                 else ""
             )
             return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}}
+
 
 Diagnose
 ---------------------
@@ -373,6 +373,7 @@ The pipeline without optimizaton achieved around :math:`0.6` accuracy on the tes
 
 Training
 ---------------------
+First, we train with only the supervision on the final generation answer, without the retriever supervision.
 
 
 
