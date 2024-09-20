@@ -1263,6 +1263,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/optim/index.html#optim.Trainer.debug">debug (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.debug">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.debug">[2]</a>
 </li>
+      <li><a href="apis/optim/index.html#optim.Trainer.debug_report">debug_report() (Trainer method)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.debug_report">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.debug_report">[2]</a>
+</li>
       <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.decode">decode() (Tokenizer method)</a>
 </li>
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.default">default() (in module utils.serialization)</a>
@@ -1406,10 +1408,10 @@
 </li>
       <li><a href="apis/optim/index.html#optim.Parameter.eval_input">eval_input (Parameter attribute)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.eval_input">[1]</a>
 </li>
-      <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt.eval_score">eval_score (HistoryPrompt attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt.eval_score">eval_score (HistoryPrompt attribute)</a>
+</li>
       <li><a href="apis/optim/index.html#optim.EvalFnToTextLoss">EvalFnToTextLoss (class in optim)</a>
 
       <ul>
@@ -1419,8 +1421,6 @@
 </li>
       </ul></li>
       <li><a href="apis/core/core.functional.html#core.functional.evaluate_ast_node">evaluate_ast_node() (in module core.functional)</a>
-</li>
-      <li><a href="apis/optim/index.html#optim.AdalComponent.evaluate_one_sample">evaluate_one_sample() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.evaluate_one_sample">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.evaluate_one_sample">[2]</a>
 </li>
       <li><a href="apis/optim/index.html#optim.AdalComponent.evaluate_samples">evaluate_samples() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.evaluate_samples">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.evaluate_samples">[2]</a>
 </li>
@@ -1802,20 +1802,16 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/optim/index.html#optim.AdalComponent.handle_one_loss_sample">handle_one_loss_sample() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.handle_one_loss_sample">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.handle_one_loss_sample">[2]</a>
-</li>
-      <li><a href="apis/optim/index.html#optim.AdalComponent.handle_one_task_sample">handle_one_task_sample() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.handle_one_task_sample">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.handle_one_task_sample">[2]</a>
-</li>
       <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.handle_streaming_response">handle_streaming_response() (in module components.model_client.openai_client)</a>
 </li>
       <li><a href="apis/utils/utils.cache.html#utils.cache.hash_text">hash_text() (in module utils.cache)</a>
 </li>
       <li><a href="apis/utils/utils.cache.html#utils.cache.hash_text_sha1">hash_text_sha1() (in module utils.cache)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt">HistoryPrompt (class in optim.text_grad.tgd_optimizer)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/datasets/index.html#datasets.HotPotQA">HotPotQA (class in datasets)</a>
 
       <ul>
@@ -2676,12 +2672,12 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.FunctionOutput.parsed_input">parsed_input (FunctionOutput attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.string_parser.html#core.string_parser.Parser">Parser (class in core.string_parser)</a>
 </li>
       <li><a href="apis/optim/index.html#optim.Parameter.peers">peers (Parameter attribute)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.peers">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/eval/eval.base.html#eval.base.EvaluationResult.per_item_scores">per_item_scores (EvaluationResult attribute)</a>
 </li>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.PGVECTOR">PGVECTOR (OptionalPackages attribute)</a>
@@ -2699,6 +2695,12 @@
       <li><a href="apis/datasets/datasets.utils.html#datasets.utils.prepare_dataset_path">prepare_dataset_path() (in module datasets.utils)</a>
 </li>
       <li><a href="apis/datasets/datasets.trec.html#datasets.trec.prepare_datasets">prepare_datasets() (in module datasets.trec)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.prepare_eval">prepare_eval() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.prepare_eval">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.prepare_eval">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.prepare_loss">prepare_loss() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.prepare_loss">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.prepare_loss">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.prepare_task">prepare_task() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.prepare_task">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.prepare_task">[2]</a>
 </li>
       <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.preprocess">preprocess() (Tokenizer method)</a>
 </li>

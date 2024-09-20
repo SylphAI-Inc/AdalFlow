@@ -53,7 +53,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="RAG optimization" href="rag_opt.html" />
-    <link rel="prev" title="Introduction to AdalFlow library" href="question_answering.html" />
+    <link rel="prev" title="Q&amp;A Few Shot Demo Trace Graph" href="qa_demo_trace_graph.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -388,7 +388,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">End-to-End</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="question_answering.html">Introduction to AdalFlow library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="question_answering.html">Question Answering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qa_computation_graph.html">Q&amp;A Computation Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qa_text_grad_trace_graph.html">Q&amp;A Text Grad Trace Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qa_demo_trace_graph.html">Q&amp;A Few Shot Demo Trace Graph</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Classification Optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rag_opt.html">RAG optimization</a></li>
 </ul>
@@ -448,7 +451,13 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="classification-optimization">
+  <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+
+   <a href="https://github.com/SylphAI-Inc/AdalFlow/tree/main/use_cases/classification" target="_blank" style="display: flex; align-items: center;">
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+      <span style="vertical-align: middle;"> Open Source Code</span>
+   </a>
+</div><section id="classification-optimization">
 <h1>Classification Optimization<a class="headerlink" href="#classification-optimization" title="Link to this heading">#</a></h1>
 <p>Classification is one of the most widely used tasks in NLP.
 Optimizing GenAI-based classification can help developers quickly create a well-performing model.
@@ -623,18 +632,18 @@ as well as a method method to configure teacher generator for the demo optimizer
             <span class="n">teacher_model_config</span><span class="o">=</span><span class="n">teacher_model_config</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">handle_one_task_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">TRECExtendedData</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">prepare_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">TRECExtendedData</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">call</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">question</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">evaluate_one_sample</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">prepare_eval</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">TRECExtendedData</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="n">y_label</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="k">if</span> <span class="n">y_pred</span> <span class="ow">and</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">class_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">y_label</span> <span class="o">=</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">class_name</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_fn</span><span class="p">(</span><span class="n">y_label</span><span class="p">,</span> <span class="n">sample</span><span class="o">.</span><span class="n">class_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_fn</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y_label</span><span class="p">,</span> <span class="s2">&quot;y_gt&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">class_name</span><span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">handle_one_loss_sample</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">prepare_loss</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">TRECExtendedData</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="n">full_response</span> <span class="o">=</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">full_response</span>
@@ -654,17 +663,6 @@ as well as a method method to configure teacher generator for the demo optimizer
             <span class="n">requires_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y_pred</span><span class="p">,</span> <span class="s2">&quot;y_gt&quot;</span><span class="p">:</span> <span class="n">y_gt</span><span class="p">}}</span>
-
-    <span class="k">def</span> <span class="nf">configure_teacher_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_teacher_generator_helper</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">teacher_model_config</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">configure_backward_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_backward_engine_helper</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">backward_engine_model_config</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">to</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_text_optimizer_helper</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">text_optimizer_model_config</span><span class="p">)</span>
-        <span class="n">do</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_demo_optimizer_helper</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">to</span> <span class="o">+</span> <span class="n">do</span>
 </pre></div>
 </div>
 </section>
@@ -765,7 +763,7 @@ The demo prompt is also short, directly from a teacher model teaching the studen
      <span class="p">)</span>
 </pre></div>
 </div>
-<p>Here is the peroformance result</p>
+<p>Here is the performance result</p>
 <div class="pst-scrollable-table-container"><table class="table" id="id3">
 <caption><span class="caption-text">AdalFlow vs DsPy on GPT-3.5-turbo</span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
 <colgroup>
@@ -862,12 +860,12 @@ We trained to train a joined <code class="docutils literal notranslate"><span cl
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="question_answering.html"
+       href="qa_demo_trace_graph.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Introduction to AdalFlow library</p>
+        <p class="prev-next-title">Q&amp;A Few Shot Demo Trace Graph</p>
       </div>
     </a>
     <a class="right-next"

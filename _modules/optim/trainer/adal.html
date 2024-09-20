@@ -521,30 +521,36 @@
             <span class="c1"># if p.requires_opt</span>
         <span class="p">]</span>
 
-<div class="viewcode-block" id="AdalComponent.handle_one_task_sample">
-<a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.handle_one_task_sample">[docs]</a>
-    <span class="k">def</span> <span class="nf">handle_one_task_sample</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a task call and kwargs for one training sample.</span>
+<div class="viewcode-block" id="AdalComponent.prepare_task">
+<a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.prepare_task">[docs]</a>
+    <span class="k">def</span> <span class="nf">prepare_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Tell Trainer how to call the task in both training and inference mode.</span>
+
+<span class="sd">        Return a task call and kwargs for one training sample.</span>
+
+<span class="sd">        If you just need to eval, ensure the Callable has the inference mode.</span>
+<span class="sd">        If you need to also train, ensure the Callable has the training mode which returns a Parameter and mainly</span>
+<span class="sd">        call forward for all subcomponents within the task.</span>
 
 <span class="sd">        Example:</span>
 
 <span class="sd">        .. code-block:: python</span>
 
-<span class="sd">            def handle_one_task_sample(self, sample: Any, *args, **kwargs) -&gt; Tuple[Callable, Dict]:</span>
+<span class="sd">            def prepare_task(self, sample: Any, *args, **kwargs) -&gt; Tuple[Callable, Dict]:</span>
 <span class="sd">                return self.task, {&quot;x&quot;: sample.x}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;handle_one_task_sample method is not implemented&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;prepare_task method is not implemented&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="AdalComponent.handle_one_loss_sample">
-<a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.handle_one_loss_sample">[docs]</a>
-    <span class="k">def</span> <span class="nf">handle_one_loss_sample</span><span class="p">(</span>
+<div class="viewcode-block" id="AdalComponent.prepare_loss">
+<a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.prepare_loss">[docs]</a>
+    <span class="k">def</span> <span class="nf">prepare_loss</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a loss call and kwargs for one loss sample.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Tell Trainer how to calculate the loss in the training mode.</span>
+
+<span class="sd">        Return a loss call and kwargs for one loss sample.</span>
 
 <span class="sd">        Need to ensure y_pred is a Parameter, and the real input to use</span>
 <span class="sd">        for y_gt and y_pred is `eval_input`.</span>
@@ -557,7 +563,7 @@
 <span class="sd">            # &quot;y&quot; and &quot;y_gt&quot; are arguments needed</span>
 <span class="sd">            #by the eval_fn inside of the loss_fn if it is a EvalFnToTextLoss</span>
 
-<span class="sd">            def handle_one_loss_sample(self, sample: Example, pred: adal.Parameter) -&gt; Dict:</span>
+<span class="sd">            def prepare_loss(self, sample: Example, pred: adal.Parameter) -&gt; Dict:</span>
 <span class="sd">                # prepare gt parameter</span>
 <span class="sd">                y_gt = adal.Parameter(</span>
 <span class="sd">                    name=&quot;y_gt&quot;,</span>
@@ -570,16 +576,20 @@
 <span class="sd">                pred.eval_input = pred.full_response.data</span>
 <span class="sd">                return self.loss_fn, {&quot;kwargs&quot;: {&quot;y&quot;: y_gt, &quot;y_pred&quot;: pred}}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;handle_one_loss_sample method is not implemented&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;prepare_loss method is not implemented&quot;</span><span class="p">)</span></div>
 
 
     <span class="c1"># TODO: support more complicated evaluation</span>
-<div class="viewcode-block" id="AdalComponent.evaluate_one_sample">
-<a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.evaluate_one_sample">[docs]</a>
-    <span class="k">def</span> <span class="nf">evaluate_one_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Used to evaluate a single sample. Return a score in range [0, 1].</span>
-<span class="sd">        The higher the score the better the prediction.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;evaluate_one_sample method is not implemented&quot;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="AdalComponent.prepare_eval">
+<a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.prepare_eval">[docs]</a>
+    <span class="k">def</span> <span class="nf">prepare_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Tell Trainer how to eval in inference mode.</span>
+<span class="sd">        Return the eval_fn and kwargs for one evaluation sample.</span>
+
+<span class="sd">        Ensure the eval_fn is a callable that takes the predicted output and the ground truth output.</span>
+<span class="sd">        Ensure the kwargs are setup correctly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;prepare_eval method is not implemented&quot;</span><span class="p">)</span></div>
 
 
     <span class="c1"># def configure_optimizers(self, *args, **kwargs) -&gt; Optimizer:</span>
@@ -637,7 +647,7 @@
         <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EvaluationResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run evaluation on samples using parallel processing. Utilizes ``evaluate_one_sample`` defined by the user.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run evaluation on samples using parallel processing. Utilizes ``prepare_eval`` defined by the user.</span>
 
 <span class="sd">        Metadata is used for storing context that you can find from generator input.</span>
 
@@ -667,12 +677,19 @@
             <span class="n">futures</span> <span class="o">=</span> <span class="p">{}</span>
 
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">)):</span>
+
                 <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluate_one_sample</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+                    <span class="n">eval_fn</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_eval</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+                    <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">eval_fn</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="c1"># future = executor.submit(self.evaluate_one_sample, sample, y_pred)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_one_sample</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span>
+                    <span class="n">eval_fn</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_eval</span><span class="p">(</span>
+                        <span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span>
                     <span class="p">)</span>
+                    <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">eval_fn</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="c1"># future = executor.submit(</span>
+                    <span class="c1">#     self.evaluate_one_sample, sample, y_pred, metadata=metadata</span>
+                    <span class="c1"># )</span>
                 <span class="n">futures</span><span class="p">[</span><span class="n">future</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
 
             <span class="c1"># 2. collect the results, update the progress bar</span>
@@ -751,7 +768,7 @@
             <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">tqdm_loader</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Loading Data&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm_loader</span><span class="p">):</span>
-                <span class="n">task_call</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_one_task_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+                <span class="n">task_call</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_task</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
                 <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">task_call</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">future</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span><span class="p">))</span>  <span class="c1"># preserve the order of the samples</span>
 
@@ -814,7 +831,7 @@
             <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">tqdm_loader</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Loading Data&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm_loader</span><span class="p">):</span>
-                <span class="n">task_call</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_one_task_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+                <span class="n">task_call</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_task</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
                 <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">task_call</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">future</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span><span class="p">))</span>  <span class="c1"># preserve the order of the samples</span>
 
@@ -838,7 +855,8 @@
 
                 <span class="k">if</span> <span class="n">running_eval</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
                     <span class="c1"># evaluate one sample</span>
-                    <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_one_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+                    <span class="n">eval_fn</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_eval</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+                    <span class="n">score</span> <span class="o">=</span> <span class="n">eval_fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                     <span class="n">index_to_score</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">score</span>
                     <span class="n">eval_score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">index_to_score</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
 
@@ -954,7 +972,7 @@
                 <span class="nb">zip</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">),</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Loading Data&quot;</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm_loader</span><span class="p">):</span>
-                <span class="n">loss_forward</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_one_loss_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+                <span class="n">loss_forward</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_loss</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
                 <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">loss_forward</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">future</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span><span class="p">))</span>
             <span class="n">tqdm_loader</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
@@ -1076,13 +1094,13 @@
         <span class="n">training</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">training</span>
         <span class="c1"># test training</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
-        <span class="n">task_call</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_one_task_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+        <span class="n">task_call</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_task</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">task_call</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output is not a Parameter in training mode: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># eval mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
-        <span class="n">task_call</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_one_task_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+        <span class="n">task_call</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_task</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">task_call</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output is a Parameter in evaluation mode: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1094,7 +1112,7 @@
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.run_one_loss_sample">[docs]</a>
     <span class="k">def</span> <span class="nf">run_one_loss_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run one loss sample. Used for debugging and testing.&quot;&quot;&quot;</span>
-        <span class="n">loss_call</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_one_loss_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+        <span class="n">loss_call</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_loss</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">loss_call</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 

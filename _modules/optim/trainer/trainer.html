@@ -491,6 +491,17 @@
 <span class="s2">        test_dataset: Any: Test dataset</span>
 <span class="s2">        few_shots_config: Optional[FewShotConfig]: Few shot configuration</span>
 <span class="s2">        save_traces: bool: Save traces for for synthetic data generation or debugging</span>
+<span class="s2">        debug: bool: Debug mode to run the trainer in debug mode. If debug is True, for text debug, the graph will be under /ckpt/YourAdalComponentName/debug_text_grads for prompt parameter,</span>
+<span class="s2">        and for demo debug, the graph will be under /ckpt/YourAdalComponentName/debug_demos for demo parameters.</span>
+
+<span class="s2">    Note:</span>
+<span class="s2">        When you are in the debug mode, you can use get_logger api to show more detailed log on your own.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">            from adalflow.utils import get_logger</span>
+
+<span class="s2">            get_logger(level=&quot;DEBUG&quot;)</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="n">adaltask</span><span class="p">:</span> <span class="n">AdalComponent</span>  <span class="c1"># task pipeline</span>
@@ -683,6 +694,40 @@
         <span class="k">return</span> <span class="n">acc_score</span><span class="p">,</span> <span class="n">acc_per_item_scores</span><span class="p">,</span> <span class="n">log_paths</span></div>
 
 
+<div class="viewcode-block" id="Trainer.debug_report">
+<a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.debug_report">[docs]</a>
+    <span class="k">def</span> <span class="nf">debug_report</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">text_grad_debug_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">few_shot_demo_debug_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">colorama</span>
+        <span class="kn">from</span> <span class="nn">colorama</span> <span class="kn">import</span> <span class="n">Fore</span>
+
+        <span class="c1"># Initialize colorama</span>
+        <span class="n">colorama</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">autoreset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">CYAN</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">================== DEBUG REPORT ==================</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">text_grad_debug_path</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">GREEN</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;✔ Text grad debug path: </span><span class="si">{</span><span class="n">text_grad_debug_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">RED</span> <span class="o">+</span> <span class="s2">&quot;✘ Text grad debugging was not run.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">few_shot_demo_debug_path</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">Fore</span><span class="o">.</span><span class="n">GREEN</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;✔ Few shot demo debug path: </span><span class="si">{</span><span class="n">few_shot_demo_debug_path</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">RED</span> <span class="o">+</span> <span class="s2">&quot;✘ Few shot demo debugging was not run.&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">GREEN</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">✔ The debug has run successfully!&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="n">Fore</span><span class="o">.</span><span class="n">YELLOW</span>
+            <span class="o">+</span> <span class="s2">&quot;You can visualize the complete computation graph at the paths shown above.&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">CYAN</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">===================================================</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Trainer.fit">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.fit">[docs]</a>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
@@ -707,10 +752,6 @@
         <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
         <span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span>
-        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">get_logger</span>
-
-            <span class="n">get_logger</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
 
         <span class="c1"># check task</span>
         <span class="n">adaltask</span> <span class="o">=</span> <span class="n">adaltask</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span>
@@ -823,13 +864,17 @@
 
         <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debugging mode&quot;</span><span class="p">)</span>
-            <span class="c1"># if len(self.text_optimizers) &gt; 0:</span>
-            <span class="c1">#     self._fit_text_grads_one_step_for_debug(train_loader)</span>
+            <span class="n">text_grad_debug_path</span><span class="p">,</span> <span class="n">few_shot_demo_debug_path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">text_grad_debug_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit_text_grads_one_step_for_debug</span><span class="p">(</span>
+                    <span class="n">train_loader</span>
+                <span class="p">)</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_fit_demos_one_step_for_debug</span><span class="p">(</span>
+                <span class="n">few_shot_demo_debug_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit_demos_one_step_for_debug</span><span class="p">(</span>
                     <span class="n">train_loader</span><span class="p">,</span> <span class="n">train_dataset</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">,</span> <span class="n">test_dataset</span>
                 <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">debug_report</span><span class="p">(</span><span class="n">text_grad_debug_path</span><span class="p">,</span> <span class="n">few_shot_demo_debug_path</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1">########Run text_optimizers and demo optimizers in sequential order ########</span>
@@ -1031,15 +1076,16 @@
         <span class="k">return</span> <span class="n">trainer_results</span>
         <span class="c1"># end of validation</span>
 
-    <span class="c1"># TODO: make this the debug</span>
     <span class="k">def</span> <span class="nf">_fit_demos_one_step_for_debug</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">train_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">test_dataset</span><span class="p">:</span> <span class="n">Any</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
         <span class="c1"># get_logger(level=&quot;DEBUG&quot;)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fitting using Random Demo Optimizer&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prep_ckpt_file_path</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;save to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ckpt_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">debug_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ckpt_path</span><span class="p">,</span> <span class="s2">&quot;debug_demos&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">debug_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;save to </span><span class="si">{</span><span class="n">debug_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span>
@@ -1089,7 +1135,7 @@
         <span class="n">losses</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
         <span class="n">pred_teacher</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="n">pred_teacher</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-        <span class="n">graph_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ckpt_path</span><span class="p">,</span> <span class="s2">&quot;graph&quot;</span><span class="p">)</span>
+        <span class="n">graph_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">debug_path</span><span class="p">,</span> <span class="s2">&quot;graph&quot;</span><span class="p">)</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Graph saved to </span><span class="si">{</span><span class="n">graph_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -1156,7 +1202,7 @@
 
             <span class="c1"># propose</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_propose</span><span class="p">()</span>
-            <span class="n">graph_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ckpt_path</span><span class="p">,</span> <span class="s2">&quot;student_graph&quot;</span><span class="p">)</span>
+            <span class="n">graph_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">debug_path</span><span class="p">,</span> <span class="s2">&quot;student_graph&quot;</span><span class="p">)</span>
 
             <span class="n">losses_student</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">graph_path</span><span class="p">)</span>
 
@@ -1172,7 +1218,6 @@
                 <span class="n">opt_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Opt params: </span><span class="si">{</span><span class="n">opt_params</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Param: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">param_type</span> <span class="o">==</span> <span class="n">ParameterType</span><span class="o">.</span><span class="n">DEMOS</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Demo param: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, value: </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">, param: </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1188,14 +1233,15 @@
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">_demos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No demos found, param: </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_fit_text_grads_one_step_for_debug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">debug_path</span>
+
+    <span class="k">def</span> <span class="nf">_fit_text_grads_one_step_for_debug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debugging fitting one step with batch size 2 for text optimizer&quot;</span><span class="p">)</span>
-        <span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">get_logger</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">prep_ckpt_file_path</span><span class="p">()</span>
         <span class="n">debug_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ckpt_path</span><span class="p">,</span> <span class="s2">&quot;debug_text_grads&quot;</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">debug_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">get_logger</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">enable_console</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_dir</span><span class="o">=</span><span class="n">debug_path</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;save to </span><span class="si">{</span><span class="n">debug_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">train_loader</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">2</span>
         <span class="n">train_loader</span><span class="o">.</span><span class="n">shuffle</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>  <span class="c1"># this will turn everything to train mode</span>
@@ -1210,7 +1256,8 @@
                     <span class="n">correct_loss</span> <span class="o">=</span> <span class="n">loss</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">failed_loss</span> <span class="o">=</span> <span class="n">loss</span>
-            <span class="k">if</span> <span class="n">correct_loss</span> <span class="ow">and</span> <span class="n">failed_loss</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">correct_loss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">failed_loss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found correct and failed loss&quot;</span><span class="p">)</span>
                 <span class="k">break</span>
         <span class="n">total_loss</span> <span class="o">=</span> <span class="n">sum_ops</span><span class="p">([</span><span class="n">correct_loss</span><span class="p">,</span> <span class="n">failed_loss</span><span class="p">])</span>
         <span class="n">total_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
@@ -1218,6 +1265,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_propose_text_optimizers</span><span class="p">()</span>
 
         <span class="n">total_loss</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">debug_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">debug_path</span>
 
     <span class="k">def</span> <span class="nf">_set_demo_optimizers_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
         <span class="c1"># init the dataset</span>
@@ -1350,6 +1398,7 @@
                 <span class="c1">#     )</span>
                 <span class="c1">#     loss.backward()</span>
                 <span class="c1"># handle the demo</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;batch: </span><span class="si">{</span><span class="n">batch</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_add_scores</span><span class="p">(</span>
                     <span class="p">[</span><span class="n">sample</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">],</span>
                     <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">loss</span> <span class="ow">in</span> <span class="n">losses</span><span class="p">],</span>

@@ -556,7 +556,7 @@
         <span class="n">data</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># for generator output, the data will be set up as raw_response</span>
         <span class="n">requires_opt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">role_desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="n">param_type</span><span class="p">:</span> <span class="n">ParameterType</span> <span class="o">=</span> <span class="n">ParameterType</span><span class="o">.</span><span class="n">PROMPT</span><span class="p">,</span>
+        <span class="n">param_type</span><span class="p">:</span> <span class="n">ParameterType</span> <span class="o">=</span> <span class="n">ParameterType</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># name is used to refer to the parameter in the prompt, easier to read for humans</span>
         <span class="n">gradient_prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">raw_response</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># use this to track the raw response of generator instead of the data (can be parsed)</span>
@@ -1008,7 +1008,7 @@
         <span class="c1"># # Set up TensorBoard logging</span>
         <span class="c1"># writer = SummaryWriter(log_dir)</span>
 
-        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;trace_graph_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;trace_graph_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_id_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">filepath</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">filepath</span>
@@ -1090,9 +1090,7 @@
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node: </span><span class="si">{</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">n</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="c1"># track gradients</span>
             <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">gradients</span><span class="p">:</span>
-                <span class="c1"># writer.add_text(g.name, str(g.to_dict()))</span>
-                <span class="c1"># if g.gradient_prompt:</span>
-                <span class="c1">#     writer.add_text(f&quot;{g.name}_prompt&quot;, g.gradient_prompt)</span>
+
                 <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gradient: </span><span class="si">{</span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">g</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gradient prompt: </span><span class="si">{</span><span class="n">g</span><span class="o">.</span><span class="n">gradient_prompt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
