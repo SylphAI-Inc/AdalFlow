@@ -53,7 +53,6 @@ class VallinaRAGAdal(adal.AdalComponent):
         if y_pred and y_pred.data and y_pred.data.answer:
             y_label = y_pred.data.answer
         return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
-        # return self.eval_fn(y=y_label, y_gt=sample.answer)
 
     # train mode: get the loss and get the data from the full_response
     def prepare_loss(self, sample: HotPotQAData, pred: adal.Parameter):
@@ -164,3 +163,4 @@ if __name__ == "__main__":
     # resume from random_max_steps_12_7c091_run_1.json
 
     # demo only, no input, 4 shots, 0.58-> 0.62, VallinaRAGAdal/constrained_max_steps_12_b0a37_run_1.json
+    # this is the same as dspy's 20shots, because dspy does not use the weighted sampling
