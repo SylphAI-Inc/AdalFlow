@@ -183,7 +183,7 @@ Just define it as a ``Parameter`` and pass it to our ``Generator``.
 ``AdalComponent`` acts as the 'interpreter'  between task pipeline and the trainer, defining training and validation steps, optimizers, evaluators, loss functions, backward engine for textual gradients or tracing the demonstrations, the teacher generator.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/trainer.png" alt="AdalFlow AdalComponent & Trainer">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/blob/main/docs/source/_static/images/trainer.png" alt="AdalFlow AdalComponent & Trainer">
 </p>
 
 # Quick Install
