@@ -1,11 +1,11 @@
 from dataclasses import dataclass, field
 
-from lightrag.core import Component, Generator, DataClass
+from adalflow.core import Component, Generator, DataClass
 
 # fun_to_component, Sequential
-from lightrag.components.model_client import GroqAPIClient
-from lightrag.components.output_parsers import JsonOutputParser
-from lightrag.utils import setup_env
+from adalflow.components.model_client import GroqAPIClient
+from adalflow.components.output_parsers import JsonOutputParser
+from adalflow.utils import setup_env
 
 setup_env()
 
@@ -76,8 +76,8 @@ class QA(Component):
 
 
 def minimum_generator():
-    from lightrag.core import Generator
-    from lightrag.components.model_client import GroqAPIClient
+    from adalflow.core import Generator
+    from adalflow.components.model_client import GroqAPIClient
 
     generator = Generator(
         model_client=GroqAPIClient(),
@@ -93,10 +93,10 @@ def minimum_generator():
 
 
 def use_a_json_parser():
-    from lightrag.core import Generator
-    from lightrag.core.types import GeneratorOutput
-    from lightrag.components.model_client import OpenAIClient
-    from lightrag.core.string_parser import JsonParser
+    from adalflow.core import Generator
+    from adalflow.core.types import GeneratorOutput
+    from adalflow.components.model_client import OpenAIClient
+    from adalflow.core.string_parser import JsonParser
 
     output_format_str = """Your output should be formatted as a standard JSON object with two keys:
     {
@@ -122,8 +122,8 @@ def use_a_json_parser():
 
 
 def use_its_own_template():
-    from lightrag.core import Generator
-    from lightrag.components.model_client import GroqAPIClient
+    from adalflow.core import Generator
+    from adalflow.components.model_client import GroqAPIClient
 
     template = r"""<SYS>{{task_desc_str}}</SYS>
 User: {{input_str}}
@@ -147,8 +147,8 @@ You:"""
 
 
 def use_model_client_enum_to_switch_client():
-    from lightrag.core import Generator
-    from lightrag.core.types import ModelClientType
+    from adalflow.core import Generator
+    from adalflow.core.types import ModelClientType
 
     generator = Generator(
         model_client=ModelClientType.OPENAI(),  # or ModelClientType.GROQ()
@@ -165,8 +165,8 @@ def use_model_client_enum_to_switch_client():
 
 def create_purely_from_config():
 
-    from lightrag.utils.config import new_component
-    from lightrag.core import Generator
+    from adalflow.utils.config import new_component
+    from adalflow.core import Generator
 
     config = {
         "generator": {
@@ -196,7 +196,7 @@ def create_purely_from_config():
 
 def create_purely_from_config_2():
 
-    from lightrag.core import Generator
+    from adalflow.core import Generator
 
     config = {
         "model_client": {
@@ -221,7 +221,7 @@ def create_purely_from_config_2():
 
 if __name__ == "__main__":
     qa1 = SimpleQA()
-    answer = qa1("What is LightRAG?")
+    answer = qa1("What is adalflow?")
     print(qa1)
 
     qa2 = QA()
