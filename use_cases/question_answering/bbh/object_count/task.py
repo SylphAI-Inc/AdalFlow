@@ -75,9 +75,10 @@ def test_object_count_task():
 
     # set it to train mode
     task_pipeline.train()
-    answer = task_pipeline(question, id="1")
+    answer: adal.Parameter = task_pipeline(question, id="1")
     print(answer)
     print(f"full_response: {answer.full_response}")
+    answer.draw_graph()
 
 
 if __name__ == "__main__":

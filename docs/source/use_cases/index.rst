@@ -60,8 +60,9 @@ Optimization
    :caption: End-to-End
    :hidden:
 
-
-
    question_answering
+   qa_computation_graph
+   qa_text_grad_trace_graph
+   qa_demo_trace_graph
    classification
    rag_opt

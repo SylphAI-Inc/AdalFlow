@@ -17,6 +17,10 @@ Learn AdalFlow in 15 minutes
 AdalFlow provides easy way to build and to auto-optimize LLM task pipelines.
 We provide token-efficient and high-performing prompt optimization within a unified framework.
 
+.. TODO:
+    - model agnostic pipeline
+    - trainable pipeline with both text-grad and few-shot demo
+
 Overview
 ----------------
 In this tutorial, we will implement and optimize a question-answering task pipeline. Specifically, the task is to count the total number of objects.

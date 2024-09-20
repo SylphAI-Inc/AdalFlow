@@ -66,7 +66,9 @@ class BootstrapFewShot(DemoOptimizer):
 
     def add_scores(self, ids: List[str], scores: List[float], is_teacher: bool = True):
         if len(ids) != len(scores):
-            raise ValueError("ids and scores must have the same length")
+            raise ValueError(
+                f"ids and scores must have the same length, got ids: {ids}, scores: {scores}"
+            )
 
         for score in scores:
 

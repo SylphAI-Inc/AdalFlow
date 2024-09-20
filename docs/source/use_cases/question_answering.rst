@@ -1,7 +1,7 @@
 .. raw:: html
 
    <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
-      <a href="https://colab.research.google.com/drive/1n3mHUWekTEYHiBdYBTw43TKlPN41A9za?usp=sharing" target="_blank" style="margin-right: 10px;">
+      <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/notebooks/qas/adalflow_object_count_auto_optimization.ipynb" target="_blank" style="margin-right: 10px;">
          <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
       </a>
       <a href="https://github.com/SylphAI-Inc/AdalFlow/tree/main/use_cases/question_answering/bbh/object_count" target="_blank" style="display: flex; align-items: center;">
@@ -11,29 +11,35 @@
    </div>
 
 
-Introduction to AdalFlow library
+Question Answering
 ===============================
 
 
 AdalFlow provides token-efficient and high-performing prompt optimization within a unified framework.
 
+This will be our first tutorial on end to end task pipeline optimization with AdalFlow.
+
 Overview
 ----------------
-In this tutorial, we will implement and optimize a question-answering task pipeline. Specifically, the task is to count the total number of objects.
+In this tutorial, we will build and optimize a question-answering task pipeline.
+Specifically, the task is to count the total number of objects.
 Here is an example from the dataset:
 
 .. code-block:: python
 
     question = "I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?"
 
+LLM has to understand the type of objects to count and provide the correct answer.
 
-For optimization, we will demonstrate both the instruction/prompt optimization and few-shot In-context Learning(ICL).
+For optimization, we will demonstrate both the instruction/prompt optimization [1]_ using text-grad and few-shot In-context Learning(ICL) [2]_.
 
 **Instruction/prompt Optimization**
 
-We especially want to see how the auto-training pipeline performs with both good and bad starting prompts.
+We especially want to see how the optimizer performs with both good and bad starting prompts.
 
-With a low-performing starting prompt, our zero-shot optimizer states:
+With a low-performing starting prompt, our zero-shot optimizer can achieve a 90% accuracy on the validation and test sets, a 36% and 25% improvement, respectively.
+It converged within 5 steps, with each batch containing only 4 samples.
+
 
 .. list-table:: Scores by Method and Split On Low-performing Starting Prompt (gpt-3.5-turbo)
    :header-rows: 1
@@ -52,7 +58,6 @@ With a low-performing starting prompt, our zero-shot optimizer states:
      - 0.9 (**+36%**)
      - 0.9 (**+25%**)
 
-It converged within 5 steps, with each batch containing only 4 samples.
 
 
 .. list-table:: Manual Prompt vs Optimized Prompt (gpt-3.5-turbo)
@@ -103,6 +108,14 @@ We will also demonstrate how to optimize an already high-performing task pipelin
 **Bootstrap Few-shot**
 
 We achieved 94% accuracy on the test split with just one bootstrap shot, using only the demonstration of the teacher model's response, surpassing the performance of all existing libraries.
+
+Here is one example of the demonstrated reasoning from the teacher model:
+
+.. code-block:: python
+
+    "Example: 'Let''s count the fruits one by one:\n\n\n  1. Orange: 1\n\n  2. Strawberries: 3\n\n  3. Apple: 1\n\n  4. Bananas: 3\n\n  5. Raspberries: 3\n\n  6. Peach: 1\n\n  7. Blackberry: 1\n\n  8. Grape: 1\n\n  9. Plum: 1\n\n  10. Nectarines: 2\n\n\n  Now, we sum them up:\n\n  \\[ 1 + 3 + 1 + 3 + 3 + 1 + 1 + 1 + 1 + 2 = 17 \\]\n\n\n  Answer: 17'",
+
+**Overall**
 
 .. list-table:: Optimized Scores comparison on the same prompt on test set (gpt-3.5-turbo)
    :header-rows: 1
@@ -297,6 +310,15 @@ The answer for the train mode:
 
     Answer: 8, predecessors={Parameter(name=To_give_ta, requires_opt=True, param_type=prompt (Instruction to the language model on task, data, and format.), role_desc=To give task instruction to the language model in the system prompt, data=You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value., predecessors=set(), gradients=set(),            raw_response=None, input_args=None, traces={}), Parameter(name=To_provide, requires_opt=True, param_type=demos (A few examples to guide the language model.), role_desc=To provide few shot demos to the language model, data=None, predecessors=set(), gradients=set(),            raw_response=None, input_args=None, traces={})}, gradients=set(),            raw_response=None, input_args={'prompt_kwargs': {'system_prompt': Parameter(name=To_give_ta, requires_opt=True, param_type=prompt (Instruction to the language model on task, data, and format.), role_desc=To give task instruction to the language model in the system prompt, data=You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value., predecessors=set(), gradients=set(),            raw_response=None, input_args=None, traces={}), 'few_shot_demos': Parameter(name=To_provide, requires_opt=True, param_type=demos (A few examples to guide the language model.), role_desc=To provide few shot demos to the language model, data=None, predecessors=set(), gradients=set(),            raw_response=None, input_args=None, traces={}), 'input_str': 'I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?'}, 'model_kwargs': {'model': 'gpt-3.5-turbo', 'max_tokens': 2000, 'temperature': 0.0, 'top_p': 0.99, 'frequency_penalty': 0, 'presence_penalty': 0, 'stop': None}}, traces={})
 
+**Visualize the computation graph**
+
+When in training mode, we are able to visualize the computation graph easily with the following code:
+
+.. code-block:: python
+
+    answer.draw_graph()
+
+Here is the :doc:`computation graph for this task pipeline <../use_cases/qa_computation_graph>`
 
 So far, we have completed the task pipeline and ensured it works in both evaluation and training modes. Of course, if the performance is already perfect, there may be no need for further training, but evaluation is still essential.
 
@@ -352,7 +374,8 @@ Diagnose the task pipeline
 
 To evaluate the task pipeline using the :meth:`diagnose<optim.trainer.trainer.Trainer>` method provided by our trainer,
 we can take advantage of the :class:`AdalComponent<optim.trainer.adal.AdalComponent>` interface.
-This interface class should be subclassed, allowing us to leverage its parallel processing capabilities, callback configuration, optimizer configuration, and built-in support for the teacher/backward engine. The AdalComponent works similarly to how PyTorch Lightning's LightningModule interacts with its Trainer.
+This interface class should be subclassed, allowing us to leverage its parallel processing capabilities, callback configuration, optimizer configuration, and built-in support for the teacher/backward engine.
+The AdalComponent works similarly to how PyTorch Lightning's LightningModule interacts with its Trainer.
 
 Here’s the minimum code required to get started on evaluating the task pipeline:
 
@@ -368,16 +391,16 @@ Here’s the minimum code required to get started on evaluating the task pipelin
             eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
             super().__init__(task=task, eval_fn=eval_fn)
 
-        def handle_one_task_sample(self, sample: Example):
+        def prepare_task(self, sample: Example):
             return self.task.call, {"question": sample.question, "id": sample.id}
 
-        def evaluate_one_sample(
-            self, sample: Example, y_pred: adal.GeneratorOutput
-        ) -> float:
+        def prepare_eval(self, sample: Example, y_pred: adal.GeneratorOutput) -> float:
             y_label = -1
             if y_pred and y_pred.data:
                 y_label = y_pred.data
-            return self.eval_fn(y=y_label, y_gt=sample.answer)
+            return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
+
+We needed one `eval_fn`, one `task`, and two methods: `prepare_task` and `prepare_eval` that tells `Trainer` how to call the task and how to call the eval function.
 
 Now, lets use the trainer.
 
@@ -466,6 +489,8 @@ To be able to train, we will add a few attributes and define a few methods in ou
 
 First, ``loss_fn`` where we use ``ada.EvalFnToTextLoss`` to compute the loss(``Parameter``) where it takes the ``eval_fn`` and the ``eval_fn_desc`` at the initialization.
 This loss function will pass whatever user set at ``kwargs`` to the ``eval_fn`` and compute the loss and handle the ``textual gradient`` for the loss function.
+If you intent to train ``ParameterType.PROMPT``, you need to configure the `backward_engine` which is a subclass of `Generator` with its own `template`, along with a `text_optimizer_model_config` which will be used as the optimizer that proposes the new prompt.
+If you also want to train ``ParameterType.DEMOS``, you need to configure the `teacher_generator` which is exactly the same setup as your `llm_counter` but with your configured `model_client` and `model_kwargs` that potentially will be a strong teacher model to guide your target model to learn from.
 
 .. code-block:: python
 
@@ -492,27 +517,29 @@ This loss function will pass whatever user set at ``kwargs`` to the ``eval_fn`` 
 
 
 
-Second, :meth:`handle_one_loss_sample` where we will return the loss function and the ``kwargs`` to the loss function.
+Second, :meth:`prepare_loss` where we will return the loss function and the ``kwargs`` to the loss function.
 We need to convert the the ground truth into a ``Parameter`` and set the ``eval_input`` that will be used as value to the ``eval_fn``
 when we evaluate the model.
 
 .. code-block:: python
 
-    def handle_one_loss_sample(self, sample: Example, pred: adal.Parameter):
-        # prepare gt parameter
+    def prepare_loss(
+        self, sample: Example, pred: adal.Parameter
+    ) -> Tuple[Callable, Dict[str, Any]]:
         y_gt = adal.Parameter(
             name="y_gt",
             data=sample.answer,
             eval_input=sample.answer,
             requires_opt=False,
         )
-
-        # pred's full_response is the output of the task pipeline which is GeneratorOutput
         pred.eval_input = pred.full_response.data
         return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}}
 
-Third, if you intent to train ``ParameterType.PROMPT``, we will need to set the ``backward_engine`` which is a subclass of ``Generator`` with its own ``template``.
-We provided a ``configure_backward_engine_helper`` method to smooth this setup; it requires only the ``model_client`` and the ``model_kwargs``.
+Optional[Under the hood]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Under the hood, `AdalComponent` already has three methods to configure the backward engine, the teacher generator, the text optimizer, and the demo optimizer.
+
+.. We provided a ``configure_backward_engine_helper`` method to smooth this setup; it requires only the ``model_client`` and the ``model_kwargs``.
 
 .. code-block:: python
 
@@ -521,8 +548,8 @@ We provided a ``configure_backward_engine_helper`` method to smooth this setup; 
             **self.backward_engine_model_config
         )
 
-If we also need to train the ``ParameterType.DEMOS``, we will need to set the ``teacher_generator`` which is exactly the same setup as your ``llm_counter`` but
-with your configured ``model_client`` and ``model_kwargs``.
+.. If we also need to train the ``ParameterType.DEMOS``, we will need to set the ``teacher_generator`` which is exactly the same setup as your ``llm_counter`` but
+.. with your configured ``model_client`` and ``model_kwargs``.
 
 .. code-block:: python
 
@@ -532,7 +559,7 @@ with your configured ``model_client`` and ``model_kwargs``.
         )
 
 
-Finally, we need to configure the optimizer. We will use both the ``DemoOptimizer`` (in default configured with ``adal.optim.few_shot.few_shot_optimizer.BootstrapFewShot``) and the ``PromptOptimizer`` (in default configured with ``adal.optim.text_grad.tgd_optimizer.TGDOptimizer``).
+.. Finally, we need to configure the optimizer. We will use both the ``DemoOptimizer`` (in default configured with ``adal.optim.few_shot.few_shot_optimizer.BootstrapFewShot``) and the ``PromptOptimizer`` (in default configured with ``adal.optim.text_grad.tgd_optimizer.TGDOptimizer``).
 
 .. code-block:: python
 
@@ -600,7 +627,28 @@ have implemented all parts correctly before the training on the whole dataset wh
 Also, it is important to make sure the ``backward_engine`` is giving the right feedback and the ``optimizer`` is
 following the instruction to make correct proposal.
 
-Debug mode will turn on the log and set it to ``DEBUG`` level.
+When you need more detailed logging, you can add this setup:
+
+.. code-block:: python
+
+    from adalflow.utils import get_logger
+
+    get_logger(level="DEBUG")
+
+.. Debug mode will turn on the log and set it to ``DEBUG`` level.
+
+If everything is fine, you will see the following debug report:
+
+.. figure:: /_static/images/adalflow_debug_report.png
+    :align: center
+    :alt: AdalFlow debug report
+    :width: 620px
+
+
+    AdalFlow debug report
+
+
+student_graph
 
 .. code-block:: bash
 
@@ -616,8 +664,13 @@ Debug mode will turn on the log and set it to ``DEBUG`` level.
     │       │   ├── lib.log                    # Log file
     │       │   ├── trace_graph_sum.png       # Trace graph with textual feedback and new proposed value
     │       │   ├── trace_graph_sum_root.json # Json representation of the root loss node (sum of the success and fail loss)
+    │       |-- debug_demos                           # Directory for debug mode with demo optimizer
+    │       │   ├── student_graph
+    │       │   │   ├── trace_graph_EvalFnToTextLoss_output_id_6ea5da3c-d414-4aae-8462-75dd1e09abab.png # Trace graph with textual feedback and new proposed value
+    │       │   │   ├── trace_graph_EvalFnToTextLoss_output_id_6ea5da3c-d414-4aae-8462-75dd1e09abab_root.json # Json representation of the root loss node (sum of the success and fail loss)
 
-Here is how our trace_graph looks like: :doc:`trace_graph <../tutorials/trace_graph>`.
+Here is how our trace_graph with text gradients looks like: :doc:`QA text-grad trace graph <qa_text_grad_trace_graph>`.
+Here is how our trace_graph with demos looks like: :doc:`QA demos trace graph <qa_demo_trace_graph>`.
 
 
 Train with Text-Gradient Descent
@@ -773,4 +826,4 @@ We also leverage single message prompt, sending the whole template to the model'
 
    .. [1] Text-grad: https://arxiv.org/abs/2406.07496
    .. [2] DsPy: https://arxiv.org/abs/2310.03714
-   .. [3] ORPO: https://arxiv.org/abs/2309.03409
+   .. [3] OPRO: https://arxiv.org/abs/2309.03409

@@ -120,7 +120,7 @@ class Parameter(Generic[T]):
         data: T = None,  # for generator output, the data will be set up as raw_response
         requires_opt: bool = True,
         role_desc: str = "",
-        param_type: ParameterType = ParameterType.PROMPT,
+        param_type: ParameterType = ParameterType.NONE,
         name: str = None,  # name is used to refer to the parameter in the prompt, easier to read for humans
         gradient_prompt: str = None,
         raw_response: str = None,  # use this to track the raw response of generator instead of the data (can be parsed)
@@ -495,7 +495,7 @@ class Parameter(Generic[T]):
         # # Set up TensorBoard logging
         # writer = SummaryWriter(log_dir)
 
-        filename = f"trace_graph_{self.name}"
+        filename = f"trace_graph_{self.name}_id_{self.id}"
         filepath = (
             os.path.join(filepath, filename)
             if filepath
@@ -577,9 +577,7 @@ class Parameter(Generic[T]):
             log.info(f"Node: {n.name}, {n.to_dict()}")
             # track gradients
             for g in n.gradients:
-                # writer.add_text(g.name, str(g.to_dict()))
-                # if g.gradient_prompt:
-                #     writer.add_text(f"{g.name}_prompt", g.gradient_prompt)
+
                 log.info(f"Gradient: {g.name}, {g.to_dict()}")
                 log.info(f"Gradient prompt: {g.gradient_prompt}")
         for n1, n2 in edges:

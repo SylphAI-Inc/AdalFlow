@@ -153,7 +153,6 @@ Generator                  - Manual Prompt Engineering       - Ragas answer rele
 ========================  ==============================  =========================================
 
 TODO: make this a table that i can put in links. so that i can link together other tutorials to form a comprehensive playbook.
-- move this in the tutorial section.
 
 For benchmarking datasets and metrics, please refer to :ref:`Evaluation Guideline <tutorials-llm-evaluation>`.
 Additionally, FlashRAG [3]_ provides more references to RAG datasets and research.

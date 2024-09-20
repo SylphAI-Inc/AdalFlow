@@ -152,6 +152,7 @@ class VanillaRAG(adal.GradComponent):
                     data=task_desc_str,
                     role_desc="Task description for the language model",
                     param_type=adal.ParameterType.PROMPT,
+                    requires_opt=False,
                 ),
                 "few_shot_demos": adal.Parameter(
                     data=None,
@@ -286,5 +287,5 @@ def test_vailla_rag():
 
 
 if __name__ == "__main__":
-    test_retriever()
-    # test_vailla_rag()
+    # test_retriever()
+    test_vailla_rag()

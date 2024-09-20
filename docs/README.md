@@ -1,4 +1,4 @@
-# LightRAG Documentation Guide
+# AdalFlow Documentation Guide
 
 ## Content Overview
 
@@ -9,23 +9,25 @@
 
 ## How the Documentation Works
 
-We use [Sphinx](https://www.sphinx-doc.org/en/master/) and [reStructuredText](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html) for our documentation. Sphinx primarily reads configurations from a Python script (`conf.py`), pulls documentation from comments in the code (via the `autodoc` extension), and organizes content through its table of contents hierarchy defined in `.rst` files.
+AdalFlow uses [Sphinx](https://www.sphinx-doc.org/en/master/) and [reStructuredText](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html) for our documentation. Sphinx primarily reads configurations from a Python script (`conf.py`), pulls documentation from comments in the code (via the `autodoc` extension), and organizes content through its table of contents hierarchy defined in `.rst` files.
 
 ## Setup
 
 ### **1. Clone the Github Project**
 
-`git clone https://github.com/SylphAI-Inc/LightRAG.git`
+`git clone https://github.com/SylphAI-Inc/AdalFlow.git`
 
 ### **2. Install Necessary Packages**
 
-We use `poetry` and `pyproject.toml` to manage the dependencies. You can install all the necessary packages by running:
+AdalFlow documentation uses `poetry` and `pyproject.toml` to manage the dependencies. You can install all the necessary packages by running:
 
 ```
 
 poetry lock
 poetry install
 ```
+
+**NOTE:** The default versions of `sphinx-build` and `poetry` that come with Linux may be out of date for AdalFlow's documentation. Using "pip install" will get the latest versions of those tools.
 
 <!--
 All the packages are manged in the project's ``pyproject.toml`` file in the doc dependencies section. You can install all the necessary packages by running:
@@ -97,14 +99,14 @@ For example, in the `index.rst`, the `:caption: Get Started` corresponds to the 
 
 Existing sections include:
 
-`get_started/`: Includes installation and LightRAG in 10 minutes
+`get_started/`: Includes installation and AdalFlow in 10 minutes
 
 `tutorials/`: Includes our main tutorials
-`use_cases/`: Includes the use cases of LightRAG that will be added in the future and which accepts community contributions
+`use_cases/`: Includes the use cases of AdalFlow that will be added in the future and which accepts community contributions
 
 `apis/`: All the source-code-related documents will be included in this directory
 
-<!-- `resources/`: Include all the LightRAG-relevant resources. -->
+<!-- `resources/`: Include all the AdalFlow-relevant resources. -->
 
 ## How to Edit the Documentation
 
@@ -200,7 +202,7 @@ Please push your updates to the GitHub repo.
 The structure of the code base and the docs:
 
 ```
-LightRAG/
+AdalFlow/
 ├── docs/
 │   ├── apis/
 │   │   ├── core/

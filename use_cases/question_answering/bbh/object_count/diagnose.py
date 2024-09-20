@@ -12,20 +12,16 @@ class ObjectCountAdalComponent(adal.AdalComponent):
         eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
         super().__init__(task=task, eval_fn=eval_fn)
 
-    def handle_one_task_sample(self, sample: Example):
+    def prepare_task(self, sample: Example):
         return self.task.call, {"question": sample.question, "id": sample.id}
 
-    def evaluate_one_sample(
-        self, sample: Example, y_pred: adal.GeneratorOutput
-    ) -> float:
+    def prepare_eval(self, sample: Example, y_pred: adal.GeneratorOutput) -> float:
         y_label = -1
         if y_pred and y_pred.data:
             y_label = y_pred.data
-        return self.eval_fn(y_label, sample.answer)
+        return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
 
 
-# TODO: ensure it can work by dataset, because
-# right now it will put trainset, valset, testset all together
 def diagnose(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
@@ -43,7 +39,7 @@ def diagnose(
 
 
 if __name__ == "__main__":
-    from LightRAG.use_cases.config import (
+    from use_cases.config import (
         gpt_3_model,
     )
 
