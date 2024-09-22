@@ -13,6 +13,11 @@ from botocore.config import Config
 
 log = logging.getLogger(__name__)
 
+bedrock_runtime_exceptions = boto3.client(
+    service_name="bedrock-runtime",
+    region_name=os.getenv("AWS_REGION_NAME", "us-east-1")
+).exceptions
+
 
 def get_first_message_content(completion: Dict) -> str:
     r"""When we only need the content of the first message.
@@ -20,10 +25,7 @@ def get_first_message_content(completion: Dict) -> str:
     return completion['output']['message']['content'][0]['text']
 
 
-__all__ = ["BedrockAPIClient", "get_first_message_content"]
-
-# get the bedrock runtime exception
-bedrock_runtime_exceptions = boto3.client("bedrock-runtime").exceptions
+__all__ = ["BedrockAPIClient", "get_first_message_content", "bedrock_runtime_exceptions"]
 
 
 class BedrockAPIClient(ModelClient):
@@ -135,7 +137,7 @@ class BedrockAPIClient(ModelClient):
                 bedrock_runtime_exceptions.ModelTimeoutException,
                 bedrock_runtime_exceptions.InternalServerException,
                 bedrock_runtime_exceptions.ModelErrorException,
-                bedrock_runtime_exceptions.ValidationException,
+                bedrock_runtime_exceptions.ValidationException
         ),
         max_time=5,
     )
