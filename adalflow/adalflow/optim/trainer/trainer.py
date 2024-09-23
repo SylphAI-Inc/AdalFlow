@@ -31,7 +31,7 @@ from adalflow.utils.data import DataLoader
 from adalflow.optim.types import TrainerValidateStats
 
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Trainer(Component):
@@ -188,7 +188,7 @@ class Trainer(Component):
             trainer_state = self.gather_trainer_states()
             self.prep_ckpt_file_path(trainer_state)
         save_path = os.path.join(self.ckpt_path, f"diagnose_{split}")
-        print(f"Save diagnose to {save_path}")
+        logger.debug(f"Save diagnose to {save_path}")
         log_paths = self.adaltask.configure_callbacks(save_dir=save_path)
         # 2. evaluate
         acc = self.adaltask.validation_step(dataset, 0, self.num_workers)
@@ -206,15 +206,18 @@ class Trainer(Component):
             raise ValueError(
                 "dataset should have an attribute id for tracking the samples"
             )
-        print(f"sorted_indices: {sorted_indices}")
+        logger.debug(f"sorted_indices: {sorted_indices}")
+
         sorted_scores = [acc_per_item_scores[i] for i in sorted_indices]
-        print(f"sorted_scores: {sorted_scores}")
+        logger.debug(f"sorted_scores: {sorted_scores}")
         sorted_dataset = [dataset[i] for i in sorted_indices]
+
+        paths: Dict[str, List[str]] = {"Log": log_paths, "Diagnose": [], "Stats": []}
 
         # reorder the samples based on the score
         for log_path in log_paths:
             file_name = os.path.basename(log_path)
-            print(f"Loading log file: {file_name}")
+            logger.debug(f"Loading log file: {file_name}")
             logs = load_jsonl(log_path)
             try:
                 logs_dict = {log["output"]["id"]: log for log in logs}
@@ -232,6 +235,7 @@ class Trainer(Component):
 
             diagnose_file = os.path.join(log_dir, diagnose_filename)
             diagnose_items = []
+            stats_list: List[Dict] = []
             for i, log in enumerate(sorted_logs):
                 if log["score"] < 0.5:
                     diagnose_item = {
@@ -252,11 +256,63 @@ class Trainer(Component):
                 "total_error_samples": len(diagnose_items),
                 "avg_score": acc_score,
             }
-            save_json(stats, os.path.join(log_dir, "stats.json"))
-            print(f"Total error samples: {len(diagnose_items)}")
-            print(f"Saved diagnose to {diagnose_file}")
+            stat_path = os.path.join(log_dir, "stats.json")
+            save_json(stats, stat_path)
+            logger.debug(f"Total error samples: {len(diagnose_items)}")
+            logger.debug(f"Saved diagnose to {diagnose_file}")
+            paths["Diagnose"].append(diagnose_file)
+            paths["Stats"].append(stat_path)
+            stats_list.append(stats)
 
-        return acc_score, acc_per_item_scores, log_paths
+        self.diagnose_report(
+            split=split,
+            acc_score=acc_score,
+            stats_list=stats_list,
+            log_paths=paths,
+        )
+
+    def diagnose_report(
+        self,
+        split: str,
+        acc_score: Optional[float] = None,
+        stats_list: Optional[List[Dict]] = None,
+        log_paths: Optional[Dict[str, List[str]]] = None,
+    ):
+        import colorama
+        from colorama import Fore
+
+        # Initialize colorama
+        colorama.init(autoreset=True)
+        print(Fore.CYAN + "\n================== DIAGNOSE REPORT ==================\n")
+
+        print(Fore.GREEN + f"✔ Split: {split}")
+
+        # Check the accuracy score
+        if acc_score is not None:
+            print(Fore.GREEN + f"✔ Overall accuracy score: {acc_score:.2f}")
+        else:
+            print(Fore.RED + "✘ Accuracy score not provided or calculated.")
+
+        # List the overall stats
+        if stats_list is not None and len(stats_list) > 0:
+            print(Fore.GREEN + "✔ Overall stats:")
+            for idx, item in enumerate(stats_list):
+                print(Fore.YELLOW + f"  - {idx + 1}: {item}")
+
+        # Check for log paths
+        if log_paths is not None:
+            for key, paths in log_paths.items():
+                if len(paths) > 0:
+                    print(Fore.GREEN + f"✔ {key} paths:")
+                    for idx, path in enumerate(paths):
+                        print(Fore.YELLOW + f"  - {key} {idx + 1}: {path}")
+
+        else:
+            print(Fore.RED + "✘ No log paths available.")
+
+        # General summary
+        print(Fore.GREEN + "\n✔ Diagnose report completed successfully!")
+        print(Fore.CYAN + "\n=====================================================\n")
 
     def debug_report(
         self,
@@ -582,7 +638,7 @@ class Trainer(Component):
             self.ckpt_path = os.path.join(
                 default_root_path, "ckpt", self.adaltask.__class__.__name__
             )
-            print(f"Checkpoint path: {self.ckpt_path}")
+            logger.debug(f"Checkpoint path: {self.ckpt_path}")
         os.makedirs(self.ckpt_path, exist_ok=True)
         # list all existing checkpoints with the same file name prefix
         hash_key = (
@@ -899,7 +955,7 @@ class Trainer(Component):
     ):
         from adalflow.optim.parameter import Parameter
 
-        log.info("Fitting using Textual Gradient Descent")
+        logger.info("Fitting using Textual Gradient Descent")
         trainer_results = (
             self._pre_fit(val_dataset, test_dataset)
             if trainer_results is None
@@ -1065,7 +1121,7 @@ class Trainer(Component):
         train_results: TrainerResult = None,
         starting_step: int = 0,
     ):
-        log.info("Fitting using Textual Gradient Descent")
+        logger.info("Fitting using Textual Gradient Descent")
 
         trainer_results = (
             self._pre_fit(val_dataset, test_dataset)
@@ -1207,7 +1263,7 @@ class Trainer(Component):
         trainer_results: TrainerResult,
         starting_step: int,
     ):
-        log.info("Fitting using Random Demo Optimizer")
+        logger.info("Fitting using Random Demo Optimizer")
         # self.adaltask.train()
         trainer_results = (
             self._pre_fit(val_dataset, test_dataset)
@@ -1397,7 +1453,7 @@ class Trainer(Component):
         trainer_results: TrainerResult = None,
         starting_step: int = 0,
     ) -> TrainerResult:
-        log.info("Fitting using Textual Gradient Descent")
+        logger.info("Fitting using Textual Gradient Descent")
         trainer_results = (
             self._pre_fit(val_dataset, test_dataset)
             if trainer_results is None
@@ -1741,7 +1797,7 @@ class Trainer(Component):
     ) -> TrainerResult:
         from adalflow.optim.parameter import Parameter
 
-        log.info("Fitting using Textual Gradient Descent with constraints")
+        logger.info("Fitting using Textual Gradient Descent with constraints")
         trainer_results = (
             self._pre_fit(val_dataset, test_dataset)
             if trainer_results is None
