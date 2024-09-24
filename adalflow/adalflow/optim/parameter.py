@@ -41,6 +41,23 @@ class GradientContext:
     )
 
 
+@dataclass
+class ComponentTrace:
+    input_args: Dict[str, Any] = field(
+        metadata={"desc": "The input arguments of the GradComponent forward"},
+        default=None,
+    )
+    full_response: object = field(
+        metadata={"desc": "The full response of the GradComponent output"}, default=None
+    )
+    api_kwargs: Dict[str, Any] = field(
+        metadata={
+            "desc": "The api_kwargs for components like Generator and Retriever that pass to the model client"
+        },
+        default=None,
+    )
+
+
 COMBINED_GRADIENTS_TEMPLATE = r"""
 {% for g in combined_gradients %}
 {% set gradient = g[0] %}
@@ -113,6 +130,8 @@ class Parameter(Generic[T]):
         False  # Disable the backward engine for the parameter
     )
 
+    component_trace: ComponentTrace = None  # Trace of the component
+
     def __init__(
         self,
         *,
@@ -178,6 +197,7 @@ class Parameter(Generic[T]):
 
         self.from_response_id = from_response_id  # for gradient parameter
         self.successor_map_fn = successor_map_fn or {}
+        self.component_trace = ComponentTrace()
 
     def map_to_successor(self, successor: object) -> T:
         """Apply the map function to the successor based on the successor's id."""
@@ -238,10 +258,20 @@ class Parameter(Generic[T]):
                     )
             self.peers = set(peers)
 
+    ############################################################################################################
+    #  Trace component, include trace_forward_pass & trace_api_kwargs for now
+    ############################################################################################################
     def trace_forward_pass(self, input_args: Dict[str, Any], full_response: object):
         r"""Trace the forward pass of the parameter."""
         self.input_args = input_args
         self.full_response = full_response
+        # TODO: remove the input_args and full_response to use component_trace
+        self.component_trace.input_args = input_args
+        self.component_trace.full_response = full_response
+
+    def trace_api_kwargs(self, api_kwargs: Dict[str, Any]):
+        r"""Trace the api_kwargs for components like Generator and Retriever that pass to the model client."""
+        self.component_trace.api_kwargs = api_kwargs
 
     def set_eval_fn_input(self, eval_input: object):
         r"""Set the input for the eval_fn."""
@@ -518,6 +548,7 @@ class Parameter(Generic[T]):
     def draw_graph(
         self,
         add_grads: bool = True,
+        full_trace: bool = False,
         format: Literal["png", "svg"] = "png",
         rankdir: Literal["LR", "TB"] = "TB",
         filepath: Optional[str] = None,
@@ -529,6 +560,7 @@ class Parameter(Generic[T]):
             format (str, optional): The format of the output file. Defaults to "png".
             rankdir (str, optional): The direction of the graph. Defaults to "TB".
             filepath (str, optional): The path to save the graph. Defaults to None.
+            full_trace (bool, optional): Whether to include more detailed trace such as api_kwargs. Defaults to False.
         """
         from adalflow.utils import save_json
         from adalflow.utils.global_config import get_adalflow_default_root_path
@@ -613,6 +645,8 @@ class Parameter(Generic[T]):
                 node_label += f"<tr><td><b><font color='{label_color}'>Requires Optimization: </font ></b></td><td>{{'Yes'}}</td></tr>"
             if n.param_type:
                 node_label += f"<tr><td><b><font color='{label_color}'>Type: </font></b></td><td>{wrap_and_escape(n.param_type.name)}</td></tr>"
+            if full_trace and n.component_trace.api_kwargs is not None:
+                node_label += f"<tr><td><b><font color='{label_color}'> API kwargs: </font></b></td><td>{wrap_and_escape(str(n.component_trace.api_kwargs))}</td></tr>"
             if add_grads:
                 node_label += f"<tr><td><b><font color='{label_color}'>Gradients: </font></b></td><td>{wrap_and_escape(n.get_gradients_names())}</td></tr>"
                 # add a list of each gradient with short value

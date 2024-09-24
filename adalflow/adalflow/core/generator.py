@@ -77,7 +77,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     model_client: ModelClient  # for better type checking
 
     _use_cache: bool = False
-    _kwargs: Dict[str, Any] = {}
+    # _kwargs: Dict[str, Any] = {}
 
     def __init__(
         self,
@@ -151,17 +151,20 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self.model_str = model_str
         self._use_cache = use_cache
 
-        self._kwargs = {
-            "model_client": model_client,
-            "model_kwargs": model_kwargs,
-            "template": template,
-            "prompt_kwargs": prompt_kwargs,
-            "output_processors": output_processors,
-            "name": name,
-            "cache_path": cache_path,
-            "use_cache": use_cache,
-        }
+        # self._kwargs = {
+        #     "model_client": model_client,
+        #     "model_kwargs": model_kwargs,
+        #     "template": template,
+        #     "prompt_kwargs": prompt_kwargs,
+        #     "output_processors": output_processors,
+        #     "name": name,
+        #     "cache_path": cache_path,
+        #     "use_cache": use_cache,
+        # }
         self._teacher: Optional["Generator"] = None
+        self._trace_api_kwargs: Dict[str, Any] = (
+            {}
+        )  # used by dynamic computation graph and backpropagation
 
     def get_cache_path(self) -> str:
         r"""Get the cache path for the generator."""
@@ -499,6 +502,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         )
         response.set_predecessors(predecessors)
         response.trace_forward_pass(input_args=input_args, full_response=output)
+        # *** special to the generator ***
+        response.trace_api_kwargs(api_kwargs=self._trace_api_kwargs)
         # attach the demo to the demo parameter
         # if self.tracing:
         demo_param = self.find_demo_parameter(combined_prompt_kwargs)
@@ -519,6 +524,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             log.debug(
                 "No demo parameter found in the prompt_kwargs. You can not trace the demo data."
             )
+
+        # **** end of the special to the generator ****
 
         if not self.backward_engine:
             # self.set_backward_engine()
@@ -768,6 +775,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         log.debug(f"model_kwargs: {model_kwargs}")
 
         api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
+
         log.debug(f"api_kwargs: {api_kwargs}")
         output: GeneratorOutputType = None
         # call the model client
@@ -801,6 +809,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         )
 
         log.info(f"output: {output}")
+        self._trace_api_kwargs = api_kwargs  # tracing
         return output
 
     # TODO: training is not supported in async call yet
@@ -846,6 +855,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             prompt_kwargs=prompt_kwargs,
             model_kwargs=model_kwargs,
         )
+        self._trace_api_kwargs = api_kwargs  # tracing
         return output
 
     def __call__(self, *args, **kwargs) -> Union[GeneratorOutputType, Any]:

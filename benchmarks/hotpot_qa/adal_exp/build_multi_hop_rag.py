@@ -236,7 +236,7 @@ class MultiHopRetriever2(adal.Retriever):
                     model_kwargs=model_kwargs,
                     prompt_kwargs={
                         "few_shot_demos": Parameter(
-                            name="few_shot_demos_1",
+                            name=f"few_shot_demos_{i}",
                             data=None,
                             role_desc="To provide few shot demos to the language model",
                             requires_opt=True,
@@ -291,32 +291,12 @@ class MultiHopRetriever2(adal.Retriever):
         # assemble the foundamental building blocks
         context = []
         print(f"question: {question}")
-        # 1. make question a parameter as generator does not have it yet
-        # can create the parameter at the leaf, but not the intermediate nodes
-        # question_param = adal.Parameter(
-        #     name="question",
-        #     data=question,
-        #     role_desc="The question to be answered",
-        #     requires_opt=True,
-        #     param_type=ParameterType.INPUT,
-        # )
-        # context_param = adal.Parameter(
-        #     name="context",
-        #     data=context,
-        #     role_desc="The context to be used for the query",
-        #     requires_opt=True,
-        #     param_type=ParameterType.INPUT,
-        # )
-        # context_param.add_successor_map_fn(
-        #     successor=self.query_generators[0],
-        #     map_fn=lambda x: self.context_to_str(x.data),
-        # )
 
         for i in range(self.max_hops):
 
             gen_out = self.query_generators[i].forward(
                 prompt_kwargs={
-                    "context": context,
+                    "context": context,  # can be a list or a parameter
                     "question": question,
                 },
                 id=id,
@@ -422,12 +402,12 @@ def test_multi_hop_retriever2():
     multi_hop_retriever.train()
     output = multi_hop_retriever.forward(question=question, id="1")
     print(output)
-    output.draw_graph()
+    output.draw_graph(full_trace=True)
 
 
 if __name__ == "__main__":
     ### Try the minimum effort to test on any task
 
     # get_logger(level="DEBUG")
-    test_multi_hop_retriever()
-    # test_multi_hop_retriever2()
+    # test_multi_hop_retriever()
+    test_multi_hop_retriever2()
