@@ -265,39 +265,51 @@ class MultiHopRetriever2(adal.Retriever):
         seen = set()
         return [x for x in seq if not (x in seen or seen.add(x))]
 
-    def call(self, *, question: str, id: str = None) -> adal.RetrieverOutput:
-        context = []
-        print(f"question: {question}")
-        for i in range(self.max_hops):
-            gen_out = self.query_generators[i](
-                prompt_kwargs={
-                    "context": self.context_to_str(context),
-                    "question": question,
-                },
-                id=id,
-            )
+    # def call(self, *, question: str, id: str = None) -> adal.RetrieverOutput:
+    #     context = []
+    #     print(f"question: {question}")
+    #     for i in range(self.max_hops):
+    #         gen_out = self.query_generators[i](
+    #             prompt_kwargs={
+    #                 "context": self.context_to_str(context),
+    #                 "question": question,
+    #             },
+    #             id=id,
+    #         )
 
-            query = gen_out.data.query if gen_out.data and gen_out.data.query else None
+    #         query = gen_out.data.query if gen_out.data and gen_out.data.query else None
 
-            print(f"query {i}: {query}")
+    #         print(f"query {i}: {query}")
 
-            retrieve_out = self.retrievers[i].call(input=query)
-            passages = retrieve_out[0].documents
-            context = self.deduplicate(context + passages)
-        out = [adal.RetrieverOutput(documents=context, query=query, doc_indices=[])]
-        return out
+    #         retrieve_out = self.retrievers[i].call(input=query)
+    #         passages = retrieve_out[0].documents
+    #         context = self.deduplicate(context + passages)
+    #     out = [adal.RetrieverOutput(documents=context, query=query, doc_indices=[])]
+    #     return out
 
-    def forward(self, *, question: str, id: str = None) -> adal.Parameter:
+    # TODO: simplify and avoid the need where users need to write two methods (call and forward)
+    def call(self, *, input: str, id: str = None) -> List[adal.RetrieverOutput]:
+        # assemble the foundamental building blocks
+        out = self.forward(input=input, id=id)
+
+        if not isinstance(out, adal.Parameter):
+            raise ValueError("The output should be a parameter")
+
+        return out.data  # or full response its up to users
+
+    def forward(self, *, input: str, id: str = None) -> adal.Parameter:
         # assemble the foundamental building blocks
         context = []
-        print(f"question: {question}")
+        print(f"question: {input}")
+
+        queries: List[str] = []
 
         for i in range(self.max_hops):
 
             gen_out = self.query_generators[i].forward(
                 prompt_kwargs={
                     "context": context,  # can be a list or a parameter
-                    "question": question,
+                    "question": input,
                 },
                 id=id,
             )
@@ -311,6 +323,8 @@ class MultiHopRetriever2(adal.Retriever):
             )
             print(f"query {i}: {success_map_fn(gen_out)}")
 
+            queries.append(success_map_fn(gen_out))
+
             gen_out.add_successor_map_fn(
                 successor=self.retrievers[i], map_fn=success_map_fn
             )
@@ -320,7 +334,7 @@ class MultiHopRetriever2(adal.Retriever):
             def retrieve_out_map_fn(x: adal.Parameter):
                 return x.data[0].documents if x.data and x.data[0].documents else []
 
-            print(f"retrieve_out: {retrieve_out}")
+            # print(f"retrieve_out: {retrieve_out}")
 
             retrieve_out.add_successor_map_fn(
                 successor=self.deduplicaters[i], map_fn=retrieve_out_map_fn
@@ -331,6 +345,15 @@ class MultiHopRetriever2(adal.Retriever):
             )
 
         context.param_type = ParameterType.RETRIEVER_OUTPUT
+
+        def context_to_retrover_output(x):
+            return [
+                adal.RetrieverOutput(
+                    documents=x.data, query=[input] + queries, doc_indices=[]
+                )
+            ]
+
+        context.data = context_to_retrover_output(context)
 
         return context
 
@@ -347,7 +370,7 @@ class MultiHopRAG(VanillaRAG):
             model_client=model_client,
             model_kwargs=model_kwargs,
         )
-        self.retriever = MultiHopRetriever(
+        self.retriever = MultiHopRetriever2(
             model_client=model_client,
             model_kwargs=model_kwargs,
             passages_per_hop=passages_per_hop,
@@ -395,14 +418,53 @@ def test_multi_hop_retriever2():
     question = "How many storeys are in the castle that David Gregory inherited?"
 
     # eval mode
-    output = multi_hop_retriever.call(question=question, id="1")
-    print(output)
+    # output = multi_hop_retriever.call(question=question, id="1")
+    # print(output)
 
     # train mode
     multi_hop_retriever.train()
-    output = multi_hop_retriever.forward(question=question, id="1")
-    print(output)
+    output = multi_hop_retriever.forward(input=question, id="1")
+    # print(output)
     output.draw_graph(full_trace=True)
+
+    # multi_hop_retriever.eval()
+    # output = multi_hop_retriever.call(input=question, id="1")
+    # print(output)
+
+
+def test_multi_hop_rag():
+
+    from use_cases.config import (
+        gpt_3_model,
+    )
+
+    task = MultiHopRAG(
+        **gpt_3_model,
+        passages_per_hop=3,
+        max_hops=2,
+    )
+
+    # test the retriever
+
+    question = "How many storeys are in the castle that David Gregory inherited?"
+
+    task.train()
+
+    # id = "1"
+
+    # retriever_out = task.retriever(input=question, id=id)
+
+    # print(f"retriever_out: {retriever_out}")
+
+    # test the forward function
+    generator_out = task.forward(question=question, id="1")
+    print(f"generator_out: {generator_out}")
+
+    generator_out.draw_graph()
+
+    # task.eval()
+    # generator_out = task.call(question=question, id="1")
+    # print(f"generator_out: {generator_out}")
 
 
 if __name__ == "__main__":
@@ -411,3 +473,4 @@ if __name__ == "__main__":
     # get_logger(level="DEBUG")
     # test_multi_hop_retriever()
     test_multi_hop_retriever2()
+    # test_multi_hop_rag()
