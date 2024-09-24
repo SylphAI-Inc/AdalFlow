@@ -4,13 +4,13 @@ Use :ref:`Prompt <core-prompt_builder>` class  to manage it.
 """
 
 __all__ = [
-    "LIGHTRAG_DEFAULT_PROMPT_ARGS",
-    "LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS",
-    "SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT",
-    "DEFAULT_LIGHTRAG_SYSTEM_PROMPT",
+    "ADALFLOW_DEFAULT_PROMPT_ARGS",
+    "ADALFLOW_DEFAULT_PROMPT_TRAINABLE_PARAMS",
+    "SIMPLE_DEFAULT_ADALFLOW_SYSTEM_PROMPT",
+    "DEFAULT_ADALFLOW_SYSTEM_PROMPT",
 ]
 # TODO: potentially make a data class for this
-LIGHTRAG_DEFAULT_PROMPT_ARGS = [
+ADALFLOW_DEFAULT_PROMPT_ARGS = [
     "task_desc_str",  # task description
     "output_format_str",  # output format of the task
     "tools_str",  # tools used in the task
@@ -21,17 +21,17 @@ LIGHTRAG_DEFAULT_PROMPT_ARGS = [
     "input_str",  # user query or input
 ]
 
-LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS = [
+ADALFLOW_DEFAULT_PROMPT_TRAINABLE_PARAMS = [
     "task_desc_str",
     # "output_format_str",
     "examples_str",
 ]
 
-SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""<SYS>{{task_desc_str}}</SYS>
+SIMPLE_DEFAULT_ADALFLOW_SYSTEM_PROMPT = r"""<SYS>{{task_desc_str}}</SYS>
 User: {{input_str}}
 You:"""
 
-DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
+DEFAULT_ADALFLOW_SYSTEM_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
 {# task desc #}
 {% if task_desc_str %}
 {{task_desc_str}}

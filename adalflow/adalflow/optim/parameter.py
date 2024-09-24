@@ -416,6 +416,21 @@ class Parameter(Generic[T]):
         build_graph(root)
         return nodes, edges
 
+    def report_cycle(cycle_nodes: List["Parameter"]):
+        """
+        Report the detected cycle and provide guidance to the user on how to avoid it.
+        """
+        cycle_names = [node.name for node in cycle_nodes]
+        log.warning(f"Cycle detected: {' -> '.join(cycle_names)}")
+        print(f"Cycle detected in the graph: {' -> '.join(cycle_names)}")
+
+        # Provide guidance on how to avoid the cycle
+        print("To avoid the cycle, consider the following strategies:")
+        print("- Modify the graph structure to remove cyclic dependencies.")
+        print(
+            "- Check the relationships between these nodes to ensure no feedback loops."
+        )
+
     def backward(
         self,
     ):  # engine should be the llm or customized backwards function to pass feedback
@@ -446,6 +461,59 @@ class Parameter(Generic[T]):
             if node.get_grad_fn() is not None:  # gradient function takes in the engine
                 log.debug(f"Calling gradient function for {node.name}")
                 node.grad_fn()
+
+    # def backward(
+    #     self,
+    # ):  # engine should be the llm or customized backwards function to pass feedback
+
+    #     # topological sort of all the predecessors of the current parameter in the graph
+    #     log.debug(f"Backward pass for {self.data}, backward function: {self.grad_fn}")
+    #     topo: List[Parameter] = []
+    #     visited = set()
+    #     in_stack = set()  # Nodes currently being visited to detect cycles
+    #     cycle_detected = False  # Flag to check if any cycle was detected
+
+    #     def build_topo(node: Parameter, stack: Set[Parameter] = set()):
+    #         nonlocal cycle_detected
+
+    #         if stack is None:
+    #             stack = []
+
+    #         # If the node is already in the stack, we have detected a cycle
+    #         if node in in_stack:
+    #             cycle_detected = True
+    #             cycle_nodes = stack + [node]  # The cycle includes the current path
+    #             self.report_cycle(cycle_nodes)
+    #             return False  # Stop further processing due to cycle
+    #         if node in visited:
+    #             return
+    #         visited.add(node)
+    #         in_stack.add(node)
+    #         stack.append(node)
+    #         for pred in node.predecessors:
+    #             build_topo(pred)
+    #         topo.append(node)
+    #         stack.pop()  # Backtrack, remove the node from the current path
+
+    #         in_stack.remove(node)  # Remove from the stack after processing
+    #         return True
+
+    #     # build_topo(self)
+    #     if not build_topo(self):
+    #         log.error("Cycle detected, stopping backward pass.")
+    #         return  # Stop the backward pass due to cycle detection
+    #     # backpropagation
+
+    #     self.gradients = set()
+    #     for node in reversed(topo):
+    #         if not node.requires_opt:
+    #             log.debug(f"Skipping {node.name} as it does not require optimization")
+    #             continue
+    #         node.gradients = _check_and_reduce_gradients(node)
+    #         log.debug(f"v: {node.data}, grad_fn: {node.grad_fn}, {node.get_grad_fn()}")
+    #         if node.get_grad_fn() is not None:  # gradient function takes in the engine
+    #             log.debug(f"Calling gradient function for {node.name}")
+    #             node.grad_fn()
 
     def draw_graph(
         self,

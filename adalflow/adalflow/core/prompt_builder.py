@@ -1,4 +1,4 @@
-"""Class prompt builder for LightRAG system prompt."""
+"""Class prompt builder for AdalFlow system prompt."""
 
 from typing import Dict, Any, Optional, List, TypeVar
 import logging
@@ -8,7 +8,7 @@ from jinja2 import Template, Environment, StrictUndefined, meta
 
 
 from adalflow.core.component import Component
-from adalflow.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+from adalflow.core.default_prompt_template import DEFAULT_ADALFLOW_SYSTEM_PROMPT
 from adalflow.optim.parameter import Parameter
 
 
@@ -20,10 +20,10 @@ T = TypeVar("T")
 class Prompt(Component):
     __doc__ = r"""Renders a text string(prompt) from a Jinja2 template string.
 
-    In default, we use the :ref:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core-default_prompt_template>`  as the template.
+    In default, we use the :ref:`DEFAULT_ADALFLOW_SYSTEM_PROMPT<core-default_prompt_template>`  as the template.
 
     Args:
-        template (str, optional): The Jinja2 template string. Defaults to DEFAULT_LIGHTRAG_SYSTEM_PROMPT.
+        template (str, optional): The Jinja2 template string. Defaults to DEFAULT_ADALFLOW_SYSTEM_PROMPT.
         preset_prompt_kwargs (Optional[Dict], optional): The preset prompt kwargs to fill in the variables in the prompt. Defaults to {}.
 
     Examples:
@@ -56,7 +56,7 @@ class Prompt(Component):
     ):
         super().__init__()
 
-        self.template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+        self.template = template or DEFAULT_ADALFLOW_SYSTEM_PROMPT
         self.__create_jinja2_template()
         self.prompt_variables: List[str] = []
         for var in self._find_template_variables(self.template):

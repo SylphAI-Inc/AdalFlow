@@ -89,19 +89,6 @@ class WordSortingAdalComponent(adal.AdalComponent):
             }
         }
 
-    # def configure_backward_engine(self):
-    #     super().configure_backward_engine_helper(**self.backward_engine_model_config)
-
-    # def configure_teacher_generator(self):
-    #     super().configure_teacher_generator_helper(**self.teacher_model_config)
-
-    # def configure_optimizers(
-    #     self,
-    # ):  # TODO: train the text optimizer and the demo optimizer at the same time
-    #     to = super().configure_text_optimizer_helper(**self.text_optimizer_model_config)
-    #     do = super().configure_demo_optimizer_helper()
-    #     return to + do
-
 
 def train(
     train_batch_size=4,  # larger batch size is not that effective, probably because of llm's lost in the middle
@@ -138,9 +125,7 @@ def train(
     )
     print(trainer)
 
-    train_dataset, val_dataset, test_dataset = load_datasets(
-        task_name="BBH_word_sorting"
-    )
+    train_dataset, val_dataset, test_dataset = load_datasets(task_name="word_sorting")
     trainer.fit(
         train_dataset=train_dataset,
         val_dataset=val_dataset,

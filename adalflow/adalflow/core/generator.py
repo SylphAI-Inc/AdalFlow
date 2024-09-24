@@ -25,7 +25,7 @@ from adalflow.optim.types import ParameterType
 from adalflow.core.prompt_builder import Prompt
 from adalflow.core.functional import compose_model_kwargs
 from adalflow.core.model_client import ModelClient
-from adalflow.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+from adalflow.core.default_prompt_template import DEFAULT_ADALFLOW_SYSTEM_PROMPT
 from adalflow.optim.function import BackwardContext
 from adalflow.utils.cache import CachedEngine
 from adalflow.tracing.callback_manager import CallbackManager
@@ -63,7 +63,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     Args:
         model_client (ModelClient): The model client to use for the generator.
         model_kwargs (Dict[str, Any], optional): The model kwargs to pass to the model client. Defaults to {}. Please refer to :ref:`ModelClient<components-model_client>` for the details on how to set the model_kwargs for your specific model if it is from our library.
-        template (Optional[str], optional): The template for the prompt.  Defaults to :ref:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core-default_prompt_template>`.
+        template (Optional[str], optional): The template for the prompt.  Defaults to :ref:`DEFAULT_ADALFLOW_SYSTEM_PROMPT<core-default_prompt_template>`.
         prompt_kwargs (Optional[Dict], optional): The preset prompt kwargs to fill in the variables in the prompt. Defaults to None.
         output_processors (Optional[Component], optional):  The output processors after model call. It can be a single component or a chained component via ``Sequential``. Defaults to None.
         trainable_params (Optional[List[str]], optional): The list of trainable parameters. Defaults to [].
@@ -95,7 +95,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         cache_path: Optional[str] = None,
         use_cache: bool = False,
     ) -> None:
-        r"""The default prompt is set to the DEFAULT_LIGHTRAG_SYSTEM_PROMPT. It has the following variables:
+        r"""The default prompt is set to the DEFAULT_ADALFLOW_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
         - tools_str
         - example_str
@@ -112,7 +112,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                     Got {model_client} instead."
             )
 
-        template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+        template = template or DEFAULT_ADALFLOW_SYSTEM_PROMPT
 
         # Cache
         model_str = (
@@ -146,8 +146,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         #  to support better testing on the parts beside of the model call
         self.mock_output: bool = False
         self.mock_output_data: str = "mock data"
-        self.data_map_func: Callable = None
-        self.set_data_map_func()
+        # self.data_map_func: Callable = None
+        # self.set_data_map_func()
         self.model_str = model_str
         self._use_cache = use_cache
 
@@ -392,17 +392,17 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         print(f"Teacher generator set: {self._teacher}, teacher {teacher}")
         log.debug(f"Teacher generator set: {self._teacher}")
 
-    def set_data_map_func(self, map_func: Callable = None):
-        def default_map_func(data: "GeneratorOutputType") -> str:
-            return (
-                data.data
-                if data.data
-                else self.failure_message_to_backward_engine(data)
-            )
+    # def set_data_map_func(self, map_func: Callable = None):
+    #     def default_map_func(data: "GeneratorOutputType") -> str:
+    #         return (
+    #             data.data
+    #             if data.data
+    #             else self.failure_message_to_backward_engine(data)
+    #         )
 
-        self.data_map_func = map_func or default_map_func
+    #     self.data_map_func = map_func or default_map_func
 
-        log.debug(f"Data map function set: {self.data_map_func}")
+    #     log.debug(f"Data map function set: {self.data_map_func}")
 
     # TODO: limit to only one demo parameter.
     @staticmethod
@@ -414,14 +414,36 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 return p
         return None
 
-    # NOTE: when training is true, forward will be called in __call__ instead of call
     def forward(
         self,
-        prompt_kwargs: Optional[Dict] = {},  # the input need to be passed to the prompt
+        prompt_kwargs: Optional[
+            Dict[str, Union[str, Parameter]]
+        ] = {},  # the input need to be passed to the prompt
         model_kwargs: Optional[Dict] = {},
         id: Optional[str] = None,
     ) -> "Parameter":
-        # 1. call the model
+        # 1. convert prompt_kwargs to parameter if it is not
+        for k, v in prompt_kwargs.items():
+            if not isinstance(v, Parameter):
+                prompt_kwargs[k] = Parameter(
+                    data=v,
+                    name=f"{self.name}_{k}",
+                    requires_opt=True,
+                    param_type=ParameterType.INPUT,
+                )
+
+        # 2. call the model
+        unwrapped_prompt_kwargs: Dict[str, Any] = {}
+        for k, v in prompt_kwargs.items():
+            if isinstance(v, Parameter):
+                unwrapped_prompt_kwargs[k] = v.map_to_successor(self)
+            else:
+                unwrapped_prompt_kwargs[k] = v
+
+        print(
+            f"unwrapped_prompt_kwargs: {unwrapped_prompt_kwargs}, model_kwargs: {model_kwargs}"
+        )
+
         output: GeneratorOutputType = None
         input_args = {}
         if self.mock_output:
@@ -430,34 +452,34 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             if self.teacher_mode and not isinstance(self, BackwardEngine):
                 if not self._teacher:
                     print(
-                        f"prompt_kwargs: {prompt_kwargs}, model_kwargs: {model_kwargs}"
+                        f"unwrapped_prompt_kwargs: {unwrapped_prompt_kwargs}, model_kwargs: {model_kwargs}"
                     )
                     print(f"names: {self.name}")
                     raise ValueError("Teacher generator is not set.")
                 log.info(f"Using teacher: {self._teacher}")
                 input_args = {
                     "prompt_kwargs": compose_model_kwargs(
-                        self._teacher.prompt_kwargs, prompt_kwargs
+                        self._teacher.prompt_kwargs, unwrapped_prompt_kwargs
                     ),
                     "model_kwargs": compose_model_kwargs(
                         self._teacher.model_kwargs, model_kwargs
                     ),
                 }
-                output = self._teacher.call(prompt_kwargs, model_kwargs)
+                output = self._teacher.call(**input_args, id=id)
             else:
                 input_args = {
                     "prompt_kwargs": compose_model_kwargs(
-                        self.prompt_kwargs, prompt_kwargs
+                        self.prompt_kwargs, unwrapped_prompt_kwargs
                     ),
                     "model_kwargs": compose_model_kwargs(
                         self.model_kwargs, model_kwargs
                     ),
                 }
-                output = self.call(prompt_kwargs, model_kwargs)
+                output = self.call(**input_args, id=id)
         # 2. Generate a Parameter object from the output
         combined_prompt_kwargs = compose_model_kwargs(self.prompt_kwargs, prompt_kwargs)
-        if self.data_map_func is None:
-            self.set_data_map_func()
+        # if self.data_map_func is None:
+        #     self.set_data_map_func()
 
         predecessors = [
             p for p in combined_prompt_kwargs.values() if isinstance(p, Parameter)

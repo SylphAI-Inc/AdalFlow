@@ -105,18 +105,11 @@ ollama = ["ollama"]
 datasets = ["datasets"]
 
 
-# [[tool.poetry.source]]
-# name = "pypi"
-# url = "https://pypi.org/simple"
-# default = true
 [[tool.poetry.source]]
 name = "nvidia-pypi"
 priority = "supplemental"
 url = "https://pypi.nvidia.com"
-# [[tool.poetry.source]]
-# name = "nvidia-pypi"
-# priority = "supplemental"
-# url = "https://pypi.nvidia.com"
+
 
 [tool.ruff]
 exclude = ["images"]

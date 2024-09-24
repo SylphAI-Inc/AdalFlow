@@ -126,9 +126,7 @@ def train(
     )
     print(trainer)
 
-    train_dataset, val_dataset, test_dataset = load_datasets(
-        task_name="BBH_word_sorting"
-    )
+    train_dataset, val_dataset, test_dataset = load_datasets(task_name="word_sorting")
     for dataset in [train_dataset, val_dataset, test_dataset]:
         for example in dataset:
             example.question = example.question.replace(
