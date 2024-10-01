@@ -1,12 +1,11 @@
 """Base Classes for AdalFlow Optimizers, including Optimizer, TextOptimizer, and DemoOptimizer."""
 
-from typing_extensions import TypeAlias
 from typing import Dict, Any, Union, Iterable, Sequence
 
 from adalflow.optim.parameter import Parameter
 from adalflow.core.base_data_class import DataClass
 
-ParamsT: TypeAlias = Union[Iterable[Parameter], Iterable[Dict[str, Any]]]
+ParamsT = Union[Iterable[Parameter], Iterable[Dict[str, Any]]]
 
 
 class Optimizer:
