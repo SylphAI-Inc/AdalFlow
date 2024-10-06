@@ -3,7 +3,7 @@
 .. _developer_notes:
 
 
-Developer Notes
+Tutorials
 =============================
 
 .. *Why and How Each Part works*
@@ -152,6 +152,22 @@ Components work on a sequence of ``Document`` and return a sequence of ``Documen
 
 .. Let us put all of these components together to build a :doc:`rag` (Retrieval Augmented Generation), which requires data processing pipeline along with a task pipeline to run user queries.
 
+
+
+
+Putting it all together
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. list-table::
+    :widths: 20 80
+    :header-rows: 1
+
+    * - Part
+      - Description
+    * - :doc:`rag_playbook`
+      - Comprehensive RAG playbook according to the sota research and the best practices in the industry.
+
+
 .. toctree::
    :maxdepth: 1
    :caption: RAG Essentials
@@ -165,6 +181,7 @@ Components work on a sequence of ``Document`` and return a sequence of ``Documen
    retriever
    text_splitter
    db
+   rag_playbook
 
 
 
@@ -215,7 +232,7 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
 
 
 
-Optimizing
+Optimization
 -------------------
 AdalFlow auto-optimization provides a powerful and unified framework to optimize every single part of the prompt: (1) instruction, (2) few-shot examples, and (3) the prompt template,
 for any task pipeline you have just built. We leverage all SOTA prompt optimization from Dspy, Text-grad, ORPO, to our own research in the library.
@@ -227,8 +244,10 @@ The optimization requires users to have at least one dataset, an evaluator, and 
 This section we will briefly cover the datasets and evaluation metrics supported in the library.
 
 
-Evaluating
+Evaluation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+You can not optimize what you can not meature.
+In this section, we provide a general guide to the evaluation datasets, metrics, and methods to productionize your LLM tasks and to publish your research.
 
 .. list-table::
    :widths: 20 80
@@ -236,20 +255,18 @@ Evaluating
 
    * - Part
      - Description
-   * - :doc:`datasets`
-     - The datasets used in the evaluation.
    * - :doc:`evaluation`
-     - The evaluation metrics and methods.
+     - A quick guide to the evaluation datasets, metrics, and methods.
+   * - :doc:`datasets`
+     - How to load and use the datasets in the library.
 
 .. toctree::
    :maxdepth: 1
    :caption: Evaluating
    :hidden:
 
-
-   datasets
-
    evaluation
+   datasets
 
 
 Training
@@ -273,7 +290,7 @@ Note: Documentation is work in progress for this section.
    * - Part
      - Description
    * - :doc:`parameter_`
-     - The `Parameter` class stores the text, textual gradidents(feedback), and manage the states and applies the backpropagation in auto-diff.
+     - The `Parameter` class stores the text, textual gradidents(feedback), and managed the states and applies the backpropagation in auto-diff.
    * - :doc:`optimizer_`
      - The  `Optimizer` to define a structure and to manage `propose`, `revert`, and `step` methods. We defined two variants: `DemoOptimizer` and `TextOptimizer` to cover the prompt optimization and the few-shot optimization.
    * - :doc:`few_shot_optimizer_`

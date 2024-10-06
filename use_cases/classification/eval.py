@@ -71,7 +71,7 @@ if __name__ == "__main__":
     targets = [0, 1, 2, 0, 0, 0]
     accuracy, macro_f1_score = evaluator.run(preds, targets)
     print(f"Accuracy: {accuracy}")
-    print(f"Micro F1 Score: {macro_f1_score}")
+    print(f"Macro F1 Score: {macro_f1_score}")
     print(type(accuracy))
     weights_per_class = evaluator.weights_per_class(preds, targets)
     print(f"weights_per_class: {weights_per_class}")

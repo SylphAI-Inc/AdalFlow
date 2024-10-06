@@ -222,13 +222,8 @@ As an example, :class:`BM25Retriever<components.retriever.bm25_retriever.BM25Ret
     self.index_keys = ["nd", "t2d", "idf","doc_len","avgdl","total_documents","top_k","k1","b","epsilon","indexed"]
 
 
-Retriever in Action
+Experiment data
 --------------------
-All of our retrievers are  subclassed from the base retriever, and they are located in the ``components.retriever`` module.
-You can skim through their implementations here: :ref:`retriever<components-retriever>`.
-Currently only :class:`BM25Retriever<components.retriever.faiss_retriever.BM25Retriever>` needs to have its own ``save_to_file`` and ``load_from_file`` to avoid recomputation again.
-The ``FAISSRetriever`` will work with a database instead to store the embeddings and it alleviates the need for the retriever to deal with states saving.
-
 In this note, we will use the following documents and queries for demonstration:
 
 .. code-block:: python
@@ -256,6 +251,43 @@ In this note, we will use the following documents and queries for demonstration:
     ]
 
 The first query should retrieve the first and the last document, and the second query should retrieve the second and the third document.
+
+Documents filtering
+--------------------
+Before using more advanced retrieval methods, it is common to filter the documents first.
+Document filtering is dependent on your data storage, whether it is in memory, local disk, or cloud database.
+For the cloud database, it is highly dependent on the database's search and filter methods. And SQL-based search is common, scalable, and efficient.
+
+If you are using `LocalDB` and `Document` as the data item, you can use the `filter` method to filter the documents.
+
+Before you pass the documents or processed document chunks and embeddings to the retriever, you can filter the documents first.
+
+.. code-block:: python
+
+    from adalflow.core.db import LocalDB
+    from adalflow.core.types import Document
+
+    db = LocalDB()
+    db.connect()
+
+    # Add the documents to the database
+    for doc in documents:
+        db.add_item(Document(**doc))
+
+    # Filter the documents
+    filtered_documents = db.filter(Document, title="Solar Panels")
+
+    print(filtered_documents)
+
+
+Retriever in Action
+--------------------
+All of our retrievers are  subclassed from the base retriever, and they are located in the ``components.retriever`` module.
+You can skim through their implementations here: :ref:`retriever<components-retriever>`.
+Currently only :class:`BM25Retriever<components.retriever.faiss_retriever.BM25Retriever>` needs to have its own ``save_to_file`` and ``load_from_file`` to avoid recomputation again.
+The ``FAISSRetriever`` will work with a database instead to store the embeddings and it alleviates the need for the retriever to deal with states saving.
+
+
 
 FAISSRetriever
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

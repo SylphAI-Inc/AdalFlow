@@ -1,3 +1,17 @@
+.. <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/notebooks/qas/adalflow_object_count_auto_optimization.ipynb" target="_blank" style="margin-right: 10px;">
+..     <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+.. </a>
+
+.. raw:: html
+
+   <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+
+      <a href="https://github.com/SylphAI-Inc/AdalFlow/tree/main/use_cases/classification" target="_blank" style="display: flex; align-items: center;">
+         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+         <span style="vertical-align: middle;"> Open Source Code</span>
+      </a>
+   </div>
+
 Classification Optimization
 =============================
 
@@ -195,18 +209,18 @@ as well as a method method to configure teacher generator for the demo optimizer
                 teacher_model_config=teacher_model_config,
             )
 
-        def handle_one_task_sample(self, sample: TRECExtendedData):
+        def prepare_task(self, sample: TRECExtendedData):
             return self.task.call, {"question": sample.question, "id": sample.id}
 
-        def evaluate_one_sample(
+        def prepare_eval(
             self, sample: TRECExtendedData, y_pred: adal.GeneratorOutput
         ) -> float:
             y_label = -1
             if y_pred and y_pred.data is not None and y_pred.data.class_name is not None:
                 y_label = y_pred.data.class_name
-            return self.eval_fn(y_label, sample.class_name)
+            return self.eval_fn, {"y": y_label, "y_gt": sample.class_name}
 
-        def handle_one_loss_sample(
+        def prepare_loss(
             self, sample: TRECExtendedData, y_pred: adal.Parameter, *args, **kwargs
         ) -> Tuple[Callable[..., Any], Dict]:
             full_response = y_pred.full_response
@@ -227,16 +241,6 @@ as well as a method method to configure teacher generator for the demo optimizer
             )
             return self.loss_fn, {"kwargs": {"y": y_pred, "y_gt": y_gt}}
 
-        def configure_teacher_generator(self):
-            super().configure_teacher_generator_helper(**self.teacher_model_config)
-
-        def configure_backward_engine(self):
-            super().configure_backward_engine_helper(**self.backward_engine_model_config)
-
-        def configure_optimizers(self):
-            to = super().configure_text_optimizer_helper(**self.text_optimizer_model_config)
-            do = super().configure_demo_optimizer_helper()
-            return to + do
 
 
 Trainer and Training Strategy
@@ -355,7 +359,7 @@ Here is the DsPy's Signature (similar to the prompt) where its task description 
         )
 
 
-Here is the peroformance result
+Here is the performance result
 
 .. list-table:: AdalFlow vs DsPy on GPT-3.5-turbo
    :header-rows: 1

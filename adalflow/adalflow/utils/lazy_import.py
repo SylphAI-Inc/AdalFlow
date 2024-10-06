@@ -4,7 +4,6 @@ import importlib
 import logging
 from types import ModuleType
 
-
 from enum import Enum
 
 log = logging.getLogger(__name__)
@@ -19,6 +18,7 @@ class OptionalPackages(Enum):
     GROQ = ("groq", "Please install groq with: pip install groq")
     OPENAI = ("openai", "Please install openai with: pip install openai")
     ANTHROPIC = ("anthropic", "Please install anthropic with: pip install anthropic")
+    BEDROCK = ("bedrock", "Please install boto3 with: pip install boto3")
     GOOGLE_GENERATIVEAI = (
         "google.generativeai",
         "Please install google-generativeai with: pip install google-generativeai",
@@ -35,7 +35,10 @@ class OptionalPackages(Enum):
 
     AZURE_AUTH_SERVICES = ("AZURE_AUTH_SERVICES", "Please install AZURE_AUTH_SERVICES with: pip install azure-identity azure-core")
     # search library
-    FAISS = ("faiss", "Please install faiss with: pip install faiss")
+    FAISS = (
+        "faiss",
+        "Please install faiss with: pip install faiss-cpu (or faiss if you use GPU)",
+    )
 
     # db library
     SQLALCHEMY = (
@@ -77,7 +80,7 @@ class LazyImport:
     """
 
     def __init__(
-        self, import_path: str, optional_package: OptionalPackages, *args, **kwargs
+            self, import_path: str, optional_package: OptionalPackages, *args, **kwargs
     ):
         if args or kwargs:
             raise TypeError(

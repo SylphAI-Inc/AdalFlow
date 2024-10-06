@@ -29,13 +29,13 @@ class BootstrapFewShot(DemoOptimizer):
         to prioritize failed demos but successful in augmented demos based on the evaluation score
         while we backpropagate the demo samples.
      2. In default, we exclude the input fields from the augmented demos. Our reserch finds that
-        using the reasoning demostrations from teacher model can be more effective to just take inputs and output
+        using the reasoning demostrations from teacher model can be more effective in some cases than taking both inputs and output
         samples and be more token efficient.
 
     Reference:
     - DsPy: Com-piling declarative language model calls into state-of-the-art pipelines.
     """
-    exclude_input_fields_from_bootstrap_demos: bool = False
+    exclude_input_fields_from_bootstrap_demos: bool
 
     def __init__(
         self,
@@ -66,7 +66,9 @@ class BootstrapFewShot(DemoOptimizer):
 
     def add_scores(self, ids: List[str], scores: List[float], is_teacher: bool = True):
         if len(ids) != len(scores):
-            raise ValueError("ids and scores must have the same length")
+            raise ValueError(
+                f"ids and scores must have the same length, got ids: {ids}, scores: {scores}"
+            )
 
         for score in scores:
 
@@ -125,10 +127,17 @@ class BootstrapFewShot(DemoOptimizer):
                     raise ValueError(
                         f"score must be provided for each demo, id: {demo.id}, all scores: {self._teacher_scores}"
                     )
+                if demo_score < 0 or demo_score > 1:
+                    raise ValueError(f"score must be in range [0, 1], got {demo_score}")
 
                 w = demo_score
                 student_demo_score = self._student_scores.get(demo.id, None)
+
                 if student_demo_score is not None:
+                    if student_demo_score < 0 or student_demo_score > 1:
+                        raise ValueError(
+                            f"score must be in range [0, 1], got {student_demo_score}"
+                        )
                     # if demo.id in demos and demos[demo.id].score is not None:
                     w = (
                         w
@@ -138,6 +147,7 @@ class BootstrapFewShot(DemoOptimizer):
                     if w < 0:
                         w = 0
                 weights.append(w)
+
         # print(f"augs: {augmented_options}")
         sampled_augmented_demos = (
             random_sample(
@@ -149,6 +159,7 @@ class BootstrapFewShot(DemoOptimizer):
 
         # 2. sample from raw demos
         # exclude the sampled augmented demos
+        # TODO: ensure all data points has unique ids
         filtered_dataset = list(
             filter(
                 lambda x: x.id
@@ -156,6 +167,9 @@ class BootstrapFewShot(DemoOptimizer):
                 dataset,
             )
         )
+        if len(filtered_dataset) == 0:
+            # If no demos left we will get raw_weights [], sum to 0
+            return sampled_augmented_demos, []
         # assigne weights 0 to all options
         raw_weights = None
         if weighted:
@@ -163,8 +177,15 @@ class BootstrapFewShot(DemoOptimizer):
             # for those exist in the demos, assign higher score with failed demos
             for i, demo in enumerate(filtered_dataset):
                 student_demo_score = self._student_scores.get(demo.id, None)
+
                 if student_demo_score is not None:
-                    raw_weights[i] += 1 - student_demo_score
+                    # ensure the score is in range [0, 1]
+                    if student_demo_score < 0 or student_demo_score > 1:
+                        raise ValueError(
+                            f"score must be in range [0, 1], got {student_demo_score}"
+                        )
+                    raw_weights[i] = 1 - student_demo_score
+
         sampled_raw_demos = random_sample(
             filtered_dataset, raw_shots, replace=False, weights=raw_weights
         )
@@ -258,7 +279,7 @@ class BootstrapFewShot(DemoOptimizer):
 
     def __str__(self) -> str:
         s = f"BootstrapFewShot(raw_shots={self._raw_shots}, bootstrap_shots={self._bootstrap_shots}, \
-            params={[p.name for p in self.params]}, dataset={len(self.dataset)})"
+            params={[p.name for p in self.params]}, dataset={len(self.dataset) if self.dataset else 0})"
         return s
 
     def __repr__(self) -> str:

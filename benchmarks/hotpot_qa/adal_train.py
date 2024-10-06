@@ -2,6 +2,9 @@
 
 import dspy
 from typing import List, Union, Optional, Dict, Callable
+from dataclasses import dataclass, field
+
+import adalflow as adal
 from adalflow.optim.parameter import Parameter, ParameterType
 
 from adalflow.datasets.hotpot_qa import HotPotQA, HotPotQAData
@@ -18,12 +21,10 @@ dspy.settings.configure(rm=colbertv2_wiki17_abstracts)
 
 
 def load_datasets():
-    # trainset = HotPotQA(split="train", size=2)
-    # valset = HotPotQA(split="val", size=5)
-    # testset = HotPotQA(split="test", size=5)
+
     trainset = HotPotQA(split="train", size=20)
     valset = HotPotQA(split="val", size=50)
-    testset = HotPotQA(split="test", size=50)
+    testset = HotPotQA(split="test", size=50)  # to keep the same as the dspy
     print(f"trainset, valset: {len(trainset)}, {len(valset)}, example: {trainset[0]}")
     return trainset, valset, testset
 
@@ -34,12 +35,43 @@ from typing import Any, Tuple
 from adalflow.core import Component, Generator
 
 
+# dspy format
+# Follow the following format.
+# Context: may contain relevant facts
+# Question: ${question}
+# Reasoning: Let's think step by step in order to ${produce the query}. We ...
+# Query: ${query}
+@dataclass
+class QueryRewritterData(adal.DataClass):
+    reasoning: str = field(
+        metadata={"desc": "The reasoning to produce the query"},
+    )
+    query: str = field(
+        metadata={"desc": "The query you produced"},
+    )
+
+    __output_fields__ = ["reasoning", "query"]
+
+
+@dataclass
+class AnswerData(adal.DataClass):
+    reasoning: str = field(
+        metadata={"desc": "The reasoning to produce the answer"},
+    )
+    answer: str = field(
+        metadata={"desc": "The answer you produced"},
+    )
+
+    __output_fields__ = ["reasoning", "answer"]
+
+
 query_template = """<START_OF_SYSTEM_PROMPT>
 Write a simple search query that will help answer a complex question.
 
-You will receive a context and a question. Think step by step.
-The last line of your response should be of the following format: 'Query: $VALUE' where VALUE is a search query.
+You will receive a context(may contain relevant facts) and a question.
+Think step by step.
 
+{{output_format_str}}
 {# Few shot demos #}
 {% if few_shot_demos is not none %}
 Here are some examples:
@@ -56,9 +88,9 @@ Question: {{question}}
 answer_template = """<START_OF_SYSTEM_PROMPT>
 Answer questions with short factoid answers.
 
-You will receive context and a question. Think step by step.
-The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a short factoid answer.
-
+You will receive context(may contain relevabt facts) and a question.
+Think step by step.
+{{output_format_str}}
 {# Few shot demos #}
 {% if few_shot_demos is not none %}
 Here are some examples:
@@ -137,7 +169,7 @@ class DspyRetriever(Retriever):
         self.k = k
         self.dspy_retriever = dspy.Retrieve(k=k)
 
-    def call(self, input, top_k=None, id=None):
+    def call(self, input: str) -> List[RetrieverOutput]:
         output = self.dspy_retriever(query_or_queries=input, k=self.k)
         print(f"dsy_retriever output: {output}")
         final_output: List[RetrieverOutput] = []
@@ -161,13 +193,18 @@ import adalflow as adal
 
 
 # User customize an auto-grad operator
-class MultiHopRetriever(adal.GradComponent):
+class MultiHopRetriever(adal.Retriever):
     def __init__(self, model_client, model_kwargs, passages_per_hop=3, max_hops=2):
         super().__init__()
 
         self.passages_per_hop = passages_per_hop
         self.max_hops = max_hops
 
+        self.data_parser = adal.DataClassParser(
+            data_class=QueryRewritterData, return_data_class=True, format_type="yaml"
+        )
+
+        # Grad Component
         self.query_generator = Generator(
             name="query_generator",
             model_client=model_client,
@@ -179,100 +216,145 @@ class MultiHopRetriever(adal.GradComponent):
                     role_desc="To provide few shot demos to the language model",
                     requires_opt=True,
                     param_type=ParameterType.DEMOS,
-                )
+                ),
+                "output_format_str": self.data_parser.get_output_format_str(),
             },
             template=query_template,
-            output_processors=parse_string_query,
+            # output_processors=parse_string_query,
+            output_processors=self.data_parser,
             use_cache=True,
-            demo_data_class=HotPotQADemoData,
-            demo_data_class_input_mapping={
-                "question": "question",
-                # "context": "context",
-            },
-            demo_data_class_output_mapping={"answer": lambda x: x.raw_response},
+            # demo_data_class=HotPotQADemoData,
+            # demo_data_class_input_mapping={
+            #     "question": "question",
+            #     # "context": "context",
+            # },
+            # demo_data_class_output_mapping={"answer": lambda x: x.raw_response},
         )
         self.retrieve = DspyRetriever(k=passages_per_hop)
 
-    def call(self, question: str, id: str = None) -> Any:  # Add id for tracing
-        # inferenc mode
-        # output = self.forward(question, id=id)
-        context = []
-        self.max_hops = 1
-        # for hop in range(self.max_hops):
-        last_context_param = Parameter(
-            data=context,
-            name=f"query_context_{id}_{0}",
-            requires_opt=True,
-        )
-        query = self.query_generator(
-            prompt_kwargs={
-                "context": last_context_param,
-                "question": question,
-            },
-            id=id,
-        )
-        print(f"query: {query}")
-        if isinstance(query, GeneratorOutput):
-            query = query.data
-        output = self.retrieve(query)
-        print(f"output: {output}")
-        print(f"output call: {output}")
-        return output[0].documents
+    @staticmethod
+    def context_to_str(context: List[str]) -> str:
+        return "\n".join(context)
 
-    def forward(self, question: str, id: str = None) -> Parameter:
-        question_param = question
-        if not isinstance(question, Parameter):
-            question_param = Parameter(
-                data=question,
-                name="question",
-                role_desc="The question to be answered",
-                requires_opt=False,
-            )
+    def call(self, *, question: str, id: str = None) -> Any:  # Add id for tracing
+        # inference mode!!!
+        # output = self.forward(question, id=id)
+
         context = []
         self.max_hops = 1
-        # for hop in range(self.max_hops):
-        last_context_param = Parameter(
-            data=context,
-            name=f"query_context_{id}_{0}",
-            requires_opt=True,
-        )
-        query = self.query_generator(
-            prompt_kwargs={
-                "context": last_context_param,
-                "question": question_param,
-            },
-            id=id,
-        )
-        print(f"query: {query}")
-        if isinstance(query, GeneratorOutput):
-            query = query.data
-        output = self.retrieve(query)
-        print(f"output: {output}")
-        passages = []
-        if isinstance(output, Parameter):
-            passages = output.data[0].documents
-        else:
-            passages = output[0].documents
-        # context = deduplicate(context + passages) # all these needs to gradable
-        # output_param = Parameter(
-        #     data=passages,
-        #     alias=f"qa_context_{id}",
-        #     role_desc="The context to be used for answering the question",
+        for hop in range(self.max_hops):
+            gen_out = self.query_generator(
+                prompt_kwargs={
+                    "context": self.context_to_str(context),
+                    "question": question,
+                },
+                id=id,
+            )
+            query = None
+            # TODO: the bridge between the retriever to the generator and generator to the retriever needs to be more smooth
+            if isinstance(gen_out, GeneratorOutput):
+                query = (  # noqa: F841
+                    gen_out.data.query if gen_out.data and gen_out.data.query else None
+                )
+            elif isinstance(gen_out, adal.Parameter):
+                gen_out.successor_map_fn = lambda x: (
+                    x.full_response.data.query
+                    if x.full_response and x.full_response.data
+                    else None
+                )
+                print(f"gen_out: {gen_out}")
+                # query = (
+                #     gen_out.full_response.data.query
+                #     if gen_out.full_response and gen_out.full_response.data
+                #     else None
+                # )
+            retrieve_out = self.retrieve(input=gen_out)
+            print(f"retrieve_out: {retrieve_out}")
+            # passages = []
+            # if isinstance(retrieve_out, Parameter):
+            #     passages = retrieve_out.data[0].documents
+            # else:
+            #     passages = retrieve_out[0].documents
+
+            # print(f"passages: {passages}")
+
+            # context = deduplicate(context + passages)
+
+        # # for hop in range(self.max_hops):
+        # last_context_param = Parameter(
+        #     data=context,
+        #     name=f"query_context_{id}_{0}",
         #     requires_opt=True,
         # )
-        output.data = passages  # reset the values to be used in the next
-        if not isinstance(output, Parameter):
-            raise ValueError(f"Output must be a Parameter, got {output}")
-        return output
-        # output_param.set_grad_fn(
-        #     BackwardContext(
-        #         backward_fn=self.backward,
-        #         response=output_param,
-        #         id=id,
-        #         prededecessors=prededecessors,
-        #     )
+        # query = self.query_generator(
+        #     prompt_kwargs={
+        #         "context": last_context_param,
+        #         "question": question,
+        #     },
+        #     id=id,
         # )
-        # return output_param
+        # print(f"query: {query}")
+        # if isinstance(query, GeneratorOutput):
+        #     query = query.data
+        # output = self.retrieve(query)
+        # print(f"output: {output}")
+        # print(f"output call: {output}")
+        # return output[0].documents
+
+    # def forward(self, question: str, id: str = None) -> Parameter:
+    #     question_param = question
+    #     if not isinstance(question, Parameter):
+    #         question_param = Parameter(
+    #             data=question,
+    #             name="question",
+    #             role_desc="The question to be answered",
+    #             requires_opt=False,
+    #         )
+    #     context = []
+    #     self.max_hops = 1
+    #     # for hop in range(self.max_hops):
+    #     last_context_param = Parameter(
+    #         data=context,
+    #         name=f"query_context_{id}_{0}",
+    #         requires_opt=True,
+    #     )
+    #     query = self.query_generator(
+    #         prompt_kwargs={
+    #             "context": last_context_param,
+    #             "question": question_param,
+    #         },
+    #         id=id,
+    #     )
+    #     print(f"query: {query}")
+    #     if isinstance(query, GeneratorOutput):
+    #         query = query.data
+    #     output = self.retrieve(query)
+    #     print(f"output: {output}")
+    #     passages = []
+    #     if isinstance(output, Parameter):
+    #         passages = output.data[0].documents
+    #     else:
+    #         passages = output[0].documents
+    #     # context = deduplicate(context + passages) # all these needs to gradable
+    #     # output_param = Parameter(
+    #     #     data=passages,
+    #     #     alias=f"qa_context_{id}",
+    #     #     role_desc="The context to be used for answering the question",
+    #     #     requires_opt=True,
+    #     # )
+    #     output.data = passages  # reset the values to be used in the next
+    #     if not isinstance(output, Parameter):
+    #         raise ValueError(f"Output must be a Parameter, got {output}")
+    #     return output
+    #     # output_param.set_grad_fn(
+    #     #     BackwardContext(
+    #     #         backward_fn=self.backward,
+    #     #         response=output_param,
+    #     #         id=id,
+    #     #         prededecessors=prededecessors,
+    #     #     )
+    #     # )
+    #     # return output_param
 
     def backward(self, response: Parameter, id: Optional[str] = None):
         print(f"MultiHopRetriever backward: {response}")
@@ -487,25 +569,55 @@ def validate_dspy_demos(
 
     demos = demos_json["generate_answer"]["demos"]  # noqa: F841
 
-    task = HotPotQARAG(  # noqa: F841
+    # task = HotPotQARAG(  # noqa: F841
+    #     **gpt_3_model,
+    #     passages_per_hop=3,
+    #     max_hops=2,
+    # )
+    # task.llm_counter.p
+
+
+def test_multi_hop_retriever():
+
+    from use_cases.config import (
+        gpt_3_model,
+    )
+
+    multi_hop_retriever = MultiHopRetriever(
         **gpt_3_model,
         passages_per_hop=3,
         max_hops=2,
     )
-    # task.llm_counter.p
+    # 1. use print
+    # print(multi_hop_retriever.query_generator)
+    # # 2. run one forward for query generator
+    question = "How many storeys are in the castle that David Gregory inherited?"
+    # context = []
+    # context_str = multi_hop_retriever.context_to_str(context)
+    # print(
+    #     multi_hop_retriever.query_generator(
+    #         prompt_kwargs={"question": question, "context": context_str}, id="1"
+    #     )
+    # )
+    # # verfify the prompt
+    # multi_hop_retriever.query_generator.print_prompt(
+    #     **{"question": question, "context": context_str}
+    # )
+
+    # training mode
+    multi_hop_retriever.train()
+
+    # 3. run one forward for retriever
+    print(multi_hop_retriever(question=question, id="1"))
 
 
-if __name__ == "__main__":
-    ### Try the minimum effort to test on any task
-
-    # get_logger(level="DEBUG")
+def train():
     trainset, valset, testset = load_datasets()
 
-    from use_cases.question_answering.bhh_object_count.config import (
+    from use_cases.config import (
         gpt_3_model,
         gpt_4o_model,
     )
-    import dspy
 
     task = HotPotQARAG(
         **gpt_3_model,
@@ -537,6 +649,13 @@ if __name__ == "__main__":
     trainer.fit(
         train_dataset=trainset, val_dataset=valset, test_dataset=testset, debug=True
     )
+
+
+if __name__ == "__main__":
+    ### Try the minimum effort to test on any task
+
+    # get_logger(level="DEBUG")
+    test_multi_hop_retriever()
 
 
 # TODO: i forgot that i need demo_data_class

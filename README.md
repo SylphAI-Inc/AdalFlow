@@ -16,6 +16,7 @@
 </h2>
 
 
+
 <p align="center">
     <a href="https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing">
         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
@@ -28,6 +29,7 @@
         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.html">Models</a> |
         <a href="https://adalflow.sylph.ai/apis/components/components.retriever.html">Retrievers</a> |
         <a href="https://adalflow.sylph.ai/apis/components/components.agent.html">Agents</a> |
+        <a href="https://adalflow.sylph.ai/tutorials/evaluation.html"> LLM evaluation</a> |
         <a href="https://adalflow.sylph.ai/use_cases/question_answering.html">Trainer & Optimizers</a>
     <p>
 </h4>
@@ -36,19 +38,25 @@
     <a href="https://pypi.org/project/adalflow/">
         <img alt="PyPI Version" src="https://img.shields.io/pypi/v/adalflow?style=flat-square">
     </a>
-    <a href="https://star-history.com/#SylphAI-Inc/LightRAG">
-        <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square">
+    <a href="https://star-history.com/#SylphAI-Inc/AdalFlow">
+        <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/AdalFlow?style=flat-square">
     </a>
-    <a href="https://github.com/SylphAI-Inc/LightRAG/issues">
-        <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square">
+    <a href="https://github.com/SylphAI-Inc/AdalFlow/issues">
+        <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/SylphAI-Inc/AdalFlow?style=flat-square">
     </a>
     <a href="https://opensource.org/license/MIT">
-        <img alt="License" src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG">
+        <img alt="License" src="https://img.shields.io/github/license/SylphAI-Inc/AdalFlow">
     </a>
       <a href="https://discord.gg/ezzszrRZvT">
         <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
     </a>
 </p>
+
+<h4>
+<p align="center">
+For AI researchers, product teams, and software engineers who want to learn the AI way.
+</p>
+</h4>
 
 
 
@@ -69,7 +77,7 @@
 # Why AdalFlow
 
 1. Embracing a design pattern similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
-AdalFlow provides `Model-agnostic` building blocks to build LLM task pipeline, ranging from RAG, Agents to classical NLP tasks like text classification and named entity recognition. It is easy to get high performance even with just basic manual promting.
+AdalFlow provides `Model-agnostic` building blocks to build LLM task pipelines, ranging from RAG, Agents to classical NLP tasks like text classification and named entity recognition. It is easy to get high performance only using manual prompting.
 2. AdalFlow provides a unified auto-differentiative framework for both zero-shot prompt optimization and few-shot optimization. It advances existing auto-optimization research, including ``Text-Grad`` and ``DsPy``.
 Through our research, ``Text-Grad 2.0`` and ``Learn-to-Reason Few-shot In Context Learning``, AdalFlow ``Trainer`` achieves the highest accuracy while being the most token-efficient.
 
@@ -78,7 +86,7 @@ Through our research, ``Text-Grad 2.0`` and ``Learn-to-Reason Few-shot In Contex
 <!-- AdalFlow not only helps developers build model-agnostic LLM task pipelines with full control over prompts and output processing, but it also auto-optimizes these pipelines to achieve SOTA accuracy. -->
 <!-- Embracing a design pattern similar to PyTorch, AdalFlow is powerful, light, modular, and robust. -->
 
-Here is our optimization demonstration on a text classification task:
+Here is an optimization demonstration on a text classification task:
 <!-- <p align="center">
   <img src="docs/source/_static/images/classification_training_map.png" alt="AdalFlow Auto-optimization" style="width: 80%;">
 </p>
@@ -96,16 +104,16 @@ Here is our optimization demonstration on a text classification task:
 </p>
 
 
-Among all libraries, we achieved the highest accuracy with manual prompting (starting at 82%) and the highest accuracy after optimization.
+Among all libraries, AdalFlow achieved the highest accuracy with manual prompting (starting at 82%) and the highest accuracy after optimization.
 
 Further reading: [Optimize Classification](https://adalflow.sylph.ai/use_cases/classification.html)
 
-## Light, Modular, and Model-agnositc Task Pipeline
+## Light, Modular, and Model-Agnostic Task Pipeline
 
-LLMs are like water; AdalFlow help developers quickly shape them into any applications, from GenAI applications such as chatbots, translation, summarization, code generation, RAG, and autonomous agents to classical NLP tasks like text classification and named entity recognition.
+LLMs are like water; AdalFlow help you quickly shape them into any applications, from GenAI applications such as chatbots, translation, summarization, code generation, RAG, and autonomous agents to classical NLP tasks like text classification and named entity recognition.
 
-Only two fundamental but powerful base classes: `Component` for the pipeline and `DataClass` for data interaction with LLMs.
-The result is a library with bare minimum abstraction, providing developers with *maximum customizability*.
+AdalFlow has two fundamental, but powerful, base classes: `Component` for the pipeline and `DataClass` for data interaction with LLMs.
+The result is a library with minimal abstraction, providing developers with *maximum customizability*.
 
 You have full control over the prompt template, the model you use, and the output parsing for your task pipeline.
 
@@ -122,8 +130,7 @@ Because of this, no library can provide out-of-the-box solutions. Users must bui
 <!-- This is what AdalFlow is: light, modular, and robust, with a 100% readable codebase. -->
 
 
-Further reading: [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop),
-[Introduction](https://adalflow.sylph.ai/), [Design Philosophy](https://adalflow.sylph.ai/tutorials/lightrag_design_philosophy.html) and [Class hierarchy](https://adalflow.sylph.ai/tutorials/class_hierarchy.html).
+Further reading: [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop), <!-- [Introduction](https://adalflow.sylph.ai/),  -->[Design Philosophy](https://adalflow.sylph.ai/tutorials/lightrag_design_philosophy.html) and [Class hierarchy](https://adalflow.sylph.ai/tutorials/class_hierarchy.html).
 
 
 <!--
@@ -155,15 +162,17 @@ class Net(nn.Module):
 ## Unified Framework for Auto-Optimization
 
 AdalFlow provides token-efficient and high-performing prompt optimization within a unified framework.
-To optimize your pipeline, simply define a ``Parameter`` and pass it to our ``Generator``.
-Whether you need to optimize task instructions or few-shot demonstrations,
-our unified framework offers an easy way to **diagnose**, **visualize**, **debug**, and **train** your pipeline.
+To optimize your pipeline, simply define a ``Parameter`` and pass it to AdalFlow's ``Generator``.
+Whether you need to optimize task instructions or run some few-shot demonstrations,
+AdalFlow's unified framework offers an easy way to **diagnose**, **visualize**, **debug**, and **train** your pipeline.
 
-This [Trace Graph](https://adalflow.sylph.ai/tutorials/trace_graph.html) demonstrates how our auto-differentiation works.
+This [Dynamic Computation Graph](https://adalflow.sylph.ai/tutorials/trace_graph.html) demonstrates how our auto-differentiation and the dynamic computation graph work.
+
+No need to manually defined nodes and edges, AdalFlow will automatically trace the computation graph for you.
 
 ### **Trainable Task Pipeline**
 
-Just define it as a ``Parameter`` and pass it to our ``Generator``.
+Just define it as a ``Parameter`` and pass it to AdalFlow's ``Generator``.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/Trainable_task_pipeline.png" alt="AdalFlow Trainable Task Pipeline">
@@ -171,10 +180,11 @@ Just define it as a ``Parameter`` and pass it to our ``Generator``.
 
 ### **AdalComponent & Trainer**
 
-``AdalComponent`` acts as the `interpreter`  between task pipeline and the trainer, defining training and validation steps, optimizers, evaluators, loss functions, backward engine for textual gradients or tracing the demonstrations, the teacher generator.
+``AdalComponent`` acts as the 'interpreter'  between task pipeline and the trainer, defining training and validation steps, optimizers, evaluators, loss functions, backward engine for textual gradients or tracing the demonstrations, the teacher generator.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/trainer.png" alt="AdalFlow AdalComponent & Trainer">
+    <img src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/trainer.png" alt="AdalFlow AdalComponent & Trainer">
+
 </p>
 
 # Quick Install
@@ -206,7 +216,9 @@ AdalFlow full documentation available at [adalflow.sylph.ai](https://adalflow.sy
 
 # AdalFlow: A Tribute to Ada Lovelace
 
-AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could do more than just calculations. As a female-led team, we aim to inspire more women to enter the AI field.
+
+AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could do more than just perform calculations. As a female-led team, we aim to inspire more women to enter the AI field.
+
 
 # Contributors
 
@@ -214,13 +226,14 @@ AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_L
 
 # Acknowledgements
 
-Many existing works greatly inspired this project! Here is a non-exhaustive list:
+Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive list:
 
 - 📚 [PyTorch](https://github.com/pytorch/pytorch/) for design philosophy and design pattern of ``Component``, ``Parameter``, ``Sequential``.
 - 📚 [Micrograd](https://github.com/karpathy/micrograd): A tiny autograd engine for our auto-differentiative architecture.
 - 📚 [Text-Grad](https://github.com/zou-group/textgrad) for the ``Textual Gradient Descent`` text optimizer.
 - 📚 [DSPy](https://github.com/stanfordnlp/dspy) for inspiring the ``__{input/output}__fields`` in our ``DataClass`` and the bootstrap few-shot optimizer.
-- 📚 [ORPO](https://github.com/google-deepmind/opro) for adding past text instruction along with its accuracy in the text optimizer.
+- 📚 [OPRO](https://github.com/google-deepmind/opro) for adding past text instructions along with its accuracy in the text optimizer.
+- 📚 [PyTorch Lightning](https://github.com/Lightning-AI/pytorch-lightning) for the ``AdalComponent`` and ``Trainer``.
 
 # Citation
 
@@ -231,6 +244,12 @@ Many existing works greatly inspired this project! Here is a non-exhaustive list
   month = {7},
   year = {2024},
   doi = {10.5281/zenodo.12639531},
-  url = {https://github.com/SylphAI-Inc/LightRAG}
+  url = {https://github.com/SylphAI-Inc/AdalFlow}
 }
 ```
+
+<!-- # Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=SylphAI-Inc/AdalFlow&type=Date)](https://star-history.com/#SylphAI-Inc/AdalFlow&Date) -->
+<!--
+<a href="https://trendshift.io/repositories/11559" target="_blank"><img src="https://trendshift.io/api/badge/repositories/11559" alt="SylphAI-Inc%2FAdalFlow | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a> -->

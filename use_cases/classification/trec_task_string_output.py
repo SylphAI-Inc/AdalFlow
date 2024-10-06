@@ -3,7 +3,8 @@ from typing import Dict, Union, Optional
 import adalflow as adal
 import re
 from adalflow.datasets.trec import _COARSE_LABELS_DESC, _COARSE_LABELS
-from use_cases.classification.trec_task import task_desc_template
+
+from use_cases.classification.trec_task_structured_output import task_desc_template
 
 template = r"""<START_OF_SYSTEM_MESSAGE>
 {{system_prompt}}

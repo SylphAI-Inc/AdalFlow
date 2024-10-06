@@ -121,7 +121,7 @@ def examples_of_different_ways_to_parse_string():
 
 
 def int_parser():
-    from lightrag.core.string_parser import IntParser
+    from adalflow.core.string_parser import IntParser
 
     int_str = "42"
     int_str_2 = "42.0"
@@ -138,7 +138,7 @@ def int_parser():
 
 
 def float_parser():
-    from lightrag.core.string_parser import FloatParser
+    from adalflow.core.string_parser import FloatParser
 
     float_str = "42.0"
     float_str_2 = "42"
@@ -154,7 +154,7 @@ def float_parser():
 
 
 def bool_parser():
-    from lightrag.core.string_parser import BooleanParser
+    from adalflow.core.string_parser import BooleanParser
 
     bool_str = "True"
     bool_str_2 = "False"
@@ -179,7 +179,7 @@ def bool_parser():
 
 def list_parser():
 
-    from lightrag.core.string_parser import ListParser
+    from adalflow.core.string_parser import ListParser
 
     list_str = '["key", "value"]'
     list_str_2 = 'prefix["key", 2]...'
@@ -194,7 +194,7 @@ def list_parser():
 
 
 def json_parser():
-    from lightrag.core.string_parser import JsonParser
+    from adalflow.core.string_parser import JsonParser
 
     dict_str = '{"key": "value"}'
     nested_dict_str = (
@@ -212,7 +212,7 @@ def json_parser():
 
 
 def yaml_parser():
-    from lightrag.core.string_parser import YamlParser
+    from adalflow.core.string_parser import YamlParser
 
     yaml_dict_str = "key: value"
     yaml_nested_dict_str = (
@@ -229,8 +229,8 @@ def yaml_parser():
 
 def json_output_parser():
     from dataclasses import dataclass, field
-    from lightrag.components.output_parsers import JsonOutputParser
-    from lightrag.core import DataClass
+    from adalflow.components.output_parsers import JsonOutputParser
+    from adalflow.core import DataClass
 
     @dataclass
     class User(DataClass):
@@ -251,8 +251,8 @@ def json_output_parser():
 
 def yaml_output_parser():
     from dataclasses import dataclass, field
-    from lightrag.components.output_parsers import YamlOutputParser
-    from lightrag.core import DataClass
+    from adalflow.components.output_parsers import YamlOutputParser
+    from adalflow.core import DataClass
 
     @dataclass
     class User(DataClass):

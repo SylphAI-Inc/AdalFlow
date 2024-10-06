@@ -90,7 +90,6 @@ class DataClassParser(Component):
         else:
             schema = self._data_class.to_json_signature(include=self._output_fields)
             output_format_str = Prompt(template=JSON_OUTPUT_FORMAT)(schema=schema)
-        print(f"output_format_str: {output_format_str}")
         return output_format_str
 
     def get_input_str(self, input: DataClass) -> str:
