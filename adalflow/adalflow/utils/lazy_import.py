@@ -29,6 +29,8 @@ class OptionalPackages(Enum):
     )
     COHERE = ("cohere", "Please install cohere with: pip install cohere")
     OLLAMA = ("ollama", "Please install ollama with: pip install ollama")
+    # AWS
+    BOTO3 = ("boto3", "Please install boto3 with: pip install boto3")
     # modeling library
     TORCH = ("torch", "Please install torch with: pip install torch")
 
@@ -78,7 +80,7 @@ class LazyImport:
     """
 
     def __init__(
-            self, import_path: str, optional_package: OptionalPackages, *args, **kwargs
+        self, import_path: str, optional_package: OptionalPackages, *args, **kwargs
     ):
         if args or kwargs:
             raise TypeError(
