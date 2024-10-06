@@ -3,14 +3,29 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = LightRAG
+SPHINXPROJ    = AdalFlow
 SOURCEDIR     = source
 BUILDDIR      = build
 APIDOCOUTDIR  = $(SOURCEDIR)/apis
+PYTHON        := $(shell command -v python3 2>/dev/null || command -v python 2>/dev/null)
+POETRY        = poetry 
 
 # Put it first so that "make" without argument is like "make help".
 help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@if command -v sphinx-binary > /dev/null 2>&1; then \
+	    $(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O) ; \
+	else \
+	    echo "sphinx-binary is not installed. Please grab the latest version of Sphinx (via pip)." ; \
+	fi
+
+print_prereqs:
+	@for tool in $(SPHINXBUILD) $(POETRY) ; do \
+	     if command -v $${tool} > /dev/null 2>&1; then \
+	        $${tool} --version ; \
+	     else \
+	        echo "$${tool} is not installed. Please grab the latest version via pip." ; \
+	     fi \
+	done
 
 .PHONY: help Makefile
 
@@ -29,20 +44,17 @@ apidoc:
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../adalflow/adalflow/utils --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/tracing ../adalflow/adalflow/tracing --separate --force
 
-
-
 update_files:
 	@echo "Inserting reference labels into RST files."
-	@python $(SOURCEDIR)/insert_labels.py
+	@$(PYTHON) $(SOURCEDIR)/insert_labels.py
 	@echo "Removing unnecessary strings for better formatting"
-	@python $(SOURCEDIR)/remove_string.py
+	@$(PYTHON) $(SOURCEDIR)/remove_string.py
 	@echo "Removing duplicated files"
-	@python $(SOURCEDIR)/remove_files.py
+	@$(PYTHON) $(SOURCEDIR)/remove_files.py
 	@echo "Renaming and updating file"
-	@python $(SOURCEDIR)/change_api_file_name.py
+	@$(PYTHON) $(SOURCEDIR)/change_api_file_name.py
 	@echo "Add autosummary of functions and classes"
-	@python $(SOURCEDIR)/insert_autosummary.py
-
+	@$(PYTHON) $(SOURCEDIR)/insert_autosummary.py
 
 html: apidoc  update_files
 	@$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

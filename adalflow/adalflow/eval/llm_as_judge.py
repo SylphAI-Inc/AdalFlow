@@ -14,6 +14,7 @@ from adalflow.core.model_client import ModelClient
 from adalflow.eval.base import BaseEvaluator
 from adalflow.eval.functional import confidence_interval
 
+__all__ = ["DefaultLLMJudge", "LLMasJudge", "LLMJudgeEvalResult"]
 
 log = logging.getLogger(__name__)
 

@@ -64,6 +64,7 @@ class Sum(GradComponent):
             requires_opt=any([p.requires_opt for p in params]),
             name="sum",
             score=sum([p._score for p in params]),  # total has a score
+            param_type=ParameterType.SUM_OUTPUT,
         )
         total.set_predecessors(params)
 

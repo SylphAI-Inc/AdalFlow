@@ -37,3 +37,4 @@ index.faiss
 # ignore the softlink to adalflow cache
 *.adalflow
 .idea
+extend/

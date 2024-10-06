@@ -23,7 +23,7 @@ U = TypeVar("U")  # U will be the type after transformation
 # TODO: DB clarity can be further improved
 @dataclass
 class LocalDB(Generic[T], Component):
-    __doc__ = r"""LocalDB with in-memory CRUD operations, data transformation/processing pipelines, and persistence.
+    __doc__ = """LocalDB with in-memory CRUD operations, data transformation/processing pipelines, and persistence.
 
     LocalDB is highly flexible.
     1. It can store any type of data items in the `items` attribute.
@@ -126,10 +126,7 @@ class LocalDB(Generic[T], Component):
     def get_transformer_keys(self) -> List[str]:
         return list(self.transformed_items.keys())
 
-    # def get_transformed_data(self, key: str) -> List[U]:
-    #     """Get the transformed items by key."""
-    #     return self.transformed_items[key]
-
+    # TODO: combine this to fetch_transformed_items
     def get_transformed_data(
         self, key: str, filter_fn: Callable[[Any], bool] = lambda x: True
     ) -> List[U]:

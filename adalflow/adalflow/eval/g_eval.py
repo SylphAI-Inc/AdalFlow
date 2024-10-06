@@ -12,6 +12,8 @@ from adalflow.core.model_client import ModelClient
 from adalflow.eval.llm_as_judge import DEFAULT_LLM_EVALUATOR_MODEL_KWARGS
 from adalflow.core.string_parser import FloatParser
 
+__all__ = ["GEvalMetric", "NLGTask", "GEvalLLMJudge", "GEvalJudgeEvaluator"]
+
 log = logging.getLogger(__name__)
 
 
@@ -256,5 +258,5 @@ class GEvalJudgeEvaluator(BaseEvaluator):
         return final_output, output
 
     def __str__(self) -> str:
-        s = f"llm_judge={self.llm_evaluator}, prompt_kwargs={self.llm_judge.prompt_kwargs}"
+        s = f"llm_judge={self.llm_judge}, prompt_kwargs={self.llm_judge.prompt_kwargs}"
         return s

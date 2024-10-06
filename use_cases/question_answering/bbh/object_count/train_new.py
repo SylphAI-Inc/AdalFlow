@@ -7,7 +7,7 @@ from use_cases.config import (
     gpt_4o_model,
 )
 
-from typing import Dict, Optional
+from typing import Any, Callable, Dict, Optional, Tuple
 import adalflow as adal
 
 from adalflow.datasets.types import Example
@@ -36,43 +36,28 @@ class ObjectCountAdalComponent(adal.AdalComponent):
         self.teacher_model_config = teacher_model_config
         self.text_optimizer_model_config = text_optimizer_model_config
 
-    def handle_one_task_sample(self, sample: Example):
+    def prepare_task(self, sample: Example) -> Tuple[Callable, Dict[str, Any]]:
         return self.task.call, {"question": sample.question, "id": sample.id}
 
-    def evaluate_one_sample(
+    def prepare_eval(
         self, sample: Example, y_pred: adal.GeneratorOutput
-    ) -> float:
+    ) -> Tuple[float, Dict[str, Any]]:
         y_label = -1
         if y_pred and y_pred.data:
             y_label = y_pred.data
-        return self.eval_fn(y=y_label, y_gt=sample.answer)
+        return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
 
-    # needed for training
-    def handle_one_loss_sample(self, sample: Example, pred: adal.Parameter):
-        # prepare gt parameter
+    def prepare_loss(
+        self, sample: Example, pred: adal.Parameter
+    ) -> Tuple[Callable, Dict[str, Any]]:
         y_gt = adal.Parameter(
             name="y_gt",
             data=sample.answer,
             eval_input=sample.answer,
             requires_opt=False,
         )
-
-        # pred's full_response is the output of the task pipeline which is GeneratorOutput
         pred.eval_input = pred.full_response.data
         return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}}
-
-    def configure_backward_engine(self):
-        super().configure_backward_engine_helper(**self.backward_engine_model_config)
-
-    def configure_teacher_generator(self):
-        super().configure_teacher_generator_helper(**self.teacher_model_config)
-
-    def configure_optimizers(
-        self,
-    ):  # TODO: train the text optimizer and the demo optimizer at the same time
-        to = super().configure_text_optimizer_helper(**self.text_optimizer_model_config)
-        do = super().configure_demo_optimizer_helper()
-        return to + do
 
 
 # TODO: make the train diagnose on the student model and the teacher model automatcally
@@ -154,7 +139,7 @@ def train(
 if __name__ == "__main__":
 
     train(
-        debug=False,
+        debug=True,
         max_steps=12,
         strategy="constrained",
         exclude_input_fields_from_bootstrap_demos=True,

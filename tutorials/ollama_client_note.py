@@ -1,15 +1,15 @@
-from lightrag.core.generator import Generator
-from lightrag.core.component import Component
-from lightrag.core.embedder import Embedder
-from lightrag.components.model_client import OllamaClient
+from adalflow.core.generator import Generator
+from adalflow.core.component import Component
+from adalflow.core.embedder import Embedder
+from adalflow.components.model_client import OllamaClient
 from dotenv import load_dotenv
 import asyncio
-from lightrag.core.types import ModelType
+from adalflow.core.types import ModelType
 
 
 # To get started with Ollama we're going to need to install it.
 # Navigate to https://ollama.com/download in order to get ollama installed locally.
-# Once you have ollama installed, we can pull the model we want to use with LightRAG.
+# Once you have ollama installed, we can pull the model we want to use with AdalFLow.
 ## `ollama pull qwen2:0.5b` will allow you to download the Qwen2 model ~ 352MB
 ## `ollama pull jina/jina-embeddings-v2-small-en` will allow you to download the Jina Embedding model ~ 66MB
 ## **After installation, ollama should already be running in the background.**

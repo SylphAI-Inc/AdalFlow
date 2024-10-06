@@ -15,6 +15,7 @@ from adalflow.core.types import (
 from adalflow.core.component import Component
 import adalflow.core.functional as F
 
+__all__ = ["Embedder", "BatchEmbedder"]
 
 log = logging.getLogger(__name__)
 

@@ -35,7 +35,7 @@ log = logging.getLogger(__name__)
 
 
 class Trainer(Component):
-    r"""We make trainer a component to as a trainer itself is an LLM task pipeline too.
+    __doc__ = r"""Ready to use trainer for LLM task pipeline to optimize all types of parameters.
 
 
     Training set: can be used for passing initial proposed prompt or for few-shot sampling.
@@ -58,6 +58,17 @@ class Trainer(Component):
         test_dataset: Any: Test dataset
         few_shots_config: Optional[FewShotConfig]: Few shot configuration
         save_traces: bool: Save traces for for synthetic data generation or debugging
+        debug: bool: Debug mode to run the trainer in debug mode. If debug is True, for text debug, the graph will be under /ckpt/YourAdalComponentName/debug_text_grads for prompt parameter,
+        and for demo debug, the graph will be under /ckpt/YourAdalComponentName/debug_demos for demo parameters.
+
+    Note:
+        When you are in the debug mode, you can use get_logger api to show more detailed log on your own.
+
+        Example:
+
+            from adalflow.utils import get_logger
+
+            get_logger(level="DEBUG")
     """
 
     adaltask: AdalComponent  # task pipeline
@@ -243,8 +254,40 @@ class Trainer(Component):
             }
             save_json(stats, os.path.join(log_dir, "stats.json"))
             print(f"Total error samples: {len(diagnose_items)}")
+            print(f"Saved diagnose to {diagnose_file}")
 
         return acc_score, acc_per_item_scores, log_paths
+
+    def debug_report(
+        self,
+        text_grad_debug_path: Optional[str] = None,
+        few_shot_demo_debug_path: Optional[str] = None,
+    ):
+        import colorama
+        from colorama import Fore
+
+        # Initialize colorama
+        colorama.init(autoreset=True)
+        print(Fore.CYAN + "\n================== DEBUG REPORT ==================\n")
+
+        if text_grad_debug_path:
+            print(Fore.GREEN + f"✔ Text grad debug path: {text_grad_debug_path}")
+        else:
+            print(Fore.RED + "✘ Text grad debugging was not run.")
+
+        if few_shot_demo_debug_path:
+            print(
+                Fore.GREEN + f"✔ Few shot demo debug path: {few_shot_demo_debug_path}"
+            )
+        else:
+            print(Fore.RED + "✘ Few shot demo debugging was not run.")
+
+        print(Fore.GREEN + "\n✔ The debug has run successfully!")
+        print(
+            Fore.YELLOW
+            + "You can visualize the complete computation graph at the paths shown above."
+        )
+        print(Fore.CYAN + "\n===================================================\n")
 
     def fit(
         self,
@@ -268,10 +311,6 @@ class Trainer(Component):
         start_time = time.time()
 
         debug = debug or self.debug
-        if debug:
-            from adalflow.utils import get_logger
-
-            get_logger(level="DEBUG")
 
         # check task
         adaltask = adaltask or self.adaltask
@@ -339,7 +378,6 @@ class Trainer(Component):
                 )
             self.adaltask.configure_teacher_generator()
             print("Configured demo optimizers")
-            # return
         else:
             print("No trainable demo params to optimize")
             self.demo_optimizers = []
@@ -385,13 +423,17 @@ class Trainer(Component):
 
         if debug:
             print("Debugging mode")
-            # if len(self.text_optimizers) > 0:
-            #     self._fit_text_grads_one_step_for_debug(train_loader)
+            text_grad_debug_path, few_shot_demo_debug_path = None, None
+            if len(self.text_optimizers) > 0:
+                text_grad_debug_path = self._fit_text_grads_one_step_for_debug(
+                    train_loader
+                )
 
             if len(self.demo_optimizers) > 0:
-                self._fit_demos_one_step_for_debug(
+                few_shot_demo_debug_path = self._fit_demos_one_step_for_debug(
                     train_loader, train_dataset, val_dataset, test_dataset
                 )
+            self.debug_report(text_grad_debug_path, few_shot_demo_debug_path)
             return
 
         ########Run text_optimizers and demo optimizers in sequential order ########
@@ -583,15 +625,16 @@ class Trainer(Component):
         return trainer_results
         # end of validation
 
-    # TODO: make this the debug
     def _fit_demos_one_step_for_debug(
         self, train_loader, train_dataset: Any, val_dataset: Any, test_dataset: Any
-    ):
+    ) -> str:
 
         # get_logger(level="DEBUG")
         print("Fitting using Random Demo Optimizer")
         self.prep_ckpt_file_path()
-        print(f"save to {self.ckpt_file}")
+        debug_path = os.path.join(self.ckpt_path, "debug_demos")
+        os.makedirs(debug_path, exist_ok=True)
+        print(f"save to {debug_path}")
 
         self.adaltask.train()
         self.adaltask.trace()
@@ -641,7 +684,7 @@ class Trainer(Component):
         losses[1].backward()
         pred_teacher.add(batch[0].id)
         pred_teacher.add(batch[1].id)
-        graph_path = os.path.join(self.ckpt_path, "graph")
+        graph_path = os.path.join(debug_path, "graph")
 
         print(f"Graph saved to {graph_path}")
 
@@ -708,7 +751,7 @@ class Trainer(Component):
 
             # propose
             self._demo_optimizers_propose()
-            graph_path = os.path.join(self.ckpt_path, "student_graph")
+            graph_path = os.path.join(debug_path, "student_graph")
 
             losses_student[0].draw_graph(filepath=graph_path)
 
@@ -724,7 +767,6 @@ class Trainer(Component):
                 opt_params.extend(opt.params)
             print(f"Opt params: {opt_params}")
             for name, param in self.adaltask.named_parameters():
-                print(f"Param: {name}")
 
                 if param.param_type == ParameterType.DEMOS:
                     print(f"Demo param: {name}, value: {param.data}, param: {param}")
@@ -740,14 +782,15 @@ class Trainer(Component):
                     if len(param._demos) == 0:
                         raise ValueError(f"No demos found, param: {param}")
 
-    def _fit_text_grads_one_step_for_debug(self, train_loader: Any):
+        return debug_path
+
+    def _fit_text_grads_one_step_for_debug(self, train_loader: Any) -> str:
         print("Debugging fitting one step with batch size 2 for text optimizer")
-        from adalflow.utils import get_logger
 
         self.prep_ckpt_file_path()
         debug_path = os.path.join(self.ckpt_path, "debug_text_grads")
         os.makedirs(debug_path, exist_ok=True)
-        get_logger(level="DEBUG", enable_console=False, save_dir=debug_path)
+        print(f"save to {debug_path}")
         train_loader.batch_size = 2
         train_loader.shuffle = True
         self.adaltask.train()  # this will turn everything to train mode
@@ -762,7 +805,8 @@ class Trainer(Component):
                     correct_loss = loss
                 else:
                     failed_loss = loss
-            if correct_loss and failed_loss:
+            if correct_loss is not None and failed_loss is not None:
+                print("Found correct and failed loss")
                 break
         total_loss = sum_ops([correct_loss, failed_loss])
         total_loss.backward()
@@ -770,6 +814,7 @@ class Trainer(Component):
         self._propose_text_optimizers()
 
         total_loss.draw_graph(filepath=debug_path)
+        return debug_path
 
     def _set_demo_optimizers_dataset(self, train_dataset: Any):
         # init the dataset
@@ -902,6 +947,7 @@ class Trainer(Component):
                 #     )
                 #     loss.backward()
                 # handle the demo
+                print(f"batch: {batch}")
                 self._demo_optimizers_add_scores(
                     [sample.id for sample in batch],
                     [float(loss.data) for loss in losses],

@@ -1,3 +1,24 @@
+## [0.2.3] - 2024-09-20
+
+### Rename
+- three methods within `AdalComponent` are renamed:
+  - `handle_one_loss_sample` to `prepre_loss`
+  - `handle_one_task_sample` to `prepre_task`
+  - `evaluate_one_sample` to `prepre_eval`
+
+## [0.2.3.beta.1] - 2024-09-17
+### Removed
+- Removed /reasoning as COT is just too simple to be a separate module.
+### Fixed
+- datasets/hotpotqa.py
+- eval/answer_match_acc: added lower() to both the gt and pred in the fuzzy match. On hotpotqa, the accuracy goes from 0.15 to 0.4 on one test.
+- eval/functional: fixed the `confidence_interval` to be able to customize the confidence level.
+
+### Added
+Auto-grad system to support retriever and any component:
+- `GradComponent` has a default `forward` which wraps the `call` to handle the auto-grad automatically for any component that has subclassed `GradComponent`.
+- Clarified the `ParamType` to include `input`, `output`, `hyperparam` instead of following PyTorch's tensor and Parameter design pattern.
+- `TraceGraph` of the `Parameter` at `draw_graph` to support `ParamType`.
 ## [0.2.2] - 2024-09-09
 ### Added
 - `get_cache_path`, instead of print out the cache path all the time, we add a ``get_cache_path`` to get the cache path.

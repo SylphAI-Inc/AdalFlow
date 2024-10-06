@@ -1,4 +1,4 @@
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
 from adalflow.core.component import Component, fun_to_component
 from adalflow.core.container import Sequential
@@ -23,6 +23,7 @@ from adalflow.core.string_parser import (
     ListParser,
     BooleanParser,
 )
+from adalflow.core.retriever import Retriever
 from adalflow.components.output_parsers import (
     YamlOutputParser,
     JsonOutputParser,
@@ -70,6 +71,7 @@ __all__ = [
     "ModelClient",
     "Generator",
     "Embedder",
+    "Retriever",
     "Parameter",
     "AdalComponent",
     "Trainer",

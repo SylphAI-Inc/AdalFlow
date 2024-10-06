@@ -35,3 +35,9 @@ pip install your_path/dist/adalflow-0.1.0-py3-none-any.whl
 ```
 
 to install the package.
+
+## Link
+
+Your colab link will be:
+
+`https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/your_new_colab.ipynb`
