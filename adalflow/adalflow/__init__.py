@@ -7,7 +7,6 @@ from adalflow.core.base_data_class import DataClass, DataClassFormatType, requir
 from adalflow.optim.grad_component import GradComponent
 from adalflow.core.generator import Generator
 
-
 from adalflow.core.types import (
     GeneratorOutput,
     EmbedderOutput,
@@ -56,6 +55,7 @@ from adalflow.components.model_client import (
     TransformersClient,
     AnthropicAPIClient,
     CohereAPIClient,
+    BedrockAPIClient,
 )
 
 __all__ = [
@@ -113,4 +113,5 @@ __all__ = [
     "TransformersClient",
     "AnthropicAPIClient",
     "CohereAPIClient",
+    "BedrockAPIClient",
 ]
