@@ -43,7 +43,6 @@ class OptionalPackages(Enum):
     GROQ = ("groq", "Please install groq with: pip install groq")
     OPENAI = ("openai", "Please install openai with: pip install openai")
     ANTHROPIC = ("anthropic", "Please install anthropic with: pip install anthropic")
-    BOTO3 = ("boto3", "Please install boto3 with: pip install boto3")
     GOOGLE_GENERATIVEAI = (
         "google.generativeai",
         "Please install google-generativeai with: pip install google-generativeai",
