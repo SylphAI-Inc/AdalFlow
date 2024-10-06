@@ -21,10 +21,23 @@ import backoff
 # optional import
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
+import sys
 
 openai = safe_import(OptionalPackages.OPENAI.value[0], OptionalPackages.OPENAI.value[1])
+# Importing all Azure packages together
+azure_modules = safe_import(
+    OptionalPackages.AZURE.value[0],  # List of package names
+    OptionalPackages.AZURE.value[1],  # Error message
+)
+# Manually add each module to sys.modules to make them available globally as if imported normally
+azure_module_names = OptionalPackages.AZURE.value[0]
+for name, module in zip(azure_module_names, azure_modules):
+    sys.modules[name] = module
+
+# Use the modules as if they were imported normally
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
-from azure.core.credentials import AccessToken
+
+# from azure.core.credentials import AccessToken
 from openai import AzureOpenAI, AsyncAzureOpenAI, Stream
 from openai import (
     APITimeoutError,
@@ -51,6 +64,11 @@ from adalflow.components.model_client.utils import parse_embedding_response
 
 log = logging.getLogger(__name__)
 T = TypeVar("T")
+
+
+__all__ = ["AzureAIClient"]
+
+# TODO: this overlaps with openai client largely, might need to refactor to subclass openai client to simplify the code
 
 
 # completion parsing functions and you can combine them into one singple chat completion parser
@@ -102,12 +120,12 @@ class AzureAIClient(ModelClient):
     A client wrapper for interacting with Azure OpenAI's API.
 
     This class provides support for both embedding and chat completion API calls.
-    Users can use this class to simplify their interactions with Azure OpenAI models 
+    Users can use this class to simplify their interactions with Azure OpenAI models
     through the `Embedder` and `Generator` components.
 
     **Initialization:**
 
-    You can initialize the `AzureAIClient` with either an API key or Azure Active Directory (AAD) token 
+    You can initialize the `AzureAIClient` with either an API key or Azure Active Directory (AAD) token
     authentication. It is recommended to set environment variables for sensitive data like API keys.
 
     Args:
@@ -131,37 +149,38 @@ class AzureAIClient(ModelClient):
     - **Using Azure AD Token:**
       Ensure you have configured Azure AD credentials. The `DefaultAzureCredential` will automatically use your configured credentials.
 
-    **Example Usage:**do
+    **Example Usage:**
 
-    ```python
-    from azure.identity import DefaultAzureCredential
-    from your_module import AzureAIClient  # Adjust import based on your module name
+    .. code-block:: python
 
-    # Initialize with API key
-    client = AzureAIClient(
-        api_key="your_api_key",
-        api_version="2023-05-15",
-        azure_endpoint="https://your-endpoint.openai.azure.com/"
-    )
+        from azure.identity import DefaultAzureCredential
+        from your_module import AzureAIClient  # Adjust import based on your module name
 
-    # Or initialize with Azure AD token
-    client = AzureAIClient(
-        api_version="2023-05-15",
-        azure_endpoint="https://your-endpoint.openai.azure.com/",
-        credential=DefaultAzureCredential()
-    )
+        # Initialize with API key
+        client = AzureAIClient(
+            api_key="your_api_key",
+            api_version="2023-05-15",
+            azure_endpoint="https://your-endpoint.openai.azure.com/"
+        )
 
-    # Example call to the chat completion API
-    api_kwargs = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": "What is the meaning of life?"}],
-        "stream": True
-    }
-    response = client.call(api_kwargs=api_kwargs, model_type=ModelType.LLM)
+        # Or initialize with Azure AD token
+        client = AzureAIClient(
+            api_version="2023-05-15",
+            azure_endpoint="https://your-endpoint.openai.azure.com/",
+            credential=DefaultAzureCredential()
+        )
 
-    for chunk in response:
-        print(chunk)
-    ```
+        # Example call to the chat completion API
+        api_kwargs = {
+            "model": "gpt-3.5-turbo",
+            "messages": [{"role": "user", "content": "What is the meaning of life?"}],
+            "stream": True
+        }
+        response = client.call(api_kwargs=api_kwargs, model_type=ModelType.LLM)
+
+        for chunk in response:
+            print(chunk)
+
 
     **Notes:**
     - Ensure that the API key or credentials are correctly set up and accessible to avoid authentication errors.
@@ -176,17 +195,17 @@ class AzureAIClient(ModelClient):
     def __init__(
         self,
         api_key: Optional[str] = None,
-        api_version:Optional[str]=None,
-        azure_endpoint: Optional[str]= None,
+        api_version: Optional[str] = None,
+        azure_endpoint: Optional[str] = None,
         credential: Optional[DefaultAzureCredential] = None,
         chat_completion_parser: Callable[[Completion], Any] = None,
         input_type: Literal["text", "messages"] = "text",
     ):
         r"""It is recommended to set the API_KEY into the  environment variable instead of passing it as an argument.
 
-         
+
         Initializes the Azure OpenAI client with either API key or AAD token authentication.
-        
+
         Args:
             api_key: Azure OpenAI API key.
             api_version: Azure OpenAI API version.
@@ -194,14 +213,14 @@ class AzureAIClient(ModelClient):
             credential: Azure AD credential for token-based authentication.
             chat_completion_parser: Function to parse chat completions.
             input_type: Input format, either "text" or "messages".
-        
+
         """
         super().__init__()
 
         # added api_type azure for azure Ai
         self.api_type = "azure"
         self._api_key = api_key
-        self._apiversion= api_version
+        self._apiversion = api_version
         self._azure_endpoint = azure_endpoint
         self._credential = credential
         self.sync_client = self.init_sync_client()
@@ -215,40 +234,59 @@ class AzureAIClient(ModelClient):
         api_key = self._api_key or os.getenv("AZURE_OPENAI_API_KEY")
         azure_endpoint = self._azure_endpoint or os.getenv("AZURE_OPENAI_ENDPOINT")
         api_version = self._apiversion or os.getenv("AZURE_OPENAI_VERSION")
-        credential = self._credential  or DefaultAzureCredential
+        # credential = self._credential or DefaultAzureCredential
         if not azure_endpoint:
             raise ValueError("Environment variable AZURE_OPENAI_ENDPOINT must be set")
         if not api_version:
             raise ValueError("Environment variable AZURE_OPENAI_VERSION must be set")
-        
+
         if api_key:
-            return AzureOpenAI(api_key=api_key, azure_endpoint=azure_endpoint, api_version=api_version)
+            return AzureOpenAI(
+                api_key=api_key, azure_endpoint=azure_endpoint, api_version=api_version
+            )
         elif self._credential:
             # credential = DefaultAzureCredential()
-            token_provider = get_bearer_token_provider(DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
-            return AzureOpenAI(azure_ad_token_provider=token_provider, azure_endpoint=azure_endpoint, api_version=api_version)
+            token_provider = get_bearer_token_provider(
+                DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
+            )
+            return AzureOpenAI(
+                azure_ad_token_provider=token_provider,
+                azure_endpoint=azure_endpoint,
+                api_version=api_version,
+            )
         else:
-            raise ValueError("Environment variable AZURE_OPENAI_API_KEY must be set or credential must be provided")
-        
+            raise ValueError(
+                "Environment variable AZURE_OPENAI_API_KEY must be set or credential must be provided"
+            )
 
     def init_async_client(self):
         api_key = self._api_key or os.getenv("AZURE_OPENAI_API_KEY")
         azure_endpoint = self._azure_endpoint or os.getenv("AZURE_OPENAI_ENDPOINT")
         api_version = self._apiversion or os.getenv("AZURE_OPENAI_VERSION")
-        credential = self._credential  or DefaultAzureCredential()
+        # credential = self._credential or DefaultAzureCredential()
         if not azure_endpoint:
-                raise ValueError("Environment variable AZURE_OPENAI_ENDPOINT must be set")
+            raise ValueError("Environment variable AZURE_OPENAI_ENDPOINT must be set")
         if not api_version:
             raise ValueError("Environment variable AZURE_OPENAI_VERSION must be set")
-        
+
         if api_key:
-            return AsyncAzureOpenAI(api_key=api_key, azure_endpoint=azure_endpoint, api_version=api_version)
+            return AsyncAzureOpenAI(
+                api_key=api_key, azure_endpoint=azure_endpoint, api_version=api_version
+            )
         elif self._credential:
             # credential = DefaultAzureCredential()
-            token_provider = get_bearer_token_provider(DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
-            return AsyncAzureOpenAI(azure_ad_token_provider=token_provider, azure_endpoint=azure_endpoint, api_version=api_version)
+            token_provider = get_bearer_token_provider(
+                DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
+            )
+            return AsyncAzureOpenAI(
+                azure_ad_token_provider=token_provider,
+                azure_endpoint=azure_endpoint,
+                api_version=api_version,
+            )
         else:
-            raise ValueError("Environment variable AZURE_OPENAI_API_KEY must be set or credential must be provided")
+            raise ValueError(
+                "Environment variable AZURE_OPENAI_API_KEY must be set or credential must be provided"
+            )
 
     # def _parse_chat_completion(self, completion: ChatCompletion) -> "GeneratorOutput":
     #     # TODO: raw output it is better to save the whole completion as a source of truth instead of just the message
