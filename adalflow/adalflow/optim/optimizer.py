@@ -5,6 +5,7 @@ from typing import Dict, Any, Union, Iterable, Sequence
 from adalflow.optim.parameter import Parameter
 from adalflow.core.base_data_class import DataClass
 
+
 ParamsT = Union[Iterable[Parameter], Iterable[Dict[str, Any]]]
 
 
