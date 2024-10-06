@@ -6,7 +6,6 @@ import os
 import json
 
 from typing import Any, Dict, Optional, Union, Callable, Tuple, List
-from copy import deepcopy
 import logging
 
 
@@ -42,6 +41,9 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
     OBJECTIVE_INSTRUCTION_CHAIN,
 )
 
+__all__ = ["Generator", "BackwardEngine", "create_teacher_generator"]
+
+
 log = logging.getLogger(__name__)
 
 PromptArgType = Dict[str, Union[str, Parameter]]
@@ -67,7 +69,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         trainable_params (Optional[List[str]], optional): The list of trainable parameters. Defaults to [].
 
     Note:
-        The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output. And we encourage you to only use it to parse the response to data format you will use later.
+        The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output.
+        And we encourage you to only use it to parse the response to data format you will use later.
     """
 
     model_type: ModelType = ModelType.LLM
@@ -110,11 +113,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             )
 
         template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
-        try:
-            prompt_kwargs = deepcopy(prompt_kwargs)
-        except Exception as e:
-            log.warning(f"Error copying the prompt_kwargs: {e}")
-            prompt_kwargs = prompt_kwargs
 
         # Cache
         model_str = (
@@ -124,8 +122,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             get_adalflow_default_root_path() if cache_path is None else cache_path
         )
         self.cache_path = os.path.join(_cache_path, f"cache_{model_str}.db")
-
-        print(f"cache_path: {self.cache_path}")
 
         CachedEngine.__init__(self, cache_path=self.cache_path)
         Component.__init__(self)
@@ -166,6 +162,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             "use_cache": use_cache,
         }
         self._teacher: Optional["Generator"] = None
+
+    def get_cache_path(self) -> str:
+        r"""Get the cache path for the generator."""
+        return self.cache_path
 
     @staticmethod
     def _get_default_mapping(
@@ -268,12 +268,11 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             combined_model_kwargs.update(model_kwargs)
         return combined_model_kwargs
 
+    # TODO: use prompt_kwargs as users are already familiar with it
     def print_prompt(self, **kwargs) -> str:
-        # prompt_kwargs_str = _convert_prompt_kwargs_to_str(kwargs)
         return self.prompt.print_prompt(**kwargs)
 
     def get_prompt(self, **kwargs) -> str:
-        # prompt_kwargs_str = _convert_prompt_kwargs_to_str(kwargs)
         return self.prompt.call(**kwargs)
 
     def _extra_repr(self) -> str:
@@ -340,7 +339,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             raise e
 
     ##############################################################################################################
-    ### Forward and backwards, and teacher generator are for training
+    ### Forward, backwards, teacher generator, create demo data instance,
+    # are for training and backpropagation
     ##############################################################################################################
 
     def create_demo_data_instance(
@@ -349,6 +349,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         output: GeneratorOutput,
         id: Optional[str] = None,
     ):
+        r"""Automatically create a demo data instance from the input and output of the generator.
+        Used to trace the demos for the demo paramter in the prompt_kwargs.
+        Part of the few-shot learning.
+        """
         from adalflow.core.base_data_class import DynamicDataClassFactory
 
         # map the input fields
@@ -358,7 +362,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         )
 
         for k, v in input_prompt_kwargs.items():
-            demo_data[k] = v
+            if isinstance(v, Parameter):
+                demo_data[k] = v.map_to_successor(self)
+            else:
+                demo_data[k] = v
         # map the output fields
         for key, value in demo_data_class_output_mapping.items():
             demo_data[key] = value(output)
@@ -420,8 +427,12 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         if self.mock_output:
             output = GeneratorOutput(data=self.mock_output_data)
         else:
-            if self.teacher_mode:
+            if self.teacher_mode and not isinstance(self, BackwardEngine):
                 if not self._teacher:
+                    print(
+                        f"prompt_kwargs: {prompt_kwargs}, model_kwargs: {model_kwargs}"
+                    )
+                    print(f"names: {self.name}")
                     raise ValueError("Teacher generator is not set.")
                 log.info(f"Using teacher: {self._teacher}")
                 input_args = {
@@ -475,15 +486,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 raise ValueError(
                     "ID is required for tracing. Please pass it to your Geneartor call."
                 )
-            input_prompt_kwargs = {
-                k: v.data if isinstance(v, Parameter) else v
-                for k, v in prompt_kwargs.items()
-            }
 
             demo = self.create_demo_data_instance(
-                input_prompt_kwargs,
+                prompt_kwargs,
                 output,
-                # self._demo_data_class_output_mapping,
                 id=id,
             )
             demo_param.add_to_trace(demo, is_teacher=self.teacher_mode)
@@ -706,7 +712,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             model_kwargs=model_kwargs,
         )
         if output.error:
-            print(f"call back on failure: {output}")
             self.trigger_callbacks(
                 "on_failure",
                 output=output,
@@ -830,8 +835,23 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             return self.call(*args, **kwargs)
 
     def _extra_repr(self) -> str:
+        # Create the string for model_kwargs
         s = f"model_kwargs={self.model_kwargs}, "
+
+        # Create the string for trainable prompt_kwargs
+        prompt_kwargs_repr = [
+            k
+            for k, v in self.prompt_kwargs.items()
+            if isinstance(v, Parameter) and v.requires_opt
+        ]
+
+        s += f"trainable_prompt_kwargs={prompt_kwargs_repr}"
         return s
+
+    def to_dict(self) -> Dict[str, Any]:
+        r"""Convert the generator to a dictionary."""
+        # TODO: exclude default functions
+        return super().to_dict()
 
     @staticmethod
     def failure_message_to_backward_engine(
@@ -854,6 +874,8 @@ class BackwardEngine(Generator):  # it is a generator with defaule template
             kwargs = {}
         kwargs["template"] = FEEDBACK_ENGINE_TEMPLATE
         super().__init__(**kwargs)
+        self.name = "BackwardEngine"
+        self.teacher_mode = False
 
     @staticmethod
     def failure_message_to_optimizer(
@@ -954,7 +976,6 @@ if __name__ == "__main__":
     call_logger = GeneratorCallLogger(save_dir="traces")
 
     def on_complete(output, input, prompt_kwargs, model_kwargs, logger_call: Callable):
-        print(f"on_complet  output: {output}")
         logger_call(
             output=output,
             input=input,
@@ -963,13 +984,9 @@ if __name__ == "__main__":
         )
 
     for model in [llama3_model, gpt_3_model, gemini_model, claude_model]:
-        print(f"""model: {model["model_kwargs"]["model"]}""")
         generator = Generator(**model)
 
-        print("_kwargs: ", generator._kwargs)
-
         teacher = create_teacher_generator(generator, **claude_model)
-        print(f"teacher: {teacher}")
 
         call_logger.register_generator("generator", "generator_call")
         # setup the callback
@@ -983,7 +1000,6 @@ if __name__ == "__main__":
                 "input_str": "Hello, world!",
             }
         )
-        print(f"output: {output}")
         break
 
     # test the backward engine

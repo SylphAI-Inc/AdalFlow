@@ -7,7 +7,7 @@ from use_cases.classification.trec_task_structured_output import (
 from use_cases.classification.data import load_datasets, TRECExtendedData
 
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
-from use_cases.question_answering.bhh_object_count.config import (
+from use_cases.config import (
     gpt_3_model,
     gpt_4o_model,
 )
@@ -37,18 +37,18 @@ class TrecClassifierAdal(adal.AdalComponent):
             teacher_model_config=teacher_model_config,
         )
 
-    def handle_one_task_sample(self, sample: TRECExtendedData):
+    def prepare_task(self, sample: TRECExtendedData):
         return self.task.call, {"question": sample.question, "id": sample.id}
 
-    def evaluate_one_sample(
+    def prepare_eval(
         self, sample: TRECExtendedData, y_pred: adal.GeneratorOutput
     ) -> float:
         y_label = -1
         if y_pred and y_pred.data is not None and y_pred.data.class_name is not None:
             y_label = y_pred.data.class_name
-        return self.eval_fn(y_label, sample.class_name)
+        return self.eval_fn, {"y": y_label, "y_gt": sample.class_name}
 
-    def handle_one_loss_sample(
+    def prepare_loss(
         self, sample: TRECExtendedData, y_pred: adal.Parameter, *args, **kwargs
     ) -> Tuple[Callable[..., Any], Dict]:
         full_response = y_pred.full_response
@@ -69,24 +69,13 @@ class TrecClassifierAdal(adal.AdalComponent):
         )
         return self.loss_fn, {"kwargs": {"y": y_pred, "y_gt": y_gt}}
 
-    def configure_teacher_generator(self):
-        super().configure_teacher_generator_helper(**self.teacher_model_config)
-
-    def configure_backward_engine(self):
-        super().configure_backward_engine_helper(**self.backward_engine_model_config)
-
-    def configure_optimizers(self):
-        to = super().configure_text_optimizer_helper(**self.text_optimizer_model_config)
-        do = super().configure_demo_optimizer_helper()
-        return to + do
-
 
 def train(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
     train_batch_size=4,  # larger batch size is not that effective, probably because of llm's lost in the middle
-    raw_shots: int = 0,
-    bootstrap_shots: int = 1,
+    raw_shots: int = 36,
+    bootstrap_shots: int = 4,
     max_steps=1,
     num_workers=4,
     strategy="constrained",
@@ -113,7 +102,7 @@ def train(
         debug=debug,
         weighted_sampling=True,
         optimization_order=optimization_order,
-        exclude_input_fields_from_bootstrap_demos=True,
+        exclude_input_fields_from_bootstrap_demos=False,
     )
     print(trainer)
 
@@ -124,7 +113,7 @@ def train(
         # val_dataset=val_dataset,
         # test_dataset=test_dataset,
         debug=debug,
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_1_33c1a_run_1.json",
+        resume_from_ckpt="/Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json",
     )
 
 

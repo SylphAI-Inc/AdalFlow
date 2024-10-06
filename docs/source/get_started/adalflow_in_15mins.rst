@@ -1,9 +1,25 @@
+.. raw:: html
+
+   <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+      <a href="https://colab.research.google.com/drive/1n3mHUWekTEYHiBdYBTw43TKlPN41A9za?usp=sharing" target="_blank" style="margin-right: 10px;">
+         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+      </a>
+      <a href="https://github.com/SylphAI-Inc/AdalFlow/tree/main/use_cases/question_answering/bhh_object_count" target="_blank" style="display: flex; align-items: center;">
+         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+         <span style="vertical-align: middle;"> Open Source Code</span>
+      </a>
+   </div>
+
 Learn AdalFlow in 15 minutes
 =============================
 
 
 AdalFlow provides easy way to build and to auto-optimize LLM task pipelines.
 We provide token-efficient and high-performing prompt optimization within a unified framework.
+
+.. TODO:
+    - model agnostic pipeline
+    - trainable pipeline with both text-grad and few-shot demo
 
 Overview
 ----------------

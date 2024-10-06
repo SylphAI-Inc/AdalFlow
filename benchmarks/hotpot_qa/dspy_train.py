@@ -9,6 +9,7 @@ colbertv2_wiki17_abstracts = dspy.ColBERTv2(
 )
 
 dspy.settings.configure(lm=turbo, rm=colbertv2_wiki17_abstracts)
+from adalflow.eval.answer_match_acc import AnswerMatchAcc
 
 
 def load_datasets():
@@ -70,6 +71,13 @@ class SimplifiedBaleen(dspy.Module):
 
 
 # pred: Prediction
+
+
+def validate_answer(example, pred, trace=None):
+    evaluator = AnswerMatchAcc(type="fuzzy_match")
+    return evaluator.compute_single_item(pred.answer, example["answer"])
+
+
 def validate_context_and_answer_and_hops(example, pred, trace=None):
     # print(f"example: {example}, pred: {pred}, trace: {trace}")
     if not dspy.evaluate.answer_exact_match(example, pred):
@@ -104,7 +112,8 @@ def train(trainset, save_path, filename):
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
-    teleprompter = BootstrapFewShot(metric=validate_context_and_answer_and_hops)
+    # teleprompter = BootstrapFewShot(metric=validate_context_and_answer_and_hops)
+    teleprompter = BootstrapFewShot(metric=validate_answer)
     compiled_baleen = teleprompter.compile(
         SimplifiedBaleen(),
         teacher=SimplifiedBaleen(passages_per_hop=2),
@@ -129,25 +138,41 @@ def validate(devset, compiled_baleen, uncompiled_baleen):
 
     # Set up the `evaluate_on_hotpotqa` function. We'll use this many times below.
     evaluate_on_hotpotqa = Evaluate(
-        devset=devset, num_threads=1, display_progress=True, display_table=5
+        devset=devset,
+        num_threads=1,
+        display_progress=True,
+        display_table=5,
+        # metric=validate_answer,
     )
+    uncompiled_baleen_answer_score = evaluate_on_hotpotqa(
+        uncompiled_baleen, metric=validate_answer, display_progress=True
+    )
+    print(f"## Answer Score for uncompiled Baleen: {uncompiled_baleen_answer_score}")
 
-    uncompiled_baleen_retrieval_score = evaluate_on_hotpotqa(
-        uncompiled_baleen, metric=gold_passages_retrieved, display=False
-    )
+    if compiled_baleen is None:
+        return
 
-    compiled_baleen_retrieval_score = evaluate_on_hotpotqa(
-        compiled_baleen, metric=gold_passages_retrieved
+    compiled_baleen_answer_score = evaluate_on_hotpotqa(
+        compiled_baleen, metric=validate_answer, display_progress=True
     )
+    print(f"## Answer Score for compiled Baleen: {compiled_baleen_answer_score}")
 
-    print(
-        f"## Retrieval Score for uncompiled Baleen: {uncompiled_baleen_retrieval_score}"
-    )
-    print(f"## Retrieval Score for compiled Baleen: {compiled_baleen_retrieval_score}")
+    # uncompiled_baleen_retrieval_score = evaluate_on_hotpotqa(
+    #     uncompiled_baleen, metric=gold_passages_retrieved, display=False
+    # )
+
+    # compiled_baleen_retrieval_score = evaluate_on_hotpotqa(
+    #     compiled_baleen, metric=gold_passages_retrieved
+    # )
+
+    # print(
+    #     f"## Retrieval Score for uncompiled Baleen: {uncompiled_baleen_retrieval_score}"
+    # )
+    # print(f"## Retrieval Score for compiled Baleen: {compiled_baleen_retrieval_score}")
 
 
 if __name__ == "__main__":
-    from lightrag.utils import setup_env
+    from adalflow.utils import setup_env
 
     setup_env()
     # Ask any question you like to this simple RAG program.
@@ -155,17 +180,26 @@ if __name__ == "__main__":
 
     # Get the prediction. This contains `pred.context` and `pred.answer`.
     uncompiled_baleen = SimplifiedBaleen()  # uncompiled (i.e., zero-shot) program
-    pred = uncompiled_baleen(my_question)
+    # pred = uncompiled_baleen(my_question)
 
-    # Print the contexts and the answer.
-    print(f"Question: {my_question}")
-    print(f"Predicted Answer: {pred.answer}")
-    print(f"Retrieved Contexts (truncated): {[c[:200] + '...' for c in pred.context]}")
-    turbo.inspect_history(n=3)
+    # # Print the contexts and the answer.
+    # print(f"Question: {my_question}")
+    # print(f"Predicted Answer: {pred.answer}")
+    # print(f"Retrieved Contexts (truncated): {[c[:200] + '...' for c in pred.context]}")
+    # turbo.inspect_history(n=3)
 
     # Load the datasets.
     trainset, devset = load_datasets()
     from benchmarks.config import dspy_save_path
 
+    validate(
+        devset, uncompiled_baleen, uncompiled_baleen
+    )  # dspy has 58.0% accuracy untrained. it is very slow at the inference, 3.58s per example
+
     # train the model
     compiled_baleen = train(trainset, dspy_save_path, "hotpotqa.json")
+    validate(devset, compiled_baleen, uncompiled_baleen)
+
+    # dspy 16 raw shots, 4 demos
+    # dspy supports multiple generators,  in this case 3. Two query generator and one answer generator, they all choose the same examples.
+    # accuracy 62.0

@@ -1,8 +1,8 @@
-from lightrag.core.generator import Generator
-from lightrag.core.component import Component
-from lightrag.core.embedder import Embedder
-from lightrag.components.model_client.ollama_client import OllamaClient
-from lightrag.utils import setup_env
+from adalflow.core.generator import Generator
+from adalflow.core.component import Component
+from adalflow.core.embedder import Embedder
+from adalflow.components.model_client.ollama_client import OllamaClient
+from adalflow.utils import setup_env
 
 from ollama import Client
 

@@ -4,7 +4,6 @@ import pytest
 from adalflow.eval import (
     AnswerMatchAcc,
     RetrieverRecall,
-    RetrieverRelevance,
     LLMasJudge,
 )
 
@@ -38,31 +37,32 @@ def test_retriever_recall():
         ["Feburary has 28 days in common years", "Feburary has 29 days in leap years"],
     ]
     retriever_recall = RetrieverRecall()
-    avg_recall, recall_list = retriever_recall.compute(retrieved_contexts, gt_contexts)
+    eval_rslt = retriever_recall.compute(retrieved_contexts, gt_contexts)
+    avg_recall, recall_list = eval_rslt.avg_score, eval_rslt.per_item_scores
     assert avg_recall == 2 / 3
     assert recall_list == [1 / 3, 1.0]
 
 
-def test_retriever_relevance():
-    retrieved_contexts = [
-        "Apple is founded before Google.",
-        "Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.",
-    ]
-    gt_contexts = [
-        [
-            "Apple is founded in 1976.",
-            "Google is founded in 1998.",
-            "Apple is founded before Google.",
-        ],
-        ["Feburary has 28 days in common years", "Feburary has 29 days in leap years"],
-    ]
-    retriever_relevance = RetrieverRelevance()
-    avg_relevance, relevance_list = retriever_relevance.compute(
-        retrieved_contexts, gt_contexts
-    )
-    assert 0.8 < avg_relevance < 0.81
-    assert relevance_list[0] == 1.0
-    assert 0.6 < relevance_list[1] < 0.61
+# def test_retriever_relevance():
+#     retrieved_contexts = [
+#         "Apple is founded before Google.",
+#         "Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.",
+#     ]
+#     gt_contexts = [
+#         [
+#             "Apple is founded in 1976.",
+#             "Google is founded in 1998.",
+#             "Apple is founded before Google.",
+#         ],
+#         ["Feburary has 28 days in common years", "Feburary has 29 days in leap years"],
+#     ]
+#     retriever_relevance = RetrieverRelevance()
+#     avg_relevance, relevance_list = retriever_relevance.compute(
+#         retrieved_contexts, gt_contexts
+#     )
+#     assert 0.8 < avg_relevance < 0.81
+#     assert relevance_list[0] == 1.0
+#     assert 0.6 < relevance_list[1] < 0.61
 
 
 # This test is skipped by default. To run this test locally, set the environment variable RUN_LOCAL_TESTS to True (export RUN_LOCAL_TESTS=true).

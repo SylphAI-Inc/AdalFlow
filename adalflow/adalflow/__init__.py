@@ -1,14 +1,18 @@
-__version__ = "0.2.0"
+__version__ = "0.2.3"
 
 from adalflow.core.component import Component, fun_to_component
 from adalflow.core.container import Sequential
-from adalflow.core.base_data_class import DataClass
+from adalflow.core.base_data_class import DataClass, DataClassFormatType, required_field
 
 from adalflow.optim.grad_component import GradComponent
 from adalflow.core.generator import Generator
 
-
-from adalflow.core.types import GeneratorOutput, EmbedderOutput, RetrieverOutput
+from adalflow.core.types import (
+    GeneratorOutput,
+    EmbedderOutput,
+    RetrieverOutput,
+    Document,
+)
 from adalflow.core.model_client import ModelClient
 from adalflow.core.embedder import Embedder
 from adalflow.core.string_parser import (
@@ -19,6 +23,7 @@ from adalflow.core.string_parser import (
     ListParser,
     BooleanParser,
 )
+from adalflow.core.retriever import Retriever
 from adalflow.components.output_parsers import (
     YamlOutputParser,
     JsonOutputParser,
@@ -50,17 +55,23 @@ from adalflow.components.model_client import (
     TransformersClient,
     AnthropicAPIClient,
     CohereAPIClient,
+    BedrockAPIClient,
 )
 
 __all__ = [
     "Component",
     "fun_to_component",
+    # dataclass
     "DataClass",
+    "DataClassFormatType",
+    "required_field",
+    # Container
     "Sequential",
     "GradComponent",
     "ModelClient",
     "Generator",
     "Embedder",
+    "Retriever",
     "Parameter",
     "AdalComponent",
     "Trainer",
@@ -87,6 +98,7 @@ __all__ = [
     "GeneratorOutput",
     "EmbedderOutput",
     "RetrieverOutput",
+    "Document",
     # Optimizer types
     "Optimizer",
     "DemoOptimizer",
@@ -101,4 +113,5 @@ __all__ = [
     "TransformersClient",
     "AnthropicAPIClient",
     "CohereAPIClient",
+    "BedrockAPIClient",
 ]

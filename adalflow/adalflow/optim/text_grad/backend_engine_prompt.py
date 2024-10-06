@@ -1,6 +1,6 @@
 """Meta-prompts for the backward engine.
 
-Created for Textual Auto-diff and enhanced with peer variables.
+Optimized from Textual Auto-diff and enhanced with peer variables.
 
 Reference: TextGrad: Automatic “Differentiation” via Text."""
 

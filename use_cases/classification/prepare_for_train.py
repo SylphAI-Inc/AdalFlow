@@ -17,16 +17,16 @@ class TrecClassifierAdal(adal.AdalComponent):
         eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
         super().__init__(task=task, eval_fn=eval_fn)
 
-    def handle_one_task_sample(self, sample: TRECExtendedData):
+    def prepare_task(self, sample: TRECExtendedData):
         return self.task.call, {"question": sample.question, "id": sample.id}
 
-    def evaluate_one_sample(
+    def prepare_eval(
         self, sample: TRECExtendedData, y_pred: adal.GeneratorOutput
     ) -> float:
         y_label = -1
         if y_pred and y_pred.data is not None and y_pred.data.class_name is not None:
             y_label = y_pred.data.class_name
-        return self.eval_fn(y_label, sample.class_name)
+        return self.eval_fn, {"y": y_label, "y_gt": sample.class_name}
 
 
 def diagnose(
@@ -57,16 +57,16 @@ class TrecClassifierStringOutputAdal(adal.AdalComponent):
         eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
         super().__init__(task=task, eval_fn=eval_fn)
 
-    def handle_one_task_sample(self, sample: TRECExtendedData):
+    def prepare_task(self, sample: TRECExtendedData):
         return self.task.call, {"question": sample.question, "id": sample.id}
 
-    def evaluate_one_sample(
+    def prepare_eval(
         self, sample: TRECExtendedData, y_pred: adal.GeneratorOutput
     ) -> float:
         y_label = -1
         if y_pred and y_pred.data is not None:  # use different output format
             y_label = y_pred.data
-        return self.eval_fn(y_label, sample.class_index)
+        return self.eval_fn, {"y": y_label, "y_gt": sample.class_name}
 
 
 def diagnose_string_output(
@@ -85,7 +85,7 @@ def diagnose_string_output(
 
 
 if __name__ == "__main__":
-    from use_cases.question_answering.bhh_object_count.config import (
+    from use_cases.config import (
         gpt_4o_model,
     )
 
