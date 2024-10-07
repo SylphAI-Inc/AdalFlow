@@ -23,7 +23,12 @@ from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
 
 openai = safe_import(OptionalPackages.OPENAI.value[0], OptionalPackages.OPENAI.value[1])
-from azure.identity import DefaultAzureCredential, get_bearer_token_provider
+
+try:
+    from azure.identity import DefaultAzureCredential, get_bearer_token_provider
+except ImportError as e:
+    print("Failed to import Azure Identity libraries. Please ensure the Azure SDK is installed.")
+    raise e 
 from azure.core.credentials import AccessToken
 from openai import AzureOpenAI, AsyncAzureOpenAI, Stream
 from openai import (
@@ -87,7 +92,6 @@ def get_probabilities(completion: ChatCompletion) -> List[List[TokenLogProb]]:
     log_probs = []
     for c in completion.choices:
         content = c.logprobs.content
-        print(content)
         log_probs_for_choice = []
         for openai_token_logprob in content:
             token = openai_token_logprob.token
@@ -200,9 +204,9 @@ class AzureAIClient(ModelClient):
 
         # added api_type azure for azure Ai
         self.api_type = "azure"
-        self._api_key = api_key
-        self._apiversion= api_version
-        self._azure_endpoint = azure_endpoint
+        self._api_key = api_key or os.getenv("AZURE_OPENAI_API_KEY")
+        self._apiversion= api_version or os.getenv("AZURE_OPENAI_VERSION")
+        self._azure_endpoint = azure_endpoint or os.getenv("AZURE_OPENAI_ENDPOINT")
         self._credential = credential
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called

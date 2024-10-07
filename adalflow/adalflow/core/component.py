@@ -316,6 +316,7 @@ class Component:
         # obj = cls(**data.get("_init_args", {}))
         obj = cls.__new__(cls)  # Create a new instance without calling __init__
         for key, value in data["data"].items():
+            print(key,value)
             setattr(obj, key, cls._restore_value(value))
         return obj
 
