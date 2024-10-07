@@ -3,7 +3,8 @@
 import os
 import unittest
 from unittest.mock import patch, MagicMock, ANY
-from adalflow.components.model_client.azureai_client import AzureAIClient  # Adjust based on your project structure
+from adalflow.components.model_client.azureai_client import AzureAIClient
+# from adalflow.components.model_client.azureai_client import AzureAIClient  # Adjust based on your project structure
 from adalflow.core.types import ModelType
 from openai import *
 from openai.types import CreateEmbeddingResponse,CompletionUsage
@@ -86,6 +87,42 @@ class TestAzureAIClient(unittest.TestCase):
         self.assertIn("model_type ModelType.UNDEFINED is not supported", str(context.exception))
         # mock_azure_openai.assert_not_called()
     
+    
+    @patch
+    def test_call_chat(self, mock_azure_openai):
+        # Arrange
+        client = AzureAIClient(api_key="test_api_key")
+        
+        mock_azure_openai = MagicMock()
+        client.sync_client = mock_azure_openai
+        mock_azure_openai.chat.create.return_value = ChatCompletion(
+            id="test_id",
+            object="chat_completion",
+            created_at="2023-05-15T12:00:00Z",
+            model="gpt-4.0-turbo",
+            choices=[{"role": "user", "content": "Hi"}],
+            completion={"role": "assistant", "content": "Hello!"}
+        )
+        
+        api_kwargs = {
+            "model": "gpt-4.0-turbo",
+            "messages": [{"role": "user", "content": "Hi"}]
+        }
+        
+        self.assertAlmostEqual(client.call(api_kwargs=api_kwargs, model_type=ModelType.CHAT), ChatCompletion(
+            id="test_id",
+            object="chat_completion",
+            created_at="2023-05-15T12:00:00Z",
+            model="gpt-4.0-turbo",
+            choices=[{"role": "user", "content": "Hi"}],
+            completion={"role": "assistant", "content": "Hello!"}
+        ))  
+        mock_azure_openai.chat.create.assert_called_once_with(
+            model="gpt-4.0-turbo",
+            messages=[{"role": "user", "content": "Hi"}]
+        )
+        
+        
     # Additional tests can follow the same pattern
 
 if __name__ == '__main__':
