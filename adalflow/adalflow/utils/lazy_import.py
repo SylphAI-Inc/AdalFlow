@@ -32,6 +32,8 @@ class OptionalPackages(Enum):
     # modeling library
     TORCH = ("torch", "Please install torch with: pip install torch")
 
+
+    AZURE_AUTH_SERVICES = ("AZURE_AUTH_SERVICES", "Please install AZURE_AUTH_SERVICES with: pip install azure-identity azure-core")
     # search library
     FAISS = (
         "faiss",
