@@ -57,9 +57,6 @@ class GradComponent(Component):
         1. for all args and kwargs, if it is a `Parameter` object, it will be tracked as `Predecessor`.
         2. Trace input_args and full_response in the parameter object.
         3. Return the parameter object.
-
-        TODO: all Gradcomponent should not allow args but only kwargs.
-        For now, just check if id is in kwargs.
         """
 
         from adalflow.optim.parameter import Parameter

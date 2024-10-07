@@ -3,7 +3,7 @@ from .base_data_class import DataClass, required_field, DataClassFormatType
 from .component import Component, FunComponent, fun_to_component
 from .container import Sequential
 from .db import LocalDB
-from .default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+from .default_prompt_template import DEFAULT_ADALFLOW_SYSTEM_PROMPT
 from .embedder import Embedder, BatchEmbedder
 from .generator import Generator, BackwardEngine
 from .model_client import ModelClient
@@ -58,7 +58,7 @@ __all__ = [
     "Generator",
     "BackwardEngine",
     "Prompt",
-    "DEFAULT_LIGHTRAG_SYSTEM_PROMPT",
+    "DEFAULT_ADALFLOW_SYSTEM_PROMPT",
     # "Parameter",
     "required_field",
     "ModelClient",
