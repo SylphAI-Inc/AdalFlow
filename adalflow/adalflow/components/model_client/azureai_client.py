@@ -24,11 +24,11 @@ from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
 openai = safe_import(OptionalPackages.OPENAI.value[0], OptionalPackages.OPENAI.value[1])
 
-try:
-    from azure.identity import DefaultAzureCredential, get_bearer_token_provider
-except ImportError as e:
-    print("Failed to import Azure Identity libraries. Please ensure the Azure SDK is installed.")
-    raise e 
+DefaultAzureCredential = safe_import('azure.identity.DefaultAzureCredential', 'azure.identity')
+get_bearer_token_provider = safe_import('azure.identity.get_bearer_token_provider', 'azure.identity')
+
+
+
 from azure.core.credentials import AccessToken
 from openai import AzureOpenAI, AsyncAzureOpenAI, Stream
 from openai import (
@@ -216,6 +216,7 @@ class AzureAIClient(ModelClient):
         self._input_type = input_type
 
     def init_sync_client(self):
+
         api_key = self._api_key or os.getenv("AZURE_OPENAI_API_KEY")
         azure_endpoint = self._azure_endpoint or os.getenv("AZURE_OPENAI_ENDPOINT")
         api_version = self._apiversion or os.getenv("AZURE_OPENAI_VERSION")
