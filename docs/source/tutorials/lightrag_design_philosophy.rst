@@ -3,12 +3,12 @@
 Design Philosophy
 ====================================
 
-Right from the begining, `LightRAG` follows three fundamental principles.
+Right from the begining, `AdalFlow` follows three fundamental principles.
 
 
 Principle 1:  Simplicity over Complexity
 -----------------------------------------------------------------------
- We put these three hard rules while designing LightRAG:
+ We put these three hard rules while designing AdalFlow:
 
 - Every layer of abstraction needs to be adjusted and overall we do not allow more than 3 layers of abstraction.
 - We minimize the lines of code instead of maximizing the lines of code.
@@ -83,7 +83,7 @@ All while giving full control of the prompt and the task pipeline to the develop
 
 .. raw::
 
-    [Optional] Side story: How `LightRAG` is born
+    [Optional] Side story: How `AdalFlow` is born
 .. ----------------------------------------------
 
 .. The whole `PyTorch` library is built on a few core and base classes: ``Module``, ``Tensor``, ``Parameter``, and ``Optimizer``,

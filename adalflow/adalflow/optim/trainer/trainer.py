@@ -167,7 +167,7 @@ class Trainer(Component):
         """Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent's default configure_callbacks
         Args:
             dataset: Any: Dataset to evaluate
-            split: str: Split name, default to train and it is also used as set the directory name for saving the logs
+            split: str: Split name, default to train and it is also used as the directory name for saving the logs
         Example:
 
         .. code-block:: python

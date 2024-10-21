@@ -17,7 +17,7 @@ class ObjectCountAdalComponent(adal.AdalComponent):
 
     def prepare_eval(self, sample: Example, y_pred: adal.GeneratorOutput) -> float:
         y_label = -1
-        if y_pred and y_pred.data:
+        if y_pred is not None and y_pred.data is not None:
             y_label = y_pred.data
         return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
 
