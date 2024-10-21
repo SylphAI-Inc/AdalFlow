@@ -435,7 +435,6 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
 
-
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -452,6 +451,7 @@
     <span class="n">GROQ</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;groq&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install groq with: pip install groq&quot;</span><span class="p">)</span>
     <span class="n">OPENAI</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;openai&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install openai with: pip install openai&quot;</span><span class="p">)</span>
     <span class="n">ANTHROPIC</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;anthropic&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install anthropic with: pip install anthropic&quot;</span><span class="p">)</span>
+    <span class="n">BEDROCK</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;bedrock&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install boto3 with: pip install boto3&quot;</span><span class="p">)</span>
     <span class="n">GOOGLE_GENERATIVEAI</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;google.generativeai&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Please install google-generativeai with: pip install google-generativeai&quot;</span><span class="p">,</span>
@@ -514,7 +514,7 @@
 <span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">import_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">optional_package</span><span class="p">:</span> <span class="n">OptionalPackages</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">import_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">optional_package</span><span class="p">:</span> <span class="n">OptionalPackages</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="n">args</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>

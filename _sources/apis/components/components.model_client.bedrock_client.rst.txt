@@ -1,0 +1,27 @@
+.. _components-model_client-bedrock_client:
+
+bedrock_client
+===============================================
+
+.. automodule:: components.model_client.bedrock_client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      get_first_message_content
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      BedrockAPIClient
+
+   .. rubric:: Constants
+
+   .. autodata:: components.model_client.bedrock_client.bedrock_runtime_exceptions
+

@@ -10,6 +10,7 @@ Submodules
    :maxdepth: 4
 
    components.model_client.anthropic_client
+   components.model_client.bedrock_client
    components.model_client.cohere_client
    components.model_client.google_client
    components.model_client.groq_client
