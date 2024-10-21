@@ -3,13 +3,13 @@ from typing import List
 import numpy as np
 import time
 import asyncio
-from lightrag.core import Component, DataClass
-from lightrag.core.types import Function, FunctionExpression
-from lightrag.core.tool_manager import ToolManager
-from lightrag.components.output_parsers import JsonOutputParser
+from adalflow.core import Component, DataClass
+from adalflow.core.types import Function, FunctionExpression
+from adalflow.core.tool_manager import ToolManager
+from adalflow.components.output_parsers import JsonOutputParser
 
-from lightrag.core.generator import Generator
-from lightrag.core.types import ModelClientType
+from adalflow.core.generator import Generator
+from adalflow.core.types import ModelClientType
 
 
 def multiply(a: int, b: int) -> int:
@@ -345,7 +345,7 @@ class MultiFunctionCallWithFunctionExpression(Component):
 
 
 if __name__ == "__main__":
-    from lightrag.utils import setup_env
+    from adalflow.utils import setup_env
 
     setup_env()
     # fc = FunctionCall()

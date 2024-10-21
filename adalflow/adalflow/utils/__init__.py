@@ -19,6 +19,9 @@ from .registry import EntityMapping
 from .config import new_components_from_config, new_component
 from .lazy_import import LazyImport, OptionalPackages, safe_import
 from .setup_env import setup_env
+from .data import DataLoader, Dataset, Subset
+from .global_config import get_adalflow_default_root_path
+from .cache import CachedEngine
 
 
 __all__ = [
@@ -43,4 +46,9 @@ __all__ = [
     "write_list_to_jsonl",
     "safe_import",
     "setup_env",
+    "DataLoader",
+    "Dataset",
+    "Subset",
+    "get_adalflow_default_root_path",
+    "CachedEngine",
 ]
