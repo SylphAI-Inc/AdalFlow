@@ -205,7 +205,7 @@ class VanillaRAG(adal.GradComponent):
     def forward(self, question: str, id: str = None) -> adal.Parameter:
         if not self.training:
             raise ValueError("This component is not supposed to be called in eval mode")
-        retriever_out = self.retriever.forward(input=question)
+        retriever_out = self.retriever.forward(input=question, id=id)
         successor_map_fn = lambda x: (  # noqa E731
             "\n\n".join(x.data[0].documents)
             if x.data and x.data[0] and x.data[0].documents
@@ -281,9 +281,9 @@ def test_vailla_rag():
 
     generator_out.draw_graph()
 
-    task.eval()
-    generator_out = task.call(question=question, id="1")
-    print(f"generator_out: {generator_out}")
+    # task.eval()
+    # generator_out = task.call(question=question, id="1")
+    # print(f"generator_out: {generator_out}")
 
 
 if __name__ == "__main__":

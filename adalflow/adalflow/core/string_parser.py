@@ -214,6 +214,7 @@ class JsonParser(Parser):
 YAML_PARSER_OUTPUT_TYPE = JSON_PARSER_OUTPUT_TYPE
 
 
+# TODO: yaml parser needs to be more robust, currently json works way better than yaml
 class YamlParser(Parser):
     __doc__ = r"""To extract YAML strings from text and parse them into a YAML object.
 
