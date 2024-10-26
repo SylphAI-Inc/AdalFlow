@@ -28,14 +28,20 @@
     <a href="https://pypi.org/project/adalflow/">
         <img alt="PyPI Version" src="https://img.shields.io/pypi/v/adalflow?style=flat-square">
     </a>
-    <a href="https://star-history.com/#SylphAI-Inc/LightRAG">
-        <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square">
+    <a href="https://pypi.org/project/adalflow/">
+        <img alt="PyPI Downloads" src="https://static.pepy.tech/badge/adalflow">
     </a>
-    <a href="https://github.com/SylphAI-Inc/LightRAG/issues">
-        <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square">
+    <a href="https://pypi.org/project/adalflow/">
+        <img alt="PyPI Downloads" src="https://static.pepy.tech/badge/adalflow/month">
+    </a>
+    <a href="https://star-history.com/#SylphAI-Inc/AdalFlow">
+        <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/AdalFlow?style=flat-square">
+    </a>
+    <a href="https://github.com/SylphAI-Inc/AdalFlow/issues">
+        <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/SylphAI-Inc/AdalFlow?style=flat-square">
     </a>
     <a href="https://opensource.org/license/MIT">
-        <img alt="License" src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG">
+        <img alt="License" src="https://img.shields.io/github/license/SylphAI-Inc/AdalFlow">
     </a>
       <a href="https://discord.gg/ezzszrRZvT">
         <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
@@ -304,7 +310,8 @@ AdalFlow full documentation available at [adalflow.sylph.ai](https://adalflow.sy
 
 # AdalFlow: A Tribute to Ada Lovelace
 
-AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could do more than just calculations. As a female-led team, we aim to inspire more women to enter the AI field.
+
+AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could go beyond mere calculations. As a team led by a female founder, we aim to inspire more women to pursue careers in AI.
 
 # Contributors
 
