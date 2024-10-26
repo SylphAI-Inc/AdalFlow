@@ -33,10 +33,15 @@
         <a href="https://adalflow.sylph.ai/use_cases/question_answering.html">Trainer & Optimizers</a>
     <p>
 </h4>
-
 <p align="center">
     <a href="https://pypi.org/project/adalflow/">
         <img alt="PyPI Version" src="https://img.shields.io/pypi/v/adalflow?style=flat-square">
+    </a>
+    <a href="https://pypi.org/project/adalflow/">
+        <img alt="PyPI Downloads" src="https://static.pepy.tech/badge/adalflow">
+    </a>
+    <a href="https://pypi.org/project/adalflow/">
+        <img alt="PyPI Downloads" src="https://static.pepy.tech/badge/adalflow/month">
     </a>
     <a href="https://star-history.com/#SylphAI-Inc/AdalFlow">
         <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/AdalFlow?style=flat-square">
@@ -217,7 +222,7 @@ AdalFlow full documentation available at [adalflow.sylph.ai](https://adalflow.sy
 # AdalFlow: A Tribute to Ada Lovelace
 
 
-AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could do more than just perform calculations. As a female-led team, we aim to inspire more women to enter the AI field.
+AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could go beyond mere calculations. As a team led by a female founder, we aim to inspire more women to pursue careers in AI.
 
 
 # Contributors
