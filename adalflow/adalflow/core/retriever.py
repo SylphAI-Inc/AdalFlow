@@ -83,6 +83,7 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
         self,
         input: RetrieverQueriesType,
         top_k: Optional[int] = None,
+        id: str = None,  # for tracing, diagnosing, and training
         **kwargs,
     ) -> RetrieverOutputType:
         raise NotImplementedError("retrieve is not implemented")
@@ -91,6 +92,7 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
         self,
         input: RetrieverQueriesType,
         top_k: Optional[int] = None,
+        id: str = None,  # for tracing, diagnosing, and training
         **kwargs,
     ) -> RetrieverOutputType:
         raise NotImplementedError("Async retrieve is not implemented")
@@ -102,6 +104,7 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
         top_k: Optional[
             int
         ] = None,  # TODO: top_k can be trained in the future if its formulated as a parameter
+        id: str = None,  # for tracing, diagnosing, and training
         **kwargs,
     ) -> Parameter:
         r"""Customized forward on top of the GradComponent forward method.
