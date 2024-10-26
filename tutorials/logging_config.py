@@ -1,8 +1,8 @@
 import os
-from lightrag.utils.logger import get_logger, printc
-from lightrag.utils.file_io import load_json
-from lightrag.core import Generator
-from lightrag.utils import setup_env
+from adalflow.utils.logger import get_logger, printc
+from adalflow.utils.file_io import load_json
+from adalflow.core import Generator
+from adalflow.utils import setup_env
 
 
 def prepare_paths():
@@ -90,8 +90,8 @@ def use_only_child_logger():
     child_logger.info(f"output using app logger {__name__}: {output}")
 
 
-def user_program_lightrag_config():
-    from lightrag.utils.logger import get_logger
+def user_program_adalflow_config():
+    from adalflow.utils.logger import get_logger
 
     log = get_logger(
         name=__name__,
@@ -146,7 +146,7 @@ def use_named_logger():
     named_logger.info(f"output using named logger {__name__}: {output}")
 
 
-def use_lightrag_logger():
+def use_adalflow_logger():
     # set up root logger for the library
     # get_logger(
     #     level="INFO",
@@ -157,7 +157,7 @@ def use_lightrag_logger():
     # generator = Generator.from_config(generator_config)
     # output = generator(prompt_kwargs={"input_str": "how are you?"})
     # use a logger for the user program
-    user_program_lightrag_config()
+    user_program_adalflow_config()
 
 
 if __name__ == "__main__":
@@ -167,5 +167,5 @@ if __name__ == "__main__":
     # use_only_child_logger()
     # use_native_root_logging()
     # use_named_logger()
-    use_lightrag_logger()
+    use_adalflow_logger()
     printc("All logging examples are done. Feeling green!", color="green")

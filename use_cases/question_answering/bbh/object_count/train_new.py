@@ -43,7 +43,9 @@ class ObjectCountAdalComponent(adal.AdalComponent):
         self, sample: Example, y_pred: adal.GeneratorOutput
     ) -> Tuple[float, Dict[str, Any]]:
         y_label = -1
-        if y_pred and y_pred.data:
+        if (
+            y_pred is not None and y_pred.data is not None
+        ):  # if y_pred and y_pred.data: might introduce bug when the data is 0
             y_label = y_pred.data
         return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
 
