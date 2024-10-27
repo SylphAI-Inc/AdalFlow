@@ -1,5 +1,7 @@
 import hashlib
 import diskcache as dc
+from pathlib import Path
+from typing import Union
 
 
 def hash_text(text: str):
@@ -15,9 +17,11 @@ def direct(text: str):
 
 
 class CachedEngine:
-    def __init__(self, cache_path: str):
+    def __init__(self, cache_path: Union[str, Path]):
         super().__init__()
-        self.cache_path = cache_path
+        self.cache_path = Path(cache_path)
+        self.cache_path.parent.mkdir(parents=True, exist_ok=True)
+
         self.cache = dc.Cache(cache_path)
 
     def _check_cache(self, prompt: str):
