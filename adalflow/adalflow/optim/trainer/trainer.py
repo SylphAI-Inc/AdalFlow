@@ -189,6 +189,7 @@ class Trainer(Component):
             self.prep_ckpt_file_path(trainer_state)
         save_path = os.path.join(self.ckpt_path, f"diagnose_{split}")
         logger.debug(f"Save diagnose to {save_path}")
+        # One generator will be one file, all stats are in logger_metadata.json
         log_paths = self.adaltask.configure_callbacks(save_dir=save_path)
         # 2. evaluate
         acc = self.adaltask.validation_step(dataset, 0, self.num_workers)

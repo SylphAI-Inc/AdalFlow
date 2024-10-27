@@ -58,6 +58,18 @@ class ComponentTrace:
     )
 
 
+# TODO: use this to better trace the score
+@dataclass
+class ScoreTrace:
+    score: float = field(metadata={"desc": "The score of the data point"}, default=None)
+    eval_comp_id: str = field(
+        metadata={"desc": "The id of the evaluation component"}, default=None
+    )
+    eval_comp_name: str = field(
+        metadata={"desc": "The name of the evaluation component"}, default=None
+    )
+
+
 COMBINED_GRADIENTS_TEMPLATE = r"""
 {% for g in combined_gradients %}
 {% set gradient = g[0] %}

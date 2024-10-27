@@ -673,9 +673,10 @@ class AdalComponent(Component):
         # Register the callback for each generator
 
         file_paths = []
+        call_logger = GeneratorCallLogger(save_dir=save_dir)
         for name, generator in all_generators:
-            call_logger = GeneratorCallLogger(save_dir=save_dir)
-            call_logger.reset()
+
+            # call_logger.reset()
             call_logger.register_generator(name)
             logger_call = partial(call_logger.log_call, name)
             generator.register_callback(
