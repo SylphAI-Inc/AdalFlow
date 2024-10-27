@@ -1,7 +1,7 @@
 from .base_data_class import DataClass, required_field, DataClassFormatType
 
 from .component import Component, FunComponent, fun_to_component
-from .container import Sequential
+from .container import Sequential, ComponentList
 from .db import LocalDB
 from .default_prompt_template import DEFAULT_ADALFLOW_SYSTEM_PROMPT
 from .embedder import Embedder, BatchEmbedder
@@ -50,6 +50,7 @@ __all__ = [
     "LocalDB",
     "Component",
     "Sequential",
+    "ComponentList",
     "FunComponent",
     "fun_to_component",
     "DataClass",

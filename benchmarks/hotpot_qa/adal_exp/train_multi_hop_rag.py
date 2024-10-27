@@ -145,6 +145,8 @@ def train(
 if __name__ == "__main__":
     from use_cases.config import gpt_3_model
 
+    log = adal.get_logger(level="DEBUG")
+
     adal.setup_env()
 
     # task = MultiHopRAGAdal(**gpt_3_model)

@@ -640,6 +640,7 @@ class AdalComponent(Component):
         for name, comp in self.task.named_components():
             if isinstance(comp, Generator):
                 all_generators.append((name, comp))
+        log.debug(f"all_generators: {all_generators}")
         return all_generators
 
     def _auto_generator_callbacks(self, save_dir: str = "traces") -> List[str]:
@@ -682,10 +683,7 @@ class AdalComponent(Component):
             )
             file_path = call_logger.get_log_location(name)
             file_paths.append(file_path)
-            log.debug(
-                f"Registered callback for {name}, file path: {file_path}",
-                end="\n",
-            )
+            log.debug(f"Registered callback for {name}, file path: {file_path}")
         return file_paths
 
     def configure_demo_optimizer_helper(self) -> List[DemoOptimizer]:

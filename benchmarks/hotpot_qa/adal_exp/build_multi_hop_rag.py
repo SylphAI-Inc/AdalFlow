@@ -225,7 +225,8 @@ class MultiHopRetriever2(adal.Retriever):
         )
 
         # Grad Component
-        self.query_generators: List[adal.Generator] = []
+        # self.query_generators: List[adal.Generator] = []
+        self.query_generators: adal.ComponentList[adal.Generator] = adal.ComponentList()
         self.retrievers: List[Retriever] = []
         self.deduplicaters: List[adal.GradComponent] = []
         for i in range(self.max_hops):
@@ -438,11 +439,21 @@ def test_multi_hop_rag():
         gpt_3_model,
     )
 
+    adal.get_logger(level="DEBUG")
+
     task = MultiHopRAG(
         **gpt_3_model,
         passages_per_hop=3,
         max_hops=2,
     )
+    print(f"task: {task}")
+
+    for name, comp in task.named_components():
+
+        if isinstance(comp, adal.Generator):
+            print(f"name: {name}")
+            print(f"comp: {comp }")
+    return
 
     # test the retriever
 
@@ -472,5 +483,5 @@ if __name__ == "__main__":
 
     # get_logger(level="DEBUG")
     # test_multi_hop_retriever()
-    test_multi_hop_retriever2()
-    # test_multi_hop_rag()
+    # test_multi_hop_retriever2()
+    test_multi_hop_rag()
