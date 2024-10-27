@@ -33,6 +33,7 @@ pgvector = "^0.3.0"
 faiss-cpu = "^1.8.0.post1"
 ollama = "^0.3.0"
 qdrant-client = "^1.10.1"
+lancedb = "^0.14.0"
 diskcache = "^5.6.3"
 torch = "^2.4.0"
 
