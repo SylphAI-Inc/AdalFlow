@@ -433,8 +433,9 @@
 
 <span class="sd">It is a pipeline that consists of three subcomponents.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -547,16 +548,14 @@
 
         <span class="n">template</span> <span class="o">=</span> <span class="n">template</span> <span class="ow">or</span> <span class="n">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span>
 
-        <span class="c1"># Cache</span>
-        <span class="n">model_str</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_client</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">model_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;default&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="c1"># create the cache path and initialize the cache engine</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_cache_path</span><span class="p">(</span>
+            <span class="n">cache_path</span><span class="p">,</span> <span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">_cache_path</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">get_adalflow_default_root_path</span><span class="p">()</span> <span class="k">if</span> <span class="n">cache_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cache_path</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_cache_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;cache_</span><span class="si">{</span><span class="n">model_str</span><span class="si">}</span><span class="s2">.db&quot;</span><span class="p">)</span>
 
         <span class="n">CachedEngine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">)</span>
+
         <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">GradComponent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">CallbackManager</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -581,7 +580,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mock_output_data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mock data&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_map_func</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_data_map_func</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model_str</span> <span class="o">=</span> <span class="n">model_str</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_use_cache</span> <span class="o">=</span> <span class="n">use_cache</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span> <span class="o">=</span> <span class="p">{</span>
@@ -595,6 +593,28 @@
             <span class="s2">&quot;use_cache&quot;</span><span class="p">:</span> <span class="n">use_cache</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_teacher</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Generator&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Generator.set_cache_path">
+<a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.set_cache_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_cache_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the cache path for the generator.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Construct a valid model string using the client class name and model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_client</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="c1"># Remove any characters that are not allowed in file names (cross-platform)</span>
+        <span class="c1"># On Windows, characters like `:&lt;&gt;?/\|*` are prohibited.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^a-zA-Z0-9_\-]&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_str</span><span class="p">)</span>
+
+        <span class="n">_cache_path</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">get_adalflow_default_root_path</span><span class="p">()</span> <span class="k">if</span> <span class="n">cache_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cache_path</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Use pathlib to handle paths more safely across OS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">_cache_path</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;cache_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_str</span><span class="si">}</span><span class="s2">.db&quot;</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cache path set to: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="Generator.get_cache_path">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.get_cache_path">[docs]</a>
