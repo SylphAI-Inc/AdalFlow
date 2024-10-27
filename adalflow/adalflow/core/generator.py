@@ -2,8 +2,9 @@
 
 It is a pipeline that consists of three subcomponents."""
 
-import os
 import json
+import re
+from pathlib import Path
 
 from typing import Any, Dict, Optional, Union, Callable, Tuple, List
 import logging
@@ -114,16 +115,14 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         template = template or DEFAULT_ADALFLOW_SYSTEM_PROMPT
 
-        # Cache
-        model_str = (
-            f"{model_client.__class__.__name__}_{model_kwargs.get('model', 'default')}"
+        # create the cache path and initialize the cache engine
+
+        self.set_cache_path(
+            cache_path, model_client, model_kwargs.get("model", "default")
         )
-        _cache_path = (
-            get_adalflow_default_root_path() if cache_path is None else cache_path
-        )
-        self.cache_path = os.path.join(_cache_path, f"cache_{model_str}.db")
 
         CachedEngine.__init__(self, cache_path=self.cache_path)
+
         Component.__init__(self)
         GradComponent.__init__(self)
         CallbackManager.__init__(self)
@@ -148,7 +147,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self.mock_output_data: str = "mock data"
         # self.data_map_func: Callable = None
         # self.set_data_map_func()
-        self.model_str = model_str
         self._use_cache = use_cache
 
         # self._kwargs = {
@@ -165,6 +163,25 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self._trace_api_kwargs: Dict[str, Any] = (
             {}
         )  # used by dynamic computation graph and backpropagation
+
+    def set_cache_path(self, cache_path: str, model_client: object, model: str):
+        """Set the cache path for the generator."""
+
+        # Construct a valid model string using the client class name and model
+        self.model_str = f"{model_client.__class__.__name__}_{model}"
+
+        # Remove any characters that are not allowed in file names (cross-platform)
+        # On Windows, characters like `:<>?/\|*` are prohibited.
+        self.model_str = re.sub(r"[^a-zA-Z0-9_\-]", "_", self.model_str)
+
+        _cache_path = (
+            get_adalflow_default_root_path() if cache_path is None else cache_path
+        )
+
+        # Use pathlib to handle paths more safely across OS
+        self.cache_path = Path(_cache_path) / f"cache_{self.model_str}.db"
+
+        log.debug(f"Cache path set to: {self.cache_path}")
 
     def get_cache_path(self) -> str:
         r"""Get the cache path for the generator."""

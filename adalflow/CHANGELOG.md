@@ -1,8 +1,21 @@
+<<<<<<< HEAD
 ## [0.2.4] - 2024-09-23
 
 ### Improved
 - Better diagnose report for `Trainer.diagnose`.
 - Multi-hop RAG with handling of Cycle.
+=======
+## [0.2.4] - 2024-10-27
+
+### Added
+- `BedrockAPIClient` to support the AWS Bedrock API. Note: still need more testing and documentation.
+
+### Fixed
+- `Generator` cache path: fixed the issue with invalid window path with incompaticle special characters: https://github.com/SylphAI-Inc/AdalFlow/issues/237
+- Wrong score in the diagnose file as `prepare_eval` is not passing classification label 0 to the `eval_input`.
+
+
+>>>>>>> main
 ## [0.2.3] - 2024-09-20
 
 ### Rename

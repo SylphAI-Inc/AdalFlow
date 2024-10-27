@@ -3,6 +3,7 @@ from unittest.mock import patch, Mock
 import unittest
 import os
 import shutil
+from pathlib import Path
 
 from openai.types import CompletionUsage
 from openai.types.chat import ChatCompletion
@@ -54,6 +55,32 @@ class TestGenerator(IsolatedAsyncioTestCase):
         self.assertIsInstance(output, GeneratorOutput)
         print(f"output: {output}")
         # self.assertEqual(output.data, "Generated text response")
+
+    def test_cache_path(self):
+        prompt_kwargs = {"input_str": "Hello, world!"}
+        model_kwargs = {"model": "phi3.5:latest"}
+
+        self.test_generator = Generator(
+            model_client=self.mock_api_client,
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=model_kwargs,
+            use_cache=True,
+        )
+
+        # Convert the path to a string to avoid the TypeError
+        cache_path = self.test_generator.get_cache_path()
+        cache_path_str = str(cache_path)
+
+        print(f"cache path: {cache_path}")
+
+        # Check if the sanitized model string is in the cache path
+        self.assertIn("phi3_5_latest", cache_path_str)
+
+        # Check if the cache path exists as a file (or directory, depending on your use case)
+
+        self.assertTrue(
+            Path(cache_path).exists(), f"Cache path {cache_path_str} does not exist"
+        )
 
     def test_generator_prompt_logger_first_record(self):
         # prompt_kwargs = {"input_str": "Hello, world!"}
