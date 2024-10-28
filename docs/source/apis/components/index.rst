@@ -49,6 +49,7 @@ Output Parsers
 .. autosummary::
 
    components.output_parsers.outputs
+   components.output_parsers.dataclass_parser
 
 Agent
 ~~~~~~~~~~~~~~~~~~~~

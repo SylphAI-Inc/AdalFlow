@@ -132,10 +132,10 @@ class DataClassParser(Component):
     def call(self, input: str) -> Any:
         r"""Parse the output string to the desired format and return the parsed output."""
         try:
-            output = self._output_processor(input)
+            output_dict = self._output_processor(input)
             if self._return_data_class:
-                return self._data_class(**output)
-            return output
+                return self._data_class.from_dict(output_dict)
+            return output_dict
         except Exception as e:
             log.error(f"Error at parsing output: {e}")
             raise ValueError(f"Error: {e}")

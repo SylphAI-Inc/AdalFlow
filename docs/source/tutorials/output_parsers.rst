@@ -1,3 +1,5 @@
+.. _components-output_parser_note:
+
 Parser
 =============
 
