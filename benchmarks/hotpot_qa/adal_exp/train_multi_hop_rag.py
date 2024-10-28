@@ -113,9 +113,9 @@ def train(
 ):
     adal_component = MultiHopRAGAdal(
         **gpt_3_model,
-        teacher_model_config=gpt_4o_model,
-        text_optimizer_model_config=gpt_4o_model,
-        backward_engine_model_config=gpt_4o_model
+        teacher_model_config=gpt_3_model,
+        text_optimizer_model_config=gpt_3_model,
+        backward_engine_model_config=gpt_3_model
     )
     print(adal_component)
     trainer = adal.Trainer(
@@ -145,25 +145,19 @@ def train(
 if __name__ == "__main__":
     from use_cases.config import gpt_3_model
 
-    log = adal.get_logger(level="DEBUG")
+    log = adal.get_logger(level="DEBUG", enable_console=False)
 
     adal.setup_env()
 
     # task = MultiHopRAGAdal(**gpt_3_model)
     # print(task)
 
-    train_diagnose(**gpt_3_model)
+    # train_diagnose(**gpt_3_model)
 
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     # TODO: test debug mode
-    # train(
-    #     debug=False,
-    #     max_steps=12,
-    #     # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
-    # )
-    # random_max_steps_12_ecf16_run_9.json, demo only, val 0.6 to 0.68,  test: 0.58-0.61
-    # random_max_steps_12_7c091_run_1.json,  prompt + demo, 0.58 -0.62, test: 0.55 - 0.58
-    # resume from random_max_steps_12_7c091_run_1.json
-
-    # demo only, no input, 4 shots, 0.58-> 0.62, VallinaRAGAdal/constrained_max_steps_12_b0a37_run_1.json
-    # this is the same as dspy's 20shots, because dspy does not use the weighted sampling
+    train(
+        debug=True,
+        max_steps=5,
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
+    )

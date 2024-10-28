@@ -123,6 +123,9 @@ class Parameter(Generic[T]):
     name: str = None  # Name of the parameter, easier to read for humans
     role_desc: str = ""  # Description of the role of the parameter
     data: T = None  # Data of the parameter
+    data_id: str = (
+        None  # Id of the data from the training set, used only for input_type
+    )
     param_type: ParameterType
 
     proposing: bool = False  # State of the parameter
@@ -149,6 +152,7 @@ class Parameter(Generic[T]):
         *,
         id: Optional[str] = None,
         data: T = None,  # for generator output, the data will be set up as raw_response
+        data_id: str = None,  # for tracing the data item in the training/val/test set
         requires_opt: bool = True,
         role_desc: str = "",
         param_type: ParameterType = ParameterType.NONE,
@@ -163,6 +167,7 @@ class Parameter(Generic[T]):
         successor_map_fn: Optional[Dict[str, Callable]] = None,
     ):
         self.id = id or str(uuid.uuid4())
+        self.data_id = data_id
 
         self.name = name
         self.role_desc = role_desc
@@ -197,8 +202,10 @@ class Parameter(Generic[T]):
         self.instruction_to_backward_engine: str = instruction_to_backward_engine
 
         # here are used for demo parameter, filled by generator.forward
-        self._traces: Dict[str, DataClass] = {}  # id of the data points
-        self._score: float = score  # end to end evaluation score
+        self._traces: Dict[str, DataClass] = {}  # id to data items (DynamicDataClass)
+        self._score: float = (
+            score  # end to end evaluation score, TODO: might have multiple scores if using multiple eval fns
+        )
 
         self._student_traces: Dict[str, DataClass] = {}  # id
         self._demos: List[DataClass] = (
@@ -289,10 +296,19 @@ class Parameter(Generic[T]):
         r"""Set the input for the eval_fn."""
         self.eval_input = eval_input
 
+    ###################################################################################################################
+    #   Used for demo optimizer (forward and backward pass) to accumlate the traces on both score and DynamicDataClass
+    ###################################################################################################################
     def set_score(self, score: float):
+        r"""Set the score of the parameter in the backward pass
+        For intermediate nodes, there is only one score per each eval fn behind this node.
+        For leaf nodes, like DEMO or PROMPT, it will have [batch_size] of scores.
+
+        But this score is only used to relay the score to the demo parametr.
+        """
         self._score = score
 
-    def add_to_trace(self, trace: DataClass, is_teacher: bool = True):
+    def add_dataclass_to_trace(self, trace: DataClass, is_teacher: bool = True):
         r"""Called by the generator.forward to add a trace to the parameter.
 
         It is important to allow updating to the trace, as this will give different sampling weight.
@@ -315,7 +331,12 @@ class Parameter(Generic[T]):
             raise ValueError(
                 f"Trace with id {trace_id} does not exist. Current traces: {target.keys()}"
             )
-        target[trace_id].score = score
+
+        setattr(target[trace_id], "score", score)
+
+        from adalflow.utils.logger import printc
+
+        printc(f"Adding score {score} to trace {trace_id}", "magenta")
 
     ############################################################################################################
     #   Used for optimizer to propose new data
@@ -564,7 +585,7 @@ class Parameter(Generic[T]):
         format: Literal["png", "svg"] = "png",
         rankdir: Literal["LR", "TB"] = "TB",
         filepath: Optional[str] = None,
-    ):
+    ) -> Dict[str, Any]:
         """Draw the graph of the parameter and its gradients.
 
         Args:
@@ -650,6 +671,8 @@ class Parameter(Generic[T]):
                 f"<tr><td><b><font color='{label_color}'>Role: </font></b></td><td>{wrap_and_escape(n.role_desc.capitalize())}</td></tr>"
                 f"<tr><td><b><font color='{label_color}'>Value: </font></b></td><td>{wrap_and_escape(n.data)}</td></tr>"
             )
+            if n.data_id is not None:
+                node_label += f"<tr><td><b><font color='{label_color}'>Data ID: </font></b></td><td>{wrap_and_escape(n.data_id)}</td></tr>"
             if n.proposing:
                 node_label += f"<tr><td><b><font color='{label_color}'>Proposing</font></b></td><td>{{'Yes'}}</td></tr>"
                 node_label += f"<tr><td><b><font color='{label_color}'>Previous Value: </font></b></td><td>{wrap_and_escape(n.previous_data)}</td></tr>"
@@ -659,6 +682,10 @@ class Parameter(Generic[T]):
                 node_label += f"<tr><td><b><font color='{label_color}'>Type: </font></b></td><td>{wrap_and_escape(n.param_type.name)}</td></tr>"
             if full_trace and n.component_trace.api_kwargs is not None:
                 node_label += f"<tr><td><b><font color='{label_color}'> API kwargs: </font></b></td><td>{wrap_and_escape(str(n.component_trace.api_kwargs))}</td></tr>"
+
+            # show the score for intermediate nodes
+            if n._score is not None and len(n.predecessors) > 0:
+                node_label += f"<tr><td><b><font color='{label_color}'>Score: </font></b></td><td>{str(n._score)}</td></tr>"
             if add_grads:
                 node_label += f"<tr><td><b><font color='{label_color}'>Gradients: </font></b></td><td>{wrap_and_escape(n.get_gradients_names())}</td></tr>"
                 # add a list of each gradient with short value
@@ -737,7 +764,7 @@ class Parameter(Generic[T]):
         # save_json(prompts, filename)
         # save root node to_dict to json
         save_json(self.to_dict(), f"{filepath}_root.json")
-        return dot
+        return {"graph_path": filepath, "root_path": f"{filepath}_root.json"}
 
     def to_dict(self):
         return {

@@ -70,6 +70,12 @@ class DeduplicateList(adal.GradComponent):
         seen = set()
         return [x for x in exisiting_list + new_list if not (x in seen or seen.add(x))]
 
+    def backward(self, *args, **kwargs):
+        from adalflow.utils.logger import printc
+
+        printc(f"DeduplicateList backward: {args}", "yellow")
+        return super().backward(*args, **kwargs)
+
 
 # User customize an auto-grad operator
 # Need this to be a GradComponent
@@ -330,7 +336,7 @@ class MultiHopRetriever2(adal.Retriever):
                 successor=self.retrievers[i], map_fn=success_map_fn
             )
 
-            retrieve_out = self.retrievers[i].forward(input=gen_out)
+            retrieve_out = self.retrievers[i].forward(input=gen_out, id=id)
 
             def retrieve_out_map_fn(x: adal.Parameter):
                 return x.data[0].documents if x.data and x.data[0].documents else []
@@ -356,7 +362,18 @@ class MultiHopRetriever2(adal.Retriever):
 
         context.data = context_to_retrover_output(context)
 
+        from adalflow.utils.logger import printc
+
+        printc(f"MultiHopRetriever2 grad fn: {context.grad_fn}", "yellow")
+
         return context
+
+    def backward(self, *args, **kwargs):
+        from adalflow.utils.logger import printc
+
+        printc(f"MultiHopRetriever2 backward: {args}", "yellow")
+        super().backward(*args, **kwargs)
+        return
 
 
 from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import VanillaRAG

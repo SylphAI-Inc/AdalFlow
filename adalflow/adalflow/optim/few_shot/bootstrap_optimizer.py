@@ -52,7 +52,9 @@ class BootstrapFewShot(DemoOptimizer):
             for param in params
             if param.requires_opt and param.param_type == ParameterType.DEMOS
         ]
-        log.info(f"BootstrapFewShot: {self.params}")
+        log.info(f"BootstrapFewShot: {[p.name for p in self.params]}")
+
+        print(f"BootstrapFewShot: {[p.name for p in self.params]}")
 
         self._raw_shots = raw_shots
         self._bootstrap_shots = bootstrap_shots
@@ -64,7 +66,11 @@ class BootstrapFewShot(DemoOptimizer):
             exclude_input_fields_from_bootstrap_demos
         )
 
+    # TODO: use the scores from the backward engine (optionally) on the demo parameters
+    # needs to make a decision on which
+    # this score does not make sense for multiple demo parameters
     def add_scores(self, ids: List[str], scores: List[float], is_teacher: bool = True):
+        r"""Add scores for each demo via _teacher_scores or _student_scores."""
         if len(ids) != len(scores):
             raise ValueError(
                 f"ids and scores must have the same length, got ids: {ids}, scores: {scores}"

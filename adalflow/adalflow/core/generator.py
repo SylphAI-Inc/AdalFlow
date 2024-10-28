@@ -78,7 +78,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     model_client: ModelClient  # for better type checking
 
     _use_cache: bool = False
-    # _kwargs: Dict[str, Any] = {}
+    _kwargs: Dict[str, Any] = (
+        {}
+    )  # to create teacher generator from student TODO: might reaccess this
 
     def __init__(
         self,
@@ -149,16 +151,16 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # self.set_data_map_func()
         self._use_cache = use_cache
 
-        # self._kwargs = {
-        #     "model_client": model_client,
-        #     "model_kwargs": model_kwargs,
-        #     "template": template,
-        #     "prompt_kwargs": prompt_kwargs,
-        #     "output_processors": output_processors,
-        #     "name": name,
-        #     "cache_path": cache_path,
-        #     "use_cache": use_cache,
-        # }
+        self._kwargs = {
+            "model_client": model_client,
+            "model_kwargs": model_kwargs,
+            "template": template,
+            "prompt_kwargs": prompt_kwargs,
+            "output_processors": output_processors,
+            "name": name,
+            "cache_path": cache_path,
+            "use_cache": use_cache,
+        }
         self._teacher: Optional["Generator"] = None
         self._trace_api_kwargs: Dict[str, Any] = (
             {}
@@ -376,7 +378,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         from adalflow.core.base_data_class import DynamicDataClassFactory
 
         # map the input fields
-        demo_data = {"id": id}
+        demo_data = {"id": id, "score": None}  # add score to trace the prediction score
         demo_data_class_output_mapping, output_fields = self._get_default_mapping(
             output
         )
@@ -442,6 +444,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         model_kwargs: Optional[Dict] = {},
         id: Optional[str] = None,
     ) -> "Parameter":
+        r"""Customized forward pass on top of the GradComponent forward method."""
         # 1. convert prompt_kwargs to parameter if it is not
         for k, v in prompt_kwargs.items():
             if not isinstance(v, Parameter):
@@ -450,12 +453,15 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                     name=f"{self.name}_{k}",
                     requires_opt=True,
                     param_type=ParameterType.INPUT,
+                    data_id=id,
                 )
 
         # 2. call the model
         unwrapped_prompt_kwargs: Dict[str, Any] = {}
         for k, v in prompt_kwargs.items():
             if isinstance(v, Parameter):
+                if v.param_type == ParameterType.INPUT:
+                    v.data_id = id
                 unwrapped_prompt_kwargs[k] = v.map_to_successor(self)
             else:
                 unwrapped_prompt_kwargs[k] = v
@@ -536,7 +542,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 output,
                 id=id,
             )
-            demo_param.add_to_trace(demo, is_teacher=self.teacher_mode)
+            demo_param.add_dataclass_to_trace(demo, is_teacher=self.teacher_mode)
         else:
             log.debug(
                 "No demo parameter found in the prompt_kwargs. You can not trace the demo data."
@@ -576,7 +582,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         id: Optional[str] = None,  # the id of the input
     ) -> Parameter:
 
-        log.info(f"Generator: Backward: {response}")
+        log.info(f"Generator: Backward: {response.name}")
 
         children_params = response.predecessors
         is_chain = True
@@ -585,17 +591,17 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         # backward score to the demo parameter
         for pred in children_params:
-            if pred.requires_opt:
-                pred.set_score(response._score)
-                log.debug(
-                    f"backpropagate the score {response._score} to {pred.name}, is_teacher: {self.teacher_mode}"
+            # if pred.requires_opt:
+            pred.set_score(response._score)
+            log.debug(
+                f"backpropagate the score {response._score} to {pred.name}, is_teacher: {self.teacher_mode}"
+            )
+            if pred.param_type == ParameterType.DEMOS:
+                # Accumulate the score to the demo
+                pred.add_score_to_trace(
+                    trace_id=id, score=response._score, is_teacher=self.teacher_mode
                 )
-                if pred.param_type == ParameterType.DEMOS:
-                    # Accumulate the score to the demo
-                    pred.add_score_to_trace(
-                        trace_id=id, score=response._score, is_teacher=self.teacher_mode
-                    )
-                    log.debug(f"Pred: {pred.name}, traces: {pred._traces}")
+                log.debug(f"Pred: {pred.name}, traces: {pred._traces}")
 
         # 1.backward for text-gradients
         if backward_engine:

@@ -369,12 +369,22 @@ class EvalFnToTextLoss(LossComponent):
                 )
         # backward for the score for the demo
         for pred in children_params:
-            if not pred.requires_opt:
-                log.debug(
-                    f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
+            # if not pred.requires_opt:
+            #     log.debug(
+            #         f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
+            #     )
+            #     continue
+            if not isinstance(response.data, float):
+                raise TypeError(
+                    f"EvalFnToTextLoss: response.data must be a float. Got {type(response.data)}."
                 )
-                continue
-            pred._score = float(response.data)
+            pred._score = response.data
+            from adalflow.utils.logger import printc
+
+            printc(
+                f"EvalFnToTextLoss: {pred.name} set_score: {response.data}, {response.name}",
+                "blue",
+            )
             log.info(f"setting pred name {pred.name} score to {response.data}")
 
 
