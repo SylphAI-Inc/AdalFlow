@@ -480,12 +480,16 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="dataclass">
-<span id="core-base-data-class-note"></span><h1>DataClass<a class="headerlink" href="#dataclass" title="Link to this heading">#</a></h1>
-<p>In <cite>PyTorch</cite>, <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> is the data type used in <code class="docutils literal notranslate"><span class="pre">Module</span></code> and <code class="docutils literal notranslate"><span class="pre">Optimizer</span></code> across the library.
-Tensor wraps a multi-dimensional matrix to better support its operations and computations.
-In LLM applications, data constantly needs to interact with LLMs in the form of strings via prompt and be parsed back to structured data from LLMs’ text prediction.
-<a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></a> is designed to ease this data interaction with LLMs via prompt(input) and to parse the text prediction(output).</p>
+  <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+   <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_dataclasses.ipynb" target="_blank" style="margin-right: 10px;">
+      <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+   </a>
+
+</div><section id="dataclass">
+<h1>DataClass<a class="headerlink" href="#dataclass" title="Link to this heading">#</a></h1>
+<p>In LLM applications, data constantly needs to interact with LLMs in the form of strings via prompt and be parsed back to structured data from LLMs’ text prediction.
+<a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></a> is designed to ease this data interaction with LLMs via prompt(input) and to parse the text prediction(output).
+It is even more convenient to use together with <span class="xref std std-ref">components-output_parser_note</span>.</p>
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../_images/dataclass.png"><img alt="DataClass" src="../_images/dataclass.png" style="width: 680px;" />
 </a>
@@ -530,11 +534,13 @@ Here are our reasoning:</p>
 <p>We also made the effort to provide more control:</p>
 <ol class="arabic simple">
 <li><p><strong>Keep the ordering of your data fields.</strong> We provided <a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.required_field" title="core.base_data_class.required_field"><code class="xref py py-func docutils literal notranslate"><span class="pre">required_field</span></code></a> with <code class="docutils literal notranslate"><span class="pre">default_factory</span></code> to mark the field as required even if it is after optional fields. We also has to do customization to preserve their ordering while being converted to dictionary, json and yaml string.</p></li>
+<li><p><strong>Signal the output/input fields.</strong> We allow you to use <code class="docutils literal notranslate"><span class="pre">__output_fields__</span></code> and <code class="docutils literal notranslate"><span class="pre">__input_fields__</span></code> to explicitly signal the output and input fields. (1) It can be a subset of the fields in the data class. (2) You can specify the ordering in the <cite>__output_fields__</cite>.</p></li>
 <li><p><strong>Exclude some fields from the output.</strong>  All serialization methods support <cite>exclude</cite> parameter to exclude some fields even for nested dataclasses.</p></li>
 <li><p><strong>Allow nested dataclasses, lists, and dictionaries.</strong> All methods support nested dataclasses, lists, and dictionaries.</p></li>
+<li><p><strong>Easy to use with Output parser.</strong>  It works well with output parsers such as <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code>, <code class="docutils literal notranslate"><span class="pre">YamlOutputParser</span></code>, and <code class="docutils literal notranslate"><span class="pre">DataClassParser</span></code>. You can refer to <span class="xref std std-ref">components-output_parser_note</span> for more details.</p></li>
 </ol>
-<section id="describing-the-data-format">
-<h3>Describing the Data Format<a class="headerlink" href="#describing-the-data-format" title="Link to this heading">#</a></h3>
+<section id="describing-the-data-format-data-class">
+<h3>Describing the Data Format (Data Class)<a class="headerlink" href="#describing-the-data-format-data-class" title="Link to this heading">#</a></h3>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
 <col style="width: 36.4%" />
@@ -546,6 +552,12 @@ Here are our reasoning:</p>
 </tr>
 </thead>
 <tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">__input_fields__</span></code></p></td>
+<td><p>A list of fields that are input fields.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">__output_fields__</span></code></p></td>
+<td><p>Used more often than <code class="docutils literal notranslate"><span class="pre">__input_fields__</span></code>. A list of fields that are output fields. (1) It can be a subset of the fields in the data class. (2) You can specify the ordering in the <cite>__output_fields__</cite>. (3) Works well and only with <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code>.</p></td>
+</tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">to_schema(cls,</span> <span class="pre">exclude)</span> <span class="pre">-&gt;</span> <span class="pre">Dict</span></code></p></td>
 <td><p>Generate a JSON schema which is more detailed than the signature.</p></td>
 </tr>
@@ -688,7 +700,7 @@ Normally, this is not possible with the native <cite>dataclasses</cite> module a
 <p>As you can see, it handles the nested dataclass <cite>Question</cite> and the required field <cite>metadata</cite> correctly.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">Optional</span></code> type hint will not affect the field’s required status. You can use this to work with static type checkers such as <cite>mypy</cite> if you want to.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Optional</span></code> type hint will not affect the field’s required status. We recommend you not to use it in the <cite>dataclasses</cite> module especially when you are nesting many levels of dataclasses. It might end up confusing the LLMs.</p>
 </div>
 <p><strong>Signature</strong></p>
 <p>As schema can be rather verbose, and sometimes it works better to be more concise, and to mimick the output data structure that you want.
@@ -878,6 +890,11 @@ You can simply do a bit customization to map the dataset’s key to the field na
 <p class="admonition-title">Note</p>
 <p>If you are looking for data types we used to support each component or any other class like <cite>Optimizer</cite>, you can check out the <a class="reference internal" href="../apis/core/core.types.html#core-types"><span class="std std-ref">core.types</span></a> file.</p>
 </div>
+</section>
+<section id="about-output-fields">
+<h3>About __output_fields__<a class="headerlink" href="#about-output-fields" title="Link to this heading">#</a></h3>
+<p>Though you can use <cite>exclude</cite> in the <a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser" title="components.output_parsers.outputs.JsonOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonOutputParser</span></code></a> to exclude some fields from the output, it is less readable and less convenient than
+directly use <cite>__output_fields__</cite> in the data class to signal the output fields and directly work with <a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code></a>.</p>
 <div class="highlight admonition">
 <p class="admonition-title">References</p>
 <ol class="arabic simple">
@@ -891,6 +908,9 @@ You can simply do a bit customization to map the dataset’s key to the field na
 <li><p><a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType" title="core.base_data_class.DataClassFormatType"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.base_data_class.DataClassFormatType</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.custom_asdict" title="core.functional.custom_asdict"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.custom_asdict()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.base_data_class.html#core-base-data-class"><span class="std std-ref">core.base_data_class</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.required_field" title="core.base_data_class.required_field"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.base_data_class.required_field</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser" title="components.output_parsers.outputs.JsonOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.JsonOutputParser</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.dataclass_parser.DataClassParser</span></code></a></p></li>
 </ul>
 </div>
 </section>
@@ -944,7 +964,7 @@ You can simply do a bit customization to map the dataset’s key to the field na
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design">Design</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#describing-the-data-format">Describing the Data Format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#describing-the-data-format-data-class">Describing the Data Format (Data Class)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#work-with-data-instance">Work with Data Instance</a></li>
 </ul>
 </li>
@@ -952,6 +972,7 @@ You can simply do a bit customization to map the dataset’s key to the field na
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#describe-the-data-format-to-llms">Describe the data format to LLMs</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-data-examples-parse-string-to-data-instance">Show data examples &amp; parse string to data instance</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-data-from-dataset-as-example">Load data from dataset as example</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#about-output-fields">About __output_fields__</a></li>
 </ul>
 </li>
 </ul>

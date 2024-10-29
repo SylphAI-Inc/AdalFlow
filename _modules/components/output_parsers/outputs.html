@@ -429,7 +429,14 @@
                 <article class="bd-article">
                   
   <h1>Source code for components.output_parsers.outputs</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;The most commonly used output parsers for the Generator.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;The most commonly used output parsers for the Generator.</span>
+
+<span class="sd">Includes:</span>
+<span class="sd">- YamlOutputParser: YAML output parser using dataclass for schema extraction.</span>
+<span class="sd">- JsonOutputParser: JSON output parser using dataclass for schema extraction.</span>
+<span class="sd">- ListOutputParser: List output parser to parse list of objects from the string.</span>
+<span class="sd">- BooleanOutputParser: Boolean output parser to parse boolean values from the string.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">is_dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>

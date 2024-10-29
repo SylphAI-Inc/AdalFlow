@@ -429,7 +429,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for components.output_parsers.dataclass_parser</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;DataClassParser will help users convert a dataclass to prompt&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;DataClassParser will help users interact with LLMs even better than JsonOutputParser and YamlOutputParser with DataClass.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">is_dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
@@ -476,9 +476,46 @@
 <div class="viewcode-block" id="DataClassParser">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.DataClassParser">[docs]</a>
 <span class="k">class</span> <span class="nc">DataClassParser</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;This is similar to Dspy&#39;s signature but more controllable and flexible.&quot;&quot;&quot;</span>
-    <span class="p">)</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Made the structured output even simpler compared with JsonOutputParser and YamlOutputParser.</span>
+
+<span class="s2">        1. Understands __input_fields__ and __output_fields__ from the DataClass (no need to use include/exclude to decide fields).</span>
+<span class="s2">        2. User can choose to save the `task_desc` in the DataClass and use it in the prompt.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">        .. code-block:: python</span>
+
+<span class="s2">            @dataclass</span>
+<span class="s2">            class BasicQAOutput(adal.DataClass):</span>
+<span class="s2">                explanation: str = field(</span>
+<span class="s2">                    metadata={&quot;desc&quot;: &quot;A brief explanation of the concept in one sentence.&quot;}</span>
+<span class="s2">                )</span>
+<span class="s2">                example: str = field(</span>
+<span class="s2">                    metadata={&quot;desc&quot;: &quot;An example of the concept in a sentence.&quot;}</span>
+<span class="s2">                )</span>
+<span class="s2">                # Control output fields order</span>
+<span class="s2">                __output_fields__ = [&quot;explanation&quot;, &quot;example&quot;]</span>
+
+<span class="s2">            # Define the template using jinja2 syntax</span>
+<span class="s2">            qa_template = &quot;&lt;SYS&gt;</span>
+<span class="s2">            You are a helpful assistant.</span>
+<span class="s2">            &lt;OUTPUT_FORMAT&gt;</span>
+<span class="s2">            {{output_format_str}}</span>
+<span class="s2">            &lt;/OUTPUT_FORMAT&gt;</span>
+<span class="s2">            &lt;/SYS&gt;</span>
+<span class="s2">            &lt;USER&gt; {{input_str}} &lt;/USER&gt;&quot;</span>
+
+<span class="s2">            parser = adal.DataClassParser(data_class=BasicQAOutput, return_data_class=True)</span>
+
+<span class="s2">            # Set up the generator with model, template, and parser</span>
+<span class="s2">            self.generator = adal.Generator(</span>
+<span class="s2">                model_client=model_client,</span>
+<span class="s2">                model_kwargs=model_kwargs,</span>
+<span class="s2">                template=qa_template,</span>
+<span class="s2">                prompt_kwargs={&quot;output_format_str&quot;: parser.get_output_format_str()},</span>
+<span class="s2">                output_processors=parser,</span>
+<span class="s2">            )</span>
+<span class="s2">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -582,10 +619,10 @@
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the output string to the desired format and return the parsed output.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_processor</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+            <span class="n">output_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_processor</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_class</span><span class="p">(</span><span class="o">**</span><span class="n">output</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">output</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_class</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">output_dict</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">output_dict</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error at parsing output: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
