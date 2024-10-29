@@ -15,6 +15,8 @@ from adalflow.core.types import (
 )
 from adalflow.core.model_client import ModelClient
 from adalflow.core.embedder import Embedder
+
+# parser
 from adalflow.core.string_parser import (
     YamlParser,
     JsonParser,
@@ -30,7 +32,10 @@ from adalflow.components.output_parsers import (
     ListOutputParser,
 )
 from adalflow.components.output_parsers.dataclass_parser import DataClassParser
+
 from adalflow.core.prompt_builder import Prompt
+
+# optimization
 from adalflow.optim import (
     Optimizer,
     DemoOptimizer,
