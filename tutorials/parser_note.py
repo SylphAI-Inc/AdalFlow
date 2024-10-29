@@ -271,6 +271,62 @@ def yaml_output_parser():
     print(parsed_user)
 
 
+def dataclass_parser():
+    from dataclasses import dataclass, field
+    from adalflow.components.output_parsers import DataClassParser
+    from adalflow.core import DataClass
+
+    @dataclass
+    class SampleDataClass(DataClass):
+        description: str = field(metadata={"description": "A sample description"})
+        category: str = field(metadata={"description": "Category of the sample"})
+        value: int = field(metadata={"description": "A sample integer value"})
+        status: str = field(metadata={"description": "Status of the sample"})
+
+        __input_fields__ = [
+            "description",
+            "category",
+        ]  # Define which fields are input fields
+        __output_fields__ = ["value", "status"]  # Define which fields are output fields
+
+    # Initialize the DataClassParser with SampleDataClass
+    parser = DataClassParser(
+        data_class=SampleDataClass, return_data_class=True, format_type="json"
+    )
+    print("DataClassParser instance created:\n", parser)
+
+    # Get formatted instructions for the output format
+    output_format_str = parser.get_output_format_str()
+    print("\nOutput format string:\n", output_format_str)
+
+    # Get formatted instructions for the input format
+    input_format_str = parser.get_input_format_str()
+    print("\nInput format string:\n", input_format_str)
+
+    # Parse a sample JSON string
+    user_input = '{"description": "Parsed description", "category": "Sample Category", "value": 100, "status": "active"}'
+    parsed_instance = parser.call(user_input)
+    print("\nParsed DataClass instance:\n", parsed_instance)
+
+    samples = [
+        SampleDataClass(
+            description="Sample description",
+            category="Sample category",
+            value=100,
+            status="active",
+        ),
+        SampleDataClass(
+            description="Another description",
+            category="Another category",
+            value=200,
+            status="inactive",
+        ),
+    ]
+
+    examples_str = parser.get_examples_str(examples=samples)
+    print(f"examples_str: {examples_str}")
+
+
 if __name__ == "__main__":
     examples_of_different_ways_to_parse_string()
     int_parser()
@@ -281,3 +337,4 @@ if __name__ == "__main__":
     yaml_parser()
     json_output_parser()
     yaml_output_parser()
+    dataclass_parser()

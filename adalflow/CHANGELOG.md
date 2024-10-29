@@ -1,3 +1,8 @@
+## [0.2.5] - 2024-10-28
+
+### Fixed
+- `DataClassParser` nested data class parsing where we have to use `from_dict(json_dict)` instead of `(**json_dict)` to parse the nested data class.
+
 ## [0.2.4] - 2024-10-27
 
 ### Added
