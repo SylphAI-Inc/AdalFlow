@@ -489,12 +489,12 @@
 <h1>DataClass<a class="headerlink" href="#dataclass" title="Link to this heading">#</a></h1>
 <p>In LLM applications, data constantly needs to interact with LLMs in the form of strings via prompt and be parsed back to structured data from LLMs’ text prediction.
 <a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></a> is designed to ease this data interaction with LLMs via prompt(input) and to parse the text prediction(output).
-It is even more convenient to use together with <span class="xref std std-ref">components-output_parser_note</span>.</p>
-<figure class="align-center" id="id1">
+It is even more convenient to use together with <a class="reference internal" href="output_parsers.html"><span class="doc">Parser</span></a> to parse the output from LLMs.</p>
+<figure class="align-center" id="id3">
 <a class="reference internal image-reference" href="../_images/dataclass.png"><img alt="DataClass" src="../_images/dataclass.png" style="width: 680px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">DataClass is to ease the data interaction with LLMs.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+<p><span class="caption-text">DataClass is to ease the data interaction with LLMs.</span><a class="headerlink" href="#id3" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="design">
@@ -537,7 +537,7 @@ Here are our reasoning:</p>
 <li><p><strong>Signal the output/input fields.</strong> We allow you to use <code class="docutils literal notranslate"><span class="pre">__output_fields__</span></code> and <code class="docutils literal notranslate"><span class="pre">__input_fields__</span></code> to explicitly signal the output and input fields. (1) It can be a subset of the fields in the data class. (2) You can specify the ordering in the <cite>__output_fields__</cite>.</p></li>
 <li><p><strong>Exclude some fields from the output.</strong>  All serialization methods support <cite>exclude</cite> parameter to exclude some fields even for nested dataclasses.</p></li>
 <li><p><strong>Allow nested dataclasses, lists, and dictionaries.</strong> All methods support nested dataclasses, lists, and dictionaries.</p></li>
-<li><p><strong>Easy to use with Output parser.</strong>  It works well with output parsers such as <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code>, <code class="docutils literal notranslate"><span class="pre">YamlOutputParser</span></code>, and <code class="docutils literal notranslate"><span class="pre">DataClassParser</span></code>. You can refer to <span class="xref std std-ref">components-output_parser_note</span> for more details.</p></li>
+<li><p><strong>Easy to use with Output parser.</strong>  It works well with output parsers such as <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code>, <code class="docutils literal notranslate"><span class="pre">YamlOutputParser</span></code>, and <code class="docutils literal notranslate"><span class="pre">DataClassParser</span></code>. You can refer to :doc:<a href="#id1"><span class="problematic" id="id2">`</span></a>Parser&lt;output_parsers&gt;`for more details.</p></li>
 </ol>
 <section id="describing-the-data-format-data-class">
 <h3>Describing the Data Format (Data Class)<a class="headerlink" href="#describing-the-data-format-data-class" title="Link to this heading">#</a></h3>
