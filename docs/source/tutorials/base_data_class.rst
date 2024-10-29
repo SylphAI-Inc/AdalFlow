@@ -21,7 +21,7 @@ DataClass
 
 In LLM applications, data constantly needs to interact with LLMs in the form of strings via prompt and be parsed back to structured data from LLMs' text prediction.
 :class:`DataClass<core.base_data_class.DataClass>` is designed to ease this data interaction with LLMs via prompt(input) and to parse the text prediction(output).
-It is even more convenient to use together with :ref:`components-output_parser_note`.
+It is even more convenient to use together with :doc:`Parser<output_parsers>` to parse the output from LLMs.
 
 .. figure:: /_static/images/dataclass.png
     :align: center
@@ -75,7 +75,7 @@ We also made the effort to provide more control:
 2. **Signal the output/input fields.** We allow you to use ``__output_fields__`` and ``__input_fields__`` to explicitly signal the output and input fields. (1) It can be a subset of the fields in the data class. (2) You can specify the ordering in the `__output_fields__`.
 3. **Exclude some fields from the output.**  All serialization methods support `exclude` parameter to exclude some fields even for nested dataclasses.
 4. **Allow nested dataclasses, lists, and dictionaries.** All methods support nested dataclasses, lists, and dictionaries.
-5. **Easy to use with Output parser.**  It works well with output parsers such as ``JsonOutputParser``, ``YamlOutputParser``, and ``DataClassParser``. You can refer to :ref:`components-output_parser_note` for more details.
+5. **Easy to use with Output parser.**  It works well with output parsers such as ``JsonOutputParser``, ``YamlOutputParser``, and ``DataClassParser``. You can refer to :doc:`Parser<output_parsers>`for more details.
 
 
 Describing the Data Format (Data Class)
