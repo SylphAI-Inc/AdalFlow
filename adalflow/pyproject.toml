@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "adalflow"
 
-version = "0.2.4"
-description = "The Library to Build and Auto-optimize Any LLM Task Pipeline"
+version = "0.2.5"
+description = "The Library to Build and Auto-optimize LLM Applications"
 authors = ["Li Yin <li@sylphai.com>"]
 readme = "README.md"
 repository = "https://github.com/SylphAI-Inc/AdalFlow"

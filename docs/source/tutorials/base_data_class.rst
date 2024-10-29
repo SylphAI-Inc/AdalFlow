@@ -1,4 +1,15 @@
 .. _core-base_data_class_note:
+
+
+.. raw:: html
+
+   <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+      <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_dataclasses.ipynb" target="_blank" style="margin-right: 10px;">
+         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+      </a>
+
+   </div>
+
 DataClass
 ============
 
@@ -7,10 +18,10 @@ DataClass
 
 ..    `Li Yin <https://github.com/liyin2015>`_
 
-In `PyTorch`, ``Tensor`` is the data type used in ``Module`` and ``Optimizer`` across the library.
-Tensor wraps a multi-dimensional matrix to better support its operations and computations.
+
 In LLM applications, data constantly needs to interact with LLMs in the form of strings via prompt and be parsed back to structured data from LLMs' text prediction.
 :class:`DataClass<core.base_data_class.DataClass>` is designed to ease this data interaction with LLMs via prompt(input) and to parse the text prediction(output).
+It is even more convenient to use together with :ref:`components-output_parser_note`.
 
 .. figure:: /_static/images/dataclass.png
     :align: center
@@ -61,11 +72,13 @@ Here is how users typically use the ``dataclasses`` module:
 We also made the effort to provide more control:
 
 1. **Keep the ordering of your data fields.** We provided :func:`required_field<core.base_data_class.required_field>` with ``default_factory`` to mark the field as required even if it is after optional fields. We also has to do customization to preserve their ordering while being converted to dictionary, json and yaml string.
-2. **Exclude some fields from the output.**  All serialization methods support `exclude` parameter to exclude some fields even for nested dataclasses.
-3. **Allow nested dataclasses, lists, and dictionaries.** All methods support nested dataclasses, lists, and dictionaries.
+2. **Signal the output/input fields.** We allow you to use ``__output_fields__`` and ``__input_fields__`` to explicitly signal the output and input fields. (1) It can be a subset of the fields in the data class. (2) You can specify the ordering in the `__output_fields__`.
+3. **Exclude some fields from the output.**  All serialization methods support `exclude` parameter to exclude some fields even for nested dataclasses.
+4. **Allow nested dataclasses, lists, and dictionaries.** All methods support nested dataclasses, lists, and dictionaries.
+5. **Easy to use with Output parser.**  It works well with output parsers such as ``JsonOutputParser``, ``YamlOutputParser``, and ``DataClassParser``. You can refer to :ref:`components-output_parser_note` for more details.
 
 
-Describing the Data Format
+Describing the Data Format (Data Class)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. list-table::
@@ -74,6 +87,10 @@ Describing the Data Format
 
    * - **Name**
      - **Description**
+   * - ``__input_fields__``
+     - A list of fields that are input fields.
+   * - ``__output_fields__``
+     - Used more often than ``__input_fields__``. A list of fields that are output fields. (1) It can be a subset of the fields in the data class. (2) You can specify the ordering in the `__output_fields__`. (3) Works well and only with :class:`DataClassParser<core.base_data_class.DataClassParser>`.
    * - ``to_schema(cls, exclude) -> Dict``
      - Generate a JSON schema which is more detailed than the signature.
    * - ``to_schema_str(cls, exclude) -> str``
@@ -227,7 +244,7 @@ As you can see, it handles the nested dataclass `Question` and the required fiel
 
 .. note::
 
-    ``Optional`` type hint will not affect the field's required status. You can use this to work with static type checkers such as `mypy` if you want to.
+    ``Optional`` type hint will not affect the field's required status. We recommend you not to use it in the `dataclasses` module especially when you are nesting many levels of dataclasses. It might end up confusing the LLMs.
 
 **Signature**
 
@@ -600,7 +617,10 @@ You can simply do a bit customization to map the dataset's key to the field name
 
     If you are looking for data types we used to support each component or any other class like `Optimizer`, you can check out the :ref:`core.types<core-types>` file.
 
-
+About __output_fields__
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Though you can use `exclude` in the :class:`JsonOutputParser<components.output_parsers.outputs.JsonOutputParser>` to exclude some fields from the output, it is less readable and less convenient than
+directly use `__output_fields__` in the data class to signal the output fields and directly work with :class:`DataClassParser<components.output_parsers.dataclass_parser.DataClassParser>`.
 
 .. admonition:: References
    :class: highlight
@@ -616,7 +636,9 @@ You can simply do a bit customization to map the dataset's key to the field name
    - :class:`core.base_data_class.DataClassFormatType`
    - :func:`core.functional.custom_asdict`
    - :ref:`core.base_data_class<core-base_data_class>`
-
+   - :class:`core.base_data_class.required_field`
+   - :class:`components.output_parsers.outputs.JsonOutputParser`
+   - :class:`components.output_parsers.dataclass_parser.DataClassParser`
 
 .. Document
 .. ------------
