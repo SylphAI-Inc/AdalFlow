@@ -21,7 +21,7 @@ DataClass
 
 In LLM applications, data constantly needs to interact with LLMs in the form of strings via prompt and be parsed back to structured data from LLMs' text prediction.
 :class:`DataClass<core.base_data_class.DataClass>` is designed to ease this data interaction with LLMs via prompt(input) and to parse the text prediction(output).
-It is even more convenient to use together with **:ref:`components-output_parser_note`**.
+It is even more convenient to use together with :ref:`components-output_parser_note`.
 
 .. figure:: /_static/images/dataclass.png
     :align: center

@@ -1,4 +1,4 @@
-"""DataClassParser will help users convert a dataclass to prompt"""
+"""DataClassParser will help users interact with LLMs even better than JsonOutputParser and YamlOutputParser with DataClass."""
 
 from dataclasses import is_dataclass
 from typing import Any, Literal, List, Optional
@@ -43,9 +43,46 @@ __________
 
 
 class DataClassParser(Component):
-    __doc__ = (
-        r"""This is similar to Dspy's signature but more controllable and flexible."""
-    )
+    __doc__ = r"""Made the structured output even simpler compared with JsonOutputParser and YamlOutputParser.
+
+        1. Understands __input_fields__ and __output_fields__ from the DataClass (no need to use include/exclude to decide fields).
+        2. User can choose to save the `task_desc` in the DataClass and use it in the prompt.
+
+        Example:
+
+        .. code-block:: python
+
+            @dataclass
+            class BasicQAOutput(adal.DataClass):
+                explanation: str = field(
+                    metadata={"desc": "A brief explanation of the concept in one sentence."}
+                )
+                example: str = field(
+                    metadata={"desc": "An example of the concept in a sentence."}
+                )
+                # Control output fields order
+                __output_fields__ = ["explanation", "example"]
+
+            # Define the template using jinja2 syntax
+            qa_template = "<SYS>
+            You are a helpful assistant.
+            <OUTPUT_FORMAT>
+            {{output_format_str}}
+            </OUTPUT_FORMAT>
+            </SYS>
+            <USER> {{input_str}} </USER>"
+
+            parser = adal.DataClassParser(data_class=BasicQAOutput, return_data_class=True)
+
+            # Set up the generator with model, template, and parser
+            self.generator = adal.Generator(
+                model_client=model_client,
+                model_kwargs=model_kwargs,
+                template=qa_template,
+                prompt_kwargs={"output_format_str": parser.get_output_format_str()},
+                output_processors=parser,
+            )
+        """
 
     def __init__(
         self,
