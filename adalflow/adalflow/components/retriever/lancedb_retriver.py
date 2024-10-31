@@ -82,7 +82,13 @@ class LanceDBRetriever(Retriever[LanceDBRetrieverDocumentEmbeddingType, Union[st
         if isinstance(query, str):
             query = [query]
 
-        # Embed the query text(s) with Embedder
+        if not query or (isinstance(query, str) and query.strip() == ""):
+                raise ValueError("Query cannot be empty.")
+
+        # Check if table (index) exists before performing search
+        if not self.table:
+            raise ValueError("The index has not been initialized or the table is missing.")
+
         query_embeddings = self.embedder(input=query).data
         output: List[RetrieverOutput] = []
 
