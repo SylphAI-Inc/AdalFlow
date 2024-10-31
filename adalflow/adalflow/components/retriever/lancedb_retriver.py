@@ -32,7 +32,7 @@ class LanceDBRetriever(Retriever[LanceDBRetrieverDocumentEmbeddingType, Union[st
         More information on LanceDB can be found here:(https://github.com/lancedb/lancedb)
         Documentations: https://lancedb.github.io/lancedb/
         """
-
+        super().__init__()
         self.db = lancedb.connect(db_uri)
         self.embedder = embedder
         self.top_k = top_k
