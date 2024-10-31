@@ -4,7 +4,8 @@ import pyarrow as pa
 import lancedb
 from typing import List, Optional, Sequence, Union, Dict, Any
 from adalflow.core.embedder import Embedder
-from adalflow.core.types import ModelClientType, RetrieverOutput, RetrieverOutputType
+from adalflow.core.retriever import Retriever
+from adalflow.core.types import RetrieverOutput
 
 # Initialize logging
 log = logging.getLogger(__name__)
@@ -14,8 +15,24 @@ LanceDBRetrieverDocumentEmbeddingType = Union[List[float], np.ndarray]  # single
 LanceDBRetrieverDocumentsType = Sequence[LanceDBRetrieverDocumentEmbeddingType]
 
 # Step 2: Define the LanceDBRetriever class
-class LanceDBRetriever:
+class LanceDBRetriever(Retriever[LanceDBRetrieverDocumentEmbeddingType, Union[str, List[str]]]):
     def __init__(self, embedder: Embedder, dimensions: int, db_uri: str = "/tmp/lancedb", top_k: int = 5, overwrite: bool = True):
+        """
+        LanceDBRetriever is a retriever that leverages LanceDB to efficiently store and query document embeddings.
+
+        Attributes:
+            embedder (Embedder): An instance of the Embedder class used for computing embeddings.
+            dimensions (int): The dimensionality of the embeddings used.
+            db_uri (str): The URI of the LanceDB storage (default is "/tmp/lancedb").
+            top_k (int): The number of top results to retrieve for a given query (default is 5).
+            overwrite (bool): If True, the existing table is overwritten; otherwise, new documents are appended.
+
+        This retriever supports adding documents with their embeddings to a LanceDB storage and retrieving relevant documents based on a given query.
+
+        More information on LanceDB can be found here:(https://github.com/lancedb/lancedb)
+        Documentations: https://lancedb.github.io/lancedb/
+        """
+
         self.db = lancedb.connect(db_uri)
         self.embedder = embedder
         self.top_k = top_k
@@ -31,7 +48,12 @@ class LanceDBRetriever:
         self.table = self.db.create_table("documents", schema=schema, mode="overwrite" if overwrite else "append")
 
     def add_documents(self, documents: Sequence[Dict[str, Any]]):
-        """Adds documents with pre-computed embeddings."""
+        """
+        Adds documents with pre-computed embeddings to LanceDB.
+        Args:
+            documents (Sequence[Dict[str, Any]]): A sequence of documents, each with a 'content' field containing text.
+
+        """
         if not documents:
             log.warning("No documents provided for embedding")
             return
@@ -48,7 +70,15 @@ class LanceDBRetriever:
         log.info(f"Added {len(documents)} documents to the index")
 
     def retrieve(self, query: Union[str, List[str]], top_k: Optional[int] = None) -> List[RetrieverOutput]:
-        """Retrieve top-k documents from LanceDB for given query or queries."""
+        """.
+        Retrieve top-k documents from LanceDB for a given query or queries.
+        Args:
+            query (Union[str, List[str]]): A query string or a list of query strings.
+            top_k (Optional[int]): The number of top documents to retrieve (if not specified, defaults to the instance's top_k).
+
+        Returns:
+            List[RetrieverOutput]: A list of RetrieverOutput containing the indices and scores of the retrieved documents.
+        """
         if isinstance(query, str):
             query = [query]
 
