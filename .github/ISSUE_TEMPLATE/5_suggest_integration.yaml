@@ -1,4 +1,4 @@
-name: Feature request
+name: New integration proposal
 description: Propose a new integration for this project, either db, retriever, model_client. We highly recommend you to find a POC from the provider team to work together on this.
 labels: ['needs triage', 'feature']
 body:
