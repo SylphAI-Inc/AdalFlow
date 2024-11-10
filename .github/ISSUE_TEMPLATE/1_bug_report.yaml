@@ -1,6 +1,6 @@
 name: Report a bug
 description: Any errors that you encounter.
-labels: ['needs triage', 'bug']
+labels: ['bug']
 body:
   - type: markdown
     attributes:

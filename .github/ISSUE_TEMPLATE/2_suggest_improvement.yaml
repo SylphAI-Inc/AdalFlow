@@ -1,6 +1,6 @@
 name: Improvement suggestion
 description: Suggest an improvement, a code refactor, or deprecation
-labels: ['needs triage', 'refactor']
+labels: ['[adalflow] improvement']
 body:
   - type: textarea
     attributes:
