@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Chat with us
+    url: https://discord.gg/ezzszrRZvT
+    about: Live chat with experts, engineers, and users in our Discord community.
+  - name: 📖 Read the documentation
+    url: http://adalflow.sylph.ai/
+    about: Please consult the documentation before opening any issues!
+  # - name: 🙋 Contact us about professional services
+  #   url: https://lightning.ai
+  #   about: Contact the Lightning.ai sales team for paid support.

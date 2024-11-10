@@ -339,9 +339,10 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
 
 .. hide the for contributors now
 
-   .. :glob:
-   .. :maxdepth: 1
-   .. :caption: For Contributors
-   .. :hidden:
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :caption: For Contributors
+   :hidden:
 
-   .. contributor/index
+   contributor/index

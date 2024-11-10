@@ -1,17 +1,39 @@
-LightRAG Contribution Guide
+Overall contributing process
 =======================================
-``LightRAG``'s contribution process is similar to most open source projects on GitHub. We encourage new project ideas and the communication between ``LightRAG`` team, developers and the broader community.
-Please don't forget to join us on `Discord <https://discord.com/invite/ezzszrRZvT>`_.
+
+Welcome to the AdalFlow community! We're building the most user-friendly, modular library for building and auto-optimizing LLM applications, from Chatbots, RAGs, to Agents.
+Think of AdalFlow to LLM applications and in-context learning is like PyTorch/TensorFlow/JAX for AI modeling.
+The goal is to provide basic and foudamental building blocks to build advanced applications with auto-optimization out-of-the-box.
+As we mature, we might see more RAG, memory-based chatbots, or agents frameworks will be built on top of AdalFlow building blocks such as retriever, generator.
+
+We highly suggest you to read our :ref:`design principle<lightrag_design_philosophy>` before you start contributing.
+
+We only accept high quality contribution.
+We appreciate contributors but we have to hold our libary responsible for users.
+Once you decide to contribute, we hope you are not just to list your name on the repo, but more importantly, you learn and improve your own skills! you support your faviroty projects and community!
+
+It took us 3 months to setup a contributing guide, as we did explore with users and think a lot on how to organize labels and what is the best process that can control the quality of our library while leveraing the open-source community. **We will continously improve our process and we welcome any suggestion and advice.**
+We are determined to make AdalFlow as great and legendary as PyTorch.
+
+.. ``LightRAG``'s contribution process is similar to most open source projects on GitHub. We encourage new project ideas and the communication between ``LightRAG`` team, developers and the broader community.
+.. Please don't forget to join us on `Discord <https://discord.com/invite/ezzszrRZvT>`_.
+
+.. toctree::
+   :maxdepth: 2
+
+   contribution_process
+   contribute_to_code
+   contribute_to_document
 
 Contribution Process
 ----------------------------
-You are always welcomed to contribute even if you've never participated in open source project before. 
+You are always welcomed to contribute even if you've never participated in open source project before.
 Here is the basic contribution process:
 
 Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 When contributing, please note:
-LightRAG separates the source code environment and documentation environment. 
+LightRAG separates the source code environment and documentation environment.
 
 * To activate the code environment, you should run ``poetry install`` and ``poetry shell`` under ``./lightrag``. The ``./lightrag/pyproject.toml`` contains the dependencies for the ``LightRAG`` package.
 
@@ -44,7 +66,7 @@ Pull requests
 **WIP PR:** If you are working on an in pull request that is not ready for review, you can create a PR with **"[WIP]"** to inform us that this PR is a draft **“work in progress”**.
 
 **Finished PR:** You can name your finished PR as **"[New Retriever Integration]"** for example.
-We will carry out code review regularly and provide feedbacks as soon as possible. 
+We will carry out code review regularly and provide feedbacks as soon as possible.
 Please iterate your PR with the feedbacks. We will try our best to reduce the revision workload on your side.
 Once your PR is approved, we will merge the PR for you.
 If you have any concerns about our feedbacks, please feel free to contact us on `Discord <https://discord.com/invite/ezzszrRZvT>`_.
@@ -59,5 +81,3 @@ Please see our `documentation contribution guidelines <./contribute_to_document.
 
 .. admonition:: Resources
    :class: highlight
-
-   

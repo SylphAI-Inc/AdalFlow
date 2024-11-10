@@ -25,5 +25,5 @@ Test the package locally:
 Better to use a colab to update the whl file and test the installation.
 
 ```bash
-pip install "dist/lightrag-0.1.0b1-py3-none-any.whl[openai,groq,faiss]"
+pip install "dist/adalflow-0.1.0b1-py3-none-any.whl[openai,groq,faiss]"
 ```
