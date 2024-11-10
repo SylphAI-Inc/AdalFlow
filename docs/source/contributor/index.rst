@@ -16,12 +16,10 @@ We are determined to make AdalFlow as great and legendary as PyTorch.
 
 The contributing guide includes three parts:
 
-* Overall Contribution Process (include env and structure)
-* Code and testing
-* Documentation Contribution
+
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    contribution
    contribute_to_code

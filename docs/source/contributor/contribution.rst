@@ -1,4 +1,4 @@
-AdalFlow Contribution Guide
+Overall contributing process
 =======================================
 
 Welcome to the AdalFlow community! We're building the most user-friendly, modular library for building and auto-optimizing LLM applications, from Chatbots, RAGs, to Agents.
