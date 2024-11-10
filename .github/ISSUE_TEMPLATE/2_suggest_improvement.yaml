@@ -1,11 +1,11 @@
-name: Refactor
-description: Suggest a code refactor or deprecation
+name: Improvement suggestion
+description: Suggest an improvement, a code refactor, or deprecation
 labels: ['needs triage', 'refactor']
 body:
   - type: textarea
     attributes:
       label: Outline & Motivation
-      description: A clear and concise description of the refactor...
+      description: A clear and concise description of the improvement suggestion
       placeholder: |
         Please outline the motivation for the proposal.
         If this is related to another GitHub issue, please link it here
@@ -25,15 +25,3 @@ body:
       description: Add any other context or screenshots here.
     validations:
       required: false
-
-  - type: markdown
-    attributes:
-      value: >
-        ### If you enjoy Lightning, check out our other projects! ⚡
-
-        - [**Metrics**](https://github.com/Lightning-AI/metrics):
-          Machine learning metrics for distributed, scalable PyTorch applications.
-          enables pure PyTorch users to scale their existing code on any kind of device while retaining full control over their own loops and optimization logic.
-        - [**GPT**](https://github.com/Lightning-AI/lit-GPT):
-          Hackable implementation of state-of-the-art open-source LLMs based on nanoGPT.
-          Supports flash attention, 4-bit and 8-bit quantization, LoRA and LLaMA-Adapter fine-tuning, pre-training. Apache 2.0-licensed.
