@@ -1,5 +1,5 @@
 name: Report a bug
-description: Any errors that are not UI related.
+description: Any errors that you encounter.
 labels: ['needs triage', 'bug']
 body:
   - type: markdown
@@ -7,8 +7,8 @@ body:
       value: >
         Before you go any further. Is this really a **🐛 bug**?
 
-        If it's a question about how Lightning works, have a look at our [Lightning documentation](https://lightning.ai/lightning-docs/)
-        or ask a question on our [Community Discord](https://discord.gg/VptPCZkGNa).
+        If it's a question about how AdalFlow works, have a look at our [AdalFlow documentation](https://adalflow.sylph.ai/)
+        or ask a question on our [Community Discord](https://discord.gg/ezzszrRZvT).
 
   - type: textarea
     attributes:
@@ -25,21 +25,14 @@ body:
     validations:
       required: true
 
-  - type: dropdown
+  - type: textarea
     id: versions
     attributes:
       label: What version are you seeing the problem on?
-      description: select all version where you have experienced this issue
-      multiple: true
-      options:
-        - 'v1.x'
-        - 'v2.1'
-        - 'v2.2'
-        - 'v2.3'
-        - 'v2.4'
-        - 'master'
+      description: Use `adalflow.__version__` to get the version if it's via pip or "main branch" if you're using the latest code.
+      render: python
     validations:
-      required: true
+      required: false
 
   - type: markdown
     attributes:
@@ -50,8 +43,7 @@ body:
       label: How to reproduce the bug
       description: >
         Provide steps and example code here.
-        You can also paste a link to Google Colab (see our [Colab bug report template](https://colab.research.google.com/github/Lightning-AI/lightning/blob/master/examples/pytorch/bug_report/bug_report_model.ipynb)) or adapt this minimal [snippet](https://github.com/Lightning-AI/lightning/blob/master/examples/pytorch/bug_report/bug_report_model.py).
-      placeholder: |
+        You can also paste a link to Google Colab.
         ```python
         # Sample code to reproduce the problem
         ```
@@ -76,29 +68,11 @@ body:
     attributes:
       label: Environment
       description: |
-        Please provide details about your environment by copying and pasting the output from our environment collection script:
-        https://raw.githubusercontent.com/Lightning-AI/lightning/master/requirements/collect_env_details.py
-        (For security purposes, please check the contents of the script before running it)
-        You can get the script and run it with:
-        ```console
-        wget https://raw.githubusercontent.com/Lightning-AI/lightning/master/requirements/collect_env_details.py
-        python collect_env_details.py
-        ```
-
-        You can also fill out the list below manually.
+        Please provide details about your environment, including the following:
+        - OS (e.g., Linux, Windows, macOS)
       value: |
         <details>
           <summary>Current environment</summary>
-
-        ```
-        #- PyTorch Lightning Version (e.g., 2.4.0):
-        #- PyTorch Version (e.g., 2.4):
-        #- Python version (e.g., 3.12):
-        #- OS (e.g., Linux):
-        #- CUDA/cuDNN version:
-        #- GPU models and configuration:
-        #- How you installed Lightning(`conda`, `pip`, source):
-        ```
 
         </details>
     validations:
