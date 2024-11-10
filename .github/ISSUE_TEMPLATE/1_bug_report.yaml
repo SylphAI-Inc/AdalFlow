@@ -71,10 +71,7 @@ body:
         Please provide details about your environment, including the following:
         - OS (e.g., Linux, Windows, macOS)
       value: |
-        <details>
-          <summary>Current environment</summary>
-
-        </details>
+        - OS: [e.g., Linux, Windows, macOS]
     validations:
       required: false
 
