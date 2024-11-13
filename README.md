@@ -111,6 +111,8 @@ Here is an optimization demonstration on a text classification task:
 
 Among all libraries, AdalFlow achieved the highest accuracy with manual prompting (starting at 82%) and the highest accuracy after optimization.
 
+
+
 Further reading: [Optimize Classification](https://adalflow.sylph.ai/use_cases/classification.html)
 
 ## Light, Modular, and Model-Agnostic Task Pipeline
@@ -192,7 +194,8 @@ Just define it as a ``Parameter`` and pass it to AdalFlow's ``Generator``.
 
 </p>
 
-# Quick Install
+# Quick Start
+
 
 Install AdalFlow with pip:
 
@@ -202,6 +205,9 @@ pip install adalflow
 
 Please refer to the [full installation guide](https://adalflow.sylph.ai/get_started/installation.html) for more details.
 
+
+* Try the [Building Quickstart](https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing) in Colab to see how AdalFlow can build the task pipeline, including Chatbot, RAG, agent, and structured output.
+* Try the [Optimization Quickstart](https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/qas/adalflow_object_count_auto_optimization.ipynb) to see how AdalFlow can optimize the task pipeline.
 
 
 
