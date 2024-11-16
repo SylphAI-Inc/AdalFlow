@@ -80,7 +80,7 @@ We carefully designed 13 labels to categorize these issues.
 We use three categories of labels in parallel:
 
 * Type of issue: There are 7 types of issues. We use `[adalflow]` to indicate the issue is related to `AdalFlow` source code under the `/adalflow` directory. Under this directory, we have two subdirectories: `adalflow` for the source code and `tests` for the test code.  You can suggest `integration`, `improvement`, `core feature`, `bug` here. Additionally, you can `documentation` for things located in the `/docs`, `/tutorials`, and `/notebooks` directories. "new use cases/benchmarks" is for new use cases or benchmarks located in the `/use_cases` and `/benchmarks` directories. "question" is for general questions.
-* How to proceed: There are 3 types of issues. We use `good first issue` to indicate the issue is suitable for new contributors. We use `wontfix` to indicate the issue is not suitable for the library. We use `duplicate` to indicate the issue is a duplicate of another issue.
+* How to proceed: There are 4 types of issues. We use `good first issue` to indicate the issue is suitable for new contributors. We use `wontfix` to indicate the issue is not suitable for the library. We use `duplicate` to indicate the issue is a duplicate of another issue. `help wanted` we indicates `priority signal`, `discussion`, and `pr` are needed.
 * Priority: There are 3 types of issues. We use `P0` to indicate the issue is the highest priority. We use `P1` to indicate the issue is the second highest priority. We use `P2` to indicate the issue is the lowest priority.
 
 
@@ -104,7 +104,7 @@ We use three categories of labels in parallel:
      - duplicate (aggregate) and close one
      - P1
    * - [adalflow] bug
-     -
+     - help wanted
      - P2
    * - question
      -
@@ -120,7 +120,7 @@ You can use 👍 to indicate the importance of a particular issue to you.
 We will take the `# of 👍 / time_period` as a signal to the priority too.
 
 
-2. What to contribute
+1. What to contribute
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 This section explains more details on how each issue will relate to our codebase. We will list some example prs to help you understand better.
 The following table will provide an quick overview. We will provide more details in each subsection on each type of contributions.
