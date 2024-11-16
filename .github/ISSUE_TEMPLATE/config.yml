@@ -1,5 +1,7 @@
 blank_issues_enabled: false
 contact_links:
+  - name: 👍 Upvote an issue
+    about: You should upvote an issue if it is important to you.
   - name: 💬 Chat with us
     url: https://discord.gg/ezzszrRZvT
     about: Live chat with experts, engineers, and users in our Discord community.

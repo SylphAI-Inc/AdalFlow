@@ -1,32 +1,167 @@
-Overall contributing process
+Contributing process
 =======================================
+Welcome to the AdalFlow community! We tried our best to make the process as simple and as clear as possible. We are open to any suggestions and advice to improve the process.
+Please feel free to contact us on `Discord <https://discord.com/invite/ezzszrRZvT>`_.
 
-Welcome to the AdalFlow community! We're building the most user-friendly, modular library for building and auto-optimizing LLM applications, from Chatbots, RAGs, to Agents.
-Think of AdalFlow to LLM applications and in-context learning is like PyTorch/TensorFlow/JAX for AI modeling.
-The goal is to provide basic and foudamental building blocks to build advanced applications with auto-optimization out-of-the-box.
-As we mature, we might see more RAG, memory-based chatbots, or agents frameworks will be built on top of AdalFlow building blocks such as retriever, generator.
 
-We highly suggest you to read our :ref:`design principle<lightrag_design_philosophy>` before you start contributing.
+Quick Start
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1. The `Github issues < https>`_ is the best place to pick up a first task. Simply look for a task labeled `good first issue`.
+2. The follow the `Code Contribution Guidelines <./contribute_to_code.html>`_ to start setting up your environment, coding and testing.
+3. Last, you can follow the `Documentation Contribution Guidelines <./contribute_to_document.html>`_ to write documentation for your code.
+4. Check out the last section on `PR & Review Process <#pr-review-process>`_ to complete the review and iteration process. We are trying out best to maximize both your learning and the quality of the library.
 
-We only accept high quality contribution.
-We appreciate contributors but we have to hold our libary responsible for users.
-Once you decide to contribute, we hope you are not just to list your name on the repo, but more importantly, you learn and improve your own skills! you support your faviroty projects and community!
 
-It took us 3 months to setup a contributing guide, as we did explore with users and think a lot on how to organize labels and what is the best process that can control the quality of our library while leveraing the open-source community. **We will continously improve our process and we welcome any suggestion and advice.**
-We are determined to make AdalFlow as great and legendary as PyTorch.
+.. note::
 
-.. ``LightRAG``'s contribution process is similar to most open source projects on GitHub. We encourage new project ideas and the communication between ``LightRAG`` team, developers and the broader community.
-.. Please don't forget to join us on `Discord <https://discord.com/invite/ezzszrRZvT>`_.
+   You can use 👍 to indicate that you want a particular issue to be addressed.
 
-.. toctree::
-   :maxdepth: 2
 
-   contribution_process
-   contribute_to_code
-   contribute_to_document
+1. Structuring
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+To go deeper, we will explain our repo structure, issue and label system.
 
-Contribution Process
-----------------------------
+..  what to contribute(with examples), contributing steps with proposal/discussion/coding/testing/documentation/pr/review process.
+.. The coding and testing will be discussed more in details in `Code Contribution Guidelines <./contribute_to_code.html>`_ and the documentation will be discussed in `Documentation Contribution Guidelines <./contribute_to_document.html>`_.
+
+Repo Structure
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+We have a clear structure for the repo. The repo is divided into 6 subdirectories:
+
+.. code-block:: text
+
+   .
+   ├── .github/
+   ├── adalflow/
+   │   ├── adalflow/
+   │   ├── tests/
+   |   ├── pyproject.toml
+   ├── docs/
+   |   |── pyproject.toml
+   ├── tutorials/
+   ├── use_cases/
+   ├── benchmarks/
+   ├── notebooks/
+   |   ├── tutorials/
+   |   ├── use_cases/
+   |   ├── benchmarks/
+   ├── .env_example
+   ├── .gitattributes
+   ├── .gitignore
+   ├── .pre-commit-config.yaml
+   ├── CNAME
+   ├── LICENSE.md
+   ├── README.md
+   ├── SETUP.md
+   ├── poetry.lock
+   ├── pyproject.toml
+
+The `/adalflow` directory contains the source code for the `AdalFlow` library, it has its soource code and tests, along with its own `pyproject.toml` file.
+The `docs` directory contains the documentation for the `AdalFlow` library, it has its own `pyproject.toml` file too.
+We use `reStructuredText` for the documentation. Please refer to `Documentation Contribution Guidelines <./contribute_to_document.html>`_ for more details.
+
+Besides, we have `tutorials`, `use_cases`, and `benchmarks` directories for the tutorials, use cases, and benchmarks of the `AdalFlow` library.
+`notebooks` directory contains all notebooks that are used across `tutorials`, `use_cases`, and `benchmarks`.
+
+
+Issue & Label System
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+We use issues to manage our bugs, features, and discussions.
+We carefully designed 13 labels to categorize these issues.
+
+
+.. figure:: ../_static/images/adalflow_issues.png
+   :alt: AdalFlow Issues
+   :align: center
+   :width: 700px
+
+   **Type**: The type of the issue, such as bug, feature, or discussion.
+
+We use three categories of labels in parallel:
+
+* Type of issue: There are 7 types of issues. We use `[adalflow]` to indicate the issue is related to `AdalFlow` source code under the `/adalflow` directory. Under this directory, we have two subdirectories: `adalflow` for the source code and `tests` for the test code.  You can suggest `integration`, `improvement`, `core feature`, `bug` here. Additionally, you can `documentation` for things located in the `/docs`, `/tutorials`, and `/notebooks` directories. "new use cases/benchmarks" is for new use cases or benchmarks located in the `/use_cases` and `/benchmarks` directories. "question" is for general questions.
+* How to proceed: There are 3 types of issues. We use `good first issue` to indicate the issue is suitable for new contributors. We use `wontfix` to indicate the issue is not suitable for the library. We use `duplicate` to indicate the issue is a duplicate of another issue.
+* Priority: There are 3 types of issues. We use `P0` to indicate the issue is the highest priority. We use `P1` to indicate the issue is the second highest priority. We use `P2` to indicate the issue is the lowest priority.
+
+
+.. list-table:: Type of issue, How to proceed, and Priority
+   :header-rows: 1
+   :widths: 40 70 10
+
+   * - Type of issue (7 labels)
+     - How to proceed (3 labels)
+     - Priority
+   * - [adalflow] suggest integration
+     -
+     -
+   * - [adalflow] suggest improvement
+     - wontfix
+     - P0
+   * - [adalflow] suggest core feature
+     - good first issue
+     -
+   * - new use cases/benchmarks
+     - duplicate (aggregate) and close one
+     - P1
+   * - [adalflow] bug
+     -
+     - P2
+   * - question
+     -
+     -
+   * - documentation
+     -
+     -
+
+How to assign priority?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Besides our team to mark the priority with our best judgement, we allow the community to give us more signals on the priority.
+You can use 👍 to indicate the importance of a particular issue to you.
+We will take the `# of 👍 / time_period` as a signal to the priority too.
+
+
+2. What to contribute
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This section explains more details on how each issue will relate to our codebase. We will list some example prs to help you understand better.
+The following table will provide an quick overview. We will provide more details in each subsection on each type of contributions.
+
+
+.. list-table:: What to Contribute (by 7 Labels) and Example PRs
+   :header-rows: 1
+   :widths: 20 50 30
+
+   * - Label
+     - Contribution Suggestions
+     - Example PRs
+   * - [adalflow] bug
+     - Fix bugs reported in issues or identified during testing.
+     - Fix data processing errors or incorrect retriever outputs.
+   * - [adalflow] suggest integration
+     - Add new integrations with external tools or data sources.
+     - Integrate a cloud data store as a new retriever and include usage documentation.
+   * - [adalflow] suggest improvement
+     - Enhance existing features for better performance or usability.
+     - Optimize `text_splitter` or improve `LocalDB` handling efficiency.
+   * - [adalflow] suggest core feature
+     - Develop new core functionalities for the library.
+     - Add support for advanced retriever capabilities or new storage backends.
+   * - new use cases/benchmarks
+     - Design benchmarks or propose new use cases for `adalflow`.
+     - Add retriever performance benchmarks or examples of practical applications.
+   * - documentation
+     - Improve documentation and tutorials for better user understanding.
+     - Create Colab notebooks, add integration examples, or refine tutorials.
+   * - question
+     - Answer user queries or provide clarifications about the library.
+     - Add a Q&A section to the documentation or examples for common user issues.
+
+
+3. Contributing Steps
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+4. PR & Review Process
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 You are always welcomed to contribute even if you've never participated in open source project before.
 Here is the basic contribution process:
 
@@ -79,5 +214,5 @@ Please see our `documentation contribution guidelines <./contribute_to_document.
 
 
 
-.. admonition:: Resources
-   :class: highlight
+.. .. admonition:: Resources
+..    :class: highlight
