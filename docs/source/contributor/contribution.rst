@@ -1,7 +1,7 @@
 Contributing process
 =======================================
 Welcome to the AdalFlow community! We tried our best to make the process as simple and as clear as possible. We are open to any suggestions and advice to improve the process.
-Please feel free to contact us on `Discord <https://discord.com/invite/ezzszrRZvT>`_.
+Please feel free to contact us on `Discord <https://discord.com/invite/ezzszrRZvT>`_ or use the `Github Discussion<https://github.com/SylphAI-Inc/AdalFlow/discussions>`.
 
 
 Quick Start
@@ -86,11 +86,11 @@ We use three categories of labels in parallel:
 
 .. list-table:: Type of issue, How to proceed, and Priority
    :header-rows: 1
-   :widths: 40 70 10
+   :widths: 40 60 20
 
    * - Type of issue (7 labels)
      - How to proceed (3 labels)
-     - Priority
+     - Priority (3 labels)
    * - [adalflow] suggest integration
      -
      -
@@ -113,6 +113,19 @@ We use three categories of labels in parallel:
      -
      -
 
+How to create an issue?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+We created five templates to make it easy for you to create an issue.
+
+.. figure:: ../_static/images/adalflow_issue_template.png
+   :alt: AdalFlow Issue Template
+   :align: center
+   :width: 700px
+
+   5 templates for creating issues
+
+Each template will automatically have labels assigned to them.
+
 How to assign priority?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Besides our team to mark the priority with our best judgement, we allow the community to give us more signals on the priority.
@@ -132,19 +145,19 @@ The following table will provide an quick overview. We will provide more details
 
    * - Label
      - Contribution Suggestions
-     - Example PRs
+     - Example Issue/PR
    * - [adalflow] bug
-     - Fix bugs reported in issues or identified during testing.
-     - Fix data processing errors or incorrect retriever outputs.
+     - Fix bugs reported in issues, can relate to /adalflow code or /tutorials/user_cases/benchmarks.
+     - `Issue 134 <https://github.com/SylphAI-Inc/AdalFlow/issues/134>`_ and `PR 135 <https://github.com/SylphAI-Inc/AdalFlow/pull/135>`_
    * - [adalflow] suggest integration
-     - Add new integrations with external tools or data sources.
-     - Integrate a cloud data store as a new retriever and include usage documentation.
+     - Add new integrations with model inference SDKs (`model_client`) or database retrievers (`retriever`) or tools or other libraries/frameworks.
+     - `Ollama integration request <https://github.com/SylphAI-Inc/AdalFlow/issues/96>`_ and `PR 97 <https://github.com/SylphAI-Inc/AdalFlow/pull/97>`_. This often involves tests, tutorial, and documentation.
    * - [adalflow] suggest improvement
      - Enhance existing features for better performance or usability.
      - Optimize `text_splitter` or improve `LocalDB` handling efficiency.
    * - [adalflow] suggest core feature
      - Develop new core functionalities for the library.
-     - Add support for advanced retriever capabilities or new storage backends.
+     - `Stream the response request <>`_ and `PR 97 <>`_.
    * - new use cases/benchmarks
      - Design benchmarks or propose new use cases for `adalflow`.
      - Add retriever performance benchmarks or examples of practical applications.
@@ -156,10 +169,19 @@ The following table will provide an quick overview. We will provide more details
      - Add a Q&A section to the documentation or examples for common user issues.
 
 
-3. Contributing Steps
+Integrate a new model_client
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Integrate a new database retriever
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add notebooks for existing/new tutorials/use_cases/benchmarks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Contributing Steps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-4. PR & Review Process
+1. PR & Review Process
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You are always welcomed to contribute even if you've never participated in open source project before.
