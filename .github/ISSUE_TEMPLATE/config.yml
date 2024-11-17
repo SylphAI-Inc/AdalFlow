@@ -1,6 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: 👍 Upvote an issue
+    url: https://github.com/SylphAI-Inc/AdalFlow/issues
     about: You should upvote an issue if it is important to you.
   - name: 💬 Chat with us
     url: https://discord.gg/ezzszrRZvT

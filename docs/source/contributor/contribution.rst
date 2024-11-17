@@ -17,7 +17,7 @@ Quick Start
    You can use 👍 to indicate that you want a particular issue to be addressed.
 
 
-1. Structuring
+Part 1: Structuring
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 To go deeper, we will explain our repo structure, issue and label system.
 
@@ -133,7 +133,7 @@ You can use 👍 to indicate the importance of a particular issue to you.
 We will take the `# of 👍 / time_period` as a signal to the priority too.
 
 
-2. What to contribute
+Part 2: What to contribute
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 This section explains more details on how each issue will relate to our codebase. We will list some example prs to help you understand better.
 The following table will provide an quick overview. We will provide more details in each subsection on each type of contributions.
@@ -153,25 +153,23 @@ The following table will provide an quick overview. We will provide more details
      - Add new integrations with model inference SDKs (:ref:`model_client<tutorials-model_client>`) or database retrievers (:ref:`retriever<tutorials-retriever>`) or tools or other libraries/frameworks.
      - `Ollama integration request <https://github.com/SylphAI-Inc/AdalFlow/issues/96>`_ and `PR 97 <https://github.com/SylphAI-Inc/AdalFlow/pull/97>`_. This often involves tests, tutorial, and documentation.
    * - [adalflow] suggest improvement
-     - Enhance existing features for better performance or usability.
-     - Optimize `text_splitter` or improve `LocalDB` handling efficiency.
+     - Enhance existing features for better performance or usability, can relate to /adalflow code or /tutorials/user_cases/benchmarks.
+     - `Stream the response request <https://github.com/SylphAI-Inc/AdalFlow/issues/149>`_ and `PR 158 <https://github.com/SylphAI-Inc/AdalFlow/pull/158>`_.
    * - [adalflow] suggest core feature
-     - Develop new core functionalities for the library.
-     - `Stream the response request <>`_ and `PR 97 <>`_.
+     - Develop **new** core functionalities in `/adalflow` directory, such as `text_splitter` or `memory`.
+     -
    * - new use cases/benchmarks
      - Design benchmarks or propose new use cases for `adalflow`.
-     - Add retriever performance benchmarks or examples of practical applications.
+     -
    * - documentation
-     - Improve documentation and tutorials for better user understanding.
-     - Create Colab notebooks, add integration examples, or refine tutorials.
+     - Improve existing documentation under `/docs` or `/notebooks` directories or create new documentation for existing code.
+     - `Issue 194<https://github.com/SylphAI-Inc/AdalFlow/issues/194>`_, `Issue 123<https://github.com/SylphAI-Inc/AdalFlow/issues/123>`_,  and `PR 260<https://github.com/SylphAI-Inc/AdalFlow/pull/260>`_.
    * - question
      - Answer user queries or provide clarifications about the library.
-     - Add a Q&A section to the documentation or examples for common user issues.
+     -
 
 
-
-
-3. Contributing Steps
+Part 3: Contributing Steps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Once you know what you want to contribute, you need to make sure you follow these steps to ensure the quality of your contribution.
@@ -186,7 +184,7 @@ Integrate a  model_client
 All existing :ref:`model clients<components-model_client>` are located in the `/adalflow/adalflow/components/model_client` directory.
 The tutorial :ref:`model_client<tutorials-model_client>` will help you understand the base class and how it is designed.
 
-In general, `OpenAI SDK<https://platform.openai.com/docs/quickstart>` is trending to the the industry standard.
+In general, `OpenAI SDK <https://platform.openai.com/docs/quickstart>`_ is trending to the the industry standard.
 And you can measure your targetting SDKs by the difference between these two.
 But overall, the OPENAI integration consists of: coding, testing, documentation.
 
@@ -221,13 +219,46 @@ Documentation includes:
 
 This `ollama_client PR <https://github.com/SylphAI-Inc/AdalFlow/pull/97>`_ is a good example of how to integrate a new model client.
 
-Integrate a new database retriever
+Integrate a database retriever
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+All existing :ref:`retrievers<components-retriever>` are located in the `/adalflow/adalflow/components/retriever` directory.
+The tutorial :ref:`retriever<tutorials-retriever>` will help you understand the base class and how it is designed.
+
+The process is quite similar to integrating a model client. For documentation, ensure you add an example in :ref:`retriever<tutorials-retriever>`.
+
+This `qdrant_retriever PR <https://github.com/SylphAI-Inc/AdalFlow/pull/165>`_ is a good example of how to integrate a new database retriever.
 
 Add notebooks for existing/new tutorials/use_cases/benchmarks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. PR & Review Process
+.. figure:: ../_static/images/adalflow_code_samples.png
+   :alt: Code samples for tutorials
+
+   :align: center
+   :width: 700px
+
+   Code samples for tutorials
+
+
+.. note::
+  For how to add a new notebook, please follow the `README.md <https://github.com/SylphAI-Inc/AdalFlow/blob/main/notebooks/README.md>`_ in the `notebooks` directory.
+
+**Tutorials**
+
+For :ref:`tutorials<tutorials>` in our documentation, each tutorial is accompanied by two code files: one `XX_note.py` in `/tutorials` and one `adalflow_XX.ipynb` in `/notebooks/tutorials`.
+You can help add the missing code file in tutorials and make sure to link them in the documentation like the above figure.
+Here is one example issue and PR for adding a new tutorial: `Issue 192 <https://github.com/SylphAI-Inc/AdalFlow/issues/192>`_ and `PR 261 <https://github.com/SylphAI-Inc/AdalFlow/pull/261>`_.
+
+**Use Cases**
+
+For :ref:`use_cases<use_cases>` in our documentation, each use case is accompanied by source code in `/use_cases` and a notebook in `/notebooks/use_cases`.
+For our existing use cases, we do not always have the corresponding notebooks. You can help add the missing notebooks for the existing use cases.
+
+**Benchmarks**
+
+So far, we are still working on the code in the `/benchmarks` directory. We will need help on addint the documentation along with the code.
+
+Part 4: PR & Review Process
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You are always welcomed to contribute even if you've never participated in open source project before.
