@@ -261,6 +261,10 @@ So far, we are still working on the code in the `/benchmarks` directory. We will
 Part 4: PR & Review Process
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+**Before submitting a PR**
+
+Ensure you add a checklist.
+
 You are always welcomed to contribute even if you've never participated in open source project before.
 Here is the basic contribution process:
 
