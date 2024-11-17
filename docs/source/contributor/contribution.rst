@@ -133,7 +133,7 @@ You can use 👍 to indicate the importance of a particular issue to you.
 We will take the `# of 👍 / time_period` as a signal to the priority too.
 
 
-1. What to contribute
+2. What to contribute
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 This section explains more details on how each issue will relate to our codebase. We will list some example prs to help you understand better.
 The following table will provide an quick overview. We will provide more details in each subsection on each type of contributions.
@@ -150,7 +150,7 @@ The following table will provide an quick overview. We will provide more details
      - Fix bugs reported in issues, can relate to /adalflow code or /tutorials/user_cases/benchmarks.
      - `Issue 134 <https://github.com/SylphAI-Inc/AdalFlow/issues/134>`_ and `PR 135 <https://github.com/SylphAI-Inc/AdalFlow/pull/135>`_
    * - [adalflow] suggest integration
-     - Add new integrations with model inference SDKs (`model_client`) or database retrievers (`retriever`) or tools or other libraries/frameworks.
+     - Add new integrations with model inference SDKs (:ref:`model_client<tutorials-model_client>`) or database retrievers (:ref:`retriever<tutorials-retriever>`) or tools or other libraries/frameworks.
      - `Ollama integration request <https://github.com/SylphAI-Inc/AdalFlow/issues/96>`_ and `PR 97 <https://github.com/SylphAI-Inc/AdalFlow/pull/97>`_. This often involves tests, tutorial, and documentation.
    * - [adalflow] suggest improvement
      - Enhance existing features for better performance or usability.
@@ -169,17 +169,63 @@ The following table will provide an quick overview. We will provide more details
      - Add a Q&A section to the documentation or examples for common user issues.
 
 
-Integrate a new model_client
+
+
+3. Contributing Steps
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Once you know what you want to contribute, you need to make sure you follow these steps to ensure the quality of your contribution.
+
+1. **Track it.** Create the issue if it doesn't exist yet.
+2. **Learn enough context.** Ensure you read relavant documentation, code inside and outside of AdalFlow. This includes :ref:`tutorials<source-tutorials>`, :ref:`use_cases<use_cases>`, and even :ref:`API references<apis>` and tests within `/adalflow/tests` to understand everything you need to know. We will show more examples for each type of contribution in the next section. For integration, you need to make sure your know the relevant SDKs and APIs. For documentation, you need to know the structure of the documentation and the writing style.
+3. **Create a solution proposal and take inputs before working on it.** We encourage you to write down your *solution proposal in the comments of the issue*. Or sometimes you can use a publically accessible `Google Doc/Colab` to share your proposal. SylphAI team and the community can double-check your proposal and give you feedbacks before you start coding. This will be extremely necessary for more complicated features. Additionally, you can discuss in our `Discord <https://discord.com/invite/ezzszrRZvT>`_.
+4. **Work on it.**  Follow the `PR & Review Process <#pr-review-process>`_ to start your coding, testing, documenting, and reviewing process.
+
+Integrate a  model_client
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+All existing :ref:`model clients<components-model_client>` are located in the `/adalflow/adalflow/components/model_client` directory.
+The tutorial :ref:`model_client<tutorials-model_client>` will help you understand the base class and how it is designed.
+
+In general, `OpenAI SDK<https://platform.openai.com/docs/quickstart>` is trending to the the industry standard.
+And you can measure your targetting SDKs by the difference between these two.
+But overall, the OPENAI integration consists of: coding, testing, documentation.
+
+Coding includes:
+
+1. A :ref:`OpenAIClient<components-model_client-openai_client>` class that inherits from the base class :ref:`ModelClient<core.model_client>`.
+2. Add the `sdk package` as an optional package in the `adalflow/pyproject.toml` file.
+3. Add the `sdk package` as lazy import in the `adalflow/adalflow/utils/lazy_import.py` file.
+4. Call the lazy import in the `adalflow/adalflow/components/model_client/__init__.py` file.
+5. Import the new client in the `adalflow/adalflow/__init__.py` file so that we can call it directly from the `adalflow` package.
+
+Testing includes:
+
+1. Create a test file `test_XX_client.py` in the `adalflow/tests/` directory. You can use `test_openai_client.py` as a reference.
+2. Add the package to the `adalflow/pyproject.toml` file under the `[tool.poetry.group.test.dependencies]` section.
+3. Add the test case for the new client in the test file.
+4. Follow the `adalflow/tests/README.md` to run the test.
+
+Documentation includes:
+
+1. Add examples on how to use the new client in the `tutorials` directory. You can use `tutorials/ollama_client_note.py` as a reference.
+2. Make sure you add the new client package in the root `pyproject.toml` file under the `[tool.poetry.dependencies]` section.
+3. Ensure the API reference is correctly rendenered in the `docs` directory.
+   For example, with `ollama_client`, you need to add the following line in the `docs/source/apis/components/index.rst` file:
+
+   .. code-block:: text
+
+      components.model_client.ollama_client
+
+4. Add examplary API configurations in the root `.env_example` file.
+
+
+This `ollama_client PR <https://github.com/SylphAI-Inc/AdalFlow/pull/97>`_ is a good example of how to integrate a new model client.
 
 Integrate a new database retriever
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Add notebooks for existing/new tutorials/use_cases/benchmarks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-1. Contributing Steps
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1. PR & Review Process
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
