@@ -258,12 +258,75 @@ For our existing use cases, we do not always have the corresponding notebooks. Y
 
 So far, we are still working on the code in the `/benchmarks` directory. We will need help on addint the documentation along with the code.
 
-Part 4: PR & Review Process
+Part 4: Pull Request Process
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**Before submitting a PR**
+**Prepare the codebase**
 
-Ensure you add a checklist.
+Before you can start a pull request, you need to follow these steps and this `Github official fork guide <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo?tool=webui>`_:
+
+1. **Fork the repository.**
+   You can fork the repository by clicking the `Fork` button on the top right corner of the repository page.
+
+2. **Clone the repository.**
+   You can clone the repository by running the following command in your terminal:
+
+   .. code-block:: bash
+
+      git clone your_forked_repository_url
+
+   Also, make sure your repository is in sync with the original owner's repository. You can do this by running the following commands:
+
+   .. code-block:: bash
+
+      git remote add upstream original_owner_repository_url
+
+3. **Create a new branch.**
+   Create a new branch to ensure your changes are isolated from the main codebase. You can do this by running the following command:
+
+   .. code-block:: bash
+
+      git checkout -b your_branch_name
+
+
+**Work on your PR**
+
+1. **Commit your changes.**
+   Once you have made your changes, you can commit them by running the following commands:
+
+   .. code-block:: bash
+
+      git add .
+      git commit -m "Your commit message"
+      git push origin your_branch_name
+
+2. **Create a Pull Request.**
+    Go to your forked repository on Github and click the `New Pull Request` button. Make sure you select the correct branch for the base and compare branches.
+    Here we have a default `PR template <https://github.com/SylphAI-Inc/adalflow/blob/main/.github/PULL_REQUEST_TEMPLATE.md>`_ for you to fill in.
+
+3. **Fill in the PR template.**
+    Make sure you fill in the PR template with the necessary information. This will help the reviewers understand your changes better.
+
+4. **Submit the PR.**
+    We encourage you to submit the PR as soon as possible, even if it is not ready for review. You can mark it as a draft: (1) click the `Draft` button on the PR page, (2) add `[WIP]` to the PR title.
+
+    .. figure:: ../_static/images/pr_draft.png
+       :alt: Create a draft PR
+       :align: center
+       :width: 700px
+
+        Create a draft PR
+
+5. **Iterate your PR.**
+    Once you have submitted the PR, the reviewers will review your changes and provide feedback. You can iterate your PR by making the necessary changes and pushing them to your branch. The reviewers will review your changes again.
+
+6. **Merge your PR.**
+    Once your PR is approved, the reviewers will merge your PR for you. You can also merge your PR by clicking the `Merge` button on the PR page.
+
+
+
+Part 5: Review Process
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You are always welcomed to contribute even if you've never participated in open source project before.
 Here is the basic contribution process:
