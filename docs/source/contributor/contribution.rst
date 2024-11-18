@@ -277,7 +277,6 @@ Before you can start a pull request, you need to follow these steps and this `Gi
       git clone your_forked_repository_url
 
 3. **Sync your fork.**
-
    Also, make sure your repository is in sync with the original owner's repository. You can do this by running the following commands:
 
    .. code-block:: bash
@@ -327,23 +326,23 @@ Work on your PR
    We have a `.pre-commit-config.yaml` file in the root directory.
    We use `poetry` to manage our dependencies. You can install `poetry` by running the following command:
 
-    .. code-block:: bash
+   .. code-block:: bash
 
-        pip install poetry
+    pip install poetry
 
-    You can install the dependencies by running the following command:
+   You can install the dependencies by running the following command:
 
-    .. code-block:: bash
+   .. code-block:: bash
 
-        poetry install
+    poetry install
 
-    Then you can activate the environment by running the following command:
+   Then you can activate the environment by running the following command:
 
-    .. code-block:: bash
+   .. code-block:: bash
 
-        poetry shell
+    poetry shell
 
-    Now, you can start to commit your changes from the `/adalflow` directory with `poetry` environment activated.
+   Now, you can start to commit your changes from the `/adalflow` directory with `poetry` environment activated.
 
 2. **Commit your changes.**
    Once you have made your changes, you can commit them by running the following commands:
@@ -357,27 +356,29 @@ Work on your PR
    If you face "permission denied" issue, you can refer to this `medium blog <https://medium.com/geekculture/how-to-change-your-github-remote-authentication-from-username-password-to-personal-access-token-64e527a766cf>`_ for help.
 
 3. **Create a Pull Request.**
-    Go to your forked repository on Github and click the `New Pull Request` button. Make sure you select the correct branch for the base and compare branches.
-    Here we have a default `PR template <https://github.com/SylphAI-Inc/adalflow/blob/main/.github/PULL_REQUEST_TEMPLATE.md>`_ for you to fill in.
+   Go to your forked repository on Github and click the `New Pull Request` button. Make sure you select the correct branch for the base and compare branches.
+   Here we have a default `PR template <https://github.com/SylphAI-Inc/adalflow/blob/main/.github/PULL_REQUEST_TEMPLATE.md>`_ for you to fill in.
 
 4. **Fill in the PR template.**
-    Make sure you fill in the PR template with the necessary information. This will help the reviewers understand your changes better.
+   Make sure you fill in the PR template with the necessary information. This will help the reviewers understand your changes better.
 
-5. **Submit the PR.**
-    We encourage you to submit the PR as soon as possible, even if it is not ready for review. You can mark it as a draft: (1) click the `Draft` button on the PR page, (2) add `[WIP]` to the PR title.
+5. **Submit the PR**
+   We encourage you to submit the PR as soon as possible, even if it is not ready for review. You can mark it as a draft by:
+   1. Clicking the `Draft` button on the PR page.
+   2. Adding `[WIP]` to the PR title.
 
-    .. figure:: ../_static/images/pr_draft.png
-       :alt: Create a draft PR
-       :align: center
-       :width: 700px
+   .. figure:: ../_static/images/pr_draft.png
+      :alt: Create a draft PR
+      :align: center
+      :width: 700px
 
-        Create a draft PR
+      Create a draft PR
 
-6. **Iterate your PR.**
-    Once you have submitted the PR, the reviewers will review your changes and provide feedback. You can iterate your PR by making the necessary changes and pushing them to your branch. The reviewers will review your changes again.
+7. **Iterate your PR.**
+   Once you have submitted the PR, the reviewers will review your changes and provide feedback. You can iterate your PR by making the necessary changes and pushing them to your branch. The reviewers will review your changes again.
 
-7. **Merge your PR.**
-    Once your PR is approved, the reviewers will merge your PR for you. You can also merge your PR by clicking the `Merge` button on the PR page.
+8. **Merge your PR.**
+   Once your PR is approved, the reviewers will merge your PR for you. You can also merge your PR by clicking the `Merge` button on the PR page.
 
 
 
