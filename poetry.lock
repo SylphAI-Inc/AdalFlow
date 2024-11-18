@@ -44,8 +44,8 @@ testing = ["bitsandbytes", "datasets", "diffusers", "evaluate", "parameterized",
 
 [[package]]
 name = "adalflow"
-version = "0.2.2"
-description = "The Library to Build and Auto-optimize Any LLM Task Pipeline"
+version = "0.2.5"
+description = "The Library to Build and Auto-optimize LLM Applications"
 optional = false
 python-versions = ">=3.9, <4.0"
 files = []
@@ -54,6 +54,7 @@ develop = true
 [package.dependencies]
 backoff = "^2.2.1"
 botocore = "^1.34.149"
+colorama = "^0.4.6"
 diskcache = "^5.6.3"
 jinja2 = "^3.1.3"
 jsonlines = "^4.0.0"
@@ -6128,5 +6129,5 @@ multidict = ">=4.0"
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.11, <4.0
-content-hash = "4d44108f296caafc4f938300bcd09141d2bed45c88bfbed06081be67f01ae868"
+python-versions = ">=3.11, <4.0"
+content-hash = "e37147771ba46212166b62327cb83b76012da7ddbcc57aa5088ff7418eef2393"

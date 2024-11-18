@@ -1,6 +1,5 @@
-"""
-We just need to very basic generator that can be used to generate text from a prompt.
-"""
+# TODO: We need an example to demonstrate how to use the memory component in the genertor.
+
 
 # from adalflow.core.component import Component
 # from adalflow.core.memory import Memory
