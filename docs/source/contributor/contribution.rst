@@ -261,7 +261,8 @@ So far, we are still working on the code in the `/benchmarks` directory. We will
 Part 4: Pull Request Process
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**Prepare the codebase**
+Prepare the codebase
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Before you can start a pull request, you need to follow these steps and this `Github official fork guide <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo?tool=webui>`_:
 
@@ -275,23 +276,76 @@ Before you can start a pull request, you need to follow these steps and this `Gi
 
       git clone your_forked_repository_url
 
+3. **Sync your fork.**
+
    Also, make sure your repository is in sync with the original owner's repository. You can do this by running the following commands:
 
    .. code-block:: bash
 
-      git remote add upstream original_owner_repository_url
+      git remote -v
 
-3. **Create a new branch.**
+   You will not see our repo in the list. You can add it by running the following command:
+
+   .. code-block:: bash
+
+      git remote add upstream https://github.com/SylphAI-Inc/AdalFlow.git
+
+   Now, when you run `git remote -v`, you will see the upstream repo.
+   Then, we can sync your fork with the upstream repo by running the following commands:
+
+   .. code-block:: bash
+
+      git fetch upstream
+      git checkout main
+      git merge upstream/main
+
+   *Note: `fetch` will fetch the changes from the upstream repo, but it will not merge them into your local branch. `merge` will merge the changes from the upstream repo into your local branch.*
+   For more detials, please refer to the `Github official syncing a fork guide <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork>`_.
+
+4. **Create a new branch.**
    Create a new branch to ensure your changes are isolated from the main codebase. You can do this by running the following command:
 
    .. code-block:: bash
 
-      git checkout -b your_branch_name
+      git checkout -b <issue_number>_<issue_title>
+
+   Similarly, you always use step 3 to sync your branch with the upstream repo.
+   Additionally, you can use the following commands to sync:
+
+   .. code-block:: bash
+
+     git fetch --all --prune
+     git rebase upstream/main
+     # follow git instructions to resolve conflicts
+     git push origin your_branch_name
 
 
-**Work on your PR**
+Work on your PR
+~~~~~~~~~~~~~~~~~~~~
 
-1. **Commit your changes.**
+1. **Before committing your changes.**
+   We have a `.pre-commit-config.yaml` file in the root directory.
+   We use `poetry` to manage our dependencies. You can install `poetry` by running the following command:
+
+    .. code-block:: bash
+
+        pip install poetry
+
+    You can install the dependencies by running the following command:
+
+    .. code-block:: bash
+
+        poetry install
+
+    Then you can activate the environment by running the following command:
+
+    .. code-block:: bash
+
+        poetry shell
+
+    Now, you can start to commit your changes from the `/adalflow` directory with `poetry` environment activated.
+
+2. **Commit your changes.**
    Once you have made your changes, you can commit them by running the following commands:
 
    .. code-block:: bash
@@ -300,14 +354,16 @@ Before you can start a pull request, you need to follow these steps and this `Gi
       git commit -m "Your commit message"
       git push origin your_branch_name
 
-2. **Create a Pull Request.**
+   If you face "permission denied" issue, you can refer to this `medium blog <https://medium.com/geekculture/how-to-change-your-github-remote-authentication-from-username-password-to-personal-access-token-64e527a766cf>`_ for help.
+
+3. **Create a Pull Request.**
     Go to your forked repository on Github and click the `New Pull Request` button. Make sure you select the correct branch for the base and compare branches.
     Here we have a default `PR template <https://github.com/SylphAI-Inc/adalflow/blob/main/.github/PULL_REQUEST_TEMPLATE.md>`_ for you to fill in.
 
-3. **Fill in the PR template.**
+4. **Fill in the PR template.**
     Make sure you fill in the PR template with the necessary information. This will help the reviewers understand your changes better.
 
-4. **Submit the PR.**
+5. **Submit the PR.**
     We encourage you to submit the PR as soon as possible, even if it is not ready for review. You can mark it as a draft: (1) click the `Draft` button on the PR page, (2) add `[WIP]` to the PR title.
 
     .. figure:: ../_static/images/pr_draft.png
@@ -317,65 +373,28 @@ Before you can start a pull request, you need to follow these steps and this `Gi
 
         Create a draft PR
 
-5. **Iterate your PR.**
+6. **Iterate your PR.**
     Once you have submitted the PR, the reviewers will review your changes and provide feedback. You can iterate your PR by making the necessary changes and pushing them to your branch. The reviewers will review your changes again.
 
-6. **Merge your PR.**
+7. **Merge your PR.**
     Once your PR is approved, the reviewers will merge your PR for you. You can also merge your PR by clicking the `Merge` button on the PR page.
 
 
 
 Part 5: Review Process
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+For now, we will use the `PyTorch lightning's review guideline <https://github.com/Lightning-AI/pytorch-lightning/wiki/Review-guidelines>`_.
 
-You are always welcomed to contribute even if you've never participated in open source project before.
-Here is the basic contribution process:
+.. Environment
+.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. When contributing, please note:
+.. LightRAG separates the source code environment and documentation environment.
 
-Environment
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-When contributing, please note:
-LightRAG separates the source code environment and documentation environment.
+.. * To activate the code environment, you should run ``poetry install`` and ``poetry shell`` under ``./lightrag``. The ``./lightrag/pyproject.toml`` contains the dependencies for the ``LightRAG`` package.
 
-* To activate the code environment, you should run ``poetry install`` and ``poetry shell`` under ``./lightrag``. The ``./lightrag/pyproject.toml`` contains the dependencies for the ``LightRAG`` package.
+.. * To activate the documentation environment, you can run ``poetry install`` and ``poetry shell`` under ``.``. The ``./pyproject.toml`` controls documentation dependencies.
 
-* To activate the documentation environment, you can run ``poetry install`` and ``poetry shell`` under ``.``. The ``./pyproject.toml`` controls documentation dependencies.
 
-Find a direction to work on
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The team builds ``LightRAG`` based on latest researches and product cases. But you might have your own task to apply ``LightRAG``.
-Therefore, you can extend ``LightRAG`` and add any new features you believe will solve yours or others' problems.
-If you don't have any idea yet, you can:
-
-* Check the `existing issues <https://github.com/SylphAI-Inc/LightRAG/issues>`_ and see if there is anyone you know how to fix or you'd love to fix.
-
-* Join us on `Discord <https://discord.com/invite/ezzszrRZvT>`_. We are glad to discuss with you and know what you are interested in here.
-
-Figure out the scope of your change
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-**Small:** Most of the pull requests are small. If your change is small, such as fixing a line of bug, please go ahead to push it.
-
-**Big:** But if you are making a new feature, or planning to push a large change, it is recommended to contact us on `Discord <https://discord.com/invite/ezzszrRZvT>`_ first.
-
-**Unknown:** If you have no idea how big it will be, we are here to help you. Please post your idea on `issues <https://github.com/SylphAI-Inc/LightRAG/issues>`_. We will read it carefully and get back to you.
-
-Add your code
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Please check our `code contribution guidelines <./contribute_to_code.html>`_ to work with code.
-
-Pull requests
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-**WIP PR:** If you are working on an in pull request that is not ready for review, you can create a PR with **"[WIP]"** to inform us that this PR is a draft **“work in progress”**.
-
-**Finished PR:** You can name your finished PR as **"[New Retriever Integration]"** for example.
-We will carry out code review regularly and provide feedbacks as soon as possible.
-Please iterate your PR with the feedbacks. We will try our best to reduce the revision workload on your side.
-Once your PR is approved, we will merge the PR for you.
-If you have any concerns about our feedbacks, please feel free to contact us on `Discord <https://discord.com/invite/ezzszrRZvT>`_.
-
-Writing Documentation
-----------------------------
-It is a good practice to submit your code with documentations to help the ``LightRAG`` team and other developers better understand your updates.
-Please see our `documentation contribution guidelines <./contribute_to_document.html>`_ for more details on ``LightRAG`` documentation standard.
 
 
 
