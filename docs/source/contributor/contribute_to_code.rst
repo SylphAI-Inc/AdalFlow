@@ -1,11 +1,11 @@
 Coding and Testing
 ======================================
-This document will cover how you can contribute to lightRAG codebase.
+This document will cover how you can set up the AdalFlow codebase and start coding and testing.
 
 Set Up
 ^^^^^^^^^^^^^^^^^^^
-The current ``LightRAG`` code contribution supports `poetry <https://python-poetry.org/>`_ setup only. The team is working on optimizing the library and will get back to support more environment soon.
-If you are only interested in using ``LightRAG`` as a package, please check our `installation guide <https://lightrag.sylph.ai/get_started/installation.html#install-lightrag>`_.
+We mainly use `poetry <https://python-poetry.org/>`_ for dependency management and virtual environment setup.
+.. If you are only interested in using ``LightRAG`` as a package, please check our `installation guide <https://lightrag.sylph.ai/get_started/installation.html#install-lightrag>`_.
 
 To set up ``poetry`` and contribute, please check the following steps:
 
@@ -13,10 +13,47 @@ To set up ``poetry`` and contribute, please check the following steps:
 
    .. code-block:: bash
 
-        git clone https://github.com/SylphAI-Inc/LightRAG
-        cd LightRAG
+        git clone https://github.com/SylphAI-Inc/AdalFlow
+        cd AdalFlow
 
-2. **Configure API Keys:**
+2. **Set Up the AdalFlow Dev Environment:**
+
+    The AdalFlow source code, tests, and dependencies are in the ``./adalflow`` directory.
+    The ``./adalflow/pyproject.toml`` controls the dependencies for the ``adalflow`` package.
+    Use Poetry to install the dependencies and set up the virtual environment:
+
+   .. code-block:: bash
+
+        cd adalflow
+        poetry install
+        poetry shell
+
+   Test the setup by running the tests at the ``./adalflow`` directory:
+
+    .. code-block:: bash
+
+        pytest tests
+
+3. **Set Up the Root Dev Environment:**
+
+    At the root directory, we have a ``pyproject.toml`` file that controls the dependencies for the root directory.
+
+   .. code-block:: bash
+
+        poetry install
+        poetry shell
+
+    This will install all relevant dependencies and the files in /use_cases, /tutorials, and /benchmarks will be using the development version of the ``adalflow`` package.
+    You should see output similar to the following:
+
+    .. code-block:: bash
+
+        - Installing adalflow (0.2.5 /Users/liyin/Documents/test/AdalFlow/adalflow)
+
+
+
+
+4. **[Optional] Configure API Keys in the Root Directory:**
 
    Copy the example environment file and add your API keys:
 
@@ -31,15 +68,8 @@ To set up ``poetry`` and contribute, please check the following steps:
         # COHERE_API_KEY=YOUR_API_KEY_IF_YOU_USE_COHERE
         # HF_TOKEN=YOUR_API_KEY_IF_YOU_USE_HF
 
-3. **Install Dependencies:**
+   This will be helpful for you to run tutorials, use cases, and benchmarks.
 
-    The ``./lightrag/pyproject.toml`` controls the dependencies for the ``LightRAG`` package.
-    Use Poetry to install the dependencies and set up the virtual environment:
-
-   .. code-block:: bash
-        cd lightrag
-        poetry install
-        poetry shell
 
 Codebase Structure
 ^^^^^^^^^^^^^^^^^^^
