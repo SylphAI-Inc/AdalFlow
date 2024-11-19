@@ -5,6 +5,7 @@ This document will cover how you can set up the AdalFlow codebase and start codi
 Set Up
 ^^^^^^^^^^^^^^^^^^^
 We mainly use `poetry <https://python-poetry.org/>`_ for dependency management and virtual environment setup.
+
 .. If you are only interested in using ``LightRAG`` as a package, please check our `installation guide <https://lightrag.sylph.ai/get_started/installation.html#install-lightrag>`_.
 
 To set up ``poetry`` and contribute, please check the following steps:
@@ -17,10 +18,9 @@ To set up ``poetry`` and contribute, please check the following steps:
         cd AdalFlow
 
 2. **Set Up the AdalFlow Dev Environment:**
-
-    The AdalFlow source code, tests, and dependencies are in the ``./adalflow`` directory.
-    The ``./adalflow/pyproject.toml`` controls the dependencies for the ``adalflow`` package.
-    Use Poetry to install the dependencies and set up the virtual environment:
+   The AdalFlow source code, tests, and dependencies are in the ``./adalflow`` directory.
+   The ``./adalflow/pyproject.toml`` controls the dependencies for the ``adalflow`` package.
+   Use Poetry to install the dependencies and set up the virtual environment:
 
    .. code-block:: bash
 
@@ -30,23 +30,22 @@ To set up ``poetry`` and contribute, please check the following steps:
 
    Test the setup by running the tests at the ``./adalflow`` directory:
 
-    .. code-block:: bash
+   .. code-block:: bash
 
         pytest tests
 
 3. **Set Up the Root Dev Environment:**
-
-    At the root directory, we have a ``pyproject.toml`` file that controls the dependencies for the root directory.
+   At the root directory, we have a ``pyproject.toml`` file that controls the dependencies for the root directory.
 
    .. code-block:: bash
 
         poetry install
         poetry shell
 
-    This will install all relevant dependencies and the files in /use_cases, /tutorials, and /benchmarks will be using the development version of the ``adalflow`` package.
-    You should see output similar to the following:
+   This will install all relevant dependencies and the files in /use_cases, /tutorials, and /benchmarks will be using the development version of the ``adalflow`` package.
+   You should see output similar to the following:
 
-    .. code-block:: bash
+   .. code-block:: bash
 
         - Installing adalflow (0.2.5 /Users/liyin/Documents/test/AdalFlow/adalflow)
 
@@ -54,7 +53,6 @@ To set up ``poetry`` and contribute, please check the following steps:
 
 
 4. **[Optional] Configure API Keys in the Root Directory:**
-
    Copy the example environment file and add your API keys:
 
    .. code-block:: bash
@@ -71,40 +69,37 @@ To set up ``poetry`` and contribute, please check the following steps:
    This will be helpful for you to run tutorials, use cases, and benchmarks.
 
 
-Codebase Structure
+Coding
 ^^^^^^^^^^^^^^^^^^^
-It is recommended to check our `LightRAG codebase structure <https://lightrag.sylph.ai/developer_notes/index.html>`_ and current `API references <https://lightrag.sylph.ai/apis/index.html>`_ to familiarize yourself with the directories and paths before contributing.
+Structuring
+~~~~~~~~~~~~~~~
+It is recommended to check our the structuring in :ref:`part1-structuring` and :doc:`../apis/index`
+to understand the codebase structure.
 
-Code Examples
-^^^^^^^^^^^^^^^^^^^
-We want to support you with our best. We have included code samples in the `tutorial <https://lightrag.sylph.ai/developer_notes/index.html>`_ for you to refer to.
-
-We inlcude a list of potential samples(`We are working in progress to add more`):
-
-- `ModelClient integration <https://lightrag.sylph.ai/developer_notes/model_client.html#model-inference-sdks>`_. This document will help if you want to add new models not included in our codebase.
-- `Retriever Integration <https://lightrag.sylph.ai/developer_notes/retriever.html#retriever-in-action>`_. We provide different retrivers but you can create more.
+What to code
+~~~~~~~~~~~~~~~
+Please check the :ref:`part3-contributing-steps` to see some coding examples and steps to contribute to the codebase.
 
 Code Tips
-^^^^^^^^^^^^^^^^^^^
-* When writing code, it is appreciated to include any important docstrings and comments. Please refer to `documentation contribution guidelines <./contribute_to_document.html>`_ for standard docstrings.
-* LightRAG is a Python library and if you could follow the `Google Python Style Guide <https://google.github.io/styleguide/pyguide.html>`_, the codebase will be more consistent.
+~~~~~~~~~~~~~~~
+* Please follow the `Google Python Style Guide <https://google.github.io/styleguide/pyguide.html>`_.
+
+* Functions and classes should include standard docstrings and comments. Please refer to `documentation contribution guidelines <./contribute_to_document.html>`_ for standard docstrings.
 
 Dependencies
-^^^^^^^^^^^^^^^^^^^
-If you want to add any new dependencies to the package, please include them in your PR description to inform us.
-Since we have already set up the testing automatic workflow in GitHub, please also set your new dependencies in
-``./lightrag/pyproject.toml`` file ``[tool.poetry.group.test.dependencies]`` section to avoid dependency errors in our CI/CD workflow.
+~~~~~~~~~~~~~~~
+1. If you want to add any new dependencies to the package, please include them in your PR description to inform us.
+2. Since we have already set up the testing automatic workflow in GitHub, please also set your new dependencies in ``./adalflow/pyproject.toml`` file ``[tool.poetry.group.test.dependencies]`` section to avoid dependency errors in our CI/CD workflow.
+   In order to correctly add the dependency using ``poetry``, please run
 
-In order to correctly add the dependency using ``poetry``, please run
+   .. code-block:: bash
 
-.. code-block:: bash
-
-        poetry add --group test <package-name>
+      poetry add --group test <package-name>
 
 Testing
 ^^^^^^^^^^^^^^^^^^^
 After you update the code, please make sure your code is well tested before making a pull request.
-There is a ``./lightrag/tests`` folder in the project directory to host your unit testing cases.
+There is a ``./adalflow/tests`` folder in the project directory to host your unit testing cases.
 
 You might need to install the testing packages using ``poetry``:
 
@@ -112,13 +107,23 @@ For example:
 
 .. code-block:: bash
 
-        poetry add --group test unittest
-        poetry add --group test pytest
-        poetry add --group test mypy
+        poetry install # or
+        poetry add --group test
 
 
-All the test scripts should start with ``test_``. For example, run the individual test for ``components`` with:
+You should name your test files with the following format: ``test_<module_name>.py``.
+
+Activate the virtual environment from `./adalflow` and run the tests:
 
 .. code-block:: bash
 
-    python lightrag/tests/test_components.py
+    poetry shell
+    pytest
+
+To run a specific test file, you can use the following command:
+
+.. code-block:: bash
+
+    pytest tests/test_components.py
+
+For more details on testing, please refer to the `README.md <https://github.com/SylphAI-Inc/AdalFlow/blob/main/adalflow/tests/README.md>`_ under the ``./adalflow/tests`` directory.

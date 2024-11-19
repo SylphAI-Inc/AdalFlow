@@ -16,7 +16,7 @@ Quick Start
 
    You can use 👍 to indicate that you want a particular issue to be addressed.
 
-
+.. _part1-structuring:
 Part 1: Structuring
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 To go deeper, we will explain our repo structure, issue and label system.
@@ -168,6 +168,7 @@ The following table will provide an quick overview. We will provide more details
      - Answer user queries or provide clarifications about the library.
      -
 
+.. _part3-contributing-steps:
 
 Part 3: Contributing Steps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
