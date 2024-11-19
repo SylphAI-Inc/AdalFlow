@@ -1,4 +1,4 @@
-Contributing
+Contributor Guide
 =============================
 Welcome to the AdalFlow community! We're building the most user-friendly, modular, and powerful library for building and auto-optimizing LLM applications, from Chatbots, RAGs, to Agents.
 Think of AdalFlow to LLM applications and prompt engineering like the PyTorch/TensorFlow/JAX for AI modeling.
@@ -16,7 +16,6 @@ It took us 3 months to setup a contributing guide, as we did explore with users 
 We are determined to make AdalFlow as great and legendary as PyTorch.
 
 
-The contributing guide includes three parts:
 
 
 
@@ -25,5 +24,4 @@ The contributing guide includes three parts:
 
    contribution
    contribute_to_code
-   contribute_to_document
    .. version_control

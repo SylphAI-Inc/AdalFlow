@@ -1,6 +1,6 @@
-Coding and Testing
+Development Essentials
 ======================================
-This document will cover how you can set up the AdalFlow codebase and start coding and testing.
+This document will cover how you can set up the AdalFlow codebase and start coding, testing, and documentation.
 
 Set Up
 ^^^^^^^^^^^^^^^^^^^
@@ -133,3 +133,7 @@ To run a specific test file, you can use the following command:
     pytest tests/test_components.py
 
 For more details on testing, please refer to the `README.md <https://github.com/SylphAI-Inc/AdalFlow/blob/main/adalflow/tests/README.md>`_ under the ``./adalflow/tests`` directory.
+
+Documentation
+^^^^^^^^^^^^^^^^^^^
+Please refer to the `README.md <https://github.com/SylphAI-Inc/AdalFlow/blob/main/docs/README.md>`_ under the ``./docs`` directory for more details on how to contribute to the documentation.
