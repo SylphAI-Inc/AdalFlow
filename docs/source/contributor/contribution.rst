@@ -1,32 +1,34 @@
 Contributing Process
 =======================================
-Welcome to the AdalFlow community! We tried our best to make the process as simple and as clear as possible. We are open to any suggestions and advice to improve the process.
-Please feel free to contact us on `Discord <https://discord.com/invite/ezzszrRZvT>`_ or use the `Github Discussion<https://github.com/SylphAI-Inc/AdalFlow/discussions>`.
+Welcome to the AdalFlow community!
+
+We tried to make the process simple and clear, but it can always improve.
+Share your suggestions on `Discord <https://discord.com/invite/ezzszrRZvT>`_ or `Github Discussion <https://github.com/SylphAI-Inc/AdalFlow/discussions>`_.
 
 
 Quick Start
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-1. The `Github issues < https>`_ is the best place to pick up a first task. Simply look for a task labeled `good first issue`.
-2. The follow the `Code Contribution Guidelines <./contribute_to_code.html>`_ to start setting up your environment, coding and testing.
-3. Last, you can follow the `Documentation Contribution Guidelines <./contribute_to_document.html>`_ to write documentation for your code.
-4. Check out the last section on `PR & Review Process <#pr-review-process>`_ to complete the review and iteration process. We are trying out best to maximize both your learning and the quality of the library.
+1. The `Github issues <https://github.com/SylphAI-Inc/AdalFlow/issues>`_ is the best place to find your first task. Look for tasks labeled `good first issue`.
+2. Follow the :doc:`./contribute_to_code` to set up your environment and start coding, testing, and documenting.
+3. Review the `PR & Review Process <#pr-review-process>`_ to complete the review and iteration process.
+   We aim to maximize both your learning and the library's quality.
 
 
 .. note::
 
-   You can use 👍 to indicate that you want a particular issue to be addressed.
+   You can use 👍 to show that you want a particular issue to be addressed.
 
 .. _part1-structuring:
 Part 1: Structuring
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-To go deeper, we will explain our repo structure, issue and label system.
+To dive deeper, we’ll explain our repository structure, issue tracking, and label system.
 
 ..  what to contribute(with examples), contributing steps with proposal/discussion/coding/testing/documentation/pr/review process.
 .. The coding and testing will be discussed more in details in `Code Contribution Guidelines <./contribute_to_code.html>`_ and the documentation will be discussed in `Documentation Contribution Guidelines <./contribute_to_document.html>`_.
 
 Repo Structure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-We have a clear structure for the repo. The repo is divided into 6 subdirectories:
+Our repository has a clear structure, divided into six subdirectories:
 
 .. code-block:: text
 
@@ -46,28 +48,29 @@ We have a clear structure for the repo. The repo is divided into 6 subdirectorie
    |   ├── use_cases/
    |   ├── benchmarks/
    ├── .env_example
-   ├── .gitattributes
    ├── .gitignore
    ├── .pre-commit-config.yaml
-   ├── CNAME
    ├── LICENSE.md
    ├── README.md
-   ├── SETUP.md
    ├── poetry.lock
    ├── pyproject.toml
 
-The `/adalflow` directory contains the source code for the `AdalFlow` library, it has its soource code and tests, along with its own `pyproject.toml` file.
-The `docs` directory contains the documentation for the `AdalFlow` library, it has its own `pyproject.toml` file too.
-We use `reStructuredText` for the documentation. Please refer to `Documentation Contribution Guidelines <./contribute_to_document.html>`_ for more details.
+1. The ``/adalflow`` directory contains the source code for the `AdalFlow` library,including its implementation, tests, and a dedicated `pyproject.toml` file.
+2. The ``/docs`` directory houses the documentation for the `AdalFlow` library and also includes its own `pyproject.toml` file.
+   We use `reStructuredText` for the documentation.  For more details, please refer to `README.md <https://github.com/SylphAI-Inc/AdalFlow/blob/main/docs/README.md>`_ under the ``./docs`` directory.
+3. Additionally, it includes the following directories:
 
-Besides, we have `tutorials`, `use_cases`, and `benchmarks` directories for the tutorials, use cases, and benchmarks of the `AdalFlow` library.
-`notebooks` directory contains all notebooks that are used across `tutorials`, `use_cases`, and `benchmarks`.
+   - ``/tutorials``: Contains tutorials for the `AdalFlow` library, for each core feature or class.
+   - ``/use_cases``: Covers various use cases, likely end to end applications even with auto-optimization.
+   - ``/benchmarks``: Includes benchmarks to evaluate the library with other libraries or frameworks.
+4. ``/notebooks`` directory contains all notebooks used across `tutorials`, `use_cases`, and `benchmarks`.
+
 
 
 Issue & Label System
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-We use issues to manage our bugs, features, and discussions.
-We carefully designed 13 labels to categorize these issues.
+We use issues to manage bugs, features, and discussions.
+To organize them, we’ve carefully designed **15** labels.
 
 
 .. figure:: ../_static/images/adalflow_issues.png
@@ -79,14 +82,42 @@ We carefully designed 13 labels to categorize these issues.
 
 We use three categories of labels in parallel:
 
-* Type of issue: There are 7 types of issues. We use `[adalflow]` to indicate the issue is related to `AdalFlow` source code under the `/adalflow` directory. Under this directory, we have two subdirectories: `adalflow` for the source code and `tests` for the test code.  You can suggest `integration`, `improvement`, `core feature`, `bug` here. Additionally, you can `documentation` for things located in the `/docs`, `/tutorials`, and `/notebooks` directories. "new use cases/benchmarks" is for new use cases or benchmarks located in the `/use_cases` and `/benchmarks` directories. "question" is for general questions.
-* How to proceed: There are 4 types of issues. We use `good first issue` to indicate the issue is suitable for new contributors. We use `wontfix` to indicate the issue is not suitable for the library. We use `duplicate` to indicate the issue is a duplicate of another issue. `help wanted` we indicates `priority signal`, `discussion`, and `pr` are needed.
-* Priority: There are 3 types of issues. We use `P0` to indicate the issue is the highest priority. We use `P1` to indicate the issue is the second highest priority. We use `P2` to indicate the issue is the lowest priority.
+* Type of issue: There are 7 types of issues.
+
+  - ``[adalflow]`` indicates the issue relates to `AdalFlow` source code in the ``/adalflow`` directory.
+  Within this directory, the ``/adalflow`` contains the source code, and the ``/tests`` contains test code.
+  3 labels here include: ``integration``, ``improvement``, ``core feature``.
+
+  - We use ``bug`` for code-related issues across all directories.
+  - ``documentation`` for items in the ``/docs``, ``/tutorials``, ``/use_cases``, ``/benchmarks``, and ``/notebooks`` directories.
+  - ``new use cases/benchmarks`` for issues in ``/use_cases`` and ``/benchmarks``.
+  - ``question`` for general inquiries.
+
+* How to proceed: There are 4 labels.
+
+  - ``good first issue`` for tasks suitable for new contributors.
+  - ``wontfix`` for issues that won’t be addressed in the library.
+  - ``duplicate`` for issues already tracked elsewhere.
+  - ``help wanted`` indicates priority signal, discussion, and pr are needed.
+
+* Priority: There are 3 levels.
+
+  - ``P0`` for the highest priority issues.
+  - ``P1`` for medium priority.
+  - ``P2`` for the lowest priority.
 
 
-.. list-table:: Type of issue, How to proceed, and Priority
+.. note::
+   * All the above 14 labels can be used for both issues and PRs.
+   * ``ready-for-pr`` is exclusive to issues and indicates the issue is ready for a PR.
+   * ``ready-to-go`` is exclusive to PRs and indicates the PR is ready to be merged.
+
+This following table will provide a quick overview of them all.
+
+
+.. list-table:: Label overview
    :header-rows: 1
-   :widths: 40 60 20
+   :widths: 40 50 30
 
    * - Type of issue (7 labels)
      - How to proceed (3 labels)
@@ -107,37 +138,44 @@ We use three categories of labels in parallel:
      - help wanted
      - P2
    * - question
-     -
+     - ``ready-for-pr``
      -
    * - documentation
-     -
+     - ``ready-to-go``
      -
 
-How to create an issue?
+How to create an issue
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-We created five templates to make it easy for you to create an issue.
+We’ve created five templates to make it easy for you to create an issue.
 
 .. figure:: ../_static/images/adalflow_issue_template.png
    :alt: AdalFlow Issue Template
    :align: center
    :width: 700px
 
-   5 templates for creating issues
+   Five templates for creating issues
 
-Each template will automatically have labels assigned to them.
+Each template automatically assigns relevant labels to the issue.
 
-How to assign priority?
+
+How to assign priority
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Besides our team to mark the priority with our best judgement, we allow the community to give us more signals on the priority.
-You can use 👍 to indicate the importance of a particular issue to you.
-We will take the `# of 👍 / time_period` as a signal to the priority too.
+
+While our team marks priorities based on our best judgment, we also welcome community input to help us prioritize issues.
+
+You can use 👍 to indicate how important a particular issue is to you.
+We’ll consider the ``# of 👍 / time_period`` as an additional signal for setting priorities.
+
 
 
 Part 2: What to contribute
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-This section explains more details on how each issue will relate to our codebase. We will list some example prs to help you understand better.
-The following table will provide an quick overview. We will provide more details in each subsection on each type of contributions.
 
+This section provides more details on how each issue relates to our codebase.
+We’ll include example PRs to help clarify these connections.
+
+The following table offers a quick overview.
+More details on each type of contribution in Part 3.
 
 .. list-table:: What to Contribute (by 7 Labels) and Example PRs
    :header-rows: 1
@@ -163,7 +201,7 @@ The following table will provide an quick overview. We will provide more details
      -
    * - documentation
      - Improve existing documentation under `/docs` or `/notebooks` directories or create new documentation for existing code.
-     - `Issue 194<https://github.com/SylphAI-Inc/AdalFlow/issues/194>`_, `Issue 123<https://github.com/SylphAI-Inc/AdalFlow/issues/123>`_,  and `PR 260<https://github.com/SylphAI-Inc/AdalFlow/pull/260>`_.
+     - `Issue 194 <https://github.com/SylphAI-Inc/AdalFlow/issues/194>`_, `Issue 123 <https://github.com/SylphAI-Inc/AdalFlow/issues/123>`_,  and `PR 260 <https://github.com/SylphAI-Inc/AdalFlow/pull/260>`_.
    * - question
      - Answer user queries or provide clarifications about the library.
      -
@@ -173,12 +211,33 @@ The following table will provide an quick overview. We will provide more details
 Part 3: Contributing Steps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Once you know what you want to contribute, you need to make sure you follow these steps to ensure the quality of your contribution.
+Once you know what you want to contribute, follow these steps to ensure the quality of your contribution:
 
-1. **Track it.** Create the issue if it doesn't exist yet.
-2. **Learn enough context.** Ensure you read relavant documentation, code inside and outside of AdalFlow. This includes :ref:`tutorials<source-tutorials>`, :ref:`use_cases<use_cases>`, and even :ref:`API references<apis>` and tests within `/adalflow/tests` to understand everything you need to know. We will show more examples for each type of contribution in the next section. For integration, you need to make sure your know the relevant SDKs and APIs. For documentation, you need to know the structure of the documentation and the writing style.
-3. **Create a solution proposal and take inputs before working on it.** We encourage you to write down your *solution proposal in the comments of the issue*. Or sometimes you can use a publically accessible `Google Doc/Colab` to share your proposal. SylphAI team and the community can double-check your proposal and give you feedbacks before you start coding. This will be extremely necessary for more complicated features. Additionally, you can discuss in our `Discord <https://discord.com/invite/ezzszrRZvT>`_.
-4. **Work on it.**  Follow the `PR & Review Process <#pr-review-process>`_ to start your coding, testing, documenting, and reviewing process.
+1. **Track it.** Create an issue if it doesn’t already exist.
+2. **Learn enough context.** Read the relevant documentation and code inside and outside of AdalFlow.
+   This includes:
+
+   - :ref:`tutorials<source-tutorials>`
+   - :ref:`use_cases<use_cases>`
+   - :ref:`API references<apis>`
+   - tests within `/adalflow/tests` to understand everything you need to know.
+
+   This will help you understand everything necessary for your contribution.
+   We’ll provide examples for each type of contribution in the next section.
+
+   - For integration, you need to know the relevant SDKs and APIs.
+   - For documentation, you need to know the structure of the documentation and the writing style.
+
+3. **Create a solution proposal and gather input.** Write your solution proposal in the issue comments.
+   Alternatively, you can use a publically accessible tool like ``Google Doc`` or ``Colab`` to share your proposal.
+   The `AdalFlow` team and the community will review and provide feedback before your start coding.
+   The team and core contributors can label it as ``ready-for-pr`` when it is ready for a PR.
+   This step is especially crucial for complex features. You can also discuss your proposal on our `Discord <https://discord.com/invite/ezzszrRZvT>`_.
+
+4. **Work on it.**  Follow the `PR & Review Process <#pr-review-process>`_ to begin coding, testing, documenting, and reviewing.
+
+
+.. TODO: edit the remaining content
 
 Integrate a  model_client
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

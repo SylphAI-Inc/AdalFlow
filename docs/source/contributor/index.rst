@@ -24,6 +24,7 @@ By `Li Yin <https://github.com/liyin2015>`_.
 
 
 .. toctree::
+   :caption: Contributor Guide
    :maxdepth: 1
 
    contribution
