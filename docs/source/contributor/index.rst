@@ -11,9 +11,10 @@ We appreciate contributors, but we have to hold our libary responsible for our u
 Once you decide to contribute, we hope it’s not just to list your name on the repo.
 More importantly, we want you to learn and improve your own skills, support your favorite projects, and contribute to the community!
 
-It took us three months to set up this contributor guide, as we explored ideas with users and thought extensively about how to organize labels and design the best process for maintaining the quality of our library while leveraging the open-source community. We will continuously improve our process and welcome any suggestions and advice.
+It took us three months to set up this contributor guide, as we first tested the process with early contributors.
+Our goal is to design the best process for maintaining the quality of our library while enabling the community to make meaningful contributions.
 We are determined to make AdalFlow as great and legendary as PyTorch.
-The guide consists of an overall contributing process and the development essentials for environment setup, coding, testing, and documentation.
+This guide covers the overall contributing process, along with development essentials for environment setup, coding, testing, and documentation.
 
 Here’s to the future of LLM applications!
 
