@@ -86,6 +86,12 @@ Code Tips
 
 * Functions and classes should include standard docstrings and comments. Please refer to `documentation contribution guidelines <./contribute_to_document.html>`_ for standard docstrings.
 
+Copilot
+~~~~~~~~~~~~~~~
+We suggest you use `GitHub Copilot <https://copilot.github.com/>`_ to help you write code faster and more efficiently.
+You can follow this `Guide <https://docs.github.com/en/copilot/using-github-copilot/getting-code-suggestions-in-your-ide-with-github-copilot>`_ to set it up with your IDE.
+There are other options like `Cursor <https://www.cursor.com/>`_ and `Tabnine <https://www.tabnine.com/>`_ that you can use as well.
+
 Dependencies
 ~~~~~~~~~~~~~~~
 1. If you want to add any new dependencies to the package, please include them in your PR description to inform us.
