@@ -1,0 +1,16 @@
+name: Typos and doc fixes
+description: Tell us about how we can improve our documentation and Google colab/ipynb notebooks.
+labels: ["documentation"]
+body:
+  - type: textarea
+    attributes:
+      label: 📚 Documentation
+      description: A description of the 🐛bug🐛.
+      placeholder: |
+        For typos and doc fixes, please go ahead and:
+
+        - For a simlpe typo or fix, please send directly a PR (no need to create an issue)
+        - If you are not sure about the proper solution, please describe here your finding...
+
+    validations:
+      required: true

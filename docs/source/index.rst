@@ -318,14 +318,6 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
    use_cases/index
 
 
-.. toctree::
-   :glob:
-   :maxdepth: 1
-   :hidden:
-
-   apis/index
-
-
       .. :caption: Benchmarks
 
       .. Manually add documents for the code in benchmarks
@@ -339,9 +331,19 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
 
 .. hide the for contributors now
 
-   .. :glob:
-   .. :maxdepth: 1
-   .. :caption: For Contributors
-   .. :hidden:
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :caption: For Contributors
+   :hidden:
 
-   .. contributor/index
+   contributor/index
+
+
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :hidden:
+
+   apis/index
