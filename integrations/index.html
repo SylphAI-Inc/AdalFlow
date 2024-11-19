@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Contribute to Documentation &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+    <title>&lt;no title&gt; &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
   
   
   
@@ -48,7 +48,7 @@
     <script src="../_static/js/rtd_search_config.js"></script>
     <script src="../_static/js/rtd_sphinx_search.min.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'contributor/contribute_to_document';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'integrations/index';</script>
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -169,6 +169,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributor/index.html">
+    Contributor Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
@@ -277,7 +284,9 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -309,6 +318,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../use_cases/index.html">
     Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributor/index.html">
+    Contributor Guide
   </a>
 </li>
 
@@ -379,15 +395,6 @@
     
   </div>
   
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-<nav class="bd-docs-nav bd-links"
-     aria-label="Section Navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"></div>
-</nav></div>
-    </div>
-  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -420,7 +427,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Contribute...</li>
+    <li class="breadcrumb-item active" aria-current="page">&lt;no title&gt;</li>
   </ul>
 </nav>
 </div>
@@ -437,83 +444,7 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="contribute-to-documentation">
-<h1>Contribute to Documentation<a class="headerlink" href="#contribute-to-documentation" title="Link to this heading">#</a></h1>
-<nav class="contents local" id="contents">
-<ul class="simple">
-<li><p><a class="reference internal" href="#souce-code-docstring-standard" id="id1">Souce Code Docstring Standard</a></p></li>
-<li><p><a class="reference internal" href="#setup-build-documentation" id="id2">Setup &amp; Build Documentation</a></p></li>
-<li><p><a class="reference internal" href="#adding-documentation-tests" id="id3">Adding Documentation Tests</a></p></li>
-<li><p><a class="reference internal" href="#documentation-dependencies" id="id4">Documentation Dependencies</a></p></li>
-<li><p><a class="reference internal" href="#commit-changes" id="id5">Commit Changes</a></p></li>
-</ul>
-</nav>
-<ul class="simple" id="documentation-contribution">
-<li><p><strong>User-Facing Documentation</strong>: Found on the main docs site. These include tutorials, guides, and usage documentation meant for end users.</p></li>
-<li><p><strong>Developer Documentation</strong>: Located within the repository’s READMEs and the <code class="docutils literal notranslate"><span class="pre">docs/</span></code> directory. These documents are more technical and intended for contributors and maintainers.</p></li>
-</ul>
-<p>This section is about user-facing documentation.</p>
-<p>LightRAG uses <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> for documentation, leveraging both <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">reStructuredText</a> and Sphinx’s <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html">autodoc</a> feature to pull docstrings from code and organize them through <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files. Our documentation is split into:</p>
-<section id="souce-code-docstring-standard">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Souce Code Docstring Standard</a><a class="headerlink" href="#souce-code-docstring-standard" title="Link to this heading">#</a></h2>
-<p>Sphinx automatically pulls docstrings from source code and uses them as the docs in API reference. For clarity and consistency, we have a standard for all the code contributors.</p>
-<p>Aligning with Pytorch, LightRAG uses the <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html">Google style with Sphinx</a> for formatting docstrings <a class="reference external" href="https://google.github.io/styleguide/pyguide.html">(detailed styles)</a>, emphasizing <strong>docstring</strong> and <strong>type control</strong> to guarantee the document and code quality.</p>
-</section>
-<section id="setup-build-documentation">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Setup &amp; Build Documentation</a><a class="headerlink" href="#setup-build-documentation" title="Link to this heading">#</a></h2>
-<p><strong>1. Clone the GitHub Project</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/SylphAI-Inc/LightRAG.git
-</pre></div>
-</div>
-<p><strong>2. Install Necessary Packages</strong></p>
-<p>LightRAG’s documentation style is <a class="reference external" href="https://pydata-sphinx-theme.readthedocs.io/en/stable/">pydata_sphinx_theme</a>.</p>
-<p>Install by <code class="docutils literal notranslate"><span class="pre">poetry</span></code> along with all other dependencies for LightRAG:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install
-</pre></div>
-</div>
-<p><strong>3. Build the Documentation</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docs
-make<span class="w"> </span>html
-</pre></div>
-</div>
-<p><strong>conf.py</strong></p>
-<p>This file (<code class="docutils literal notranslate"><span class="pre">docs/source/conf.py</span></code>) contains configurations used by Sphinx, including extensions, templates, HTML theme, and language settings.</p>
-<p><strong>Source Code Doc-string</strong></p>
-<p>Follow <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html">Google style docstrings</a> to update your source code docstrings. Limit lines to <strong>80</strong> characters for better readability in various environments.</p>
-<p><strong>RST Files</strong>: Directly edit <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files for broader changes or new sections. Use the <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">toctree::</span></code> directive to link documents.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files are in the <code class="docutils literal notranslate"><span class="pre">docs/source</span></code>. The majority of <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files in the <code class="docutils literal notranslate"><span class="pre">docs/source/apis</span></code> are generated automatically from the Python code docstrings using <code class="docutils literal notranslate"><span class="pre">sphinx-apidoc</span></code>.</p>
-<p>To shorten the doc generating process, please remove the files that is not included in your project.</p>
-<p>The Sphinx build will show warnings but the docs will still be completed.</p>
-<p>If you have a module folder containing code, for example, <code class="docutils literal notranslate"><span class="pre">components/</span></code>, please add the following line to the <code class="docutils literal notranslate"><span class="pre">docs/Makefile</span></code> in the <code class="docutils literal notranslate"><span class="pre">apidoc:</span></code> section.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>@sphinx-apidoc<span class="w"> </span>-o<span class="w"> </span><span class="k">$(</span>APIDOCOUTDIR<span class="k">)</span>/components<span class="w"> </span>../components<span class="w"> </span>--separate<span class="w"> </span>--force
-</pre></div>
-</div>
-<p><strong>4. View the Documentation Locally</strong></p>
-<p>After building, open <code class="docutils literal notranslate"><span class="pre">docs/build/html/index.html</span></code> in a web browser. If you face issues with local resources, such as the browser prohibits loading the web page correctly, run a local server:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docs/build
-python<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span><span class="m">8000</span><span class="w"> </span>&lt;path_to_html_output&gt;
-</pre></div>
-</div>
-<p>Then navigate to the corresbonding site in your browser. E.g. it can be <cite>http://127.0.0.1:8000/</cite>.</p>
-</section>
-<section id="adding-documentation-tests">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">Adding Documentation Tests</a><a class="headerlink" href="#adding-documentation-tests" title="Link to this heading">#</a></h2>
-<p>To ensure the documentation remains up-to-date, LightRAG uses Sphinx’s Doctest extension. Add <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">testcode::</span></code> to your <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files or docstrings and run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">doctest</span></code> to test your documentation snippets.</p>
-<p>To manually run these tests, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docs
-make<span class="w"> </span>doctest
-</pre></div>
-</div>
-</section>
-<section id="documentation-dependencies">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Documentation Dependencies</a><a class="headerlink" href="#documentation-dependencies" title="Link to this heading">#</a></h2>
-<p>If your documentation requires any new dependencies, please include it in the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> under the root directory, include it in your PR description and let us know.</p>
-</section>
-<section id="commit-changes">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Commit Changes</a><a class="headerlink" href="#commit-changes" title="Link to this heading">#</a></h2>
-<p>After making changes, commit the <code class="docutils literal notranslate"><span class="pre">.rst</span></code> and source files, avoiding the <code class="docutils literal notranslate"><span class="pre">docs/build</span></code> directory, and push them to your GitHub fork for review.</p>
-</section>
-</section>
+  <p>The integration will be listing all existing integrations and integrations we plan to add.</p>
 
 
                 </article>
@@ -542,13 +473,9 @@ make<span class="w"> </span>doctest
     <i class="fa-solid fa-list"></i> On this page
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#souce-code-docstring-standard">Souce Code Docstring Standard</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-build-documentation">Setup &amp; Build Documentation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-documentation-tests">Adding Documentation Tests</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation-dependencies">Documentation Dependencies</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#commit-changes">Commit Changes</a></li>
+    <ul class="simple visible nav section-nav flex-column">
 </ul>
+
   </nav></div>
 
 </div></div>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>For Contributors &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+    <title>Contributor Guide &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
   
   
   
@@ -52,6 +52,8 @@
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contributing Process" href="contribution.html" />
+    <link rel="prev" title="RAG optimization" href="../use_cases/rag_opt.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -168,6 +170,13 @@
 </li>
 
 
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Contributor Guide
+  </a>
+</li>
+
+
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
@@ -273,9 +282,7 @@
       
       
       
-        
-      
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -307,6 +314,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../use_cases/index.html">
     Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Contributor Guide
   </a>
 </li>
 
@@ -377,6 +391,20 @@
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributor Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="contribution.html">Contributing Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute_to_code.html">Development Essentials</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -409,7 +437,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">For Contributors</li>
+    <li class="breadcrumb-item active" aria-current="page">Contributor Guide</li>
   </ul>
 </nav>
 </div>
@@ -426,32 +454,27 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="for-contributors">
-<h1>For Contributors<a class="headerlink" href="#for-contributors" title="Link to this heading">#</a></h1>
+  <section id="contributor-guide">
+<h1>Contributor Guide<a class="headerlink" href="#contributor-guide" title="Link to this heading">#</a></h1>
+<p>Welcome to the AdalFlow community! We’re building the most user-friendly, modular, and powerful library for building and auto-optimizing LLM applications, rom Chatbots and RAGs to Agents.
+<em>Think of AdalFlow for LLM applications and prompt engineering as the PyTorch/TensorFlow/JAX equivalent for AI modeling.</em>
+The goal is to provide basic and fundamental building blocks to create advanced applications with auto-optimization out of the box.
+As we mature, we anticipate that more RAG, memory-based chatbots, or agent frameworks will be built on top of AdalFlow’s building blocks, such as <cite>retriever</cite> and <cite>generator</cite>.
+We highly suggest you read our <a class="reference internal" href="../tutorials/lightrag_design_philosophy.html#lightrag-design-philosophy"><span class="std std-ref">design principle</span></a> before you start contributing.</p>
+<p>We only accept high quality contributions.
+We appreciate contributors, but we have to hold our libary responsible for our users.
+Once you decide to contribute, we hope it’s not just to list your name on the repo.
+More importantly, we want you to learn and improve your own skills, support your favorite projects, and contribute to the community!</p>
+<p>It took us three months to set up this contributor guide, as we explored ideas with users and thought extensively about how to organize labels and design the best process for maintaining the quality of our library while leveraging the open-source community. We will continuously improve our process and welcome any suggestions and advice.
+We are determined to make AdalFlow as great and legendary as PyTorch.
+The guide consists of an overall contributing process and the development essentials for environment setup, coding, testing, and documentation.</p>
+<p>Here’s to the future of LLM applications!</p>
+<p>By <a class="reference external" href="https://github.com/liyin2015">Li Yin</a>.</p>
 <div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributor Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="contribution.html">LightRAG Contribution Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="contribution.html#contribution-process">Contribution Process</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contribution.html#writing-documentation">Writing Documentation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="contribute_to_code.html">Contribute to Code</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="contribute_to_code.html#set-up">Set Up</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contribute_to_code.html#codebase-structure">Codebase Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contribute_to_code.html#code-examples">Code Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contribute_to_code.html#code-tips">Code Tips</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contribute_to_code.html#dependencies">Dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contribute_to_code.html#testing">Testing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="contribute_to_document.html">Contribute to Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="contribute_to_document.html#souce-code-docstring-standard">Souce Code Docstring Standard</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contribute_to_document.html#setup-build-documentation">Setup &amp; Build Documentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contribute_to_document.html#adding-documentation-tests">Adding Documentation Tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contribute_to_document.html#documentation-dependencies">Documentation Dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contribute_to_document.html#commit-changes">Commit Changes</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="contribution.html">Contributing Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute_to_code.html">Development Essentials</a></li>
 </ul>
 </div>
 </section>
@@ -466,6 +489,24 @@
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="../use_cases/rag_opt.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">RAG optimization</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="contribution.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Contributing Process</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               

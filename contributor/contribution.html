@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LightRAG Contribution Guide &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+    <title>Contributing Process &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
   
   
   
@@ -52,6 +52,8 @@
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Development Essentials" href="contribute_to_code.html" />
+    <link rel="prev" title="Contributor Guide" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -164,6 +166,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../use_cases/index.html">
     Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Contributor Guide
   </a>
 </li>
 
@@ -313,6 +322,13 @@
 </li>
 
 
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Contributor Guide
+  </a>
+</li>
+
+
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
@@ -384,7 +400,12 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"></div>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributor Guide</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Contributing Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute_to_code.html">Development Essentials</a></li>
+</ul>
+</div>
 </nav></div>
     </div>
   
@@ -420,7 +441,10 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">LightRAG...</li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Contributor Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Contributing Process</li>
   </ul>
 </nav>
 </div>
@@ -437,57 +461,437 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="lightrag-contribution-guide">
-<h1>LightRAG Contribution Guide<a class="headerlink" href="#lightrag-contribution-guide" title="Link to this heading">#</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">LightRAG</span></code>’s contribution process is similar to most open source projects on GitHub. We encourage new project ideas and the communication between <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> team, developers and the broader community.
-Please don’t forget to join us on <a class="reference external" href="https://discord.com/invite/ezzszrRZvT">Discord</a>.</p>
-<section id="contribution-process">
-<h2>Contribution Process<a class="headerlink" href="#contribution-process" title="Link to this heading">#</a></h2>
-<p>You are always welcomed to contribute even if you’ve never participated in open source project before.
-Here is the basic contribution process:</p>
-<section id="environment">
-<h3>Environment<a class="headerlink" href="#environment" title="Link to this heading">#</a></h3>
-<p>When contributing, please note:
-LightRAG separates the source code environment and documentation environment.</p>
+  <section id="contributing-process">
+<h1>Contributing Process<a class="headerlink" href="#contributing-process" title="Link to this heading">#</a></h1>
+<p>Welcome to the AdalFlow community!</p>
+<p>We tried to make the process simple and clear, but it can always improve.
+Share your suggestions on <a class="reference external" href="https://discord.com/invite/ezzszrRZvT">Discord</a> or <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/discussions">Github Discussion</a>.</p>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>The <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/issues">Github issues</a> is the best place to find your first task. Look for tasks labeled <cite>good first issue</cite>.</p></li>
+<li><p>Follow the <a class="reference internal" href="contribute_to_code.html"><span class="doc">Development Essentials</span></a> to set up your environment and start coding, testing, and documenting.</p></li>
+<li><p>Review the PR &amp; Review Process to complete the review and iteration process.
+We aim to maximize both your learning and the library’s quality.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can use 👍 to show that you want a particular issue to be addressed.</p>
+</div>
+</section>
+<section id="part-1-structuring">
+<span id="part1-structuring"></span><h2>Part 1: Structuring<a class="headerlink" href="#part-1-structuring" title="Link to this heading">#</a></h2>
+<p>To dive deeper, we’ll explain our repository structure, issue tracking, and label system.</p>
+<section id="repo-structure">
+<h3>Repo Structure<a class="headerlink" href="#repo-structure" title="Link to this heading">#</a></h3>
+<p>Our repository has a clear structure, divided into six subdirectories:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>.
+├── .github/
+├── adalflow/
+│   ├── adalflow/
+│   ├── tests/
+|   ├── pyproject.toml
+├── docs/
+|   |── pyproject.toml
+├── tutorials/
+├── use_cases/
+├── benchmarks/
+├── notebooks/
+|   ├── tutorials/
+|   ├── use_cases/
+|   ├── benchmarks/
+├── .env_example
+├── .gitignore
+├── .pre-commit-config.yaml
+├── LICENSE.md
+├── README.md
+├── poetry.lock
+├── pyproject.toml
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">/adalflow</span></code> directory contains the source code for the <cite>AdalFlow</cite> library,including its implementation, tests, and a dedicated <cite>pyproject.toml</cite> file.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">/docs</span></code> directory houses the documentation for the <cite>AdalFlow</cite> library and also includes its own <cite>pyproject.toml</cite> file.
+We use <cite>reStructuredText</cite> for the documentation.  For more details, please refer to <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/docs/README.md">README.md</a> under the <code class="docutils literal notranslate"><span class="pre">./docs</span></code> directory.</p></li>
+<li><p>Additionally, it includes the following directories:</p>
 <ul class="simple">
-<li><p>To activate the code environment, you should run <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">install</span></code> and <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">shell</span></code> under <code class="docutils literal notranslate"><span class="pre">./lightrag</span></code>. The <code class="docutils literal notranslate"><span class="pre">./lightrag/pyproject.toml</span></code> contains the dependencies for the <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> package.</p></li>
-<li><p>To activate the documentation environment, you can run <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">install</span></code> and <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">shell</span></code> under <code class="docutils literal notranslate"><span class="pre">.</span></code>. The <code class="docutils literal notranslate"><span class="pre">./pyproject.toml</span></code> controls documentation dependencies.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/tutorials</span></code>: Contains tutorials for the <cite>AdalFlow</cite> library, for each core feature or class.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/use_cases</span></code>: Covers various use cases, likely end to end applications even with auto-optimization.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/benchmarks</span></code>: Includes benchmarks to evaluate the library with other libraries or frameworks.</p></li>
 </ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/notebooks</span></code> directory contains all notebooks used across <cite>tutorials</cite>, <cite>use_cases</cite>, and <cite>benchmarks</cite>.</p></li>
+</ol>
 </section>
-<section id="find-a-direction-to-work-on">
-<h3>Find a direction to work on<a class="headerlink" href="#find-a-direction-to-work-on" title="Link to this heading">#</a></h3>
-<p>The team builds <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> based on latest researches and product cases. But you might have your own task to apply <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code>.
-Therefore, you can extend <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> and add any new features you believe will solve yours or others’ problems.
-If you don’t have any idea yet, you can:</p>
+<section id="issue-label-system">
+<h3>Issue &amp; Label System<a class="headerlink" href="#issue-label-system" title="Link to this heading">#</a></h3>
+<p>We use issues to manage bugs, features, and discussions.
+To organize them, we’ve carefully designed <strong>15</strong> labels.</p>
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/adalflow_issues.png"><img alt="AdalFlow Issues" src="../_images/adalflow_issues.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><strong>Type</strong>: The type of the issue, such as bug, feature, or discussion.</span><a class="headerlink" href="#id4" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>We use three categories of labels in parallel:</p>
+<ul>
+<li><p>Type of issue: There are 7 types of issues.</p>
 <ul class="simple">
-<li><p>Check the <a class="reference external" href="https://github.com/SylphAI-Inc/LightRAG/issues">existing issues</a> and see if there is anyone you know how to fix or you’d love to fix.</p></li>
-<li><p>Join us on <a class="reference external" href="https://discord.com/invite/ezzszrRZvT">Discord</a>. We are glad to discuss with you and know what you are interested in here.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[adalflow]</span></code> indicates the issue relates to <cite>AdalFlow</cite> source code in the <code class="docutils literal notranslate"><span class="pre">/adalflow</span></code> directory.</p></li>
 </ul>
+<p>Within this directory, the <code class="docutils literal notranslate"><span class="pre">/adalflow</span></code> contains the source code, and the <code class="docutils literal notranslate"><span class="pre">/tests</span></code> contains test code.
+3 labels here include: <code class="docutils literal notranslate"><span class="pre">integration</span></code>, <code class="docutils literal notranslate"><span class="pre">improvement</span></code>, <code class="docutils literal notranslate"><span class="pre">core</span> <span class="pre">feature</span></code>.</p>
+<ul class="simple">
+<li><p>We use <code class="docutils literal notranslate"><span class="pre">bug</span></code> for code-related issues across all directories.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">documentation</span></code> for items in the <code class="docutils literal notranslate"><span class="pre">/docs</span></code>, <code class="docutils literal notranslate"><span class="pre">/tutorials</span></code>, <code class="docutils literal notranslate"><span class="pre">/use_cases</span></code>, <code class="docutils literal notranslate"><span class="pre">/benchmarks</span></code>, and <code class="docutils literal notranslate"><span class="pre">/notebooks</span></code> directories.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">use</span> <span class="pre">cases/benchmarks</span></code> for issues in <code class="docutils literal notranslate"><span class="pre">/use_cases</span></code> and <code class="docutils literal notranslate"><span class="pre">/benchmarks</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">question</span></code> for general inquiries.</p></li>
+</ul>
+</li>
+<li><p>How to proceed: There are 4 labels.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">good</span> <span class="pre">first</span> <span class="pre">issue</span></code> for tasks suitable for new contributors.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wontfix</span></code> for issues that won’t be addressed in the library.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">duplicate</span></code> for issues already tracked elsewhere.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">wanted</span></code> indicates priority signal, discussion, and pr are needed.</p></li>
+</ul>
+</li>
+<li><p>Priority: There are 3 levels.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">P0</span></code> for the highest priority issues.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">P1</span></code> for medium priority.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">P2</span></code> for the lowest priority.</p></li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>All the above 14 labels can be used for both issues and PRs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ready-for-pr</span></code> is exclusive to issues and indicates the issue is ready for a PR.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ready-to-go</span></code> is exclusive to PRs and indicates the PR is ready to be merged.</p></li>
+</ul>
+</div>
+<p>This following table will provide a quick overview of them all.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id5">
+<caption><span class="caption-text">Label overview</span><a class="headerlink" href="#id5" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 33.3%" />
+<col style="width: 41.7%" />
+<col style="width: 25.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type of issue (7 labels)</p></th>
+<th class="head"><p>How to proceed (3 labels)</p></th>
+<th class="head"><p>Priority (3 labels)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>[adalflow] suggest integration</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>[adalflow] suggest improvement</p></td>
+<td><p>wontfix</p></td>
+<td><p>P0</p></td>
+</tr>
+<tr class="row-even"><td><p>[adalflow] suggest core feature</p></td>
+<td><p>good first issue</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>new use cases/benchmarks</p></td>
+<td><p>duplicate (aggregate) and close one</p></td>
+<td><p>P1</p></td>
+</tr>
+<tr class="row-even"><td><p>[adalflow] bug</p></td>
+<td><p>help wanted</p></td>
+<td><p>P2</p></td>
+</tr>
+<tr class="row-odd"><td><p>question</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ready-for-pr</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>documentation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ready-to-go</span></code></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
-<section id="figure-out-the-scope-of-your-change">
-<h3>Figure out the scope of your change<a class="headerlink" href="#figure-out-the-scope-of-your-change" title="Link to this heading">#</a></h3>
-<p><strong>Small:</strong> Most of the pull requests are small. If your change is small, such as fixing a line of bug, please go ahead to push it.</p>
-<p><strong>Big:</strong> But if you are making a new feature, or planning to push a large change, it is recommended to contact us on <a class="reference external" href="https://discord.com/invite/ezzszrRZvT">Discord</a> first.</p>
-<p><strong>Unknown:</strong> If you have no idea how big it will be, we are here to help you. Please post your idea on <a class="reference external" href="https://github.com/SylphAI-Inc/LightRAG/issues">issues</a>. We will read it carefully and get back to you.</p>
+<section id="how-to-create-an-issue">
+<h3>How to create an issue<a class="headerlink" href="#how-to-create-an-issue" title="Link to this heading">#</a></h3>
+<p>We’ve created five templates to make it easy for you to create an issue.</p>
+<figure class="align-center" id="id6">
+<a class="reference internal image-reference" href="../_images/adalflow_issue_template.png"><img alt="AdalFlow Issue Template" src="../_images/adalflow_issue_template.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Five templates for creating issues</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Each template automatically assigns relevant labels to the issue.</p>
 </section>
-<section id="add-your-code">
-<h3>Add your code<a class="headerlink" href="#add-your-code" title="Link to this heading">#</a></h3>
-<p>Please check our <a class="reference external" href="./contribute_to_code.html">code contribution guidelines</a> to work with code.</p>
-</section>
-<section id="pull-requests">
-<h3>Pull requests<a class="headerlink" href="#pull-requests" title="Link to this heading">#</a></h3>
-<p><strong>WIP PR:</strong> If you are working on an in pull request that is not ready for review, you can create a PR with <strong>“[WIP]”</strong> to inform us that this PR is a draft <strong>“work in progress”</strong>.</p>
-<p><strong>Finished PR:</strong> You can name your finished PR as <strong>“[New Retriever Integration]”</strong> for example.
-We will carry out code review regularly and provide feedbacks as soon as possible.
-Please iterate your PR with the feedbacks. We will try our best to reduce the revision workload on your side.
-Once your PR is approved, we will merge the PR for you.
-If you have any concerns about our feedbacks, please feel free to contact us on <a class="reference external" href="https://discord.com/invite/ezzszrRZvT">Discord</a>.</p>
+<section id="how-to-assign-priority">
+<h3>How to assign priority<a class="headerlink" href="#how-to-assign-priority" title="Link to this heading">#</a></h3>
+<p>While our team marks priorities based on our best judgment, we also welcome community input to help us prioritize issues.</p>
+<p>You can use 👍 to indicate how important a particular issue is to you.
+We’ll consider the <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">of</span> <span class="pre">👍</span> <span class="pre">/</span> <span class="pre">time_period</span></code> as an additional signal for setting priorities.</p>
 </section>
 </section>
-<section id="writing-documentation">
-<h2>Writing Documentation<a class="headerlink" href="#writing-documentation" title="Link to this heading">#</a></h2>
-<p>It is a good practice to submit your code with documentations to help the <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> team and other developers better understand your updates.
-Please see our <a class="reference external" href="./contribute_to_document.html">documentation contribution guidelines</a> for more details on <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> documentation standard.</p>
+<section id="part-2-what-to-contribute">
+<h2>Part 2: What to contribute<a class="headerlink" href="#part-2-what-to-contribute" title="Link to this heading">#</a></h2>
+<p>This section provides more details on how each issue relates to our codebase.
+We’ll include example PRs to help clarify these connections.</p>
+<p>The following table offers a quick overview.
+More details on each type of contribution in Part 3.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id7">
+<caption><span class="caption-text">What to Contribute (by 7 Labels) and Example PRs</span><a class="headerlink" href="#id7" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 50.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Label</p></th>
+<th class="head"><p>Contribution Suggestions</p></th>
+<th class="head"><p>Example Issue/PR</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>[adalflow] bug</p></td>
+<td><p>Fix bugs reported in issues, can relate to /adalflow code or /tutorials/user_cases/benchmarks.</p></td>
+<td><p><a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/issues/134">Issue 134</a> and <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/pull/135">PR 135</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>[adalflow] suggest integration</p></td>
+<td><p>Add new integrations with model inference SDKs (<a class="reference internal" href="../tutorials/model_client.html#tutorials-model-client"><span class="std std-ref">model_client</span></a>) or database retrievers (<a class="reference internal" href="../tutorials/retriever.html#tutorials-retriever"><span class="std std-ref">retriever</span></a>) or tools or other libraries/frameworks.</p></td>
+<td><p><a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/issues/96">Ollama integration request</a> and <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/pull/97">PR 97</a>. This often involves tests, tutorial, and documentation.</p></td>
+</tr>
+<tr class="row-even"><td><p>[adalflow] suggest improvement</p></td>
+<td><p>Enhance existing features for better performance or usability, can relate to /adalflow code or /tutorials/user_cases/benchmarks.</p></td>
+<td><p><a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/issues/149">Stream the response request</a> and <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/pull/158">PR 158</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>[adalflow] suggest core feature</p></td>
+<td><p>Develop <strong>new</strong> core functionalities in <cite>/adalflow</cite> directory, such as <cite>text_splitter</cite> or <cite>memory</cite>.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>new use cases/benchmarks</p></td>
+<td><p>Design benchmarks or propose new use cases for <cite>adalflow</cite>.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>documentation</p></td>
+<td><p>Improve existing documentation under <cite>/docs</cite> or <cite>/notebooks</cite> directories or create new documentation for existing code.</p></td>
+<td><p><a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/issues/194">Issue 194</a>, <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/issues/123">Issue 123</a>,  and <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/pull/260">PR 260</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p>question</p></td>
+<td><p>Answer user queries or provide clarifications about the library.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="part-3-contributing-steps">
+<span id="part3-contributing-steps"></span><h2>Part 3: Contributing Steps<a class="headerlink" href="#part-3-contributing-steps" title="Link to this heading">#</a></h2>
+<p>Once you know what you want to contribute, follow these steps to ensure the quality of your contribution:</p>
+<ol class="arabic">
+<li><p><strong>Track it.</strong> Create an issue if it doesn’t already exist.</p></li>
+<li><p><strong>Learn enough context.</strong> Read the relevant documentation and code inside and outside of AdalFlow.
+This includes:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../tutorials/index.html#source-tutorials"><span class="std std-ref">tutorials</span></a></p></li>
+<li><p><a class="reference internal" href="../use_cases/index.html#use-cases"><span class="std std-ref">use_cases</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/index.html#apis"><span class="std std-ref">API references</span></a></p></li>
+<li><p>tests within <cite>/adalflow/tests</cite> to understand everything you need to know.</p></li>
+</ul>
+<p>This will help you understand everything necessary for your contribution.
+We’ll provide examples for each type of contribution in the next section.</p>
+<ul class="simple">
+<li><p>For integration, you need to know the relevant SDKs and APIs.</p></li>
+<li><p>For documentation, you need to know the structure of the documentation and the writing style.</p></li>
+</ul>
+</li>
+<li><p><strong>Create a solution proposal and gather input.</strong> Write your solution proposal in the issue comments.
+Alternatively, you can use a publically accessible tool like <code class="docutils literal notranslate"><span class="pre">Google</span> <span class="pre">Doc</span></code> or <code class="docutils literal notranslate"><span class="pre">Colab</span></code> to share your proposal.
+The <cite>AdalFlow</cite> team and the community will review and provide feedback before your start coding.
+The team and core contributors can label it as <code class="docutils literal notranslate"><span class="pre">ready-for-pr</span></code> when it is ready for a PR.
+This step is especially crucial for complex features. You can also discuss your proposal on our <a class="reference external" href="https://discord.com/invite/ezzszrRZvT">Discord</a>.</p></li>
+<li><p><strong>Work on it.</strong>  Follow the PR &amp; Review Process to begin coding, testing, documenting, and reviewing.</p></li>
+</ol>
+<section id="integrate-a-model-client">
+<h3>Integrate a  model_client<a class="headerlink" href="#integrate-a-model-client" title="Link to this heading">#</a></h3>
+<p>All existing <a class="reference internal" href="../apis/components/components.model_client.html#components-model-client"><span class="std std-ref">model clients</span></a> are located in the <cite>/adalflow/adalflow/components/model_client</cite> directory.
+The tutorial <a class="reference internal" href="../tutorials/model_client.html#tutorials-model-client"><span class="std std-ref">model_client</span></a> will help you understand the base class and how it is designed.</p>
+<p>In general, <a class="reference external" href="https://platform.openai.com/docs/quickstart">OpenAI SDK</a> is trending to the the industry standard.
+And you can measure your targetting SDKs by the difference between these two.
+But overall, the OPENAI integration consists of: coding, testing, documentation.</p>
+<p>Coding includes:</p>
+<ol class="arabic simple">
+<li><p>A <a class="reference internal" href="../apis/components/components.model_client.openai_client.html#components-model-client-openai-client"><span class="std std-ref">OpenAIClient</span></a> class that inherits from the base class <span class="xref std std-ref">ModelClient</span>.</p></li>
+<li><p>Add the <cite>sdk package</cite> as an optional package in the <cite>adalflow/pyproject.toml</cite> file.</p></li>
+<li><p>Add the <cite>sdk package</cite> as lazy import in the <cite>adalflow/adalflow/utils/lazy_import.py</cite> file.</p></li>
+<li><p>Call the lazy import in the <cite>adalflow/adalflow/components/model_client/__init__.py</cite> file.</p></li>
+<li><p>Import the new client in the <cite>adalflow/adalflow/__init__.py</cite> file so that we can call it directly from the <cite>adalflow</cite> package.</p></li>
+</ol>
+<p>Testing includes:</p>
+<ol class="arabic simple">
+<li><p>Create a test file <cite>test_XX_client.py</cite> in the <cite>adalflow/tests/</cite> directory. You can use <cite>test_openai_client.py</cite> as a reference.</p></li>
+<li><p>Add the package to the <cite>adalflow/pyproject.toml</cite> file under the <cite>[tool.poetry.group.test.dependencies]</cite> section.</p></li>
+<li><p>Add the test case for the new client in the test file.</p></li>
+<li><p>Follow the <cite>adalflow/tests/README.md</cite> to run the test.</p></li>
+</ol>
+<p>Documentation includes:</p>
+<ol class="arabic">
+<li><p>Add examples on how to use the new client in the <cite>tutorials</cite> directory. You can use <cite>tutorials/ollama_client_note.py</cite> as a reference.</p></li>
+<li><p>Make sure you add the new client package in the root <cite>pyproject.toml</cite> file under the <cite>[tool.poetry.dependencies]</cite> section.</p></li>
+<li><p>Ensure the API reference is correctly rendenered in the <cite>docs</cite> directory.
+For example, with <cite>ollama_client</cite>, you need to add the following line in the <cite>docs/source/apis/components/index.rst</cite> file:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>components.model_client.ollama_client
+</pre></div>
+</div>
+</li>
+<li><p>Add examplary API configurations in the root <cite>.env_example</cite> file.</p></li>
+</ol>
+<p>This <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/pull/97">ollama_client PR</a> is a good example of how to integrate a new model client.</p>
+</section>
+<section id="integrate-a-database-retriever">
+<h3>Integrate a database retriever<a class="headerlink" href="#integrate-a-database-retriever" title="Link to this heading">#</a></h3>
+<p>All existing <a class="reference internal" href="../apis/components/components.retriever.html#components-retriever"><span class="std std-ref">retrievers</span></a> are located in the <cite>/adalflow/adalflow/components/retriever</cite> directory.
+The tutorial <a class="reference internal" href="../tutorials/retriever.html#tutorials-retriever"><span class="std std-ref">retriever</span></a> will help you understand the base class and how it is designed.</p>
+<p>The process is quite similar to integrating a model client. For documentation, ensure you add an example in <a class="reference internal" href="../tutorials/retriever.html#tutorials-retriever"><span class="std std-ref">retriever</span></a>.</p>
+<p>This <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/pull/165">qdrant_retriever PR</a> is a good example of how to integrate a new database retriever.</p>
+</section>
+<section id="add-notebooks-for-existing-new-tutorials-use-cases-benchmarks">
+<h3>Add notebooks for existing/new tutorials/use_cases/benchmarks<a class="headerlink" href="#add-notebooks-for-existing-new-tutorials-use-cases-benchmarks" title="Link to this heading">#</a></h3>
+<figure class="align-default">
+<img alt="Code samples for tutorials" src="../_images/adalflow_code_samples.png" />
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For how to add a new notebook, please follow the <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/notebooks/README.md">README.md</a> in the <cite>notebooks</cite> directory.</p>
+</div>
+<p><strong>Tutorials</strong></p>
+<p>For <span class="xref std std-ref">tutorials</span> in our documentation, each tutorial is accompanied by two code files: one <cite>XX_note.py</cite> in <cite>/tutorials</cite> and one <cite>adalflow_XX.ipynb</cite> in <cite>/notebooks/tutorials</cite>.
+You can help add the missing code file in tutorials and make sure to link them in the documentation like the above figure.
+Here is one example issue and PR for adding a new tutorial: <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/issues/192">Issue 192</a> and <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/pull/261">PR 261</a>.</p>
+<p><strong>Use Cases</strong></p>
+<p>For <a class="reference internal" href="../use_cases/index.html#use-cases"><span class="std std-ref">use_cases</span></a> in our documentation, each use case is accompanied by source code in <cite>/use_cases</cite> and a notebook in <cite>/notebooks/use_cases</cite>.
+For our existing use cases, we do not always have the corresponding notebooks. You can help add the missing notebooks for the existing use cases.</p>
+<p><strong>Benchmarks</strong></p>
+<p>So far, we are still working on the code in the <cite>/benchmarks</cite> directory. We will need help on addint the documentation along with the code.</p>
+</section>
+</section>
+<section id="part-4-pull-request-process">
+<h2>Part 4: Pull Request Process<a class="headerlink" href="#part-4-pull-request-process" title="Link to this heading">#</a></h2>
+<section id="prepare-the-codebase">
+<h3>Prepare the codebase<a class="headerlink" href="#prepare-the-codebase" title="Link to this heading">#</a></h3>
+<p>Before you can start a pull request, you need to follow these steps and this <a class="reference external" href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo?tool=webui">Github official fork guide</a>:</p>
+<ol class="arabic">
+<li><p><strong>Fork the repository.</strong>
+You can fork the repository by clicking the <cite>Fork</cite> button on the top right corner of the repository page.</p></li>
+<li><p><strong>Clone the repository.</strong>
+You can clone the repository by running the following command in your terminal:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>your_forked_repository_url
+</pre></div>
+</div>
+</li>
+<li><p><strong>Sync your fork.</strong>
+Also, make sure your repository is in sync with the original owner’s repository. You can do this by running the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>remote<span class="w"> </span>-v
+</pre></div>
+</div>
+<p>You will not see our repo in the list. You can add it by running the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>upstream<span class="w"> </span>https://github.com/SylphAI-Inc/AdalFlow.git
+</pre></div>
+</div>
+<p>Now, when you run <cite>git remote -v</cite>, you will see the upstream repo.
+Then, we can sync your fork with the upstream repo by running the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>fetch<span class="w"> </span>upstream
+git<span class="w"> </span>checkout<span class="w"> </span>main
+git<span class="w"> </span>merge<span class="w"> </span>upstream/main
+</pre></div>
+</div>
+<p><em>Note: `fetch` will fetch the changes from the upstream repo, but it will not merge them into your local branch. `merge` will merge the changes from the upstream repo into your local branch.</em>
+For more detials, please refer to the <a class="reference external" href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork">Github official syncing a fork guide</a>.</p>
+</li>
+<li><p><strong>Create a new branch.</strong>
+Create a new branch to ensure your changes are isolated from the main codebase. You can do this by running the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>&lt;issue_number&gt;_&lt;issue_title&gt;
+</pre></div>
+</div>
+<p>Similarly, you always use step 3 to sync your branch with the upstream repo.
+Additionally, you can use the following commands to sync:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>fetch<span class="w"> </span>--all<span class="w"> </span>--prune
+git<span class="w"> </span>rebase<span class="w"> </span>upstream/main
+<span class="c1"># follow git instructions to resolve conflicts</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>your_branch_name
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="work-on-your-pr">
+<h3>Work on your PR<a class="headerlink" href="#work-on-your-pr" title="Link to this heading">#</a></h3>
+<ol class="arabic">
+<li><p><strong>Set up the pre-commit hooks.</strong>
+We have a <cite>.pre-commit-config.yaml</cite> file in the root directory.
+Ensure you have set up the pre-commit hooks. We recommend you to do so in the <cite>poetry</cite> environment.
+The following steps will help you set up the root poetry environment and the pre-commit hooks:
+Install <cite>poetry</cite> if you haven’t already:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>poetry
+</pre></div>
+</div>
+<p>You can install the dependencies by running the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install
+</pre></div>
+</div>
+<p>Then you can activate the environment by running the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>shell
+</pre></div>
+</div>
+<p>Then, install the pre-commit hooks by running the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+<p><em>Now, you can start to commit your changes from the `/adalflow` directory next time even if you are not in the poetry environment.</em>
+If you have more questions, you can refer to the <a class="reference external" href="https://pre-commit.com/#install">pre-commit official guide</a>.</p>
+</li>
+<li><p><strong>Commit your changes.</strong>
+Once you have made your changes, you can commit them by running the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Your commit message&quot;</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>your_branch_name
+</pre></div>
+</div>
+<p>If you face “permission denied” issue, you can refer to this <a class="reference external" href="https://medium.com/geekculture/how-to-change-your-github-remote-authentication-from-username-password-to-personal-access-token-64e527a766cf">medium blog</a> for help.</p>
+</li>
+<li><p><strong>Create a Pull Request.</strong>
+Go to your forked repository on Github and click the <cite>New Pull Request</cite> button. Make sure you select the correct branch for the base and compare branches.
+Here we have a default <a class="reference external" href="https://github.com/SylphAI-Inc/adalflow/blob/main/.github/PULL_REQUEST_TEMPLATE.md">PR template</a> for you to fill in.</p></li>
+<li><p><strong>Fill in the PR template.</strong>
+Make sure you fill in the PR template with the necessary information. This will help the reviewers understand your changes better.</p></li>
+<li><p><strong>Submit the PR</strong>
+We encourage you to submit the PR as soon as possible, even if it is not ready for review. You can mark it as a draft by:
+1. Clicking the <cite>Draft</cite> button on the PR page.
+2. Adding <cite>[WIP]</cite> to the PR title.</p>
+<figure class="align-center" id="id8">
+<a class="reference internal image-reference" href="../_images/pr_draft.png"><img alt="Create a draft PR" src="../_images/pr_draft.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Create a draft PR</span><a class="headerlink" href="#id8" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</li>
+<li><p><strong>Iterate your PR.</strong>
+Once you have submitted the PR, the reviewers will review your changes and provide feedback. You can iterate your PR by making the necessary changes and pushing them to your branch. The reviewers will review your changes again.</p></li>
+<li><p><strong>Merge your PR.</strong>
+Once your PR is approved, the reviewers will merge your PR for you. You can also merge your PR by clicking the <cite>Merge</cite> button on the PR page.</p></li>
+</ol>
+</section>
+</section>
+<section id="part-5-review-process">
+<h2>Part 5: Review Process<a class="headerlink" href="#part-5-review-process" title="Link to this heading">#</a></h2>
+<p>For now, we will use the <a class="reference external" href="https://github.com/Lightning-AI/pytorch-lightning/wiki/Review-guidelines">PyTorch lightning’s review guideline</a>.</p>
 </section>
 </section>
 
@@ -501,6 +905,24 @@ Please see our <a class="reference external" href="./contribute_to_document.html
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Contributor Guide</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="contribute_to_code.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Development Essentials</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -519,15 +941,27 @@ Please see our <a class="reference external" href="./contribute_to_document.html
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contribution-process">Contribution Process</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#environment">Environment</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#find-a-direction-to-work-on">Find a direction to work on</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#figure-out-the-scope-of-your-change">Figure out the scope of your change</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-your-code">Add your code</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pull-requests">Pull requests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-start">Quick Start</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#part-1-structuring">Part 1: Structuring</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#repo-structure">Repo Structure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#issue-label-system">Issue &amp; Label System</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-create-an-issue">How to create an issue</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-assign-priority">How to assign priority</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-documentation">Writing Documentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#part-2-what-to-contribute">Part 2: What to contribute</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#part-3-contributing-steps">Part 3: Contributing Steps</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#integrate-a-model-client">Integrate a  model_client</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#integrate-a-database-retriever">Integrate a database retriever</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-notebooks-for-existing-new-tutorials-use-cases-benchmarks">Add notebooks for existing/new tutorials/use_cases/benchmarks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#part-4-pull-request-process">Part 4: Pull Request Process</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-the-codebase">Prepare the codebase</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#work-on-your-pr">Work on your PR</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#part-5-review-process">Part 5: Review Process</a></li>
 </ul>
   </nav></div>
 
