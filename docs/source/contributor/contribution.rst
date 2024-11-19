@@ -351,6 +351,7 @@ Work on your PR
     pre-commit install
 
    *Now, you can start to commit your changes from the `/adalflow` directory next time even if you are not in the poetry environment.*
+   If you have more questions, you can refer to the `pre-commit official guide <https://pre-commit.com/#install>`_.
 
 2. **Commit your changes.**
    Once you have made your changes, you can commit them by running the following commands:
