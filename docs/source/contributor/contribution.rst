@@ -322,9 +322,11 @@ Before you can start a pull request, you need to follow these steps and this `Gi
 Work on your PR
 ~~~~~~~~~~~~~~~~~~~~
 
-1. **Before committing your changes.**
+1. **Set up the pre-commit hooks.**
    We have a `.pre-commit-config.yaml` file in the root directory.
-   We use `poetry` to manage our dependencies. You can install `poetry` by running the following command:
+   Ensure you have set up the pre-commit hooks. We recommend you to do so in the `poetry` environment.
+   The following steps will help you set up the root poetry environment and the pre-commit hooks:
+   Install `poetry` if you haven't already:
 
    .. code-block:: bash
 
@@ -342,7 +344,13 @@ Work on your PR
 
     poetry shell
 
-   Now, you can start to commit your changes from the `/adalflow` directory with `poetry` environment activated.
+   Then, install the pre-commit hooks by running the following command:
+
+   .. code-block:: bash
+
+    pre-commit install
+
+   *Now, you can start to commit your changes from the `/adalflow` directory next time even if you are not in the poetry environment.*
 
 2. **Commit your changes.**
    Once you have made your changes, you can commit them by running the following commands:
@@ -374,10 +382,10 @@ Work on your PR
 
       Create a draft PR
 
-7. **Iterate your PR.**
+6. **Iterate your PR.**
    Once you have submitted the PR, the reviewers will review your changes and provide feedback. You can iterate your PR by making the necessary changes and pushing them to your branch. The reviewers will review your changes again.
 
-8. **Merge your PR.**
+7. **Merge your PR.**
    Once your PR is approved, the reviewers will merge your PR for you. You can also merge your PR by clicking the `Merge` button on the PR page.
 
 
