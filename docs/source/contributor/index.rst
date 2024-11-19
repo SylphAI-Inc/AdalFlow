@@ -1,21 +1,25 @@
 Contributor Guide
 =============================
-Welcome to the AdalFlow community! We're building the most user-friendly, modular, and powerful library for building and auto-optimizing LLM applications, from Chatbots, RAGs, to Agents.
-Think of AdalFlow to LLM applications and prompt engineering like the PyTorch/TensorFlow/JAX for AI modeling.
+Welcome to the AdalFlow community! We're building the most user-friendly, modular, and powerful library for building and auto-optimizing LLM applications, rom Chatbots and RAGs to Agents.
+*Think of AdalFlow for LLM applications and prompt engineering as the PyTorch/TensorFlow/JAX equivalent for AI modeling.*
+The goal is to provide basic and fundamental building blocks to create advanced applications with auto-optimization out of the box.
+As we mature, we anticipate that more RAG, memory-based chatbots, or agent frameworks will be built on top of AdalFlow’s building blocks, such as `retriever` and `generator`.
+We highly suggest you read our :ref:`design principle<lightrag_design_philosophy>` before you start contributing.
+
+We only accept high quality contributions.
+We appreciate contributors, but we have to hold our libary responsible for our users.
+Once you decide to contribute, we hope it’s not just to list your name on the repo.
+More importantly, we want you to learn and improve your own skills, support your favorite projects, and contribute to the community!
+
+It took us three months to set up this contributor guide, as we explored ideas with users and thought extensively about how to organize labels and design the best process for maintaining the quality of our library while leveraging the open-source community. We will continuously improve our process and welcome any suggestions and advice.
+We are determined to make AdalFlow as great and legendary as PyTorch.
+The guide consists of an overall contributing process and the development essentials for environment setup, coding, testing, and documentation.
+
+Here’s to the future of LLM applications!
+
+By `Li Yin <https://github.com/liyin2015>`_.
 
 .. TODO: add a relation to the whole ecosystem
-The goal is to provide basic and foudamental building blocks to build advanced applications with auto-optimization out-of-the-box.
-As we mature, we might see more RAG, memory-based chatbots, or agents frameworks will be built on top of AdalFlow building blocks such as retriever, generator.
-We highly suggest you to read our :ref:`design principle<lightrag_design_philosophy>` before you start contributing.
-
-We only accept high quality contribution.
-We appreciate contributors but we have to hold our libary responsible for users.
-Once you decide to contribute, we hope you are not just to list your name on the repo, but more importantly, you learn and improve your own skills! you support your faviroty projects and community!
-
-It took us 3 months to setup a contributing guide, as we did explore with users and think a lot on how to organize labels and what is the best process that can control the quality of our library while leveraing the open-source community. **We will continously improve our process and we welcome any suggestion and advice.**
-We are determined to make AdalFlow as great and legendary as PyTorch.
-
-
 
 
 

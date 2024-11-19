@@ -1,4 +1,4 @@
-Contributing process
+Contributing Process
 =======================================
 Welcome to the AdalFlow community! We tried our best to make the process as simple and as clear as possible. We are open to any suggestions and advice to improve the process.
 Please feel free to contact us on `Discord <https://discord.com/invite/ezzszrRZvT>`_ or use the `Github Discussion<https://github.com/SylphAI-Inc/AdalFlow/discussions>`.
