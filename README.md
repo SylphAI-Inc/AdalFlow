@@ -76,7 +76,20 @@ For AI researchers, product teams, and software engineers who want to learn the 
 
 
 
+# Quick Start
 
+
+Install AdalFlow with pip:
+
+```bash
+pip install adalflow
+```
+
+Please refer to the [full installation guide](https://adalflow.sylph.ai/get_started/installation.html) for more details.
+
+
+* Try the [Building Quickstart](https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing) in Colab to see how AdalFlow can build the task pipeline, including Chatbot, RAG, agent, and structured output.
+* Try the [Optimization Quickstart](https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/qas/adalflow_object_count_auto_optimization.ipynb) to see how AdalFlow can optimize the task pipeline.
 
 
 # Why AdalFlow
@@ -194,20 +207,7 @@ Just define it as a ``Parameter`` and pass it to AdalFlow's ``Generator``.
 
 </p>
 
-# Quick Start
 
-
-Install AdalFlow with pip:
-
-```bash
-pip install adalflow
-```
-
-Please refer to the [full installation guide](https://adalflow.sylph.ai/get_started/installation.html) for more details.
-
-
-* Try the [Building Quickstart](https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing) in Colab to see how AdalFlow can build the task pipeline, including Chatbot, RAG, agent, and structured output.
-* Try the [Optimization Quickstart](https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/qas/adalflow_object_count_auto_optimization.ipynb) to see how AdalFlow can optimize the task pipeline.
 
 
 
@@ -230,6 +230,13 @@ AdalFlow full documentation available at [adalflow.sylph.ai](https://adalflow.sy
 
 AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could go beyond mere calculations. As a team led by a female founder, we aim to inspire more women to pursue careers in AI.
 
+# Community & Contributors
+
+The AdalFlow is a community-driven project, and we welcome everyone to join us in building the future of LLM applications.
+
+Join our [Discord](https://discord.gg/ezzszrRZvT) community to ask questions, share your projects, and get updates on AdalFlow.
+
+To contribute, please read our [Contributor Guide](https://adalflow.sylph.ai/contributor/index.html).
 
 # Contributors
 
