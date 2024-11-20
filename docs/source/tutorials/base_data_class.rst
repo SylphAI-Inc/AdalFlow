@@ -7,7 +7,10 @@
       <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_dataclasses.ipynb" target="_blank" style="margin-right: 10px;">
          <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
       </a>
-
+      <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/adalflow_dataclasses.py" target="_blank" style="display: flex; align-items: center; margin-right: 10px;">
+         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+         <span style="vertical-align: middle;"> Open Source Code</span>
+      </a>
    </div>
 
 DataClass
