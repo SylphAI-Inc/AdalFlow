@@ -45,8 +45,8 @@ class QA(adal.Component):
         return await self.generator.acall({"input_str": query})
 
 
-# Example usage function
 def run_basic_example():
+    """Run a basic example of the QA component"""
     qa = QA(
         model_client=GroqAPIClient(),
         model_kwargs={"model": "llama3-8b-8192"},
@@ -59,4 +59,6 @@ def run_basic_example():
     print(f"Example: {response.data.example}")
 
 
-# Additional classes and functions can be added here following the same structure
+if __name__ == "__main__":
+    print("Running basic QA example...")
+    run_basic_example()
