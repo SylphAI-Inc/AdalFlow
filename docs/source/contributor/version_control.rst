@@ -7,7 +7,7 @@ Overview
 --------
 **The version will mainly be managed by the LightRAG team. But we are glad to share how we will release the latest version here.**
 
-This guide outlines the process for releasing a new version of ``LightRAG``. 
+This guide outlines the process for releasing a new version of ``LightRAG``.
 The workflow pipeline validates the version tag, builds the package, runs tests, publishes to PyPI, and creates a release on GitHub. The workflow is triggered by tags pushed to the **Release** branch. See `GitHub tags <https://docs.github.com/en/desktop/managing-commits/managing-tags-in-github-desktop>`_ for more details on version release tagging.
 
 Steps to Release a New Version
@@ -18,7 +18,7 @@ Steps to Release a New Version
 
       [tool.poetry]
       name = "lightrag"
-      
+
       version = "0.0.0-rc.1"
       description = "The 'PyTorch' library for LLM applications. RAG=Retriever-Agent-Generator."
 
@@ -49,7 +49,7 @@ Steps to Release a New Version
       git add lightrag/pyproject.toml
       git commit -m "new version release"
       git push origin release
-   
+
    Since the workflow only processes **tags**, your file submission will not go through the version release workflow.
 
    Only the tags you pushed will get checked.
@@ -66,7 +66,7 @@ Steps to Release a New Version
    .. code-block:: python
 
       git tags # list the existing tags
-      
+
       git tag -d <tag>
       git push origin --delete <tag>
 

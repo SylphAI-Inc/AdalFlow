@@ -126,7 +126,7 @@ if __name__ == "__main__":
         debug=False,
         max_steps=12,
         strategy="constrained",
-        optimization_order="sequential"
+        optimization_order="sequential",
     )
     # val 0.694 -> 0.833, #test 0.8472 -> 0.833, adding more shots does not help
     # NOTE: raw: 40, bootstrap: 4, max_steps: 8, strategy: random, val: 86.1, test: 86.8 (+4.2% compared with dspy)

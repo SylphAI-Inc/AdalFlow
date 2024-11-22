@@ -111,7 +111,7 @@ def train(
         **gpt_3_model,
         teacher_model_config=gpt_4o_model,
         text_optimizer_model_config=gpt_4o_model,
-        backward_engine_model_config=gpt_4o_model
+        backward_engine_model_config=gpt_4o_model,
     )
     print(adal_component)
     trainer = adal.Trainer(
