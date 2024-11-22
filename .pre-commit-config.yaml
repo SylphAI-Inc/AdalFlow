@@ -16,6 +16,14 @@ repos:
         args: ['--line-length=88']
         exclude: ^docs/|.*\.(json|yaml|md|txt)$
 
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.2
+    hooks:
+      # Run the linter.
+      - id: ruff
+        args: ['--fix']
+        exclude: ^docs/|.*\.(json|yaml|md|txt)$
+
   # Add local hooks to run custom commands
   - repo: local
     hooks:
