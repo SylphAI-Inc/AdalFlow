@@ -48,6 +48,8 @@ faiss-cpu = "^1.8.0.post1"
 nltk = "^3.9.1"
 ragas = "^0.1.16"
 colorama = "^0.4.6"
+black = "^24.10.0"
+ruff = "^0.8.0"
 
 
 [build-system]
