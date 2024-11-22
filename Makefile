@@ -23,7 +23,7 @@ setup:
 .PHONY: format
 format:
 	$(PYTHON) black $(SRC_DIR)
-	$(PYTHON) ruff check $(SRC_DIR) --fix
+	git ls-files | xargs pre-commit run black --files
 
 # Run lint checks using Ruff
 .PHONY: lint

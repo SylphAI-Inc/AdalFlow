@@ -63,5 +63,9 @@ line-length = 88
 target-version = ["py311"]
 
 [tool.ruff]
-extend-ignore = ["E402"] # Ignore module-level import issues
+lint.extend-ignore = [
+    "E402",  # Ignore module-level import issues
+    "E731",
+    "UP007", # Wants | over Union, which breaks 3.8
+]
 line-length = 88
