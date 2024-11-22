@@ -78,7 +78,7 @@ class LazyImport:
     """
 
     def __init__(
-            self, import_path: str, optional_package: OptionalPackages, *args, **kwargs
+        self, import_path: str, optional_package: OptionalPackages, *args, **kwargs
     ):
         if args or kwargs:
             raise TypeError(

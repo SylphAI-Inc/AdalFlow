@@ -15,17 +15,21 @@ log = logging.getLogger(__name__)
 
 bedrock_runtime_exceptions = boto3.client(
     service_name="bedrock-runtime",
-    region_name=os.getenv("AWS_REGION_NAME", "us-east-1")
+    region_name=os.getenv("AWS_REGION_NAME", "us-east-1"),
 ).exceptions
 
 
 def get_first_message_content(completion: Dict) -> str:
     r"""When we only need the content of the first message.
     It is the default parser for chat completion."""
-    return completion['output']['message']['content'][0]['text']
+    return completion["output"]["message"]["content"][0]["text"]
 
 
-__all__ = ["BedrockAPIClient", "get_first_message_content", "bedrock_runtime_exceptions"]
+__all__ = [
+    "BedrockAPIClient",
+    "get_first_message_content",
+    "bedrock_runtime_exceptions",
+]
 
 
 class BedrockAPIClient(ModelClient):
@@ -34,15 +38,15 @@ class BedrockAPIClient(ModelClient):
     """
 
     def __init__(
-            self,
-            aws_profile_name=None,
-            aws_region_name=None,
-            aws_access_key_id=None,
-            aws_secret_access_key=None,
-            aws_session_token=None,
-            aws_connection_timeout=None,
-            aws_read_timeout=None,
-            chat_completion_parser: Callable = None,
+        self,
+        aws_profile_name=None,
+        aws_region_name=None,
+        aws_access_key_id=None,
+        aws_secret_access_key=None,
+        aws_session_token=None,
+        aws_connection_timeout=None,
+        aws_read_timeout=None,
+        chat_completion_parser: Callable = None,
     ):
         super().__init__()
         self._aws_profile_name = aws_profile_name
@@ -56,7 +60,7 @@ class BedrockAPIClient(ModelClient):
         self.session = None
         self.sync_client = self.init_sync_client()
         self.chat_completion_parser = (
-                chat_completion_parser or get_first_message_content
+            chat_completion_parser or get_first_message_content
         )
 
     def init_sync_client(self):
@@ -67,14 +71,16 @@ class BedrockAPIClient(ModelClient):
         aws_profile_name = self._aws_profile_name or os.getenv("AWS_PROFILE_NAME")
         aws_region_name = self._aws_region_name or os.getenv("AWS_REGION_NAME")
         aws_access_key_id = self._aws_access_key_id or os.getenv("AWS_ACCESS_KEY_ID")
-        aws_secret_access_key = self._aws_secret_access_key or os.getenv("AWS_SECRET_ACCESS_KEY")
+        aws_secret_access_key = self._aws_secret_access_key or os.getenv(
+            "AWS_SECRET_ACCESS_KEY"
+        )
         aws_session_token = self._aws_session_token or os.getenv("AWS_SESSION_TOKEN")
 
         config = None
         if self._aws_connection_timeout or self._aws_read_timeout:
             config = Config(
                 connect_timeout=self._aws_connection_timeout,  # Connection timeout in seconds
-                read_timeout=self._aws_read_timeout  # Read timeout in seconds
+                read_timeout=self._aws_read_timeout,  # Read timeout in seconds
             )
 
         session = boto3.Session(
@@ -93,7 +99,7 @@ class BedrockAPIClient(ModelClient):
     def parse_chat_completion(self, completion):
         log.debug(f"completion: {completion}")
         try:
-            data = completion['output']['message']['content'][0]['text']
+            data = completion["output"]["message"]["content"][0]["text"]
             usage = self.track_completion_usage(completion)
             return GeneratorOutput(data=None, usage=usage, raw_response=data)
         except Exception as e:
@@ -104,18 +110,18 @@ class BedrockAPIClient(ModelClient):
 
     def track_completion_usage(self, completion: Dict) -> CompletionUsage:
         r"""Track the completion usage."""
-        usage = completion['usage']
+        usage = completion["usage"]
         return CompletionUsage(
-            completion_tokens=usage['outputTokens'],
-            prompt_tokens=usage['inputTokens'],
-            total_tokens=usage['totalTokens']
+            completion_tokens=usage["outputTokens"],
+            prompt_tokens=usage["inputTokens"],
+            total_tokens=usage["totalTokens"],
         )
 
     def convert_inputs_to_api_kwargs(
-            self,
-            input: Optional[Any] = None,
-            model_kwargs: Dict = {},
-            model_type: ModelType = ModelType.UNDEFINED
+        self,
+        input: Optional[Any] = None,
+        model_kwargs: Dict = {},
+        model_type: ModelType = ModelType.UNDEFINED,
     ):
         """
         check the converse api doc here:
@@ -133,11 +139,11 @@ class BedrockAPIClient(ModelClient):
     @backoff.on_exception(
         backoff.expo,
         (
-                bedrock_runtime_exceptions.ThrottlingException,
-                bedrock_runtime_exceptions.ModelTimeoutException,
-                bedrock_runtime_exceptions.InternalServerException,
-                bedrock_runtime_exceptions.ModelErrorException,
-                bedrock_runtime_exceptions.ValidationException
+            bedrock_runtime_exceptions.ThrottlingException,
+            bedrock_runtime_exceptions.ModelTimeoutException,
+            bedrock_runtime_exceptions.InternalServerException,
+            bedrock_runtime_exceptions.ModelErrorException,
+            bedrock_runtime_exceptions.ValidationException,
         ),
         max_time=5,
     )

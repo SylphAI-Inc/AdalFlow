@@ -33,7 +33,7 @@ pip install "dist/adalflow-0.1.0b1-py3-none-any.whl[openai,groq,faiss]"
 
 1. Update the version in `pyproject.toml`
 2. Add the version number in `adalflow/__init__.py`
-3. Build the package 
+3. Build the package
 4. Test the package locally
 5. Push the changes to the repository
 6. Ensure to run `poetry lock --no-update` in the root directory (project-level) to update the lock file for other directories such as `tutorials`, `use_cases`, `benchmarks`, etc.
