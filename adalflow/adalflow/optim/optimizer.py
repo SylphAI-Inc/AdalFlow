@@ -67,7 +67,7 @@ class DemoOptimizer(Optimizer):
         dataset: Sequence[DataClass] = None,
         exclude_input_fields_from_bootstrap_demos: bool = False,
         *args,
-        **kwargs
+        **kwargs,
     ):
         self._weighted = weighted
         self.dataset = dataset
