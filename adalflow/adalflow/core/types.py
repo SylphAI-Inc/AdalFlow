@@ -39,7 +39,7 @@ from adalflow.components.model_client import (
     GroqAPIClient,
     OpenAIClient,
     GoogleGenAIClient,
-    OllamaClient
+    OllamaClient,
 )
 
 
