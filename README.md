@@ -142,6 +142,14 @@ You have full control over the prompt template, the model you use, and the outpu
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/AdalFlow_task_pipeline.png" alt="AdalFlow Task Pipeline">
 </p>
 
+Many providers and models accessible via the same interface:
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/multi-providers.png" alt="AdalFlow Model Providers">
+</p>
+
+[All available model providers](https://adalflow.sylph.ai/apis/components/components.model_client.html)
+
 
 <!-- LLMs are like water; they can be shaped into anything, from GenAI applications such as chatbots, translation, summarization, code generation, and autonomous agents to classical NLP tasks like text classification and named entity recognition. They interact with the world beyond the model’s internal knowledge via retrievers, memory, and tools (function calls). Each use case is unique in its data, business logic, and user experience.
 
