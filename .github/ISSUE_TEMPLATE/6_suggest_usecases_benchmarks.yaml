@@ -1,15 +1,14 @@
-name: Feature request
-description: Propose a feature for this project
-labels: ["[adalflow] new feature request"]
+name: Suggest use cases and benchmarks
+description: Propose new use cases that AdalFlow should support or benchmarks that we should compare against
+labels: ["new use cases/benchmarks"]
 body:
   - type: textarea
     attributes:
       label: Description & Motivation
-      description: A clear and concise description of the feature proposal
+      description: A clear and concise description of the new use case or benchmark proposal
       placeholder: |
         Please outline the motivation for the proposal.
-        Is your feature request related to a problem? e.g., I'm always frustrated when [...].
-        If this is related to another GitHub issue, please link it here
+
 
   - type: textarea
     attributes:

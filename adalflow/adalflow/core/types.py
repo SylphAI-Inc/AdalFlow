@@ -39,6 +39,7 @@ from adalflow.components.model_client import (
     GroqAPIClient,
     OpenAIClient,
     GoogleGenAIClient,
+    OllamaClient,
 )
 
 
@@ -86,6 +87,7 @@ class ModelClientType:
     GROQ = GroqAPIClient
     OPENAI = OpenAIClient
     GOOGLE_GENAI = GoogleGenAIClient
+    OLLAMA = OllamaClient
 
 
 # TODO: define standard required outputs
