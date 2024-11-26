@@ -494,7 +494,10 @@
 
 <span class="s2">    Visit https://docs.anthropic.com/en/docs/intro-to-claude for more api details.</span>
 
-<span class="s2">    Ensure &quot;max_tokens&quot; are set.</span>
+<span class="s2">    Note:</span>
+
+<span class="s2">    As antropic API needs users to set max_tokens, we set up a default value of 512 for the max_tokens.</span>
+<span class="s2">    You can override this value by passing the max_tokens in the model_kwargs.</span>
 
 <span class="s2">    Reference: 8/1/2024</span>
 <span class="s2">    - https://docs.anthropic.com/en/docs/about-claude/models</span>
@@ -514,6 +517,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">chat_completion_parser</span> <span class="ow">or</span> <span class="n">get_first_message_content</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_max_tokens</span> <span class="o">=</span> <span class="mi">512</span>
 
 <div class="viewcode-block" id="AnthropicAPIClient.init_sync_client">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client">[docs]</a>
@@ -580,6 +584,8 @@
             <span class="n">api_kwargs</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">},</span>
             <span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;max_tokens&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">api_kwargs</span><span class="p">:</span>
+                <span class="n">api_kwargs</span><span class="p">[</span><span class="s2">&quot;max_tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_max_tokens</span>
             <span class="c1"># if input and input != &quot;&quot;:</span>
             <span class="c1">#     api_kwargs[&quot;system&quot;] = input</span>
         <span class="k">else</span><span class="p">:</span>

@@ -612,7 +612,9 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClient</span></code></p>
 <p>A component wrapper for the Anthropic API client.</p>
 <p>Visit <a class="reference external" href="https://docs.anthropic.com/en/docs/intro-to-claude">https://docs.anthropic.com/en/docs/intro-to-claude</a> for more api details.</p>
-<p>Ensure “max_tokens” are set.</p>
+<p>Note:</p>
+<p>As antropic API needs users to set max_tokens, we set up a default value of 512 for the max_tokens.
+You can override this value by passing the max_tokens in the model_kwargs.</p>
 <p>Reference: 8/1/2024
 - <a class="reference external" href="https://docs.anthropic.com/en/docs/about-claude/models">https://docs.anthropic.com/en/docs/about-claude/models</a></p>
 <dl class="py method">

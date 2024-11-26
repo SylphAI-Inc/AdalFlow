@@ -604,34 +604,27 @@
 <p>A component wrapper for the Google GenAI API client.</p>
 <p>Visit <a class="reference external" href="https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/inference">https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/inference</a> for more api details.</p>
 <p>Info: 8/1/2024
-Tested: gemini-1.0-pro, gemini-1.5-pro-latest
-class UsageMetadata(proto.Message):</p>
-<blockquote>
-<div><dl class="simple">
-<dt>prompt_token_count: int = proto.Field(</dt><dd><p>proto.INT32,
-number=1,</p>
-</dd>
-</dl>
-<p>)
-cached_content_token_count: int = proto.Field(</p>
-<blockquote>
-<div><p>proto.INT32,
-number=4,</p>
-</div></blockquote>
-<p>)
-candidates_token_count: int = proto.Field(</p>
-<blockquote>
-<div><p>proto.INT32,
-number=2,</p>
-</div></blockquote>
-<p>)
-total_token_count: int = proto.Field(</p>
-<blockquote>
-<div><p>proto.INT32,
-number=3,</p>
-</div></blockquote>
-<p>)</p>
-</div></blockquote>
+Tested: gemini-1.0-pro, gemini-1.5-pro-latest</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">UsageMetadata</span><span class="p">(</span><span class="n">proto</span><span class="o">.</span><span class="n">Message</span><span class="p">):</span>
+
+    <span class="n">prompt_token_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">proto</span><span class="o">.</span><span class="n">INT32</span><span class="p">,</span>
+        <span class="n">number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">cached_content_token_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">proto</span><span class="o">.</span><span class="n">INT32</span><span class="p">,</span>
+        <span class="n">number</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">candidates_token_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">proto</span><span class="o">.</span><span class="n">INT32</span><span class="p">,</span>
+        <span class="n">number</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">total_token_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">proto</span><span class="o">.</span><span class="n">INT32</span><span class="p">,</span>
+        <span class="n">number</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="components.model_client.google_client.GoogleGenAIClient.init_sync_client">
 <span class="sig-name descname"><span class="pre">init_sync_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/google_client.html#GoogleGenAIClient.init_sync_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.google_client.GoogleGenAIClient.init_sync_client" title="Link to this definition">#</a></dt>

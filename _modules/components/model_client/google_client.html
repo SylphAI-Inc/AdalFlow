@@ -481,24 +481,27 @@
 
 <span class="s2">    Info: 8/1/2024</span>
 <span class="s2">    Tested: gemini-1.0-pro, gemini-1.5-pro-latest</span>
-<span class="s2">    class UsageMetadata(proto.Message):</span>
 
-<span class="s2">        prompt_token_count: int = proto.Field(</span>
-<span class="s2">            proto.INT32,</span>
-<span class="s2">            number=1,</span>
-<span class="s2">        )</span>
-<span class="s2">        cached_content_token_count: int = proto.Field(</span>
-<span class="s2">            proto.INT32,</span>
-<span class="s2">            number=4,</span>
-<span class="s2">        )</span>
-<span class="s2">        candidates_token_count: int = proto.Field(</span>
-<span class="s2">            proto.INT32,</span>
-<span class="s2">            number=2,</span>
-<span class="s2">        )</span>
-<span class="s2">        total_token_count: int = proto.Field(</span>
-<span class="s2">            proto.INT32,</span>
-<span class="s2">            number=3,</span>
-<span class="s2">        )</span>
+<span class="s2">    .. code-block:: python</span>
+
+<span class="s2">        class UsageMetadata(proto.Message):</span>
+
+<span class="s2">            prompt_token_count: int = proto.Field(</span>
+<span class="s2">                proto.INT32,</span>
+<span class="s2">                number=1,</span>
+<span class="s2">            )</span>
+<span class="s2">            cached_content_token_count: int = proto.Field(</span>
+<span class="s2">                proto.INT32,</span>
+<span class="s2">                number=4,</span>
+<span class="s2">            )</span>
+<span class="s2">            candidates_token_count: int = proto.Field(</span>
+<span class="s2">                proto.INT32,</span>
+<span class="s2">                number=2,</span>
+<span class="s2">            )</span>
+<span class="s2">            total_token_count: int = proto.Field(</span>
+<span class="s2">                proto.INT32,</span>
+<span class="s2">                number=3,</span>
+<span class="s2">            )</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
