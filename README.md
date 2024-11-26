@@ -33,10 +33,15 @@
         <a href="https://adalflow.sylph.ai/use_cases/question_answering.html">Trainer & Optimizers</a>
     <p>
 </h4>
-
 <p align="center">
     <a href="https://pypi.org/project/adalflow/">
         <img alt="PyPI Version" src="https://img.shields.io/pypi/v/adalflow?style=flat-square">
+    </a>
+    <a href="https://pypi.org/project/adalflow/">
+        <img alt="PyPI Downloads" src="https://static.pepy.tech/badge/adalflow">
+    </a>
+    <a href="https://pypi.org/project/adalflow/">
+        <img alt="PyPI Downloads" src="https://static.pepy.tech/badge/adalflow/month">
     </a>
     <a href="https://star-history.com/#SylphAI-Inc/AdalFlow">
         <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/AdalFlow?style=flat-square">
@@ -71,7 +76,20 @@ For AI researchers, product teams, and software engineers who want to learn the 
 
 
 
+# Quick Start
 
+
+Install AdalFlow with pip:
+
+```bash
+pip install adalflow
+```
+
+Please refer to the [full installation guide](https://adalflow.sylph.ai/get_started/installation.html) for more details.
+
+
+* Try the [Building Quickstart](https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing) in Colab to see how AdalFlow can build the task pipeline, including Chatbot, RAG, agent, and structured output.
+* Try the [Optimization Quickstart](https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/qas/adalflow_object_count_auto_optimization.ipynb) to see how AdalFlow can optimize the task pipeline.
 
 
 # Why AdalFlow
@@ -106,6 +124,8 @@ Here is an optimization demonstration on a text classification task:
 
 Among all libraries, AdalFlow achieved the highest accuracy with manual prompting (starting at 82%) and the highest accuracy after optimization.
 
+
+
 Further reading: [Optimize Classification](https://adalflow.sylph.ai/use_cases/classification.html)
 
 ## Light, Modular, and Model-Agnostic Task Pipeline
@@ -121,6 +141,14 @@ You have full control over the prompt template, the model you use, and the outpu
 <p align="center">
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/AdalFlow_task_pipeline.png" alt="AdalFlow Task Pipeline">
 </p>
+
+Many providers and models accessible via the same interface:
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/multi-providers.png" alt="AdalFlow Model Providers">
+</p>
+
+[All available model providers](https://adalflow.sylph.ai/apis/components/components.model_client.html)
 
 
 <!-- LLMs are like water; they can be shaped into anything, from GenAI applications such as chatbots, translation, summarization, code generation, and autonomous agents to classical NLP tasks like text classification and named entity recognition. They interact with the world beyond the model’s internal knowledge via retrievers, memory, and tools (function calls). Each use case is unique in its data, business logic, and user experience.
@@ -187,15 +215,6 @@ Just define it as a ``Parameter`` and pass it to AdalFlow's ``Generator``.
 
 </p>
 
-# Quick Install
-
-Install AdalFlow with pip:
-
-```bash
-pip install adalflow
-```
-
-Please refer to the [full installation guide](https://adalflow.sylph.ai/get_started/installation.html) for more details.
 
 
 
@@ -217,8 +236,15 @@ AdalFlow full documentation available at [adalflow.sylph.ai](https://adalflow.sy
 # AdalFlow: A Tribute to Ada Lovelace
 
 
-AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could do more than just perform calculations. As a female-led team, we aim to inspire more women to enter the AI field.
+AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could go beyond mere calculations. As a team led by a female founder, we aim to inspire more women to pursue careers in AI.
 
+# Community & Contributors
+
+The AdalFlow is a community-driven project, and we welcome everyone to join us in building the future of LLM applications.
+
+Join our [Discord](https://discord.gg/ezzszrRZvT) community to ask questions, share your projects, and get updates on AdalFlow.
+
+To contribute, please read our [Contributor Guide](https://adalflow.sylph.ai/contributor/index.html).
 
 # Contributors
 

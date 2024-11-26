@@ -1,0 +1,27 @@
+name: Improvement suggestion
+description: Suggest an improvement, a code refactor, or deprecation
+labels: ['[adalflow] improvement']
+body:
+  - type: textarea
+    attributes:
+      label: Outline & Motivation
+      description: A clear and concise description of the improvement suggestion
+      placeholder: |
+        Please outline the motivation for the proposal.
+        If this is related to another GitHub issue, please link it here
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Pitch
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: Add any other context or screenshots here.
+    validations:
+      required: false

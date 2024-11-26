@@ -1,7 +1,7 @@
 .. raw:: html
 
    <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
-      <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/notebooks/qas/adalflow_object_count_auto_optimization.ipynb" target="_blank" style="margin-right: 10px;">
+      <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/qas/adalflow_object_count_auto_optimization.ipynb" target="_blank" style="margin-right: 10px;">
          <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
       </a>
       <a href="https://github.com/SylphAI-Inc/AdalFlow/tree/main/use_cases/question_answering/bbh/object_count" target="_blank" style="display: flex; align-items: center;">
@@ -396,7 +396,7 @@ Here’s the minimum code required to get started on evaluating the task pipelin
 
         def prepare_eval(self, sample: Example, y_pred: adal.GeneratorOutput) -> float:
             y_label = -1
-            if y_pred and y_pred.data:
+            if (y_pred is not None and y_pred.data is not None):  # if y_pred and y_pred.data: might introduce bug when the data is 0
                 y_label = y_pred.data
             return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
 

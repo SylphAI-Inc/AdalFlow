@@ -8,7 +8,7 @@ SOURCEDIR     = source
 BUILDDIR      = build
 APIDOCOUTDIR  = $(SOURCEDIR)/apis
 PYTHON        := $(shell command -v python3 2>/dev/null || command -v python 2>/dev/null)
-POETRY        = poetry 
+POETRY        = poetry
 
 # Put it first so that "make" without argument is like "make help".
 help:

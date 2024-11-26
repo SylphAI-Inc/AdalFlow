@@ -1,4 +1,11 @@
-"""The most commonly used output parsers for the Generator."""
+"""The most commonly used output parsers for the Generator.
+
+Includes:
+- YamlOutputParser: YAML output parser using dataclass for schema extraction.
+- JsonOutputParser: JSON output parser using dataclass for schema extraction.
+- ListOutputParser: List output parser to parse list of objects from the string.
+- BooleanOutputParser: Boolean output parser to parse boolean values from the string.
+"""
 
 from dataclasses import is_dataclass
 from typing import Dict, Any, Optional, List

@@ -13,6 +13,8 @@ class User(DataClass):
     id: int = field(default=1, metadata={"description": "User ID"})
     name: str = field(default="John", metadata={"description": "User name"})
 
+    __input_fields__ = ["id", "name"]
+
 
 class TestOutputParsers(unittest.TestCase):
 

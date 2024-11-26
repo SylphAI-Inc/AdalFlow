@@ -12,7 +12,6 @@ from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
 boto3 = safe_import(OptionalPackages.BOTO3.value[0], OptionalPackages.BOTO3.value[1])
 
-import boto3
 from botocore.config import Config
 
 log = logging.getLogger(__name__)
@@ -27,8 +26,14 @@ def get_first_message_content(completion: Dict) -> str:
     r"""When we only need the content of the first message.
     It is the default parser for chat completion."""
     return completion["output"]["message"]["content"][0]["text"]
+    return completion["output"]["message"]["content"][0]["text"]
 
 
+__all__ = [
+    "BedrockAPIClient",
+    "get_first_message_content",
+    "bedrock_runtime_exceptions",
+]
 __all__ = [
     "BedrockAPIClient",
     "get_first_message_content",
@@ -56,10 +61,7 @@ class BedrockAPIClient(ModelClient):
         - AWS_SECRET_ACCESS_KEY: The AWS secret access key.
 
 
-    Relevant API docs:
-    1. https://docs.aws.amazon.com/bedrock/latest/APIReference/welcome.html
-    2. https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started-api-ex-python.html
-    3. https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_Converse.html#API_runtime_Converse_RequestParameters
+
 
     Example:
 
@@ -75,6 +77,7 @@ class BedrockAPIClient(ModelClient):
         "
 
         # use AWS_PROFILE_NAME and AWS_REGION_NAME from the environment variables in this case
+        # ensure you request the modelId from the AWS team
         self.generator = Generator(
             model_client=BedrockAPIClient(),
             model_kwargs={
@@ -84,12 +87,21 @@ class BedrockAPIClient(ModelClient):
                 }
             }, template=template
         )
+
+    Relevant API docs:
+    1. https://docs.aws.amazon.com/bedrock/latest/APIReference/welcome.html
+    2. https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started-api-ex-python.html
+    3. https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_Converse.html#API_runtime_Converse_RequestParameters
+    4. To setup the AWS credentials, follow the instructions here:
+    https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html
+    5. Additionally, this medium article is a good reference:
+    https://medium.com/@harangpeter/setting-up-aws-bedrock-for-api-based-text-inference-dc25ab2b216b
     """
 
     def __init__(
         self,
-        aws_profile_name=None,
-        aws_region_name=None,
+        aws_profile_name="default",
+        aws_region_name="us-west-2",  # Use a supported default region
         aws_access_key_id=None,
         aws_secret_access_key=None,
         aws_session_token=None,
@@ -140,6 +152,8 @@ class BedrockAPIClient(ModelClient):
             aws_session_token=aws_session_token,
         )
         bedrock_runtime = session.client(service_name="bedrock-runtime", config=config)
+
+        self._client = session.client(service_name="bedrock")
         return bedrock_runtime
 
     def init_async_client(self):
@@ -165,6 +179,21 @@ class BedrockAPIClient(ModelClient):
             prompt_tokens=usage["inputTokens"],
             total_tokens=usage["totalTokens"],
         )
+
+    def list_models(self):
+        # Initialize Bedrock client (not runtime)
+
+        try:
+            response = self._client.list_foundation_models()
+            models = response.get("models", [])
+            for model in models:
+                print(f"Model ID: {model['modelId']}")
+                print(f"  Name: {model['name']}")
+                print(f"  Description: {model['description']}")
+                print(f"  Provider: {model['provider']}")
+                print("")
+        except Exception as e:
+            print(f"Error listing models: {e}")
 
     def convert_inputs_to_api_kwargs(
         self,
