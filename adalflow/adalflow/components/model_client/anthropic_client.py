@@ -15,7 +15,8 @@ from adalflow.utils.lazy_import import safe_import, OptionalPackages
 anthropic = safe_import(
     OptionalPackages.ANTHROPIC.value[0], OptionalPackages.ANTHROPIC.value[1]
 )
-import anthropic
+
+# import anthropic
 from anthropic import (
     RateLimitError,
     APITimeoutError,

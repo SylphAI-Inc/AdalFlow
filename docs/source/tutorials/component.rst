@@ -1,7 +1,7 @@
 .. raw:: html
 
    <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
-      <a href="https://colab.research.google.com/drive/1aD0C8-iMB8quIn8FKhrtFAGcrboRNg2C?usp=sharing" target="_blank" style="margin-right: 10px;">
+      <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_component.ipynb" target="_blank" style="margin-right: 10px;">
          <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
       </a>
       <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/adalflow/adalflow/core/component.py" target="_blank" style="display: flex; align-items: center;">
