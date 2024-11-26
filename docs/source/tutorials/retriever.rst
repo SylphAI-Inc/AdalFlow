@@ -369,6 +369,87 @@ The printout is:
 In default, the score is a simulated probabity in range ``[0, 1]`` using consine similarity. The higher the score, the more relevant the document is to the query.
 You can check the retriever for more type of scores.
 
+LanceDBRetriever
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+To perform semantic search using LanceDB, we will use :class:`LanceDBRetriever<components.retriever.lancedb_retriever.LanceDBRetriever>`.
+The `LanceDBRetriever` is designed for efficient vector-based retrieval with LanceDB, leveraging embeddings that can be either ``List[float]`` or ``np.ndarray``.
+LanceDB supports in-memory and disk-based configurations and can handle large-scale data with high retrieval speed.
+
+.. note ::
+    The ``lancedb`` package is optional. Ensure you have it installed in your environment to use LanceDBRetriever.
+
+We will prepare the document embeddings using the `content` field.
+
+.. code-block:: python
+
+    from adalflow.core.embedder import Embedder
+    from adalflow.core.types import ModelClientType
+
+    model_kwargs = {
+        "model": "text-embedding-3-small",
+        "dimensions": 256,
+        "encoding_format": "float",
+    }
+
+    embedder = Embedder(model_client=ModelClientType.OPENAI(), model_kwargs=model_kwargs)
+    output = embedder(input=[doc["content"] for doc in documents])
+    documents_embeddings = [x.embedding for x in output.data]
+
+After initializing the LanceDB retriever, we can add documents and perform retrievals. The retriever can be set with its top-k hyperparameter during initialization.
+
+.. code-block:: python
+
+    from adalflow.components.retriever import LanceDBRetriever
+    retriever = LanceDBRetriever(embedder=embedder, dimensions=256, db_uri="/tmp/lancedb", top_k=2)
+
+    print(retriever)
+
+The printout:
+
+.. code-block::
+
+    LanceDBRetriever(
+     top_k=2, dimensions=256, total_documents=0
+     (embedder): Embedder(
+        model_kwargs={'model': 'text-embedding-3-small', 'dimensions': 256, 'encoding_format': 'float'},
+        (model_client): OpenAIClient()
+     )
+    )
+
+We can add documents to LanceDB and use the retriever for query-based searches.
+
+.. code-block:: python
+
+    documents = [
+        {
+            "title": "The Impact of Renewable Energy on the Economy",
+            "content": "Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs."
+        },
+        {
+            "title": "Understanding Solar Panels",
+            "content": "Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms."
+        },
+        {
+            "title": "Pros and Cons of Solar Energy",
+            "content": "While solar energy offers substantial environmental benefits, such as reducing carbon footprints and pollution, it also has downsides."
+        },
+        {
+            "title": "Renewable Energy and Its Effects",
+            "content": "Renewable energy sources like wind, solar, and hydro power play a crucial role in combating climate change."
+        }
+    ]
+
+    # Add documents to LanceDB
+    retriever.add_documents(documents)
+
+    # Perform retrieval queries
+    output_1 = retriever.retrieve(query="What are the benefits of renewable energy?")
+    output_2 = retriever.retrieve(query="How do solar panels impact the environment?")
+    print("Query 1 Results:", output_1)
+    print("Query 2 Results:", output_2)
+
+This setup allows the `LanceDBRetriever` to function as an efficient tool for large-scale, embedding-based document retrieval within LanceDB.
+
 BM25Retriever
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 So the semantic search works pretty well. We will see how :class:`BM25Retriever<components.retriever.bm25_retriever.BM25Retriever>` works in comparison.
