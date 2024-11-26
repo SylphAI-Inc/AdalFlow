@@ -1,11 +1,10 @@
 import unittest
 from typing import TypeVar
+from adalflow.core.functional import random_sample
+
 
 # Assuming the random_sample function is defined here or imported
 T_co = TypeVar("T_co", covariant=True)
-
-
-from adalflow.core.functional import random_sample
 
 
 class TestRandomSample(unittest.TestCase):

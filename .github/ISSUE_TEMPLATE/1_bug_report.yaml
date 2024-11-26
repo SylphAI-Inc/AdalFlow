@@ -1,6 +1,6 @@
 name: Report a bug
 description: Any errors that you encounter.
-labels: ['needs triage', 'bug']
+labels: ['bug']
 body:
   - type: markdown
     attributes:
@@ -71,10 +71,7 @@ body:
         Please provide details about your environment, including the following:
         - OS (e.g., Linux, Windows, macOS)
       value: |
-        <details>
-          <summary>Current environment</summary>
-
-        </details>
+        - OS: [e.g., Linux, Windows, macOS]
     validations:
       required: false
 

@@ -1,6 +1,6 @@
 name: Typos and doc fixes
 description: Tell us about how we can improve our documentation and Google colab/ipynb notebooks.
-labels: ["needs triage", "docs"]
+labels: ["documentation"]
 body:
   - type: textarea
     attributes:

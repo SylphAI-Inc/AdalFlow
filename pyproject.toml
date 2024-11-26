@@ -17,10 +17,7 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.11, <4.0"
 adalflow = { path = "adalflow", develop = true }
-# torch = "^2.3.1"
 openai = "^1.34.0"
-# lightrag = {path = "lightrag/dist/lightrag-0.0.0a11-py3-none-any.whl"}
-# lightrag = "^0.0.0a13"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -51,8 +48,24 @@ faiss-cpu = "^1.8.0.post1"
 nltk = "^3.9.1"
 ragas = "^0.1.16"
 colorama = "^0.4.6"
+black = "^24.10.0"
+ruff = "^0.8.0"
 
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+
+# for formatting and linting
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+[tool.ruff]
+lint.extend-ignore = [
+    "E402",  # Ignore module-level import issues
+    "E731",
+    "UP007", # Wants | over Union, which breaks 3.8
+]
+line-length = 88
