@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "adalflow"
 
-version = "0.2.5"
+version = "0.2.6"
 description = "The Library to Build and Auto-optimize LLM Applications"
 authors = ["Li Yin <li@sylphai.com>"]
 readme = "README.md"
@@ -118,10 +118,20 @@ url = "https://pypi.nvidia.com"
 # priority = "supplemental"
 # url = "https://pypi.nvidia.com"
 
-[tool.ruff]
-exclude = ["images"]
-
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+# for formatting and linting
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+[tool.ruff]
+exclude = ["images"]
+lint.extend-ignore = [
+    "E402",  # Ignore module-level import issues
+    "E731",
+    "UP007", # Wants | over Union, which breaks 3.8
+]
