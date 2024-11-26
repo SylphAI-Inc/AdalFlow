@@ -29,7 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=5422b685" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=af51538a" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
   
@@ -460,7 +460,7 @@
 
 <span class="n">bedrock_runtime_exceptions</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
     <span class="n">service_name</span><span class="o">=</span><span class="s2">&quot;bedrock-runtime&quot;</span><span class="p">,</span>
-    <span class="n">region_name</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AWS_REGION_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;us-east-1&quot;</span><span class="p">)</span>
+    <span class="n">region_name</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AWS_REGION_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;us-east-1&quot;</span><span class="p">),</span>
 <span class="p">)</span><span class="o">.</span><span class="n">exceptions</span>
 
 
@@ -469,11 +469,15 @@
 <span class="k">def</span> <span class="nf">get_first_message_content</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;When we only need the content of the first message.</span>
 <span class="sd">    It is the default parser for chat completion.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">completion</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">][</span><span class="s1">&#39;content&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;text&#39;</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="n">completion</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;text&quot;</span><span class="p">]</span></div>
 
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;BedrockAPIClient&quot;</span><span class="p">,</span> <span class="s2">&quot;get_first_message_content&quot;</span><span class="p">,</span> <span class="s2">&quot;bedrock_runtime_exceptions&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;BedrockAPIClient&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_first_message_content&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bedrock_runtime_exceptions&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
 
 <div class="viewcode-block" id="BedrockAPIClient">
@@ -484,15 +488,15 @@
 <span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">aws_profile_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">aws_region_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">aws_session_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">aws_connection_timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">aws_read_timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">chat_completion_parser</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">aws_profile_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">aws_region_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">aws_session_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">aws_connection_timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">aws_read_timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">chat_completion_parser</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_aws_profile_name</span> <span class="o">=</span> <span class="n">aws_profile_name</span>
@@ -506,7 +510,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_sync_client</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">chat_completion_parser</span> <span class="ow">or</span> <span class="n">get_first_message_content</span>
+            <span class="n">chat_completion_parser</span> <span class="ow">or</span> <span class="n">get_first_message_content</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="BedrockAPIClient.init_sync_client">
@@ -519,14 +523,16 @@
         <span class="n">aws_profile_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aws_profile_name</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AWS_PROFILE_NAME&quot;</span><span class="p">)</span>
         <span class="n">aws_region_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aws_region_name</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AWS_REGION_NAME&quot;</span><span class="p">)</span>
         <span class="n">aws_access_key_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aws_access_key_id</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AWS_ACCESS_KEY_ID&quot;</span><span class="p">)</span>
-        <span class="n">aws_secret_access_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aws_secret_access_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AWS_SECRET_ACCESS_KEY&quot;</span><span class="p">)</span>
+        <span class="n">aws_secret_access_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aws_secret_access_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span>
+            <span class="s2">&quot;AWS_SECRET_ACCESS_KEY&quot;</span>
+        <span class="p">)</span>
         <span class="n">aws_session_token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aws_session_token</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AWS_SESSION_TOKEN&quot;</span><span class="p">)</span>
 
         <span class="n">config</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aws_connection_timeout</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aws_read_timeout</span><span class="p">:</span>
             <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span>
                 <span class="n">connect_timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_aws_connection_timeout</span><span class="p">,</span>  <span class="c1"># Connection timeout in seconds</span>
-                <span class="n">read_timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_aws_read_timeout</span>  <span class="c1"># Read timeout in seconds</span>
+                <span class="n">read_timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_aws_read_timeout</span><span class="p">,</span>  <span class="c1"># Read timeout in seconds</span>
             <span class="p">)</span>
 
         <span class="n">session</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span>
@@ -551,7 +557,7 @@
     <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">):</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">completion</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">][</span><span class="s1">&#39;content&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;text&#39;</span><span class="p">]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">completion</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
             <span class="n">usage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_completion_usage</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">usage</span><span class="p">,</span> <span class="n">raw_response</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -565,21 +571,21 @@
 <a class="viewcode-back" href="../../../apis/components/components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.track_completion_usage">[docs]</a>
     <span class="k">def</span> <span class="nf">track_completion_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CompletionUsage</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Track the completion usage.&quot;&quot;&quot;</span>
-        <span class="n">usage</span> <span class="o">=</span> <span class="n">completion</span><span class="p">[</span><span class="s1">&#39;usage&#39;</span><span class="p">]</span>
+        <span class="n">usage</span> <span class="o">=</span> <span class="n">completion</span><span class="p">[</span><span class="s2">&quot;usage&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">CompletionUsage</span><span class="p">(</span>
-            <span class="n">completion_tokens</span><span class="o">=</span><span class="n">usage</span><span class="p">[</span><span class="s1">&#39;outputTokens&#39;</span><span class="p">],</span>
-            <span class="n">prompt_tokens</span><span class="o">=</span><span class="n">usage</span><span class="p">[</span><span class="s1">&#39;inputTokens&#39;</span><span class="p">],</span>
-            <span class="n">total_tokens</span><span class="o">=</span><span class="n">usage</span><span class="p">[</span><span class="s1">&#39;totalTokens&#39;</span><span class="p">]</span>
+            <span class="n">completion_tokens</span><span class="o">=</span><span class="n">usage</span><span class="p">[</span><span class="s2">&quot;outputTokens&quot;</span><span class="p">],</span>
+            <span class="n">prompt_tokens</span><span class="o">=</span><span class="n">usage</span><span class="p">[</span><span class="s2">&quot;inputTokens&quot;</span><span class="p">],</span>
+            <span class="n">total_tokens</span><span class="o">=</span><span class="n">usage</span><span class="p">[</span><span class="s2">&quot;totalTokens&quot;</span><span class="p">],</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BedrockAPIClient.convert_inputs_to_api_kwargs">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.convert_inputs_to_api_kwargs">[docs]</a>
     <span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
-            <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        check the converse api doc here:</span>
@@ -600,11 +606,11 @@
     <span class="nd">@backoff</span><span class="o">.</span><span class="n">on_exception</span><span class="p">(</span>
         <span class="n">backoff</span><span class="o">.</span><span class="n">expo</span><span class="p">,</span>
         <span class="p">(</span>
-                <span class="n">bedrock_runtime_exceptions</span><span class="o">.</span><span class="n">ThrottlingException</span><span class="p">,</span>
-                <span class="n">bedrock_runtime_exceptions</span><span class="o">.</span><span class="n">ModelTimeoutException</span><span class="p">,</span>
-                <span class="n">bedrock_runtime_exceptions</span><span class="o">.</span><span class="n">InternalServerException</span><span class="p">,</span>
-                <span class="n">bedrock_runtime_exceptions</span><span class="o">.</span><span class="n">ModelErrorException</span><span class="p">,</span>
-                <span class="n">bedrock_runtime_exceptions</span><span class="o">.</span><span class="n">ValidationException</span>
+            <span class="n">bedrock_runtime_exceptions</span><span class="o">.</span><span class="n">ThrottlingException</span><span class="p">,</span>
+            <span class="n">bedrock_runtime_exceptions</span><span class="o">.</span><span class="n">ModelTimeoutException</span><span class="p">,</span>
+            <span class="n">bedrock_runtime_exceptions</span><span class="o">.</span><span class="n">InternalServerException</span><span class="p">,</span>
+            <span class="n">bedrock_runtime_exceptions</span><span class="o">.</span><span class="n">ModelErrorException</span><span class="p">,</span>
+            <span class="n">bedrock_runtime_exceptions</span><span class="o">.</span><span class="n">ValidationException</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">max_time</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="p">)</span>
