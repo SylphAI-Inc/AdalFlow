@@ -34,11 +34,6 @@ __all__ = [
     "get_first_message_content",
     "bedrock_runtime_exceptions",
 ]
-__all__ = [
-    "BedrockAPIClient",
-    "get_first_message_content",
-    "bedrock_runtime_exceptions",
-]
 
 
 class BedrockAPIClient(ModelClient):
