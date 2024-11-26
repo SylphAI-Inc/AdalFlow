@@ -1,3 +1,15 @@
+.. raw:: html
+
+    <div style="display: flex; justify-content: flex-start; align-items: center; gap: 15px; margin-bottom: 20px;">
+    <a target="_blank" href="https://colab.research.google.com/github.com/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_modelclient.ipynb">
+        <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+    </a>
+    <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/adalflow_modelclient_sync_and_async.py" target="_blank" style="display: flex; align-items: center;">
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+        <span style="vertical-align: middle;"> Open Source Code [Partial]</span>
+    </a>
+    </div>
+
 .. _tutorials-model_client:
 
 ModelClient
@@ -267,7 +279,7 @@ The output will be:
 
 
 .. TODO: add optional package introduction here
-
+.. TODO: update additional code relavant to notebook links
 
 .. admonition:: API reference
    :class: highlight
