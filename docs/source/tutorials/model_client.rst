@@ -956,7 +956,7 @@ Groq LLM Chat - Multichat Usage
 
 Note: Groq doesnt have embedder method to get embeddings like openai
 
-The following example demonstrates how to set up a multi-turn conversation with the Groq LLM using the ``GroqAPIClient``. 
+The following example demonstrates how to set up a multi-turn conversation with the Groq LLM using the ``GroqAPIClient``.
 
 .. code-block:: python
 
