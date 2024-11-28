@@ -1,5 +1,6 @@
 """Lazy import a module and class."""
 
+from typing import List, Union
 import importlib
 import logging
 from types import ModuleType
@@ -13,12 +14,35 @@ class OptionalPackages(Enum):
     __doc__ = r"""Enum for optional packages that can be used in the library.
 
     The package name and error message are defined for each optional package as a tuple.
+
+    The value of the tuple:
+    - The package name (str): The package name to import. Follows the right syntax: such as import azure.identity but the package itself is azure-identity.
+      Support a list of package names for related packages. This will be importing a list of packages while safe_import is used.
+    - The error message (str): The message to display if the package is not found.
+
+    Example of using multiple related packages:
+
+    .. code-block:: python
+
+        from adalflow.utils.lazy_import import safe_import, OptionalPackages
+        import sys
+
+        azure_modules = safe_import(
+        OptionalPackages.AZURE.value[0],  # List of package names
+        OptionalPackages.AZURE.value[1],  # Error message
+        )
+        # Manually add each module to sys.modules to make them available globally as if imported normally
+        azure_module_names = OptionalPackages.AZURE.value[0]
+        for name, module in zip(azure_module_names, azure_modules):
+            sys.modules[name] = module
+
+        # Use the modules as if they were imported normally
+        from azure.identity import DefaultAzureCredential, get_bearer_token_provider
     """
     # model sdk
     GROQ = ("groq", "Please install groq with: pip install groq")
     OPENAI = ("openai", "Please install openai with: pip install openai")
     ANTHROPIC = ("anthropic", "Please install anthropic with: pip install anthropic")
-    BEDROCK = ("bedrock", "Please install boto3 with: pip install boto3")
     GOOGLE_GENERATIVEAI = (
         "google.generativeai",
         "Please install google-generativeai with: pip install google-generativeai",
@@ -29,9 +53,21 @@ class OptionalPackages(Enum):
     )
     COHERE = ("cohere", "Please install cohere with: pip install cohere")
     OLLAMA = ("ollama", "Please install ollama with: pip install ollama")
+    # AWS
+    BOTO3 = ("boto3", "Please install boto3 with: pip install boto3")
     # modeling library
     TORCH = ("torch", "Please install torch with: pip install torch")
 
+    # Grouping all Azure-related packages under one entry
+    AZURE = (
+        [
+            "azure.identity",
+            "azure.core",
+            # "azure.ai-formrecognizer",
+            # "azure.ai-textanalytics",
+        ],
+        "Please install Azure packages with: pip install azure-identity azure-core azure-ai-formrecognizer azure-ai-textanalytics",
+    )
     # search library
     FAISS = (
         "faiss",
@@ -121,10 +157,23 @@ class LazyImport:
         return self.class_(*args, **kwargs)
 
 
-def safe_import(module_name: str, install_message: str) -> ModuleType:
+def safe_import(
+    module_names: Union[str, List[str]], install_message: str
+) -> Union[ModuleType, List[ModuleType]]:
     """Safely import a module and raise an ImportError with the install message if the module is not found.
 
-    Mainly used internally to import optional packages only when needed.
+    Handles importing of multiple related packages.
+
+    Args:
+        module_names (list or str): The package name(s) to import.
+        install_message (str): The message to display if import fails.
+
+    Returns:
+        ModuleType: The imported module.
+
+    Raises:
+        ImportError: If any of the packages are not found.
+
 
     Example:
 
@@ -150,7 +199,14 @@ def safe_import(module_name: str, install_message: str) -> ModuleType:
         numpy = safe_import(OptionalPackages.NUMPY.value[0], OptionalPackages.NUMPY.value[1])
 
     """
-    try:
-        return importlib.import_module(module_name)
-    except ImportError:
-        raise ImportError(f"{install_message}")
+    if isinstance(module_names, str):
+        module_names = [module_names]
+
+    return_modules = []
+    for module_name in module_names:
+        try:
+            return_modules.append(importlib.import_module(module_name))
+        except ImportError:
+            raise ImportError(f"{install_message}")
+
+    return return_modules[0] if len(return_modules) == 1 else return_modules
