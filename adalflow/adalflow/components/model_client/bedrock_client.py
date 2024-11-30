@@ -123,6 +123,12 @@ class BedrockAPIClient(ModelClient):
         self.chat_completion_parser = (
             chat_completion_parser or get_first_message_content
         )
+        self.inference_parameters = [
+            "maxTokens",
+            "temperature",
+            "topP",
+            "stopSequences",
+        ]
 
     def init_sync_client(self):
         """
@@ -233,6 +239,47 @@ class BedrockAPIClient(ModelClient):
         except Exception as e:
             print(f"Error listing models: {e}")
 
+    def _validate_and_process_model_id(self, api_kwargs: Dict):
+        """
+        Validate and process the model ID in API kwargs.
+
+        :param api_kwargs: Dictionary of API keyword arguments
+        :raises KeyError: If 'model' key is missing
+        """
+        if "model" in api_kwargs:
+            api_kwargs["modelId"] = api_kwargs.pop("model")
+        else:
+            raise KeyError("The required key 'model' is missing in model_kwargs.")
+
+        return api_kwargs
+
+    def _separate_parameters(self, api_kwargs: Dict) -> tuple:
+        """
+        Separate inference configuration and additional model request fields.
+
+        :param api_kwargs: Dictionary of API keyword arguments
+        :return: Tuple of (inference_config, additional_model_request_fields)
+        """
+        inference_config = {}
+        additional_model_request_fields = {}
+        keys_to_remove = set()
+        excluded_keys = {"modelId"}
+
+        # Categorize parameters
+        for key, value in list(api_kwargs.items()):
+            if key in self.inference_parameters:
+                inference_config[key] = value
+                keys_to_remove.add(key)
+            elif key not in excluded_keys:
+                additional_model_request_fields[key] = value
+                keys_to_remove.add(key)
+
+        # Remove categorized keys from api_kwargs
+        for key in keys_to_remove:
+            api_kwargs.pop(key, None)
+
+        return api_kwargs, inference_config, additional_model_request_fields
+
     def convert_inputs_to_api_kwargs(
         self,
         input: Optional[Any] = None,
@@ -245,9 +292,17 @@ class BedrockAPIClient(ModelClient):
         """
         api_kwargs = model_kwargs.copy()
         if model_type == ModelType.LLM:
+            # Validate and process model ID
+            api_kwargs = self._validate_and_process_model_id(api_kwargs)
+
+            # Separate inference config and additional model request fields
+            api_kwargs, inference_config, additional_model_request_fields = self._separate_parameters(api_kwargs)
+
             api_kwargs["messages"] = [
                 {"role": "user", "content": [{"text": input}]},
             ]
+            api_kwargs["inferenceConfig"] = inference_config
+            api_kwargs["additionalModelRequestFields"] = additional_model_request_fields
         else:
             raise ValueError(f"Model type {model_type} not supported")
         return api_kwargs
