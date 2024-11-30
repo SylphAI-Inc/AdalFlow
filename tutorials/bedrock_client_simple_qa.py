@@ -1,5 +1,3 @@
-import os
-
 from adalflow.components.model_client import BedrockAPIClient
 from adalflow.core.types import ModelType
 from adalflow.utils import setup_env

@@ -302,7 +302,9 @@ class BedrockAPIClient(ModelClient):
             api_kwargs = self._validate_and_process_config_keys(api_kwargs)
 
             # Separate inference config and additional model request fields
-            api_kwargs, inference_config, additional_model_request_fields = self._separate_parameters(api_kwargs)
+            api_kwargs, inference_config, additional_model_request_fields = (
+                self._separate_parameters(api_kwargs)
+            )
 
             api_kwargs["messages"] = [
                 {"role": "user", "content": [{"text": input}]},
