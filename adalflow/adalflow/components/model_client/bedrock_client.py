@@ -54,6 +54,7 @@ class BedrockAPIClient(ModelClient):
     Setup:
     1. Install boto3: `pip install boto3`
     2. Ensure you have the AWS credentials set up. There are four variables you can optionally set:
+        Either AWS_PROFILE_NAME or (AWS_REGION_NAME and AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY) are needed
         - AWS_PROFILE_NAME: The name of the AWS profile to use.
         - AWS_REGION_NAME: The name of the AWS region to use.
         - AWS_ACCESS_KEY_ID: The AWS access key ID.
@@ -80,10 +81,9 @@ class BedrockAPIClient(ModelClient):
         self.generator = Generator(
             model_client=BedrockAPIClient(),
             model_kwargs={
-                "modelId": "anthropic.claude-3-sonnet-20240229-v1:0",
-                "inferenceConfig": {
-                    "temperature": 0.8
-                }
+                "model": "mistral.mistral-7b-instruct-v0:2",
+                "temperature": 0.8,
+                "max_tokens": 100
             }, template=template
         )
 
@@ -223,6 +223,7 @@ class BedrockAPIClient(ModelClient):
 
     def list_models(self, **kwargs):
         # Initialize Bedrock client (not runtime)
+        # Reference: https://docs.aws.amazon.com/bedrock/latest/APIReference/API_ListFoundationModels.html
 
         try:
             response = self._client.list_foundation_models(**kwargs)
