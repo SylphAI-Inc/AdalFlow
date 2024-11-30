@@ -221,15 +221,16 @@ class BedrockAPIClient(ModelClient):
             total_tokens=usage["totalTokens"],
         )
 
-    def list_models(self):
+    def list_models(self, **kwargs):
         # Initialize Bedrock client (not runtime)
 
         try:
-            response = self._client.list_foundation_models()
+            response = self._client.list_foundation_models(**kwargs)
             models = response.get("modelSummaries", [])
             for model in models:
                 print(f"Model ID: {model['modelId']}")
                 print(f"  Name: {model['modelName']}")
+                print(f"  Model ARN: {model['modelArn']}")
                 print(f"  Provider: {model['providerName']}")
                 print(f"  Input: {model['inputModalities']}")
                 print(f"  Output: {model['outputModalities']}")
@@ -239,7 +240,7 @@ class BedrockAPIClient(ModelClient):
         except Exception as e:
             print(f"Error listing models: {e}")
 
-    def _validate_and_process_model_id(self, api_kwargs: Dict):
+    def _validate_and_process_config_keys(self, api_kwargs: Dict):
         """
         Validate and process the model ID in API kwargs.
 
@@ -250,6 +251,10 @@ class BedrockAPIClient(ModelClient):
             api_kwargs["modelId"] = api_kwargs.pop("model")
         else:
             raise KeyError("The required key 'model' is missing in model_kwargs.")
+
+        # In .converse() `maxTokens`` is the key for maximum tokens limit
+        if "max_tokens" in api_kwargs:
+            api_kwargs["maxTokens"] = api_kwargs.pop("max_tokens")
 
         return api_kwargs
 
@@ -293,7 +298,7 @@ class BedrockAPIClient(ModelClient):
         api_kwargs = model_kwargs.copy()
         if model_type == ModelType.LLM:
             # Validate and process model ID
-            api_kwargs = self._validate_and_process_model_id(api_kwargs)
+            api_kwargs = self._validate_and_process_config_keys(api_kwargs)
 
             # Separate inference config and additional model request fields
             api_kwargs, inference_config, additional_model_request_fields = self._separate_parameters(api_kwargs)
