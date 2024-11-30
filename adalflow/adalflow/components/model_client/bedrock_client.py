@@ -99,8 +99,8 @@ class BedrockAPIClient(ModelClient):
 
     def __init__(
         self,
-        aws_profile_name="default",
-        aws_region_name="us-west-2",  # Use a supported default region
+        aws_profile_name=None,
+        aws_region_name=None,
         aws_access_key_id=None,
         aws_secret_access_key=None,
         aws_session_token=None,
