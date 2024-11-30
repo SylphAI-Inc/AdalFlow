@@ -220,12 +220,14 @@ class BedrockAPIClient(ModelClient):
 
         try:
             response = self._client.list_foundation_models()
-            models = response.get("models", [])
+            models = response.get("modelSummaries", [])
             for model in models:
                 print(f"Model ID: {model['modelId']}")
-                print(f"  Name: {model['name']}")
-                print(f"  Description: {model['description']}")
-                print(f"  Provider: {model['provider']}")
+                print(f"  Name: {model['modelName']}")
+                print(f"  Provider: {model['providerName']}")
+                print(f"  Input: {model['inputModalities']}")
+                print(f"  Output: {model['outputModalities']}")
+                print(f"  InferenceTypesSupported: {model['inferenceTypesSupported']}")
                 print("")
 
         except Exception as e:
