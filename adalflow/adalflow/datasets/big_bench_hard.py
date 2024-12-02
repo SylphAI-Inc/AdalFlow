@@ -3,7 +3,7 @@ import json
 import os
 import uuid
 from typing import Literal
-import subprocess
+from adalflow.utils.file_io import download_large_file
 from adalflow.utils.data import Dataset
 from adalflow.datasets.types import Example
 
@@ -75,23 +75,7 @@ class BigBenchHard(Dataset):
 
         print(f"Downloading dataset to {json_path}")
         try:
-            # Use subprocess and capture the return code
-            result = subprocess.call(
-                [
-                    "wget",
-                    f"https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/main/bbh/{self.task_name}.json",
-                    "-O",
-                    json_path,
-                ]
-            )
-
-            # Check if wget failed (non-zero exit code)
-            if result != 0:
-                raise ValueError(
-                    f"Failed to download dataset for task '{self.task_name}'.\n"
-                    "Please verify the task name (the JSON file name) by checking the following link:\n"
-                    "https://github.com/suzgunmirac/BIG-Bench-Hard/tree/main/bbh"
-                )
+            download_large_file(f"https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/main/bbh/{self.task_name}.json", json_path)
 
             # Check if the file is non-empty
             if not os.path.exists(json_path) or os.path.getsize(json_path) == 0:
