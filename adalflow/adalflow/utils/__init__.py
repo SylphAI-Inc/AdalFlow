@@ -45,6 +45,7 @@ __all__ = [
     "load_jsonl",
     "append_to_jsonl",
     "write_list_to_jsonl",
+    "download_large_file",
     "safe_import",
     "setup_env",
     "DataLoader",

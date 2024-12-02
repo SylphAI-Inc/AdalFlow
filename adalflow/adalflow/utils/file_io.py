@@ -4,6 +4,7 @@ import pickle
 import logging
 import requests
 import shutil
+import functools
 from typing import Mapping, Any, Optional, List, Dict
 
 
@@ -195,17 +196,18 @@ def write_list_to_jsonl(f: str, data: List[Dict[str, Any]]) -> None:
     except Exception as e:
         log.error(f"Error writing data to jsonl file {f}: {e}")
 
-    def download_large_file(url:str, destination:str):
-        r"""Download very large files without staging them in memory.
+def download_large_file(url:str, destination:str):
+    r"""Download very large files without staging them in memory.
 
-        Args:
-            url (str): URL of data to download
-            destination (str): The name of the file to write the data to.
-        """
-        try:
-            response = requests.get(url, stream=True)
-            with open(destination, 'wb') as out_file:
-                shutil.copyfileobj(response.raw, out_file)
-            print("File downloaded successfully!")
-        except requests.exceptions.RequestException as e:
-            print("Error downloading the file:", e)
+    Args:
+        url (str): URL of data to download
+        destination (str): The name of the file to write the data to.
+    """
+    try:
+        response = requests.get(url, stream=True)
+        with open(destination, 'wb') as out_file:
+            response.raw.read = functools.partial(response.raw.read, decode_content=True)
+            shutil.copyfileobj(response.raw, out_file)
+        log.info("File downloaded successfully!")
+    except requests.exceptions.RequestException as e:
+        log.exception("Error downloading the file:", e)
