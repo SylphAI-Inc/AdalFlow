@@ -13,6 +13,7 @@ from .file_io import (
     load_jsonl,
     append_to_jsonl,
     write_list_to_jsonl,
+    download_large_file,
 )
 from .logger import printc, get_logger
 from .registry import EntityMapping
@@ -44,6 +45,7 @@ __all__ = [
     "load_jsonl",
     "append_to_jsonl",
     "write_list_to_jsonl",
+    "download_large_file",
     "safe_import",
     "setup_env",
     "DataLoader",
