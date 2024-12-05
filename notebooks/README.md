@@ -19,6 +19,11 @@ The template consists of three parts:
 2. Content section of your notebook. Link to Next that users can look at.
 3. Issues and Feedback.
 
+## If you want to use a ikernel in .ipynb to test notebooks
+
+You can use the following command to install the kernel at the root of the project:
+
+```poetry run python -m ipykernel install --user --name my-project-kernel```
 
 ## If you need to use dev api
 

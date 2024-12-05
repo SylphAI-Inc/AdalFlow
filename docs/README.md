@@ -22,12 +22,13 @@ AdalFlow uses [Sphinx](https://www.sphinx-doc.org/en/master/) and [reStructuredT
 AdalFlow documentation uses `poetry` and `pyproject.toml` to manage the dependencies. You can install all the necessary packages by running:
 
 ```
-
-poetry lock
+poetry lock --no-update
 poetry install
 ```
 
-**NOTE:** The default versions of `sphinx-build` and `poetry` that come with Linux may be out of date for AdalFlow's documentation. Using "pip install" will get the latest versions of those tools.
+**NOTE:** The default versions of `sphinx-build` and `poetry` that come with Linux may be out of date for AdalFlow's documentation. Using "pip install" will get the latest versions of those packages.
+
+
 
 <!--
 All the packages are manged in the project's ``pyproject.toml`` file in the doc dependencies section. You can install all the necessary packages by running:
@@ -99,12 +100,13 @@ For example, in the `index.rst`, the `:caption: Get Started` corresponds to the 
 
 Existing sections include:
 
-`get_started/`: Includes installation and AdalFlow in 10 minutes
+* `get_started/`: Includes installation and AdalFlow in 10 minutes
 
-`tutorials/`: Includes our main tutorials
-`use_cases/`: Includes the use cases of AdalFlow that will be added in the future and which accepts community contributions
+* `tutorials/`: Includes our main tutorials
 
-`apis/`: All the source-code-related documents will be included in this directory
+* `use_cases/`: Includes the use cases of AdalFlow that will be added in the future and which accepts community contributions
+
+* `apis/`: All the source-code-related documents will be included in this directory
 
 <!-- `resources/`: Include all the AdalFlow-relevant resources. -->
 
@@ -175,23 +177,7 @@ make html
 
 And you will be able to find the newly added use_cases module.
 
-### Add New Docs
 
-If you want to add any written files such as README.md to the documentation, there is an easy way to transform the files to `.rst` files using `Pandoc`.
-
-- First, install Pandoc with Homebrew:
-
-    `brew install pandoc`
-
-- Then run `pandoc -s <input .md file> -o <path/to/target_rst_file>`. For example, in the root directory run `pandoc -s README.md -o docs/source/get_started/introduction.rst`.This command will take content from `README.md` and create an `introduction.rst` file in the specified directory.
-
-After editing, run
-
-```python
-cd docs
-make clean
-make html
-```
 
 ### Commit the Edited Documentation
 
@@ -199,7 +185,7 @@ Remember to exclude any unnecessary files in `.gitignore`. Please don’t commit
 
 Please push your updates to the GitHub repo.
 
-The structure of the code base and the docs:
+The structure of the docs directory looks like this:
 
 ```
 AdalFlow/
@@ -227,12 +213,25 @@ AdalFlow/
 │   ├── conf.py
 │   ├── index.rst
 │   ├── Makefile
-├── core/
-│   ├── __init__.py
-│   ├── module1.py
-│   ├── module2.py
-├── components/
-│   ├── __init__.py
-│   ├── module1.py
-│   ├── module2.py
+│   ├── pyproject.toml
+│   ├── poetry.lock
+```
+
+
+## [Optional] Convert Markdown to reStructuredText
+
+If you want to add any written files such as README.md to the documentation, there is an easy way to transform the files to `.rst` files using `Pandoc`.
+
+- First, install Pandoc with Homebrew:
+
+    `brew install pandoc`
+
+- Then run `pandoc -s <input .md file> -o <path/to/target_rst_file>`. For example, in the root directory run `pandoc -s README.md -o docs/source/get_started/introduction.rst`.This command will take content from `README.md` and create an `introduction.rst` file in the specified directory.
+
+After editing, run
+
+```python
+cd docs
+make clean
+make html
 ```

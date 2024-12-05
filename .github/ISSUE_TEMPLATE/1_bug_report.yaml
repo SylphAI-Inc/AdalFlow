@@ -1,0 +1,87 @@
+name: Report a bug
+description: Any errors that you encounter.
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Before you go any further. Is this really a **🐛 bug**?
+
+        If it's a question about how AdalFlow works, have a look at our [AdalFlow documentation](https://adalflow.sylph.ai/)
+        or ask a question on our [Community Discord](https://discord.gg/ezzszrRZvT).
+
+  - type: textarea
+    attributes:
+      label: Bug description
+      description: A description of the 🐛bug🐛.
+      placeholder: |
+        A clear and concise description of what the bug is.
+
+        Include steps to reproduce, the expected behaviour, and the actual behaviour.
+
+        ```
+        The error message you got, with the full traceback if available.
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: versions
+    attributes:
+      label: What version are you seeing the problem on?
+      description: Use `adalflow.__version__` to get the version if it's via pip or "main branch" if you're using the latest code.
+      render: python
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: '**Note: The rest of this form is optional, but filling it out may help us to provide better support.**'
+
+  - type: textarea
+    attributes:
+      label: How to reproduce the bug
+      description: >
+        Provide steps and example code here.
+        You can also paste a link to Google Colab.
+        ```python
+        # Sample code to reproduce the problem
+        ```
+      render: python
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Error messages and logs
+      description: >
+        Provide any error messages and/or logs
+      placeholder: '# Copy the complete error messages and logs'
+      value: |
+        ```
+        # Error messages and logs here please
+        ```
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Environment
+      description: |
+        Please provide details about your environment, including the following:
+        - OS (e.g., Linux, Windows, macOS)
+      value: |
+        - OS: [e.g., Linux, Windows, macOS]
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: More info
+      description: Add any other info about the issue here.
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: '**Happy engineering!**'

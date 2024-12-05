@@ -34,24 +34,27 @@ class GoogleGenAIClient(ModelClient):
 
     Info: 8/1/2024
     Tested: gemini-1.0-pro, gemini-1.5-pro-latest
-    class UsageMetadata(proto.Message):
 
-        prompt_token_count: int = proto.Field(
-            proto.INT32,
-            number=1,
-        )
-        cached_content_token_count: int = proto.Field(
-            proto.INT32,
-            number=4,
-        )
-        candidates_token_count: int = proto.Field(
-            proto.INT32,
-            number=2,
-        )
-        total_token_count: int = proto.Field(
-            proto.INT32,
-            number=3,
-        )
+    .. code-block:: python
+
+        class UsageMetadata(proto.Message):
+
+            prompt_token_count: int = proto.Field(
+                proto.INT32,
+                number=1,
+            )
+            cached_content_token_count: int = proto.Field(
+                proto.INT32,
+                number=4,
+            )
+            candidates_token_count: int = proto.Field(
+                proto.INT32,
+                number=2,
+            )
+            total_token_count: int = proto.Field(
+                proto.INT32,
+                number=3,
+            )
     """
 
     def __init__(self, api_key: Optional[str] = None):

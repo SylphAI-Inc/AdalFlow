@@ -1,7 +1,26 @@
+.. _components-output_parser_note:
+
+.. raw:: html
+
+   <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+      <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_dataclasses.ipynb" target="_blank" style="margin-right: 10px;">
+         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+      </a>
+      <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/parser_note.py" target="_blank" style="display: flex; align-items: center;">
+         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+         <span style="vertical-align: middle;"> Open Source Code</span>
+      </a>
+
+   </div>
+
 Parser
 =============
 
-Parser is the `interpreter` of the LLM output.
+Parser is the `interpreter` of the LLM output. We have three types of parsers:
+
+- **String Parsers**: it simply converts the string to the desired data type. They are located at :ref:`core.string_parser<core-string_parser>`.
+- **Output Parsers**: it orchestrates the parsing and output formatting(in yaml, json and more) process. They are located at :ref:`components.output_parsers.outputs<components-output_parsers-outputs>`. :class:`JsonOutputParser` and :class:`YamlOutputParser` can work with :ref:`DataClass<core-dataclass>` for structured output.
+- **DataClass Parser**: On top of `YamlOutputParser` and `JsonOutputParser`, :class:`DataClassParser<components.output_parsers.dataclass_parser.DataClassParser>` is the most compatible to work with :ref:`DataClass<core-dataclass>` for structured output.
 
 
 
@@ -140,7 +159,44 @@ Thus, ``JsonOutputParser`` and ``YamlOutputParser`` both takes the following arg
 
 - ``data_class``: the ``DataClass`` type.
 - ``examples``: the examples of the data class instance if you want to show the examples in the prompt.
-- ``exclude``: the fields to exclude from both the data format and the examples.
+- ``exclude``: the fields to exclude from both the data format and the examples, a way to tell the ``format_instructions`` on which is the output field from the data class.
+
+DataClass Parser
+~~~~~~~~~~~~~~~~~~~~
+To make things even easier for the developers, we created :class:`DataClassParser<components.output_parsers.dataclass_parser.DataClassParser>` which
+understands `__input_fields__` and `__output_fields__` of the `DataClass`, and it is especially helpful to work on a training dataset where we will have both inputs and outputs.
+Users do not have to use `exclude/include` fields to specify the output fields, it will automatically understand the output fields from the `DataClass` instance.
+
+Below is an overview of its key components and functionalities.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 20 60
+
+   * - Method
+     - Description
+     - Details
+   * - ``__init__(data_class: DataClass, return_data_class: bool = False, format_type: Literal["yaml", "json"] = "json")``
+     - Initializes the DataClassParser
+     - Takes a DataClass type, whether to return the DataClass instance after parsing, and the output format type (JSON or YAML).
+   * - ``get_input_format_str() -> str``
+     - Returns formatted instructions for input data
+     - Provides a string representation of the input fields defined in the DataClass.
+   * - ``get_output_format_str() -> str``
+     - Returns formatted instructions for output data
+     - Generates a schema string for the output fields of the DataClass.
+   * - ``get_input_str(input: DataClass) -> str``
+     - Formats the input data as a string
+     - Converts a DataClass instance to either JSON or YAML based on the specified format type.
+   * - ``get_task_desc_str() -> str``
+     - Returns the task description string
+     - Retrieves the task description associated with the DataClass, useful for context in LLM prompts.
+   * - ``get_examples_str(examples: List[DataClass], include: Optional[IncludeType] = None, exclude: Optional[ExcludeType] = None) -> str``
+     - Formats a list of example DataClass instances
+     - Generates a formatted string representation of examples, adhering to the specified ``include/exclude`` parameters.
+   * - ``call(input: str) -> Any``
+     - Parses the output string to the desired format and returns parsed output
+     - Handles both JSON and YAML parsing, converting to the corresponding DataClass if specified.
 
 .. TODO: a summary table and a diagram
 
@@ -148,7 +204,8 @@ Parser in Action
 ------------------
 All of the parsers are quite straightforward to use.
 
-**BooleanParser**
+BooleanParser
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -181,7 +238,9 @@ The printout will be:
 
 Boolean parsers will not work for '1', '0', 'yes', 'no' as they are not the standard boolean values.
 
-**IntParser**
+
+IntParser
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -210,7 +269,9 @@ The printout will be:
 
 ``IntParser`` will return the integer value of the first number in the string, even if it is a float.
 
-**FloatParser**
+
+FloatParser
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -240,7 +301,9 @@ The printout will be:
 
 ``FloatParser`` will return the float value of the first number in the string, even if it is an integer.
 
-**ListParser**
+
+ListParser
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -263,7 +326,9 @@ The output will be:
     ['key', 2]
     [{'key': 'value'}, {'key': 'value'}]
 
-**JsonParser**
+
+JsonParser
+~~~~~~~~~~~~~~~~~~
 
 Even though it can work on lists, it is better to only use it for dictionaries.
 
@@ -294,7 +359,9 @@ The output will be:
     ['key', 2]
     [{'key': 'value'}, {'key': 'value'}]
 
-**YamlParser**
+
+YamlParser
+~~~~~~~~~~~~~~~~~~
 
 Though it works almost on all of the previous examples, it is better to use it for yaml formatted dictionaries.
 
@@ -344,7 +411,9 @@ And we will demonstrate how to use ``JsonOutputParser`` and ``YamlOutputParser``
 
     user_example = User(id=1, name="John")
 
-**JsonOutputParser**
+
+JsonOutputParser
+~~~~~~~~~~~~~~~~~~
 
 Here is how to use ``JsonOutputParser``:
 
@@ -416,7 +485,9 @@ The output will be:
 
     {'id': 2, 'name': 'Jane'}
 
-**YamlOutputParser**
+
+YamlOutputParser
+~~~~~~~~~~~~~~~~~~
 
 The steps are totally the same as the ``JsonOutputParser``.
 
@@ -496,6 +567,147 @@ The output will be:
 ..    .. [1] Jinja2: https://jinja.palletsprojects.com/en/3.1.x/
 ..    .. [2] Llama3 special tokens: https://llama.meta.com/docs/model-cards-and-prompt-formats/meta-llama-3/
 
+DataclassParser in Action
+--------------------------
+
+First, let's create a new data class with both input and output fields.
+
+.. code-block:: python
+
+    @dataclass
+    class SampleDataClass(DataClass):
+        description: str = field(metadata={"desc": "A sample description"})
+        category: str = field(metadata={"desc": "Category of the sample"})
+        value: int = field(metadata={"desc": "A sample integer value"})
+        status: str = field(metadata={"desc": "Status of the sample"})
+
+        __input_fields__ = [
+            "description",
+            "category",
+        ]  # Define which fields are input fields
+        __output_fields__ = ["value", "status"]  # Define which fields are output fields
+
+
+Now, lets' create a parser that will use the `SampleDataClass` to parse the output json string back to the data class instance.
+
+.. code-block:: python
+
+    from adalflow.components.output_parsers import DataClassParser
+
+    parser = DataClassParser(data_class=SampleDataClass, return_data_class=True, format_type="json")
+
+Let's view the structure of the parser use `print(parser)`.
+
+The output will be:
+
+.. code-block::
+
+    DataClassParser(
+        data_class=SampleDataClass, format_type=json,            return_data_class=True, input_fields=['description', 'category'],            output_fields=['value', 'status']
+        (_output_processor): JsonParser()
+        (output_format_prompt): Prompt(
+            template: Your output should be formatted as a standard JSON instance with the following schema:
+            ```
+            {{schema}}
+            ```
+            -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
+            -Use double quotes for the keys and string values.
+            -DO NOT mistaken the "properties" and "type" in the schema as the actual fields in the JSON output.
+            -Follow the JSON formatting conventions., prompt_variables: ['schema']
+        )
+    )
+
+You can get the output and input format strings using the following methods:
+
+.. code-block:: python
+
+    print(parser.get_input_format_str())
+    print(parser.get_output_format_str())
+
+The output for the output format string will be:
+
+.. code-block::
+
+    Your output should be formatted as a standard JSON instance with the following schema:
+    ```
+    {
+        "value": " (int) (required)",
+        "status": " (str) (required)"
+    }
+    ```
+    -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
+    -Use double quotes for the keys and string values.
+    -DO NOT mistaken the "properties" and "type" in the schema as the actual fields in the JSON output.
+    -Follow the JSON formatting conventions.
+
+The input format string will be:
+
+.. code-block::
+
+    {
+        "description": " (str) (required)",
+        "category": " (str) (required)"
+    }
+
+Convert a json string to a data class instance:
+
+.. code-block:: python
+
+    user_input = '{"description": "Parsed description", "category": "Sample Category", "value": 100, "status": "active"}'
+    parsed_instance = parser.call(user_input)
+
+    print(parsed_instance)
+
+The output will be:
+
+.. code-block:: python
+
+    SampleDataClass(description='Parsed description', category='Sample Category', value=100, status='active')
+
+Try the examples string:
+
+.. code-block:: python
+
+    samples = [
+        SampleDataClass(
+            description="Sample description",
+            category="Sample category",
+            value=100,
+            status="active",
+        ),
+        SampleDataClass(
+            description="Another description",
+            category="Another category",
+            value=200,
+            status="inactive",
+        ),
+    ]
+
+    examples_str = parser.get_examples_str(examples=samples)
+    print(examples_str)
+
+The output will be:
+
+.. code-block:: python
+
+    examples_str:
+    {
+        "description": "Sample description",
+        "category": "Sample category",
+        "value": 100,
+        "status": "active"
+    }
+    __________
+    {
+        "description": "Another description",
+        "category": "Another category",
+        "value": 200,
+        "status": "inactive"
+    }
+    __________
+
+
+
 
 .. admonition:: API References
    :class: highlight
@@ -507,3 +719,5 @@ The output will be:
    - :class:`components.output_parsers.outputs.OutputParser`
    - :class:`components.output_parsers.outputs.BooleanOutputParser`
    - :class:`components.output_parsers.outputs.ListOutputParser`
+   - :class:`components.output_parsers.dataclass_parser.DataClassParser`
+   - :class:`core.base_data_class.DataClass`

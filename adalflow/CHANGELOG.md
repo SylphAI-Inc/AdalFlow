@@ -1,10 +1,18 @@
-<<<<<<< HEAD
-## [0.2.4] - 2024-09-23
+## [0.2.7] - 2024-09-23
 
 ### Improved
 - Better diagnose report for `Trainer.diagnose`.
 - Multi-hop RAG with handling of Cycle.
-=======
+
+## [0.2.6] - 2024-11-25
+### Improved
+- Add default `max_tokens=512` to the `AnthropicAPIClient` to avoid the error when the user does not provide the `max_tokens` in the prompt.
+
+## [0.2.5] - 2024-10-28
+
+### Fixed
+- `DataClassParser` nested data class parsing where we have to use `from_dict(json_dict)` instead of `(**json_dict)` to parse the nested data class.
+
 ## [0.2.4] - 2024-10-27
 
 ### Added
@@ -15,7 +23,6 @@
 - Wrong score in the diagnose file as `prepare_eval` is not passing classification label 0 to the `eval_input`.
 
 
->>>>>>> main
 ## [0.2.3] - 2024-09-20
 
 ### Rename

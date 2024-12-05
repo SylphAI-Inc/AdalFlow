@@ -15,7 +15,8 @@ from adalflow.utils.lazy_import import safe_import, OptionalPackages
 anthropic = safe_import(
     OptionalPackages.ANTHROPIC.value[0], OptionalPackages.ANTHROPIC.value[1]
 )
-import anthropic
+
+# import anthropic
 from anthropic import (
     RateLimitError,
     APITimeoutError,
@@ -43,7 +44,10 @@ class AnthropicAPIClient(ModelClient):
 
     Visit https://docs.anthropic.com/en/docs/intro-to-claude for more api details.
 
-    Ensure "max_tokens" are set.
+    Note:
+
+    As antropic API needs users to set max_tokens, we set up a default value of 512 for the max_tokens.
+    You can override this value by passing the max_tokens in the model_kwargs.
 
     Reference: 8/1/2024
     - https://docs.anthropic.com/en/docs/about-claude/models
@@ -63,6 +67,7 @@ class AnthropicAPIClient(ModelClient):
         self.chat_completion_parser = (
             chat_completion_parser or get_first_message_content
         )
+        self.default_max_tokens = 512
 
     def init_sync_client(self):
         api_key = self._api_key or os.getenv("ANTHROPIC_API_KEY")
@@ -115,6 +120,8 @@ class AnthropicAPIClient(ModelClient):
             api_kwargs["messages"] = [
                 {"role": "user", "content": input},
             ]
+            if "max_tokens" not in api_kwargs:
+                api_kwargs["max_tokens"] = self.default_max_tokens
             # if input and input != "":
             #     api_kwargs["system"] = input
         else:

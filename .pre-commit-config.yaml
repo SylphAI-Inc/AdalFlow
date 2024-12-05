@@ -14,13 +14,24 @@ repos:
     hooks:
       - id: black
         args: ['--line-length=88']
+        exclude: ^docs/|.*\.(json|yaml|md|txt)$
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.4.2
     hooks:
       # Run the linter.
       - id: ruff
-        args: ['--fix', '--extend-ignore=E402']
+        args: ['--fix']
+        exclude: ^docs/|.*\.(json|yaml|md|txt)$
+
+  # Add local hooks to run custom commands
+  - repo: local
+    hooks:
+      - id: run-make-format
+        name: Run Make Format
+        entry: make format
+        language: system
+        pass_filenames: false
   # - repo: https://github.com/pycqa/flake8
   #   rev: 4.0.1
   #   hooks:
