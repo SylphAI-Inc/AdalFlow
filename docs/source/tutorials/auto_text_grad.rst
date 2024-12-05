@@ -139,6 +139,13 @@ We currently have the following operators:
   - forward will be able to track the predecessors to form a DAG of parameters, this will always be helpful.
   - # a forward will
 
+10/27
+
+**Score for weighted sampling in few-shot demo**
+
+Backpropagation is also used in few-shot demo especially at passing the score backward to predecessors and accumulate to the demo parameter.
+
+
 Generator Adaptation
 ~~~~~~~~~~~~~~~~~~~~~~
 

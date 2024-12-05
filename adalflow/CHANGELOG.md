@@ -1,3 +1,8 @@
+## [0.2.7] - 2024-09-23
+
+### Improved
+- Better diagnose report for `Trainer.diagnose`.
+- Multi-hop RAG with handling of Cycle.
 
 ## [0.2.6] - 2024-11-25
 ### Improved

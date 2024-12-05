@@ -356,8 +356,6 @@ class DataClass:
 
         return dict(ordered_dict)
 
-        return ordered_dict
-
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "DataClass":
         """Create a dataclass instance from a dictionary.

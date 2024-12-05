@@ -119,10 +119,10 @@ The minimum setup to initiate a generator in the code:
 
 .. code-block:: python
 
-    from adalflow.core import Generator
+    import adalflow as adal
     from adalflow.components.model_client import GroqAPIClient
 
-    generator = Generator(
+    generator = adal.Generator(
         model_client=GroqAPIClient(),
         model_kwargs={"model": "llama3-8b-8192"},
     )

@@ -38,34 +38,34 @@ class WordSortingAdalComponent(adal.AdalComponent):
         # eval_fn = lambda question, gt_answer, pred_answer: 1
         super().__init__(task=task, eval_fn=eval_fn)
 
-    def handle_one_task_sample(self, sample: Example):
+    def prepare_task(self, sample: Example):
         return self.task.call, {"question": sample.question, "id": sample.id}
 
-    def evaluate_one_sample(
-        self, sample: Example, y_pred: adal.GeneratorOutput
-    ) -> float:
+    def prepare_eval(self, sample: Example, y_pred: adal.GeneratorOutput) -> float:
         y_label = ""
         if (
             y_pred is not None and y_pred.data is not None
         ):  # if y_pred and y_pred.data: might introduce bug when the data is 0
             y_label = y_pred.data
-        return self.eval_fn(
-            question=sample.question, gt_answer=sample.answer, pred_answer=y_label
-        )
+        return self.eval_fn, {
+            "question": sample.question,
+            "gt_answer": sample.answer,
+            "pred_answer": y_label,
+        }
 
 
 def evaluate_one_sample():
 
-    trainset, valset, testset = load_datasets(task_name="BBH_word_sorting")
+    trainset, valset, testset = load_datasets(task_name="word_sorting")
     adal_component = WordSortingAdalComponent(
         **gpt_3_model, llm_judge_model_config=gpt_3_model
     )
     example = trainset[1]
-    call, kwargs = adal_component.handle_one_task_sample(example)
+    call, kwargs = adal_component.prepare_task(example)
     output = call(**kwargs)
     print(f"output: {output}")
     print(f"trainset[0]: {example}")
-    score = adal_component.evaluate_one_sample(example, output)
+    score = adal_component.prepare_eval(example, output)
     print(score)
 
 
@@ -74,7 +74,7 @@ def diagnose(
     model_kwargs: Dict,
 ) -> Dict:
 
-    trainset, valset, testset = load_datasets(task_name="BBH_word_sorting")
+    trainset, valset, testset = load_datasets(task_name="word_sorting")
     adal_component = WordSortingAdalComponent(
         model_client, model_kwargs, llm_judge_model_config=gpt_3_model
     )
@@ -91,3 +91,4 @@ if __name__ == "__main__":
 
     # evaluate_one_sample()
     diagnose(**gpt_3_model)
+    # 0.88 train, 0.84 test, 0.72 val
