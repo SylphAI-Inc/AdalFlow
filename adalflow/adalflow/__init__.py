@@ -63,6 +63,10 @@ from adalflow.components.model_client import (
     BedrockAPIClient,
 )
 
+# data pipeline
+from adalflow.components.data_process.text_splitter import TextSplitter
+from adalflow.components.data_process.data_components import ToEmbeddings
+
 __all__ = [
     "Component",
     "fun_to_component",
@@ -102,6 +106,9 @@ __all__ = [
     "JsonOutputParser",
     "ListOutputParser",
     "DataClassParser",
+    # Data Pipeline
+    "TextSplitter",
+    "ToEmbeddings",
     # Types
     "GeneratorOutput",
     "EmbedderOutput",
