@@ -78,6 +78,7 @@ openai = "^1.12.0"
 groq = "^0.9.0"
 google-generativeai = "^0.7.2"
 anthropic = "^0.31.1"
+boto3 = "^1.35.19"
 
 [tool.poetry.group.typing.dependencies]
 mypy = "^1"
