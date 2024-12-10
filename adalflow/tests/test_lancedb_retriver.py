@@ -7,9 +7,11 @@ from adalflow.core.embedder import Embedder
 from unittest import mock
 from adalflow.core.types import EmbedderOutput, RetrieverOutput
 
+
 # Helper function to create dummy embeddings
 def create_dummy_embeddings(num_embeddings, dim):
     return np.random.rand(num_embeddings, dim).astype(np.float32)
+
 
 class TestLanceDBRetriever(unittest.TestCase):
     def setUp(self):
@@ -21,7 +23,10 @@ class TestLanceDBRetriever(unittest.TestCase):
         # Mock embedder to return dummy embeddings
         self.dummy_embeddings = create_dummy_embeddings(10, self.dimensions)
         self.embedder.return_value = EmbedderOutput(
-            data=[Mock(embedding=emb) for emb in self.dummy_embeddings[:len(self.single_query)]]
+            data=[
+                Mock(embedding=emb)
+                for emb in self.dummy_embeddings[: len(self.single_query)]
+            ]
         )
 
         with patch("lancedb.connect") as mock_db_connect:
@@ -32,7 +37,7 @@ class TestLanceDBRetriever(unittest.TestCase):
                 embedder=self.embedder,
                 dimensions=self.dimensions,
                 db_uri="/tmp/lancedb",
-                top_k=self.top_k
+                top_k=self.top_k,
             )
 
     def test_initialization(self):
@@ -68,11 +73,10 @@ class TestLanceDBRetriever(unittest.TestCase):
         )
 
         # Mock search results from LanceDB as pandas DataFrame
-        results_df = pd.DataFrame({
-            "index": [0, 1, 2],
-            "_distance": [0.1, 0.2, 0.3]
-        })
-        self.mock_table.search.return_value.limit.return_value.to_pandas.return_value = results_df
+        results_df = pd.DataFrame({"index": [0, 1, 2], "_distance": [0.1, 0.2, 0.3]})
+        self.mock_table.search.return_value.limit.return_value.to_pandas.return_value = (
+            results_df
+        )
 
         result = self.retriever.retrieve(query)
         self.assertIsInstance(result[0], RetrieverOutput)
@@ -91,11 +95,10 @@ class TestLanceDBRetriever(unittest.TestCase):
         )
 
         # Mock search results for each query
-        results_df = pd.DataFrame({
-            "index": [0, 1, 2],
-            "_distance": [0.1, 0.2, 0.3]
-        })
-        self.mock_table.search.return_value.limit.return_value.to_pandas.return_value = results_df
+        results_df = pd.DataFrame({"index": [0, 1, 2], "_distance": [0.1, 0.2, 0.3]})
+        self.mock_table.search.return_value.limit.return_value.to_pandas.return_value = (
+            results_df
+        )
 
         result = self.retriever.retrieve(queries)
         self.assertEqual(len(result), len(queries))
@@ -106,10 +109,9 @@ class TestLanceDBRetriever(unittest.TestCase):
 
     def test_retrieve_with_empty_query(self):
         # Mock the empty results DataFrame
-        self.mock_table.search.return_value.limit.return_value.to_pandas.return_value = pd.DataFrame({
-            "index": [],
-            "_distance": []
-        })
+        self.mock_table.search.return_value.limit.return_value.to_pandas.return_value = pd.DataFrame(
+            {"index": [], "_distance": []}
+        )
 
     def test_retrieve_with_no_index(self):
         empty_retriever = LanceDBRetriever(
@@ -128,12 +130,10 @@ class TestLanceDBRetriever(unittest.TestCase):
                 embedder=self.embedder,
                 dimensions=self.dimensions,
                 db_uri="/tmp/lancedb",
-                overwrite=True
+                overwrite=True,
             )
             mock_db.create_table.assert_called_once_with(
-                "documents",
-                schema=mock.ANY,
-                mode="overwrite"
+                "documents", schema=mock.ANY, mode="overwrite"
             )
 
 

@@ -75,7 +75,7 @@ class OptionalPackages(Enum):
     )
 
     LANCEDB = (
-      "lancedb",
+        "lancedb",
         "Please install lancedb with: pip install lancedb .",
     )
 

@@ -11,12 +11,24 @@ from adalflow.core.types import RetrieverOutput
 log = logging.getLogger(__name__)
 
 # Defined data types
-LanceDBRetrieverDocumentEmbeddingType = Union[List[float], np.ndarray]  # single embedding
+LanceDBRetrieverDocumentEmbeddingType = Union[
+    List[float], np.ndarray
+]  # single embedding
 LanceDBRetrieverDocumentsType = Sequence[LanceDBRetrieverDocumentEmbeddingType]
 
+
 # Step 2: Define the LanceDBRetriever class
-class LanceDBRetriever(Retriever[LanceDBRetrieverDocumentEmbeddingType, Union[str, List[str]]]):
-    def __init__(self, embedder: Embedder, dimensions: int, db_uri: str = "/tmp/lancedb", top_k: int = 5, overwrite: bool = True):
+class LanceDBRetriever(
+    Retriever[LanceDBRetrieverDocumentEmbeddingType, Union[str, List[str]]]
+):
+    def __init__(
+        self,
+        embedder: Embedder,
+        dimensions: int,
+        db_uri: str = "/tmp/lancedb",
+        top_k: int = 5,
+        overwrite: bool = True,
+    ):
         """
         LanceDBRetriever is a retriever that leverages LanceDB to efficiently store and query document embeddings.
 
@@ -39,13 +51,17 @@ class LanceDBRetriever(Retriever[LanceDBRetrieverDocumentEmbeddingType, Union[st
         self.dimensions = dimensions
 
         # Define table schema with vector field for embeddings
-        schema = pa.schema([
-            pa.field("vector", pa.list_(pa.float32(), list_size=self.dimensions)),
-            pa.field("content", pa.string())
-        ])
+        schema = pa.schema(
+            [
+                pa.field("vector", pa.list_(pa.float32(), list_size=self.dimensions)),
+                pa.field("content", pa.string()),
+            ]
+        )
 
         # Create or overwrite the table for storing documents and embeddings
-        self.table = self.db.create_table("documents", schema=schema, mode="overwrite" if overwrite else "append")
+        self.table = self.db.create_table(
+            "documents", schema=schema, mode="overwrite" if overwrite else "append"
+        )
 
     def add_documents(self, documents: Sequence[Dict[str, Any]]):
         """
@@ -63,13 +79,18 @@ class LanceDBRetriever(Retriever[LanceDBRetrieverDocumentEmbeddingType, Union[st
         embeddings = self.embedder(input=doc_texts).data
 
         # Format embeddings for LanceDB
-        data = [{"vector": embedding.embedding, "content": text} for embedding, text in zip(embeddings, doc_texts)]
+        data = [
+            {"vector": embedding.embedding, "content": text}
+            for embedding, text in zip(embeddings, doc_texts)
+        ]
 
         # Add data to LanceDB table
         self.table.add(data)
         log.info(f"Added {len(documents)} documents to the index")
 
-    def retrieve(self, query: Union[str, List[str]], top_k: Optional[int] = None) -> List[RetrieverOutput]:
+    def retrieve(
+        self, query: Union[str, List[str]], top_k: Optional[int] = None
+    ) -> List[RetrieverOutput]:
         """.
         Retrieve top-k documents from LanceDB for a given query or queries.
         Args:
@@ -83,11 +104,13 @@ class LanceDBRetriever(Retriever[LanceDBRetrieverDocumentEmbeddingType, Union[st
             query = [query]
 
         if not query or (isinstance(query, str) and query.strip() == ""):
-                raise ValueError("Query cannot be empty.")
+            raise ValueError("Query cannot be empty.")
 
         # Check if table (index) exists before performing search
         if not self.table:
-            raise ValueError("The index has not been initialized or the table is missing.")
+            raise ValueError(
+                "The index has not been initialized or the table is missing."
+            )
 
         query_embeddings = self.embedder(input=query).data
         output: List[RetrieverOutput] = []
@@ -105,9 +128,11 @@ class LanceDBRetriever(Retriever[LanceDBRetrieverDocumentEmbeddingType, Union[st
             scores = results["_distance"].tolist()
 
             # Append results to output
-            output.append(RetrieverOutput(
-                doc_indices=indices,
-                doc_scores=scores,
-                query=query[0] if len(query) == 1 else query
-            ))
+            output.append(
+                RetrieverOutput(
+                    doc_indices=indices,
+                    doc_scores=scores,
+                    query=query[0] if len(query) == 1 else query,
+                )
+            )
         return output
