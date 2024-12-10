@@ -57,6 +57,7 @@ anthropic = { version = "^0.31.1", optional = true }
 google-generativeai = { version = "^0.7.2", optional = true }
 cohere = { version = "^5.5.8", optional = true }
 ollama = { version = "^0.2.1", optional = true }
+lancedb = { version = "^0.5.2", optional = true }
 
 
 # Azure dependencies
@@ -78,6 +79,9 @@ openai = "^1.12.0"
 groq = "^0.9.0"
 google-generativeai = "^0.7.2"
 anthropic = "^0.31.1"
+lancedb = "^0.5.2"
+
+
 
 [tool.poetry.group.typing.dependencies]
 mypy = "^1"
@@ -108,6 +112,7 @@ faiss-cpu = ["faiss-cpu"]
 sqlalchemy = ["sqlalchemy"]
 torch = ["torch"]
 ollama = ["ollama"]
+lancedb = ["lancedb"]
 azure = [
     "azure-core",
     "azure-identity",
