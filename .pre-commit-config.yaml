@@ -16,8 +16,6 @@ repos:
         args: ['--config=pyproject.toml']
         exclude: ^docs/|.*\.(json|yaml|md|txt)$
 
-
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.8.2
     hooks:
