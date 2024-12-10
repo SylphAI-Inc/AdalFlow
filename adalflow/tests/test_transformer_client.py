@@ -9,7 +9,6 @@ torch.set_num_interop_threads(1)
 
 class TestTransformerModelClient(unittest.TestCase):
     def setUp(self) -> None:
-
         self.query = "what is panda?"
         self.documents = [
             "The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China.",

@@ -21,7 +21,6 @@ dspy.settings.configure(rm=colbertv2_wiki17_abstracts)
 
 
 def load_datasets():
-
     trainset = HotPotQA(split="train", size=20)
     valset = HotPotQA(split="val", size=50)
     testset = HotPotQA(split="test", size=50)
@@ -109,7 +108,6 @@ class DspyRetriever(Retriever):
         self.dspy_retriever = dspy.Retrieve(k=top_k)
 
     def call(self, input: str, top_k: Optional[int] = None) -> List[RetrieverOutput]:
-
         k = top_k or self.top_k
 
         output = self.dspy_retriever(query_or_queries=input, k=k)
@@ -255,7 +253,6 @@ def test_retriever():
 
 
 def test_vailla_rag():
-
     from use_cases.config import (
         gpt_3_model,
     )

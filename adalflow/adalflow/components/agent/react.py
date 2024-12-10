@@ -224,7 +224,6 @@ class ReActAgent(Component):
         """Parse the action string to a function call and execute it. Update the action_step with the result."""
         action = action_step.action
         try:
-
             fun: Function = self.tool_manager.parse_func_expr(action)
             result: FunctionOutput = self.tool_manager.execute_func(fun)
             # TODO: optimize the action_step

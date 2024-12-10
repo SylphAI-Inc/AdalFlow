@@ -82,7 +82,6 @@ def test_object_count_task():
 
 
 if __name__ == "__main__":
-
     # task = ObjectCountTask(**gpt_3_model)
     # task_original = ObjectCountTaskOriginal(**gpt_3_model)
 

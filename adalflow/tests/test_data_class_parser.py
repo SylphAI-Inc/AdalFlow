@@ -25,7 +25,6 @@ class NestedOutput(DataClass):
 
 
 class TestDataClassParser(unittest.TestCase):
-
     def setUp(self):
         self.basic_data_class = BasicOutput
         self.nested_data_class = NestedOutput

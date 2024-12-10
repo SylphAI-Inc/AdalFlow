@@ -25,7 +25,6 @@ class ObjectCount(dspy.Module):
         self.generate_answer = dspy.ChainOfThought(GenerateAnswer)
 
     def forward(self, question):
-
         pred = self.generate_answer(question=question)
         answer = _parse_integer_answer(pred.answer, only_first_line=False)
         answer = str(answer)  # dspy will assume these fields are strings not integers

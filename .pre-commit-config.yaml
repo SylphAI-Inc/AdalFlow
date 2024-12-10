@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -10,28 +10,35 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/psf/black
-    rev: 24.4.2
+    rev: 24.10.0
     hooks:
       - id: black
-        args: ['--line-length=88']
+        args: ['--config=pyproject.toml']
         exclude: ^docs/|.*\.(json|yaml|md|txt)$
 
+
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.2
+    rev: v0.8.2
     hooks:
       # Run the linter.
       - id: ruff
-        args: ['--fix']
+        args: ['--fix', '--config=pyproject.toml']
+        exclude: ^docs/|.*\.(json|yaml|md|txt)$
+      - id: ruff-format
+        args: ['--config=pyproject.toml']
         exclude: ^docs/|.*\.(json|yaml|md|txt)$
 
-  # Add local hooks to run custom commands
+  # stage files after ruff
   - repo: local
     hooks:
-      - id: run-make-format
-        name: Run Make Format
-        entry: make format
+      - id: git-add
+        name: git-add
+        entry: git add
         language: system
-        pass_filenames: false
+        stages: [commit]
+        pass_filenames: true
+
   # - repo: https://github.com/pycqa/flake8
   #   rev: 4.0.1
   #   hooks:

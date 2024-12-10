@@ -1,4 +1,4 @@
-"""BM25 retriever implementation. """
+"""BM25 retriever implementation."""
 
 from typing import List, Dict, Optional, Callable, Any, Sequence
 import numpy as np
@@ -232,9 +232,7 @@ class BM25Retriever(Retriever[str, RetrieverStrQueryType]):
 
     def _calc_idf(self):
         idf_sum = 0
-        negative_idf = (
-            []
-        )  # idf can be negative if word is too common: more than half of the documents
+        negative_idf = []  # idf can be negative if word is too common: more than half of the documents
         self.idf: Dict[str, float] = {}
         for token, freq in self.nd.items():
             idf = math.log(self.total_documents - freq + 0.5) - math.log(freq + 0.5)

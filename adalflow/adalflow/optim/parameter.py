@@ -170,9 +170,9 @@ class Parameter(Generic[T]):
         self._score: float = score  # end to end evaluation score
 
         self._student_traces: Dict[str, DataClass] = {}  # id
-        self._demos: List[DataClass] = (
-            []
-        )  # used for the optimizer to save the proposed demos
+        self._demos: List[
+            DataClass
+        ] = []  # used for the optimizer to save the proposed demos
         self._previous_demos: List[DataClass] = []
         self.eval_input = eval_input
 
@@ -419,7 +419,6 @@ class Parameter(Generic[T]):
     def backward(
         self,
     ):  # engine should be the llm or customized backwards function to pass feedback
-
         # topological sort of all the predecessors of the current parameter in the graph
         log.debug(f"Backward pass for {self.data}, backward function: {self.grad_fn}")
         topo: List[Parameter] = []
@@ -577,7 +576,6 @@ class Parameter(Generic[T]):
             log.info(f"Node: {n.name}, {n.to_dict()}")
             # track gradients
             for g in n.gradients:
-
                 log.info(f"Gradient: {g.name}, {g.to_dict()}")
                 log.info(f"Gradient prompt: {g.gradient_prompt}")
         for n1, n2 in edges:
@@ -685,7 +683,6 @@ class Parameter(Generic[T]):
 
 
 def _check_and_reduce_gradients(variable: Parameter) -> Set[Parameter]:
-
     if variable.get_gradient_and_context_text() == "":
         log.debug(f"No gradients detected for {variable.data}")
         return variable.gradients

@@ -179,7 +179,6 @@ def test_json_parser_escape_single_quotes():
 
 
 class TestExtractYamlStr(unittest.TestCase):
-
     def test_extract_yaml_with_triple_backticks(self):
         text = """```yaml
 name: John

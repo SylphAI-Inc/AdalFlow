@@ -48,7 +48,6 @@ class Embedder(Component):
         model_kwargs: Dict[str, Any] = {},
         output_processors: Optional[Component] = None,
     ) -> None:
-
         super().__init__(model_kwargs=model_kwargs)
         if not isinstance(model_kwargs, Dict):
             raise TypeError(

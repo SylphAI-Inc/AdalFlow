@@ -117,7 +117,6 @@ class GoogleGenAIClient(ModelClient):
                 raise TypeError("input must be a sequence of text")
             final_model_kwargs["input"] = input
         elif model_type == ModelType.LLM:
-
             final_model_kwargs["prompt"] = input
         else:
             raise ValueError(f"model_type {model_type} is not supported")

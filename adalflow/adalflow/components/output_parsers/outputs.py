@@ -145,7 +145,6 @@ class YamlOutputParser(OutputParser):
         exclude_fields: ExcludeType = None,
         return_data_class: bool = False,
     ):
-
         super().__init__()
         if not is_dataclass(data_class):
             raise TypeError(f"Provided class is not a dataclass: {data_class}")
@@ -349,7 +348,6 @@ class BooleanOutputParser(OutputParser):
         return "The output should be a boolean value. True or False."
 
     def call(self, input: str) -> bool:
-
         input = input.strip()
         output = None
         # evaluate the expression to get the boolean value

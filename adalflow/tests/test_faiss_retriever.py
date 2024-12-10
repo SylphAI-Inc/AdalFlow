@@ -20,7 +20,6 @@ def create_dummy_embeddings(num_embeddings, dim, normalize=True):
 
 
 class TestFAISSRetriever(unittest.TestCase):
-
     def setUp(self):
         self.dimensions = 128
         self.num_embeddings = 10

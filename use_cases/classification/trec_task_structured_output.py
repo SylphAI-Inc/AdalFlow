@@ -30,7 +30,6 @@ Format: class_index. class_name, class_description
 
 
 class TRECClassifierStructuredOutput(adal.Component):
-
     def __init__(self, model_client: adal.ModelClient, model_kwargs: Dict):
         super().__init__()
 
@@ -112,7 +111,6 @@ class TRECClassifierStructuredOutput(adal.Component):
 
 
 if __name__ == "__main__":
-
     from benchmarks.config import gpt_3_model, load_model
     from use_cases.classification.data import load_datasets
 

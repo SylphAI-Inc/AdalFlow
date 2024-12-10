@@ -189,10 +189,8 @@ class DataClass:
     __output_fields__: List[str] = []
 
     def __post_init__(self):
-
         for f in fields(self):
             if "desc" not in f.metadata and "description" not in f.metadata:
-
                 logger.debug(
                     f"Class {  self.__class__.__name__} Field {f.name} is missing 'desc' in metadata"
                 )

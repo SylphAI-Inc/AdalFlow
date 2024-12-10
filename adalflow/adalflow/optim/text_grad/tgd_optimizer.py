@@ -253,9 +253,9 @@ class TGDOptimizer(TextOptimizer):
         return grad_memory
 
     def _get_user_prompt_kwargs(self, param: Parameter) -> Dict[str, str]:
-
         variable_and_peer_info = self.variable_and_peers_info.call(
-            variable=param.get_param_info(), peers=param.peers  # param.peers
+            variable=param.get_param_info(),
+            peers=param.peers,  # param.peers
         )
 
         user_prompt_kwargs = {

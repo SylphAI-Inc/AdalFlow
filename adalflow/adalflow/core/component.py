@@ -138,9 +138,7 @@ class Component:
     training: bool
     teacher_mode: bool = False
     tracing: bool = False
-    name: str = (
-        "Component"  # name will help with GradComponent output naming as "{name}_output"
-    )
+    name: str = "Component"  # name will help with GradComponent output naming as "{name}_output"
     _component_type = "base"
 
     # def _generate_unique_name(self):
@@ -840,7 +838,6 @@ class Component:
                 )
             self.register_parameter(name, value)
         else:  # set component
-
             components = self.__dict__.get("_components")
             if isinstance(value, Component):
                 if components is None:

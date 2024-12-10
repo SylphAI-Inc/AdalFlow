@@ -49,7 +49,6 @@ class ComplexData(DataClass):
 
 # Define the test class
 class TestDataclassFuncConversion(unittest.TestCase):
-
     def test_simple_data(self):
         simple = SimpleData(name="John", age=30, score=95.5)
         simple_dict = custom_asdict(simple)
@@ -191,7 +190,6 @@ class TestDataclassFuncConversion(unittest.TestCase):
 
 
 class TestDataClassBaseClassConversion(unittest.TestCase):
-
     def test_dict_data(self):
         simple1 = SimpleData(name="John", age=30, score=95.5)
         simple2 = SimpleData(name="Jane", age=25, score=88.0)
@@ -330,7 +328,6 @@ class ComplexData2(DataClass):
 
 # Define the test class
 class TestDataClassYamlJsonConversion(unittest.TestCase):
-
     def test_simple_data(self):
         simple = SimpleData(name="John", age=30, score=95.5)
         simple_dict = simple.to_dict()

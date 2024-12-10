@@ -82,7 +82,6 @@ def train_diagnose(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
 ) -> Dict:
-
     trainset, valset, testset = load_datasets()
 
     adal_component = VallinaRAGAdal(
