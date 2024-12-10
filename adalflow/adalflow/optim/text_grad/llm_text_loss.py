@@ -1,4 +1,5 @@
-"""Implementation of TextGrad: Automatic “Differentiation” via Text"""
+"""Implementation of TextGrad: Automatic “Differentiation” via Text.
+This code is not used."""
 
 from typing import Union, TYPE_CHECKING
 

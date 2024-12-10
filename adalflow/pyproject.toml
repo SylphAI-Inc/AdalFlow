@@ -122,6 +122,10 @@ datasets = ["datasets"]
 name = "nvidia-pypi"
 priority = "supplemental"
 url = "https://pypi.nvidia.com"
+# [[tool.poetry.source]]
+# name = "nvidia-pypi"
+# priority = "supplemental"
+# url = "https://pypi.nvidia.com"
 
 
 [build-system]

@@ -57,9 +57,6 @@ class GradComponent(Component):
         1. for all args and kwargs, if it is a `Parameter` object, it will be tracked as `Predecessor`.
         2. Trace input_args and full_response in the parameter object.
         3. Return the parameter object.
-
-        TODO: all Gradcomponent should not allow args but only kwargs.
-        For now, just check if id is in kwargs.
         """
 
         from adalflow.optim.parameter import Parameter
@@ -85,9 +82,13 @@ class GradComponent(Component):
         for v in input_args.values():
             if isinstance(v, Parameter):
                 predecessors.append(v)
+                if v.param_type == ParameterType.INPUT:
+                    v.data_id = kwargs.get("id", None)
         for v in kwargs.values():
             if isinstance(v, Parameter):
                 predecessors.append(v)
+                if v.param_type == ParameterType.INPUT:
+                    v.data_id = kwargs.get("id", None)
 
         # 2. unwrap the parameter object to take only the data, successor_map_fn: lambda x: x.data in default
         # unwrap args
@@ -133,6 +134,28 @@ class GradComponent(Component):
         )
         return response
 
-    def backward(self, *args, **kwargs):
-        pass
-        # raise NotImplementedError("backward method is not implemented")
+    def backward(self, *, response: "Parameter", id: str = None, **kwargs):
+        """Backward pass of the function. In default, it will pass all the scores to the predecessors.
+
+        Note: backward is mainly used internally and better to only allow kwargs as the input.
+
+        Subclass should implement this method if you need additional backward logic.
+        """
+        log.info(f"GradComponent backward: {response.name}")
+        children_params = response.predecessors
+
+        if response.get_gradient_and_context_text().strip() == "":
+            log.info(f"Generator: Backward: No gradient found for {response}.")
+
+        for pred in children_params:
+            pred.set_score(response._score)
+            from adalflow.utils.logger import printc
+
+            printc(
+                f"Retriever: Backward: {pred.name} set_score: {response._score}, {response.name}",
+                "blue",
+            )
+            if pred.param_type == ParameterType.DEMOS:
+                pred.add_score_to_trace(
+                    trace_id=id, score=response._score, is_teacher=self.teacher_mode
+                )

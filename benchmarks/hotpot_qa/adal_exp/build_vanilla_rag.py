@@ -108,7 +108,9 @@ class DspyRetriever(Retriever):
         self.top_k = top_k
         self.dspy_retriever = dspy.Retrieve(k=top_k)
 
-    def call(self, input: str, top_k: Optional[int] = None) -> List[RetrieverOutput]:
+    def call(
+        self, input: str, top_k: Optional[int] = None, id: str = None
+    ) -> List[RetrieverOutput]:
 
         k = top_k or self.top_k
 
@@ -180,7 +182,7 @@ class VanillaRAG(adal.GradComponent):
                 "This component is not supposed to be called in training mode"
             )
 
-        retriever_out = self.retriever.call(input=question)
+        retriever_out = self.retriever.call(input=question, id=id)
 
         successor_map_fn = lambda x: (  # noqa E731
             "\n\n".join(x[0].documents) if x and x[0] and x[0].documents else ""
@@ -205,7 +207,7 @@ class VanillaRAG(adal.GradComponent):
     def forward(self, question: str, id: str = None) -> adal.Parameter:
         if not self.training:
             raise ValueError("This component is not supposed to be called in eval mode")
-        retriever_out = self.retriever.forward(input=question)
+        retriever_out = self.retriever.forward(input=question, id=id)
         successor_map_fn = lambda x: (  # noqa E731
             "\n\n".join(x.data[0].documents)
             if x.data and x.data[0] and x.data[0].documents
@@ -281,9 +283,9 @@ def test_vailla_rag():
 
     generator_out.draw_graph()
 
-    task.eval()
-    generator_out = task.call(question=question, id="1")
-    print(f"generator_out: {generator_out}")
+    # task.eval()
+    # generator_out = task.call(question=question, id="1")
+    # print(f"generator_out: {generator_out}")
 
 
 if __name__ == "__main__":
