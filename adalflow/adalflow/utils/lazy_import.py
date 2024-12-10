@@ -74,6 +74,11 @@ class OptionalPackages(Enum):
         "Please install faiss with: pip install faiss-cpu (or faiss if you use GPU)",
     )
 
+    LANCEDB = (
+        "lancedb",
+        "Please install lancedb with: pip install lancedb .",
+    )
+
     # db library
     SQLALCHEMY = (
         "sqlalchemy",
