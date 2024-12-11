@@ -114,9 +114,9 @@ class LLMOptimizer(Optimizer):
         # Ensure the temperature is at least 1
         model_kwargs["temperature"] = max(1, model_kwargs.get("temperature", 1))
 
-        self.instruction_history: List[
-            Instruction
-        ] = []  # trace the history of the instructions
+        self.instruction_history: List[Instruction] = (
+            []
+        )  # trace the history of the instructions
         self.starter_instruction: Optional[str] = None
         if self.instruction_parameter.data is not None:
             self.starter_instruction = self.instruction_parameter.data

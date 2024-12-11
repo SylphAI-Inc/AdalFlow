@@ -59,9 +59,9 @@ class GeneratorStateLogger:
         self.filename = filename or "generator_state_trace.json"
         self.filepath = os.path.join(self.filepath, self.filename)
 
-        self._trace_map: Dict[
-            str, List[GeneratorStatesRecord]
-        ] = {}  # generator_name: [prompt_states]
+        self._trace_map: Dict[str, List[GeneratorStatesRecord]] = (
+            {}
+        )  # generator_name: [prompt_states]
         # load previous records if the file exists
         if os.path.exists(self.filepath):
             self.load(self.filepath)

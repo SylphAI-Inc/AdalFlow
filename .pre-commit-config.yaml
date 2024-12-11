@@ -23,19 +23,16 @@ repos:
       - id: ruff
         args: ['--fix', '--config=pyproject.toml']
         exclude: ^docs/|.*\.(json|yaml|md|txt)$
-      - id: ruff-format
-        args: ['--config=pyproject.toml']
-        exclude: ^docs/|.*\.(json|yaml|md|txt)$
 
   # stage files after ruff
   - repo: local
     hooks:
-      - id: git-add
-        name: git-add
-        entry: git add
+      - id: run-make-format
+        name: Run Make Format
+        entry: make format
         language: system
         stages: [commit]
-        pass_filenames: true
+        pass_filenames: false
 
   # - repo: https://github.com/pycqa/flake8
   #   rev: 4.0.1

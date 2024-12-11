@@ -79,9 +79,3 @@ lint.extend-ignore = [
     "UP007", # Wants | over Union, which breaks 3.8
 ]
 exclude = ["docs/*"]
-
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-skip-magic-trailing-comma = false
-line-ending = 'auto'

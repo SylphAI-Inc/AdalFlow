@@ -170,9 +170,9 @@ class Parameter(Generic[T]):
         self._score: float = score  # end to end evaluation score
 
         self._student_traces: Dict[str, DataClass] = {}  # id
-        self._demos: List[
-            DataClass
-        ] = []  # used for the optimizer to save the proposed demos
+        self._demos: List[DataClass] = (
+            []
+        )  # used for the optimizer to save the proposed demos
         self._previous_demos: List[DataClass] = []
         self.eval_input = eval_input
 

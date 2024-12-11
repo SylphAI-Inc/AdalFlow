@@ -24,7 +24,6 @@ setup:
 format:
 	$(PYTHON) black $(SRC_DIR) --config pyproject.toml
 	$(PYTHON) ruff check --fix $(SRC_DIR)
-	$(PYTHON) ruff format $(SRC_DIR)
 # remove git ls-files | xargs pre-commit run black --files, causes a circular dependency
 
 # Run lint checks using Ruff

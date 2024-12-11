@@ -139,7 +139,8 @@ class BootstrapFewShot(DemoOptimizer):
                         )
                     # if demo.id in demos and demos[demo.id].score is not None:
                     w = (
-                        w - student_demo_score
+                        w
+                        - student_demo_score
                         # w - demos[demo.id].score
                     )  # assign higher weights to failed demos but successful in augmented
                     if w < 0:

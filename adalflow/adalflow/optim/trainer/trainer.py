@@ -1517,7 +1517,8 @@ class Trainer(Component):
         error_indices = [i for i, score in enumerate(acc_score_list) if score <= 0.5]
 
         if (
-            len(error_indices) + len(correct_indices) <= max_moving_batch_size
+            len(error_indices) + len(correct_indices)
+            <= max_moving_batch_size
             # and len(correct_indices) <= max_moving_batch_size
         ):
             return all_samples, all_losses, all_y_preds, acc_score_list
