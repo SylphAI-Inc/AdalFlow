@@ -27,6 +27,11 @@ QdrantRetriever = LazyImport(
     OptionalPackages.QDRANT,
 )
 
+LanceDBRetriever = LazyImport(
+    "adalflow.components.retriever.lancedb_retriver.LanceDBRetriever",
+    OptionalPackages.LANCEDB,
+)
+
 __all__ = [
     "BM25Retriever",
     "LLMRetriever",
@@ -34,6 +39,7 @@ __all__ = [
     "RerankerRetriever",
     "PostgresRetriever",
     "QdrantRetriever",
+    "LanceDBRetriever",
     "split_text_by_word_fn",
     "split_text_by_word_fn_then_lower_tokenized",
 ]
