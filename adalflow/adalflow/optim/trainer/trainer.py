@@ -27,7 +27,7 @@ from adalflow.optim.text_grad.ops import sum_ops
 from adalflow.utils import save_json, load_json
 from adalflow.utils.cache import hash_text_sha1
 from adalflow.utils.data import DataLoader
-
+from adalflow.utils.logger import printc
 from adalflow.optim.types import TrainerValidateStats
 
 
@@ -854,7 +854,9 @@ class Trainer(Component):
         return debug_path
 
     def _fit_text_grads_one_step_for_debug(self, train_loader: Any) -> str:
-        print("Debugging fitting one step with batch size 2 for text optimizer")
+        printc(
+            "Debugging fitting one step with batch size 2 for text optimizer", "blue"
+        )
 
         self.prep_ckpt_file_path()
         debug_path = os.path.join(self.ckpt_path, "debug_text_grads")
@@ -865,7 +867,7 @@ class Trainer(Component):
         self.adaltask.train()  # this will turn everything to train mode
         correct_loss = None
         failed_loss = None
-        print("Finding one successful and one failed loss")
+        printc("Finding one successful and one failed loss", "blue")
         for batch in train_loader:
             y_preds = self.adaltask.train_step(batch, 0, self.num_workers)
             losses = self.adaltask.loss_step(batch, y_preds, 0, self.num_workers)

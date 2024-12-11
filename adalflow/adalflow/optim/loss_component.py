@@ -10,7 +10,11 @@ from adalflow.core.component import Component
 
 
 class LossComponent(Component):
-    __doc__ = """A base class to define interfaces for an auto-grad component/operator.
+    __doc__ = """A base class to define a loss component.
+
+    Loss component is to compute the textual gradients/feedback for each of its predecessors using another LLM as the backward engine.
+
+    Each precessor should have basic information that is passed to its next component to inform its type such as retriever or generator and its role description.
 
     Compared with `Component`, `GradComponent` defines three important interfaces:
     - `forward`: the forward pass of the function, returns a `Parameter` object that can be traced and backpropagated.

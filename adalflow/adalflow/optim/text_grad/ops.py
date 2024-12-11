@@ -76,8 +76,11 @@ class Sum(GradComponent):
 
     def backward(self, summation: Parameter):
         """
-        Performs the backward pass of the sum operation.
-        This is simply an idempotent operation, where we make a gradient with the combined feedback and add it to the predecessors'grads.
+        Computes gradients for the predecessors of the sum operation.
+        There is no gradient computation for the sum operation itself.
+        It is a simple way to combine multiple losses for convenience.
+
+        sum.backward() => [loss1.backward(), loss2.backward(), ...]
 
         :param summation: The parameter representing the sum.
         :type summation: Parameter

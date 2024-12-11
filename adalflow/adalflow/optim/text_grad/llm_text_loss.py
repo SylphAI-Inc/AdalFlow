@@ -1,5 +1,6 @@
 """Implementation of TextGrad: Automatic “Differentiation” via Text.
-This code is not used."""
+This code is not used as we treat the non-optimizable version of LLM judge as a form of eval_fn.
+We use class EvalFnToTextLoss instead as of today 12/9/2024"""
 
 from typing import Union, TYPE_CHECKING
 

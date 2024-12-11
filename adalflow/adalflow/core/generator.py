@@ -469,6 +469,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         print(
             f"unwrapped_prompt_kwargs: {unwrapped_prompt_kwargs}, model_kwargs: {model_kwargs}"
         )
+        print(f"prompt template: {self.template}")
 
         output: GeneratorOutputType = None
         input_args = {}
