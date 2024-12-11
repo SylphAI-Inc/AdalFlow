@@ -18,13 +18,10 @@ class SimpleQA(Component):
     ):
         super().__init__()
         if provider == "openai":
-
             model_client = OpenAIClient()
         elif provider == "groq":
-
             model_client = GroqAPIClient()
         elif provider == "anthropic":
-
             model_client = AnthropicAPIClient()
         else:
             raise ValueError(f"Unknown provider: {provider}")

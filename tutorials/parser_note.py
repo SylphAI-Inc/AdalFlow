@@ -1,5 +1,4 @@
 def examples_of_different_ways_to_parse_string():
-
     int_str = "42"
     float_str = "42.0"
     boolean_str = "True"  # json works with true/false
@@ -178,7 +177,6 @@ def bool_parser():
 
 
 def list_parser():
-
     from adalflow.core.string_parser import ListParser
 
     list_str = '["key", "value"]'

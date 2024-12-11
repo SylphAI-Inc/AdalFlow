@@ -42,7 +42,6 @@ class ComponentWithSuperInit(Component):
 
 class TestComponent(TestCase):
     def test_component_missing_super_init(self):
-
         with pytest.raises(AttributeError):
             a = ComponentMissSuperInit("John", 30)  # noqa: F841
 

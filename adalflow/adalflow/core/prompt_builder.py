@@ -169,9 +169,7 @@ def _convert_prompt_kwargs_to_str(prompt_kwargs: Dict) -> Dict[str, str]:
     prompt_kwargs_str: Dict[str, str] = {}
 
     for key, p in prompt_kwargs.items():
-
         if isinstance(p, Parameter):
-
             prompt_kwargs_str[key] = p.data
         else:
             prompt_kwargs_str[key] = p

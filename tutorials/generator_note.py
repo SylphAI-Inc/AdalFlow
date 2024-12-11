@@ -164,7 +164,6 @@ def use_model_client_enum_to_switch_client():
 
 
 def create_purely_from_config():
-
     from adalflow.utils.config import new_component
     from adalflow.core import Generator
 
@@ -195,7 +194,6 @@ def create_purely_from_config():
 
 
 def create_purely_from_config_2():
-
     from adalflow.core import Generator
 
     config = {

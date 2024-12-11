@@ -129,7 +129,6 @@ class ToolManager(Component):
         r"""Execute the function expression. Support both sync and async functions."""
         func: Function = self.parse_func_expr(expr)
         try:
-
             return self.execute_func(func)
         except Exception as e:
             # NOTE: if the function expression is not a function call, try to execute it as a function expression

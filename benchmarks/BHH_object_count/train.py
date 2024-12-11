@@ -33,7 +33,6 @@ def load_datasets(max_samples=10):
 
 
 def train(dspy_trainset=None):
-
     print("Training on", len(dspy_trainset), "samples", dspy_trainset[0])
 
     teleprompter = BootstrapFewShot(metric=validate_exact_match)

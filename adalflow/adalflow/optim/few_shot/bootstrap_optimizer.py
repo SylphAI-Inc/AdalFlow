@@ -71,7 +71,6 @@ class BootstrapFewShot(DemoOptimizer):
             )
 
         for score in scores:
-
             if not isinstance(score, float):
                 raise ValueError(
                     f"score must be a float, got {type(score)}, score: {score}"
@@ -198,7 +197,6 @@ class BootstrapFewShot(DemoOptimizer):
         sample_strs = []
         for sample in samples:
             try:
-
                 # process the input fields
                 if augmented:
                     exclude_fields = ["id", "score"]
@@ -239,7 +237,6 @@ class BootstrapFewShot(DemoOptimizer):
 
                     demo_str = ""
                     if len(sampled_augmented_demos) > 0:
-
                         demo_str = self.samples_to_str(
                             samples=sampled_augmented_demos,
                             augmented=True,

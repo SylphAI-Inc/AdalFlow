@@ -34,7 +34,6 @@ def extract_class_index_value(text: str, get_feedback=False):
 
 
 class TRECClassifierStringOutput(adal.Component):
-
     def __init__(self, model_client: adal.ModelClient, model_kwargs: Dict):
         super().__init__()
 
@@ -91,7 +90,6 @@ class TRECClassifierStringOutput(adal.Component):
 
 
 if __name__ == "__main__":
-
     from benchmarks.config import gpt_3_model, load_model
     from use_cases.classification.data import load_datasets
 

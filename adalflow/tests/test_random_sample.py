@@ -8,7 +8,6 @@ T_co = TypeVar("T_co", covariant=True)
 
 
 class TestRandomSample(unittest.TestCase):
-
     def setUp(self):
         """Set up a common dataset for testing."""
         self.dataset = [1, 2, 3, 4, 5]

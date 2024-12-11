@@ -1,5 +1,4 @@
 def python_str_format_example(task_desc_str: str, input_str: str):
-
     # percent(%) formatting
     print("<SYS>%s</SYS> User: %s" % (task_desc_str, input_str))
 
@@ -58,7 +57,6 @@ def adalflow_default_prompt():
 
 
 if __name__ == "__main__":
-
     task_desc_str = "You are a helpful assitant"
     input_str = "What is the capital of France?"
     tools = ["google", "wikipedia", "wikidata"]

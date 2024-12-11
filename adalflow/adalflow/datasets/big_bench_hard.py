@@ -41,7 +41,6 @@ class BigBenchHard(Dataset):
         *args,
         **kwargs,
     ):
-
         if split not in ["train", "val", "test"]:
             raise ValueError("Split must be one of 'train', 'val', 'test'")
 
@@ -65,7 +64,6 @@ class BigBenchHard(Dataset):
                 )  # dont use a tuple, use a dict {"x": ..., "y": ...}
 
     def _check_or_download_dataset(self, data_path: str = None, split: str = "train"):
-
         if data_path is None:
             raise ValueError("data_path must be specified")
         json_path = os.path.join(data_path, f"{self.task_name}.json")

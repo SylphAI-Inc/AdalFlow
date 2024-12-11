@@ -83,7 +83,6 @@ def train_diagnose_teacher(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
 ) -> Dict:
-
     trainset, valset, testset = load_datasets()
 
     adal_component = ObjectCountAdalComponent(model_client, model_kwargs)
@@ -139,7 +138,6 @@ def train(
 
 
 if __name__ == "__main__":
-
     train(
         debug=True,
         max_steps=12,

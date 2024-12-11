@@ -4,7 +4,6 @@ from adalflow.components.data_process.text_splitter import TextSplitter
 
 
 class TestTextSplitter(unittest.TestCase):
-
     def setUp(self):
         # Set up a TextSplitter instance before each test
         self.splitter = TextSplitter(split_by="word", chunk_size=5, chunk_overlap=2)

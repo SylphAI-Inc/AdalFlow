@@ -49,7 +49,6 @@ def trace_generator_states(
     """
 
     def decorator(cls):
-
         original_init = cls.__init__
         class_name = cls.__name__
         logger_project_name = project_name or class_name
@@ -221,7 +220,6 @@ def trace_generator_call(
 
                 # handle the file registration
                 if attr_name not in generator_names_to_files:
-
                     self.generator_call_logger.register_generator(attr_name)
                     filename = self.generator_call_logger.get_log_location(attr_name)
                     log.info(f"Registered generator {attr_name} with file {filename}")

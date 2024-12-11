@@ -22,12 +22,14 @@ setup:
 # Format code using Black and Ruff
 .PHONY: format
 format:
-	$(PYTHON) black $(SRC_DIR)
-	git ls-files | xargs pre-commit run black --files
+	$(PYTHON) black $(SRC_DIR) --config pyproject.toml
+	$(PYTHON) ruff check --fix $(SRC_DIR)
+# remove git ls-files | xargs pre-commit run black --files, causes a circular dependency
 
 # Run lint checks using Ruff
 .PHONY: lint
 lint:
+	$(PYTHON) black --check $(SRC_DIR) --config pyproject.toml
 	$(PYTHON) ruff check $(SRC_DIR)
 
 # Run all pre-commit hooks on all files

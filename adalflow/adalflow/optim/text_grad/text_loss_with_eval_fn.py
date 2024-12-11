@@ -116,7 +116,6 @@ class EvalFnToTextLoss(LossComponent):
                 "EvalFnToTextLoss: No backward engine provided. Creating one using model_client and model_kwargs."
             )
             if model_client and model_kwargs:
-
                 self.set_backward_engine(backward_engine, model_client, model_kwargs)
         else:
             if not isinstance(backward_engine, BackwardEngine):

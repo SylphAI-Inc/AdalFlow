@@ -68,7 +68,6 @@ def test_retriever_recall():
 # This test is skipped by default. To run this test locally, set the environment variable RUN_LOCAL_TESTS to True (export RUN_LOCAL_TESTS=true).
 @pytest.mark.skipif(not os.getenv("RUN_LOCAL_TESTS"), reason="Skip unless on local")
 def test_llm_as_judge():
-
     questions = [
         "Is Beijing in China?",
         "Is Apple founded before Google?",

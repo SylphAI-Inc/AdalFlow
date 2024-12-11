@@ -252,7 +252,6 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
     if is_dataclass(cls) or is_potential_dataclass(
         cls
     ):  # Optional[Address] will be false, and true for each check
-
         log.debug(
             f"{is_dataclass(cls)} of {cls}, {is_potential_dataclass(cls)} of {cls}"
         )
@@ -922,7 +921,6 @@ def get_top_k_indices_scores(
 
 
 def generate_readable_key_for_function(fn: Callable) -> str:
-
     module_name = fn.__module__
     function_name = fn.__name__
     return f"{module_name}.{function_name}"
@@ -1236,7 +1234,6 @@ def parse_json_str_to_obj(json_str: str) -> Union[Dict[str, Any], List[Any]]:
         except json.JSONDecodeError:
             # 3rd attemp using yaml
             try:
-
                 # NOTE: parsing again with pyyaml
                 #       pyyaml is less strict, and allows for trailing commas
                 #       right now we rely on this since guidance program generates

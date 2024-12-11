@@ -6,7 +6,6 @@ from adalflow.optim.parameter import Parameter
 
 
 class TestGradComponent(unittest.TestCase):
-
     def setUp(self):
         self.component = GradComponent()
         self.component.name = "test_component"

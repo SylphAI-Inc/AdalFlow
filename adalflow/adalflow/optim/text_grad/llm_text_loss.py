@@ -68,5 +68,4 @@ class LLMAsTextLoss(LossComponent):
     #     return self.forward(*args, **kwargs)
 
     def forward(self, *args, **kwargs) -> "Parameter":
-
         return self.loss_llm.forward(*args, **kwargs)

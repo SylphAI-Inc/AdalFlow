@@ -17,7 +17,6 @@ class User(DataClass):
 
 
 class TestOutputParsers(unittest.TestCase):
-
     def setUp(self):
         self.user_example = User(id=1, name="John")
         self.json_user_to_parse = '{"id": 2, "name": "Jane"}'

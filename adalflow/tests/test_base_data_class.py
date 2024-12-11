@@ -247,7 +247,6 @@ class TestBaseDataClass(unittest.TestCase):
 
 
 class TestGetTypeSchema(unittest.TestCase):
-
     def test_enum_schema(self):
         result = get_type_schema(Label)
         expected = "Enum[Label(SPAM=spam, NOT_SPAM=not_spam)]"
@@ -383,5 +382,4 @@ class TestUnnestedDataclass(unittest.TestCase):
 
 
 if __name__ == "__main__":
-
     unittest.main()

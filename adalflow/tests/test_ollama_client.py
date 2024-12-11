@@ -15,7 +15,6 @@ from adalflow.components.model_client.ollama_client import OllamaClient
 
 
 class TestOllamaModelClient(unittest.TestCase):
-
     def test_ollama_llm_client(self):
         ollama_client = Mock(spec=OllamaClient())
         print("Testing ollama LLM client")

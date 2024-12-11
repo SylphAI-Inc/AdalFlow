@@ -16,7 +16,6 @@ from adalflow.components.model_client import OpenAIClient
 
 # TODO: RAG can potentially be a component itsefl and be provided to the users
 class RAG(Component):
-
     def __init__(self):
         super().__init__()
 

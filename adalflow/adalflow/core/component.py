@@ -840,7 +840,6 @@ class Component:
                 )
             self.register_parameter(name, value)
         else:  # set component
-
             components = self.__dict__.get("_components")
             if isinstance(value, Component):
                 if components is None:

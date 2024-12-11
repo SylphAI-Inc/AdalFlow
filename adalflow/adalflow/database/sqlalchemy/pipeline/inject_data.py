@@ -83,7 +83,6 @@ class EmbeddingPipeline:
     def __call__(self, documents: List[Document]):
         batch_size = self.batch_size
         for i in range(0, len(documents), batch_size):
-
             List = documents[i : i + batch_size]
             print(i, len(List))
             self.process_batch(List)

@@ -37,7 +37,6 @@ class TrecClassifier(dspy.Module):
         self.max_hops = max_hops
 
     def forward(self, question):
-
         pred = self.generate_answer(question=question)
         return dspy.Prediction(answer=pred.answer)
 

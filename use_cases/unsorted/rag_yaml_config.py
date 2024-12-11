@@ -32,7 +32,6 @@ dotenv.load_dotenv(dotenv_path=".env", override=True)
 
 # TODO: RAG can potentially be a component itsefl and be provided to the users
 class RAG(Component):
-
     def __init__(self, settings: dict):
         super().__init__()
         self.vectorizer_settings = settings["vectorizer"]

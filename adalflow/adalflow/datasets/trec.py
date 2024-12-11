@@ -28,7 +28,6 @@ def calculate_class_weights(labels: torch.Tensor) -> torch.Tensor:
 
 
 def sample_subset_dataset(dataset, num_samples: int, sample_weights):
-
     # Create a WeightedRandomSampler to get 400 samples
     sampler = WeightedRandomSampler(
         weights=sample_weights, num_samples=num_samples, replacement=False
@@ -171,7 +170,6 @@ class TrecDataset(Dataset):
                 )
 
     def _check_or_download_dataset(self, data_path: str = None, split: str = "train"):
-
         if data_path is None:
             raise ValueError("data_path must be specified")
         split_csv_path = os.path.join(data_path, f"{split}.csv")

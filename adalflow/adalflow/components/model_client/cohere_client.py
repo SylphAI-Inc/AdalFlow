@@ -105,7 +105,6 @@ class CohereAPIClient(ModelClient):
         if (
             model_type == ModelType.RERANKER
         ):  # query -> # scores for top_k documents, index for the top_k documents, return as tuple
-
             response = self.sync_client.rerank(**api_kwargs)
             top_k_scores = [result.relevance_score for result in response.results]
             top_k_indices = [result.index for result in response.results]

@@ -86,7 +86,6 @@ class Sum(GradComponent):
         pred_params = summation.predecessors  # losses
         summation_gradients = summation.get_gradient_and_context_text().strip()
         for param in pred_params:
-
             if param.check_if_already_computed_gradient_respect_to(summation.id):
                 log.info(
                     f"Gradient already computed for {param.role_desc} with respect to {summation.role_desc}"
@@ -102,7 +101,6 @@ class Sum(GradComponent):
             ):  # as loss sum to be the base, it simply allows gradients computations on multiple losses
                 param_gradient_value = ""
             else:  # as a mid layer, it will have a combined feedback
-
                 param_gradient_value = f"Here is the combined feedback we got for this specific {param.role_desc} and other parameters: {summation_gradients}."
 
             extra = {

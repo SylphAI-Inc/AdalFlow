@@ -8,7 +8,6 @@ from adalflow.optim.sampler import RandomSampler
 
 
 class TestBootstrapFewShotRandomSampler:
-
     def setup_method(self):
         r"""
         Test the optimizer before the output processor which converts result to a string

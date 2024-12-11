@@ -5,7 +5,6 @@ from adalflow.components.model_client.azureai_client import AzureAIClient
 
 
 class TestAzureAIClient(unittest.TestCase):
-
     @patch("adalflow.components.model_client.azureai_client.AzureOpenAI")
     @patch("adalflow.components.model_client.azureai_client.DefaultAzureCredential")
     def setUp(self, MockDefaultAzureCredential, MockAzureOpenAI):
