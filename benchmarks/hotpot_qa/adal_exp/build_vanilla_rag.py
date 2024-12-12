@@ -114,6 +114,9 @@ class DspyRetriever(Retriever):
 
         k = top_k or self.top_k
 
+        if not input:
+            raise ValueError(f"Input cannot be empty, top_k: {k}")
+
         output = self.dspy_retriever(query_or_queries=input, k=k)
         # print(f"dsy_retriever output: {output}")
         final_output: List[RetrieverOutput] = []
@@ -202,6 +205,16 @@ class VanillaRAG(adal.GradComponent):
         # print(f"retrieved_context: {retrieved_context}")
         # print(f"retriever_out: {retriever_out}")
         return output
+
+    # def call(self, *, question: str, id: str = None) -> adal.GeneratorOutput:
+    #     self.train()
+    #     out = self.forward(question=question, id=id)
+    #     if not isinstance(out, adal.Parameter):
+    #         raise ValueError(
+    #             "This output should be a Parameter, please check the forward function"
+    #         )
+    #     self.eval()
+    #     return out.data
 
     # TODO: add id in the retriever output
     def forward(self, question: str, id: str = None) -> adal.Parameter:

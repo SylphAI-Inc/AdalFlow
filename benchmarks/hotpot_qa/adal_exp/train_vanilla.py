@@ -4,7 +4,7 @@ import adalflow as adal
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from adalflow.datasets.types import HotPotQAData
 
-from benchmarks.hotpot_qa.adal_train import load_datasets
+from benchmarks.hotpot_qa._adal_train import load_datasets
 from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import VanillaRAG
 from use_cases.config import gpt_3_model, gpt_4o_model
 

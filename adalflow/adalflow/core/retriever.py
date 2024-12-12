@@ -126,6 +126,8 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
             requires_opt=True,
             param_type=ParameterType.HYPERPARAM,
         )
+        if input is None:
+            raise ValueError("Input cannot be empty")
         response = super().forward(input, top_k=top_k, **kwargs)
         response.param_type = (
             ParameterType.RETRIEVER_OUTPUT

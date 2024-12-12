@@ -4,7 +4,7 @@ import adalflow as adal
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from adalflow.datasets.types import HotPotQAData
 
-from benchmarks.hotpot_qa.adal_train import load_datasets
+from benchmarks.hotpot_qa._adal_train import load_datasets
 from benchmarks.hotpot_qa.adal_exp.build_multi_hop_rag import MultiHopRAG
 from use_cases.config import gpt_3_model, gpt_4o_model
 
@@ -157,7 +157,10 @@ if __name__ == "__main__":
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     # TODO: test debug mode
     train(
-        debug=True,
-        max_steps=5,
+        debug=False,
+        max_steps=12,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )
+
+    # notes for debug: if have nontype, delete all model cache and try again
+    #    raise ValueError(ValueError: score must be provided for each demo,

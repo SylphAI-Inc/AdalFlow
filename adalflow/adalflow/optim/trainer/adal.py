@@ -394,6 +394,11 @@ class AdalComponent(Component):
                 samples[i] = sample  # Keep the sample order aligned
                 # check the ordering
 
+                if isinstance(y_pred, Parameter):
+                    raise ValueError(f"y_pred_{i} is a Parameter, {y_pred}")
+
+                print(f"y_pred: {y_pred})")
+
                 assert (
                     y_pred.id == sample.id
                 ), f"ID mismatch: {y_pred.id} != {sample.id}, type: {type(y_pred)}"
@@ -469,6 +474,7 @@ class AdalComponent(Component):
         """
         # TODO: let use decide which mode to be
         self.task.eval()
+        self.task.use_teacher(mode=False)  # ensure the teacher is not used
         completed_y_preds, completed_samples, index_to_score = self.pred_step(
             batch, batch_idx, num_workers, running_eval=True, min_score=minimum_score
         )

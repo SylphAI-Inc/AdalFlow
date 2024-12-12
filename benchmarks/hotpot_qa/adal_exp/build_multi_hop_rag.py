@@ -11,7 +11,7 @@ from adalflow.optim.parameter import Parameter, ParameterType
 from adalflow.core.retriever import Retriever
 
 from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import DspyRetriever
-
+from adalflow.utils.logger import printc
 
 colbertv2_wiki17_abstracts = dspy.ColBERTv2(
     url="http://20.102.90.50:2017/wiki17_abstracts"
@@ -71,7 +71,6 @@ class DeduplicateList(adal.GradComponent):
         return [x for x in exisiting_list + new_list if not (x in seen or seen.add(x))]
 
     def backward(self, *args, **kwargs):
-        from adalflow.utils.logger import printc
 
         printc(f"DeduplicateList backward: {args}", "yellow")
         return super().backward(*args, **kwargs)
@@ -297,6 +296,7 @@ class MultiHopRetriever2(adal.Retriever):
     # TODO: simplify and avoid the need where users need to write two methods (call and forward)
     def call(self, *, input: str, id: str = None) -> List[adal.RetrieverOutput]:
         # assemble the foundamental building blocks
+        printc(f"question: {input}", "yellow")
         out = self.forward(input=input, id=id)
 
         if not isinstance(out, adal.Parameter):
@@ -306,8 +306,8 @@ class MultiHopRetriever2(adal.Retriever):
 
     def forward(self, *, input: str, id: str = None) -> adal.Parameter:
         # assemble the foundamental building blocks
+        printc(f"question: {input}", "yellow")
         context = []
-        print(f"question: {input}")
 
         queries: List[str] = []
 
@@ -326,7 +326,7 @@ class MultiHopRetriever2(adal.Retriever):
                 if x.full_response
                 and x.full_response.data
                 and x.full_response.data.query
-                else None
+                else x.data.raw_response if x.data and x.data.raw_response else None
             )
             print(f"query {i}: {success_map_fn(gen_out)}")
 
@@ -335,6 +335,9 @@ class MultiHopRetriever2(adal.Retriever):
             gen_out.add_successor_map_fn(
                 successor=self.retrievers[i], map_fn=success_map_fn
             )
+
+            if success_map_fn(gen_out) is None:
+                raise ValueError(f"The query is None, please check the generator {i}")
 
             retrieve_out = self.retrievers[i].forward(input=gen_out, id=id)
 
@@ -362,14 +365,11 @@ class MultiHopRetriever2(adal.Retriever):
 
         context.data = context_to_retrover_output(context)
 
-        from adalflow.utils.logger import printc
-
         printc(f"MultiHopRetriever2 grad fn: {context.grad_fn}", "yellow")
 
         return context
 
     def backward(self, *args, **kwargs):
-        from adalflow.utils.logger import printc
 
         printc(f"MultiHopRetriever2 backward: {args}", "yellow")
         super().backward(*args, **kwargs)

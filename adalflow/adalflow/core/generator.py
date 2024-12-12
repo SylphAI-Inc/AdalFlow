@@ -4,6 +4,7 @@ It is a pipeline that consists of three subcomponents."""
 
 import json
 import re
+import os
 from pathlib import Path
 
 from typing import Any, Dict, Optional, Union, Callable, Tuple, List
@@ -46,6 +47,8 @@ __all__ = ["Generator", "BackwardEngine", "create_teacher_generator"]
 
 
 log = logging.getLogger(__name__)
+
+DEBUG_MODE = os.environ.get("DEBUG_MODE", False)
 
 PromptArgType = Dict[str, Union[str, Parameter]]
 
@@ -465,11 +468,11 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 unwrapped_prompt_kwargs[k] = v.map_to_successor(self)
             else:
                 unwrapped_prompt_kwargs[k] = v
-
-        print(
-            f"unwrapped_prompt_kwargs: {unwrapped_prompt_kwargs}, model_kwargs: {model_kwargs}"
-        )
-        print(f"prompt template: {self.template}")
+        if DEBUG_MODE:
+            print(
+                f"unwrapped_prompt_kwargs: {unwrapped_prompt_kwargs}, model_kwargs: {model_kwargs}"
+            )
+            print(f"prompt template: {self.template}")
 
         output: GeneratorOutputType = None
         input_args = {}
@@ -478,10 +481,11 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         else:
             if self.teacher_mode and not isinstance(self, BackwardEngine):
                 if not self._teacher:
-                    print(
-                        f"unwrapped_prompt_kwargs: {unwrapped_prompt_kwargs}, model_kwargs: {model_kwargs}"
-                    )
-                    print(f"names: {self.name}")
+                    if DEBUG_MODE:
+                        print(
+                            f"unwrapped_prompt_kwargs: {unwrapped_prompt_kwargs}, model_kwargs: {model_kwargs}"
+                        )
+                        print(f"names: {self.name}")
                     raise ValueError("Teacher generator is not set.")
                 log.info(f"Using teacher: {self._teacher}")
                 input_args = {

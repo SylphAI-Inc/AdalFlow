@@ -120,10 +120,16 @@ class BootstrapFewShot(DemoOptimizer):
         weighted: bool = True,
     ):
         r"""Performs weighted sampling, ensure the score is in range [0, 1]. The higher score means better accuracy."""
-        # 1. sample from augmented demos
+        # 1. sample from augmented demos (from teacher)
         # set weights to be score
         # add 1 to all score to avoid negative weights
         augmented_options = list(augmented_demos.values())
+
+        # get the teacher scores length and the augmented demos length
+        len_teacher_scores = len(self._teacher_scores)
+        len_augmented_options = len(augmented_options)
+        print(f"len_teacher_scores: {len_teacher_scores}")
+        print(f"len_augmented_options: {len_augmented_options}")
         weights = None
         if weighted:
             weights: List[float] = []
@@ -229,6 +235,11 @@ class BootstrapFewShot(DemoOptimizer):
             if demo_param.requires_opt:
                 augmented_demos = demo_param._traces
                 demos = demo_param._student_traces
+
+                if len(augmented_demos) != len(demos):
+                    log.warning(
+                        f"augmented and raw demos must have the same length, got {len(augmented_demos)} and {len(demos)} \n {augmented_demos} \n and student demos {demos}"
+                    )
                 try:
                     sampled_augmented_demos, sampled_raw_demos = self.sample(
                         augmented_demos=augmented_demos,
