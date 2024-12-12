@@ -326,7 +326,11 @@ class MultiHopRetriever2(adal.Retriever):
                 if x.full_response
                 and x.full_response.data
                 and x.full_response.data.query
-                else x.data.raw_response if x.data and x.data.raw_response else None
+                else (
+                    x.full_response.raw_response
+                    if x.full_response and x.full_response.raw_response
+                    else None
+                )
             )
             print(f"query {i}: {success_map_fn(gen_out)}")
 
