@@ -884,7 +884,7 @@ class Trainer(Component):
         # test optimizer
         self._propose_text_optimizers()
 
-        total_loss.draw_graph(filepath=debug_path)
+        total_loss.draw_graph(filepath=debug_path, full_trace=True)
         return debug_path
 
     def _set_demo_optimizers_dataset(self, train_dataset: Any):

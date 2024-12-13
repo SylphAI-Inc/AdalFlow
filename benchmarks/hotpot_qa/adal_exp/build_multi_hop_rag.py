@@ -42,10 +42,7 @@ class QueryRewritterData(adal.DataClass):
 
 
 query_template = """<START_OF_SYSTEM_PROMPT>
-Write a simple search query that will help answer a complex question.
-
-You will receive a context(may contain relevant facts) and a question.
-Think step by step.
+{{task_desc_str}}
 
 {{output_format_str}}
 {# Few shot demos #}
@@ -78,6 +75,9 @@ class DeduplicateList(adal.GradComponent):
 
 # User customize an auto-grad operator
 # Need this to be a GradComponent
+
+
+# NOTE: deprecated
 class MultiHopRetriever(adal.Retriever):
     def __init__(self, model_client, model_kwargs, passages_per_hop=3, max_hops=2):
         super().__init__()
@@ -104,6 +104,16 @@ class MultiHopRetriever(adal.Retriever):
                             role_desc="To provide few shot demos to the language model",
                             requires_opt=True,
                             param_type=ParameterType.DEMOS,
+                        ),
+                        "task_desc_str": Parameter(
+                            name="task_desc_str",
+                            data="""Write a simple search query that will help answer a complex question.
+
+You will receive a context(may contain relevant facts) and a question.
+Think step by step.""",
+                            role_desc="Task description for the language model",
+                            requires_opt=True,
+                            param_type=ParameterType.PROMPT,
                         ),
                         "output_format_str": self.data_parser.get_output_format_str(),
                     },
@@ -245,8 +255,18 @@ class MultiHopRetriever2(adal.Retriever):
                             name=f"few_shot_demos_{i}",
                             data=None,
                             role_desc="To provide few shot demos to the language model",
-                            requires_opt=True,
+                            requires_opt=False,
                             param_type=ParameterType.DEMOS,
+                        ),
+                        "task_desc_str": Parameter(
+                            name="task_desc_str",
+                            data="""Write a simple search query that will help answer a complex question.
+
+You will receive a context(may contain relevant facts) and a question.
+Think step by step.""",
+                            role_desc="Task description for the language model",
+                            requires_opt=True,
+                            param_type=ParameterType.PROMPT,
                         ),
                         "output_format_str": self.data_parser.get_output_format_str(),
                     },
@@ -316,7 +336,13 @@ class MultiHopRetriever2(adal.Retriever):
             gen_out = self.query_generators[i].forward(
                 prompt_kwargs={
                     "context": context,  # can be a list or a parameter
-                    "question": input,
+                    "question": adal.Parameter(
+                        name="question",
+                        data=input,
+                        role_desc="The question to be answered",
+                        requires_opt=False,
+                        param_type=ParameterType.INPUT,
+                    ),
                 },
                 id=id,
             )

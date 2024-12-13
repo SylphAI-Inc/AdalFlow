@@ -12,8 +12,10 @@ from typing import (
     Literal,
     Callable,
 )
+from pyvis.network import Network
 from collections import defaultdict
 import logging
+import os
 from dataclasses import dataclass, field
 import uuid
 from adalflow.optim.types import ParameterType
@@ -578,6 +580,100 @@ class Parameter(Generic[T]):
     #             log.debug(f"Calling gradient function for {node.name}")
     #             node.grad_fn()
 
+    def draw_interactive_html_graph(
+        self,
+        filepath: Optional[str] = None,
+        nodes: List["Parameter"] = None,
+        edges: List[Tuple["Parameter", "Parameter"]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Generate an interactive graph with pyvis and save as an HTML file.
+
+        Args:
+            nodes (list): A list of Parameter objects.
+            edges (list): A list of edges as tuples (source, target).
+            filepath (str, optional): Path to save the graph file. Defaults to None.
+
+        Returns:
+            dict: A dictionary containing the graph file path.
+        """
+        from jinja2 import Template
+
+        # Define the output file path
+        output_file = "interactive_graph.html"
+        final_file = filepath + "_" + output_file if filepath else output_file
+
+        # Create a pyvis Network instance
+        net = Network(height="750px", width="100%", directed=True)
+
+        # Add nodes to the graph
+        node_ids = set()
+        for node in nodes:
+            label = (
+                f"<b>Name:</b> {node.name}<br>"
+                f"<b>Role:</b> {node.role_desc.capitalize()}<br>"
+                f"<b>Value:</b> {node.data}<br>"
+                f"<b>Data ID:</b> {node.data_id}<br>"
+            )
+            if node.proposing:
+                label += "<b>Proposing:</b> Yes<br>"
+                label += f"<b>Previous Value:</b> {node.previous_data}<br>"
+            if node.requires_opt:
+                label += "<b>Requires Optimization:</b> Yes<br>"
+            if node.param_type:
+                label += f"<b>Type:</b> {node.param_type}<br>"
+            if node.gradients:
+                label += f"<b>Gradients:</b> {node.get_gradients_names()}<br>"
+
+            net.add_node(
+                node.id,
+                label=node.name,
+                title=label,
+                color="lightblue" if node.proposing else "orange",
+            )
+            node_ids.add(node.id)
+
+        # Add edges to the graph
+        for source, target in edges:
+            if source.id in node_ids and target.id in node_ids:
+                net.add_edge(source.id, target.id)
+            else:
+                print(
+                    f"Skipping edge from {source.name} to {target.name} as one of the nodes does not exist."
+                )
+
+        # Enable physics for better layout
+        net.toggle_physics(True)
+        net.template = Template(
+            """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-network.min.css" rel="stylesheet" />
+        </head>
+        <body>
+            <div id="mynetwork" style="height: {{ height }};"></div>
+            <script type="text/javascript">
+                var nodes = new vis.DataSet({{ nodes | safe }});
+                var edges = new vis.DataSet({{ edges | safe }});
+                var container = document.getElementById('mynetwork');
+                var data = { nodes: nodes, edges: edges };
+                var options = {{ options | safe }};
+                var network = new vis.Network(container, data, options);
+            </script>
+        </body>
+        </html>
+        """
+        )
+
+        # Save the graph as an HTML file
+
+        net.show(final_file)
+        print(f"Interactive graph saved to {final_file}")
+
+        return {"graph_path": final_file}
+
     def draw_graph(
         self,
         add_grads: bool = True,
@@ -597,7 +693,6 @@ class Parameter(Generic[T]):
         """
         from adalflow.utils import save_json
         from adalflow.utils.global_config import get_adalflow_default_root_path
-        import os
 
         try:
             from graphviz import Digraph
@@ -732,6 +827,7 @@ class Parameter(Generic[T]):
         #     raise ImportError(
         #         "Please install matplotlib using 'pip install matplotlib' to use this feature"
         #     ) from e
+        #     ) from e
         # from io import BytesIO
         # import numpy as np
 
@@ -764,11 +860,17 @@ class Parameter(Generic[T]):
         # save_json(prompts, filename)
         # save root node to_dict to json
         save_json(self.to_dict(), f"{filepath}_root.json")
+
+        # draw interactive graph
+        self.draw_interactive_html_graph(
+            filepath=filepath, nodes=[n for n in nodes], edges=edges
+        )
         return {"graph_path": filepath, "root_path": f"{filepath}_root.json"}
 
     def to_dict(self):
         return {
             "name": self.name,
+            "id": self.id,
             "role_desc": self.role_desc,
             "data": str(self.data),
             "requires_opt": self.requires_opt,

@@ -44,7 +44,7 @@ testing = ["bitsandbytes", "datasets", "diffusers", "evaluate", "parameterized",
 
 [[package]]
 name = "adalflow"
-version = "0.2.5"
+version = "0.2.6"
 description = "The Library to Build and Auto-optimize LLM Applications"
 optional = false
 python-versions = ">=3.9, <4.0"
@@ -67,6 +67,8 @@ tqdm = "^4.66.4"
 
 [package.extras]
 anthropic = ["anthropic (>=0.31.1,<0.32.0)"]
+azure = ["azure-core (>=1.24.0,<2.0.0)", "azure-identity (>=1.12.0,<2.0.0)"]
+bedrock = ["boto3 (>=1.35.19,<2.0.0)"]
 cohere = ["cohere (>=5.5.8,<6.0.0)"]
 datasets = []
 faiss-cpu = ["faiss-cpu (>=1.8.0,<2.0.0)"]
@@ -2251,22 +2253,6 @@ files = [
 
 [package.dependencies]
 jsonpointer = ">=1.9"
-
-[[package]]
-name = "jsonpickle"
-version = "3.2.2"
-description = "Python library for serializing arbitrary object graphs into JSON"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "jsonpickle-3.2.2-py3-none-any.whl", hash = "sha256:87cd82d237fd72c5a34970e7222dddc0accc13fddf49af84111887ed9a9445aa"},
-    {file = "jsonpickle-3.2.2.tar.gz", hash = "sha256:d425fd2b8afe9f5d7d57205153403fbf897782204437882a477e8eed60930f8c"},
-]
-
-[package.extras]
-docs = ["furo", "rst.linker (>=1.9)", "sphinx"]
-packaging = ["build", "twine"]
-testing = ["bson", "ecdsa", "feedparser", "gmpy2", "numpy", "pandas", "pymongo", "pytest (>=3.5,!=3.7.3)", "pytest-benchmark", "pytest-benchmark[histogram]", "pytest-checkdocs (>=1.2.3)", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-ruff (>=0.2.1)", "scikit-learn", "scipy", "scipy (>=1.9.3)", "simplejson", "sqlalchemy", "ujson"]
 
 [[package]]
 name = "jsonpointer"
@@ -4459,22 +4445,6 @@ files = [
 ]
 
 [[package]]
-name = "pyvis"
-version = "0.3.2"
-description = "A Python network graph visualization library"
-optional = false
-python-versions = ">3.6"
-files = [
-    {file = "pyvis-0.3.2-py3-none-any.whl", hash = "sha256:5720c4ca8161dc5d9ab352015723abb7a8bb8fb443edeb07f7a322db34a97555"},
-]
-
-[package.dependencies]
-ipython = ">=5.3.0"
-jinja2 = ">=2.9.6"
-jsonpickle = ">=1.4.1"
-networkx = ">=1.11"
-
-[[package]]
 name = "pywin32"
 version = "306"
 description = "Python for Window Extensions"
@@ -6475,4 +6445,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11, <4.0"
-content-hash = "456bf78e6cf5d2ec94d5cadc17754c2aebb02269f0291c39a349c34ef29409f4"
+content-hash = "1fdfe039ade0d41d28cab1d52f8f9fddcb23599178d433e31702386b2b1c5b2e"

@@ -667,6 +667,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         conversation_prompt_kwargs = {
             "variable_name": pred.name,
+            "variable_desc": pred.role_desc,
             "input_value": input_prompt_kwargs,
             "llm_output": response.data,
         }
@@ -751,7 +752,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         pred.gradients_context[var_gradient] = GradientContext(
             context=conversation_str,
             response_desc=response.role_desc,
-            variable_desc=pred.role_desc,
+            variable_desc=pred.role_desc,  # parameter_desc
         )
 
     def _run_callbacks(

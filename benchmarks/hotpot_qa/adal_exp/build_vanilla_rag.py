@@ -157,11 +157,11 @@ class VanillaRAG(adal.GradComponent):
                     data=task_desc_str,
                     role_desc="Task description for the language model",
                     param_type=adal.ParameterType.PROMPT,
-                    requires_opt=False,
+                    requires_opt=True,
                 ),
                 "few_shot_demos": adal.Parameter(
                     data=None,
-                    requires_opt=True,
+                    requires_opt=False,
                     role_desc="To provide few shot demos to the language model",
                     param_type=adal.ParameterType.DEMOS,
                 ),

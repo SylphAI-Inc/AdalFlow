@@ -26,9 +26,11 @@ Be concise, critical, and direct.
 
 ###  Backward engine: user prompt
 # First part to provide context of LLM as gradComponent
+# The target variable is used as either input or a task instruction to a language model (LM):
+# replace the "The target variable is used as either input or a task instruction to a language model (LM):" with the {{variable_desc}}
 LLM_CONVERSATION_TEMPLATE = r"""
 NAME: {{variable_name}}
-The target variable is used as either input or a task instruction to a language model (LM):
+Description: {{variable_desc}}
 
 LM_INPUT: {{input_value}}
 LM_OUTPUT: {{llm_output}}"""

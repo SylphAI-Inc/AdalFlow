@@ -164,3 +164,10 @@ if __name__ == "__main__":
 
     # notes for debug: if have nontype, delete all model cache and try again
     #    raise ValueError(ValueError: score must be provided for each demo,
+
+    # 12/11/2024
+    # demo only: /Users/liyin/Documents/test/LightRAG/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_8cdfc_run_9.json
+
+    # why text grad did not improve in the rag case? Do we need to improve the meta prompt?
+    # /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_2686e_run_1.json
+    # 0.58 -> 0.68 on the test split
