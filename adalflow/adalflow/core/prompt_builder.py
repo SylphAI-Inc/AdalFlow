@@ -8,7 +8,7 @@ from jinja2 import Template, Environment, StrictUndefined, meta
 
 
 from adalflow.core.component import Component
-from adalflow.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+from adalflow.core.default_prompt_template import DEFAULT_ADALFLOW_SYSTEM_PROMPT
 from adalflow.optim.parameter import Parameter
 
 
@@ -56,7 +56,7 @@ class Prompt(Component):
     ):
         super().__init__()
 
-        self.template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+        self.template = template or DEFAULT_ADALFLOW_SYSTEM_PROMPT
         self.__create_jinja2_template()
         self.prompt_variables: List[str] = []
         for var in self._find_template_variables(self.template):

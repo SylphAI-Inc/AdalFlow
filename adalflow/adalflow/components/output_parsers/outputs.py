@@ -75,7 +75,7 @@ class OutputParser(Component):
     This interface helps users customize output parsers with consistent interfaces for the Generator.
     Even though you don't always need to subclass it.
 
-    LightRAG uses two core components:
+    AdalFlow uses two core components:
     1. the Prompt to format output instruction
     2. A string parser component from core.string_parser for response parsing.
     """
