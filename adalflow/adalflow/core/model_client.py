@@ -25,7 +25,7 @@ It does four things:
 
 (1) Initialize the client, including both sync and async.
 
-(2) Convert the standard LightRAG components inputs to the API-specific format.
+(2) Convert the standard AdalFlow components inputs to the API-specific format.
 
 (3) Call the API and parse the response.
 
@@ -33,7 +33,7 @@ It does four things:
 
 Check the subclasses in `components/model_client/` directory for the functional API clients we have.
 
-    This interface is designed to bridge the gap between LightRAG components inputs and model APIs.
+    This interface is designed to bridge the gap between AdalFlow components inputs and model APIs.
 
     You can see examples of the subclasses in components/model_client/ directory.
     """
@@ -103,7 +103,7 @@ Check the subclasses in `components/model_client/` directory for the functional 
         )
 
     def parse_embedding_response(self, response: Any) -> "EmbedderOutput":
-        r"""Parse the embedding response to a structure LightRAG components can understand."""
+        r"""Parse the embedding response to a structure AdalFlow components can understand."""
         raise NotImplementedError(
             f"{type(self).__name__} must implement parse_embedding_response method"
         )
