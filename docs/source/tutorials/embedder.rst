@@ -124,7 +124,7 @@ If we want to decreate the embedding dimension to only 256 to save memory, we ca
 
 .. code-block:: python
 
-    from adalflow.core.types import Embedding
+    from adalflow.core.types import Embedding, EmbedderOutput
     from adalflow.core.functional import normalize_vector
     from typing import List
     from adalflow.core.component import Component
@@ -139,14 +139,14 @@ If we want to decreate the embedding dimension to only 256 to save memory, we ca
             assert self.new_dim < self.old_dim, "new_dim should be less than old_dim"
 
         def call(self, input: List[Embedding]) -> List[Embedding]:
-            output: List[Embedding] = deepcopy(input)
-            for embedding in output:
+            output: EmbedderOutput = deepcopy(input)
+            for embedding in output.data:
                 old_embedding = embedding.embedding
                 new_embedding = old_embedding[: self.new_dim]
                 if self.normalize:
                     new_embedding = normalize_vector(new_embedding)
                 embedding.embedding = new_embedding
-            return output
+            return output.data
 
         def _extra_repr(self) -> str:
             repr_str = f"old_dim={self.old_dim}, new_dim={self.new_dim}, normalize={self.normalize}"
