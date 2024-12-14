@@ -21,7 +21,6 @@ dspy.settings.configure(rm=colbertv2_wiki17_abstracts)
 
 
 def load_datasets():
-
     trainset = HotPotQA(split="train", size=20)
     valset = HotPotQA(split="val", size=50)
     testset = HotPotQA(split="test", size=50)  # to keep the same as the dspy
@@ -420,7 +419,6 @@ class HotPotQARAG(
     # TODO: the error will be a context
     # a component wont handle training, forward or backward, just passing everything through
     def call(self, question: str, id: str = None) -> Union[Parameter, str]:
-
         # normal component, will be called when in inference mode
 
         question_param = Parameter(
@@ -470,7 +468,6 @@ class HotPotQARAG(
         if (
             not self.training
         ):  # if users want to customize the output, ensure to use if not self.training
-
             # convert the generator output to a normal data format
             print(f"converting output: {output}")
 
@@ -525,7 +522,6 @@ class HotPotQARAGAdal(AdalComponent):
         }
 
     def configure_optimizers(self, *args, **kwargs):
-
         # TODO: simplify this, make it accept generator
         parameters = []
         for name, param in self.task.named_parameters():
@@ -537,7 +533,6 @@ class HotPotQARAGAdal(AdalComponent):
     def evaluate_one_sample(
         self, sample: Any, y_pred: Any, metadata: Dict[str, Any]
     ) -> Any:
-
         # we need "context" be passed as metadata
         # print(f"sample: {sample}, y_pred: {y_pred}")
         # convert pred to Dspy structure
@@ -578,7 +573,6 @@ def validate_dspy_demos(
 
 
 def test_multi_hop_retriever():
-
     from use_cases.config import (
         gpt_3_model,
     )

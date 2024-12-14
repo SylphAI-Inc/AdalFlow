@@ -16,9 +16,9 @@ import logging
 import warnings
 from adalflow.core.types import ModelType, GeneratorOutput
 
-from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
-ollama = safe_import(OptionalPackages.OLLAMA.value[0], OptionalPackages.OLLAMA.value[1])
+# need to pick either safe or regular import
+# ollama = safe_import(OptionalPackages.OLLAMA.value[0], OptionalPackages.OLLAMA.value[1])
 import ollama
 from ollama import RequestError, ResponseError, GenerateResponse
 

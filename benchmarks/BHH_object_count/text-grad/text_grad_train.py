@@ -53,7 +53,6 @@ def eval_dataset(test_set, eval_fn, model, max_samples: int = None):
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
         futures = []
         for _, sample in enumerate(test_set):
-
             future = executor.submit(eval_sample, sample, eval_fn, model)
             futures.append(future)
             if len(futures) >= max_samples:
@@ -85,7 +84,6 @@ def run_validation_revert(system_prompt: tg.Variable, results, model, eval_fn, v
 
 
 if __name__ == "__main__":
-
     from benchmarks.config import text_grad_save_path
     import os
     import time

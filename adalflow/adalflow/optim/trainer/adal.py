@@ -222,12 +222,10 @@ class AdalComponent(Component):
         acc_list = [None] * len(samples)  # Initialize accuracy list to hold results
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
-
             # 1. submit all the tasks
             futures = {}
 
             for i, (sample, y_pred) in enumerate(zip(samples, y_preds)):
-
                 if metadata is None:
                     eval_fn, kwargs = self.prepare_eval(sample, y_pred)
                     future = executor.submit(eval_fn, **kwargs)
@@ -486,7 +484,6 @@ class AdalComponent(Component):
                 avg_score=avg_score, per_item_scores=acc_list
             )
         else:
-
             eval_results = self.evaluate_samples(
                 samples=completed_samples,
                 y_preds=completed_y_preds,
@@ -516,7 +513,6 @@ class AdalComponent(Component):
                 desc="Calculating Loss",
             )
             for future, i, sample in futures:
-
                 loss = future.result()
                 if not isinstance(loss, Parameter):
                     raise ValueError(f"Loss is not a Parameter: {loss}")

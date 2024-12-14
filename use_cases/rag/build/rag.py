@@ -99,7 +99,6 @@ Output JSON format:
 
 
 class RAG(Component):
-
     def __init__(
         self,
         index_file: str = "index.faiss",

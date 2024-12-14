@@ -188,7 +188,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     def _get_default_mapping(
         output: "GeneratorOutput" = None,
     ) -> Tuple[Dict[str, Callable], List[str]]:
-
         if (
             output.data
             and isinstance(output.data, DataClass)
@@ -546,7 +545,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         backward_engine: Optional["Generator"] = None,
         id: Optional[str] = None,  # the id of the input
     ) -> Parameter:
-
         log.info(f"Generator: Backward: {response}")
 
         children_params = response.predecessors
@@ -678,7 +676,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 data=manual_response, raw_response=manual_response
             )
         else:
-
             gradient_output: GeneratorOutput = backward_engine(
                 prompt_kwargs=backward_engine_prompt_kwargs
             )
@@ -881,7 +878,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
 
 class BackwardEngine(Generator):  # it is a generator with defaule template
-
     __doc__ = """The backward engine is a Generator with a default template for the backward pass.
 
     If you want to customize the template, you can create your own backward engine"""

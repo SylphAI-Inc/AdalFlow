@@ -12,13 +12,10 @@ from adalflow.core.types import GeneratorOutput, ModelType, Embedding, EmbedderO
 from adalflow.core.functional import get_top_k_indices_scores
 
 # optional import
-from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
-
-transformers = safe_import(
-    OptionalPackages.TRANSFORMERS.value[0], OptionalPackages.TRANSFORMERS.value[1]
-)
-torch = safe_import(OptionalPackages.TORCH.value[0], OptionalPackages.TORCH.value[1])
+# need to pick either safe or regular import
+# transformers = safe_import(OptionalPackages.TRANSFORMERS.value[0], OptionalPackages.TRANSFORMERS.value[1])
+# torch = safe_import(OptionalPackages.TORCH.value[0], OptionalPackages.TORCH.value[1])
 
 import torch
 
@@ -201,7 +198,6 @@ class TransformerReranker:
         input = [(query, doc) for doc in documents]
 
         with torch.no_grad():
-
             inputs = self.tokenizer(
                 input,
                 padding=True,
@@ -358,7 +354,6 @@ class TransformerLLM:
             raise ValueError(f"Model {model_name} is not supported")
 
     def _parse_chat_completion_from_pipeline(self, completion: Any) -> str:
-
         text = completion[0]["generated_text"]
 
         pattern = r"(?<=\|assistant\|>).*"
@@ -407,7 +402,6 @@ class TransformerLLM:
         )
 
         if model == "HuggingFaceH4/zephyr-7b-beta":
-
             prompt = model_to_use.tokenizer.apply_chat_template(
                 messages, tokenize=False, add_generation_prompt=True
             )
@@ -728,7 +722,6 @@ When context is provided, you should stick to the context and less on your prior
     }
 
     class CustomizeLLM:
-
         def __init__(self) -> None:
             pass
 

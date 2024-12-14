@@ -47,7 +47,6 @@ class TextOptimizer(Optimizer):
 
 
 class DemoOptimizer(Optimizer):
-
     __doc__ = r"""Base class for all demo optimizers.
 
     Demo optimizer are few-shot optimization, where it will sample raw examples from train dataset or bootstrap examples from the model's output.

@@ -88,7 +88,6 @@ def test_word_sorting_task():
 
 
 if __name__ == "__main__":
-
     # task = ObjectCountTask(**gpt_3_model)
     # task_original = ObjectCountTaskOriginal(**gpt_3_model)
 

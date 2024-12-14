@@ -60,8 +60,8 @@ class GeneratorStateLogger:
         self.filepath = os.path.join(self.filepath, self.filename)
 
         self._trace_map: Dict[str, List[GeneratorStatesRecord]] = (
-            {}  # generator_name: [prompt_states]
-        )
+            {}
+        )  # generator_name: [prompt_states]
         # load previous records if the file exists
         if os.path.exists(self.filepath):
             self.load(self.filepath)
@@ -82,7 +82,6 @@ class GeneratorStateLogger:
         )  # TODO: log all states of the generator instead of just the prompt
 
         try:
-
             if name not in self._trace_map:
                 self._trace_map[name] = [
                     GeneratorStatesRecord(
@@ -110,7 +109,6 @@ class GeneratorStateLogger:
             f.write(serialized_obj)
 
     def load(self, filepath: str):
-
         if os.stat(filepath).st_size == 0:
             logging.info(f"File {filepath} is empty.")
             return

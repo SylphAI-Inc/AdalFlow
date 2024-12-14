@@ -55,7 +55,6 @@ class WordSortingAdalComponent(adal.AdalComponent):
 
 
 def evaluate_one_sample():
-
     trainset, valset, testset = load_datasets(task_name="BBH_word_sorting")
     adal_component = WordSortingAdalComponent(
         **gpt_3_model, llm_judge_model_config=gpt_3_model
@@ -73,7 +72,6 @@ def diagnose(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
 ) -> Dict:
-
     trainset, valset, testset = load_datasets(task_name="BBH_word_sorting")
     adal_component = WordSortingAdalComponent(
         model_client, model_kwargs, llm_judge_model_config=gpt_3_model

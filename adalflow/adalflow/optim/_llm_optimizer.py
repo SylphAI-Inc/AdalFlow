@@ -10,7 +10,6 @@ from dataclasses import field, dataclass
 from adalflow.core.base_data_class import DataClass
 
 if TYPE_CHECKING:
-
     from adalflow.core.model_client import ModelClient
 
 

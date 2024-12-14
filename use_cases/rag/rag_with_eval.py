@@ -60,7 +60,6 @@ def add_all_documents_to_rag_db(rag):
 
 
 if __name__ == "__main__":
-
     rag = RAG(index_file="hotpot_qa_index.faiss")
     # add_all_documents_to_rag_db(rag)
     print(rag.transformed_docs)

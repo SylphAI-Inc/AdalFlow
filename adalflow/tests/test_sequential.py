@@ -16,7 +16,6 @@ class MultiplyByTwo(Component):
 
 
 class SequentialTests(unittest.TestCase):
-
     def setUp(self):
         self.add_one = AddOne()
         self.multiply_by_two = MultiplyByTwo()
@@ -96,7 +95,6 @@ class Subtract(Component):
 
 
 class TestSequential:
-
     @pytest.fixture
     def setup_advanced_components(self):
         add = Add()

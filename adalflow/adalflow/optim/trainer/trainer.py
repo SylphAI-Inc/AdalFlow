@@ -369,7 +369,6 @@ class Trainer(Component):
 
         # config optimizers
         if len(self._get_trainable_demo_params()) > 0:
-
             for opt in self.demo_optimizers:
                 opt.config_shots(raw_shots=raw_shots, bootstrap_shots=bootstrap_shots)
                 opt.use_weighted_sampling(weighted=self.weighted_sampling)
@@ -443,7 +442,6 @@ class Trainer(Component):
             and len(self.text_optimizers) > 0
         ):
             if self.strategy == "random":
-
                 self._fit_text_grad_demo_mix_random(
                     train_loader,
                     train_dataset,
@@ -507,7 +505,6 @@ class Trainer(Component):
         return max_steps // num_samples + 1
 
     def initial_validation(self, val_dataset: Any, test_dataset: Any):
-
         val_output = self.adaltask.validation_step(val_dataset, 0, self.num_workers)
         val_score = val_output.avg_score
         test_score = None
@@ -628,7 +625,6 @@ class Trainer(Component):
     def _fit_demos_one_step_for_debug(
         self, train_loader, train_dataset: Any, val_dataset: Any, test_dataset: Any
     ) -> str:
-
         # get_logger(level="DEBUG")
         print("Fitting using Random Demo Optimizer")
         self.prep_ckpt_file_path()
@@ -767,7 +763,6 @@ class Trainer(Component):
                 opt_params.extend(opt.params)
             print(f"Opt params: {opt_params}")
             for name, param in self.adaltask.named_parameters():
-
                 if param.param_type == ParameterType.DEMOS:
                     print(f"Demo param: {name}, value: {param.data}, param: {param}")
                     if param.data is None:
@@ -1344,7 +1339,6 @@ class Trainer(Component):
         if self.save_traces:
             for i, demo_opt in enumerate(self.demo_optimizers):
                 for param in demo_opt.params:
-
                     teacher_traces = param._traces
                     student_traces = param._student_traces
 
@@ -1488,7 +1482,6 @@ class Trainer(Component):
         step: int,
         attempted_val_score: Optional[float] = None,
     ):
-
         step_results = TrainerStepResult(
             step=step,
             val_score=val_score,
@@ -1653,7 +1646,6 @@ class Trainer(Component):
         # TODO: make this a step
         tdqm_loader = tqdm(range(self.max_proposals_per_step), desc="Proposing")
         for i in tdqm_loader:
-
             # print(f"Proposing step: {i}")
             # self.optimizer.propose()
             self._propose_text_optimizers()  # new prompts

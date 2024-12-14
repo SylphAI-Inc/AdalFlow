@@ -48,7 +48,7 @@ faiss-cpu = "^1.8.0.post1"
 nltk = "^3.9.1"
 ragas = "^0.1.16"
 colorama = "^0.4.6"
-black = "^24.10.0"
+black = {extras = ["jupyter"], version = "^24.10.0"}
 ruff = "^0.8.0"
 google-generativeai = "^0.8.3"
 
@@ -62,11 +62,20 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 line-length = 88
 target-version = ["py311"]
+include = '\.pyi?$'
+extend-exclude = '''
+# A regex preceded with ^/ will apply only to files and directories
+# in the root of the project.
+^/docs/
+'''
 
 [tool.ruff]
+line-length = 88
 lint.extend-ignore = [
-    "E402",  # Ignore module-level import issues
-    "E731",
+    "E203", # Ignore whitespaces before : in slices (conflicts with Black)
+    "E402", # Ignore module-level import issues
+    "E501", # Ignore line too long so that Black handles line length
+    "E731", # Lambda usage for specific cases
     "UP007", # Wants | over Union, which breaks 3.8
 ]
-line-length = 88
+exclude = ["docs/*"]

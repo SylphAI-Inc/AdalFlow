@@ -18,7 +18,6 @@ log = logging.getLogger(__name__)
 
 
 class GEvalMetric(Enum):
-
     RELEVANCE = "Relevance"  # range [1, 5]
     FLUENCY = "Fluency"  # range [1, 3]
     CONSISTENCY = "Consistency"  # range [1, 5]
