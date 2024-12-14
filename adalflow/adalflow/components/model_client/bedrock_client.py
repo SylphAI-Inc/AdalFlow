@@ -39,6 +39,10 @@ __all__ = [
 class BedrockAPIClient(ModelClient):
     __doc__ = r"""A component wrapper for the Bedrock API client.
 
+    Note:
+
+    This api is in experimental and is not fully tested and validated yet.
+
     Support:
     1. AWS Titan
     2. Claude
