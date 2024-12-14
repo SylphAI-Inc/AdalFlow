@@ -55,7 +55,7 @@ An Orchestrator
 It orchestrates three components:
 
 - `Prompt`: by taking in ``template`` (string) and ``prompt_kwargs`` (dict) to format the prompt at initialization.
-  When the ``template`` is not provided, it defaults to :const:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT>`.
+  When the ``template`` is not provided, it defaults to :const:`DEFAULT_ADALFLOW_SYSTEM_PROMPT<core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT>`.
 
 - `ModelClient`: by taking in an already instantiated ``model_client`` and ``model_kwargs`` to call the model.
   Switching out the model client allows you to call any LLM model using the same prompt and output parsing.
@@ -485,7 +485,7 @@ It will require users to define ``Parameter`` and pass it to the ``prompt_kwargs
 
    - :class:`core.generator.Generator`
    - :class:`core.types.GeneratorOutput`
-   - :class:`core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT`
+   - :class:`core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT`
    - :class:`core.types.ModelClientType`
    - :class:`core.types.ModelType`
    - :class:`core.string_parser.JsonParser`

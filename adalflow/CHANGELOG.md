@@ -4,6 +4,13 @@
 - Better diagnose report for `Trainer.diagnose`.
 - Multi-hop RAG with handling of Cycle.
 
+## [0.2.7] - TO Be Released
+### Added
+- `Memory` is completed with `call` and `add_dialog_turn` methods.
+- Integrated `LanceDB` in the `Retriever`
+### Improved
+- `BedrockAPIClient` added more details on setup, yet it is still in experimental stage.
+- `AzureAPIClient` added more details on setup, yet it is still in experimental stage.
 ## [0.2.6] - 2024-11-25
 ### Improved
 - Add default `max_tokens=512` to the `AnthropicAPIClient` to avoid the error when the user does not provide the `max_tokens` in the prompt.

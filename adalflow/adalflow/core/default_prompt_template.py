@@ -1,4 +1,4 @@
-"""This is the default system prompt template used in the LightRAG.
+"""This is the default system prompt template used in the AdalFlow.
 
 Use :ref:`Prompt <core-prompt_builder>` class  to manage it.
 """
@@ -87,7 +87,7 @@ You are a helpful assistant.
 <END_OF_ASSISTANT_STEPS>
 {% endif %}
 """
-"""This is the default system prompt template used in the LightRAG.
+"""This is the default system prompt template used in the AdalFlow.
 
 Use :ref:`Prompt <core-prompt_builder>` class  to manage it.
 """
