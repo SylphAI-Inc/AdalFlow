@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -435,7 +435,9 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logger Example</a></li>
+
+
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
 </ul>
 </div>
@@ -494,7 +496,15 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="modelclient">
+  <div style="display: flex; justify-content: flex-start; align-items: center; gap: 15px; margin-bottom: 20px;">
+<a target="_blank" href="https://colab.research.google.com/github.com/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_modelclient.ipynb">
+    <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+<a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/adalflow_modelclient_sync_and_async.py" target="_blank" style="display: flex; align-items: center;">
+    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+    <span style="vertical-align: middle;"> Open Source Code [Partial]</span>
+</a>
+</div><section id="modelclient">
 <span id="tutorials-model-client"></span><h1>ModelClient<a class="headerlink" href="#modelclient" title="Link to this heading">#</a></h1>
 <p><a class="reference internal" href="../apis/core/core.model_client.html#core-model-client"><span class="std std-ref">ModelClient</span></a> is the standardized protocol and base class for all model inference SDKs (either via APIs or local) to communicate with AdalFlow internal components.
 Therefore, by switching out the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> in a <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>, or <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> (those components that take models), you can make these functional components model-agnostic.</p>
@@ -694,6 +704,1128 @@ Here is an example of using <code class="docutils literal notranslate"><span cla
 <span class="n">reponse_embedder_output</span><span class="p">:</span> <span class="n">EmbedderOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">Embedding</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="p">[</span><span class="mf">0.6175549</span><span class="p">,</span> <span class="mf">0.24047995</span><span class="p">,</span> <span class="mf">0.4509756</span><span class="p">,</span> <span class="mf">0.37041178</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.33437008</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.050995983</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.24366009</span><span class="p">,</span> <span class="mf">0.21549304</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">Embedding</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="p">[</span><span class="mf">0.6175549</span><span class="p">,</span> <span class="mf">0.24047995</span><span class="p">,</span> <span class="mf">0.4509756</span><span class="p">,</span> <span class="mf">0.37041178</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.33437008</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.050995983</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.24366009</span><span class="p">,</span> <span class="mf">0.21549304</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;text-embedding-3-small&#39;</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">Usage</span><span class="p">(</span><span class="n">prompt_tokens</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">total_tokens</span><span class="o">=</span><span class="mi">14</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raw_response</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="openai-embedder-embedding-processing-example">
+<h2>OPENAI EMBEDDER - Embedding Processing Example<a class="headerlink" href="#openai-embedder-embedding-processing-example" title="Link to this heading">#</a></h2>
+<p>In this example, we are using a collection of embeddings to demonstrate different functionalities such as calculating semantic similarity, finding nearest neighbors, and averaging embeddings. Below is the Python code used to achieve these tasks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">EmbedderOutput</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">norm</span>
+</pre></div>
+</div>
+<p>Data Classes</p>
+<p>We use two dataclass types to structure the collection and usage data:</p>
+<p>EmbeddingCollection: Stores an individual embedding collection and its corresponding index.
+Usage: Keeps track of token usage, such as prompt_tokens and total_tokens.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">EmbeddingCollection</span><span class="p">:</span>
+    <span class="n">collection</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+    <span class="n">cindex</span><span class="p">:</span> <span class="nb">int</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Usage</span><span class="p">:</span>
+    <span class="n">prompt_tokens</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">total_tokens</span><span class="p">:</span> <span class="nb">int</span>
+</pre></div>
+</div>
+<p>The following function, <cite>get_openai_embedding</cite>, sends a request to the OpenAI API to retrieve embeddings for a given text. It sets the model type to <cite>EMBEDDER</cite>, prepares the required model-specific parameters, and processes the response:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">openai_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">get_openai_embedding</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="c1"># Set model type to EMBEDDER for embedding functionality</span>
+    <span class="n">model_type</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span>
+
+    <span class="c1"># Prepare input and model-specific parameters</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">text</span>
+    <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dimensions&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="s2">&quot;encoding_format&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Convert inputs to the required API format</span>
+    <span class="n">api_kwargs</span> <span class="o">=</span> <span class="n">openai_client</span><span class="o">.</span><span class="n">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;api_kwargs: </span><span class="si">{</span><span class="n">api_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Debug output to verify API arguments</span>
+
+    <span class="c1"># Call OpenAI API and parse response for embeddings</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">openai_client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span><span class="p">)</span>
+    <span class="n">reponse_embedder_output</span> <span class="o">=</span> <span class="n">openai_client</span><span class="o">.</span><span class="n">parse_embedding_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;reponse_embedder_output: </span><span class="si">{</span><span class="n">reponse_embedder_output</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>  <span class="c1"># Debug output to verify embeddings</span>
+    <span class="k">return</span> <span class="n">reponse_embedder_output</span>
+</pre></div>
+</div>
+<p>Embedding Processing</p>
+<p>The function process_embeddings takes in a collection of embeddings and provides utilities for calculating similarity, averaging embeddings, and finding nearest neighbors:</p>
+<p>Similarity: Measures the cosine similarity between two embeddings.
+Average Embedding: Computes the mean embedding across a set of embeddings.
+Nearest Neighbors: Identifies the top-k nearest neighbors based on cosine similarity.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_embeddings</span><span class="p">(</span><span class="n">embeddings_collection</span><span class="p">):</span>
+    <span class="c1"># Extract embedding data for each item in the collection</span>
+    <span class="n">embeddingOutput</span> <span class="o">=</span> <span class="p">[</span><span class="n">emb</span><span class="o">.</span><span class="n">collection</span> <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="n">embeddings_collection</span><span class="p">]</span>
+    <span class="n">embeddingDataList</span> <span class="o">=</span> <span class="p">[</span><span class="n">each_emb_out</span><span class="o">.</span><span class="n">data</span> <span class="k">for</span> <span class="n">each_emb_out</span> <span class="ow">in</span> <span class="n">embeddingOutput</span><span class="p">]</span>
+    <span class="n">embeddingList</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">each_item</span><span class="o">.</span><span class="n">embedding</span>
+        <span class="k">for</span> <span class="n">each_emb_data</span> <span class="ow">in</span> <span class="n">embeddingDataList</span>
+        <span class="k">for</span> <span class="n">each_item</span> <span class="ow">in</span> <span class="n">each_emb_data</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Convert to numpy array for easier manipulation and calculations</span>
+    <span class="n">embeddings_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">embeddingList</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">calculate_similarity</span><span class="p">(</span><span class="n">emb1</span><span class="p">,</span> <span class="n">emb2</span><span class="p">):</span>
+        <span class="c1"># Compute cosine similarity between two embeddings</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">emb1</span><span class="p">,</span> <span class="n">emb2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="n">emb1</span><span class="p">)</span> <span class="o">*</span> <span class="n">norm</span><span class="p">(</span><span class="n">emb2</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">get_average_embedding</span><span class="p">(</span><span class="n">embeddings_list</span><span class="p">):</span>
+        <span class="c1"># Calculate the mean embedding across a list of embeddings</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">embeddings_list</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">find_nearest_neighbors</span><span class="p">(</span>
+        <span class="n">query_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">embedding_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="p">):</span>
+        <span class="c1"># Find top-k most similar embeddings to a query embedding, based on cosine similarity</span>
+        <span class="n">query_embedding</span> <span class="o">=</span> <span class="n">embedding_list</span><span class="p">[</span><span class="n">query_index</span><span class="p">]</span>
+        <span class="n">similarities</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">calculate_similarity</span><span class="p">(</span><span class="n">query_embedding</span><span class="p">,</span> <span class="n">emb</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">emb</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">embedding_list</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">query_index</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">similarities</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="c1"># Return dictionary of functions and processed data for further use</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;embeddings_array&quot;</span><span class="p">:</span> <span class="n">embeddings_array</span><span class="p">,</span>
+        <span class="s2">&quot;calculate_similarity&quot;</span><span class="p">:</span> <span class="n">calculate_similarity</span><span class="p">,</span>
+        <span class="s2">&quot;average_embedding&quot;</span><span class="p">:</span> <span class="n">get_average_embedding</span><span class="p">,</span>
+        <span class="s2">&quot;find_nearest_neighbors&quot;</span><span class="p">:</span> <span class="n">find_nearest_neighbors</span><span class="p">,</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>The function <cite>demonstrate_embeddings_usage</cite> showcases how to analyze semantic similarities, find nearest neighbors, and calculate average embeddings for sample texts. It selects random texts, compares their similarities, finds nearest neighbors for a specific query, and compares average embeddings for texts containing “Paris”.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Demonstrate embeddings usage with sample data</span>
+<span class="k">def</span> <span class="nf">demonstrate_embeddings_usage</span><span class="p">(</span><span class="n">sample_embeddings</span><span class="p">,</span> <span class="n">input_text_list</span><span class="p">):</span>
+      <span class="c1"># Initialize processor and retrieve embeddings array</span>
+      <span class="n">processor</span> <span class="o">=</span> <span class="n">process_embeddings</span><span class="p">(</span><span class="n">sample_embeddings</span><span class="p">)</span>
+      <span class="n">embeddings</span> <span class="o">=</span> <span class="n">processor</span><span class="p">[</span><span class="s2">&quot;embeddings_array&quot;</span><span class="p">]</span>
+
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Analyzing Semantic Similarities:&quot;</span><span class="p">)</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+
+      <span class="c1"># Select a few random indices for similarity testing</span>
+      <span class="n">num_indices</span> <span class="o">=</span> <span class="mi">5</span>
+      <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_text_list</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">embeddings</span><span class="p">)</span>
+      <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_text_list</span><span class="p">),</span> <span class="n">num_indices</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+      <span class="n">selected_text</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">input_text_list</span><span class="p">)[</span><span class="n">indices</span><span class="p">]</span>
+      <span class="n">selected_embeddings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">embeddings</span><span class="p">)[</span><span class="n">indices</span><span class="p">]</span>
+
+      <span class="c1"># Display selected texts and their embeddings</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Selected indices:&quot;</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Selected elements from array1:&quot;</span><span class="p">,</span> <span class="n">selected_text</span><span class="p">)</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Selected elements from array2:&quot;</span><span class="p">,</span> <span class="n">selected_embeddings</span><span class="p">)</span>
+
+      <span class="c1"># Calculate similarity between each pair of selected texts</span>
+      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">selected_text</span><span class="p">)):</span>
+          <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">selected_text</span><span class="p">)):</span>
+              <span class="n">similarity</span> <span class="o">=</span> <span class="n">processor</span><span class="p">[</span><span class="s2">&quot;calculate_similarity&quot;</span><span class="p">](</span>
+                  <span class="n">selected_embeddings</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">selected_embeddings</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+              <span class="p">)</span>
+              <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Comparing:</span><span class="se">\n</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">selected_text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; </span><span class="se">\n</span><span class="s2">with:</span><span class="se">\n</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">selected_text</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+              <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Similarity score: </span><span class="si">{</span><span class="n">similarity</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">2. Finding Nearest Neighbors:&quot;</span><span class="p">)</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+
+      <span class="c1"># Find and display the 3 nearest neighbors for the first text</span>
+      <span class="n">query_idx</span> <span class="o">=</span> <span class="mi">0</span>
+      <span class="n">neighbors</span> <span class="o">=</span> <span class="n">processor</span><span class="p">[</span><span class="s2">&quot;find_nearest_neighbors&quot;</span><span class="p">](</span><span class="n">query_idx</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+      <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Query text: &#39;</span><span class="si">{</span><span class="n">input_text_list</span><span class="p">[</span><span class="n">query_idx</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Nearest neighbors:&quot;</span><span class="p">)</span>
+
+      <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">similarity</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
+          <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- &#39;</span><span class="si">{</span><span class="n">input_text_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; (similarity: </span><span class="si">{</span><span class="n">similarity</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">3. Using Average Embeddings:&quot;</span><span class="p">)</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+
+      <span class="c1"># Calculate and compare the average embedding for texts containing &quot;Paris&quot;</span>
+      <span class="n">paris_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">input_text_list</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;Paris&quot;</span> <span class="ow">in</span> <span class="n">text</span><span class="p">]</span>
+      <span class="n">paris_embeddings</span> <span class="o">=</span> <span class="n">embeddings</span><span class="p">[</span><span class="n">paris_indices</span><span class="p">]</span>
+      <span class="n">avg_paris_embedding</span> <span class="o">=</span> <span class="n">processor</span><span class="p">[</span><span class="s2">&quot;average_embedding&quot;</span><span class="p">](</span><span class="n">paris_embeddings</span><span class="p">)</span>
+
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Comparing average &#39;Paris&#39; embedding with all texts:&quot;</span><span class="p">)</span>
+      <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">input_text_list</span><span class="p">):</span>
+          <span class="n">similarity</span> <span class="o">=</span> <span class="n">processor</span><span class="p">[</span><span class="s2">&quot;calculate_similarity&quot;</span><span class="p">](</span>
+              <span class="n">avg_paris_embedding</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+          <span class="p">)</span>
+          <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- &#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#39; (similarity: </span><span class="si">{</span><span class="n">similarity</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Running the Model Client</p>
+<p>Finally, we run the model client by initializing a set of sample texts, generating their embeddings, and using the embedding processing functions to analyze similarities and neighbors.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">run_model_client_embedding_usage</span><span class="p">():</span>
+    <span class="c1"># Define a set of sample texts to test embedding and similarity functionalities</span>
+    <span class="n">sample_texts</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;What is the capital of France?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Paris is the capital of France.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;What is the population of France?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;How big is Paris?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;What is the weather like in Paris?&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Duplicate each sample text to form an input list with repeated entries (for embedding testing)</span>
+    <span class="n">input_text_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">text</span> <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">sample_texts</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>
+
+    <span class="c1"># Generate embeddings for each text in the input list, and store them in an EmbeddingCollection</span>
+    <span class="n">embeddings_collection</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">EmbeddingCollection</span><span class="p">(</span><span class="n">collection</span><span class="o">=</span><span class="n">get_openai_embedding</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> <span class="n">cindex</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">input_text_list</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="n">embeddings_collection</span>
+    <span class="p">)</span>  <span class="c1"># Debugging output to verify embeddings collection content</span>
+
+    <span class="c1"># Demonstrate the usage of embeddings by analyzing similarities, finding neighbors, etc.</span>
+    <span class="n">demonstrate_embeddings_usage</span><span class="p">(</span><span class="n">embeddings_collection</span><span class="p">,</span> <span class="n">input_text_list</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To execute the complete example, simply call the <cite>run_model_client_embedding_usage()</cite> function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">run_model_client_embedding_usage</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This will trigger the embedding retrieval and processing functions, and you will see the results printed out, demonstrating how embeddings can be used for similarity analysis, neighbor finding, and averaging.</p>
+</section>
+<section id="openai-llm-chat-multichat-usage">
+<h2>OPENAI LLM Chat - Multichat Usage<a class="headerlink" href="#openai-llm-chat-multichat-usage" title="Link to this heading">#</a></h2>
+<p>This example demonstrates how to create a multichat system using OpenAI’s LLM with adalflow, where the assistant’s responses depend on the entire conversation history. This allows for a more dynamic and context-aware conversation flow.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+</pre></div>
+</div>
+<p>ChatConversation Class</p>
+<p>Here, we define a <code class="docutils literal notranslate"><span class="pre">ChatConversation</span></code> class to manage the conversation history and make API calls to the OpenAI model. The assistant’s responses are generated based on the entire conversation history.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChatConversation</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Initialize the OpenAI client for managing API calls</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">openai_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
+        <span class="c1"># Initialize an empty conversation history to store chat messages</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="c1"># Model parameters to customize the API call</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># Controls randomness; 0.5 for balanced responses</span>
+            <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># Limits the response length</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">add_user_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a user message to the conversation history&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;USER&gt; </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2"> &lt;/USER&gt;&quot;</span>  <span class="c1"># Format for user message</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_assistant_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an assistant message to the conversation history&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;ASSISTANT&gt; </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2"> &lt;/ASSISTANT&gt;&quot;</span>  <span class="c1"># Format for assistant message</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get response from the model based on conversation history&quot;&quot;&quot;</span>
+        <span class="c1"># Convert the conversation history and model parameters into API arguments</span>
+        <span class="n">api_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openai_client</span><span class="o">.</span><span class="n">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+            <span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="p">,</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;api_kwargs: </span><span class="si">{</span><span class="n">api_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Debugging output to verify API parameters</span>
+
+        <span class="c1"># Call the API with the generated arguments to get a response</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openai_client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;response: &quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>  <span class="c1"># Debugging output for raw API response</span>
+
+        <span class="c1"># Extract and parse the text response from the API output</span>
+        <span class="n">response_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openai_client</span><span class="o">.</span><span class="n">parse_chat_completion</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="c1"># Update conversation history with the assistant&#39;s response</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_assistant_message</span><span class="p">(</span><span class="n">response_text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response_text</span>  <span class="c1"># Return the assistant&#39;s response to the caller</span>
+</pre></div>
+</div>
+<p>Simulating a Multi-turn Conversation</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">check_chat_conversation()</span></code> function, we simulate a multi-turn conversation by iterating over a list of user questions. Each question is added to the conversation history, and the assistant responds based on the accumulated conversation context.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">check_chat_conversation</span><span class="p">():</span>
+    <span class="c1"># Initialize a new chat conversation</span>
+    <span class="n">chat</span> <span class="o">=</span> <span class="n">ChatConversation</span><span class="p">()</span>
+
+    <span class="c1"># Example list of user questions to simulate a multi-turn conversation</span>
+    <span class="n">questions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;What is the capital of France?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;What is its population?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Tell me about its famous landmarks&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Iterate through each question in the list</span>
+    <span class="k">for</span> <span class="n">question</span> <span class="ow">in</span> <span class="n">questions</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">User: </span><span class="si">{</span><span class="n">question</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Display the user&#39;s question</span>
+        <span class="n">chat</span><span class="o">.</span><span class="n">add_user_message</span><span class="p">(</span>
+            <span class="n">question</span>
+        <span class="p">)</span>  <span class="c1"># Add the user question to the conversation history</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">chat</span><span class="o">.</span><span class="n">get_response</span><span class="p">()</span>
+        <span class="p">)</span>  <span class="c1"># Get assistant&#39;s response based on conversation history</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Assistant: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Display the assistant&#39;s response</span>
+
+    <span class="c1"># Display the full conversation history after all exchanges</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Full Conversation History:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">chat</span><span class="o">.</span><span class="n">conversation_history</span><span class="p">)</span>  <span class="c1"># Print the accumulated conversation history</span>
+</pre></div>
+</div>
+<p>Key Points
+You can observe that each question is depended on previous question and the chat responds in apt manner
+check_chat_conversation()</p>
+</section>
+<section id="openai-llm-chat-multichat-usage-asynchronous">
+<h2>OPENAI LLM Chat - Multichat Usage - Asynchronous<a class="headerlink" href="#openai-llm-chat-multichat-usage-asynchronous" title="Link to this heading">#</a></h2>
+<p>This example demonstrates how to create an asynchronous multichat system using OpenAI’s LLM with adalflow. The asynchronous approach allows handling multiple questions in parallel, making the interaction more efficient when dealing with unrelated queries.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+</pre></div>
+</div>
+<p>ChatConversationAsync Class</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ChatConversationAsync</span></code> class is designed to handle asynchronous API calls to the OpenAI model. It supports concurrent requests, which improves performance when interacting with multiple questions simultaneously.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChatConversationAsync</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Initialize with an asynchronous OpenAI client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">openai_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
+
+        <span class="c1"># Default model parameters for the chat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>  <span class="c1"># Model used for chat</span>
+            <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># Controls randomness in response</span>
+            <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># Maximum tokens in the generated response</span>
+        <span class="p">}</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asynchronously get a response from the model for a given user message&quot;&quot;&quot;</span>
+
+        <span class="c1"># Convert input message and model parameters into the format expected by the API</span>
+        <span class="n">api_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openai_client</span><span class="o">.</span><span class="n">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>  <span class="c1"># User&#39;s message input</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="p">,</span>  <span class="c1"># Model-specific settings</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>  <span class="c1"># Specify the model type as a language model (LLM)</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;api_kwargs: </span><span class="si">{</span><span class="n">api_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Log the API arguments for debugging</span>
+
+        <span class="c1"># Make an asynchronous API call to OpenAI&#39;s model</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">openai_client</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span>
+            <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span>  <span class="c1"># Pass the prepared arguments</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>  <span class="c1"># Specify the model type again</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;response: &quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>  <span class="c1"># Print the raw response from the API</span>
+
+        <span class="c1"># Parse the API response to extract the assistant&#39;s reply (chat completion)</span>
+        <span class="n">response_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openai_client</span><span class="o">.</span><span class="n">parse_chat_completion</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response_text</span>  <span class="c1"># Return the parsed response text</span>
+</pre></div>
+</div>
+<p>Running Multiple Asynchronous Chat Sessions</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">check_chat_conversations_async()</span></code> function, we handle a list of unrelated user questions concurrently. This is done by creating a list of asynchronous tasks and gathering their responses.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">check_chat_conversations_async</span><span class="p">():</span>
+    <span class="c1"># Create an instance of ChatConversationAsync to handle asynchronous operations</span>
+    <span class="n">chat</span> <span class="o">=</span> <span class="n">ChatConversationAsync</span><span class="p">()</span>
+
+    <span class="c1"># List of unrelated questions that will be handled in parallel</span>
+    <span class="n">questions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;What is the capital of France?&quot;</span><span class="p">,</span>  <span class="c1"># Question 1</span>
+        <span class="s2">&quot;Is dog a wild animal?&quot;</span><span class="p">,</span>  <span class="c1"># Question 2</span>
+        <span class="s2">&quot;Tell me about amazon forest&quot;</span><span class="p">,</span>  <span class="c1"># Question 3</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Create a list of asynchronous tasks, one for each question</span>
+    <span class="c1"># Each task calls the get_response method asynchronously for a question</span>
+    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">chat</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">question</span><span class="p">)</span> <span class="k">for</span> <span class="n">question</span> <span class="ow">in</span> <span class="n">questions</span><span class="p">]</span>
+
+    <span class="c1"># Gather the results of all asynchronous tasks concurrently</span>
+    <span class="n">responses</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+
+    <span class="c1"># Print the responses from the assistant along with the respective user questions</span>
+    <span class="k">for</span> <span class="n">question</span><span class="p">,</span> <span class="n">response</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">questions</span><span class="p">,</span> <span class="n">responses</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">User: </span><span class="si">{</span><span class="n">question</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Assistant: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Running the Asynchronous Function</p>
+<p>To execute the asynchronous function, you can use the following methods based on your environment:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run the asynchronous function if in a file</span>
+<span class="c1"># asyncio.run(check_chat_conversations_async())</span>
+
+<span class="c1"># in jupyter notebook</span>
+<span class="k">await</span> <span class="n">check_chat_conversations_async</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This approach allows you to handle multiple independent conversations concurrently, improving the system’s performance and responsiveness.</p>
+</section>
+<section id="openai-llm-chat-multichat-usage-benchmark-sync-vs-async">
+<h2>OPENAI LLM Chat - Multichat Usage - Benchmark sync() vs async()<a class="headerlink" href="#openai-llm-chat-multichat-usage-benchmark-sync-vs-async" title="Link to this heading">#</a></h2>
+<p>This section compares the performance of synchronous (<code class="docutils literal notranslate"><span class="pre">call()</span></code>) vs. asynchronous (<code class="docutils literal notranslate"><span class="pre">acall()</span></code>) API calls to OpenAI’s language model, benchmarking them using a sample prompt to determine which approach is more efficient for handling multiple API requests.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">OpenAIClient</span><span class="p">,</span>
+<span class="p">)</span>  <span class="c1"># Assuming OpenAIClient with .call() and .acall() is available</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
+</pre></div>
+</div>
+<p>Setup for Benchmarking</p>
+<p>We initialize the OpenAI client and set up a sample prompt to test both synchronous and asynchronous API calls.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize the OpenAI client</span>
+<span class="n">openai_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
+
+<span class="c1"># Sample prompt for testing</span>
+<span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot;Tell me a joke.&quot;</span>
+
+<span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Synchronous Benchmarking</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">benchmark_sync_call</span></code> function runs the synchronous <code class="docutils literal notranslate"><span class="pre">.call()</span></code> method multiple times and measures the total time taken for all requests.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Synchronous function for benchmarking .call()</span>
+<span class="k">def</span> <span class="nf">benchmark_sync_call</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Benchmark the synchronous .call() method by running it multiple times.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    - api_kwargs: The arguments to be passed to the API call</span>
+<span class="sd">    - runs: The number of times to run the call (default is 10)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># List to store responses</span>
+    <span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Record the start time of the benchmark</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># Perform synchronous API calls for the specified number of runs</span>
+    <span class="n">responses</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">openai_client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span>  <span class="c1"># API arguments</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>  <span class="c1"># Model type (e.g., LLM for language models)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">runs</span><span class="p">)</span>  <span class="c1"># Repeat &#39;runs&#39; times</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Record the end time after all calls are completed</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># Output the results of each synchronous call</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">response</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">responses</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sync call </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> completed: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Print the total time taken for all synchronous calls</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Synchronous benchmark completed in </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># Asynchronous function for benchmarking .acall()</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">benchmark_async_acall</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Benchmark the asynchronous .acall() method by running it multiple times concurrently.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    - api_kwargs: The arguments to be passed to the API call</span>
+<span class="sd">    - runs: The number of times to run the asynchronous call (default is 10)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Record the start time of the benchmark</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># Create a list of asynchronous tasks for the specified number of runs</span>
+    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">openai_client</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span>
+            <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span>  <span class="c1"># API arguments</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>  <span class="c1"># Model type (e.g., LLM for language models)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">runs</span><span class="p">)</span>  <span class="c1"># Repeat &#39;runs&#39; times</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Execute all tasks concurrently and wait for them to finish</span>
+    <span class="n">responses</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+
+    <span class="c1"># Record the end time after all tasks are completed</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># Output the results of each asynchronous call</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">response</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">responses</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Async call </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> completed: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Print the total time taken for all asynchronous calls</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Asynchronous benchmark completed in </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">api_kwargs</span> <span class="o">=</span> <span class="n">openai_client</span><span class="o">.</span><span class="n">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+    <span class="nb">input</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span>
+<span class="p">)</span>
+
+<span class="c1"># Run both benchmarks</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting synchronous benchmark...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">benchmark_sync_call</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">)</span>
+
+<span class="c1"># Run the asynchronous function if in a file</span>
+<span class="c1"># asyncio.run(benchmark_async_acall(api_kwargs))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Starting asynchronous benchmark...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">benchmark_async_acall</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="openai-llm-chat-additional-utils">
+<h2>OPENAI LLM Chat - Additional Utils<a class="headerlink" href="#openai-llm-chat-additional-utils" title="Link to this heading">#</a></h2>
+<p>This section demonstrates the use of additional utility functions for OpenAI’s language model client. The following utility functions are included:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_first_message_content()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_all_messages_content()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_probabilities()</span></code></p></li>
+</ul>
+<p>These utilities can be used to interact with the OpenAI model in various ways, such as extracting the first message content, retrieving all message content from a multi-chat scenario, and calculating the probabilities of tokens.</p>
+<p>Code Setup</p>
+<p>First, we import necessary components for utilizing the OpenAI client and the utilities from the <code class="docutils literal notranslate"><span class="pre">adalflow</span></code> library.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client.openai_client</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_first_message_content</span><span class="p">,</span>
+    <span class="n">get_all_messages_content</span><span class="p">,</span>
+    <span class="n">get_probabilities</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+</pre></div>
+</div>
+<p>Function: <code class="docutils literal notranslate"><span class="pre">check_openai_additional_utils</span></code></p>
+<p>This function demonstrates how to use the OpenAI client along with a custom utility function for generating responses from the model, based on the given query and utility function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">check_openai_additional_utils</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function demonstrates the usage of the OpenAI client and a custom utility function</span>
+<span class="sd">    for generating responses from the LLM model, based on the given query in openai client.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    - func: A function that will be used to parse the chat completion (for custom parsing).</span>
+<span class="sd">    - model_kwargs: The additional model parameters (e.g., temperature, max_tokens) to be used in the model.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - output: The generated response from the model based on the query.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Initialize the OpenAI client with a custom chat completion parser</span>
+    <span class="n">openai_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">(</span><span class="n">chat_completion_parser</span><span class="o">=</span><span class="n">func</span><span class="p">)</span>
+
+    <span class="c1"># Define a sample query (user question)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;What is the capital of France?&quot;</span>
+
+    <span class="c1"># Set the model type to LLM (Large Language Model)</span>
+    <span class="n">model_type</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span>
+
+    <span class="c1"># Create the prompt by formatting the user query as a conversation</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;User: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Define any additional parameters needed for the model (e.g., the input string)</span>
+    <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What is the capital of France?&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Initialize the Generator with the OpenAI client and model parameters</span>
+    <span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span><span class="n">model_client</span><span class="o">=</span><span class="n">openai_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">)</span>
+
+    <span class="c1"># Execute the generator to get a response for the prompt (using the defined prompt_kwargs)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+
+    <span class="c1"># Return the generated output (response from the LLM)</span>
+    <span class="k">return</span> <span class="n">output</span>
+</pre></div>
+</div>
+<p>Function: <code class="docutils literal notranslate"><span class="pre">run_utils_functions</span></code></p>
+<p>This function runs a series of utility functions using different model configurations for generating responses. It demonstrates how to check OpenAI model outputs using various utility functions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">run_utils_functions</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function runs a series of utility functions using different model</span>
+<span class="sd">    configurations for generating responses. It demonstrates how to check</span>
+<span class="sd">    OpenAI model outputs using various utility functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define the model arguments for the probability-based function (with logprobs)</span>
+    <span class="n">probability_model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>  <span class="c1"># Specify the model version</span>
+        <span class="s2">&quot;logprobs&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># Enable logprobs to get probability distributions for tokens</span>
+        <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1"># Request 2 different completions for each query</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Define general model arguments for most other functions</span>
+    <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>  <span class="c1"># Specify the model version</span>
+        <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># Control the randomness of responses (0 is deterministic)</span>
+        <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># Set the maximum number of tokens (words) in the response</span>
+    <span class="p">}</span>
+
+    <span class="c1"># List of functions to run with corresponding model arguments</span>
+    <span class="n">func_list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span>
+            <span class="n">get_probabilities</span><span class="p">,</span>
+            <span class="n">probability_model_kwargs</span><span class="p">,</span>
+        <span class="p">],</span>  <span class="c1"># Function to get probabilities with specific kwargs</span>
+        <span class="p">[</span>
+            <span class="n">get_first_message_content</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="p">,</span>
+        <span class="p">],</span>  <span class="c1"># Function to get first message content</span>
+        <span class="p">[</span>
+            <span class="n">get_all_messages_content</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="p">,</span>
+        <span class="p">],</span>  <span class="c1"># Function to get all messages content in multi-chat scenarios</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Loop through each function and its corresponding arguments</span>
+    <span class="k">for</span> <span class="n">each_func</span> <span class="ow">in</span> <span class="n">func_list</span><span class="p">:</span>
+        <span class="c1"># Check the function output using the specified arguments</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">check_openai_additional_utils</span><span class="p">(</span><span class="n">each_func</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">each_func</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># Print the function and result for debugging purposes</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function: </span><span class="si">{</span><span class="n">each_func</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, Model Args: </span><span class="si">{</span><span class="n">each_func</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Running the Utility Functions</p>
+<p>To execute the utility functions, we call the <code class="docutils literal notranslate"><span class="pre">run_utils_functions()</span></code> method, which runs the defined functions and prints their results.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">run_utils_functions</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Purpose and Usage
+These utilities (<code class="docutils literal notranslate"><span class="pre">get_first_message_content</span></code>, <code class="docutils literal notranslate"><span class="pre">get_all_messages_content</span></code>, and <code class="docutils literal notranslate"><span class="pre">get_probabilities</span></code>) allow users to extract specific information from the OpenAI LLM responses, such as individual message contents in a chat or the probability distribution over tokens.</p>
+</section>
+<section id="groq-llm-chat-multichat-usage">
+<h2>Groq LLM Chat - Multichat Usage<a class="headerlink" href="#groq-llm-chat-multichat-usage" title="Link to this heading">#</a></h2>
+<p>Note: Groq doesnt have embedder method to get embeddings like openai</p>
+<p>The following example demonstrates how to set up a multi-turn conversation with the Groq LLM using the <code class="docutils literal notranslate"><span class="pre">GroqAPIClient</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">GroqAPIClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+</pre></div>
+</div>
+<p>ChatConversation Class</p>
+<p>This class handles the conversation flow by interacting with the Groq model, keeping track of the conversation history, and generating responses.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChatConversation</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a new ChatConversation object.</span>
+<span class="sd">        - GroqAPIClient is used to interact with the Groq model.</span>
+<span class="sd">        - conversation_history keeps track of the conversation between the user and assistant.</span>
+<span class="sd">        - model_kwargs contains the model parameters like temperature and max tokens.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">groq_client</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">GroqAPIClient</span><span class="p">()</span>
+        <span class="p">)</span>  <span class="c1"># Initialize GroqAPIClient for model interaction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;&quot;</span>  <span class="c1"># Initialize conversation history as an empty string</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;llama3-8b-8192&quot;</span><span class="p">,</span>  <span class="c1"># Specify the model to use</span>
+            <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># Set the temperature for response variability</span>
+            <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># Limit the number of tokens in the response</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">add_user_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a user message to the conversation history in the required format.</span>
+<span class="sd">        The message is wrapped with &lt;USER&gt; tags for better processing by the assistant.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;USER&gt; </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2"> &lt;/USER&gt;&quot;</span>  <span class="c1"># Append user message to history</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_assistant_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an assistant message to the conversation history in the required format.</span>
+<span class="sd">        The message is wrapped with &lt;ASSISTANT&gt; tags for better processing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;ASSISTANT&gt; </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2"> &lt;/ASSISTANT&gt;&quot;</span>  <span class="c1"># Append assistant message to history</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a response from the assistant based on the conversation history.</span>
+<span class="sd">        - Converts the conversation history and model kwargs into the format required by the Groq API.</span>
+<span class="sd">        - Calls the API to get the response.</span>
+<span class="sd">        - Parses and adds the assistant&#39;s reply to the conversation history.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Prepare the request for the Groq API, converting the inputs into the correct format</span>
+        <span class="n">api_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">groq_client</span><span class="o">.</span><span class="n">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+            <span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span><span class="p">,</span>  <span class="c1"># Use the conversation history as input</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="p">,</span>  <span class="c1"># Include model-specific parameters</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>  <span class="c1"># Specify the model type (Large Language Model)</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;api_kwargs: </span><span class="si">{</span><span class="n">api_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Log the API request parameters</span>
+
+        <span class="c1"># Call the Groq model API to get the response</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">groq_client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>  <span class="c1"># Specify the model type again for clarity</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;response: &quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>  <span class="c1"># Log the API response</span>
+
+        <span class="c1"># Parse the response to extract the assistant&#39;s reply</span>
+        <span class="n">response_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">groq_client</span><span class="o">.</span><span class="n">parse_chat_completion</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="c1"># Add the assistant&#39;s message to the conversation history</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_assistant_message</span><span class="p">(</span><span class="n">response_text</span><span class="p">)</span>
+
+        <span class="c1"># Return the assistant&#39;s response text</span>
+        <span class="k">return</span> <span class="n">response_text</span>
+</pre></div>
+</div>
+<p>Example Multi-Turn Conversation</p>
+<p>The following function simulates a multi-turn conversation, where the user asks a series of questions and the assistant responds. It demonstrates how user inputs are processed, and responses are generated while maintaining the conversation history.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">check_chat_conversation</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function simulates a multi-turn conversation between a user and an assistant.</span>
+<span class="sd">    It demonstrates how user inputs are processed, and the assistant generates responses,</span>
+<span class="sd">    while maintaining the conversation history for each query.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Initialize the ChatConversation object</span>
+    <span class="n">chat</span> <span class="o">=</span> <span class="n">ChatConversation</span><span class="p">()</span>  <span class="c1"># This creates an instance of the ChatConversation class</span>
+
+    <span class="c1"># Define a list of user questions for a multi-turn conversation</span>
+    <span class="n">questions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;What is the capital of France?&quot;</span><span class="p">,</span>  <span class="c1"># First user question</span>
+        <span class="s2">&quot;What is its population?&quot;</span><span class="p">,</span>  <span class="c1"># Second user question</span>
+        <span class="s2">&quot;Tell me about its famous landmarks&quot;</span><span class="p">,</span>  <span class="c1"># Third user question</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Loop through each question and get the assistant&#39;s response</span>
+    <span class="k">for</span> <span class="n">question</span> <span class="ow">in</span> <span class="n">questions</span><span class="p">:</span>
+        <span class="c1"># Print the current question from the user</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">User: </span><span class="si">{</span><span class="n">question</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add the user&#39;s message to the conversation history</span>
+        <span class="n">chat</span><span class="o">.</span><span class="n">add_user_message</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
+
+        <span class="c1"># Get the assistant&#39;s response based on the conversation history</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">chat</span><span class="o">.</span><span class="n">get_response</span><span class="p">()</span>
+
+        <span class="c1"># Print the assistant&#39;s response</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Assistant: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># After the conversation, print the full conversation history</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Full Conversation History:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="n">chat</span><span class="o">.</span><span class="n">conversation_history</span>
+    <span class="p">)</span>  <span class="c1"># This will print all messages (user and assistant) in the conversation history</span>
+</pre></div>
+</div>
+<p>Run the following to use groq_client multichat ability</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">check_chat_conversation</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="groq-llm-chat-multichat-usage-asynchronous">
+<h2>Groq LLM Chat - Multichat Usage - Asynchronous<a class="headerlink" href="#groq-llm-chat-multichat-usage-asynchronous" title="Link to this heading">#</a></h2>
+<p>This example demonstrates how to perform multi-turn conversations with the Groq LLM using asynchronous calls for each query. It uses Python’s <cite>asyncio</cite> to handle multiple independent requests concurrently.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">GroqAPIClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+</pre></div>
+</div>
+<p>ChatConversation Class</p>
+<p>This class allows you to interact asynchronously with the Groq model. The get_response method fetches responses from the model for a single user input asynchronously.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChatConversation</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Using an asynchronous client for communication with GroqAPI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">groq_client</span> <span class="o">=</span> <span class="n">GroqAPIClient</span><span class="p">()</span>  <span class="c1"># Create an instance of GroqAPIClient</span>
+        <span class="c1"># Model configuration parameters (e.g., Llama model with 8b parameters and 8192 context length)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;llama3-8b-8192&quot;</span><span class="p">,</span>  <span class="c1"># Llama model with specific size</span>
+            <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># Degree of randomness in the model&#39;s responses</span>
+            <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># Maximum number of tokens in the response</span>
+        <span class="p">}</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get response from the model for a single message asynchronously&quot;&quot;&quot;</span>
+
+        <span class="c1"># Convert the user input message to the appropriate format for the Groq API</span>
+        <span class="n">api_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">groq_client</span><span class="o">.</span><span class="n">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>  <span class="c1"># User&#39;s input message</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="p">,</span>  <span class="c1"># Model parameters</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>  <span class="c1"># Model type for large language models (LLM)</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;api_kwargs: </span><span class="si">{</span><span class="n">api_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Print the API arguments for debugging</span>
+
+        <span class="c1"># Asynchronously call the Groq API with the provided API arguments</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">groq_client</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span>
+            <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span>  <span class="c1"># Pass the API arguments</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>  <span class="c1"># Specify the model type</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;response: &quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>  <span class="c1"># Print the API response for debugging</span>
+
+        <span class="c1"># Parse the response to extract the assistant&#39;s reply from the API response</span>
+        <span class="n">response_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">groq_client</span><span class="o">.</span><span class="n">parse_chat_completion</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response_text</span>  <span class="c1"># Return the assistant&#39;s response text</span>
+</pre></div>
+</div>
+<p>Example Asynchronous Multi-Turn Conversation</p>
+<p>The following function demonstrates how multiple independent questions are handled asynchronously. Each question is processed concurrently, and their responses are gathered using asyncio.gather.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">check_chat_conversations</span><span class="p">():</span>
+    <span class="c1"># Create an instance of ChatConversation</span>
+    <span class="n">chat</span> <span class="o">=</span> <span class="n">ChatConversation</span><span class="p">()</span>
+
+    <span class="c1"># List of unrelated questions for independent async calls</span>
+    <span class="n">questions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;What is the capital of France?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Is dog a wild animal ?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Tell me about amazon forest&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Run each question as an independent asynchronous task</span>
+    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">chat</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">question</span><span class="p">)</span> <span class="k">for</span> <span class="n">question</span> <span class="ow">in</span> <span class="n">questions</span><span class="p">]</span>
+    <span class="c1"># Gather all the responses concurrently</span>
+    <span class="n">responses</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+
+    <span class="c1"># Display each response alongside the question</span>
+    <span class="k">for</span> <span class="n">question</span><span class="p">,</span> <span class="n">response</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">questions</span><span class="p">,</span> <span class="n">responses</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">User: </span><span class="si">{</span><span class="n">question</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Assistant: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To execute the function, run the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run the asynchronous function if in a file</span>
+<span class="c1"># asyncio.run(check_chat_conversations())</span>
+
+<span class="k">await</span> <span class="n">check_chat_conversations</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="groq-llm-chat-multichat-usage-benchmark-sync-vs-async">
+<h2>Groq LLM Chat - Multichat Usage - Benchmark sync() vs async()<a class="headerlink" href="#groq-llm-chat-multichat-usage-benchmark-sync-vs-async" title="Link to this heading">#</a></h2>
+<p>This example demonstrates how to benchmark the synchronous <code class="docutils literal notranslate"><span class="pre">.call()</span></code> method versus the asynchronous <code class="docutils literal notranslate"><span class="pre">.acall()</span></code> method for making API calls using Groq. The benchmark compares the time taken to execute multiple API requests synchronously and asynchronously.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">GroqAPIClient</span><span class="p">,</span>
+<span class="p">)</span>  <span class="c1"># Assuming GroqAPI with .call() and .acall() is available</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
+</pre></div>
+</div>
+<p>Initialization</p>
+<p>The following code initializes the Groq client and sets up the sample prompt and model parameters for testing.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize the Groq client</span>
+<span class="n">groq_client</span> <span class="o">=</span> <span class="n">GroqAPIClient</span><span class="p">()</span>
+
+<span class="c1"># Sample prompt for testing</span>
+<span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot;Tell me a joke.&quot;</span>
+
+<span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;llama3-8b-8192&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Benchmarking Synchronous <cite>.call()</cite> Method</p>
+<p>This function benchmarks the synchronous <cite>.call()</cite> method by calling the Groq API synchronously multiple times.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Synchronous function for benchmarking .call()</span>
+<span class="k">def</span> <span class="nf">benchmark_sync_call</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="c1"># List to store responses from each synchronous call</span>
+    <span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Record the start time for benchmarking</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># Perform synchronous API calls in a loop</span>
+    <span class="n">responses</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">groq_client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>  <span class="c1"># Calling the API synchronously</span>
+            <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span>  <span class="c1"># Passing the API arguments</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>  <span class="c1"># Defining the model type</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">runs</span><span class="p">)</span>  <span class="c1"># Repeat the call &#39;runs&#39; times</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Record the end time after all calls are completed</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># Print out the response from each synchronous call</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">response</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">responses</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sync call </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> completed: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Print the total time taken for the synchronous benchmark</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Synchronous benchmark completed in </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Benchmarking Asynchronous <code class="docutils literal notranslate"><span class="pre">.acall()</span></code> Method</p>
+<p>This asynchronous function benchmarks the <code class="docutils literal notranslate"><span class="pre">.acall()</span></code> method by calling the Groq API asynchronously multiple times using asyncio.gather() to execute tasks concurrently.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asynchronous function for benchmarking .acall()</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">benchmark_async_acall</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="c1"># Record the start time for benchmarking</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># Create a list of tasks for asynchronous API calls</span>
+    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">groq_client</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span>  <span class="c1"># Calling the API asynchronously</span>
+            <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span>  <span class="c1"># Passing the API arguments</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>  <span class="c1"># Defining the model type</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">runs</span><span class="p">)</span>  <span class="c1"># Repeat the call &#39;runs&#39; times</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Await the completion of all tasks concurrently</span>
+    <span class="n">responses</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">tasks</span>
+    <span class="p">)</span>  <span class="c1"># Gather all the responses from asynchronous calls</span>
+
+    <span class="c1"># Record the end time after all asynchronous calls are completed</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># Print out the response from each asynchronous call</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">response</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">responses</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Async call </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> completed: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Print the total time taken for the asynchronous benchmark</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Asynchronous benchmark completed in </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Running the Benchmarks</p>
+<p>The following code sets up the API arguments and runs both the synchronous and asynchronous benchmarks.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">api_kwargs</span> <span class="o">=</span> <span class="n">groq_client</span><span class="o">.</span><span class="n">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+    <span class="nb">input</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span>
+<span class="p">)</span>
+
+<span class="c1"># Run both benchmarks</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting synchronous benchmark...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">benchmark_sync_call</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Starting asynchronous benchmark...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">benchmark_async_acall</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="building-custom-model-client">
+<h2>Building Custom Model client<a class="headerlink" href="#building-custom-model-client" title="Link to this heading">#</a></h2>
+<p>Building a Synchronous api call</p>
+<p>Note: I am using openai api as a example to build custom model client
+in adalflow. Even though its already there in adalflow repo below
+code will definitly be a starter code whom ever wants to build a
+custom model client</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Building simple custom third party model client and using it</span>
+<span class="c1"># I have modified convert_inputs_to_api_kwargs() to make sure it follows the prompt of openai and i have used appropiate</span>
+<span class="c1"># openai api call in __call__()</span>
+
+<span class="kn">import</span> <span class="nn">openai</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">GeneratorOutput</span><span class="p">,</span> <span class="n">EmbedderOutput</span>
+<span class="kn">from</span> <span class="nn">openai.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CreateEmbeddingResponse</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client.utils</span> <span class="kn">import</span> <span class="n">parse_embedding_response</span>
+</pre></div>
+</div>
+<p>This class defines the custom model client. The constructor initializes the client by calling the parent class’s initializer (ModelClient), which is essential for the setup of the Adalflow framework.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SimpleCustomModelClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
+    <span class="c1"># Initialize the custom model client</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Call the parent class&#39;s initializer</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">pass</span>  <span class="c1"># Placeholder for any initialization logic if needed in the future</span>
+
+    <span class="c1"># Method to convert input into API parameters for different model types (LLM or Embedder)</span>
+    <span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the inputs into API arguments based on the model type.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input (str): The input text to be processed.</span>
+<span class="sd">            model_kwargs (dict): Additional model parameters like temperature, max_tokens, etc.</span>
+<span class="sd">            model_type (ModelType): The type of model to use (LLM or Embedder).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: API arguments formatted for the specified model type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span>
+        <span class="p">):</span>  <span class="c1"># If the model type is a large language model (LLM)</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">model_kwargs</span><span class="p">[</span>
+                    <span class="s2">&quot;model&quot;</span>
+                <span class="p">],</span>  <span class="c1"># Set the model to use (e.g., GPT-3, GPT-4)</span>
+                <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">,</span>  <span class="c1"># Provide the input as the message</span>
+                <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="n">model_kwargs</span><span class="p">[</span>
+                    <span class="s2">&quot;temperature&quot;</span>
+                <span class="p">],</span>  <span class="c1"># Set the temperature (creativity of the response)</span>
+                <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="n">model_kwargs</span><span class="p">[</span>
+                    <span class="s2">&quot;max_tokens&quot;</span>
+                <span class="p">],</span>  <span class="c1"># Max tokens to generate in the response</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>  <span class="c1"># If the model type is an embedder</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">],</span>  <span class="c1"># Model name for embedding</span>
+                <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">input</span><span class="p">],</span>  <span class="c1"># Provide the input in a list format for embedding</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Raise an error if the model type is unsupported</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Method to make the actual API call to OpenAI for either completions (LLM) or embeddings</span>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call the appropriate OpenAI API method based on the model type (LLM or Embedder).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            api_kwargs (dict): Arguments to be passed to the API call.</span>
+<span class="sd">            model_type (ModelType): The type of model (LLM or Embedder).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Response: The API response from OpenAI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">:</span>  <span class="c1"># If the model type is LLM (e.g., GPT-3, GPT-4)</span>
+            <span class="k">return</span> <span class="n">openai</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="o">**</span><span class="n">api_kwargs</span>
+            <span class="p">)</span>  <span class="c1"># Call the chat API for completion</span>
+        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>  <span class="c1"># If the model type is Embedder</span>
+            <span class="k">return</span> <span class="n">openai</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>  <span class="c1"># Call the embedding API</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Raise an error if an invalid model type is passed</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported model type: </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Method to parse the response from a chat completion API call</span>
+    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the response from a chat completion API call into a custom output format.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            completion: The completion response from the OpenAI API.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            GeneratorOutput: A custom data structure containing the parsed response.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Note: GeneratorOutput is a adalflow dataclass that contains the parsed completion data</span>
+        <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">completion</span><span class="p">,</span>  <span class="c1"># Store the raw completion data</span>
+            <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># No error in this case</span>
+            <span class="n">raw_response</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">completion</span><span class="p">),</span>  <span class="c1"># Store the raw response as a string</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Method to parse the response from an embedding API call</span>
+    <span class="k">def</span> <span class="nf">parse_embedding_response</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">CreateEmbeddingResponse</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbedderOutput</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the response from an embedding API call into a custom output format.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            response (CreateEmbeddingResponse): The response from the embedding API.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            EmbedderOutput: A custom data structure containing the parsed embedding response.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Attempt to parse the embedding response using a helper function</span>
+            <span class="k">return</span> <span class="n">parse_embedding_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># If parsing fails, return an error message with the raw response</span>
+            <span class="k">return</span> <span class="n">EmbedderOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[],</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">raw_response</span><span class="o">=</span><span class="n">response</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In below block, the custom model client is instantiated, and a query is defined for processing by both an LLM (like GPT-3.5) and an Embedder model. The API arguments are converted, and the call() method is used to fetch responses. Finally, both types of responses (LLM and Embedder) are parsed and printed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">build_custom_model_client</span><span class="p">():</span>
+    <span class="c1"># Instantiate the custom model client (SimpleCustomModelClient)</span>
+    <span class="n">custom_client</span> <span class="o">=</span> <span class="n">SimpleCustomModelClient</span><span class="p">()</span>
+
+    <span class="c1"># Define the query for the model to process</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;What is the capital of France?&quot;</span>
+
+    <span class="c1"># Set the model type for a Large Language Model (LLM)</span>
+    <span class="n">model_type</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span>
+
+    <span class="c1"># Prepare the message prompt as expected by the OpenAI chat API.</span>
+    <span class="c1"># This format is suitable for GPT-like models (e.g., gpt-3.5-turbo).</span>
+    <span class="n">message_prompt</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>  <span class="c1"># Define the user role in the conversation</span>
+            <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>  <span class="c1"># Specify that the input is a text type</span>
+                    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>  <span class="c1"># The actual query to be processed by the model</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Print message indicating the usage of the LLM model type</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ModelType LLM&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Define additional model parameters like model name, temperature, and max tokens for LLM</span>
+    <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}</span>
+
+    <span class="c1"># Convert the input message and model kwargs into the required API parameters</span>
+    <span class="n">api_kwargs</span> <span class="o">=</span> <span class="n">custom_client</span><span class="o">.</span><span class="n">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">message_prompt</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Print the API arguments that will be passed to the call method</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;api_kwargs: </span><span class="si">{</span><span class="n">api_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Call the LLM model using the prepared API arguments</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">custom_client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">)</span>
+
+    <span class="c1"># Print the result of the LLM model call (response from OpenAI)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="c1"># Parse the chat completion response and output a more structured result</span>
+    <span class="n">response_text</span> <span class="o">=</span> <span class="n">custom_client</span><span class="o">.</span><span class="n">parse_chat_completion</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="c1"># Print the structured response from the chat completion</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;response_text: </span><span class="si">{</span><span class="n">response_text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Switch to using the Embedder model type</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ModelType EMBEDDER&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Define model-specific parameters for the embedding model</span>
+    <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dimensions&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="s2">&quot;encoding_format&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Convert the input query for the embedder model</span>
+    <span class="n">api_kwargs</span> <span class="o">=</span> <span class="n">custom_client</span><span class="o">.</span><span class="n">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Print the API arguments that will be passed to the embedder model</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;embedder api_kwargs: </span><span class="si">{</span><span class="n">api_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Call the Embedder model using the prepared API arguments</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">custom_client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">)</span>
+
+    <span class="c1"># Print the result of the Embedder model call (embedding response)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="c1"># Parse the embedding response and output a more structured result</span>
+    <span class="n">response_text</span> <span class="o">=</span> <span class="n">custom_client</span><span class="o">.</span><span class="n">parse_embedding_response</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="c1"># Print the structured response from the embedding model</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;response_text: </span><span class="si">{</span><span class="n">response_text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is the function call that triggers the execution of the custom model client, processing the defined query and displaying results for both LLM and Embedder.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">build_custom_model_client</span><span class="p">()</span>
+</pre></div>
+</div>
 <div class="highlight admonition">
 <p class="admonition-title">API reference</p>
 <ul class="simple">
@@ -758,6 +1890,15 @@ Here is an example of using <code class="docutils literal notranslate"><span cla
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-inference-sdks">Model Inference SDKs</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modelclient-protocol">ModelClient Protocol</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-modelclient-directly">Use ModelClient directly</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openai-embedder-embedding-processing-example">OPENAI EMBEDDER - Embedding Processing Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openai-llm-chat-multichat-usage">OPENAI LLM Chat - Multichat Usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openai-llm-chat-multichat-usage-asynchronous">OPENAI LLM Chat - Multichat Usage - Asynchronous</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openai-llm-chat-multichat-usage-benchmark-sync-vs-async">OPENAI LLM Chat - Multichat Usage - Benchmark sync() vs async()</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openai-llm-chat-additional-utils">OPENAI LLM Chat - Additional Utils</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#groq-llm-chat-multichat-usage">Groq LLM Chat - Multichat Usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#groq-llm-chat-multichat-usage-asynchronous">Groq LLM Chat - Multichat Usage - Asynchronous</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#groq-llm-chat-multichat-usage-benchmark-sync-vs-async">Groq LLM Chat - Multichat Usage - Benchmark sync() vs async()</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-custom-model-client">Building Custom Model client</a></li>
 </ul>
   </nav></div>
 

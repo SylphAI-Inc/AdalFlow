@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -423,6 +423,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../components/index.html">Components</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.model_client.html">model_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
@@ -436,6 +437,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.bm25_retriever.html">bm25_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.lancedb_retriver.html">lancedb_retriver</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
@@ -586,7 +588,7 @@
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#utils.lazy_import.safe_import" title="utils.lazy_import.safe_import"><code class="xref py py-obj docutils literal notranslate"><span class="pre">safe_import</span></code></a>(module_name, install_message)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.lazy_import.safe_import" title="utils.lazy_import.safe_import"><code class="xref py py-obj docutils literal notranslate"><span class="pre">safe_import</span></code></a>(module_names, install_message)</p></td>
 <td><p>Safely import a module and raise an ImportError with the install message if the module is not found.</p></td>
 </tr>
 </tbody>
@@ -610,6 +612,31 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
 <p>Enum for optional packages that can be used in the library.</p>
 <p>The package name and error message are defined for each optional package as a tuple.</p>
+<p>The value of the tuple:
+- The package name (str): The package name to import. Follows the right syntax: such as import azure.identity but the package itself is azure-identity.</p>
+<blockquote>
+<div><p>Support a list of package names for related packages. This will be importing a list of packages while safe_import is used.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>The error message (str): The message to display if the package is not found.</p></li>
+</ul>
+<p>Example of using multiple related packages:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">azure_modules</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span>
+<span class="n">OptionalPackages</span><span class="o">.</span><span class="n">AZURE</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>  <span class="c1"># List of package names</span>
+<span class="n">OptionalPackages</span><span class="o">.</span><span class="n">AZURE</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># Error message</span>
+<span class="p">)</span>
+<span class="c1"># Manually add each module to sys.modules to make them available globally as if imported normally</span>
+<span class="n">azure_module_names</span> <span class="o">=</span> <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">AZURE</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">azure_module_names</span><span class="p">,</span> <span class="n">azure_modules</span><span class="p">):</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span>
+
+<span class="c1"># Use the modules as if they were imported normally</span>
+<span class="kn">from</span> <span class="nn">azure.identity</span> <span class="kn">import</span> <span class="n">DefaultAzureCredential</span><span class="p">,</span> <span class="n">get_bearer_token_provider</span>
+</pre></div>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages.GROQ">
 <span class="sig-name descname"><span class="pre">GROQ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('groq',</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">groq</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">groq')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.GROQ" title="Link to this definition">#</a></dt>
@@ -623,11 +650,6 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages.ANTHROPIC">
 <span class="sig-name descname"><span class="pre">ANTHROPIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('anthropic',</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">anthropic</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">anthropic')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.ANTHROPIC" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages.BEDROCK">
-<span class="sig-name descname"><span class="pre">BEDROCK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('bedrock',</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">boto3</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">boto3')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.BEDROCK" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -651,13 +673,28 @@
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages.BOTO3">
+<span class="sig-name descname"><span class="pre">BOTO3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('boto3',</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">boto3</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">boto3')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.BOTO3" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages.TORCH">
 <span class="sig-name descname"><span class="pre">TORCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('torch',</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">torch</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">torch')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.TORCH" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages.AZURE">
+<span class="sig-name descname"><span class="pre">AZURE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(['azure.identity',</span> <span class="pre">'azure.core'],</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">Azure</span> <span class="pre">packages</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">azure-identity</span> <span class="pre">azure-core</span> <span class="pre">azure-ai-formrecognizer</span> <span class="pre">azure-ai-textanalytics')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.AZURE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages.FAISS">
 <span class="sig-name descname"><span class="pre">FAISS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('faiss',</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">faiss</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">faiss-cpu</span> <span class="pre">(or</span> <span class="pre">faiss</span> <span class="pre">if</span> <span class="pre">you</span> <span class="pre">use</span> <span class="pre">GPU)')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.FAISS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages.LANCEDB">
+<span class="sig-name descname"><span class="pre">LANCEDB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('lancedb',</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">lancedb</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">lancedb</span> <span class="pre">.')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.LANCEDB" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -710,9 +747,26 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.lazy_import.safe_import">
-<span class="sig-name descname"><span class="pre">safe_import</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">install_message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ModuleType</span></span></span><a class="reference internal" href="../../_modules/utils/lazy_import.html#safe_import"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.lazy_import.safe_import" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">safe_import</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">install_message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ModuleType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ModuleType</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/utils/lazy_import.html#safe_import"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.lazy_import.safe_import" title="Link to this definition">#</a></dt>
 <dd><p>Safely import a module and raise an ImportError with the install message if the module is not found.</p>
-<p>Mainly used internally to import optional packages only when needed.</p>
+<p>Handles importing of multiple related packages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>module_names</strong> (<em>list</em><em> or </em><em>str</em>) – The package name(s) to import.</p></li>
+<li><p><strong>install_message</strong> (<em>str</em>) – The message to display if import fails.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The imported module.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ModuleType</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ImportError</strong> – If any of the packages are not found.</p>
+</dd>
+</dl>
 <p>Example:</p>
 <ol class="arabic simple">
 <li><p>Tests</p></li>
@@ -788,13 +842,15 @@ When numpy is installed, it will print the numpy version.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.GROQ"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.GROQ</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.OPENAI"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.OPENAI</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.ANTHROPIC"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.ANTHROPIC</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.BEDROCK"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.BEDROCK</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.GOOGLE_GENERATIVEAI"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.GOOGLE_GENERATIVEAI</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.TRANSFORMERS"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.TRANSFORMERS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.COHERE"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.COHERE</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.OLLAMA"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.OLLAMA</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.BOTO3"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.BOTO3</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.TORCH"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.TORCH</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.AZURE"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.AZURE</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.FAISS"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.FAISS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.LANCEDB"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.LANCEDB</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.SQLALCHEMY"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.SQLALCHEMY</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.PGVECTOR"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.PGVECTOR</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.DATASETS"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.DATASETS</span></code></a></li>

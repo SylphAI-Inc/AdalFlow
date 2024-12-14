@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -53,7 +53,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="cohere_client" href="components.model_client.cohere_client.html" />
-    <link rel="prev" title="anthropic_client" href="components.model_client.anthropic_client.html" />
+    <link rel="prev" title="azureai_client" href="components.model_client.azureai_client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -272,10 +272,6 @@
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
 </div>
 
     </header>
@@ -423,6 +419,7 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Components</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="components.model_client.html">model_client</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html">google_client</a></li>
@@ -436,6 +433,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.bm25_retriever.html">bm25_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.faiss_retriever.html">faiss_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.lancedb_retriver.html">lancedb_retriver</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.postgres_retriever.html">postgres_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
@@ -585,105 +583,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-components.model_client.bedrock_client">
-<span id="bedrock-client"></span><span id="components-model-client-bedrock-client"></span><h1>bedrock_client<a class="headerlink" href="#module-components.model_client.bedrock_client" title="Link to this heading">#</a></h1>
-<p>AWS Bedrock ModelClient integration.</p>
-<p class="rubric">Functions</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.bedrock_client.get_first_message_content" title="components.model_client.bedrock_client.get_first_message_content"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_first_message_content</span></code></a>(completion)</p></td>
-<td><p>When we only need the content of the first message.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.bedrock_client.BedrockAPIClient" title="components.model_client.bedrock_client.BedrockAPIClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BedrockAPIClient</span></code></a>([aws_profile_name, ...])</p></td>
-<td><p>A component wrapper for the Bedrock API client.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Constants</p>
-<dl class="py data">
-<dt class="sig sig-object py" id="components.model_client.bedrock_client.bedrock_runtime_exceptions">
-<span class="sig-name descname"><span class="pre">bedrock_runtime_exceptions</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;botocore.errorfactory.BedrockRuntimeExceptions</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#components.model_client.bedrock_client.bedrock_runtime_exceptions" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="components.model_client.bedrock_client.BedrockAPIClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BedrockAPIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aws_profile_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_region_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'us-west-2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_session_token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_connection_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_read_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chat_completion_parser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/bedrock_client.html#BedrockAPIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.bedrock_client.BedrockAPIClient" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClient</span></code></p>
-<p>A component wrapper for the Bedrock API client.</p>
-<p>Note:</p>
-<p>This client needs a lot more work to be fully functional.
-(1) Setup the AWS credentials.
-(2) Access to the modelId.
-(3) Convert the modelId to standard model.</p>
-<p>To setup the AWS credentials, follow the instructions here:
-<a class="reference external" href="https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html">https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html</a></p>
-<p>Additionally, this medium article is a good reference:
-<a class="reference external" href="https://medium.com/&#64;harangpeter/setting-up-aws-bedrock-for-api-based-text-inference-dc25ab2b216b">https://medium.com/&#64;harangpeter/setting-up-aws-bedrock-for-api-based-text-inference-dc25ab2b216b</a></p>
-<p>Visit <a class="reference external" href="https://docs.aws.amazon.com/bedrock/latest/APIReference/welcome.html">https://docs.aws.amazon.com/bedrock/latest/APIReference/welcome.html</a> for more api details.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.bedrock_client.BedrockAPIClient.init_sync_client">
-<span class="sig-name descname"><span class="pre">init_sync_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/bedrock_client.html#BedrockAPIClient.init_sync_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.bedrock_client.BedrockAPIClient.init_sync_client" title="Link to this definition">#</a></dt>
-<dd><p>There is no need to pass both profile and secret key and access key. Path one of them.
-if the compute power assume a role that have access to bedrock, no need to pass anything.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.bedrock_client.BedrockAPIClient.init_async_client">
-<span class="sig-name descname"><span class="pre">init_async_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/bedrock_client.html#BedrockAPIClient.init_async_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.bedrock_client.BedrockAPIClient.init_async_client" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.bedrock_client.BedrockAPIClient.parse_chat_completion">
-<span class="sig-name descname"><span class="pre">parse_chat_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/bedrock_client.html#BedrockAPIClient.parse_chat_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.bedrock_client.BedrockAPIClient.parse_chat_completion" title="Link to this definition">#</a></dt>
-<dd><p>Parse the chat completion to str.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.bedrock_client.BedrockAPIClient.track_completion_usage">
-<span class="sig-name descname"><span class="pre">track_completion_usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">CompletionUsage</span></span></span><a class="reference internal" href="../../_modules/components/model_client/bedrock_client.html#BedrockAPIClient.track_completion_usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.bedrock_client.BedrockAPIClient.track_completion_usage" title="Link to this definition">#</a></dt>
-<dd><p>Track the completion usage.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.bedrock_client.BedrockAPIClient.list_models">
-<span class="sig-name descname"><span class="pre">list_models</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/bedrock_client.html#BedrockAPIClient.list_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.bedrock_client.BedrockAPIClient.list_models" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.bedrock_client.BedrockAPIClient.convert_inputs_to_api_kwargs">
-<span class="sig-name descname"><span class="pre">convert_inputs_to_api_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/bedrock_client.html#BedrockAPIClient.convert_inputs_to_api_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.bedrock_client.BedrockAPIClient.convert_inputs_to_api_kwargs" title="Link to this definition">#</a></dt>
-<dd><p>check the converse api doc here:
-<a class="reference external" href="https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/bedrock-runtime/client/converse.html">https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/bedrock-runtime/client/converse.html</a></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.bedrock_client.BedrockAPIClient.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/bedrock_client.html#BedrockAPIClient.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.bedrock_client.BedrockAPIClient.call" title="Link to this definition">#</a></dt>
-<dd><p>kwargs is the combined input and model_kwargs</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.bedrock_client.BedrockAPIClient.acall">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/bedrock_client.html#BedrockAPIClient.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.bedrock_client.BedrockAPIClient.acall" title="Link to this definition">#</a></dt>
-<dd><p>Subclass use this to call the API with the async client.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="components.model_client.bedrock_client.get_first_message_content">
-<span class="sig-name descname"><span class="pre">get_first_message_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/model_client/bedrock_client.html#get_first_message_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.bedrock_client.get_first_message_content" title="Link to this definition">#</a></dt>
-<dd><p>When we only need the content of the first message.
-It is the default parser for chat completion.</p>
-</dd></dl>
-
+  <section id="bedrock-client">
+<span id="components-model-client-bedrock-client"></span><h1>bedrock_client<a class="headerlink" href="#bedrock-client" title="Link to this heading">#</a></h1>
 </section>
 
 
@@ -697,12 +598,12 @@ It is the default parser for chat completion.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="components.model_client.anthropic_client.html"
+       href="components.model_client.azureai_client.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">anthropic_client</p>
+        <p class="prev-next-title">azureai_client</p>
       </div>
     </a>
     <a class="right-next"
@@ -720,35 +621,6 @@ It is the default parser for chat completion.</p>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.bedrock_client.bedrock_runtime_exceptions"><code class="docutils literal notranslate"><span class="pre">bedrock_runtime_exceptions</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.bedrock_client.BedrockAPIClient"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.bedrock_client.BedrockAPIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.init_sync_client()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.bedrock_client.BedrockAPIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.init_async_client()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.bedrock_client.BedrockAPIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.parse_chat_completion()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.bedrock_client.BedrockAPIClient.track_completion_usage"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.track_completion_usage()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.bedrock_client.BedrockAPIClient.list_models"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.list_models()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.bedrock_client.BedrockAPIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.bedrock_client.BedrockAPIClient.call"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.call()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.bedrock_client.BedrockAPIClient.acall"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.acall()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.bedrock_client.get_first_message_content"><code class="docutils literal notranslate"><span class="pre">get_first_message_content()</span></code></a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

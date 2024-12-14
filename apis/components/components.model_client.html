@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -423,6 +423,7 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Components</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">model_client</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html">google_client</a></li>
@@ -436,6 +437,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.bm25_retriever.html">bm25_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.faiss_retriever.html">faiss_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.lancedb_retriver.html">lancedb_retriver</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.postgres_retriever.html">postgres_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
@@ -600,22 +602,23 @@
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.get_first_message_content"><code class="docutils literal notranslate"><span class="pre">get_first_message_content()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.bedrock_client.html#components.model_client.bedrock_client.bedrock_runtime_exceptions"><code class="docutils literal notranslate"><span class="pre">bedrock_runtime_exceptions</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.init_sync_client()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.init_async_client()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.parse_chat_completion()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.track_completion_usage"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.track_completion_usage()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.list_models"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.list_models()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.call"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.call()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.acall"><code class="docutils literal notranslate"><span class="pre">BedrockAPIClient.acall()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.azureai_client.html">azureai_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient"><code class="docutils literal notranslate"><span class="pre">AzureAIClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">AzureAIClient.init_sync_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">AzureAIClient.init_async_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">AzureAIClient.parse_chat_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.track_completion_usage"><code class="docutils literal notranslate"><span class="pre">AzureAIClient.track_completion_usage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">AzureAIClient.parse_embedding_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">AzureAIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.call"><code class="docutils literal notranslate"><span class="pre">AzureAIClient.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.acall"><code class="docutils literal notranslate"><span class="pre">AzureAIClient.acall()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.from_dict"><code class="docutils literal notranslate"><span class="pre">AzureAIClient.from_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.to_dict"><code class="docutils literal notranslate"><span class="pre">AzureAIClient.to_dict()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.bedrock_client.html#components.model_client.bedrock_client.get_first_message_content"><code class="docutils literal notranslate"><span class="pre">get_first_message_content()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient.init_sync_client()</span></code></a></li>

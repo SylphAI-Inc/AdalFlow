@@ -30,7 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -443,31 +443,91 @@
                 <article class="bd-article">
                   
   <h1>Source code for components.memory.memory</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Memory for user-assistant conversations. [Not completed]</span>
+<span></span><span class="sd">&quot;&quot;&quot;Memory component for user-assistant conversations.</span>
 
 <span class="sd">Memory can include data modeling, in-memory data storage, local file data storage, cloud data persistence, data pipeline, data retriever.</span>
 <span class="sd">It is itself an LLM application and different use cases can do it differently.</span>
 
+<span class="sd">This component handles the storage and retrieval of conversation history between users</span>
+<span class="sd">and assistants. It provides local memory experience with the ability to format and</span>
+<span class="sd">return conversation history.</span>
 
-<span class="sd">This implementation covers the minimal and local memory experience for the user-assistant conversation.</span>
+<span class="sd">Attributes:</span>
+<span class="sd">    current_conversation (Conversation): Stores the current active conversation.</span>
+<span class="sd">    turn_db (LocalDB): Database for storing all conversation turns.</span>
+<span class="sd">    conver_db (LocalDB): Database for storing complete conversations.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.db</span> <span class="kn">import</span> <span class="n">LocalDB</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Conversation</span><span class="p">,</span>
+    <span class="n">DialogTurn</span><span class="p">,</span>
+    <span class="n">UserQuery</span><span class="p">,</span>
+    <span class="n">AssistantResponse</span><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="kn">from</span> <span class="nn">adalflow.core.db</span> <span class="kn">import</span> <span class="n">LocalDB</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
 
 
 <div class="viewcode-block" id="Memory">
 <a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.memory.Memory">[docs]</a>
 <span class="k">class</span> <span class="nc">Memory</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turn_db</span><span class="p">:</span> <span class="n">LocalDB</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Memory component.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            turn_db (LocalDB, optional): Database for storing conversation turns.</span>
+<span class="sd">                Defaults to None, in which case a new LocalDB is created.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current_convesation</span> <span class="o">=</span> <span class="n">Conversation</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_conversation</span> <span class="o">=</span> <span class="n">Conversation</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">turn_db</span> <span class="o">=</span> <span class="n">turn_db</span> <span class="ow">or</span> <span class="n">LocalDB</span><span class="p">()</span>  <span class="c1"># all turns</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conver_db</span> <span class="o">=</span> <span class="n">LocalDB</span><span class="p">()</span>  <span class="c1"># a list of conversations</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conver_db</span> <span class="o">=</span> <span class="n">LocalDB</span><span class="p">()</span>  <span class="c1"># a list of conversations</span>
+
+<div class="viewcode-block" id="Memory.call">
+<a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.memory.Memory.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the current conversation history as a formatted string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Formatted conversation history with alternating user and assistant messages.</span>
+<span class="sd">                Returns empty string if no conversation history exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_conversation</span><span class="o">.</span><span class="n">dialog_turns</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">formatted_history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">turn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_conversation</span><span class="o">.</span><span class="n">dialog_turns</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">formatted_history</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="sa">f</span><span class="s2">&quot;User: </span><span class="si">{</span><span class="n">turn</span><span class="o">.</span><span class="n">user_query</span><span class="o">.</span><span class="n">query_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;Assistant: </span><span class="si">{</span><span class="n">turn</span><span class="o">.</span><span class="n">assistant_response</span><span class="o">.</span><span class="n">response_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">formatted_history</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Memory.add_dialog_turn">
+<a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.memory.Memory.add_dialog_turn">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_dialog_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">assistant_response</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a new dialog turn to the current conversation.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            user_query (str): The user&#39;s input message.</span>
+<span class="sd">            assistant_response (str): The assistant&#39;s response message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dialog_turn</span> <span class="o">=</span> <span class="n">DialogTurn</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">()),</span>
+            <span class="n">user_query</span><span class="o">=</span><span class="n">UserQuery</span><span class="p">(</span><span class="n">query_str</span><span class="o">=</span><span class="n">user_query</span><span class="p">),</span>
+            <span class="n">assistant_response</span><span class="o">=</span><span class="n">AssistantResponse</span><span class="p">(</span><span class="n">response_str</span><span class="o">=</span><span class="n">assistant_response</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_conversation</span><span class="o">.</span><span class="n">append_dialog_turn</span><span class="p">(</span><span class="n">dialog_turn</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn_db</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;user_query&quot;</span><span class="p">:</span> <span class="n">user_query</span><span class="p">,</span> <span class="s2">&quot;assistant_response&quot;</span><span class="p">:</span> <span class="n">assistant_response</span><span class="p">}</span>
+        <span class="p">)</span></div>
+</div>
 
 </pre></div>
 

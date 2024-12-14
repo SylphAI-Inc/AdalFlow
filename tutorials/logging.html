@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Logging &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+    <title>Logger Example &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
   
   
   
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -435,7 +435,9 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Logging</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Logger Example</a></li>
+
+
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
 </ul>
 </div>
@@ -477,7 +479,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Logging</li>
+    <li class="breadcrumb-item active" aria-current="page">Logger Example</li>
   </ul>
 </nav>
 </div>
@@ -494,12 +496,24 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="logging">
-<h1>Logging<a class="headerlink" href="#logging" title="Link to this heading">#</a></h1>
+  <section id="logger-example">
+<h1>Logger Example<a class="headerlink" href="#logger-example" title="Link to this heading">#</a></h1>
+<div style="display: flex; justify-content: flex-start; align-items: center; gap: 15px; margin-bottom: 20px;">
+<a target="_blank" href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_logger.ipynb">
+    <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+<a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/adalflow_logger.py" target="_blank" style="display: flex; align-items: center;">
+    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+    <span style="vertical-align: middle;"> Open Source Code</span>
+</a>
+</div><section id="logging">
+<h2>Logging<a class="headerlink" href="#logging" title="Link to this heading">#</a></h2>
 <p>The Python logging module <a class="footnote-reference brackets" href="#id8" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> is a powerful and flexible tool for debugging and tracing.
 AdalFlow uses the native logging module as the <em>first line of defense</em>.</p>
+</section>
+</section>
 <section id="design">
-<h2>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h2>
+<h1>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h1>
 <p>Some libraries may use hooks <a class="footnote-reference brackets" href="#id9" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> and callbacks <a class="footnote-reference brackets" href="#id10" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#id11" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>, or advanced web-based debugging tools <a class="footnote-reference brackets" href="#id12" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#id13" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#id14" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>.
 Hooks and callbacks are conceptually similar in that they both allow users to execute custom code at specific points during the execution of a program.
 Both provide mechanisms to inject additional behavior in response to certain events or conditions, without modifying the core logic.
@@ -510,8 +524,6 @@ PyTorch defines, registers, and executes hooks mainly in its base classes like <
 <li><p>Additionally, as we can’t always control the outputs of generators, we will provide customized logger and tracers(drop-in decorators) for them, for which we will explain in <a class="reference internal" href="logging_tracing.html"><span class="doc">Tracing</span></a>. This will not break the first objective.</p></li>
 </ol>
 <p>In the future, when we have more complex requirements from users, we will consider adding hooks/callbacks but we will do it in a way to keep the functional and user-facing APIs clean.</p>
-<section id="how-the-library-logs">
-<h3>How the library logs<a class="headerlink" href="#how-the-library-logs" title="Link to this heading">#</a></h3>
 <p>In each file, we simply set the logger with the following code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 
@@ -520,9 +532,6 @@ PyTorch defines, registers, and executes hooks mainly in its base classes like <
 </div>
 <p>We then use <cite>log</cite> and decide what level of logging we want to use in each function.
 Here is how <span class="xref std std-ref">Generator</span> logs.</p>
-</section>
-<section id="how-users-set-up-the-logger">
-<h3>How users set up the logger<a class="headerlink" href="#how-users-set-up-the-logger" title="Link to this heading">#</a></h3>
 <p>We provide a simple function <a class="reference internal" href="../apis/utils/utils.logger.html#utils.logger.get_logger" title="utils.logger.get_logger"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_logger</span></code></a> to help users set up loggers with great default formatting and handlers.
 The simplest way to get up a logger and see the library logs is to call this function:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.utils.logger</span> <span class="kn">import</span> <span class="n">get_logger</span>
@@ -535,9 +544,6 @@ The simplest way to get up a logger and see the library logs is to call this fun
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2024</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">05</span> <span class="mi">18</span><span class="p">:</span><span class="mi">49</span><span class="p">:</span><span class="mi">39</span> <span class="o">-</span> <span class="n">generator</span> <span class="o">-</span> <span class="n">INFO</span> <span class="o">-</span> <span class="p">[</span><span class="n">generator</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">249</span><span class="p">:</span><span class="n">call</span><span class="p">]</span> <span class="o">-</span> <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;Hello! I&#39;m just a computer program, so I don&#39;t have feelings, but I&#39;m here and ready to help you. How can I assist you today?&quot;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raw_response</span><span class="o">=</span><span class="s2">&quot;Hello! I&#39;m just a computer program, so I don&#39;t have feelings, but I&#39;m here and ready to help you. How can I assist you today?&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="printc-function">
-<h3>printc function<a class="headerlink" href="#printc-function" title="Link to this heading">#</a></h3>
 <p>A neat tiny function <a class="reference internal" href="../apis/utils/utils.logger.html#utils.logger.printc" title="utils.logger.printc"><code class="xref py py-func docutils literal notranslate"><span class="pre">printc</span></code></a> is provided to print colored text to the console.
 It has similar formatting to the logger.
 Here is an example of how to use it:</p>
@@ -550,16 +556,13 @@ Here is an example of how to use it:</p>
 <pre style="color: green; background-color: black;">
 2024-07-05 22:25:43 - [logging_config.py:98:&lt;module&gt;] - All logging examples are done. Feeling green!
 </pre></section>
-</section>
 <section id="use-logger-in-projects">
-<h2>Use Logger in Projects<a class="headerlink" href="#use-logger-in-projects" title="Link to this heading">#</a></h2>
+<h1>Use Logger in Projects<a class="headerlink" href="#use-logger-in-projects" title="Link to this heading">#</a></h1>
 <p>There are two distinct ways to set up the logging in your project:</p>
 <ol class="arabic simple">
 <li><p>Have both the library loggind and your application logging in a single file. This is the simplest setup.</p></li>
 <li><p>Use both root and named logger to log library and application logs separately.</p></li>
 </ol>
-<section id="set-up-all-logs-in-one-file">
-<h3>Set up all logs in one file<a class="headerlink" href="#set-up-all-logs-in-one-file" title="Link to this heading">#</a></h3>
 <p>Assume your source code is at <cite>src/task.py</cite>. You can log simply by:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 
@@ -583,9 +586,6 @@ Here is an example of how to use it:</p>
 </pre></div>
 </div>
 <p>This way, all logs will be saved in <cite>./logs/lib.log</cite>.</p>
-</section>
-<section id="separate-library-and-application-logs">
-<h3>Separate library and application logs<a class="headerlink" href="#separate-library-and-application-logs" title="Link to this heading">#</a></h3>
 <p>In some cases, if users prefer to separate the library and application logs, they can use a named logger.</p>
 <p>In the user program, such as at <cite>src/task.py</cite>, you can set up a named logger and logs to <cite>./logs/my_app.log</cite>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.utils.logger</span> <span class="kn">import</span> <span class="n">get_logger</span>
@@ -642,8 +642,6 @@ However, you can still set up a root logger to log the library logs separately i
 </ul>
 </div>
 </section>
-</section>
-</section>
 
 
                 </article>
@@ -691,18 +689,14 @@ However, you can still set up a root logger to log the library logs separately i
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design">Design</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-library-logs">How the library logs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-users-set-up-the-logger">How users set up the logger</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#printc-function">printc function</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Logger Example</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#logging">Logging</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-logger-in-projects">Use Logger in Projects</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-all-logs-in-one-file">Set up all logs in one file</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#separate-library-and-application-logs">Separate library and application logs</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#design">Design</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#use-logger-in-projects">Use Logger in Projects</a></li>
 </ul>
-</li>
-</ul>
+
   </nav></div>
 
 </div></div>

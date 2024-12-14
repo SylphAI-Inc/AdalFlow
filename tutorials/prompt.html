@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -435,7 +435,9 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logger Example</a></li>
+
+
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
 </ul>
 </div>
@@ -498,7 +500,7 @@
    <a href="https://colab.research.google.com/drive/1_sGeHaKrwpI9RiL01g3cKyI2_5PJqZtr?usp=sharing" target="_blank" style="margin-right: 10px;">
       <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
    </a>
-   <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/tutorials/prompt_note.py" target="_blank" style="display: flex; align-items: center;">
+   <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/prompt_note.py" target="_blank" style="display: flex; align-items: center;">
       <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
       <span style="vertical-align: middle;"> Open Source Code</span>
    </a>
@@ -650,10 +652,10 @@ Here is the output:</p>
 </section>
 <section id="default-prompt-template">
 <h2>Default Prompt Template<a class="headerlink" href="#default-prompt-template" title="Link to this heading">#</a></h2>
-<p>In default, the <code class="docutils literal notranslate"><span class="pre">Prompt</span></code> class uses the <a class="reference internal" href="../apis/core/core.default_prompt_template.html#id0" title="core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></code></a> as its string template if no template is provided.
+<p>In default, the <code class="docutils literal notranslate"><span class="pre">Prompt</span></code> class uses the <a class="reference internal" href="../apis/core/core.default_prompt_template.html#id0" title="core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_ADALFLOW_SYSTEM_PROMPT</span></code></a> as its string template if no template is provided.
 This default template allows you to conditionally passing seven important variables designed from the data flow diagram above.
 These varaibles are:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LIGHTRAG_DEFAULT_PROMPT_ARGS</span> <span class="o">=</span> <span class="p">[</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ADALFLOW_DEFAULT_PROMPT_ARGS</span> <span class="o">=</span> <span class="p">[</span>
    <span class="s2">&quot;task_desc_str&quot;</span><span class="p">,</span>  <span class="c1"># task description</span>
    <span class="s2">&quot;output_format_str&quot;</span><span class="p">,</span>  <span class="c1"># output format of the task</span>
    <span class="s2">&quot;tools_str&quot;</span><span class="p">,</span>  <span class="c1"># tools used in the task</span>
@@ -700,7 +702,7 @@ You:
 <p class="admonition-title">API References</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt" title="core.prompt_builder.Prompt"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.prompt_builder.Prompt</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.default_prompt_template.html#id0" title="core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.default_prompt_template.html#id0" title="core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT</span></code></a></p></li>
 </ul>
 </div>
 </section>

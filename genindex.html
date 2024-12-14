@@ -30,7 +30,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -450,7 +450,7 @@
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.acall">acall() (AnthropicAPIClient method)</a>
 
       <ul>
-        <li><a href="apis/components/components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.acall">(BedrockAPIClient method)</a>
+        <li><a href="apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.acall">(AzureAIClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.acall">(CohereAPIClient method)</a>
 </li>
@@ -491,18 +491,26 @@
         <li><a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent">(class in optim.trainer.adal)</a>
 </li>
       </ul></li>
+      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.ADALFLOW_DEFAULT_PROMPT_ARGS">ADALFLOW_DEFAULT_PROMPT_ARGS (in module core.default_prompt_template)</a>
+</li>
+      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.ADALFLOW_DEFAULT_PROMPT_TRAINABLE_PARAMS">ADALFLOW_DEFAULT_PROMPT_TRAINABLE_PARAMS (in module core.default_prompt_template)</a>
+</li>
       <li><a href="apis/optim/index.html#optim.Trainer.adaltask">adaltask (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.adaltask">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.adaltask">[2]</a>
 </li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.add">add() (LocalDB method)</a>
 </li>
       <li><a href="apis/core/core.component.html#core.component.Component.add_component">add_component() (Component method)</a>
 </li>
-      <li><a href="apis/optim/index.html#optim.Parameter.add_gradient">add_gradient() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.add_gradient">[1]</a>
+      <li><a href="apis/components/components.memory.memory.html#components.memory.memory.Memory.add_dialog_turn">add_dialog_turn() (Memory method)</a>
 </li>
-      <li><a href="apis/optim/index.html#optim.TGDOptimizer.add_history">add_history() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.add_history">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.add_history">[2]</a>
+      <li><a href="apis/components/components.retriever.lancedb_retriver.html#components.retriever.lancedb_retriver.LanceDBRetriever.add_documents">add_documents() (LanceDBRetriever method)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.add_gradient">add_gradient() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.add_gradient">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/index.html#optim.TGDOptimizer.add_history">add_history() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.add_history">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.add_history">[2]</a>
+</li>
       <li><a href="apis/optim/index.html#optim.TGDOptimizer.add_score_to_current_param">add_score_to_current_param() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.add_score_to_current_param">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.add_score_to_current_param">[2]</a>
 </li>
       <li><a href="apis/optim/index.html#optim.TGDOptimizer.add_score_to_params">add_score_to_params() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.add_score_to_params">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.add_score_to_params">[2]</a>
@@ -557,6 +565,10 @@
         <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.LLMJudgeEvalResult.avg_score">(LLMJudgeEvalResult attribute)</a>
 </li>
       </ul></li>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.AZURE">AZURE (OptionalPackages attribute)</a>
+</li>
+      <li><a href="apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient">AzureAIClient (class in components.model_client.azureai_client)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -601,19 +613,13 @@
 </li>
       <li><a href="apis/datasets/datasets.types.html#datasets.types.BaseData">BaseData (class in datasets.types)</a>
 </li>
-      <li><a href="apis/eval/eval.base.html#eval.base.BaseEvaluator">BaseEvaluator (class in eval.base)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/eval/eval.base.html#eval.base.BaseEvaluator">BaseEvaluator (class in eval.base)</a>
+</li>
       <li><a href="apis/optim/index.html#optim.Trainer.batch_val_score_threshold">batch_val_score_threshold (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.batch_val_score_threshold">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.batch_val_score_threshold">[2]</a>
 </li>
       <li><a href="apis/core/core.embedder.html#core.embedder.BatchEmbedder">BatchEmbedder (class in core.embedder)</a>
-</li>
-      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.BEDROCK">BEDROCK (OptionalPackages attribute)</a>
-</li>
-      <li><a href="apis/components/components.model_client.bedrock_client.html#components.model_client.bedrock_client.bedrock_runtime_exceptions">bedrock_runtime_exceptions (in module components.model_client.bedrock_client)</a>
-</li>
-      <li><a href="apis/components/components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient">BedrockAPIClient (class in components.model_client.bedrock_client)</a>
 </li>
       <li><a href="apis/datasets/index.html#datasets.BigBenchHard">BigBenchHard (class in datasets)</a>
 
@@ -637,6 +643,8 @@
         <li><a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot">(class in optim.few_shot.bootstrap_optimizer)</a>
 </li>
       </ul></li>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.BOTO3">BOTO3 (OptionalPackages attribute)</a>
+</li>
       <li><a href="apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.build_index_from_documents">build_index_from_documents() (BM25Retriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.BM25Retriever.build_index_from_documents">[1]</a>
 
       <ul>
@@ -662,9 +670,9 @@
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.call">call() (AnthropicAPIClient method)</a>
 
       <ul>
-        <li><a href="apis/core/core.embedder.html#core.embedder.BatchEmbedder.call">(BatchEmbedder method)</a>
+        <li><a href="apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.call">(AzureAIClient method)</a>
 </li>
-        <li><a href="apis/components/components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.call">(BedrockAPIClient method)</a>
+        <li><a href="apis/core/core.embedder.html#core.embedder.BatchEmbedder.call">(BatchEmbedder method)</a>
 </li>
         <li><a href="apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.call">(BM25Retriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.BM25Retriever.call">[1]</a>
 </li>
@@ -713,6 +721,8 @@
         <li><a href="apis/core/core.string_parser.html#core.string_parser.ListParser.call">(ListParser method)</a>
 </li>
         <li><a href="apis/components/components.retriever.html#components.retriever.LLMRetriever.call">(LLMRetriever method)</a>, <a href="apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.call">[1]</a>
+</li>
+        <li><a href="apis/components/components.memory.memory.html#components.memory.memory.Memory.call">(Memory method)</a>
 </li>
         <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.call">(ModelClient method)</a>
 </li>
@@ -869,10 +879,10 @@
 </li>
       </ul></li>
       <li>
-    components.model_client.bedrock_client
+    components.model_client.azureai_client
 
       <ul>
-        <li><a href="apis/components/components.model_client.bedrock_client.html#module-components.model_client.bedrock_client">module</a>
+        <li><a href="apis/components/components.model_client.azureai_client.html#module-components.model_client.azureai_client">module</a>
 </li>
       </ul></li>
       <li>
@@ -910,8 +920,6 @@
         <li><a href="apis/components/components.model_client.openai_client.html#module-components.model_client.openai_client">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     components.model_client.transformers_client
 
@@ -919,6 +927,8 @@
         <li><a href="apis/components/components.model_client.transformers_client.html#module-components.model_client.transformers_client">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     components.model_client.utils
 
@@ -966,6 +976,13 @@
 
       <ul>
         <li><a href="apis/components/components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.retriever.lancedb_retriver
+
+      <ul>
+        <li><a href="apis/components/components.retriever.lancedb_retriver.html#module-components.retriever.lancedb_retriver">module</a>
 </li>
       </ul></li>
       <li>
@@ -1056,6 +1073,8 @@
 </li>
       <li><a href="apis/optim/optim.parameter.html#optim.parameter.GradientContext.context">context (GradientContext attribute)</a>
 </li>
+      <li><a href="apis/components/components.memory.memory.html#components.memory.memory.conver_db">conver_db (in module components.memory.memory)</a>
+</li>
       <li><a href="apis/core/core.types.html#core.types.Conversation">Conversation (class in core.types)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.DialogTurn.conversation_id">conversation_id (DialogTurn attribute)</a>
@@ -1063,7 +1082,7 @@
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs">convert_inputs_to_api_kwargs() (AnthropicAPIClient method)</a>
 
       <ul>
-        <li><a href="apis/components/components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.convert_inputs_to_api_kwargs">(BedrockAPIClient method)</a>
+        <li><a href="apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.convert_inputs_to_api_kwargs">(AzureAIClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.convert_inputs_to_api_kwargs">(CohereAPIClient method)</a>
 </li>
@@ -1204,6 +1223,8 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.created_at">created_at (Conversation attribute)</a>
 </li>
+      <li><a href="apis/components/components.memory.memory.html#components.memory.memory.current_conversation">current_conversation (in module components.memory.memory)</a>
+</li>
       <li><a href="apis/core/core.functional.html#core.functional.custom_asdict">custom_asdict() (in module core.functional)</a>
 </li>
   </ul></td>
@@ -1302,7 +1323,7 @@
 </li>
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.default">default() (in module utils.serialization)</a>
 </li>
-      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT">DEFAULT_LIGHTRAG_SYSTEM_PROMPT (in module core.default_prompt_template)</a>, <a href="apis/core/core.default_prompt_template.html#id0">[1]</a>
+      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT">DEFAULT_ADALFLOW_SYSTEM_PROMPT (in module core.default_prompt_template)</a>, <a href="apis/core/core.default_prompt_template.html#id0">[1]</a>
 </li>
       <li><a href="apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT">DEFAULT_REACT_AGENT_SYSTEM_PROMPT (in module components.agent.react)</a>
 </li>
@@ -1593,9 +1614,11 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/core/core.component.html#core.component.Component.from_dict">from_dict() (Component class method)</a>
+      <li><a href="apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.from_dict">from_dict() (AzureAIClient class method)</a>
 
       <ul>
+        <li><a href="apis/core/core.component.html#core.component.Component.from_dict">(Component class method)</a>
+</li>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.from_dict">(DataClass class method)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.Document.from_dict">(Document class method)</a>
@@ -1716,8 +1739,6 @@
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.get_first_message_content">get_first_message_content() (in module components.model_client.anthropic_client)</a>
 
       <ul>
-        <li><a href="apis/components/components.model_client.bedrock_client.html#components.model_client.bedrock_client.get_first_message_content">(in module components.model_client.bedrock_client)</a>
-</li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_first_message_content">(in module components.model_client.openai_client)</a>
 </li>
       </ul></li>
@@ -1912,7 +1933,7 @@
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client">init_async_client() (AnthropicAPIClient method)</a>
 
       <ul>
-        <li><a href="apis/components/components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.init_async_client">(BedrockAPIClient method)</a>
+        <li><a href="apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.init_async_client">(AzureAIClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.init_async_client">(CohereAPIClient method)</a>
 </li>
@@ -1942,7 +1963,7 @@
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client">init_sync_client() (AnthropicAPIClient method)</a>
 
       <ul>
-        <li><a href="apis/components/components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.init_sync_client">(BedrockAPIClient method)</a>
+        <li><a href="apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.init_sync_client">(AzureAIClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.init_sync_client">(CohereAPIClient method)</a>
 </li>
@@ -2043,6 +2064,10 @@
 </li>
       <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator.L2">L2 (DistanceToOperator attribute)</a>
 </li>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.LANCEDB">LANCEDB (OptionalPackages attribute)</a>
+</li>
+      <li><a href="apis/components/components.retriever.lancedb_retriver.html#components.retriever.lancedb_retriver.LanceDBRetriever">LanceDBRetriever (class in components.retriever.lancedb_retriver)</a>
+</li>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.LazyImport">LazyImport (class in utils.lazy_import)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.length">length (EmbedderOutput property)</a>
@@ -2051,12 +2076,6 @@
         <li><a href="apis/core/core.db.html#core.db.LocalDB.length">(LocalDB property)</a>
 </li>
       </ul></li>
-      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.LIGHTRAG_DEFAULT_PROMPT_ARGS">LIGHTRAG_DEFAULT_PROMPT_ARGS (in module core.default_prompt_template)</a>
-</li>
-      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS">LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS (in module core.default_prompt_template)</a>
-</li>
-      <li><a href="apis/components/components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.list_models">list_models() (BedrockAPIClient method)</a>
-</li>
       <li><a href="apis/components/components.output_parsers.html#components.output_parsers.ListOutputParser">ListOutputParser (class in components.output_parsers)</a>
 
       <ul>
@@ -2239,7 +2258,7 @@
 </li>
         <li><a href="apis/components/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client">components.model_client.anthropic_client</a>
 </li>
-        <li><a href="apis/components/components.model_client.bedrock_client.html#module-components.model_client.bedrock_client">components.model_client.bedrock_client</a>
+        <li><a href="apis/components/components.model_client.azureai_client.html#module-components.model_client.azureai_client">components.model_client.azureai_client</a>
 </li>
         <li><a href="apis/components/components.model_client.cohere_client.html#module-components.model_client.cohere_client">components.model_client.cohere_client</a>
 </li>
@@ -2266,6 +2285,8 @@
         <li><a href="apis/components/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever">components.retriever.bm25_retriever</a>
 </li>
         <li><a href="apis/components/components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever">components.retriever.faiss_retriever</a>
+</li>
+        <li><a href="apis/components/components.retriever.lancedb_retriver.html#module-components.retriever.lancedb_retriver">components.retriever.lancedb_retriver</a>
 </li>
         <li><a href="apis/components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever">components.retriever.llm_retriever</a>
 </li>
@@ -2674,7 +2695,7 @@
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion">parse_chat_completion() (AnthropicAPIClient method)</a>
 
       <ul>
-        <li><a href="apis/components/components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.parse_chat_completion">(BedrockAPIClient method)</a>
+        <li><a href="apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.parse_chat_completion">(AzureAIClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.parse_chat_completion">(GoogleGenAIClient method)</a>
 </li>
@@ -2691,9 +2712,11 @@
         <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.parse_chat_completion">(TransformersClient method)</a>
 </li>
       </ul></li>
-      <li><a href="apis/components/components.model_client.utils.html#components.model_client.utils.parse_embedding_response">parse_embedding_response() (in module components.model_client.utils)</a>
+      <li><a href="apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.parse_embedding_response">parse_embedding_response() (AzureAIClient method)</a>
 
       <ul>
+        <li><a href="apis/components/components.model_client.utils.html#components.model_client.utils.parse_embedding_response">(in module components.model_client.utils)</a>
+</li>
         <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.parse_embedding_response">(ModelClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.parse_embedding_response">(OllamaClient method)</a>
@@ -2929,6 +2952,8 @@
 </li>
       <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.Instruction.responses">responses (Instruction attribute)</a>
 </li>
+      <li><a href="apis/components/components.retriever.lancedb_retriver.html#components.retriever.lancedb_retriver.LanceDBRetriever.retrieve">retrieve() (LanceDBRetriever method)</a>
+</li>
       <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.retrieve_by_sql">retrieve_by_sql() (PostgresRetriever method)</a>
 </li>
       <li><a href="apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.retrieve_embedding_queries">retrieve_embedding_queries() (FAISSRetriever method)</a>
@@ -3093,7 +3118,7 @@
 </li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.SIGNATURE_YAML">SIGNATURE_YAML (DataClassFormatType attribute)</a>
 </li>
-      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT">SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT (in module core.default_prompt_template)</a>
+      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.SIMPLE_DEFAULT_ADALFLOW_SYSTEM_PROMPT">SIMPLE_DEFAULT_ADALFLOW_SYSTEM_PROMPT (in module core.default_prompt_template)</a>
 </li>
       <li><a href="apis/components/components.data_process.html#components.data_process.TextSplitter.split_text">split_text() (TextSplitter method)</a>, <a href="apis/components/components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter.split_text">[1]</a>
 </li>
@@ -3227,9 +3252,11 @@
         <li><a href="apis/optim/optim.types.html#optim.types.TrainerResult.time_stamp">(TrainerResult attribute)</a>
 </li>
       </ul></li>
-      <li><a href="apis/core/core.component.html#core.component.Component.to_dict">to_dict() (Component method)</a>
+      <li><a href="apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.to_dict">to_dict() (AzureAIClient method)</a>
 
       <ul>
+        <li><a href="apis/core/core.component.html#core.component.Component.to_dict">(Component method)</a>
+</li>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_dict">(DataClass method)</a>
 </li>
         <li><a href="apis/core/core.generator.html#core.generator.Generator.to_dict">(Generator method)</a>
@@ -3338,7 +3365,7 @@
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.track_completion_usage">track_completion_usage() (AnthropicAPIClient method)</a>
 
       <ul>
-        <li><a href="apis/components/components.model_client.bedrock_client.html#components.model_client.bedrock_client.BedrockAPIClient.track_completion_usage">(BedrockAPIClient method)</a>
+        <li><a href="apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.track_completion_usage">(AzureAIClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.track_completion_usage">(GoogleGenAIClient method)</a>
 </li>
@@ -3416,6 +3443,8 @@
 </li>
       </ul></li>
       <li><a href="apis/tracing/tracing.callback_manager.html#tracing.callback_manager.CallbackManager.trigger_callbacks">trigger_callbacks() (CallbackManager method)</a>
+</li>
+      <li><a href="apis/components/components.memory.memory.html#components.memory.memory.turn_db">turn_db (in module components.memory.memory)</a>
 </li>
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.ObjectTypes.TYPE">TYPE (ObjectTypes attribute)</a>
 </li>

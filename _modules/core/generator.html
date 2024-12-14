@@ -30,7 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -471,7 +471,7 @@
 <span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="n">compose_model_kwargs</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.default_prompt_template</span> <span class="kn">import</span> <span class="n">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.default_prompt_template</span> <span class="kn">import</span> <span class="n">DEFAULT_ADALFLOW_SYSTEM_PROMPT</span>
 <span class="kn">from</span> <span class="nn">adalflow.optim.function</span> <span class="kn">import</span> <span class="n">BackwardContext</span>
 <span class="kn">from</span> <span class="nn">adalflow.utils.cache</span> <span class="kn">import</span> <span class="n">CachedEngine</span>
 <span class="kn">from</span> <span class="nn">adalflow.tracing.callback_manager</span> <span class="kn">import</span> <span class="n">CallbackManager</span>
@@ -560,7 +560,7 @@
 <span class="s2">                    Got </span><span class="si">{</span><span class="n">model_client</span><span class="si">}</span><span class="s2"> instead.&quot;</span>
             <span class="p">)</span>
 
-        <span class="n">template</span> <span class="o">=</span> <span class="n">template</span> <span class="ow">or</span> <span class="n">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">template</span> <span class="ow">or</span> <span class="n">DEFAULT_ADALFLOW_SYSTEM_PROMPT</span>
 
         <span class="c1"># create the cache path and initialize the cache engine</span>
 

@@ -6,7 +6,7 @@
       <a href="https://colab.research.google.com/drive/1_sGeHaKrwpI9RiL01g3cKyI2_5PJqZtr?usp=sharing" target="_blank" style="margin-right: 10px;">
          <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
       </a>
-      <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/tutorials/prompt_note.py" target="_blank" style="display: flex; align-items: center;">
+      <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/prompt_note.py" target="_blank" style="display: flex; align-items: center;">
          <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
          <span style="vertical-align: middle;"> Open Source Code</span>
       </a>
@@ -206,13 +206,13 @@ As with all components, you can use ``to_dict`` and ``from_dict`` to serialize a
 Default Prompt Template
 -------------------------
 
-In default, the ``Prompt`` class uses the :const:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT>` as its string template if no template is provided.
+In default, the ``Prompt`` class uses the :const:`DEFAULT_ADALFLOW_SYSTEM_PROMPT<core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT>` as its string template if no template is provided.
 This default template allows you to conditionally passing seven important variables designed from the data flow diagram above.
 These varaibles are:
 
 .. code-block:: python
 
-   LIGHTRAG_DEFAULT_PROMPT_ARGS = [
+   ADALFLOW_DEFAULT_PROMPT_ARGS = [
       "task_desc_str",  # task description
       "output_format_str",  # output format of the task
       "tools_str",  # tools used in the task
@@ -266,4 +266,4 @@ The output will be the bare minimum with only the user query and a prefix for as
    :class: highlight
 
    - :class:`core.prompt_builder.Prompt`
-   - :const:`core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT`
+   - :const:`core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT`

@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -423,6 +423,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../components/index.html">Components</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.model_client.html">model_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
@@ -436,6 +437,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.bm25_retriever.html">bm25_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.lancedb_retriver.html">lancedb_retriver</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
@@ -603,13 +605,13 @@ making it a plug-and-play component that can be used in functional components li
 It does four things:</p>
 <ol class="arabic simple">
 <li><p>Initialize the client, including both sync and async.</p></li>
-<li><p>Convert the standard LightRAG components inputs to the API-specific format.</p></li>
+<li><p>Convert the standard AdalFlow components inputs to the API-specific format.</p></li>
 <li><p>Call the API and parse the response.</p></li>
 <li><p>Handle API specific exceptions and errors to retry the call.</p></li>
 </ol>
 <p>Check the subclasses in <cite>components/model_client/</cite> directory for the functional API clients we have.</p>
 <blockquote>
-<div><p>This interface is designed to bridge the gap between LightRAG components inputs and model APIs.</p>
+<div><p>This interface is designed to bridge the gap between AdalFlow components inputs and model APIs.</p>
 <p>You can see examples of the subclasses in components/model_client/ directory.</p>
 </div></blockquote>
 <dl class="py method">
@@ -665,7 +667,7 @@ api_kwargs: all the arguments that the API call needs, subclass should implement
 <dl class="py method">
 <dt class="sig sig-object py" id="core.model_client.ModelClient.parse_embedding_response">
 <span class="sig-name descname"><span class="pre">parse_embedding_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EmbedderOutput</span></span></span><a class="reference internal" href="../../_modules/core/model_client.html#ModelClient.parse_embedding_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.model_client.ModelClient.parse_embedding_response" title="Link to this definition">#</a></dt>
-<dd><p>Parse the embedding response to a structure LightRAG components can understand.</p>
+<dd><p>Parse the embedding response to a structure AdalFlow components can understand.</p>
 </dd></dl>
 
 </dd></dl>

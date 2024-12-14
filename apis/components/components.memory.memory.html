@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -423,6 +423,7 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Components</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.model_client.html">model_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html">google_client</a></li>
@@ -436,6 +437,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.bm25_retriever.html">bm25_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.faiss_retriever.html">faiss_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.lancedb_retriver.html">lancedb_retriver</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.llm_retriever.html">llm_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.postgres_retriever.html">postgres_retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
@@ -587,10 +589,45 @@
                   
   <section id="module-components.memory.memory">
 <span id="memory"></span><span id="components-memory-memory"></span><h1>memory<a class="headerlink" href="#module-components.memory.memory" title="Link to this heading">#</a></h1>
-<p>Memory for user-assistant conversations. [Not completed]</p>
+<p>Memory component for user-assistant conversations.</p>
 <p>Memory can include data modeling, in-memory data storage, local file data storage, cloud data persistence, data pipeline, data retriever.
 It is itself an LLM application and different use cases can do it differently.</p>
-<p>This implementation covers the minimal and local memory experience for the user-assistant conversation.</p>
+<p>This component handles the storage and retrieval of conversation history between users
+and assistants. It provides local memory experience with the ability to format and
+return conversation history.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.memory.memory.current_conversation">
+<span class="sig-name descname"><span class="pre">current_conversation</span></span><a class="headerlink" href="#components.memory.memory.current_conversation" title="Link to this definition">#</a></dt>
+<dd><p>Stores the current active conversation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../core/core.types.html#core.types.Conversation" title="core.types.Conversation">Conversation</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.memory.memory.turn_db">
+<span class="sig-name descname"><span class="pre">turn_db</span></span><a class="headerlink" href="#components.memory.memory.turn_db" title="Link to this definition">#</a></dt>
+<dd><p>Database for storing all conversation turns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../core/core.db.html#core.db.LocalDB" title="core.db.LocalDB">LocalDB</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.memory.memory.conver_db">
+<span class="sig-name descname"><span class="pre">conver_db</span></span><a class="headerlink" href="#components.memory.memory.conver_db" title="Link to this definition">#</a></dt>
+<dd><p>Database for storing complete conversations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../core/core.db.html#core.db.LocalDB" title="core.db.LocalDB">LocalDB</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
@@ -604,6 +641,38 @@ It is itself an LLM application and different use cases can do it differently.</
 <dt class="sig sig-object py" id="components.memory.memory.Memory">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">turn_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LocalDB</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/memory/memory.html#Memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.memory.Memory" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.memory.memory.Memory.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/memory/memory.html#Memory.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.memory.Memory.call" title="Link to this definition">#</a></dt>
+<dd><p>Returns the current conversation history as a formatted string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>Formatted conversation history with alternating user and assistant messages.</dt><dd><p>Returns empty string if no conversation history exists.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.memory.memory.Memory.add_dialog_turn">
+<span class="sig-name descname"><span class="pre">add_dialog_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assistant_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/memory/memory.html#Memory.add_dialog_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.memory.Memory.add_dialog_turn" title="Link to this definition">#</a></dt>
+<dd><p>Add a new dialog turn to the current conversation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_query</strong> (<em>str</em>) – The user’s input message.</p></li>
+<li><p><strong>assistant_response</strong> (<em>str</em>) – The assistant’s response message.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -654,7 +723,14 @@ It is itself an LLM application and different use cases can do it differently.</
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.memory.memory.Memory"><code class="docutils literal notranslate"><span class="pre">Memory</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.memory.memory.current_conversation"><code class="docutils literal notranslate"><span class="pre">current_conversation</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.memory.memory.turn_db"><code class="docutils literal notranslate"><span class="pre">turn_db</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.memory.memory.conver_db"><code class="docutils literal notranslate"><span class="pre">conver_db</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.memory.memory.Memory"><code class="docutils literal notranslate"><span class="pre">Memory</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.memory.memory.Memory.call"><code class="docutils literal notranslate"><span class="pre">Memory.call()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.memory.memory.Memory.add_dialog_turn"><code class="docutils literal notranslate"><span class="pre">Memory.add_dialog_turn()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

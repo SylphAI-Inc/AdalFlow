@@ -1,0 +1,1031 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>components.model_client.azureai_client &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=af51538a" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/rtd_search_config.js"></script>
+    <script src="../../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/components/model_client/azureai_client';</script>
+    <link rel="icon" href="../../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/adalflow-logo.png" class="logo__image only-light" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>
+    <script>document.write(`<img src="../../../_static/adalflow-logo.png" class="logo__image only-dark" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributor/index.html">
+    Contributor Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributor/index.html">
+    Contributor Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">components.m...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for components.model_client.azureai_client</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;AzureOpenAI ModelClient integration.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Generator</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">Literal</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">backoff</span>
+
+<span class="c1"># optional import</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">openai</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span><span class="n">OptionalPackages</span><span class="o">.</span><span class="n">OPENAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">OPENAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="c1"># Importing all Azure packages together</span>
+<span class="n">azure_modules</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span>
+    <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">AZURE</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>  <span class="c1"># List of package names</span>
+    <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">AZURE</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># Error message</span>
+<span class="p">)</span>
+<span class="c1"># Manually add each module to sys.modules to make them available globally as if imported normally</span>
+<span class="n">azure_module_names</span> <span class="o">=</span> <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">AZURE</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">azure_module_names</span><span class="p">,</span> <span class="n">azure_modules</span><span class="p">):</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span>
+
+<span class="c1"># Use the modules as if they were imported normally</span>
+<span class="kn">from</span> <span class="nn">azure.identity</span> <span class="kn">import</span> <span class="n">DefaultAzureCredential</span><span class="p">,</span> <span class="n">get_bearer_token_provider</span>
+
+<span class="c1"># from azure.core.credentials import AccessToken</span>
+<span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">AzureOpenAI</span><span class="p">,</span> <span class="n">AsyncAzureOpenAI</span><span class="p">,</span> <span class="n">Stream</span>
+<span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">APITimeoutError</span><span class="p">,</span>
+    <span class="n">InternalServerError</span><span class="p">,</span>
+    <span class="n">RateLimitError</span><span class="p">,</span>
+    <span class="n">UnprocessableEntityError</span><span class="p">,</span>
+    <span class="n">BadRequestError</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">openai.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Completion</span><span class="p">,</span>
+    <span class="n">CreateEmbeddingResponse</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">openai.types.chat</span> <span class="kn">import</span> <span class="n">ChatCompletionChunk</span><span class="p">,</span> <span class="n">ChatCompletion</span>
+
+<span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ModelType</span><span class="p">,</span>
+    <span class="n">EmbedderOutput</span><span class="p">,</span>
+    <span class="n">TokenLogProb</span><span class="p">,</span>
+    <span class="n">CompletionUsage</span><span class="p">,</span>
+    <span class="n">GeneratorOutput</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client.utils</span> <span class="kn">import</span> <span class="n">parse_embedding_response</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AzureAIClient&quot;</span><span class="p">]</span>
+
+<span class="c1"># TODO: this overlaps with openai client largely, might need to refactor to subclass openai client to simplify the code</span>
+
+
+<span class="c1"># completion parsing functions and you can combine them into one singple chat completion parser</span>
+<span class="k">def</span> <span class="nf">get_first_message_content</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;When we only need the content of the first message.</span>
+<span class="sd">    It is the default parser for chat completion.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+
+
+<span class="c1"># def _get_chat_completion_usage(completion: ChatCompletion) -&gt; OpenAICompletionUsage:</span>
+<span class="c1">#     return completion.usage</span>
+
+
+<span class="k">def</span> <span class="nf">parse_stream_response</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletionChunk</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the response of the stream API.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">delta</span><span class="o">.</span><span class="n">content</span>
+
+
+<span class="k">def</span> <span class="nf">handle_streaming_response</span><span class="p">(</span><span class="n">generator</span><span class="p">:</span> <span class="n">Stream</span><span class="p">[</span><span class="n">ChatCompletionChunk</span><span class="p">]):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Handle the streaming response.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">completion</span> <span class="ow">in</span> <span class="n">generator</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Raw chunk completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">parsed_content</span> <span class="o">=</span> <span class="n">parse_stream_response</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">parsed_content</span>
+
+
+<span class="k">def</span> <span class="nf">get_all_messages_content</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;When the n &gt; 1, get all the messages content.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">get_probabilities</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">TokenLogProb</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the probabilities of each token in the completion.&quot;&quot;&quot;</span>
+    <span class="n">log_probs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">logprobs</span><span class="o">.</span><span class="n">content</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="n">log_probs_for_choice</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">openai_token_logprob</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="n">openai_token_logprob</span><span class="o">.</span><span class="n">token</span>
+            <span class="n">logprob</span> <span class="o">=</span> <span class="n">openai_token_logprob</span><span class="o">.</span><span class="n">logprob</span>
+            <span class="n">log_probs_for_choice</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TokenLogProb</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">logprob</span><span class="o">=</span><span class="n">logprob</span><span class="p">))</span>
+        <span class="n">log_probs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_probs_for_choice</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">log_probs</span>
+
+
+<div class="viewcode-block" id="AzureAIClient">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient">[docs]</a>
+<span class="k">class</span> <span class="nc">AzureAIClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    A client wrapper for interacting with Azure OpenAI&#39;s API.</span>
+
+<span class="s2">    This class provides support for both embedding and chat completion API calls.</span>
+<span class="s2">    Users can use this class to simplify their interactions with Azure OpenAI models</span>
+<span class="s2">    through the `Embedder` and `Generator` components.</span>
+
+<span class="s2">    **Initialization:**</span>
+
+<span class="s2">    You can initialize the `AzureAIClient` with either an API key or Azure Active Directory (AAD) token</span>
+<span class="s2">    authentication. It is recommended to set environment variables for sensitive data like API keys.</span>
+
+<span class="s2">    Args:</span>
+<span class="s2">        api_key (Optional[str]): Azure OpenAI API key. Default is None.</span>
+<span class="s2">        api_version (Optional[str]): API version to use. Default is None.</span>
+<span class="s2">        azure_endpoint (Optional[str]): Azure OpenAI endpoint URL. Default is None.</span>
+<span class="s2">        credential (Optional[DefaultAzureCredential]): Azure AD credential for token-based authentication. Default is None.</span>
+<span class="s2">        chat_completion_parser (Callable[[Completion], Any]): Function to parse chat completions. Default is `get_first_message_content`.</span>
+<span class="s2">        input_type (Literal[&quot;text&quot;, &quot;messages&quot;]): Format for input, either &quot;text&quot; or &quot;messages&quot;. Default is &quot;text&quot;.</span>
+
+<span class="s2">    **Setup Instructions:**</span>
+
+<span class="s2">    - **Using API Key:**</span>
+<span class="s2">      Set up the following environment variables:</span>
+<span class="s2">      ```bash</span>
+<span class="s2">      export AZURE_OPENAI_API_KEY=&quot;your_api_key&quot;</span>
+<span class="s2">      export AZURE_OPENAI_ENDPOINT=&quot;your_endpoint&quot;</span>
+<span class="s2">      export AZURE_OPENAI_VERSION=&quot;your_version&quot;</span>
+<span class="s2">      ```</span>
+
+<span class="s2">    - **Using Azure AD Token:**</span>
+<span class="s2">      Ensure you have configured Azure AD credentials. The `DefaultAzureCredential` will automatically use your configured credentials.</span>
+
+<span class="s2">    **Example Usage:**</span>
+
+<span class="s2">    .. code-block:: python</span>
+
+<span class="s2">        from azure.identity import DefaultAzureCredential</span>
+<span class="s2">        from your_module import AzureAIClient  # Adjust import based on your module name</span>
+
+<span class="s2">        # Initialize with API key</span>
+<span class="s2">        client = AzureAIClient(</span>
+<span class="s2">            api_key=&quot;your_api_key&quot;,</span>
+<span class="s2">            api_version=&quot;2023-05-15&quot;,</span>
+<span class="s2">            azure_endpoint=&quot;https://your-endpoint.openai.azure.com/&quot;</span>
+<span class="s2">        )</span>
+
+<span class="s2">        # Or initialize with Azure AD token</span>
+<span class="s2">        client = AzureAIClient(</span>
+<span class="s2">            api_version=&quot;2023-05-15&quot;,</span>
+<span class="s2">            azure_endpoint=&quot;https://your-endpoint.openai.azure.com/&quot;,</span>
+<span class="s2">            credential=DefaultAzureCredential()</span>
+<span class="s2">        )</span>
+
+<span class="s2">        # Example call to the chat completion API</span>
+<span class="s2">        api_kwargs = {</span>
+<span class="s2">            &quot;model&quot;: &quot;gpt-3.5-turbo&quot;,</span>
+<span class="s2">            &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;What is the meaning of life?&quot;}],</span>
+<span class="s2">            &quot;stream&quot;: True</span>
+<span class="s2">        }</span>
+<span class="s2">        response = client.call(api_kwargs=api_kwargs, model_type=ModelType.LLM)</span>
+
+<span class="s2">        for chunk in response:</span>
+<span class="s2">            print(chunk)</span>
+
+
+<span class="s2">    **Notes:**</span>
+<span class="s2">    - Ensure that the API key or credentials are correctly set up and accessible to avoid authentication errors.</span>
+<span class="s2">    - Use `chat_completion_parser` to define how to extract and handle the chat completion responses.</span>
+<span class="s2">    - The `input_type` parameter determines how input is formatted for the API call.</span>
+
+<span class="s2">    **References:**</span>
+<span class="s2">    - [Azure OpenAI API Documentation](https://learn.microsoft.com/en-us/azure/ai-services/openai/overview)</span>
+<span class="s2">    - [OpenAI API Documentation](https://platform.openai.com/docs/guides/text-generation)</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">api_version</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">azure_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">credential</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DefaultAzureCredential</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">chat_completion_parser</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Completion</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">input_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;It is recommended to set the API_KEY into the  environment variable instead of passing it as an argument.</span>
+
+
+<span class="sd">        Initializes the Azure OpenAI client with either API key or AAD token authentication.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            api_key: Azure OpenAI API key.</span>
+<span class="sd">            api_version: Azure OpenAI API version.</span>
+<span class="sd">            azure_endpoint: Azure OpenAI endpoint.</span>
+<span class="sd">            credential: Azure AD credential for token-based authentication.</span>
+<span class="sd">            chat_completion_parser: Function to parse chat completions.</span>
+<span class="sd">            input_type: Input format, either &quot;text&quot; or &quot;messages&quot;.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># added api_type azure for azure Ai</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_type</span> <span class="o">=</span> <span class="s2">&quot;azure&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="o">=</span> <span class="n">api_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apiversion</span> <span class="o">=</span> <span class="n">api_version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_azure_endpoint</span> <span class="o">=</span> <span class="n">azure_endpoint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_credential</span> <span class="o">=</span> <span class="n">credential</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_sync_client</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># only initialize if the async call is called</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">chat_completion_parser</span> <span class="ow">or</span> <span class="n">get_first_message_content</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_input_type</span> <span class="o">=</span> <span class="n">input_type</span>
+
+<div class="viewcode-block" id="AzureAIClient.init_sync_client">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.init_sync_client">[docs]</a>
+    <span class="k">def</span> <span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AZURE_OPENAI_API_KEY&quot;</span><span class="p">)</span>
+        <span class="n">azure_endpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_azure_endpoint</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AZURE_OPENAI_ENDPOINT&quot;</span><span class="p">)</span>
+        <span class="n">api_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apiversion</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AZURE_OPENAI_VERSION&quot;</span><span class="p">)</span>
+        <span class="c1"># credential = self._credential or DefaultAzureCredential</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">azure_endpoint</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Environment variable AZURE_OPENAI_ENDPOINT must be set&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">api_version</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Environment variable AZURE_OPENAI_VERSION must be set&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">api_key</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">AzureOpenAI</span><span class="p">(</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">azure_endpoint</span><span class="o">=</span><span class="n">azure_endpoint</span><span class="p">,</span> <span class="n">api_version</span><span class="o">=</span><span class="n">api_version</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_credential</span><span class="p">:</span>
+            <span class="c1"># credential = DefaultAzureCredential()</span>
+            <span class="n">token_provider</span> <span class="o">=</span> <span class="n">get_bearer_token_provider</span><span class="p">(</span>
+                <span class="n">DefaultAzureCredential</span><span class="p">(),</span> <span class="s2">&quot;https://cognitiveservices.azure.com/.default&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">AzureOpenAI</span><span class="p">(</span>
+                <span class="n">azure_ad_token_provider</span><span class="o">=</span><span class="n">token_provider</span><span class="p">,</span>
+                <span class="n">azure_endpoint</span><span class="o">=</span><span class="n">azure_endpoint</span><span class="p">,</span>
+                <span class="n">api_version</span><span class="o">=</span><span class="n">api_version</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Environment variable AZURE_OPENAI_API_KEY must be set or credential must be provided&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AzureAIClient.init_async_client">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.init_async_client">[docs]</a>
+    <span class="k">def</span> <span class="nf">init_async_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AZURE_OPENAI_API_KEY&quot;</span><span class="p">)</span>
+        <span class="n">azure_endpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_azure_endpoint</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AZURE_OPENAI_ENDPOINT&quot;</span><span class="p">)</span>
+        <span class="n">api_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apiversion</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AZURE_OPENAI_VERSION&quot;</span><span class="p">)</span>
+        <span class="c1"># credential = self._credential or DefaultAzureCredential()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">azure_endpoint</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Environment variable AZURE_OPENAI_ENDPOINT must be set&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">api_version</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Environment variable AZURE_OPENAI_VERSION must be set&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">api_key</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">AsyncAzureOpenAI</span><span class="p">(</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">azure_endpoint</span><span class="o">=</span><span class="n">azure_endpoint</span><span class="p">,</span> <span class="n">api_version</span><span class="o">=</span><span class="n">api_version</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_credential</span><span class="p">:</span>
+            <span class="c1"># credential = DefaultAzureCredential()</span>
+            <span class="n">token_provider</span> <span class="o">=</span> <span class="n">get_bearer_token_provider</span><span class="p">(</span>
+                <span class="n">DefaultAzureCredential</span><span class="p">(),</span> <span class="s2">&quot;https://cognitiveservices.azure.com/.default&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">AsyncAzureOpenAI</span><span class="p">(</span>
+                <span class="n">azure_ad_token_provider</span><span class="o">=</span><span class="n">token_provider</span><span class="p">,</span>
+                <span class="n">azure_endpoint</span><span class="o">=</span><span class="n">azure_endpoint</span><span class="p">,</span>
+                <span class="n">api_version</span><span class="o">=</span><span class="n">api_version</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Environment variable AZURE_OPENAI_API_KEY must be set or credential must be provided&quot;</span>
+            <span class="p">)</span></div>
+
+
+    <span class="c1"># def _parse_chat_completion(self, completion: ChatCompletion) -&gt; &quot;GeneratorOutput&quot;:</span>
+    <span class="c1">#     # TODO: raw output it is better to save the whole completion as a source of truth instead of just the message</span>
+    <span class="c1">#     try:</span>
+    <span class="c1">#         data = self.chat_completion_parser(completion)</span>
+    <span class="c1">#         usage = self.track_completion_usage(completion)</span>
+    <span class="c1">#         return GeneratorOutput(</span>
+    <span class="c1">#             data=data, error=None, raw_response=str(data), usage=usage</span>
+    <span class="c1">#         )</span>
+    <span class="c1">#     except Exception as e:</span>
+    <span class="c1">#         log.error(f&quot;Error parsing the completion: {e}&quot;)</span>
+    <span class="c1">#         return GeneratorOutput(data=None, error=str(e), raw_response=completion)</span>
+
+<div class="viewcode-block" id="AzureAIClient.parse_chat_completion">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.parse_chat_completion">[docs]</a>
+    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">completion</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ChatCompletion</span><span class="p">,</span> <span class="n">Generator</span><span class="p">[</span><span class="n">ChatCompletionChunk</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GeneratorOutput&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the completion, and put it into the raw_response.&quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, parser: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
+            <span class="n">usage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_completion_usage</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raw_response</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">usage</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing the completion: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">raw_response</span><span class="o">=</span><span class="n">completion</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AzureAIClient.track_completion_usage">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.track_completion_usage">[docs]</a>
+    <span class="k">def</span> <span class="nf">track_completion_usage</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">completion</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ChatCompletion</span><span class="p">,</span> <span class="n">Generator</span><span class="p">[</span><span class="n">ChatCompletionChunk</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CompletionUsage</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">completion</span><span class="p">,</span> <span class="n">ChatCompletion</span><span class="p">):</span>
+            <span class="n">usage</span><span class="p">:</span> <span class="n">CompletionUsage</span> <span class="o">=</span> <span class="n">CompletionUsage</span><span class="p">(</span>
+                <span class="n">completion_tokens</span><span class="o">=</span><span class="n">completion</span><span class="o">.</span><span class="n">usage</span><span class="o">.</span><span class="n">completion_tokens</span><span class="p">,</span>
+                <span class="n">prompt_tokens</span><span class="o">=</span><span class="n">completion</span><span class="o">.</span><span class="n">usage</span><span class="o">.</span><span class="n">prompt_tokens</span><span class="p">,</span>
+                <span class="n">total_tokens</span><span class="o">=</span><span class="n">completion</span><span class="o">.</span><span class="n">usage</span><span class="o">.</span><span class="n">total_tokens</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">usage</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;streaming completion usage tracking is not implemented&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AzureAIClient.parse_embedding_response">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.parse_embedding_response">[docs]</a>
+    <span class="k">def</span> <span class="nf">parse_embedding_response</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">CreateEmbeddingResponse</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbedderOutput</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the embedding response to a structure LightRAG components can understand.</span>
+
+<span class="sd">        Should be called in ``Embedder``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">parse_embedding_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing the embedding response: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">EmbedderOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[],</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">raw_response</span><span class="o">=</span><span class="n">response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AzureAIClient.convert_inputs_to_api_kwargs">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.convert_inputs_to_api_kwargs">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Specify the API input type and output api_kwargs that will be used in _call and _acall methods.</span>
+<span class="sd">        Convert the Component&#39;s standard input, and system_input(chat model) and model_kwargs into API-specific format</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">final_model_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="nb">input</span> <span class="o">=</span> <span class="p">[</span><span class="nb">input</span><span class="p">]</span>
+            <span class="c1"># convert input to input</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;input must be a sequence of text&quot;</span><span class="p">)</span>
+            <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">input</span>
+        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">:</span>
+            <span class="c1"># convert input to messages</span>
+            <span class="n">messages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_type</span> <span class="o">==</span> <span class="s2">&quot;messages&quot;</span><span class="p">:</span>
+                <span class="n">system_start_tag</span> <span class="o">=</span> <span class="s2">&quot;&lt;START_OF_SYSTEM_PROMPT&gt;&quot;</span>
+                <span class="n">system_end_tag</span> <span class="o">=</span> <span class="s2">&quot;&lt;END_OF_SYSTEM_PROMPT&gt;&quot;</span>
+                <span class="n">user_start_tag</span> <span class="o">=</span> <span class="s2">&quot;&lt;START_OF_USER_PROMPT&gt;&quot;</span>
+                <span class="n">user_end_tag</span> <span class="o">=</span> <span class="s2">&quot;&lt;END_OF_USER_PROMPT&gt;&quot;</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">system_start_tag</span><span class="si">}</span><span class="s2">(.*?)</span><span class="si">{</span><span class="n">system_end_tag</span><span class="si">}{</span><span class="n">user_start_tag</span><span class="si">}</span><span class="s2">(.*?)</span><span class="si">{</span><span class="n">user_end_tag</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="c1"># Compile the regular expression</span>
+                <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+                <span class="c1"># Match the pattern</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+                <span class="n">system_prompt</span><span class="p">,</span> <span class="n">input_str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="n">system_prompt</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">input_str</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No match found.&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">system_prompt</span> <span class="ow">and</span> <span class="n">input_str</span><span class="p">:</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">system_prompt</span><span class="p">})</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">input_str</span><span class="p">})</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">})</span>
+            <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">messages</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">final_model_kwargs</span></div>
+
+
+<div class="viewcode-block" id="AzureAIClient.call">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.call">[docs]</a>
+    <span class="nd">@backoff</span><span class="o">.</span><span class="n">on_exception</span><span class="p">(</span>
+        <span class="n">backoff</span><span class="o">.</span><span class="n">expo</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="n">APITimeoutError</span><span class="p">,</span>
+            <span class="n">InternalServerError</span><span class="p">,</span>
+            <span class="n">RateLimitError</span><span class="p">,</span>
+            <span class="n">UnprocessableEntityError</span><span class="p">,</span>
+            <span class="n">BadRequestError</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">max_time</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        kwargs is the combined input and model_kwargs.  Support streaming call.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;api_kwargs: </span><span class="si">{</span><span class="n">api_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;stream&quot;</span> <span class="ow">in</span> <span class="n">api_kwargs</span> <span class="ow">and</span> <span class="n">api_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stream&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;streaming call&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span> <span class="o">=</span> <span class="n">handle_streaming_response</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AzureAIClient.acall">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.acall">[docs]</a>
+    <span class="nd">@backoff</span><span class="o">.</span><span class="n">on_exception</span><span class="p">(</span>
+        <span class="n">backoff</span><span class="o">.</span><span class="n">expo</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="n">APITimeoutError</span><span class="p">,</span>
+            <span class="n">InternalServerError</span><span class="p">,</span>
+            <span class="n">RateLimitError</span><span class="p">,</span>
+            <span class="n">UnprocessableEntityError</span><span class="p">,</span>
+            <span class="n">BadRequestError</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">max_time</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        kwargs is the combined input and model_kwargs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_async_client</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AzureAIClient.from_dict">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.from_dict">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="c1"># recreate the existing clients</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">sync_client</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">init_sync_client</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">async_client</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">init_async_client</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="AzureAIClient.to_dict">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.to_dict">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the component to a dictionary.&quot;&quot;&quot;</span>
+        <span class="c1"># TODO: not exclude but save yes or no for recreating the clients</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;sync_client&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;async_client&quot;</span><span class="p">,</span>
+        <span class="p">]</span>  <span class="c1"># unserializable object</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span></div>
+</div>
+
+
+
+<span class="c1"># if __name__ == &quot;__main__&quot;:</span>
+<span class="c1">#     from adalflow.core import Generator</span>
+<span class="c1">#     from adalflow.utils import setup_env, get_logger</span>
+
+<span class="c1">#     log = get_logger(level=&quot;DEBUG&quot;)</span>
+
+<span class="c1">#     setup_env()</span>
+<span class="c1">#     prompt_kwargs = {&quot;input_str&quot;: &quot;What is the meaning of life?&quot;}</span>
+
+<span class="c1">#     gen = Generator(</span>
+<span class="c1">#         model_client=OpenAIClient(),</span>
+<span class="c1">#         model_kwargs={&quot;model&quot;: &quot;gpt-3.5-turbo&quot;, &quot;stream&quot;: True},</span>
+<span class="c1">#     )</span>
+<span class="c1">#     gen_response = gen(prompt_kwargs)</span>
+<span class="c1">#     print(f&quot;gen_response: {gen_response}&quot;)</span>
+
+<span class="c1">#     for genout in gen_response.data:</span>
+<span class="c1">#         print(f&quot;genout: {genout}&quot;)</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

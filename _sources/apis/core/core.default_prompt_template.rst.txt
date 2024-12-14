@@ -11,8 +11,8 @@ default_prompt_template
 
    .. rubric:: Constants
 
-   .. autodata:: core.default_prompt_template.LIGHTRAG_DEFAULT_PROMPT_ARGS
-   .. autodata:: core.default_prompt_template.LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS
-   .. autodata:: core.default_prompt_template.SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT
-   .. autodata:: core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+   .. autodata:: core.default_prompt_template.ADALFLOW_DEFAULT_PROMPT_ARGS
+   .. autodata:: core.default_prompt_template.ADALFLOW_DEFAULT_PROMPT_TRAINABLE_PARAMS
+   .. autodata:: core.default_prompt_template.SIMPLE_DEFAULT_ADALFLOW_SYSTEM_PROMPT
+   .. autodata:: core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT
 

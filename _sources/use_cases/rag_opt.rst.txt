@@ -1,10 +1,9 @@
-.. <a href="https://colab.research.google.com/drive/1n3mHUWekTEYHiBdYBTw43TKlPN41A9za?usp=sharing" target="_blank" style="margin-right: 10px;">
-..          <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
-..       </a>
-
 .. raw:: html
 
    <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+      <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_rag_optimization.ipynb" target="_blank" style="margin-right: 20px;">
+         <img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="height: 20px;">
+      </a>
 
       <a href="https://github.com/SylphAI-Inc/AdalFlow/tree/main/benchmarks/hotpot_qa/" target="_blank" style="display: flex; align-items: center;">
          <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">

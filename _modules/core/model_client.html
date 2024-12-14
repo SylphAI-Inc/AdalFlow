@@ -30,7 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -472,7 +472,7 @@
 
 <span class="s2">(1) Initialize the client, including both sync and async.</span>
 
-<span class="s2">(2) Convert the standard LightRAG components inputs to the API-specific format.</span>
+<span class="s2">(2) Convert the standard AdalFlow components inputs to the API-specific format.</span>
 
 <span class="s2">(3) Call the API and parse the response.</span>
 
@@ -480,7 +480,7 @@
 
 <span class="s2">Check the subclasses in `components/model_client/` directory for the functional API clients we have.</span>
 
-<span class="s2">    This interface is designed to bridge the gap between LightRAG components inputs and model APIs.</span>
+<span class="s2">    This interface is designed to bridge the gap between AdalFlow components inputs and model APIs.</span>
 
 <span class="s2">    You can see examples of the subclasses in components/model_client/ directory.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
@@ -573,7 +573,7 @@
 <div class="viewcode-block" id="ModelClient.parse_embedding_response">
 <a class="viewcode-back" href="../../apis/core/core.model_client.html#core.model_client.ModelClient.parse_embedding_response">[docs]</a>
     <span class="k">def</span> <span class="nf">parse_embedding_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;EmbedderOutput&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the embedding response to a structure LightRAG components can understand.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the embedding response to a structure AdalFlow components can understand.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement parse_embedding_response method&quot;</span>
         <span class="p">)</span></div>

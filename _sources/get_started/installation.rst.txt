@@ -85,7 +85,7 @@ Here is the list of our tested versions:
    google-generativeai = "^0.7.2"
    cohere = "^5.5.8"
 
-You can install the optional packages with either ``pip install package_name`` or ``pip install lightrag[package_name]``.
+You can install the optional packages with either ``pip install package_name`` or ``pip install adalflow[package_name]``.
 
 
 

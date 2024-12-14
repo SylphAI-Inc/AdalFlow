@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -435,7 +435,9 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logger Example</a></li>
+
+
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
 </ul>
 </div>
@@ -494,7 +496,15 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="function-calls">
+  <div style="display: flex; justify-content: flex-start; align-items: center; gap: 15px; margin-bottom: 20px;">
+<a target="_blank" href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_function_calls.ipynb">
+    <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+<a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/adalflow_function_calls.py" target="_blank" style="display: flex; align-items: center;">
+    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+    <span style="vertical-align: middle;"> Open Source Code</span>
+</a>
+</div><section id="function-calls">
 <span id="tool-helper"></span><h1>Function calls<a class="headerlink" href="#function-calls" title="Link to this heading">#</a></h1>
 <p>Tools are means LLM can use to interact with the world beyond of its internal knowledge. Technically speaking, retrievers are tools to help LLM to get more relevant context, and memory is a tool for LLM to carry out a conversation.
 Deciding when, which, and how to use a tool, and even to creating a tool is an agentic behavior:

@@ -1,0 +1,17 @@
+.. _components-retriever-lancedb_retriver:
+
+lancedb_retriver
+=============================================
+
+.. automodule:: components.retriever.lancedb_retriver
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      LanceDBRetriever
+

@@ -30,7 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -445,6 +445,7 @@
   <h1>Source code for utils.lazy_import</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Lazy import a module and class.&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
@@ -460,12 +461,35 @@
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Enum for optional packages that can be used in the library.</span>
 
 <span class="s2">    The package name and error message are defined for each optional package as a tuple.</span>
+
+<span class="s2">    The value of the tuple:</span>
+<span class="s2">    - The package name (str): The package name to import. Follows the right syntax: such as import azure.identity but the package itself is azure-identity.</span>
+<span class="s2">      Support a list of package names for related packages. This will be importing a list of packages while safe_import is used.</span>
+<span class="s2">    - The error message (str): The message to display if the package is not found.</span>
+
+<span class="s2">    Example of using multiple related packages:</span>
+
+<span class="s2">    .. code-block:: python</span>
+
+<span class="s2">        from adalflow.utils.lazy_import import safe_import, OptionalPackages</span>
+<span class="s2">        import sys</span>
+
+<span class="s2">        azure_modules = safe_import(</span>
+<span class="s2">        OptionalPackages.AZURE.value[0],  # List of package names</span>
+<span class="s2">        OptionalPackages.AZURE.value[1],  # Error message</span>
+<span class="s2">        )</span>
+<span class="s2">        # Manually add each module to sys.modules to make them available globally as if imported normally</span>
+<span class="s2">        azure_module_names = OptionalPackages.AZURE.value[0]</span>
+<span class="s2">        for name, module in zip(azure_module_names, azure_modules):</span>
+<span class="s2">            sys.modules[name] = module</span>
+
+<span class="s2">        # Use the modules as if they were imported normally</span>
+<span class="s2">        from azure.identity import DefaultAzureCredential, get_bearer_token_provider</span>
 <span class="s2">    &quot;&quot;&quot;</span>
     <span class="c1"># model sdk</span>
     <span class="n">GROQ</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;groq&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install groq with: pip install groq&quot;</span><span class="p">)</span>
     <span class="n">OPENAI</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;openai&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install openai with: pip install openai&quot;</span><span class="p">)</span>
     <span class="n">ANTHROPIC</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;anthropic&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install anthropic with: pip install anthropic&quot;</span><span class="p">)</span>
-    <span class="n">BEDROCK</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;bedrock&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install boto3 with: pip install boto3&quot;</span><span class="p">)</span>
     <span class="n">GOOGLE_GENERATIVEAI</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;google.generativeai&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Please install google-generativeai with: pip install google-generativeai&quot;</span><span class="p">,</span>
@@ -476,13 +500,30 @@
     <span class="p">)</span>
     <span class="n">COHERE</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;cohere&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install cohere with: pip install cohere&quot;</span><span class="p">)</span>
     <span class="n">OLLAMA</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ollama&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install ollama with: pip install ollama&quot;</span><span class="p">)</span>
+    <span class="c1"># AWS</span>
+    <span class="n">BOTO3</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;boto3&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install boto3 with: pip install boto3&quot;</span><span class="p">)</span>
     <span class="c1"># modeling library</span>
     <span class="n">TORCH</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;torch&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install torch with: pip install torch&quot;</span><span class="p">)</span>
 
+    <span class="c1"># Grouping all Azure-related packages under one entry</span>
+    <span class="n">AZURE</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;azure.identity&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;azure.core&quot;</span><span class="p">,</span>
+            <span class="c1"># &quot;azure.ai-formrecognizer&quot;,</span>
+            <span class="c1"># &quot;azure.ai-textanalytics&quot;,</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;Please install Azure packages with: pip install azure-identity azure-core azure-ai-formrecognizer azure-ai-textanalytics&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="c1"># search library</span>
     <span class="n">FAISS</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;faiss&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Please install faiss with: pip install faiss-cpu (or faiss if you use GPU)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">LANCEDB</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;lancedb&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Please install lancedb with: pip install lancedb .&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># db library</span>
@@ -577,10 +618,23 @@
 
 <div class="viewcode-block" id="safe_import">
 <a class="viewcode-back" href="../../apis/utils/utils.lazy_import.html#utils.lazy_import.safe_import">[docs]</a>
-<span class="k">def</span> <span class="nf">safe_import</span><span class="p">(</span><span class="n">module_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">install_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">safe_import</span><span class="p">(</span>
+    <span class="n">module_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">install_message</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ModuleType</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ModuleType</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Safely import a module and raise an ImportError with the install message if the module is not found.</span>
 
-<span class="sd">    Mainly used internally to import optional packages only when needed.</span>
+<span class="sd">    Handles importing of multiple related packages.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        module_names (list or str): The package name(s) to import.</span>
+<span class="sd">        install_message (str): The message to display if import fails.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ModuleType: The imported module.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImportError: If any of the packages are not found.</span>
+
 
 <span class="sd">    Example:</span>
 
@@ -606,10 +660,17 @@
 <span class="sd">        numpy = safe_import(OptionalPackages.NUMPY.value[0], OptionalPackages.NUMPY.value[1])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">install_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">module_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">module_names</span><span class="p">]</span>
+
+    <span class="n">return_modules</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">module_name</span> <span class="ow">in</span> <span class="n">module_names</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">return_modules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module_name</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">install_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">return_modules</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">return_modules</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">return_modules</span></div>
 
 </pre></div>
 

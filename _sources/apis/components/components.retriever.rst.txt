@@ -11,6 +11,7 @@ Submodules
 
    components.retriever.bm25_retriever
    components.retriever.faiss_retriever
+   components.retriever.lancedb_retriver
    components.retriever.llm_retriever
    components.retriever.postgres_retriever
    components.retriever.qdrant_retriever

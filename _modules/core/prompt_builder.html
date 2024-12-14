@@ -30,7 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=af51538a" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -453,7 +453,7 @@
 
 
 <span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.default_prompt_template</span> <span class="kn">import</span> <span class="n">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.default_prompt_template</span> <span class="kn">import</span> <span class="n">DEFAULT_ADALFLOW_SYSTEM_PROMPT</span>
 <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
 
 
@@ -503,7 +503,7 @@
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="n">template</span> <span class="ow">or</span> <span class="n">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="n">template</span> <span class="ow">or</span> <span class="n">DEFAULT_ADALFLOW_SYSTEM_PROMPT</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__create_jinja2_template</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prompt_variables</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_template_variables</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">):</span>
