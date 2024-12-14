@@ -8,7 +8,10 @@ import logging
 from adalflow.core.model_client import ModelClient
 from adalflow.core.types import ModelType, CompletionUsage, GeneratorOutput
 
-import boto3
+from adalflow.utils.lazy_import import safe_import, OptionalPackages
+
+boto3 = safe_import(OptionalPackages.BOTO3.value[0], OptionalPackages.BOTO3.value[1])
+
 from botocore.config import Config
 
 log = logging.getLogger(__name__)
@@ -22,6 +25,7 @@ bedrock_runtime_exceptions = boto3.client(
 def get_first_message_content(completion: Dict) -> str:
     r"""When we only need the content of the first message.
     It is the default parser for chat completion."""
+    return completion["output"]["message"]["content"][0]["text"]
     return completion["output"]["message"]["content"][0]["text"]
 
 
@@ -37,18 +41,60 @@ class BedrockAPIClient(ModelClient):
 
     Note:
 
-    This client needs a lot more work to be fully functional.
-    (1) Setup the AWS credentials.
-    (2) Access to the modelId.
-    (3) Convert the modelId to standard model.
+    This api is in experimental and is not fully tested and validated yet.
 
-    To setup the AWS credentials, follow the instructions here:
+    Support:
+    1. AWS Titan
+    2. Claude
+    3. Cohere
+    4. LLama
+    5. Mistral
+    6. Jamba
+
+    Setup:
+    1. Install boto3: `pip install boto3`
+    2. Ensure you have the AWS credentials set up. There are four variables you can optionally set:
+        - AWS_PROFILE_NAME: The name of the AWS profile to use.
+        - AWS_REGION_NAME: The name of the AWS region to use.
+        - AWS_ACCESS_KEY_ID: The AWS access key ID.
+        - AWS_SECRET_ACCESS_KEY: The AWS secret access key.
+
+
+
+
+    Example:
+
+    .. code-block:: python
+
+        from adalflow.components.model_client import BedrockAPIClient
+
+        template = "<SYS>
+        You are a helpful assistant.
+        </SYS>
+        User: {{input_str}}
+        You:
+        "
+
+        # use AWS_PROFILE_NAME and AWS_REGION_NAME from the environment variables in this case
+        # ensure you request the modelId from the AWS team
+        self.generator = Generator(
+            model_client=BedrockAPIClient(),
+            model_kwargs={
+                "modelId": "anthropic.claude-3-sonnet-20240229-v1:0",
+                "inferenceConfig": {
+                    "temperature": 0.8
+                }
+            }, template=template
+        )
+
+    Relevant API docs:
+    1. https://docs.aws.amazon.com/bedrock/latest/APIReference/welcome.html
+    2. https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started-api-ex-python.html
+    3. https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_Converse.html#API_runtime_Converse_RequestParameters
+    4. To setup the AWS credentials, follow the instructions here:
     https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html
-
-    Additionally, this medium article is a good reference:
+    5. Additionally, this medium article is a good reference:
     https://medium.com/@harangpeter/setting-up-aws-bedrock-for-api-based-text-inference-dc25ab2b216b
-
-    Visit https://docs.aws.amazon.com/bedrock/latest/APIReference/welcome.html for more api details.
     """
 
     def __init__(

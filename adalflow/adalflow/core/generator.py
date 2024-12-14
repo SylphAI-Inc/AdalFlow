@@ -26,7 +26,7 @@ from adalflow.optim.types import ParameterType
 from adalflow.core.prompt_builder import Prompt
 from adalflow.core.functional import compose_model_kwargs
 from adalflow.core.model_client import ModelClient
-from adalflow.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+from adalflow.core.default_prompt_template import DEFAULT_ADALFLOW_SYSTEM_PROMPT
 from adalflow.optim.function import BackwardContext
 from adalflow.utils.cache import CachedEngine
 from adalflow.tracing.callback_manager import CallbackManager
@@ -113,7 +113,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                     Got {model_client} instead."
             )
 
-        template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+        template = template or DEFAULT_ADALFLOW_SYSTEM_PROMPT
 
         # create the cache path and initialize the cache engine
 

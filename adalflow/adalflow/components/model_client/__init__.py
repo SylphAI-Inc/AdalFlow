@@ -34,7 +34,7 @@ AnthropicAPIClient = LazyImport(
 )
 BedrockAPIClient = LazyImport(
     "adalflow.components.model_client.bedrock_client.BedrockAPIClient",
-    OptionalPackages.BEDROCK,
+    OptionalPackages.BOTO3,
 )
 GroqAPIClient = LazyImport(
     "adalflow.components.model_client.groq_client.GroqAPIClient",
