@@ -13,25 +13,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
           python-version: '3.10'
+          cache: 'pip'
           
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y graphviz
+          python -m pip install --upgrade pip
           pip install diagrams
           
       - name: Create architecture diagram
         run: python architecture_generator.py
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         
       - name: Commit diagram
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           git add architecture.png
-          git commit -m "Update architecture diagram" || exit 0
+          git commit -m "Update architecture diagram [skip ci]" || exit 0
           git push
