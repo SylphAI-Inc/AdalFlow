@@ -940,9 +940,17 @@ class BackwardEngine(Generator):  # it is a generator with defaule template
         if kwargs is None:
             kwargs = {}
         kwargs["template"] = FEEDBACK_ENGINE_TEMPLATE
+
         super().__init__(**kwargs)
         self.name = "BackwardEngine"
         self.teacher_mode = False
+
+    def call(self, **kwargs) -> GeneratorOutputType:
+        r"""Catch the rate limit error and raise it."""
+        output = super().call(**kwargs)
+        if output and output.error is not None and "429" in output.error:
+            raise ValueError(f"Error in the backward engine: {output.error}")
+        return output
 
     @staticmethod
     def failure_message_to_optimizer(

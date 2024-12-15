@@ -453,6 +453,9 @@ class Parameter(Generic[T]):
                 [self.gradients_context[g] for g in self.gradients],
             )
         )
+        # set all gradients value to None
+        for g in self.gradients:
+            g.data = None
 
         gradient_context_combined_str = Prompt(
             template=COMBINED_GRADIENTS_TEMPLATE,

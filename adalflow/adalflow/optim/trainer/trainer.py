@@ -317,8 +317,8 @@ class Trainer(Component):
 
     def debug_report(
         self,
-        text_grad_debug_path: Optional[str] = None,
-        few_shot_demo_debug_path: Optional[str] = None,
+        text_grad_debug_path: Optional[Dict[str, object]] = None,
+        few_shot_demo_debug_path: Optional[Dict[str, object]] = None,
     ):
         import colorama
         from colorama import Fore
@@ -361,9 +361,12 @@ class Trainer(Component):
         resume_from_ckpt: Optional[
             str
         ] = None,  # TODO: have a more comprehensive ckpt loading in the future
-    ):
+    ) -> Tuple[str, TrainerResult]:
         r"""
         train_loader: An iterable or collection of iterables specifying training samples.
+
+        Returns:
+            Tuple[str, TrainerResult]: Checkpoint file and the TrainerResult object
         """
         start_time = time.time()
 
@@ -491,7 +494,7 @@ class Trainer(Component):
                     train_loader, train_dataset, val_dataset, test_dataset
                 )
             self.debug_report(text_grad_debug_path, few_shot_demo_debug_path)
-            return
+            return self.ckpt_file, trainer_results
 
         ########Run text_optimizers and demo optimizers in sequential order ########
         if (
@@ -557,6 +560,7 @@ class Trainer(Component):
         end_time = time.time()
         print(f"Training time: {end_time - start_time}s")
         print(f"ckpt_file: {self.ckpt_file}")
+        return self.ckpt_file, trainer_results
 
     @staticmethod
     def _estimate_num_epochs(train_loader: Any, max_steps: int):
@@ -684,7 +688,7 @@ class Trainer(Component):
 
     def _fit_demos_one_step_for_debug(
         self, train_loader, train_dataset: Any, val_dataset: Any, test_dataset: Any
-    ) -> str:
+    ) -> Dict[str, object]:
         """Trace both the teacher and the student demos with scores and for sampling.
         For demos: we need to run both the teacher mode and the student mode."""
 
@@ -760,6 +764,8 @@ class Trainer(Component):
 
         # 2. run student mode
 
+        demo_debug_result_path = None
+
         for batch_idx, batch in enumerate(train_loader):
             print(f"Training step: {batch_idx}")
             if batch_idx > 0:
@@ -820,7 +826,9 @@ class Trainer(Component):
             self._demo_optimizers_propose()
             graph_path = os.path.join(debug_path, "student_graph")
 
-            paths = losses_student[0].draw_graph(filepath=graph_path)  # noqa F841
+            demo_debug_result_path = losses_student[0].draw_graph(
+                filepath=graph_path
+            )  # noqa F841
 
             # test step
             self._demo_optimizers_step()
@@ -851,9 +859,9 @@ class Trainer(Component):
                     if len(param._demos) == 0:
                         raise ValueError(f"No demos found, param: {param}")
 
-        return debug_path
+        return demo_debug_result_path
 
-    def _fit_text_grads_one_step_for_debug(self, train_loader: Any) -> str:
+    def _fit_text_grads_one_step_for_debug(self, train_loader: Any) -> Dict[str, str]:
         printc(
             "Debugging fitting one step with batch size 2 for text optimizer", "blue"
         )
@@ -901,8 +909,8 @@ class Trainer(Component):
         # test optimizer
         self._propose_text_optimizers()
 
-        total_loss.draw_graph(filepath=debug_path, full_trace=True)
-        return debug_path
+        debug_files = total_loss.draw_graph(filepath=debug_path, full_trace=True)
+        return debug_files
 
     def _set_demo_optimizers_dataset(self, train_dataset: Any):
         # init the dataset
@@ -1701,6 +1709,9 @@ class Trainer(Component):
         all_y_preds,
         include_demo_optimizers: bool = False,
     ):
+        """Handles both the mixed training and the separate training.
+        When include_demo_optimizers is True, the demo optimizers are included in the training
+        """
         # comptute moving batch acc
         from adalflow.optim.parameter import Parameter
 
@@ -1894,6 +1905,7 @@ class Trainer(Component):
                         trainer_results.prompts[-1],
                         total_steps,
                     )
+                    self._add_failed_proposals_text_optimizers()
                     continue
 
                 # prune the correct sample size if its too big, same with error samples

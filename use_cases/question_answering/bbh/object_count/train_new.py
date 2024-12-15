@@ -130,22 +130,33 @@ def train(
     print(trainer)
 
     train_dataset, val_dataset, test_dataset = load_datasets()
-    trainer.fit(
+    ckpt, _ = trainer.fit(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
         test_dataset=test_dataset,
         resume_from_ckpt=resume_from_ckpt,
     )
+    return ckpt
 
 
 if __name__ == "__main__":
+    import sys
+    import json
 
-    train(
+    ckpt = train(
         debug=True,
-        max_steps=12,
+        max_steps=1,
         strategy="constrained",
         exclude_input_fields_from_bootstrap_demos=True,
     )
+    print(f"ckpt: {ckpt}")
+    # Save ckpt to a file passed as an argument
+    if len(sys.argv) > 1:  # Check if a file path is provided
+        with open(sys.argv[1], "w") as f:
+            json.dump({"ckpt": ckpt}, f)
 
     # train_diagnose(**gpt_3_model)
-    # train_diagnose_teacher(**gpt_4o_model)
+    # train_diagnose_teacher(**gpt_4o_model) # 4omini works well as an optimizer too
+    # /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_49c63_run_1.json
+    # 0.72 -> 0.9 val
+    # 0.79 -> 0.92 test

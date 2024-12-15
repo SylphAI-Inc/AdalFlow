@@ -249,13 +249,18 @@ class AdalComponent(Component):
             )
 
             for future in concurrent.futures.as_completed(futures):
-                i = futures[future]
-                acc_list[i] = (
-                    future.result()
-                )  # Place the result in the correct position
-                progress_bar.update(
-                    1
-                )  # Update progress bar after each result is collected
+                try:
+                    i = futures[future]
+                    acc_list[i] = (
+                        future.result()
+                    )  # Place the result in the correct position
+                    progress_bar.update(
+                        1
+                    )  # Update progress bar after each result is collected
+                except Exception as e:
+
+                    progress_bar.close()
+                    raise ValueError(f"Exception in task {i}: {e}")
 
         avg_score = float(np.mean(np.array(acc_list)))
         return EvaluationResult(avg_score=avg_score, per_item_scores=acc_list)

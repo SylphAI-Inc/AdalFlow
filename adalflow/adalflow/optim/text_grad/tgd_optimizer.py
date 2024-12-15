@@ -386,6 +386,8 @@ class TGDOptimizer(TextOptimizer):
         if self.proposing:
             raise ValueError("Already proposing a value.")
 
+        print("Proposing a new value.")
+
         # no cache so that new proposal can be made
         no_cache = True
         # print("Proposing a new value.")
