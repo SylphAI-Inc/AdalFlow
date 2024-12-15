@@ -42,7 +42,7 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add *.png
+          git add -f architecture.png
           git status
           git commit -m "Update architecture diagram [skip ci]" || echo "No changes to commit"
           git push || echo "No changes to push"
