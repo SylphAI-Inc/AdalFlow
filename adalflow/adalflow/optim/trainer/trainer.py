@@ -867,10 +867,13 @@ class Trainer(Component):
         self.adaltask.train()  # this will turn everything to train mode
         correct_loss = None
         failed_loss = None
+        all_losses = []
         printc("Finding one successful and one failed loss", "blue")
         for batch in train_loader:
             y_preds = self.adaltask.train_step(batch, 0, self.num_workers)
             losses = self.adaltask.loss_step(batch, y_preds, 0, self.num_workers)
+            # Collect all losses
+            all_losses.extend(losses)
             for loss in losses:
                 if loss.data > 0.5:
                     correct_loss = loss
@@ -879,6 +882,20 @@ class Trainer(Component):
             if correct_loss is not None and failed_loss is not None:
                 print("Found correct and failed loss")
                 break
+
+        # Handle case where one or both losses are None
+        if correct_loss is None or failed_loss is None:
+            if not all_losses:
+                raise ValueError("No losses found in the dataset.")
+
+            # Sort all_losses by their data values
+            all_losses.sort(key=lambda x: x.data, reverse=True)  # Highest to lowest
+
+            # Assign first and last loss in sorted list
+            correct_loss = all_losses[0]
+            failed_loss = all_losses[-1]
+            print("Assigned correct_loss and failed_loss from sorted losses.")
+
         total_loss = sum_ops([correct_loss, failed_loss])
         total_loss.backward()
         # test optimizer
@@ -929,6 +946,10 @@ class Trainer(Component):
     def _propose_text_optimizers(self):
         for text_optimizer in self.text_optimizers:
             text_optimizer.propose()
+
+    def _add_failed_proposals_text_optimizers(self):
+        for opt in self.text_optimizers:
+            opt.add_failed_proposal()
 
     def _get_trainable_text_params(self):
         params = []
@@ -1065,6 +1086,7 @@ class Trainer(Component):
                     print(
                         "No proposal can improve the subset and full set, go to next step"
                     )
+                    self._add_failed_proposals_text_optimizers()
 
                     self._add_one_step_in_trainer_results(
                         trainer_results,
@@ -1073,6 +1095,7 @@ class Trainer(Component):
                         trainer_results.prompts[-1],
                         total_steps,
                     )
+
                     continue
 
                 # set the batch size to the size of the validation set

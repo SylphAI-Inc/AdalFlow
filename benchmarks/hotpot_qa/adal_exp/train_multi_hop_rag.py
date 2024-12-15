@@ -114,8 +114,8 @@ def train(
     adal_component = MultiHopRAGAdal(
         **gpt_3_model,
         teacher_model_config=gpt_3_model,
-        text_optimizer_model_config=gpt_3_model,
-        backward_engine_model_config=gpt_3_model,
+        text_optimizer_model_config=gpt_4o_model,  # gpt3.5 is not enough to be used as a good optimizer, it struggles for long contenxt
+        backward_engine_model_config=gpt_4o_model,
     )
     print(adal_component)
     trainer = adal.Trainer(
@@ -171,3 +171,6 @@ if __name__ == "__main__":
     # why text grad did not improve in the rag case? Do we need to improve the meta prompt?
     # /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_2686e_run_1.json
     # 0.58 -> 0.68 on the test split
+    # 0.72 text grad  /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_c1660_run_1.json
+    # try cycle next
+    #  0.66 /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_1d189_run_1.json

@@ -37,7 +37,7 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
     FEEDBACK_ENGINE_TEMPLATE,
     LLM_CONVERSATION_TEMPLATE,
     VARIABLE_AND_PEERS_INFO,
-    CONVERSATION_START_INSTRUCTION_BASE,
+    # CONVERSATION_START_INSTRUCTION_BASE,
     CONVERSATION_START_INSTRUCTION_CHAIN,
     OBJECTIVE_INSTRUCTION_BASE,
     OBJECTIVE_INSTRUCTION_CHAIN,
@@ -590,7 +590,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         log.info(f"Generator: Backward: {response.name}")
 
         children_params = response.predecessors
-        is_chain = True
+        is_intermediate_node = True
         if response.get_gradient_and_context_text().strip() == "":
             log.info(f"Generator: Backward: No gradient found for {response}.")
 
@@ -627,7 +627,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                     template=template,
                     backward_engine=backward_engine,
                     prompt_str=prompt_str,
-                    is_chain=is_chain,
+                    is_intermediate_node=is_intermediate_node,
                 )
         else:
             log.debug("Backward engine is not set for the generator. No text gradient.")
@@ -640,14 +640,16 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         template: str,
         backward_engine: "BackwardEngine",
         prompt_str: str,
-        is_chain: bool = False,
+        is_intermediate_node: bool = False,
     ):
         if not pred.requires_opt:
             log.debug(
                 f"Generator: Skipping {pred} as it does not require optimization."
             )
             return
-        log.debug(f"Generator: Backward through {pred}, is_chain: {is_chain}")
+        log.debug(
+            f"Generator: Backward through {pred}, is_intermediate_node: {is_intermediate_node}"
+        )
 
         if pred.check_if_already_computed_gradient_respect_to(response.id):
             log.debug(
@@ -666,8 +668,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         }
 
         conversation_prompt_kwargs = {
-            "variable_name": pred.name,
-            "variable_desc": pred.role_desc,
+            # "variable_name": pred.name,
+            # "variable_desc": pred.role_desc,
             "input_value": input_prompt_kwargs,
             "llm_output": response.data,
         }
@@ -684,9 +686,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             template=VARIABLE_AND_PEERS_INFO,
         )()
 
-        conv_ins_template = CONVERSATION_START_INSTRUCTION_BASE
+        conv_ins_template = None  # CONVERSATION_START_INSTRUCTION_BASE
         obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
-        if is_chain:
+        if is_intermediate_node:  # TODO: this will always be true
             conv_ins_template = CONVERSATION_START_INSTRUCTION_CHAIN
             obj_ins_template = OBJECTIVE_INSTRUCTION_CHAIN
 
@@ -924,6 +926,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         return response_value
 
 
+from adalflow.tracing.decorators import trace_generator_states
+
+
+@trace_generator_states()
 class BackwardEngine(Generator):  # it is a generator with defaule template
 
     __doc__ = """The backward engine is a Generator with a default template for the backward pass.

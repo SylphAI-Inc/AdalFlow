@@ -11,6 +11,7 @@ from typing import (
     Optional,
     Literal,
     Callable,
+    TYPE_CHECKING,
 )
 from pyvis.network import Network
 from collections import defaultdict
@@ -21,6 +22,8 @@ import uuid
 from adalflow.optim.types import ParameterType
 from adalflow.core.base_data_class import DataClass
 
+if TYPE_CHECKING:
+    from adalflow.optim.text_grad.tgd_optimizer import TGDData, TGDOptimizerTrace
 
 T = TypeVar("T")  # covariant set to False to allow for in-place updates
 
@@ -73,6 +76,9 @@ class ScoreTrace:
 
 
 COMBINED_GRADIENTS_TEMPLATE = r"""
+{% if combined_gradients %}
+Batch size: {{ combined_gradients|length }}
+{% endif %}
 {% for g in combined_gradients %}
 {% set gradient = g[0] %}
 {% set gradient_context = g[1] %}
@@ -148,6 +154,7 @@ class Parameter(Generic[T]):
     )
 
     component_trace: ComponentTrace = None  # Trace of the component
+    tgd_optimizer_trace: "TGDOptimizerTrace" = None  # Trace of the TGD optimizer
 
     def __init__(
         self,
@@ -278,6 +285,16 @@ class Parameter(Generic[T]):
                         f"Expected a list of Parameter instances, got {type(peer).__name__}, {peer}"
                     )
             self.peers = set(peers)
+
+    #############################################################################################################
+    # Trace the tgd optimizer data
+    ############################################################################################################
+    def trace_optimizer(self, api_kwargs: Dict[str, Any], response: "TGDData"):
+        from adalflow.optim.text_grad.tgd_optimizer import TGDOptimizerTrace
+
+        self.tgd_optimizer_trace = TGDOptimizerTrace(
+            api_kwargs=api_kwargs, output=response
+        )
 
     ############################################################################################################
     #  Trace component, include trace_forward_pass & trace_api_kwargs for now
@@ -430,9 +447,11 @@ class Parameter(Generic[T]):
             self.gradients, key=lambda x: x._score if x._score else 1
         )
 
-        gradient_context_combined = zip(
-            self.gradients,
-            [self.gradients_context[g] for g in self.gradients],
+        gradient_context_combined = list(
+            zip(
+                self.gradients,
+                [self.gradients_context[g] for g in self.gradients],
+            )
         )
 
         gradient_context_combined_str = Prompt(
@@ -798,6 +817,8 @@ class Parameter(Generic[T]):
             if len(n._traces.values()) > 0:
                 node_label += f"<tr><td><b><font color='{label_color}'>Traces: keys: </font></b></td><td>{wrap_and_escape(str(n._traces.keys()))}</td></tr>"
                 node_label += f"<tr><td><b><font color='{label_color}'>Traces: values: </font></b></td><td>{wrap_and_escape(str(n._traces.values()))}</td></tr>"
+            if n.tgd_optimizer_trace is not None:
+                node_label += f"<tr><td><b><font color='{label_color}'>TGD Optimizer Trace: </font></b></td><td>{wrap_and_escape(str(n.tgd_optimizer_trace))}</td></tr>"
 
             node_label += "</table>"
             # check if the name exists in dot
