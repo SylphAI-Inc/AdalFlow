@@ -12,7 +12,8 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       
@@ -29,8 +30,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install diagrams
           
+      - name: List files
+        run: ls -la
+        
       - name: Create architecture diagram
-        run: python architecture_generator.py
+        run: |
+          pwd
+          python -c "import sys; print(sys.path)"
+          python architecture_generator.py
         env:
           PYTHONPATH: ${{ github.workspace }}
         
@@ -38,6 +45,7 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add architecture.png
-          git commit -m "Update architecture diagram [skip ci]" || exit 0
-          git push
+          git add architecture.png || echo "No diagram to add"
+          git status
+          git commit -m "Update architecture diagram [skip ci]" || echo "No changes to commit"
+          git push || echo "No changes to push"
