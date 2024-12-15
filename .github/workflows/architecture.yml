@@ -26,26 +26,23 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y graphviz
+          sudo apt-get install -y graphviz graphviz-dev
           python -m pip install --upgrade pip
           pip install diagrams
           
-      - name: List files
+      - name: List directory before
         run: ls -la
         
       - name: Create architecture diagram
         run: |
-          pwd
-          python -c "import sys; print(sys.path)"
           python architecture_generator.py
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-        
-      - name: Commit diagram
+          ls -la
+          
+      - name: Commit and push changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add architecture.png || echo "No diagram to add"
+          git add *.png
           git status
           git commit -m "Update architecture diagram [skip ci]" || echo "No changes to commit"
           git push || echo "No changes to push"
