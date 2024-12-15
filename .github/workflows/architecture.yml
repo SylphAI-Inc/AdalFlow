@@ -1,0 +1,34 @@
+name: Generate Architecture Diagram
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz
+          pip install diagrams
+          
+      - name: Create architecture diagram
+        run: python architecture_generator.py
+        
+      - name: Commit diagram
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add architecture.png
+          git commit -m "Update architecture diagram" || exit 0
+          git push
