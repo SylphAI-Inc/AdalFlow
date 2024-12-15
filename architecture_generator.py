@@ -1,7 +1,7 @@
 from diagrams import Diagram, Cluster
 from diagrams.programming.language import Python
 from diagrams.programming.framework import FastAPI
-from diagrams.database.database import PostgreSQL
+from diagrams.onprem.database import PostgreSQL
 from diagrams.generic.storage import Storage
 
 def generate_architecture():
