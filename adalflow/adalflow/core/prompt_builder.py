@@ -1,4 +1,4 @@
-"""Class prompt builder for LightRAG system prompt."""
+"""Class prompt builder for AdalFlow system prompt."""
 
 from typing import Dict, Any, Optional, List, TypeVar
 import logging
@@ -20,10 +20,10 @@ T = TypeVar("T")
 class Prompt(Component):
     __doc__ = r"""Renders a text string(prompt) from a Jinja2 template string.
 
-    In default, we use the :ref:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core-default_prompt_template>`  as the template.
+    In default, we use the :ref:`DEFAULT_ADALFLOW_SYSTEM_PROMPT<core-default_prompt_template>`  as the template.
 
     Args:
-        template (str, optional): The Jinja2 template string. Defaults to DEFAULT_LIGHTRAG_SYSTEM_PROMPT.
+        template (str, optional): The Jinja2 template string. Defaults to DEFAULT_ADALFLOW_SYSTEM_PROMPT.
         preset_prompt_kwargs (Optional[Dict], optional): The preset prompt kwargs to fill in the variables in the prompt. Defaults to {}.
 
     Examples:
