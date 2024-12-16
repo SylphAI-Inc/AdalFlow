@@ -642,6 +642,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         prompt_str: str,
         is_intermediate_node: bool = False,
     ):
+        """Creating gradient/textual feedback for prompt type parameters."""
         if not pred.requires_opt:
             log.debug(
                 f"Generator: Skipping {pred} as it does not require optimization."
@@ -704,7 +705,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             template=obj_ins_template,
             prompt_kwargs={
                 "response_desc": response.role_desc,
-                "response_gradient": response.get_gradient_and_context_text(),
+                "response_gradient": response.get_gradient_and_context_text(
+                    skip_correct_sample=True
+                ),
                 "instruction_to_backward_engine": pred.instruction_to_backward_engine,
             },
         )()
@@ -716,11 +719,16 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         gradient_output: GeneratorOutput = None
         if response._score is not None and float(response._score) > 0.9:
             log.debug(f"EvalFnToTextLoss: Skipping {pred} as the score is high enough.")
-            manual_response = f"You get a high score: {response._score}."
+            # TODO: plus score descriptions
+            manual_response = f"You get score: {response._score}."
             gradient_output = GeneratorOutput(
                 data=manual_response, raw_response=manual_response
             )
         else:
+            # manual_response = f"You get score: {response._score}."
+            # gradient_output = GeneratorOutput(
+            #     data=manual_response, raw_response=manual_response
+            # )
 
             gradient_output: GeneratorOutput = backward_engine(
                 prompt_kwargs=backward_engine_prompt_kwargs

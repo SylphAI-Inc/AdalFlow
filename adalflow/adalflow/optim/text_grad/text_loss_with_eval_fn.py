@@ -322,6 +322,7 @@ class EvalFnToTextLoss(LossComponent):
         )
 
         # backward the end to end score
+        # TODO: not really useful
         pred.set_score(response.data)
         print(f"setting pred name {pred.name} score to {response.data}")
 

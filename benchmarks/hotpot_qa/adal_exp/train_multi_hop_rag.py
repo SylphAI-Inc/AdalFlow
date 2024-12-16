@@ -155,7 +155,6 @@ if __name__ == "__main__":
     # train_diagnose(**gpt_3_model)
 
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
-    # TODO: test debug mode
     train(
         debug=False,
         max_steps=12,
@@ -174,3 +173,10 @@ if __name__ == "__main__":
     # 0.72 text grad  /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_c1660_run_1.json
     # try cycle next
     #  0.66 /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_1d189_run_1.json
+    # no gradients 1021s (/Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_68e7e_run_1.json) -> 0.64 -> 0.68, pass 10/10+28
+    # no gradient but scores (positive & negative) /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_83871_run_1.json 0.64->0.66, test 0.64 -> 0.66
+    # no gradient but only negative score
+    # no gradient but score + teacher demonstration.
+    # feedback while seeing the gt + y
+    # only negative feedback /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_f5506_run_1.json 0.62 -> 0.7
+    # /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_b4aa5_run_1.json 0.74 pass rate 8 32

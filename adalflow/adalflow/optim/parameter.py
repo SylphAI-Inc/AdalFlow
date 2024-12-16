@@ -212,11 +212,12 @@ class Parameter(Generic[T]):
 
         # here are used for demo parameter, filled by generator.forward
         self._traces: Dict[str, DataClass] = {}  # id to data items (DynamicDataClass)
+        self._student_traces: Dict[str, DataClass] = {}  # id
+
         self._score: float = (
-            score  # end to end evaluation score, TODO: might have multiple scores if using multiple eval fns
+            score  # end to end evaluation score, TODO: might have multiple scores if using multiple eval fns  # score is set in the gradients in the backward pass
         )
 
-        self._student_traces: Dict[str, DataClass] = {}  # id
         self._demos: List[DataClass] = (
             []
         )  # used for the optimizer to save the proposed demos
@@ -431,10 +432,13 @@ class Parameter(Generic[T]):
         names = ", ".join(names)
         return names
 
-    def get_gradient_and_context_text(self) -> str:
+    def get_gradient_and_context_text(self, skip_correct_sample: bool = False) -> str:
         """Aggregates and returns:
         1. the gradients
         2. the context text for which the gradients are computed
+
+        Sort the gradients from the lowest score to the highest score.
+        Highlight the gradients with the lowest score to the optimizer.
         """
         from adalflow.core.prompt_builder import Prompt
 
@@ -444,18 +448,26 @@ class Parameter(Generic[T]):
 
         # sore gradients by the _score from low to high
         self.gradients = sorted(
-            self.gradients, key=lambda x: x._score if x._score else 1
+            self.gradients, key=lambda x: x._score if x._score is not None else 1
         )
+        # print the score for the sorted gradients
+        lowest_score_gradients = []
+        for i, g in enumerate(self.gradients):
+            if skip_correct_sample:
+                if g._score > 0.5:
+                    continue
+            lowest_score_gradients.append(g)
+            print(f"{i} Score: {g._score} for {g.name}, {type(g._score)}")
 
         gradient_context_combined = list(
             zip(
-                self.gradients,
-                [self.gradients_context[g] for g in self.gradients],
+                lowest_score_gradients,
+                [self.gradients_context[g] for g in lowest_score_gradients],
             )
         )
         # set all gradients value to None
-        for g in self.gradients:
-            g.data = None
+        # for g in self.gradients:
+        #     g.data = None
 
         gradient_context_combined_str = Prompt(
             template=COMBINED_GRADIENTS_TEMPLATE,
@@ -520,7 +532,11 @@ class Parameter(Generic[T]):
 
     def backward(
         self,
-    ):  # engine should be the llm or customized backwards function to pass feedback
+    ):
+        """
+        Apply backward pass for for all nodes in the graph by reversing the topological order.
+        """
+        # engine should be the llm or customized backwards function to pass feedback
 
         # topological sort of all the predecessors of the current parameter in the graph
         log.debug(f"Backward pass for {self.data}, backward function: {self.grad_fn}")
@@ -543,7 +559,6 @@ class Parameter(Generic[T]):
             if not node.requires_opt:
                 log.debug(f"Skipping {node.name} as it does not require optimization")
                 continue
-            node.gradients = _check_and_reduce_gradients(node)
             log.debug(f"v: {node.data}, grad_fn: {node.grad_fn}, {node.get_grad_fn()}")
             if node.get_grad_fn() is not None:  # gradient function takes in the engine
                 log.debug(f"Calling gradient function for {node.name}")
@@ -949,20 +964,3 @@ class Parameter(Generic[T]):
     def __repr__(self):
         return f"Parameter(name={self.name}, requires_opt={self.requires_opt}, param_type={self.param_type}, role_desc={self.role_desc}, data={self.data}, predecessors={self.predecessors}, gradients={self.gradients},\
             raw_response={self.raw_response}, input_args={self.input_args}, traces={self._traces})"
-
-
-def _check_and_reduce_gradients(variable: Parameter) -> Set[Parameter]:
-
-    if variable.get_gradient_and_context_text() == "":
-        log.debug(f"No gradients detected for {variable.data}")
-        return variable.gradients
-    if len(variable.gradients) == 1:
-        log.debug(f"Only one gradient, no need to reduce: {variable.gradients}")
-        return variable.gradients
-    else:
-        log.debug(
-            f"Multiple gradients detected for {variable.data}. But we are not reducting them."
-        )
-        return variable.gradients
-
-    # TODO: Implement the reduction logic later

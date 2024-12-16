@@ -91,8 +91,8 @@ class Trainer(Component):
     batch_val_score_threshold: Optional[float] = (
         1.0  # when acc_score >= this threshold, skip this batch
     )
-    max_error_samples: Optional[int] = 8
-    max_correct_samples: Optional[int] = 8
+    max_error_samples: Optional[int] = 2
+    max_correct_samples: Optional[int] = 2
     debug: bool = False
 
     def __init__(
@@ -105,8 +105,8 @@ class Trainer(Component):
         num_workers: int = 4,
         ckpt_path: str = None,
         batch_val_score_threshold: Optional[float] = 1.0,
-        max_error_samples: Optional[int] = 4,
-        max_correct_samples: Optional[int] = 4,
+        max_error_samples: Optional[int] = 2,
+        max_correct_samples: Optional[int] = 2,
         max_proposals_per_step: int = 5,
         train_loader: Optional[Any] = None,
         train_dataset: Optional[Any] = None,
@@ -955,9 +955,9 @@ class Trainer(Component):
         for text_optimizer in self.text_optimizers:
             text_optimizer.propose()
 
-    def _add_failed_proposals_text_optimizers(self):
-        for opt in self.text_optimizers:
-            opt.add_failed_proposal()
+    # def _add_failed_proposals_text_optimizers(self):
+    #     for opt in self.text_optimizers:
+    #         opt.add_failed_proposal()
 
     def _get_trainable_text_params(self):
         params = []
@@ -1036,7 +1036,7 @@ class Trainer(Component):
                 )
                 # moving batch
                 all_samples.extend(batch)
-                all_losses.extend(losses)
+                all_losses.extend(losses)  # student losses
                 # extract the non-parameter y_preds
                 all_y_preds.extend(
                     [y.full_response for y in y_preds if isinstance(y, Parameter)]
@@ -1094,7 +1094,7 @@ class Trainer(Component):
                     print(
                         "No proposal can improve the subset and full set, go to next step"
                     )
-                    self._add_failed_proposals_text_optimizers()
+                    # self._add_failed_proposals_text_optimizers()
 
                     self._add_one_step_in_trainer_results(
                         trainer_results,
@@ -1353,7 +1353,7 @@ class Trainer(Component):
                 loss.backward_engine_disabled = (
                     True  # temporary disable the backward engine
                 )
-                loss.backward()  # TODO: ensure no gradients in the backward, disable backward engine
+                loss.backward()  # TODO: ensure no gradients in the backward, disable backward engine, trace the score to each class instead
             # Trace the teacher run
             self.adaltask.use_teacher(True)
             self.adaltask.train()
@@ -1544,13 +1544,13 @@ class Trainer(Component):
                     minimum_score=last_val_score,
                 )
                 val_score = val_output.avg_score
-                self._add_history_text_optimizers(val_score)
 
                 if val_score > last_val_score:
+
                     print(f"Optimizer step: {val_score} > {last_val_score}")
                     # self.optimizer.step()
                     self._step_text_optimizers()
-
+                    self._add_history_text_optimizers(val_score)  # track top performor
                     # test the model
                     test_output = self.adaltask.validation_step(
                         test_dataset, total_steps, self.num_workers
@@ -1564,6 +1564,9 @@ class Trainer(Component):
                         total_steps,
                     )
                 else:
+                    # if val_score < last_val_score:
+                    #     self._add_failed_proposals_text_optimizers() # track failed proposals
+
                     print(f"Optimizer revert: {val_score} <= {last_val_score}")
                     # self.optimizer.revert()
                     self._revert_text_optimizers()
@@ -1783,6 +1786,7 @@ class Trainer(Component):
                 print(
                     f"Fail subset check, try next proposal: {val_score} <= {subset_score}"
                 )
+                # self._add_failed_proposals_text_optimizers()
                 self._track_effectiveness("subset", False)
                 self._revert_text_optimizers()
                 if include_demo_optimizers:
@@ -1802,6 +1806,7 @@ class Trainer(Component):
                     f"Fail full check, try next proposal: {new_move_batch_score} < {move_batch_score}"
                 )
                 self._track_effectiveness("fullset", False)
+                # self._add_failed_proposals_text_optimizers()
                 self._revert_text_optimizers()
                 if include_demo_optimizers:
                     self._demo_optimizers_revert()
@@ -1905,7 +1910,6 @@ class Trainer(Component):
                         trainer_results.prompts[-1],
                         total_steps,
                     )
-                    self._add_failed_proposals_text_optimizers()
                     continue
 
                 # prune the correct sample size if its too big, same with error samples
@@ -1920,11 +1924,13 @@ class Trainer(Component):
                         minimum_score=last_val_score,
                     )
                     val_score = val_output.avg_score
-                    self._add_history_text_optimizers(val_score)
 
                     if val_score > last_val_score:
                         print(f"Optimizer step: {val_score} > {last_val_score}")
                         # self.optimizer.step()
+                        self._add_history_text_optimizers(
+                            val_score
+                        )  # track top performor
                         self._step_text_optimizers()
 
                         # save the score
@@ -1956,6 +1962,7 @@ class Trainer(Component):
                     else:
                         print(f"Optimizer revert: {val_score} <= {last_val_score}")
                         self._revert_text_optimizers()
+                        # self._add_failed_proposals_text_optimizers() # track failed proposals
                         self._track_effectiveness("valset", False)
                         self._add_one_step_in_trainer_results(
                             trainer_results,

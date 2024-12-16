@@ -37,7 +37,12 @@ class HistoryPrompt(DataClass):
 ####################################################################################################
 # Textual Gradient Descent Optimizer
 ####################################################################################################
-
+# {% if failed_proposals %}
+# Here are the past failed proposals:
+# {% for failed_proposal in failed_proposals %}
+# {{loop.index}}. {{failed_proposal}}
+# {% endfor %}
+# {% endif %}
 TEXT_GRAD_DESC_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 {{optimizer_system_prompt}}
 <END_OF_SYSTEM_PROMPT>
@@ -51,13 +56,6 @@ Here are the best past iterations of this variable along with the validation sco
 {{loop.index}}. {{history}}
 {% endfor %}
 IMPORTANT: Your goal is to generate new variable values that score higher than all previous iterations.
-
-{% if failed_proposals %}
-Here are the past failed proposals:
-{% for failed_proposal in failed_proposals %}
-{{loop.index}}. {{failed_proposal}}
-{% endfor %}
-{% endif %}
 <END_OF_HISTORY_PERFORMANCE>
 {% endif %}
 Here are the context and feedback for the variable:
@@ -176,7 +174,7 @@ class TGDOptimizer(TextOptimizer):
     params: ParamsT
     constraints: List[str]
     params_history: Dict[str, List[HistoryPrompt]] = {}  # id to history
-    failed_proposals: Dict[str, List[HistoryPrompt]] = {}  # only need the value
+    # failed_proposals: Dict[str, List[HistoryPrompt]] = {}  # only need the value
 
     def __init__(
         self,
@@ -189,7 +187,7 @@ class TGDOptimizer(TextOptimizer):
         in_context_examples: List[str] = None,  # TODO: in-context examples
         num_gradient_memory: int = 0,  # TODO: gradient memory and momentum, for now it is not useful
         max_past_history: int = 3,
-        max_failed_proposals: int = 3,
+        # max_failed_proposals: int = 3,
     ):
         from adalflow.core.generator import Generator
         from adalflow.core import Prompt
@@ -229,12 +227,12 @@ class TGDOptimizer(TextOptimizer):
         )
 
         self.max_past_history = max_past_history
-        self.max_failed_proposals = max_failed_proposals
+        # self.max_failed_proposals = max_failed_proposals
 
         # initate the past history for each parameter
         for param in self.params:
             self.params_history[param.id] = []
-            self.failed_proposals[param.id] = []
+            # self.failed_proposals[param.id] = []
 
     @property
     def constraint_text(self):
@@ -289,39 +287,39 @@ class TGDOptimizer(TextOptimizer):
             history.to_yaml(exclude=["id"]) for history in self.params_history[param_id]
         ]
 
-    def add_failed_proposal(self):
-        """Save a copy of the current value of the parameter in the failed proposals."""
-        for param in self.params:
-            failed_proposal = HistoryPrompt(
-                id=param.id,
-                value=param.data,
-                eval_score=None,
-            )
-            self.failed_proposals[param.id].append(failed_proposal)
-            if len(self.failed_proposals[param.id]) > self.max_failed_proposals:
-                for _ in range(
-                    len(self.failed_proposals[param.id]) - self.max_failed_proposals
-                ):
-                    self.failed_proposals[param.id].pop()
-        # if param_id not in self.failed_proposals:
-        #     self.failed_proposals[param_id] = []
-        # failed_proposal = HistoryPrompt(
-        #     id=param_id,
-        #     value=value,
-        #     eval_score=None,
-        # )
-        # self.failed_proposals[param_id].append(failed_proposal)
-        # if len(self.failed_proposals[param_id]) > self.max_failed_proposals:
-        #     for _ in range(len(self.failed_proposals[param_id]) - self.max_failed_proposals):
-        #         self.failed_proposals[param_id].pop()
+    # def add_failed_proposal(self):
+    #     """Save a copy of the current value of the parameter in the failed proposals."""
+    #     for param in self.params:
+    #         failed_proposal = HistoryPrompt(
+    #             id=param.id,
+    #             value=param.data,
+    #             eval_score=None,
+    #         )
+    #         self.failed_proposals[param.id].append(failed_proposal)
+    #         if len(self.failed_proposals[param.id]) > self.max_failed_proposals:
+    #             for _ in range(
+    #                 len(self.failed_proposals[param.id]) - self.max_failed_proposals
+    #             ):
+    #                 self.failed_proposals[param.id].pop()
+    #     # if param_id not in self.failed_proposals:
+    #     #     self.failed_proposals[param_id] = []
+    #     # failed_proposal = HistoryPrompt(
+    #     #     id=param_id,
+    #     #     value=value,
+    #     #     eval_score=None,
+    #     # )
+    #     # self.failed_proposals[param_id].append(failed_proposal)
+    #     # if len(self.failed_proposals[param_id]) > self.max_failed_proposals:
+    #     #     for _ in range(len(self.failed_proposals[param_id]) - self.max_failed_proposals):
+    #     #         self.failed_proposals[param_id].pop()
 
-    def render_failed_proposals(self, param_id: str) -> List[str]:
-        if param_id not in self.failed_proposals:
-            return []
-        return [
-            history.to_yaml(exclude=["id", "eval_score"])
-            for history in self.failed_proposals[param_id]
-        ]
+    # def render_failed_proposals(self, param_id: str) -> List[str]:
+    #     if param_id not in self.failed_proposals:
+    #         return []
+    #     return [
+    #         history.to_yaml(exclude=["id", "eval_score"])
+    #         for history in self.failed_proposals[param_id]
+    #     ]
 
     # TODO: optimize with adalflow template for better readability
     def get_gradient_memory_text(self, param: Parameter) -> str:
@@ -341,7 +339,9 @@ class TGDOptimizer(TextOptimizer):
 
         user_prompt_kwargs = {
             "variable_and_peers_info": variable_and_peer_info,
-            "variable_grad": param.get_gradient_and_context_text(),
+            "variable_grad": param.get_gradient_and_context_text(
+                skip_correct_sample=True
+            ),
             # constraints
             "constraint_text": self.constraint_text if self.do_constrained else None,
             # in-context examples
@@ -361,11 +361,11 @@ class TGDOptimizer(TextOptimizer):
                 self.render_history(param.id) if self.max_past_history else None
             ),
             # failed proposals
-            "failed_proposals": (
-                self.render_failed_proposals(param.id)
-                if self.max_failed_proposals
-                else None
-            ),
+            # "failed_proposals": (
+            #     self.render_failed_proposals(param.id)
+            #     if self.max_failed_proposals
+            #     else None
+            # ),
         }
 
         return user_prompt_kwargs
@@ -373,7 +373,7 @@ class TGDOptimizer(TextOptimizer):
     # TODO: better way to update the gradient memory
     def update_gradient_memory(self, param: Parameter):
         self.gradient_memory_dict[param.id].append(
-            {"value": param.get_gradient_and_context_text()}
+            {"value": param.get_gradient_and_context_text(skip_correct_sample=True)}
         )
 
     def zero_grad(self):
