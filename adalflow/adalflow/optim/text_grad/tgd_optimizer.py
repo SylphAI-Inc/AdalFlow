@@ -6,52 +6,25 @@ https://arxiv.org/abs/2309.03409
 Source code: https://github.com/google-deepmind/opro
 """
 
-from typing import List, Dict, TYPE_CHECKING, Optional
+from typing import List, Dict, TYPE_CHECKING, Optional, Any
 from collections import defaultdict
 import logging
 import re
 from dataclasses import field, dataclass
-
 
 from adalflow.optim.optimizer import TextOptimizer, ParamsT
 from adalflow.optim.text_grad.backend_engine_prompt import VARIABLE_AND_PEERS_INFO
 from adalflow.optim.parameter import Parameter
 
 from adalflow.core.base_data_class import DataClass
+from adalflow.tracing.decorators import trace_generator_states
+
 
 if TYPE_CHECKING:
     from adalflow.core import ModelClient
 
 
 log = logging.getLogger(__name__)
-
-
-# Tips:
-# 1. Eliminate unnecessary words or phrases.
-# 2. Add new elements to address specific feedback.
-# 3. Be creative and present the variable differently.
-OPTIMIZER_SYSTEM_PROMPT = r"""
-You are part of an optimization system that refines existing variable values based on feedback.
-
-Your task: Propose a new variable value in response to the feedback.
-1. Address the concerns raised in the feedback while preserving positive aspects.
-2. Observe past performance patterns when provided and to keep the good quality.
-3. Consider the variable in the context of its peers if provided.
-   FYI:
-   - If a peer will be optimized itself, do not overlap with its scope.
-   - Otherwise, you can overlap if it is necessary to address the feedback.
-
-Output:
-Provide only the new variable value between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.
-
-Tips:
-1. Eliminate unnecessary words or phrases.
-2. Add new elements to address specific feedback.
-3. Be creative and present the variable differently.
-{% if instruction_to_optimizer %}
-4. {{instruction_to_optimizer}}
-{% endif %}
-"""
 
 
 @dataclass
@@ -61,16 +34,24 @@ class HistoryPrompt(DataClass):
     eval_score: float
 
 
+####################################################################################################
+# Textual Gradient Descent Optimizer
+####################################################################################################
+# {% if failed_proposals %}
+# Here are the past failed proposals:
+# {% for failed_proposal in failed_proposals %}
+# {{loop.index}}. {{failed_proposal}}
+# {% endfor %}
+# {% endif %}
 TEXT_GRAD_DESC_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 {{optimizer_system_prompt}}
 <END_OF_SYSTEM_PROMPT>
 <START_OF_USER_MESSAGE>
-{#Variable and feedback#}
-{{variable_and_peers_info}}
-{# ORPO past history #}
+
+{# OPRO past history #}
 {% if past_history %}
 <START_OF_HISTORY_PERFORMANCE>
-Here are the past iterations of this variable along with the validation score.
+Here are the best past iterations of this variable along with the validation score.
 {% for history in past_history %}
 {{loop.index}}. {{history}}
 {% endfor %}
@@ -100,7 +81,39 @@ You must follow the following constraints:
 You must base on the following examples when modifying the {{variable_desc}}:
 <EXAMPLES>{{in_context_examples}}</EXAMPLES>
 {% endif %}
+YOU MUST ENSURE the new variable shares the same intent as the original variable.
+You can either rephrase the initial variable, or add more specific instructions based on the feedback.
+You can not change the variable to only fit on one sample if the batch size is larger than 1.
 <END_OF_USER_MESSAGE>
+"""
+
+# optimizer system prompt
+
+# Tips:
+# 1. Eliminate unnecessary words or phrases.
+# 2. Add new elements to address specific feedback.
+# 3. Be creative and present the variable differently.
+# Provide only the new variable value between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.
+OPTIMIZER_SYSTEM_PROMPT = r"""
+You are part of an optimization system that refines existing variable based on feedback generated on a batch of input data.
+
+1. Address the concerns raised in the feedback while preserving positive aspects.
+3. Observe past performance patterns when provided and to keep the good quality.
+4. Consider the variable in the context of its peers if provided.
+   FYI:
+   - If a peer will be optimized itself, do not overlap with its scope.
+   - Otherwise, you can overlap if it is necessary to address the feedback.
+
+{{output_format_str}}
+
+
+Tips:
+1. Eliminate unnecessary words or phrases.
+2. Add new elements to address specific feedback.
+3. Be creative and present the variable differently.
+{% if instruction_to_optimizer %}
+4. {{instruction_to_optimizer}}
+{% endif %}
 """
 
 
@@ -119,6 +132,25 @@ class Instruction(DataClass):
     )
 
 
+@dataclass
+class TGDData(DataClass):
+    reasoning: str = field(metadata={"desc": "Why the variable is proposed this way"})
+    proposed_variable: str = field(metadata={"desc": "The proposed variable"})
+
+
+@dataclass
+class TGDOptimizerTrace:
+    api_kwargs: Dict[str, Any] = field(
+        metadata={
+            "desc": "The api_kwargs for components like Generator and Retriever that pass to the model client"
+        },
+        default=None,
+    )
+    output: TGDData = field(
+        metadata={"desc": "The output of the TGD optimizer"}, default=None
+    )
+
+
 new_variable_tags = ["<VARIABLE>", "</VARIABLE>"]
 
 
@@ -134,6 +166,7 @@ def extract_new_variable(text: str) -> str:
     return matches[0].strip()
 
 
+@trace_generator_states()
 class TGDOptimizer(TextOptimizer):
     __doc__ = """Textual Gradient Descent(LLM) optimizer for text-based variables."""
 
@@ -141,6 +174,7 @@ class TGDOptimizer(TextOptimizer):
     params: ParamsT
     constraints: List[str]
     params_history: Dict[str, List[HistoryPrompt]] = {}  # id to history
+    # failed_proposals: Dict[str, List[HistoryPrompt]] = {}  # only need the value
 
     def __init__(
         self,
@@ -153,18 +187,25 @@ class TGDOptimizer(TextOptimizer):
         in_context_examples: List[str] = None,  # TODO: in-context examples
         num_gradient_memory: int = 0,  # TODO: gradient memory and momentum, for now it is not useful
         max_past_history: int = 3,
+        # max_failed_proposals: int = 3,
     ):
         from adalflow.core.generator import Generator
         from adalflow.core import Prompt
+        from adalflow.components.output_parsers.dataclass_parser import DataClassParser
 
         super().__init__()
         self.params = params
         self.constraints = constraints or []
+        self.data_class = TGDData
+        self.output_parser = DataClassParser(
+            data_class=self.data_class, return_data_class=True, format_type="json"
+        )
         self.optimizer_system_prompt = Prompt(
             template=optimizer_system_prompt,
             prompt_kwargs={
-                "new_variable_start_tag": new_variable_tags[0],
-                "new_variable_end_tag": new_variable_tags[1],
+                # "new_variable_start_tag": new_variable_tags[0],
+                # "new_variable_end_tag": new_variable_tags[1],
+                "output_format_str": self.output_parser.get_output_format_str(),
             },
         )
         self.variable_and_peers_info = Prompt(
@@ -177,17 +218,21 @@ class TGDOptimizer(TextOptimizer):
         self.num_gradient_memory = num_gradient_memory
         self.gradient_memory_dict = defaultdict(list)  # id to num_gradient_memory
         self.do_gradient_memory = self.num_gradient_memory > 0
+
         self.llm_optimizer = Generator(
             model_client=model_client,
             model_kwargs=model_kwargs,
             template=TEXT_GRAD_DESC_TEMPLATE,
+            output_processors=self.output_parser,
         )
 
         self.max_past_history = max_past_history
+        # self.max_failed_proposals = max_failed_proposals
 
         # initate the past history for each parameter
         for param in self.params:
             self.params_history[param.id] = []
+            # self.failed_proposals[param.id] = []
 
     @property
     def constraint_text(self):
@@ -242,6 +287,40 @@ class TGDOptimizer(TextOptimizer):
             history.to_yaml(exclude=["id"]) for history in self.params_history[param_id]
         ]
 
+    # def add_failed_proposal(self):
+    #     """Save a copy of the current value of the parameter in the failed proposals."""
+    #     for param in self.params:
+    #         failed_proposal = HistoryPrompt(
+    #             id=param.id,
+    #             value=param.data,
+    #             eval_score=None,
+    #         )
+    #         self.failed_proposals[param.id].append(failed_proposal)
+    #         if len(self.failed_proposals[param.id]) > self.max_failed_proposals:
+    #             for _ in range(
+    #                 len(self.failed_proposals[param.id]) - self.max_failed_proposals
+    #             ):
+    #                 self.failed_proposals[param.id].pop()
+    #     # if param_id not in self.failed_proposals:
+    #     #     self.failed_proposals[param_id] = []
+    #     # failed_proposal = HistoryPrompt(
+    #     #     id=param_id,
+    #     #     value=value,
+    #     #     eval_score=None,
+    #     # )
+    #     # self.failed_proposals[param_id].append(failed_proposal)
+    #     # if len(self.failed_proposals[param_id]) > self.max_failed_proposals:
+    #     #     for _ in range(len(self.failed_proposals[param_id]) - self.max_failed_proposals):
+    #     #         self.failed_proposals[param_id].pop()
+
+    # def render_failed_proposals(self, param_id: str) -> List[str]:
+    #     if param_id not in self.failed_proposals:
+    #         return []
+    #     return [
+    #         history.to_yaml(exclude=["id", "eval_score"])
+    #         for history in self.failed_proposals[param_id]
+    #     ]
+
     # TODO: optimize with adalflow template for better readability
     def get_gradient_memory_text(self, param: Parameter) -> str:
         grad_memory = ""
@@ -260,7 +339,9 @@ class TGDOptimizer(TextOptimizer):
 
         user_prompt_kwargs = {
             "variable_and_peers_info": variable_and_peer_info,
-            "variable_grad": param.get_gradient_and_context_text(),
+            "variable_grad": param.get_gradient_and_context_text(
+                skip_correct_sample=True
+            ),
             # constraints
             "constraint_text": self.constraint_text if self.do_constrained else None,
             # in-context examples
@@ -279,6 +360,12 @@ class TGDOptimizer(TextOptimizer):
             "past_history": (
                 self.render_history(param.id) if self.max_past_history else None
             ),
+            # failed proposals
+            # "failed_proposals": (
+            #     self.render_failed_proposals(param.id)
+            #     if self.max_failed_proposals
+            #     else None
+            # ),
         }
 
         return user_prompt_kwargs
@@ -286,7 +373,7 @@ class TGDOptimizer(TextOptimizer):
     # TODO: better way to update the gradient memory
     def update_gradient_memory(self, param: Parameter):
         self.gradient_memory_dict[param.id].append(
-            {"value": param.get_gradient_and_context_text()}
+            {"value": param.get_gradient_and_context_text(skip_correct_sample=True)}
         )
 
     def zero_grad(self):
@@ -298,6 +385,8 @@ class TGDOptimizer(TextOptimizer):
         r"""Proposing a value while keeping previous value saved on parameter."""
         if self.proposing:
             raise ValueError("Already proposing a value.")
+
+        print("Proposing a new value.")
 
         # no cache so that new proposal can be made
         no_cache = True
@@ -327,12 +416,22 @@ class TGDOptimizer(TextOptimizer):
             )
             prompt_str = self.llm_optimizer.get_prompt(**prompt_kwargs)
             log.debug(f"TGD LLM optimizer prompt: {prompt_str}")
-            proposed_data = response.data
+            proposed_data: TGDData = (
+                response.data
+                if response.data
+                else TGDData(
+                    reasoning="No reasoning", proposed_variable=response.raw_response
+                )
+            )
             log.info(f"Response from the optimizer: {response}")
             # extract the improved variable from the response
             # TODO: make it more robust
-            improved_variable = extract_new_variable(proposed_data)
+            # improved_variable = extract_new_variable(proposed_data)
+            improved_variable = proposed_data.proposed_variable
             param.propose_data(improved_variable)
+            param.trace_optimizer(api_kwargs=prompt_str, response=response)
+            print(f"prompt_str: {prompt_str}")
+            print(f"response: {response}")
             if self.do_gradient_memory:
                 self.update_gradient_memory(param)
         self.proposing = True
@@ -345,6 +444,7 @@ class TGDOptimizer(TextOptimizer):
             if not param.requires_opt:
                 continue
             param.revert_data()
+            param.trace_optimizer(api_kwargs=None, response=None)
         self.proposing = False
 
     def step(self):

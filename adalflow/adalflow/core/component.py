@@ -167,6 +167,7 @@ class Component:
             component.use_teacher(mode)
         return self
 
+    # TODO: reassese trace, it should be turned on maybe all the time
     def trace(self, mode: bool = True):
         r"""Sets the component in tracing mode.This signal will be used in forward and backward to accumulate input and output."""
         if not isinstance(mode, bool):

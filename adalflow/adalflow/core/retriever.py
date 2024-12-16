@@ -83,6 +83,7 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
         self,
         input: RetrieverQueriesType,
         top_k: Optional[int] = None,
+        id: str = None,  # for tracing, diagnosing, and training
         **kwargs,
     ) -> RetrieverOutputType:
         raise NotImplementedError("retrieve is not implemented")
@@ -91,6 +92,7 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
         self,
         input: RetrieverQueriesType,
         top_k: Optional[int] = None,
+        id: str = None,  # for tracing, diagnosing, and training
         **kwargs,
     ) -> RetrieverOutputType:
         raise NotImplementedError("Async retrieve is not implemented")
@@ -102,6 +104,7 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
         top_k: Optional[
             int
         ] = None,  # TODO: top_k can be trained in the future if its formulated as a parameter
+        id: str = None,  # for tracing, diagnosing, and training
         **kwargs,
     ) -> Parameter:
         r"""Customized forward on top of the GradComponent forward method.
@@ -123,6 +126,8 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
             requires_opt=True,
             param_type=ParameterType.HYPERPARAM,
         )
+        if input is None:
+            raise ValueError("Input cannot be empty")
         response = super().forward(input, top_k=top_k, **kwargs)
         response.param_type = (
             ParameterType.RETRIEVER_OUTPUT
@@ -135,6 +140,24 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
         id: Optional[str] = None,
         backward_engine: Optional["Generator"] = None,
     ):
-        r"""Backward the response to pass the score to predecessors"""
-        log.info(f"Retriever backward: {response}")
-        pass
+        r"""Backward the response to pass the score to predecessors.
+        Function as a relay component"""
+        log.info(f"Retriever backward: {response.name}")
+        children_params = response.predecessors
+
+        # is_chain = True
+        if response.get_gradient_and_context_text().strip() == "":
+            log.info(f"Generator: Backward: No gradient found for {response}.")
+
+        for pred in children_params:
+            pred.set_score(response._score)
+            from adalflow.utils.logger import printc
+
+            printc(
+                f"Retriever: Backward: {pred.name} set_score: {response._score}, {response.name}",
+                "blue",
+            )
+            if pred.param_type == ParameterType.DEMOS:
+                pred.add_score_to_trace(
+                    trace_id=id, score=response._score, is_teacher=self.teacher_mode
+                )

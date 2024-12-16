@@ -96,6 +96,7 @@ tensorboardx = "^2.6.2.2"
 matplotlib = "^3.9.1"
 azure-identity = "^1.18.0"
 azure-core = "^1.31.0"
+pyvis = "^0.3.2"
 
 
 [tool.poetry.group.extra.dependencies]
@@ -127,6 +128,10 @@ datasets = ["datasets"]
 name = "nvidia-pypi"
 priority = "supplemental"
 url = "https://pypi.nvidia.com"
+# [[tool.poetry.source]]
+# name = "nvidia-pypi"
+# priority = "supplemental"
+# url = "https://pypi.nvidia.com"
 
 
 [build-system]

@@ -41,7 +41,7 @@ gpt_4o_mini_model = {
 gpt_4o_model = {
     "model_client": OpenAIClient(),
     "model_kwargs": {
-        "model": "gpt-4o",
+        "model": "gpt-4o-mini",
         "temperature": 1,
         "top_p": 0.99,
         "max_tokens": 1000,

@@ -52,23 +52,23 @@ class WordSortingAdalComponent(adal.AdalComponent):
             text_optimizer_model_config=text_optimizer_model_config,
         )
 
-    def handle_one_task_sample(self, sample: Example):
+    def prepare_task(self, sample: Example):
         return self.task.call, {"question": sample.question, "id": sample.id}
 
-    def evaluate_one_sample(
-        self, sample: Example, y_pred: adal.GeneratorOutput
-    ) -> float:
+    def prepare_eval(self, sample: Example, y_pred: adal.GeneratorOutput) -> float:
         y_label = ""
         if (
             y_pred is not None and y_pred.data is not None
         ):  # if y_pred and y_pred.data: might introduce bug when the data is 0
             y_label = y_pred.data
 
-        return self.eval_fn(
-            question=sample.question, gt_answer=sample.answer, pred_answer=y_label
-        )
+        return self.eval_fn, {
+            "question": sample.question,
+            "gt_answer": sample.answer,
+            "pred_answer": y_label,
+        }
 
-    def handle_one_loss_sample(self, sample: Example, pred: adal.Parameter):
+    def prepare_loss(self, sample: Example, pred: adal.Parameter):
         # prepare gt parameter
         y_gt = adal.Parameter(
             name="y_gt",
@@ -91,19 +91,6 @@ class WordSortingAdalComponent(adal.AdalComponent):
                 "question": question_param,
             }
         }
-
-    # def configure_backward_engine(self):
-    #     super().configure_backward_engine_helper(**self.backward_engine_model_config)
-
-    # def configure_teacher_generator(self):
-    #     super().configure_teacher_generator_helper(**self.teacher_model_config)
-
-    # def configure_optimizers(
-    #     self,
-    # ):  # TODO: train the text optimizer and the demo optimizer at the same time
-    #     to = super().configure_text_optimizer_helper(**self.text_optimizer_model_config)
-    #     do = super().configure_demo_optimizer_helper()
-    #     return to + do
 
 
 def train(
@@ -141,9 +128,7 @@ def train(
     )
     print(trainer)
 
-    train_dataset, val_dataset, test_dataset = load_datasets(
-        task_name="BBH_word_sorting"
-    )
+    train_dataset, val_dataset, test_dataset = load_datasets(task_name="word_sorting")
     for dataset in [train_dataset, val_dataset, test_dataset]:
         for example in dataset:
             example.question = example.question.replace(

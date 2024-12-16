@@ -1,3 +1,9 @@
+## [0.2.7] - 2024-09-23
+
+### Improved
+- Better diagnose report for `Trainer.diagnose`.
+- Multi-hop RAG with handling of Cycle.
+
 ## [0.2.7] - TO Be Released
 ### Added
 - `Memory` is completed with `call` and `add_dialog_turn` methods.

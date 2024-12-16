@@ -1,7 +1,7 @@
 __version__ = "0.2.6"
 
 from adalflow.core.component import Component, fun_to_component
-from adalflow.core.container import Sequential
+from adalflow.core.container import Sequential, ComponentList
 from adalflow.core.base_data_class import DataClass, DataClassFormatType, required_field
 
 from adalflow.optim.grad_component import GradComponent
@@ -63,6 +63,10 @@ from adalflow.components.model_client import (
     BedrockAPIClient,
 )
 
+# data pipeline
+from adalflow.components.data_process.text_splitter import TextSplitter
+from adalflow.components.data_process.data_components import ToEmbeddings
+
 __all__ = [
     "Component",
     "fun_to_component",
@@ -72,7 +76,10 @@ __all__ = [
     "required_field",
     # Container
     "Sequential",
+    "ComponentList",
+    # Grad Component
     "GradComponent",
+    # Functional Component
     "ModelClient",
     "Generator",
     "Embedder",
@@ -99,6 +106,9 @@ __all__ = [
     "JsonOutputParser",
     "ListOutputParser",
     "DataClassParser",
+    # Data Pipeline
+    "TextSplitter",
+    "ToEmbeddings",
     # Types
     "GeneratorOutput",
     "EmbedderOutput",

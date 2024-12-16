@@ -1,3 +1,4 @@
+"deprecated"
 """We will use dspy's retriever to keep that the same and only use our generator and optimizer"""
 
 import dspy
@@ -22,9 +23,9 @@ dspy.settings.configure(rm=colbertv2_wiki17_abstracts)
 
 def load_datasets():
 
-    trainset = HotPotQA(split="train", size=20)
-    valset = HotPotQA(split="val", size=50)
-    testset = HotPotQA(split="test", size=50)  # to keep the same as the dspy
+    trainset = HotPotQA(split="train", size=20)  # 20
+    valset = HotPotQA(split="val", size=50)  # 50
+    testset = HotPotQA(split="test", size=50)  # to keep the same as the dspy #50
     print(f"trainset, valset: {len(trainset)}, {len(valset)}, example: {trainset[0]}")
     return trainset, valset, testset
 

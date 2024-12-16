@@ -16,20 +16,25 @@ from adalflow.optim.types import ParameterType
 
 from adalflow.core.prompt_builder import Prompt
 from adalflow.eval.base import BaseEvaluator
+from adalflow.optim.text_grad.backend_engine_prompt import (
+    LOSS_CONVERSATION_TEMPLATE_STRING,
+    LOSS_CONVERSATION_START_INSTRUCTION_STRING_FN,
+    OBJECTIVE_INSTRUCTION_BASE,
+)
 
 
 log = logging.getLogger(__name__)
 
 ###  Loss/Score Information  ###
-CONVERSATION_TEMPLATE_STRING = r"""
-The variable is passed to the eval function and compared with a target/ground truth value.
+# LOSS_CONVERSATION_TEMPLATE_STRING = r"""
+# The variable is passed to the eval function and compared with a target/ground truth value.
 
-<EVAL_FUNC_DESCRIPTION>: {{eval_fn_desc}}
-<INPUTS>: {{input_str}}
-<OUTPUTS/SCORE>: {{response_value}}
-{% if metadata %}
-Note: {{metadata}}
-{% endif %}"""
+# <EVAL_FUNC_DESCRIPTION>: {{eval_fn_desc}}
+# <INPUTS>: {{input_str}}
+# <OUTPUTS/SCORE>: {{response_value}}
+# {% if metadata %}
+# Note: {{metadata}}
+# {% endif %}"""
 
 
 # Does not have gradient on the output, the loss function of the backpropagation chain
@@ -41,22 +46,22 @@ Note: {{metadata}}
 # Has the gradient on the output, the layer in the backpropagation chain
 # Conversation will be provided differently.
 
-### Variable Information ###
-CONVERSATION_START_INSTRUCTION_STRING_FN = r"""
-TARGET VARIABLE:
-<NAME>: {{variable_name}}
-<ROLE> {{variable_desc}} </ROLE>
-<VARIABLE> {{variable_value}} </VARIABLE>
-{{conversation_str}}
-"""
+# ### Variable Information ###
+# CONVERSATION_START_INSTRUCTION_STRING_FN = r"""
+# TARGET VARIABLE:
+# <NAME> {{variable_name}} </NAME>
+# <ROLE> {{variable_desc}} </ROLE>
+# <VARIABLE> {{variable_value}} </VARIABLE>
+# {{conversation_str}}
+# """
 
 # Third part of the user prompt
-OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>
-Your only goal is to clearly states how it obtained the "<OUTPUTS/SCORE>".
-Especially when the score is low.
-Be CONCISE.
-If you have enough context, add a more specific feedback on how it failed.
-</OBJECTIVE_FUNCTION>"""
+# OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>
+# Your only goal is to clearly states how it obtained the "<OUTPUTS/SCORE>".
+# Especially when the score is low.
+# Be CONCISE.
+# If you have enough context, add a more specific feedback on how it failed.
+# </OBJECTIVE_FUNCTION>"""
 
 
 OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. The <INPUTS/SCORE> was later used as "{{response_name}}: {{response_desc}}".
@@ -206,7 +211,7 @@ class EvalFnToTextLoss(LossComponent):
         response: Parameter,
         eval_fn_desc: str,
         backward_engine: "BackwardEngine",
-        is_chain: bool = False,
+        is_intermediate_node: bool = False,  # if the node is an intermediate node in the backpropagation chain
         metadata: Dict[str, str] = None,
     ):
         if not pred.requires_opt:
@@ -214,7 +219,9 @@ class EvalFnToTextLoss(LossComponent):
                 f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
             )
             return
-        log.debug(f"EvalFnToTextLoss: Backward through {pred}, is_chain: {is_chain}")
+        log.debug(
+            f"EvalFnToTextLoss: Backward through {pred}, is_intermediate_node: {is_intermediate_node}"
+        )
 
         if pred.check_if_already_computed_gradient_respect_to(response.id):
             log.info(
@@ -237,7 +244,7 @@ class EvalFnToTextLoss(LossComponent):
 
         # response information
         conversation_str = Prompt(
-            CONVERSATION_TEMPLATE_STRING,
+            LOSS_CONVERSATION_TEMPLATE_STRING,
             prompt_kwargs={
                 "input_str": inputs_string,
                 "eval_fn_desc": eval_fn_desc,
@@ -246,10 +253,10 @@ class EvalFnToTextLoss(LossComponent):
             },
         )()
 
-        conv_ins_template = CONVERSATION_START_INSTRUCTION_STRING_FN
+        conv_ins_template = LOSS_CONVERSATION_START_INSTRUCTION_STRING_FN
         obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
 
-        if is_chain:
+        if is_intermediate_node:
             # conv_ins_template = CONVERSATION_START_INSTRUCTION_STRING_FN_CHAIN
             obj_ins_template = OBJECTIVE_INSTRUCTION_CHAIN
 
@@ -315,6 +322,7 @@ class EvalFnToTextLoss(LossComponent):
         )
 
         # backward the end to end score
+        # TODO: not really useful
         pred.set_score(response.data)
         print(f"setting pred name {pred.name} score to {response.data}")
 
@@ -335,11 +343,11 @@ class EvalFnToTextLoss(LossComponent):
         """
         log.info(f"EvalFnToTextLoss: Backward: {response}")
         children_params = response.predecessors
-        is_chain = True
+        is_intermediate_node = False
         response_gradient_context = response.get_gradient_and_context_text().strip()
-        if response_gradient_context == "":
-            log.info(f"EvalFnToTextLoss: Backward: No gradient found for {response}.")
-            is_chain = False
+        if response_gradient_context != "":
+            log.info("EvalFnToTextLoss is an intermediate node.")
+            is_intermediate_node = True
         log.info(f"response_gradient_context: {response_gradient_context}")
 
         # go through all child parameters
@@ -364,17 +372,27 @@ class EvalFnToTextLoss(LossComponent):
                     response,
                     eval_fn_desc,
                     backward_engine,
-                    is_chain,
+                    is_intermediate_node,
                     metadata,
                 )
         # backward for the score for the demo
         for pred in children_params:
-            if not pred.requires_opt:
-                log.debug(
-                    f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
+            # if not pred.requires_opt:
+            #     log.debug(
+            #         f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
+            #     )
+            #     continue
+            if not isinstance(response.data, float):
+                raise TypeError(
+                    f"EvalFnToTextLoss: response.data must be a float. Got {type(response.data)}."
                 )
-                continue
-            pred._score = float(response.data)
+            pred._score = response.data
+            from adalflow.utils.logger import printc
+
+            printc(
+                f"EvalFnToTextLoss: {pred.name} set_score: {response.data}, {response.name}",
+                "blue",
+            )
             log.info(f"setting pred name {pred.name} score to {response.data}")
 
 
