@@ -255,7 +255,7 @@ class MultiHopRetriever2(adal.Retriever):
                             name=f"few_shot_demos_{i}",
                             data=None,
                             role_desc="To provide few shot demos to the language model",
-                            requires_opt=False,
+                            requires_opt=True,
                             param_type=ParameterType.DEMOS,
                         ),
                         "task_desc_str": Parameter(

@@ -94,6 +94,7 @@ class Trainer(Component):
     max_error_samples: Optional[int] = 2
     max_correct_samples: Optional[int] = 2
     debug: bool = False
+    sequential_order: List[str] = ["text", "demo"]
 
     def __init__(
         self,
@@ -119,6 +120,7 @@ class Trainer(Component):
         exclude_input_fields_from_bootstrap_demos: bool = False,
         debug: bool = False,
         save_traces: bool = False,  # save traces in the few-shto demos
+        sequential_order: List[str] = ["text", "demo"],
         *args,
         **kwargs,
     ) -> None:
@@ -161,6 +163,7 @@ class Trainer(Component):
         self.exclude_input_fields_from_bootstrap_demos = (
             exclude_input_fields_from_bootstrap_demos
         )
+        self.sequential_order = sequential_order
 
     # TODO: need to support checkpoint resume too!
     def diagnose(self, dataset: Any, split: str = "train"):
@@ -503,7 +506,6 @@ class Trainer(Component):
             and len(self.text_optimizers) > 0
         ):
             if self.strategy == "random":
-
                 self._fit_text_grad_demo_mix_random(
                     train_loader,
                     train_dataset,
@@ -525,37 +527,62 @@ class Trainer(Component):
                 raise ValueError(f"Strategy {self.strategy} not supported")
 
         else:  # sequential, text first and demo second
-            if len(self.text_optimizers) > 0:
-                if self.strategy == "random":
-                    trainer_results = self._fit_text_grad_random(
+
+            def run_text_optimizers(starting_step: int, trainer_results: TrainerResult):
+                if len(self.text_optimizers) > 0:
+                    if self.strategy == "random":
+                        trainer_results = self._fit_text_grad_random(
+                            train_loader,
+                            val_dataset,
+                            test_dataset,
+                            trainer_results,
+                            starting_step=starting_step,
+                        )
+                        starting_step += self.max_steps
+                    elif self.strategy == "constrained":
+                        trainer_results = self._fit_text_grad_constraint(
+                            train_loader,
+                            val_dataset,
+                            test_dataset,
+                            trainer_results=trainer_results,
+                            starting_step=starting_step,
+                        )
+                        starting_step += self.max_steps
+                    else:
+                        raise ValueError(f"Strategy {self.strategy} not supported")
+
+            def run_demo_optimizers(starting_step: int, trainer_results: TrainerResult):
+                if len(self.demo_optimizers) > 0:
+                    self.adaltask.configure_teacher_generator()
+                    self._fit_demos_random(
                         train_loader,
-                        val_dataset,
-                        test_dataset,
-                        trainer_results,
-                        starting_step=starting_step,
-                    )
-                    starting_step += self.max_steps
-                elif self.strategy == "constrained":
-                    trainer_results = self._fit_text_grad_constraint(
-                        train_loader,
+                        train_dataset,
                         val_dataset,
                         test_dataset,
                         trainer_results=trainer_results,
                         starting_step=starting_step,
                     )
-                    starting_step += self.max_steps
-                else:
-                    raise ValueError(f"Strategy {self.strategy} not supported")
-            if len(self.demo_optimizers) > 0:
-                self.adaltask.configure_teacher_generator()  # attemp to use the newest teacher as
-                self._fit_demos_random(
-                    train_loader,
-                    train_dataset,
-                    val_dataset,
-                    test_dataset,
-                    trainer_results=trainer_results,
-                    starting_step=starting_step,
-                )
+
+            if self.sequential_order == ["text", "demo"]:
+                run_text_optimizers(starting_step, trainer_results)
+                run_demo_optimizers(starting_step, trainer_results)
+            else:
+                run_demo_optimizers(starting_step, trainer_results)
+                run_text_optimizers(starting_step, trainer_results)
+            # if len(self.text_optimizers) > 0:
+            #     run_text_optimizers(starting_step, trainer_results)
+
+            # if len(self.demo_optimizers) > 0:
+            #     run_demo_optimizers(starting_step, trainer_results)
+            # self.adaltask.configure_teacher_generator()  # attemp to use the newest teacher as
+            # self._fit_demos_random(
+            #     train_loader,
+            #     train_dataset,
+            #     val_dataset,
+            #     test_dataset,
+            #     trainer_results=trainer_results,
+            #     starting_step=starting_step,
+            # )
 
         end_time = time.time()
         print(f"Training time: {end_time - start_time}s")

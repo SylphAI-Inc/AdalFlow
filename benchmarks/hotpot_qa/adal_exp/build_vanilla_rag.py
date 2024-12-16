@@ -161,7 +161,7 @@ class VanillaRAG(adal.GradComponent):
                 ),
                 "few_shot_demos": adal.Parameter(
                     data=None,
-                    requires_opt=False,
+                    requires_opt=True,
                     role_desc="To provide few shot demos to the language model",
                     param_type=adal.ParameterType.DEMOS,
                 ),

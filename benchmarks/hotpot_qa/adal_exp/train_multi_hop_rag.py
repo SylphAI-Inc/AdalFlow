@@ -130,6 +130,7 @@ def train(
         weighted_sampling=True,
         optimization_order=optimization_order,
         exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
+        sequential_order=["text", "demo"],
     )
     print(trainer)
 
