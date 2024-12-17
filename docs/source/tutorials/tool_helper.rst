@@ -510,8 +510,8 @@ We will use :class:`components.output_parsers.outputs.JsonOutputParser` to strea
 
     from adalflow.components.output_parsers import JsonOutputParser
 
-    func_parser = JsonOutputParser(data_class=Function)
-    instructions = func_parser.format_instructions(exclude=["thought", "args"])
+    func_parser = JsonOutputParser(data_class=Function, exclude_fields=["thought", "args"])
+    instructions = func_parser.format_instructions()
     print(instructions)
 
 The output is:
@@ -542,9 +542,7 @@ Now, let's prepare our generator with the above prompt, ``Function`` data class,
     model_kwargs = {"model": "gpt-3.5-turbo"}
     prompt_kwargs = {
         "tools": tool_manager.yaml_definitions,
-        "output_format_str": func_parser.format_instructions(
-            exclude=["thought", "args"]
-        ),
+        "output_format_str": func_parser.format_instructions(),
     }
     generator = Generator(
         model_client=ModelClientType.OPENAI(),
