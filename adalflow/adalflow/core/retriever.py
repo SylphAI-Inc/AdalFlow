@@ -128,7 +128,13 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
         )
         if input is None:
             raise ValueError("Input cannot be empty")
-        response = super().forward(input, top_k=top_k, **kwargs)
+        response = super().forward(input, top_k=top_k, id=id, **kwargs)
+        response.trace_forward_pass(
+            input_args={"input": input, "top_k": top_k},
+            full_response=response,
+            id=self.id,
+            name=self.name,
+        )
         response.param_type = (
             ParameterType.RETRIEVER_OUTPUT
         )  # be more specific about the type

@@ -46,8 +46,18 @@ class GradientContext:
     )
 
 
+@dataclass(frozen=True)
+class ComponentNode:
+    """Used to represent a node in the component graph."""
+
+    id: str = field(metadata={"desc": "The unique id of the component"})
+    name: str = field(metadata={"desc": "The name of the component"})
+
+
 @dataclass
 class ComponentTrace:
+    name: str = field(metadata={"desc": "The name of the component"}, default=None)
+    id: str = field(metadata={"desc": "The unique id of the component"}, default=None)
     input_args: Dict[str, Any] = field(
         metadata={"desc": "The input arguments of the GradComponent forward"},
         default=None,
@@ -159,7 +169,7 @@ class Parameter(Generic[T]):
     def __init__(
         self,
         *,
-        id: Optional[str] = None,
+        id: Optional[str] = None,  # unique id of the parameter
         data: T = None,  # for generator output, the data will be set up as raw_response
         data_id: str = None,  # for tracing the data item in the training/val/test set
         requires_opt: bool = True,
@@ -300,13 +310,21 @@ class Parameter(Generic[T]):
     ############################################################################################################
     #  Trace component, include trace_forward_pass & trace_api_kwargs for now
     ############################################################################################################
-    def trace_forward_pass(self, input_args: Dict[str, Any], full_response: object):
-        r"""Trace the forward pass of the parameter."""
+    def trace_forward_pass(
+        self,
+        input_args: Dict[str, Any],
+        full_response: object,
+        id: str = None,
+        name: str = None,
+    ):
+        r"""Trace the forward pass of the parameter. Adding the component information to the trace"""
         self.input_args = input_args
         self.full_response = full_response
         # TODO: remove the input_args and full_response to use component_trace
         self.component_trace.input_args = input_args
         self.component_trace.full_response = full_response
+        self.component_trace.id = id
+        self.component_trace.name = name
 
     def trace_api_kwargs(self, api_kwargs: Dict[str, Any]):
         r"""Trace the api_kwargs for components like Generator and Retriever that pass to the model client."""
@@ -515,20 +533,20 @@ class Parameter(Generic[T]):
         build_graph(root)
         return nodes, edges
 
-    def report_cycle(cycle_nodes: List["Parameter"]):
-        """
-        Report the detected cycle and provide guidance to the user on how to avoid it.
-        """
-        cycle_names = [node.name for node in cycle_nodes]
-        log.warning(f"Cycle detected: {' -> '.join(cycle_names)}")
-        print(f"Cycle detected in the graph: {' -> '.join(cycle_names)}")
+    # def report_cycle(cycle_nodes: List["Parameter"]):
+    #     """
+    #     Report the detected cycle and provide guidance to the user on how to avoid it.
+    #     """
+    #     cycle_names = [node.name for node in cycle_nodes]
+    #     log.warning(f"Cycle detected: {' -> '.join(cycle_names)}")
+    #     print(f"Cycle detected in the graph: {' -> '.join(cycle_names)}")
 
-        # Provide guidance on how to avoid the cycle
-        print("To avoid the cycle, consider the following strategies:")
-        print("- Modify the graph structure to remove cyclic dependencies.")
-        print(
-            "- Check the relationships between these nodes to ensure no feedback loops."
-        )
+    #     # Provide guidance on how to avoid the cycle
+    #     print("To avoid the cycle, consider the following strategies:")
+    #     print("- Modify the graph structure to remove cyclic dependencies.")
+    #     print(
+    #         "- Check the relationships between these nodes to ensure no feedback loops."
+    #     )
 
     def backward(
         self,
@@ -799,6 +817,7 @@ class Parameter(Generic[T]):
 
             node_label = (
                 f"<table border='0' cellborder='1' cellspacing='0'>"
+                f"<tr><td><b><font color='{label_color}'>Name: </font></b></td><td>{wrap_and_escape(n.id)}</td></tr>"
                 f"<tr><td><b><font color='{label_color}'>Name: </font></b></td><td>{wrap_and_escape(n.name)}</td></tr>"
                 f"<tr><td><b><font color='{label_color}'>Role: </font></b></td><td>{wrap_and_escape(n.role_desc.capitalize())}</td></tr>"
                 f"<tr><td><b><font color='{label_color}'>Value: </font></b></td><td>{wrap_and_escape(n.data)}</td></tr>"
@@ -837,6 +856,12 @@ class Parameter(Generic[T]):
                 node_label += f"<tr><td><b><font color='{label_color}'>Traces: values: </font></b></td><td>{wrap_and_escape(str(n._traces.values()))}</td></tr>"
             if n.tgd_optimizer_trace is not None:
                 node_label += f"<tr><td><b><font color='{label_color}'>TGD Optimizer Trace: </font></b></td><td>{wrap_and_escape(str(n.tgd_optimizer_trace))}</td></tr>"
+
+            # show component trace, id and name
+            if n.component_trace.id is not None:
+                node_label += f"<tr><td><b><font color='{label_color}'>Component Trace ID: </font></b></td><td>{wrap_and_escape(str(n.component_trace.id))}</td></tr>"
+            if n.component_trace.name is not None:
+                node_label += f"<tr><td><b><font color='{label_color}'>Component Trace Name: </font></b></td><td>{wrap_and_escape(str(n.component_trace.name))}</td></tr>"
 
             node_label += "</table>"
             # check if the name exists in dot
@@ -905,6 +930,303 @@ class Parameter(Generic[T]):
             filepath=filepath, nodes=[n for n in nodes], edges=edges
         )
         return {"graph_path": filepath, "root_path": f"{filepath}_root.json"}
+
+    def draw_output_subgraph(
+        self,
+        add_grads: bool = True,
+        format: str = "png",
+        rankdir: str = "TB",
+        filepath: str = None,
+    ):
+        """
+        Build and visualize a subgraph containing only OUTPUT parameters.
+
+        Args:
+            add_grads (bool): Whether to include gradient edges.
+            format (str): Format for output (e.g., png, svg).
+            rankdir (str): Graph layout direction ("LR" or "TB").
+            filepath (str): Path to save the graph.
+        """
+        assert rankdir in ["LR", "TB"]
+        from adalflow.utils.global_config import get_adalflow_default_root_path
+
+        try:
+            from graphviz import Digraph
+
+        except ImportError as e:
+            raise ImportError(
+                "Please install graphviz using 'pip install graphviz' to use this feature"
+            ) from e
+
+        root_path = get_adalflow_default_root_path()
+        # # prepare the log directory
+        # log_dir = os.path.join(root_path, "logs")
+
+        # # Set up TensorBoard logging
+        # writer = SummaryWriter(log_dir)
+
+        filename = f"trace_component_output_graph_{self.name}_id_{self.id}"
+        filepath = (
+            os.path.join(filepath, filename)
+            if filepath
+            else os.path.join(root_path, "graphs", filename)
+        )
+        print(f"Saving graph to {filepath}.{format}")
+
+        # Step 1: Collect OUTPUT nodes and edges
+        nodes, edges = self._collect_output_subgraph()
+
+        # Step 2: Render using Graphviz
+        filename = f"output_subgraph_{self.name}_{self.id}"
+        filepath = filepath or f"./{filename}"
+        print(f"Saving OUTPUT subgraph to {filepath}.{format}")
+
+        dot = Digraph(format=format, graph_attr={"rankdir": rankdir})
+        node_ids = set()
+
+        for node in nodes:
+            node_label = f"""
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td><b>Name:</b></td><td>{node.name}</td></tr>
+                <tr><td><b>Type:</b></td><td>{node.param_type}</td></tr>
+                <tr><td><b>Value:</b></td><td>{node.get_short_value()}</td></tr>"""
+            # add the component trace id and name
+            if node.component_trace.id is not None:
+                node_label += f"<tr><td><b>Component Trace ID:</b></td><td>{node.component_trace.id}</td></tr>"
+            if node.component_trace.name is not None:
+                node_label += f"<tr><td><b>Component Trace Name:</b></td><td>{node.component_trace.name}</td></tr>"
+
+            node_label += "</table>"
+            dot.node(
+                name=node.id,
+                label=f"<{node_label}>",
+                shape="plaintext",
+                color="lightblue" if node.requires_opt else "gray",
+            )
+            node_ids.add(node.id)
+
+        for source, target in edges:
+            if source.id in node_ids and target.id in node_ids:
+                dot.edge(source.id, target.id)
+
+        # Step 3: Save and render
+        dot.render(filepath, cleanup=True)
+        print(f"Graph saved as {filepath}.{format}")
+
+    def draw_component_subgraph(
+        self,
+        format: str = "png",
+        rankdir: str = "TB",
+        filepath: str = None,
+    ):
+        """
+        Build and visualize a subgraph containing only OUTPUT parameters.
+
+        Args:
+            format (str): Format for output (e.g., png, svg).
+            rankdir (str): Graph layout direction ("LR" or "TB").
+            filepath (str): Path to save the graph.
+        """
+        assert rankdir in ["LR", "TB"]
+
+        try:
+            from graphviz import Digraph
+        except ImportError as e:
+            raise ImportError(
+                "Please install graphviz using 'pip install graphviz' to use this feature"
+            ) from e
+
+        # Step 1: Collect OUTPUT nodes and edges
+        component_nodes, edges, component_nodes_orders = (
+            self._collect_component_subgraph()
+        )
+
+        # Step 2: Setup graph rendering
+        filename = f"output_component_{self.name}_{self.id}"
+        filepath = filepath or f"./{filename}"
+        print(f"Saving OUTPUT subgraph to {filepath}.{format}")
+
+        dot = Digraph(format=format, graph_attr={"rankdir": rankdir})
+
+        # Add nodes
+        for node in component_nodes:
+            node_label = f"""
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td><b>ID:</b></td><td>{node.id}</td></tr>
+                <tr><td><b>Name:</b></td><td>{node.name}</td></tr>"""
+
+            # add the list of orders
+            if node.id in component_nodes_orders:
+                node_label += f"<tr><td><b>Order:</b></td><td>{component_nodes_orders[node.id]}</td></tr>"
+            node_label += "</table>"
+            dot.node(
+                name=node.id,
+                label=f"<{node_label}>",
+                shape="plaintext",
+                color="lightblue",
+            )
+
+        # Add edges with order labels
+        for source_id, target_id, edge_order in edges:
+            dot.edge(source_id, target_id, label=str(edge_order), color="black")
+
+        # Step 3: Save and render
+        dot.render(filepath, cleanup=True)
+        print(f"Graph saved as {filepath}.{format}")
+
+    def _collect_output_subgraph(
+        self,
+    ) -> Tuple[Set["Parameter"], List[Tuple["Parameter", "Parameter"]]]:
+        """
+        Collect nodes of type OUTPUT and their relationships.
+
+        Returns:
+            nodes (Set[Parameter]): Set of OUTPUT nodes.
+            edges (List[Tuple[Parameter, Parameter]]): Edges between OUTPUT nodes.
+        """
+        output_nodes = set()
+        edges = []
+
+        visited = set()  # check component_trace.id and name
+
+        def traverse(node: "Parameter"):
+            if node in visited:
+                return
+            visited.add(node)
+
+            # Add OUTPUT nodes to the set
+            if (
+                node.param_type == ParameterType.OUTPUT
+                or "OUTPUT" in node.param_type.name
+            ):
+                output_nodes.add(node)
+
+            # Traverse predecessors and add edges
+            for pred in node.predecessors:
+                if (
+                    pred.param_type == ParameterType.OUTPUT
+                    or "OUTPUT" in pred.param_type.name
+                ):
+                    edges.append((pred, node))
+                traverse(pred)
+
+        traverse(self)
+        return output_nodes, edges
+
+    # def _collect_output_subgraph(
+    #     self,
+    # ) -> Tuple[Set[Tuple[str, str]], List[Tuple[str, str]]]:
+    #     """
+    #     Collect OUTPUT nodes and their relationships using component_trace information.
+
+    #     Returns:
+    #         nodes (Set[Tuple[str, str]]): Set of component nodes (component_id, label).
+    #         edges (List[Tuple[str, str]]): Edges between component IDs.
+    #     """
+    #     component_nodes = set()  # To store component nodes as (component_id, label)
+    #     edges = []  # To store edges between components
+
+    #     visited = set()  # Track visited parameters to avoid cycles
+
+    #     def traverse(node: "Parameter"):
+    #         if node in visited:
+    #             return
+    #         visited.add(node)
+
+    #         # Only consider OUTPUT-type parameters
+    #         if (
+    #             node.param_type == ParameterType.OUTPUT
+    #             or "OUTPUT" in node.param_type.name
+    #         ):
+    #             component_id = node.component_trace.id
+    #             component_name = node.component_trace.name or "Unknown Component"
+    #             label = f"{component_name}\nID: {component_id}"
+
+    #             # Add the component as a node
+    #             component_nodes.add((component_id, label))
+
+    #             # Traverse predecessors and add edges
+    #             for pred in node.predecessors:
+    #                 if pred.param_type == ParameterType.OUTPUT:
+    #                     pred_id = pred.component_trace.id
+    #                     pred_name = pred.component_trace.name or "Unknown Component"
+
+    #                     # Add predecessor as a node
+    #                     pred_label = f"{pred_name}\nID: {pred_id}"
+    #                     component_nodes.add((pred_id, pred_label))
+
+    #                     # Add edge between components
+    #                     edges.append((pred_id, component_id))
+
+    #                 # Recursive traversal
+    #                 traverse(pred)
+
+    #     # Start traversal from the current parameter
+    #     traverse(self)
+    #     return component_nodes, edges
+
+    def _collect_component_subgraph(
+        self,
+    ) -> Tuple[Set[ComponentNode], List[Tuple[str, str]]]:
+        """
+        Collect OUTPUT nodes and their relationships as ComponentNodes.
+
+        Returns:
+            component_nodes (Set[ComponentNode]): Set of component nodes (id and name only).
+            edges (List[Tuple[str, str]]): Edges between component IDs.
+        """
+        component_nodes = set()  # To store component nodes as ComponentNode
+        component_nodes_orders: Dict[str, List[int]] = (
+            {}
+        )  # To store component nodes order
+        edges = []  # To store edges between component IDs
+
+        visited = set()  # Track visited parameters to avoid cycles
+        edge_counter = [0]  # Mutable counter for edge order tracking
+
+        def traverse(node: "Parameter", depth: int):
+            if node in visited:
+                return
+            visited.add(node)
+
+            # Check if node is of OUTPUT type
+            if (
+                node.param_type == ParameterType.OUTPUT
+                or "OUTPUT" in node.param_type.name
+            ):
+                component_id = node.component_trace.id or f"unknown_id_{uuid.uuid4()}"
+                component_name = node.component_trace.name or "Unknown Component"
+
+                # Create a ComponentNode and add to the set
+                component_node = ComponentNode(id=component_id, name=component_name)
+                component_nodes.add(component_node)
+
+                # Traverse predecessors and add edges
+                for pred in node.predecessors:
+                    pred_id = pred.component_trace.id or f"unknown_id_{uuid.uuid4()}"
+                    pred_name = pred.component_trace.name or "Unknown Component"
+
+                    # Add edge if predecessor is also of OUTPUT type
+                    if (
+                        pred.param_type == ParameterType.OUTPUT
+                        or "OUTPUT" in pred.param_type.name
+                    ):
+                        edges.append((pred_id, component_id, depth))
+                        component_nodes.add(ComponentNode(id=pred_id, name=pred_name))
+                        edge_counter[0] += 1
+
+                    traverse(pred, depth + 1)
+
+        # Start traversal from the current parameter
+        traverse(self, depth=0)
+        # Reverse the edge order
+        # total_edges = len(edges)
+        # edges = [
+        #     (source, target, (total_edges - 1) - edge_number)
+        #     for idx, (source, target, edge_number) in enumerate(edges)
+        # ]
+
+        return component_nodes, edges, component_nodes_orders
 
     def to_dict(self):
         return {

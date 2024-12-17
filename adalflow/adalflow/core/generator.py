@@ -506,6 +506,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                         self.model_kwargs, model_kwargs
                     ),
                 }
+
                 output = self.call(**input_args, id=id)
         # 2. Generate a Parameter object from the output
         combined_prompt_kwargs = compose_model_kwargs(self.prompt_kwargs, prompt_kwargs)
@@ -527,9 +528,12 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             name=self.name + "_output",
             role_desc=f"Output from (llm) {self.name}",
             param_type=ParameterType.GENERATOR_OUTPUT,
+            data_id=id,
         )
         response.set_predecessors(predecessors)
-        response.trace_forward_pass(input_args=input_args, full_response=output)
+        response.trace_forward_pass(
+            input_args=input_args, full_response=output, id=self.id, name=self.name
+        )
         # *** special to the generator ***
         response.trace_api_kwargs(api_kwargs=self._trace_api_kwargs)
         # attach the demo to the demo parameter
@@ -755,6 +759,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             score=response._score,  # add score to gradient
             param_type=ParameterType.GRADIENT,
             from_response_id=response.id,
+            data_id=response.data_id,
         )
         pred.add_gradient(var_gradient)
         pred.set_score(response._score)
