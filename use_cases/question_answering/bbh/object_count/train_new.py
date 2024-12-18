@@ -140,20 +140,36 @@ def train(
 
 
 if __name__ == "__main__":
-    import sys
     import json
+
+    # make the strategy configurable in the script
+    import argparse
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--strategy", type=str, default="random")
+    parser.add_argument(
+        "output_path", nargs="?", help="File path to save the checkpoint"
+    )
+
+    args = parser.parse_args()
+
+    set_strategy = args.strategy
+    set_output_path = args.output_path
 
     ckpt = train(
         debug=False,
-        max_steps=12,
-        strategy="constrained",
+        max_steps=2,
+        strategy=set_strategy,
         exclude_input_fields_from_bootstrap_demos=True,
     )
     print(f"ckpt: {ckpt}")
-    # Save ckpt to a file passed as an argument
-    if len(sys.argv) > 1:  # Check if a file path is provided
-        with open(sys.argv[1], "w") as f:
+    if set_output_path:
+        with open(set_output_path, "w") as f:
             json.dump({"ckpt": ckpt}, f)
+        print(f"Checkpoint saved to {set_output_path}")
+    else:
+        print("No file path provided for saving the checkpoint.")
 
     # train_diagnose(**gpt_3_model)
     # train_diagnose_teacher(**gpt_4o_model) # 4omini works well as an optimizer too

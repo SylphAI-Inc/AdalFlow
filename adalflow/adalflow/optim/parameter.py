@@ -52,6 +52,9 @@ class ComponentNode:
 
     id: str = field(metadata={"desc": "The unique id of the component"})
     name: str = field(metadata={"desc": "The name of the component"})
+    type: Literal["INPUT", "COMPONENT"] = field(
+        metadata={"desc": "The type of the node"}, default="COMPONENT"
+    )
 
 
 @dataclass
@@ -1052,8 +1055,10 @@ class Parameter(Generic[T]):
         for node in component_nodes:
             node_label = f"""
             <table border="0" cellborder="1" cellspacing="0">
-                <tr><td><b>ID:</b></td><td>{node.id}</td></tr>
-                <tr><td><b>Name:</b></td><td>{node.name}</td></tr>"""
+                <tr><td><b>Name:</b></td><td>{node.name}</td></tr>
+                <tr><td><b>TYPE:</b></td><td>{node.type}</td></tr>
+                """
+            #                 <tr><td><b>ID:</b></td><td>{node.id}</td></tr>
 
             # add the list of orders
             if node.id in component_nodes_orders:
@@ -1068,7 +1073,7 @@ class Parameter(Generic[T]):
 
         # Add edges with order labels
         for source_id, target_id, edge_order in edges:
-            dot.edge(source_id, target_id, label=str(edge_order), color="black")
+            dot.edge(source_id, target_id)  # , label=str(edge_order), color="black")
 
         # Step 3: Save and render
         dot.render(filepath, cleanup=True)
@@ -1113,58 +1118,6 @@ class Parameter(Generic[T]):
         traverse(self)
         return output_nodes, edges
 
-    # def _collect_output_subgraph(
-    #     self,
-    # ) -> Tuple[Set[Tuple[str, str]], List[Tuple[str, str]]]:
-    #     """
-    #     Collect OUTPUT nodes and their relationships using component_trace information.
-
-    #     Returns:
-    #         nodes (Set[Tuple[str, str]]): Set of component nodes (component_id, label).
-    #         edges (List[Tuple[str, str]]): Edges between component IDs.
-    #     """
-    #     component_nodes = set()  # To store component nodes as (component_id, label)
-    #     edges = []  # To store edges between components
-
-    #     visited = set()  # Track visited parameters to avoid cycles
-
-    #     def traverse(node: "Parameter"):
-    #         if node in visited:
-    #             return
-    #         visited.add(node)
-
-    #         # Only consider OUTPUT-type parameters
-    #         if (
-    #             node.param_type == ParameterType.OUTPUT
-    #             or "OUTPUT" in node.param_type.name
-    #         ):
-    #             component_id = node.component_trace.id
-    #             component_name = node.component_trace.name or "Unknown Component"
-    #             label = f"{component_name}\nID: {component_id}"
-
-    #             # Add the component as a node
-    #             component_nodes.add((component_id, label))
-
-    #             # Traverse predecessors and add edges
-    #             for pred in node.predecessors:
-    #                 if pred.param_type == ParameterType.OUTPUT:
-    #                     pred_id = pred.component_trace.id
-    #                     pred_name = pred.component_trace.name or "Unknown Component"
-
-    #                     # Add predecessor as a node
-    #                     pred_label = f"{pred_name}\nID: {pred_id}"
-    #                     component_nodes.add((pred_id, pred_label))
-
-    #                     # Add edge between components
-    #                     edges.append((pred_id, component_id))
-
-    #                 # Recursive traversal
-    #                 traverse(pred)
-
-    #     # Start traversal from the current parameter
-    #     traverse(self)
-    #     return component_nodes, edges
-
     def _collect_component_subgraph(
         self,
     ) -> Tuple[Set[ComponentNode], List[Tuple[str, str]]]:
@@ -1184,7 +1137,7 @@ class Parameter(Generic[T]):
         visited = set()  # Track visited parameters to avoid cycles
         edge_counter = [0]  # Mutable counter for edge order tracking
 
-        def traverse(node: "Parameter", depth: int):
+        def traverse(node: "Parameter"):
             if node in visited:
                 return
             visited.add(node)
@@ -1211,14 +1164,25 @@ class Parameter(Generic[T]):
                         pred.param_type == ParameterType.OUTPUT
                         or "OUTPUT" in pred.param_type.name
                     ):
-                        edges.append((pred_id, component_id, depth))
+                        edges.append((pred_id, component_id, edge_counter[0]))
                         component_nodes.add(ComponentNode(id=pred_id, name=pred_name))
                         edge_counter[0] += 1
 
-                    traverse(pred, depth + 1)
+                    if pred.param_type == ParameterType.INPUT:
+                        pred_id = pred.id
+                        pred_name = pred.name
+                        pred_node = ComponentNode(
+                            id=pred_id, name=pred_name, type="INPUT"
+                        )
+                        component_nodes.add(pred_node)
+                        # add an edge from input to the first output
+                        edges.append((pred_id, component_id, edge_counter[0]))
+                        edge_counter[0] += 1
+
+                    traverse(pred)
 
         # Start traversal from the current parameter
-        traverse(self, depth=0)
+        traverse(self)
         # Reverse the edge order
         # total_edges = len(edges)
         # edges = [
