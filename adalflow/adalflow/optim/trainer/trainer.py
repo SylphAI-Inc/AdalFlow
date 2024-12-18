@@ -91,6 +91,9 @@ class Trainer(Component):
     batch_val_score_threshold: Optional[float] = (
         1.0  # when acc_score >= this threshold, skip this batch
     )
+    correct_val_score_threshold: Optional[float] = (
+        0.5  # when acc_score >= this threshold, it is considered as correct sample
+    )
     max_error_samples: Optional[int] = 2
     max_correct_samples: Optional[int] = 2
     debug: bool = False
@@ -106,6 +109,7 @@ class Trainer(Component):
         num_workers: int = 4,
         ckpt_path: str = None,
         batch_val_score_threshold: Optional[float] = 1.0,
+        correct_val_score_threshold: Optional[float] = 0.5,
         max_error_samples: Optional[int] = 2,
         max_correct_samples: Optional[int] = 2,
         max_proposals_per_step: int = 5,
@@ -140,6 +144,7 @@ class Trainer(Component):
         self.val_dataset = val_dataset
         self.test_dataset = test_dataset
         self.batch_val_score_threshold = batch_val_score_threshold
+        self.correct_val_score_threshold = correct_val_score_threshold
         self.max_error_samples = max_error_samples
         self.max_correct_samples = max_correct_samples
         self.max_proposals_per_step = max_proposals_per_step
@@ -1680,10 +1685,18 @@ class Trainer(Component):
         # ensure only 0 and 1 in the acc_score_list
         import numpy as np
 
-        if not all([score in [0, 1] for score in acc_score_list]):
+        if not all(0 <= score <= 1 for score in acc_score_list):
             raise ValueError("acc_score_list should only contain 0 and 1")
-        correct_indices = [i for i, score in enumerate(acc_score_list) if score == 1]
-        error_indices = [i for i, score in enumerate(acc_score_list) if score == 0]
+        correct_indices = [
+            i
+            for i, score in enumerate(acc_score_list)
+            if score > self.correct_val_score_threshold
+        ]
+        error_indices = [
+            i
+            for i, score in enumerate(acc_score_list)
+            if score <= self.correct_val_score_threshold
+        ]
         print(f"Moving batch correct size: {len(correct_indices)}")
         print(f"Moving batch error size: {len(error_indices)}")
         if len(error_indices) == 0:
@@ -1983,6 +1996,8 @@ class Trainer(Component):
                             trainer_results,
                             **step_result,
                         )
+
+                        # reset the moving batch
 
                         all_samples, all_losses, all_y_preds = [], [], []
 
