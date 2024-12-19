@@ -402,8 +402,6 @@ class AdalComponent(Component):
                 if isinstance(y_pred, Parameter):
                     raise ValueError(f"y_pred_{i} is a Parameter, {y_pred}")
 
-                print(f"y_pred: {y_pred})")
-
                 assert (
                     y_pred.id == sample.id
                 ), f"ID mismatch: {y_pred.id} != {sample.id}, type: {type(y_pred)}"

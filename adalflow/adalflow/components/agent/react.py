@@ -6,7 +6,8 @@ import logging
 
 
 from adalflow.core.generator import Generator
-from adalflow.core.component import Component
+from adalflow.optim.grad_component import GradComponent
+from adalflow.optim.parameter import Parameter, ParameterType
 from adalflow.core.func_tool import FunctionTool, AsyncCallable
 from adalflow.core.tool_manager import ToolManager
 from adalflow.components.output_parsers import JsonOutputParser
@@ -27,28 +28,13 @@ __all__ = ["DEFAULT_REACT_AGENT_SYSTEM_PROMPT", "ReActAgent"]
 
 # TODO: test react agent
 
-DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<SYS>
-{# role/task description #}
+react_agent_task_desc = r"""{# role/task description #}
 You are a helpful assistant.
 Answer the user's query using the tools provided below with minimal steps and maximum accuracy.
 {# REACT instructions #}
 Each step you will read the previous Thought, Action, and Observation(execution result of the action) and then provide the next Thought and Action.
-{# Tools #}
-{% if tools %}
-<TOOLS>
-You available tools are:
-{% for tool in tools %}
-{{ loop.index }}.
-{{tool}}
-------------------------
-{% endfor %}
-</TOOLS>
-{% endif %}
-{# output format and examples for output format #}
-<OUTPUT_FORMAT>
-{{output_format_str}}
-</OUTPUT_FORMAT>
-<TASK_SPEC>
+
+<START_OF_TASK_SPEC>
 {# Task specification to teach the agent how to think using 'divide and conquer' strategy #}
 - For simple queries: Directly call the ``finish`` action and provide the answer.
 - For complex queries:
@@ -58,9 +44,29 @@ You available tools are:
 Remember:
 - Action must call one of the above tools with name. It can not be empty.
 - You will always end with 'finish' action to finish the task. The answer can be the final answer or failure message.
-</TASK_SPEC>
-</SYS>
+<END_OF_TASK_SPEC>
+"""
+
+DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
+{{react_agent_task_desc}}
+{# Tools #}
+{% if tools %}
+<START_OF_TOOLS>
+You available tools are:
+{% for tool in tools %}
+{{ loop.index }}.
+{{tool}}
+------------------------
+{% endfor %}
+<END_OF_TOOLS>
+{% endif %}
+{# output format and examples for output format #}
+<START_OF_OUTPUT_FORMAT>
+{{output_format_str}}
+<END_OF_OUTPUT_FORMAT>
+<END_OF_SYSTEM_PROMPT>
 -----------------
+<START_OF_USER_QUERY>
 User query:
 {{ input_str }}
 {# Step History #}
@@ -76,10 +82,11 @@ Step {{ loop.index }}.
 {% endfor %}
 </STEPS>
 {% endif %}
-You:"""
+<END_OF_USER_QUERY>
+"""
 
 
-class ReActAgent(Component):
+class ReActAgent(GradComponent):
     __doc__ = r"""ReActAgent uses generator as a planner that runs multiple and sequential functional call steps to generate the final response.
 
     Users need to set up:
@@ -135,11 +142,13 @@ class ReActAgent(Component):
         max_steps: int = 10,
         add_llm_as_fallback: bool = True,
         # TODO: the examples are just for specifying the output format, not end to end input-output examples, need further optimization
-        examples: List[FunctionExpression] = [],
+        # examples: List[FunctionExpression] = [],
+        examples: Union[List[FunctionExpression], List[str]] = [],
         *,
         # the following arguments are mainly for the planner
         model_client: ModelClient,
         model_kwargs: Dict = {},
+        # template for the planner
         template: Optional[str] = None,  # allow users to customize the template
     ):
         super().__init__()
@@ -165,6 +174,13 @@ class ReActAgent(Component):
         prompt_kwargs = {
             "tools": self.tool_manager.yaml_definitions,
             "output_format_str": output_parser.format_instructions(),
+            "react_agent_task_desc": Parameter(
+                name="react_agent_task_desc",
+                data=react_agent_task_desc,
+                role_desc="Task description for the ReAct agent which functions as a planner using a Large Language Model.",
+                param_type=ParameterType.PROMPT,
+                requires_opt=True,
+            ),
         }
         self.planner = Generator(
             template=template,
@@ -249,6 +265,7 @@ class ReActAgent(Component):
         response: GeneratorOutput = self.planner(
             prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
         )
+
         if response.error:
             error_msg = f"Error planning step {step}: {response.error}"
             step_output.observation = error_msg
