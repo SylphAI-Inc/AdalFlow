@@ -2,7 +2,7 @@ import subprocess
 import tempfile
 import json
 
-num_runs = 2
+num_runs = 4
 # List of experiments to run
 object_count = "use_cases/question_answering/bbh/object_count/train_new.py"
 hotpot_qa_multi_hop_rag = "benchmarks/hotpot_qa/adal_exp/train_multi_hop_rag.py"
@@ -15,7 +15,7 @@ experiments = [
 
 # Optional: Arguments for each experiment (if needed)
 experiment_args = {
-    object_count: "--strategy random",
+    object_count: "--strategy constrained",
     # hotpot_qa_multi_hop_rag: "",
 }
 ckpt_values = {}
@@ -48,6 +48,13 @@ def run_experiment(script, args):
 
 
 if __name__ == "__main__":
+
+    result_file = "text_grad_2_results"
+    # add important run information in the naming of the file
+    import uuid
+
+    result_file = f"{result_file}_{num_runs}_runs_{uuid.uuid4()}.json"
+
     for experiment in experiments:
         args = experiment_args.get(experiment, "")
         for i in range(num_runs):
@@ -70,18 +77,18 @@ if __name__ == "__main__":
                 data = json.load(f)
                 print(f"Experiment: {experiment_index}")
                 print(f"Data: {data}")
-                _high_test_score = max(data["test_scores"])
-                print(f" test score: {data["test_scores"]}")
+                _high_test_score = max(data["val_scores"])
+                print(f" val score: {data["val_scores"]}")
                 past_highest_scores.append(_high_test_score)
                 if _high_test_score > highest_test_score:
                     highest_test_score = _high_test_score
                     highest_test_score_json_file = ckpt
                 # read the effective measures
-                effective_measures = data.get("effective_measures", {})
+                effective_measures = data.get("effective_measure", {})
                 if not effective_measures:
-                    total_prompts = len(data["test_scores"]) - 1
+                    total_prompts = len(data["val_scores"]) - 1
                     # count the total number of different test scores
-                    pass_num = len(set(data["test_scores"])) - 1
+                    pass_num = len(set(data["val_scores"])) - 1
                     average_pass_rate = pass_num / total_prompts
                     average_pass_rate_list.append(average_pass_rate)
                     average_pass_prompts_list.append(pass_num)
@@ -115,11 +122,15 @@ if __name__ == "__main__":
             average_pass_prompts_list
         )
         # calculate the average total prompts
-        average_total_prompts = sum(average_total_prompts) / len(average_total_prompts)
+        average_total_prompts = sum(average_total_prompts) / num_runs
 
         # add these numbers in the ckpt_values
         index = f"{experiment}_summary"
         ckpt_values[index] = {
+            "config": {
+                "num_runs": num_runs,
+                "args": args,
+            },
             "highest_test_score": highest_test_score,
             "mean_test_score": mean_test_score,
             "standard_deviation": standard_deviation,
@@ -127,6 +138,7 @@ if __name__ == "__main__":
             "average_pass_rate": average_pass_rate,
             "average_pass_prompts": average_pass_prompts,
             "average_total_prompts": average_total_prompts,
+            "past_highest_scores": past_highest_scores,
         }
 
     print("\nAll Checkpoints:")
@@ -134,5 +146,7 @@ if __name__ == "__main__":
         print(f"{experiment}: {ckpt}")
 
     # Save the results to a file
-    with open("results.json", "w") as f:
+    with open(result_file, "w") as f:
         json.dump(ckpt_values, f)
+
+    print(f"\nResults saved to {result_file}")

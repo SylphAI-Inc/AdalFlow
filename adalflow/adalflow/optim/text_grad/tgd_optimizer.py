@@ -81,11 +81,12 @@ You must follow the following constraints:
 You must base on the following examples when modifying the {{variable_desc}}:
 <EXAMPLES>{{in_context_examples}}</EXAMPLES>
 {% endif %}
-YOU MUST ENSURE the new variable shares the same intent as the original variable.
-You can either rephrase the initial variable, or add more specific instructions based on the feedback.
-You can not change the variable to only fit on one sample if the batch size is larger than 1.
 <END_OF_USER_MESSAGE>
 """
+
+# YOU MUST ENSURE the new variable shares the same intent as the original variable.
+# You can either rephrase the initial variable, or add more specific instructions based on the feedback.
+# You can not change the variable to only fit on one sample if the batch size is larger than 1.
 
 # optimizer system prompt
 
