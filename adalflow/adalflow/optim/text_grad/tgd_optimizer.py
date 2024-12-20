@@ -431,8 +431,8 @@ class TGDOptimizer(TextOptimizer):
             improved_variable = proposed_data.proposed_variable
             param.propose_data(improved_variable)
             param.trace_optimizer(api_kwargs=prompt_str, response=response)
-            print(f"prompt_str: {prompt_str}")
-            print(f"response: {response}")
+            # print(f"prompt_str: {prompt_str}")
+            # print(f"response: {response}")
             if self.do_gradient_memory:
                 self.update_gradient_memory(param)
         self.proposing = True

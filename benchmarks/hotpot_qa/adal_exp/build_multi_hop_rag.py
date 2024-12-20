@@ -592,6 +592,69 @@ class MultiHopRAGCycle(VanillaRAG):
         )
 
 
+from adalflow.components.agent.react import ReActAgent
+
+
+from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import (
+    answer_template,
+    AnswerData,
+    task_desc_str,
+)
+
+
+class AgenticRAG(adal.GradComponent):
+    def __init__(self, model_client, model_kwargs):
+        super().__init__()
+
+        self.dspy_retriever = DspyRetriever(top_k=3)
+        self.llm_parser = adal.DataClassParser(
+            data_class=AnswerData, return_data_class=True, format_type="json"
+        )
+        self.llm = adal.Generator(
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+            template=answer_template,
+            prompt_kwargs={
+                "task_desc_str": adal.Parameter(
+                    data=task_desc_str,
+                    role_desc="Task description for the language model",
+                    param_type=adal.ParameterType.PROMPT,
+                    requires_opt=True,
+                ),
+                "few_shot_demos": adal.Parameter(
+                    data=None,
+                    requires_opt=None,
+                    role_desc="To provide few shot demos to the language model",
+                    param_type=adal.ParameterType.DEMOS,
+                ),
+                "output_format_str": self.llm_parser.get_output_format_str(),
+            },
+            output_processors=self.llm_parser,
+        )
+
+        def dspy_retriever_as_tool(input: str) -> List[str]:
+            output = self.dspy_retriever(input=input)
+            parsed_output = output
+            if isinstance(output, adal.Parameter):
+                parsed_output = output.data
+            return parsed_output[0].documents
+
+        def generator_as_tool(input: str) -> str:
+            output = self.llm(input=input)
+            return output
+
+        self.agent = ReActAgent(
+            max_steps=6,
+            add_llm_as_fallback=False,
+            tools=[dspy_retriever_as_tool, generator_as_tool],
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+        )
+
+    def call(self, input: str, id: str = None) -> str:
+        return self.agent(input=input)
+
+
 def test_multi_hop_retriever():
 
     from use_cases.config import (
@@ -642,6 +705,27 @@ def test_multi_hop_retriever_cycle():
     output.draw_graph()
     output.draw_output_subgraph()
     output.draw_component_subgraph()
+
+
+def test_agent_rag():
+
+    from use_cases.config import (
+        gpt_3_model,
+    )
+
+    task = AgenticRAG(
+        **gpt_3_model,
+    )
+
+    question = "How many storeys are in the castle that David Gregory inherited?"
+
+    task.train()
+
+    output = task.forward(input=question)
+    print(output)
+    # output.draw_graph()
+    # output.draw_output_subgraph()
+    # output.draw_component_subgraph()
 
 
 def test_multi_hop_retriever2():
@@ -725,5 +809,6 @@ if __name__ == "__main__":
     # test_multi_hop_retriever()
     # test_multi_hop_retriever2()
 
-    test_multi_hop_retriever_cycle()
+    # test_multi_hop_retriever_cycle()
     # test_multi_hop_rag()
+    test_agent_rag()

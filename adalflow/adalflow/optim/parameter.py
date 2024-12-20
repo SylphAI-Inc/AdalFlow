@@ -932,7 +932,9 @@ class Parameter(Generic[T]):
         self.draw_interactive_html_graph(
             filepath=filepath, nodes=[n for n in nodes], edges=edges
         )
-        return {"graph_path": filepath, "root_path": f"{filepath}_root.json"}
+        output = {"graph_path": filepath, "root_path": f"{filepath}_root.json"}
+        print(f"Graph saved as {filepath}.{format}")
+        return output
 
     def draw_output_subgraph(
         self,
