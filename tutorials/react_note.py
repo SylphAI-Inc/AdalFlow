@@ -68,6 +68,14 @@ def test_react_agent(model_client: ModelClient, model_kwargs: dict):
         print("")
 
 
+"""
+To have an agent.
+input, prompt, template, step_history -> generator
+-> stepoutput -> step_history  -> generator -> stepoutput -> step_history
+-> generator -> stepoutput -> step_history -> generator -> stepoutput -> step_history
+"""
+
+
 def test_react_agent_train(model_client: ModelClient, model_kwargs: dict):
     tools = [multiply, add, divide]
     queries = [

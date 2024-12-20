@@ -151,6 +151,7 @@ class GradComponent(Component):
 
         Subclass should implement this method if you need additional backward logic.
         """
+
         log.info(f"GradComponent backward: {response.name}")
         children_params = response.predecessors
 
@@ -169,3 +170,15 @@ class GradComponent(Component):
                 pred.add_score_to_trace(
                     trace_id=id, score=response._score, is_teacher=self.teacher_mode
                 )
+
+            # pass the current gradient to pred
+            # pred.add_gradient(
+            #     gradient=Parameter(
+            #         name=f"gradient",
+            #         data=response.get_gradient_and_context_text(
+            #             skip_correct_sample=True
+            #         ),
+            #         param_type=ParameterType.GRADIENT,
+            #         from_response_id=response.id,
+            #     )
+            # )

@@ -359,7 +359,11 @@ class ReActAgent(GradComponent):
             return action_step
 
     def _run_one_step(
-        self, step: int, prompt_kwargs: Dict, model_kwargs: Dict
+        self,
+        step: int,
+        prompt_kwargs: Dict,
+        model_kwargs: Dict,
+        id: Optional[str] = None,
     ) -> Union[StepOutput, Parameter]:
         """Run one step of the agent. Plan and execute the action for the step.
         Need to deal with both train and eval mode on the self.planner.
@@ -373,7 +377,7 @@ class ReActAgent(GradComponent):
         )
 
         response: Union[GeneratorOutput, Parameter] = self.planner(
-            prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
+            prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs, id=id
         )
 
         # create a new step output
@@ -430,21 +434,35 @@ class ReActAgent(GradComponent):
                         f"Error: {x} does not have full_response attribute."
                     )
 
+            def map_parameter_to_step_output(x: Parameter) -> StepOutput:
+                if x and x.data:
+                    return x.data
+                else:
+                    raise ValueError(f"Error: {x} does not have data attribute.")
+
             # Bind `step_output` to a specific value using partial
             preinitialized_map_fn = partial(map_fn, step_output=step_output)
+            # execute the function and get the output
             response.add_successor_map_fn(
                 successor=self.generator_output_to_step_output, map_fn=map_fn2
             )
             output = self.generator_output_to_step_output.forward(
                 response, step_output, step, self._execute_action
             )
+            # add the output to the step history
+            output.add_successor_map_fn(
+                successor=self.append_step_history, map_fn=map_parameter_to_step_output
+            )
 
-            # connect response to append_step_history
+            # # connect response to append_step_history
             response.add_successor_map_fn(
                 successor=self.append_step_history, map_fn=preinitialized_map_fn
             )
 
-            # call self.append_step_history with the response
+            # # call self.append_step_history with the response
+            # self.step_history = self.append_step_history.forward(
+            #     output, self.step_history
+            # )
             self.step_history = self.append_step_history.forward(
                 response, self.step_history
             )
@@ -454,7 +472,6 @@ class ReActAgent(GradComponent):
             )
             # printc(f"step_history 2: {self.step_history}", color="yellow")
             # convert step history back to data
-            # self.step_history = self.step_history.data
             return output
 
         else:
@@ -562,6 +579,7 @@ class ReActAgent(GradComponent):
         input: str,
         promt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
+        id: Optional[str] = None,
     ) -> Any:
         r"""prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs."""
         prompt_kwargs = {**promt_kwargs, "input_str": input}
@@ -570,7 +588,7 @@ class ReActAgent(GradComponent):
         for i in range(self.max_steps):
             step = i + 1
             try:
-                step_output = self._run_one_step(step, prompt_kwargs, model_kwargs)
+                step_output = self._run_one_step(step, prompt_kwargs, model_kwargs, id)
                 # if (
                 #     self.step_history[-1].function
                 #     and self.step_history[-1].function.name == "finish"
@@ -587,7 +605,8 @@ class ReActAgent(GradComponent):
         # printc(f"answer:\n {answer}", color="green")
         # log.info(f"step_history: {self.step_history}")
         # self.reset()
-        return step_output
+        self.step_history.draw_graph()
+        return self.step_history
 
     def _extra_repr(self) -> str:
         s = f"max_steps={self.max_steps}, add_llm_as_fallback={self.add_llm_as_fallback}, "

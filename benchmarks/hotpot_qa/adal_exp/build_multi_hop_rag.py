@@ -651,8 +651,20 @@ class AgenticRAG(adal.GradComponent):
             model_kwargs=model_kwargs,
         )
 
-    def call(self, input: str, id: str = None) -> str:
-        return self.agent(input=input)
+    def forward(self, *args, **kwargs) -> Parameter:
+        return self.bicall(*args, **kwargs)
+
+    def call(self, *args, **kwargs):
+        return self.bicall(*args, **kwargs)
+
+    def bicall(self, input: str, id: str = None) -> str:
+        out = self.agent(input=input, id=id)
+        if isinstance(out, adal.Parameter):
+            return out
+        return out[-1].observation
+        # if isinstance(out, adal.Parameter):
+        #     return out.data[-1].observation
+        # return out[-1].observation
 
 
 def test_multi_hop_retriever():
@@ -722,10 +734,10 @@ def test_agent_rag():
     task.train()
 
     output = task.forward(input=question)
-    print(output)
-    # output.draw_graph()
-    # output.draw_output_subgraph()
-    # output.draw_component_subgraph()
+    # print(output)
+    output.draw_graph()
+    output.draw_output_subgraph()
+    output.draw_component_subgraph()
 
 
 def test_multi_hop_retriever2():
