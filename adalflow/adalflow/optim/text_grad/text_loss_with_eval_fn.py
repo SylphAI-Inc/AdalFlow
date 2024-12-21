@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from adalflow.core import ModelClient
     from adalflow.core.generator import BackwardEngine
 from adalflow.core.types import GeneratorOutput
-from adalflow.optim.parameter import Parameter, GradientContext
+from adalflow.optim.parameter import Parameter, GradientContext, Gradient
 from adalflow.optim.types import ParameterType
 
 from adalflow.core.prompt_builder import Prompt
@@ -291,35 +291,33 @@ class EvalFnToTextLoss(LossComponent):
         gradient_value: GeneratorOutput = backward_engine(
             prompt_kwargs=backward_engine_prompt_kwargs
         )
-        # gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
+        gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
         gradient_value_data = (
             gradient_value.data
             or backward_engine.failure_message_to_optimizer(
                 gradient_response=gradient_value
             )
         )
-        # print(f"gradient_prompt: {gradient_prompt}")
-        # gradient_value_data = response.data.to_yaml()
 
         log.debug(f"EvalFnToTextLoss: Gradient for {pred}: {gradient_value_data}")
 
         # score should be passed to grad
-        gradient_param = Parameter(
-            name=f"{response.name}_to_{pred.name}_grad",
+        gradient_param = Gradient(
             data=gradient_value_data,
-            requires_opt=True,
-            # gradient_prompt=gradient_prompt,
-            role_desc=f"Feedback for {pred.role_desc}",
+            data_id=response.data_id,
             score=response.data,
-            from_response_id=response.id,
-            param_type=ParameterType.GRADIENT,
+            from_response=response,
+            to_pred=pred,
+        )
+        gradient_param.add_prompt(gradient_prompt)
+        gradient_param.add_context(
+            GradientContext(
+                context=conversation_str,
+                response_desc=response.role_desc,
+                variable_desc=pred.role_desc,
+            )
         )
         pred.add_gradient(gradient_param)
-        pred.gradients_context[gradient_param] = GradientContext(
-            context=conversation_str,
-            response_desc=response.role_desc,
-            variable_desc=pred.role_desc,
-        )
 
         # backward the end to end score
         # TODO: not really useful

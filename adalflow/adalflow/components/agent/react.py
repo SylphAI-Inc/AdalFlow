@@ -1,6 +1,8 @@
 """Implementation and optimization of React agent."""
 
 from typing import List, Union, Callable, Optional, Any, Dict
+from dataclasses import dataclass, field
+from adalflow.core.base_data_class import DataClass
 from copy import deepcopy
 import logging
 
@@ -132,27 +134,6 @@ class GeneroutorOutputToStepOutput(GradComponent):
     ) -> StepOutput:
         """Convert the generator output to the step output."""
         return execute_action_fn(generator_output, step_output, step, execute_action)
-        # if generator_output.error:
-        #     error_msg = f"Error planning step {step}: {generator_output.error}"
-        #     step_output.observation = error_msg
-        #     log.error(error_msg)
-        # else:
-        #     try:
-        #         fun_expr: FunctionExpression = generator_output.data
-        #         step_output.action = fun_expr
-        #         log.debug(f"Step {step}: {fun_expr}")
-
-        #         if step_output and step_output.action:
-        #             step_output = execute_action_fn(step_output, step, execute_action)
-        #             printc(f"Step {step}: \n{step_output}\n_______\n", color="blue")
-        #         else:
-        #             log.error(f"Failed to parse response for step {step}")
-        #     except Exception as e:
-        #         error_msg = f"Error parsing response for step {step}: {e}"
-        #         step_output.observation = error_msg
-        #         log.error(error_msg)
-        #         printc(error_msg, color="red")
-        # return step_output
 
 
 def execute_action_fn(
@@ -183,6 +164,20 @@ def execute_action_fn(
             log.error(error_msg)
             printc(error_msg, color="red")
             return step_output
+
+
+@dataclass
+class ReActOutput(DataClass):
+    r"""Similar to GeneratorOutput, but with additional step history and final answer."""
+
+    id: Optional[str] = field(
+        default=None, metadata={"desc": "The unique id of the output"}
+    )
+    step_history: List[StepOutput] = field(
+        metadata={"desc": "The history of steps."}, default_factory=list
+    )
+
+    answer: Any = field(metadata={"desc": "The final answer."}, default=None)
 
 
 class ReActAgent(GradComponent):
@@ -289,11 +284,11 @@ class ReActAgent(GradComponent):
             model_kwargs=model_kwargs,
         )
 
-        self.step_history: Union[List[StepOutput], Parameter] = None
+        # self.step_history: Union[List[StepOutput], Parameter] = None
         # added this component to the computation graph
         self.append_step_history = AppendStepHistory()
         self.step_history_to_output = StepHistoryToOutput()
-        self.generator_output_to_step_output = GeneroutorOutputToStepOutput()
+        # self.generator_output_to_step_output = GeneroutorOutputToStepOutput()
 
     def _init_tools(
         self,
@@ -336,9 +331,9 @@ class ReActAgent(GradComponent):
 
     # def reset(self):
     #     r"""Reset the agent to start a new query."""
-    #     self.step_history = []
-    #     if isinstance(self.step_history, Parameter):
-    #         self.step_history = self.step_history.data
+    #     self.step_history = None
+    #     # if isinstance(self.step_history, Parameter):
+    #     #     self.step_history = self.step_history.data
 
     # TODO: add async execution
     def _execute_action(self, action_step: StepOutput) -> Optional[StepOutput]:
@@ -364,13 +359,18 @@ class ReActAgent(GradComponent):
         prompt_kwargs: Dict,
         model_kwargs: Dict,
         id: Optional[str] = None,
+        step_history: Union["Parameter", List[str]] = None,
     ) -> Union[StepOutput, Parameter]:
         """Run one step of the agent. Plan and execute the action for the step.
         Need to deal with both train and eval mode on the self.planner.
         """
         from functools import partial
 
-        prompt_kwargs["step_history"] = self.step_history
+        # prompt_kwargs["step_history"] = self.step_history
+
+        # step_history = prompt_kwargs["step_history"]
+        # add step history to the prompt_kwargs
+        prompt_kwargs["step_history"] = step_history
 
         log.debug(
             f"Running step {step} with prompt: {self.planner.prompt(**prompt_kwargs)}"
@@ -443,16 +443,16 @@ class ReActAgent(GradComponent):
             # Bind `step_output` to a specific value using partial
             preinitialized_map_fn = partial(map_fn, step_output=step_output)
             # execute the function and get the output
-            response.add_successor_map_fn(
-                successor=self.generator_output_to_step_output, map_fn=map_fn2
-            )
-            output = self.generator_output_to_step_output.forward(
-                response, step_output, step, self._execute_action
-            )
-            # add the output to the step history
-            output.add_successor_map_fn(
-                successor=self.append_step_history, map_fn=map_parameter_to_step_output
-            )
+            # response.add_successor_map_fn(
+            #     successor=self.generator_output_to_step_output, map_fn=map_fn2
+            # )
+            # output = self.generator_output_to_step_output.forward(
+            #     response, step_output, step, self._execute_action
+            # )
+            # # add the output to the step history
+            # output.add_successor_map_fn(
+            #     successor=self.append_step_history, map_fn=map_parameter_to_step_output
+            # )
 
             # # connect response to append_step_history
             response.add_successor_map_fn(
@@ -463,23 +463,19 @@ class ReActAgent(GradComponent):
             # self.step_history = self.append_step_history.forward(
             #     output, self.step_history
             # )
-            self.step_history = self.append_step_history.forward(
-                response, self.step_history
-            )
+            step_history = self.append_step_history.forward(response, step_history)
             # connect step_history to the next planner
-            self.step_history.add_successor_map_fn(
+            step_history.add_successor_map_fn(
                 successor=self.planner, map_fn=lambda x: x.data
             )
             # printc(f"step_history 2: {self.step_history}", color="yellow")
             # convert step history back to data
-            return output
+            return step_history
 
         else:
             execute_action_fn(response, step_output, step, self._execute_action)
-            if not self.step_history:
-                self.step_history = []
-            self.step_history.append(step_output)
-            return step_output
+            step_history.append(step_output)
+            return step_history
 
         # if response_generator_output.error:
         #     error_msg = f"Error planning step {step}: {response_generator_output.error}"
@@ -503,55 +499,53 @@ class ReActAgent(GradComponent):
 
         return response
 
-    def _check_last_step(self):
+    def _check_last_step(
+        self, step_history: Union["Parameter", List[str]] = None
+    ) -> bool:
         """Check if the last step is the finish step."""
-        if not self.step_history:
-            return False
+        if not step_history:
+            return True
 
         last_step: StepOutput = None
-        if isinstance(self.step_history, Parameter):
+        if isinstance(step_history, Parameter):
             try:
-                step_history = self.step_history.data
+                step_history = step_history.data
                 last_step = step_history[-1]
 
             except Exception as e:
                 log.error(f"Error getting data from Parameter: {e}")
                 return False
         else:
-            last_step = self.step_history[-1]
+            last_step = step_history[-1]
 
         if last_step and last_step.function and last_step.function.name == "finish":
             return True
         return False
 
-    def _get_answer(self):
+    def _get_answer(
+        self, step_history: Union["Parameter", List[str]] = None
+    ) -> Union[str, "Parameter"]:
         """Get the final answer from the step history."""
-        if not self.step_history:
+        if not step_history:
             return None
 
         last_step: StepOutput = None
-        if isinstance(self.step_history, Parameter):
+        if isinstance(step_history, Parameter):
             try:
 
-                def map_fn(x: Parameter) -> StepOutput:
-                    if x and x.data:
-                        return x.data
-                    else:
-                        raise ValueError(f"Error: {x} does not have data attribute.")
-
-                last_step = self.step_history.add_successor_map_fn(
-                    self.step_history_to_output, map_fn=lambda x: x.data
-                )
-                # self.step_history.draw_graph()
-                last_step = self.step_history_to_output.forward(self.step_history)
-                printc(f"last_step: {last_step.data}", color="yellow")
-                return last_step
+                # last_step = self.step_history.add_successor_map_fn(
+                #     self.step_history_to_output, map_fn=lambda x: x.data
+                # )
+                # # self.step_history.draw_graph()
+                # last_step = self.step_history_to_output.forward(self.step_history)
+                # printc(f"last_step: {last_step.data}", color="yellow")
+                return step_history
 
             except Exception as e:
                 log.error(f"Error getting data from Parameter: {e}")
                 return None
         else:
-            last_step = self.step_history[-1]
+            last_step = step_history[-1]
 
             return last_step.observation
 
@@ -580,33 +574,54 @@ class ReActAgent(GradComponent):
         promt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
         id: Optional[str] = None,
-    ) -> Any:
+    ) -> Union["Parameter", ReActOutput]:
         r"""prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs."""
-        prompt_kwargs = {**promt_kwargs, "input_str": input}
+        # initialize step_history
+        step_history = None
+        if self.training:
+            step_history = Parameter(
+                data=[],
+                param_type=ParameterType.INPUT,
+                name="step_history",
+                requires_opt=True,
+            )
+        else:
+            step_history = []
+
+        # set up the prompts
+        prompt_kwargs = {
+            **promt_kwargs,
+            "input_str": input,
+        }
+
         printc(f"input_query: {input}", color="red")
-        step_output = None
         for i in range(self.max_steps):
             step = i + 1
             try:
-                step_output = self._run_one_step(step, prompt_kwargs, model_kwargs, id)
+                step_history = self._run_one_step(
+                    step, prompt_kwargs, model_kwargs, id, step_history
+                )
                 # if (
                 #     self.step_history[-1].function
                 #     and self.step_history[-1].function.name == "finish"
                 # ):
-                # if self._check_last_step():
-                #     break
-                if self._is_step_output_last_step(step_output):
+                if self._check_last_step(step_history):
                     break
+                # if self._is_step_output_last_step(step_output):
+                #     break
             except Exception as e:
                 log.error(f"Error running step {step}: {e}")
 
         # answer = self.step_history[-1].observation
         # answer = self._get_answer()
+        answer = self._get_answer(step_history)
+        if self.training:
+            return answer
+        # wrap the output
+        output = ReActOutput(step_history=step_history, id=id, answer=answer)
         # printc(f"answer:\n {answer}", color="green")
         # log.info(f"step_history: {self.step_history}")
-        # self.reset()
-        self.step_history.draw_graph()
-        return self.step_history
+        return output
 
     def _extra_repr(self) -> str:
         s = f"max_steps={self.max_steps}, add_llm_as_fallback={self.add_llm_as_fallback}, "

@@ -11,6 +11,10 @@ from use_cases.config import gpt_3_model, gpt_4o_model
 
 # TODO: look more into the loss function
 # TODO: test LLM judge too.
+
+from adalflow.components.agent.react import ReActOutput
+
+
 class AgenticRAGAdal(adal.AdalComponent):
     def __init__(
         self,
@@ -47,7 +51,7 @@ class AgenticRAGAdal(adal.AdalComponent):
     # TODO: use two map fn to make the cde even simpler
 
     # eval mode: get the generator output, directly engage with the eval_fn
-    def prepare_eval(self, sample: HotPotQAData, y_pred: Any) -> float:
+    def prepare_eval(self, sample: HotPotQAData, y_pred: ReActOutput) -> float:
         # y_label = ""
         # if y_pred and y_pred.data and y_pred.data.answer:
         #     y_label = y_pred.data.answer
@@ -153,6 +157,6 @@ if __name__ == "__main__":
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     train(
         debug=True,
-        max_steps=12,
+        max_steps=2,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )

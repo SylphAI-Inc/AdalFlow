@@ -4,7 +4,7 @@ from typing import List
 import logging
 
 from adalflow.optim.function import BackwardContext
-from adalflow.optim.parameter import Parameter
+from adalflow.optim.parameter import Parameter, Gradient
 from adalflow.optim.types import ParameterType
 from adalflow.optim.grad_component import GradComponent
 
@@ -54,7 +54,7 @@ class Sum(GradComponent):
                 raise ValueError(
                     f"Sum operation only accepts a list of Parameters, got {type(param)}"
                 )
-        concat_values = "\n".join([str(p.data) for p in params])  # to_dict
+        concat_values = ",".join([str(p.data) for p in params])  # to_dict
         role_descriptions = set([p.role_desc for p in params])
         role_descriptions = ", ".join(role_descriptions)
 
@@ -114,13 +114,37 @@ class Sum(GradComponent):
             }
             log.info(f"""Idempotent sum backward: {extra}""")
 
-            param_gradient = Parameter(
-                name=f"sum_to_{param.name}_grad",
+            param_gradient = Gradient(
+                # name=f"sum_to_{param.name}_grad",
                 data=param_gradient_value,
-                role_desc=f"Feedback to {param.role_desc}",
+                data_id=summation.data_id,
+                # role_desc=f"Feedback to {param.role_desc}",
                 score=summation._score,
-                from_response_id=summation.id,
-                param_type=ParameterType.GRADIENT,
+                from_response=summation,
+                to_pred=param,
             )
             param.add_gradient(param_gradient)
             log.debug(f"Added gradient to {param.role_desc}: {param_gradient.data}")
+
+        #             var_gradient = Gradient(
+        #     # name=f"{response.name}({response.id})_to_{pred.name}({pred.id})_grad",
+        #     # gradient_prompt=prompt_str,  # trace the prompt
+        #     data=gradient_value,
+        #     data_id=response.data_id,
+        #     # requires_opt=True,
+        #     # role_desc=f"feedback for {pred.name}",
+        #     score=response._score,  # add score to gradient
+        #     # param_type=ParameterType.GRADIENT,
+        #     # from_response_id=response.id,
+        #     from_response=response,
+        #     to_pred=pred,
+        # )
+        # var_gradient.add_context(
+        #     GradientContext(
+        #         context=conversation_str,
+        #         response_desc=response.role_desc,
+        #         variable_desc=pred.role_desc,  # parameter_desc
+        #     )
+        # )
+        # pred.add_gradient(var_gradient)
+        # pred.set_score(response._score)

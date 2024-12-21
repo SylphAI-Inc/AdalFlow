@@ -18,6 +18,7 @@ from adalflow.optim.parameter import Parameter
 
 from adalflow.core.base_data_class import DataClass
 from adalflow.tracing.decorators import trace_generator_states
+from adalflow.utils.logger import printc
 
 
 if TYPE_CHECKING:
@@ -95,27 +96,48 @@ You must base on the following examples when modifying the {{variable_desc}}:
 # 2. Add new elements to address specific feedback.
 # 3. Be creative and present the variable differently.
 # Provide only the new variable value between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.
-OPTIMIZER_SYSTEM_PROMPT = r"""
-You are part of an optimization system that refines existing variable based on feedback generated on a batch of input data.
+# OPTIMIZER_SYSTEM_PROMPT = r"""
+# You are part of an optimization system that refines existing variable based on feedback generated on a batch of input data.
 
-1. Address the concerns raised in the feedback while preserving positive aspects.
-3. Observe past performance patterns when provided and to keep the good quality.
-4. Consider the variable in the context of its peers if provided.
-   FYI:
-   - If a peer will be optimized itself, do not overlap with its scope.
-   - Otherwise, you can overlap if it is necessary to address the feedback.
+# 1. Address the concerns raised in the feedback while preserving positive aspects.
+# 3. Observe past performance patterns when provided and to keep the good quality.
+# 4. Consider the variable in the context of its peers if provided.
+#    FYI:
+#    - If a peer will be optimized itself, do not overlap with its scope.
+#    - Otherwise, you can overlap if it is necessary to address the feedback.
+
+# {{output_format_str}}
+
+# YOU MUST ENSURE the new variable shares the same intent as the original variable.
+# You can either rephrase the initial variable when no specific feedback found, or add more specific instructions based on the feedback.
+# You can not change the variable to only fit on one sample if the batch size is larger than 1.
+# {% if instruction_to_optimizer %}
+# YOU Should consider user instruction: {{instruction_to_optimizer}}
+# {% endif %}
+# """
+
+OPTIMIZER_SYSTEM_PROMPT = r"""
+You are part of an optimization system designed to refine variables based on feedback generated from a batch of input data.
+
+### Your Responsibilities:
+1. **Address Feedback**: Resolve concerns raised in the feedback while preserving the positive aspects of the original variable.
+2. **Preserve Intent**: Ensure that the new variable maintains the same overall intent and purpose as the original.
+3. **Leverage Context**: Consider past performance patterns (when available) to retain good qualities in the variable.
+4. **Peer Awareness**:
+   - If a peer variable will be optimized separately, avoid overlapping its scope.
+   - If a peer variable is not being optimized, overlap is permitted when necessary to address the feedback effectively.
+
+### Notes:
+- In the absence of specific feedback, you may rephrase the initial variable to improve clarity or specificity without altering its core meaning.
+- When feedback is provided, refine the variable with more detailed instructions or adjustments to directly address the feedback.
 
 {{output_format_str}}
 
-
-Tips:
-1. Eliminate unnecessary words or phrases.
-2. Add new elements to address specific feedback.
-3. Be creative and present the variable differently.
 {% if instruction_to_optimizer %}
-4. {{instruction_to_optimizer}}
+5. **Additional User Instructions**: {{instruction_to_optimizer}}
 {% endif %}
 """
+# 5. **Batch Consistency**: Do not optimize the variable to fit only one specific sample if the batch size is larger than 1. Ensure the variable remains applicable to the entire batch.
 
 
 @dataclass
@@ -341,7 +363,7 @@ class TGDOptimizer(TextOptimizer):
         user_prompt_kwargs = {
             "variable_and_peers_info": variable_and_peer_info,
             "variable_grad": param.get_gradient_and_context_text(
-                skip_correct_sample=True
+                skip_correct_sample=False
             ),
             # constraints
             "constraint_text": self.constraint_text if self.do_constrained else None,
@@ -387,7 +409,7 @@ class TGDOptimizer(TextOptimizer):
         if self.proposing:
             raise ValueError("Already proposing a value.")
 
-        print("Proposing a new value.")
+        printc("Proposing a new value.", color="magenta")
 
         # no cache so that new proposal can be made
         no_cache = True

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from collections import OrderedDict
 import uuid
 import logging
+from copy import deepcopy
 
 if TYPE_CHECKING:
     from adalflow.core.generator import BackwardEngine
@@ -172,6 +173,13 @@ class GradComponent(Component):
                 )
 
             # pass the current gradient to pred
+
+            for grad in response.gradients:
+                # make a copy of the gradient
+                grad = deepcopy(grad)
+                # grad.from_response_id = response.id
+                # grad.name = f"{grad.name}_to_{pred.name}"
+                pred.add_gradient(grad)
             # pred.add_gradient(
             #     gradient=Parameter(
             #         name=f"gradient",

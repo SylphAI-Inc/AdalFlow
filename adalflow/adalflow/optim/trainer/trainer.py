@@ -8,6 +8,7 @@ import random
 import numpy as np
 import uuid
 import time
+from copy import copy
 
 from adalflow.core.component import Component
 from adalflow.optim.optimizer import Optimizer, DemoOptimizer, TextOptimizer
@@ -901,7 +902,6 @@ class Trainer(Component):
         self.prep_ckpt_file_path()
         debug_path = os.path.join(self.ckpt_path, "debug_text_grads")
         os.makedirs(debug_path, exist_ok=True)
-        print(f"save to {debug_path}")
         train_loader.batch_size = 2
         train_loader.shuffle = True
         self.adaltask.train()  # this will turn everything to train mode
@@ -920,13 +920,12 @@ class Trainer(Component):
                 else:
                     failed_loss = loss
             if correct_loss is not None and failed_loss is not None:
-                print("Found correct and failed loss")
+                printc("Found correct and failed loss", "blue")
                 break
-
+        if not all_losses:
+            raise ValueError("No losses found in the dataset.")
         # Handle case where one or both losses are None
         if correct_loss is None or failed_loss is None:
-            if not all_losses:
-                raise ValueError("No losses found in the dataset.")
 
             # Sort all_losses by their data values
             all_losses.sort(key=lambda x: x.data, reverse=True)  # Highest to lowest
@@ -936,12 +935,37 @@ class Trainer(Component):
             failed_loss = all_losses[-1]
             print("Assigned correct_loss and failed_loss from sorted losses.")
 
-        total_loss = sum_ops([correct_loss, failed_loss])
+        total_loss = sum_ops([copy(correct_loss), copy(failed_loss)])
         total_loss.backward()
         # test optimizer
         self._propose_text_optimizers()
 
-        debug_files = total_loss.draw_graph(filepath=debug_path, full_trace=True)
+        debug_files: Dict = total_loss.draw_graph(filepath=debug_path, full_trace=True)
+
+        debug_output_file = total_loss.draw_output_subgraph(filepath=debug_path)
+
+        debug_component_file = total_loss.draw_component_subgraph(filepath=debug_path)
+        debug_files.update(debug_output_file)
+        debug_files.update(debug_component_file)
+
+        # draw graph on a single loss
+
+        total_loss = sum_ops([copy(failed_loss)])
+        total_loss.backward()
+
+        failed_debug_files = failed_loss.draw_graph(
+            filepath=debug_path, full_trace=True
+        )
+        failed_output_file = failed_loss.draw_output_subgraph(filepath=debug_path)
+        failed_component_file = failed_loss.draw_component_subgraph(filepath=debug_path)
+        failed_debug_files.update(failed_output_file)
+        failed_debug_files.update(failed_component_file)
+
+        for k, v in failed_debug_files.items():
+            if k in debug_files:
+                k = f"failed_{k}"
+            debug_files[k] = v
+
         return debug_files
 
     def _set_demo_optimizers_dataset(self, train_dataset: Any):
@@ -1774,15 +1798,15 @@ class Trainer(Component):
         ]
         print(f"Moving batch correct size: {len(correct_indices)}")
         print(f"Moving batch error size: {len(error_indices)}")
-        if len(error_indices) == 0:
-            raise ValueError("No error samples found")
+        # if len(error_indices) == 0:
+        #     raise ValueError("No error samples found")
         sampled_error_indices = random.sample(
             error_indices, min(self.max_error_samples, len(error_indices))
         )
         num_errors = len(sampled_error_indices)
 
         # max allowed correct samples min(0.8 * num_errors, len(correct_indices), self.max_correct_samples)
-        max_num_correct_samples = int(2 * num_errors)
+        max_num_correct_samples = int(2 * max(1, num_errors))
         sampled_correct_indices = random.sample(
             correct_indices,
             min(
@@ -1848,20 +1872,20 @@ class Trainer(Component):
         last_val_score = trainer_results.val_scores[-1]
         val_score_increased = False
 
-        if move_batch_score >= self.batch_val_score_threshold:
-            print(f"Skipping batch {steps} as acc: {move_batch_score}")
+        # if move_batch_score >= self.batch_val_score_threshold:
+        #     print(f"Skipping batch {steps} as acc: {move_batch_score}")
 
-            # reset the moving batch
-            all_samples, all_losses, all_y_preds = [], [], []
-            # track the result
-            self._add_one_step_in_trainer_results(
-                trainer_results,
-                last_val_score,
-                trainer_results.test_scores[-1],
-                trainer_results.prompts[-1],
-                total_steps,
-            )
-            return all_samples, all_losses, all_y_preds
+        #     # reset the moving batch
+        #     all_samples, all_losses, all_y_preds = [], [], []
+        #     # track the result
+        #     self._add_one_step_in_trainer_results(
+        #         trainer_results,
+        #         last_val_score,
+        #         trainer_results.test_scores[-1],
+        #         trainer_results.prompts[-1],
+        #         total_steps,
+        #     )
+        #     return all_samples, all_losses, all_y_preds
         # downsample the moving batch
         all_samples, all_losses, all_y_preds, move_batch_acc_score_list = (
             self._downsample_move_batch(
@@ -1923,24 +1947,24 @@ class Trainer(Component):
                     self._demo_optimizers_revert()
                 continue
             # validate the full set
-            # move_batch_result = self.adaltask.validation_step(
-            #     all_samples, steps, self.num_workers
-            # )
-            # new_move_batch_score = move_batch_result.avg_score
-            # if new_move_batch_score >= move_batch_score:
-            #     print(f"Pass full check: {new_move_batch_score} >= {move_batch_score}")
-            #     self._track_effectiveness("fullset", True)
-            #     # break
-            # else:
-            #     print(
-            #         f"Fail full check, try next proposal: {new_move_batch_score} < {move_batch_score}"
-            #     )
-            #     self._track_effectiveness("fullset", False)
-            #     # self._add_failed_proposals_text_optimizers()
-            #     self._revert_text_optimizers()
-            #     if include_demo_optimizers:
-            #         self._demo_optimizers_revert()
-            #     continue
+            move_batch_result = self.adaltask.validation_step(
+                all_samples, steps, self.num_workers
+            )
+            new_move_batch_score = move_batch_result.avg_score
+            if new_move_batch_score >= move_batch_score:
+                print(f"Pass full check: {new_move_batch_score} >= {move_batch_score}")
+                self._track_effectiveness("fullset", True)
+                # break
+            else:
+                print(
+                    f"Fail full check, try next proposal: {new_move_batch_score} < {move_batch_score}"
+                )
+                self._track_effectiveness("fullset", False)
+                # self._add_failed_proposals_text_optimizers()
+                self._revert_text_optimizers()
+                if include_demo_optimizers:
+                    self._demo_optimizers_revert()
+                continue
 
             # check on the validation set
             # set the batch size to the size of the validation set

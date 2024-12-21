@@ -14,7 +14,6 @@ from typing import (
     TYPE_CHECKING,
 )
 from pyvis.network import Network
-from collections import defaultdict
 import logging
 import os
 from dataclasses import dataclass, field
@@ -88,26 +87,46 @@ class ScoreTrace:
     )
 
 
+# COMBINED_GRADIENTS_TEMPLATE = r"""
+# {% if combined_gradients %}
+# Batch size: {{ combined_gradients|length }}
+# {% endif %}
+# {% for g in combined_gradients %}
+# {% set gradient = g[0] %}
+# {% set gradient_context = g[1] %}
+
+# {% if gradient_context %}
+# {{loop.index}}.
+# <CONTEXT>{{gradient_context.context}}</CONTEXT>
+# {% endif %}
+
+# {% if gradient.data %}
+#   {% if gradient_context %}
+# {#The output is used as <{{gradient_context.response_desc}}>#}
+# <FEEDBACK>{{gradient.data}}</FEEDBACK>
+# {% else %}
+# <FEEDBACK>{{gradient.data}}</FEEDBACK>
+# {% endif %}
+# {% endif %}
+# {% endfor %}"""
+
+
 COMBINED_GRADIENTS_TEMPLATE = r"""
 {% if combined_gradients %}
 Batch size: {{ combined_gradients|length }}
 {% endif %}
 {% for g in combined_gradients %}
-{% set gradient = g[0] %}
-{% set gradient_context = g[1] %}
+{% set gradient = g %}
 
-{% if gradient_context %}
+{% if gradient.context %}
 {{loop.index}}.
-<CONTEXT>{{gradient_context.context}}</CONTEXT>
+<CONTEXT>{{gradient.context}}</CONTEXT>
 {% endif %}
 
 {% if gradient.data %}
-  {% if gradient_context %}
 {#The output is used as <{{gradient_context.response_desc}}>#}
+<SCORE>{{gradient.score}}</SCORE>
 <FEEDBACK>{{gradient.data}}</FEEDBACK>
-{% else %}
-<FEEDBACK>{{gradient.data}}</FEEDBACK>
-{% endif %}
 {% endif %}
 {% endfor %}"""
 
@@ -159,9 +178,7 @@ class Parameter(Generic[T]):
     successor_map_fn: Dict[str, Callable] = (
         None  # Map function to get the data from the output
     )
-    from_response_id: str = (
-        None  # for parameterType GRADIENT, the id of the response parameter
-    )
+
     backward_engine_disabled: bool = (
         False  # Disable the backward engine for the parameter
     )
@@ -179,7 +196,6 @@ class Parameter(Generic[T]):
         role_desc: str = "",
         param_type: ParameterType = ParameterType.NONE,
         name: str = None,  # name is used to refer to the parameter in the prompt, easier to read for humans
-        gradient_prompt: str = None,
         raw_response: str = None,  # use this to track the raw response of generator instead of the data (can be parsed)
         instruction_to_optimizer: str = None,
         instruction_to_backward_engine: str = None,
@@ -206,14 +222,8 @@ class Parameter(Generic[T]):
         self.data_type = type(data)
 
         self.set_eval_fn_input(eval_input=data)
-        self.gradients: List[Parameter] = []  # <FEEDBACK>gradient.data</FEEDBACK>
-        self.gradient_prompt: str = (
-            gradient_prompt  # the whole llm prompt to compute the gradient
-        )
-        self.gradients_context: Dict[Parameter, GradientContext] = defaultdict(
-            lambda: None
-        )  # input and output from an operator, each operator should have a template
-        # <CONVERSATION>...</CONVERSATION>
+        self.gradients: List[Gradient] = []  # <FEEDBACK>gradient.data</FEEDBACK>
+
         self.grad_fn = None
 
         self.previous_data = None  # used to store the previous data
@@ -258,14 +268,76 @@ class Parameter(Generic[T]):
         from_response_ids = [g.from_response_id for g in self.gradients]
         return response_id in from_response_ids
 
-    def add_gradient(self, gradient: "Parameter"):
-        if gradient.param_type != ParameterType.GRADIENT:
-            raise ValueError("Cannot add non-gradient parameter to gradients list.")
+    # ############################################################################################################
+    # Handle gradients and context
+    # ############################################################################################################
+    def add_gradient(self, gradient: "Gradient"):
+        # if gradient.param_type != ParameterType.GRADIENT:
+        #     raise ValueError("Cannot add non-gradient parameter to gradients list.")
 
         if gradient.from_response_id is None:
             raise ValueError("Gradient must have a from_response_id.")
 
         self.gradients.append(gradient)
+
+    def reset_gradients(self):
+        self.gradients = []
+
+    # def reset_gradients_context(self):
+    #     self.gradients_context = defaultdict(lambda: None)
+
+    def get_gradients_names(self) -> str:
+        names = [g.name for g in self.gradients]
+        names = ", ".join(names)
+        return names
+
+    def get_gradient_and_context_text(self, skip_correct_sample: bool = False) -> str:
+        """Aggregates and returns:
+        1. the gradients
+        2. the context text for which the gradients are computed
+
+        Sort the gradients from the lowest score to the highest score.
+        Highlight the gradients with the lowest score to the optimizer.
+        """
+        from adalflow.core.prompt_builder import Prompt
+
+        # print(
+        #     f"len of gradients: {len(self.gradients)}, scores: {[g._score for g in self.gradients]} for {self.name}"
+        # )
+
+        # sore gradients by the _score from low to high
+        self.gradients = sorted(
+            self.gradients, key=lambda x: x.score if x.score is not None else 1
+        )
+        # print the score for the sorted gradients
+        lowest_score_gradients = []
+        for i, g in enumerate(self.gradients):
+            if skip_correct_sample:
+                if g.score > 0.5:
+                    continue
+            lowest_score_gradients.append(g)
+            print(f"{i} Score: {g.score} for {g.name}, {type(g.score)}")
+
+        # gradient_context_combined = list(
+        #     zip(
+        #         lowest_score_gradients,
+        #         [self.gradients_context[g] for g in lowest_score_gradients],
+        #     )
+        # )
+        # set all gradients value to None
+        # for g in self.gradients:
+        #     g.data = None
+
+        gradient_context_combined_str = Prompt(
+            template=COMBINED_GRADIENTS_TEMPLATE,
+            prompt_kwargs={"combined_gradients": lowest_score_gradients},
+        )().strip()
+
+        return gradient_context_combined_str
+
+    ############################################################################################################
+    # Setters and getters
+    ############################################################################################################
 
     def set_predecessors(self, predecessors: List["Parameter"] = None):
         if predecessors is None:
@@ -441,61 +513,6 @@ class Parameter(Generic[T]):
         if self.data is None and data is not None:
             self.data_type = type(data)
         self.data = data
-
-    def reset_gradients(self):
-        self.gradients = []
-
-    def reset_gradients_context(self):
-        self.gradients_context = defaultdict(lambda: None)
-
-    def get_gradients_names(self) -> str:
-        names = [g.name for g in self.gradients]
-        names = ", ".join(names)
-        return names
-
-    def get_gradient_and_context_text(self, skip_correct_sample: bool = False) -> str:
-        """Aggregates and returns:
-        1. the gradients
-        2. the context text for which the gradients are computed
-
-        Sort the gradients from the lowest score to the highest score.
-        Highlight the gradients with the lowest score to the optimizer.
-        """
-        from adalflow.core.prompt_builder import Prompt
-
-        # print(
-        #     f"len of gradients: {len(self.gradients)}, scores: {[g._score for g in self.gradients]} for {self.name}"
-        # )
-
-        # sore gradients by the _score from low to high
-        self.gradients = sorted(
-            self.gradients, key=lambda x: x._score if x._score is not None else 1
-        )
-        # print the score for the sorted gradients
-        lowest_score_gradients = []
-        for i, g in enumerate(self.gradients):
-            if skip_correct_sample:
-                if g._score > 0.5:
-                    continue
-            lowest_score_gradients.append(g)
-            print(f"{i} Score: {g._score} for {g.name}, {type(g._score)}")
-
-        gradient_context_combined = list(
-            zip(
-                lowest_score_gradients,
-                [self.gradients_context[g] for g in lowest_score_gradients],
-            )
-        )
-        # set all gradients value to None
-        # for g in self.gradients:
-        #     g.data = None
-
-        gradient_context_combined_str = Prompt(
-            template=COMBINED_GRADIENTS_TEMPLATE,
-            prompt_kwargs={"combined_gradients": gradient_context_combined},
-        )().strip()
-
-        return gradient_context_combined_str
 
     # TODO: dont use short value
     def get_short_value(self, n_words_offset: int = 10) -> str:
@@ -787,6 +804,7 @@ class Parameter(Generic[T]):
             if filepath
             else os.path.join(root_path, "graphs", filename)
         )
+        final_path = f"{filepath}.{format}"
         print(f"Saving graph to {filepath}.{format}")
 
         def wrap_text(text, width):
@@ -844,16 +862,18 @@ class Parameter(Generic[T]):
                 node_label += f"<tr><td><b><font color='{label_color}'>Gradients: </font></b></td><td>{wrap_and_escape(n.get_gradients_names())}</td></tr>"
                 # add a list of each gradient with short value
                 # combine the gradients and context
-                combined_gradients_contexts = zip(
-                    n.gradients, [n.gradients_context[g] for g in n.gradients]
-                )
-                for g, context in combined_gradients_contexts:
-                    gradient_context = context
+                # combined_gradients_contexts = zip(
+                #     n.gradients, [n.gradients_context[g] for g in n.gradients]
+                # )
+                for g in n.gradients:
+                    gradient_context = g.context
                     log.info(f"Gradient context display: {gradient_context}")
                     log.info(f"data: {g.data}")
                     node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.name} Feedback: </font></b></td><td>{wrap_and_escape(g.data)}</td></tr>"
                     if gradient_context != "":
                         node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.name} Context: </font></b></td><td>{wrap_and_escape(gradient_context)}</td></tr>"
+                    if g.prompt:
+                        node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.name} Prompt: </font></b></td><td>{wrap_and_escape(g.prompt)}</td></tr>"
             if len(n._traces.values()) > 0:
                 node_label += f"<tr><td><b><font color='{label_color}'>Traces: keys: </font></b></td><td>{wrap_and_escape(str(n._traces.keys()))}</td></tr>"
                 node_label += f"<tr><td><b><font color='{label_color}'>Traces: values: </font></b></td><td>{wrap_and_escape(str(n._traces.values()))}</td></tr>"
@@ -882,7 +902,7 @@ class Parameter(Generic[T]):
             for g in n.gradients:
 
                 log.info(f"Gradient: {g.name}, {g.to_dict()}")
-                log.info(f"Gradient prompt: {g.gradient_prompt}")
+                log.info(f"Gradient prompt: {g.prompt}")
         for n1, n2 in edges:
             dot.edge(n1.name, n2.name)
 
@@ -932,7 +952,7 @@ class Parameter(Generic[T]):
         self.draw_interactive_html_graph(
             filepath=filepath, nodes=[n for n in nodes], edges=edges
         )
-        output = {"graph_path": filepath, "root_path": f"{filepath}_root.json"}
+        output = {"graph_path": final_path, "root_path": f"{filepath}_root.json"}
         print(f"Graph saved as {filepath}.{format}")
         return output
 
@@ -942,7 +962,7 @@ class Parameter(Generic[T]):
         format: str = "png",
         rankdir: str = "TB",
         filepath: str = None,
-    ):
+    ) -> Dict:
         """
         Build and visualize a subgraph containing only OUTPUT parameters.
 
@@ -952,6 +972,8 @@ class Parameter(Generic[T]):
             rankdir (str): Graph layout direction ("LR" or "TB").
             filepath (str): Path to save the graph.
         """
+
+        # TODO: improve the pathes
         assert rankdir in ["LR", "TB"]
         from adalflow.utils.global_config import get_adalflow_default_root_path
 
@@ -976,7 +998,6 @@ class Parameter(Generic[T]):
             if filepath
             else os.path.join(root_path, "graphs", filename)
         )
-        print(f"Saving graph to {filepath}.{format}")
 
         # Step 1: Collect OUTPUT nodes and edges
         nodes, edges = self._collect_output_subgraph()
@@ -1017,6 +1038,7 @@ class Parameter(Generic[T]):
         # Step 3: Save and render
         dot.render(filepath, cleanup=True)
         print(f"Graph saved as {filepath}.{format}")
+        return {"output_subgraph": filepath}
 
     def draw_component_subgraph(
         self,
@@ -1033,6 +1055,7 @@ class Parameter(Generic[T]):
             filepath (str): Path to save the graph.
         """
         assert rankdir in ["LR", "TB"]
+        from adalflow.utils.global_config import get_adalflow_default_root_path
 
         try:
             from graphviz import Digraph
@@ -1045,11 +1068,18 @@ class Parameter(Generic[T]):
         component_nodes, edges, component_nodes_orders = (
             self._collect_component_subgraph()
         )
+        root_path = get_adalflow_default_root_path()
 
         # Step 2: Setup graph rendering
-        filename = f"output_component_{self.name}_{self.id}"
+        filename = f"output_component_{self.name}_{self.id}.{format}"
         filepath = filepath or f"./{filename}"
-        print(f"Saving OUTPUT subgraph to {filepath}.{format}")
+
+        filepath = (
+            os.path.join(filepath, filename)
+            if filepath
+            else os.path.join(root_path, "graphs", filename)
+        )
+        print(f"Saving OUTPUT subgraph to {filepath}")
 
         dot = Digraph(format=format, graph_attr={"rankdir": rankdir})
 
@@ -1079,7 +1109,8 @@ class Parameter(Generic[T]):
 
         # Step 3: Save and render
         dot.render(filepath, cleanup=True)
-        print(f"Graph saved as {filepath}.{format}")
+        print(f"Graph saved as {filepath}")
+        return {"component_graph": f"{filepath}"}
 
     def _collect_output_subgraph(
         self,
@@ -1206,13 +1237,9 @@ class Parameter(Generic[T]):
             "predecessors": [pred.to_dict() for pred in self.predecessors],
             "gradients": [grad.to_dict() for grad in self.gradients],
             "previous_data": self.previous_data,
-            "gradients_context": [
-                (k.name, v) for k, v in self.gradients_context.items()
-            ],
             "grad_fn": str(
                 self.grad_fn
             ),  # Simplify for serialization, modify as needed
-            "gradient_prompt": str(self.gradient_prompt),
             "raw_response": self.raw_response,
             "score": self._score,
             "traces": {k: v.to_dict() for k, v in self._traces.items()},
@@ -1234,7 +1261,6 @@ class Parameter(Generic[T]):
             predecessors=predecessors,
             gradients=[cls.from_dict(grad) for grad in data["gradients"]],
             previous_data=data["previous_data"],
-            gradient_prompt=data["gradient_prompt"],
             raw_response=data["raw_response"],
             input_args=data["input_args"],
             score=data["score"],
@@ -1242,9 +1268,6 @@ class Parameter(Generic[T]):
             demos=[DataClass.from_dict(d) for d in data["demos"]],
         )
         # Reconstruct gradients_context from the list of tuples
-        param.gradients_context = defaultdict(
-            lambda: None, {cls.from_dict(k): v for k, v in data["gradients_context"]}
-        )
         param._traces = {k: DataClass.from_dict(v) for k, v in data["traces"].items()}
         return param
 
@@ -1252,3 +1275,154 @@ class Parameter(Generic[T]):
     def __repr__(self):
         return f"Parameter(name={self.name}, requires_opt={self.requires_opt}, param_type={self.param_type}, role_desc={self.role_desc}, data={self.data}, predecessors={self.predecessors}, gradients={self.gradients},\
             raw_response={self.raw_response}, input_args={self.input_args}, traces={self._traces})"
+
+
+# TODO: separate the Parameter class into different classes and each class will have its own methods instead of all in one class
+class InputParameter(Parameter):
+    """One of the simplest types of parameters, representing an input to the system."""
+
+    def __init__(
+        self,
+        name: str,
+        role_desc: str,
+        data: Any,
+        requires_opt: bool = False,
+        param_type: ParameterType = ParameterType.INPUT,
+    ):
+        super().__init__(
+            name=name,
+            role_desc=role_desc,
+            data=data,
+            requires_opt=requires_opt,
+            param_type=param_type,
+        )
+
+
+class HyperParameter(Parameter):
+    """One of the simplest types of parameters, representing a hyperparameter to the system."""
+
+    def __init__(
+        self,
+        name: str,
+        role_desc: str,
+        data: Any,
+        requires_opt: bool = False,
+        param_type: ParameterType = ParameterType.HYPERPARAM,
+    ):
+        super().__init__(
+            name=name,
+            role_desc=role_desc,
+            data=data,
+            requires_opt=requires_opt,
+            param_type=param_type,
+        )
+
+
+class PromptParameter(Parameter):
+
+    def __init__(
+        self,
+        name: str,
+        role_desc: str,
+        data: Any,
+        requires_opt: bool = True,
+        param_type: ParameterType = ParameterType.PROMPT,
+    ):
+        super().__init__(
+            name=name,
+            role_desc=role_desc,
+            data=data,
+            requires_opt=requires_opt,
+            param_type=param_type,
+        )
+
+
+class DemoParameter(Parameter):
+
+    def __init__(
+        self,
+        name: str,
+        role_desc: str,
+        data: Any,
+        requires_opt: bool = True,
+        param_type: ParameterType = ParameterType.DEMOS,
+    ):
+        super().__init__(
+            name=name,
+            role_desc=role_desc,
+            data=data,
+            requires_opt=requires_opt,
+            param_type=param_type,
+        )
+
+
+class OutputParameter(Parameter):
+
+    def __init__(
+        self,
+        name: str,
+        role_desc: str,
+        data: Any,
+        requires_opt: bool = True,
+        param_type: ParameterType = ParameterType.OUTPUT,
+    ):
+        super().__init__(
+            name=name,
+            role_desc=role_desc,
+            data=data,
+            requires_opt=requires_opt,
+            param_type=param_type,
+        )
+
+
+@dataclass
+class Gradient(DataClass):
+    __doc__ = r"""It will handle gradients and feedbacks.
+
+    It tracks the d_from_response_id / d_to_pred_id and the score of the whole response.
+    """
+
+    from_response_id: str = (
+        None  # the id of the response from which the gradient is calculated
+    )
+    to_pred_id: str = (
+        None  # the id of the parameter to which the gradient is calculated and attached to d(from_response_id) / d(to_pred_id)
+    )
+
+    score: Optional[float] = None
+
+    context: GradientContext = None
+    data: Any = None
+    data_id: Optional[str] = None  # the id of the response from data in the dataset
+    prompt: Optional[str] = None  # the LLM prompt to generate the gradient
+
+    def __init__(
+        self,
+        *,
+        from_response: "Parameter",
+        to_pred: "Parameter",
+        id: Optional[str] = None,  # the id of the gradient
+        score: Optional[float] = None,
+        data_id: Optional[str] = None,
+        data: Any = None,
+    ):
+        self.id = id or str(uuid.uuid4())
+        self._generate_name(from_response, to_pred)
+        self.from_response_id = from_response.id
+        self.to_pred_id = to_pred.id
+        self.score = score
+        self.data_id = data_id
+        self.data = data
+
+    def _generate_name(self, response: "Parameter", pred: "Parameter"):
+        self.name = f"d_{response.name}_/_{pred.name}({response.id}_/_{pred.id})"
+        self.role_desc = f"Gradient from {response.name} to {pred.name}"
+
+    def add_context(self, context: GradientContext):
+        self.context = context
+
+    def add_data(self, data: Any):
+        self.data = data
+
+    def add_prompt(self, prompt: str):
+        self.prompt = prompt

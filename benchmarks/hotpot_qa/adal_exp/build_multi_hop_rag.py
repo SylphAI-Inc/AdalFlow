@@ -661,7 +661,7 @@ class AgenticRAG(adal.GradComponent):
         out = self.agent(input=input, id=id)
         if isinstance(out, adal.Parameter):
             return out
-        return out[-1].observation
+        return out  # .observation ReactOutput
         # if isinstance(out, adal.Parameter):
         #     return out.data[-1].observation
         # return out[-1].observation

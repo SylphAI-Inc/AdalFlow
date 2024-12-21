@@ -21,7 +21,7 @@ from adalflow.optim.grad_component import GradComponent
 from adalflow.core.base_data_class import DataClass
 
 
-from adalflow.optim.parameter import Parameter, GradientContext
+from adalflow.optim.parameter import Parameter, GradientContext, Gradient
 from adalflow.optim.types import ParameterType
 
 from adalflow.core.prompt_builder import Prompt
@@ -720,6 +720,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             "conversation_sec": instruction_str,
             "objective_instruction_sec": objective_str,
         }
+        backward_engine_prompt_str = backward_engine.get_prompt(
+            **backward_engine_prompt_kwargs
+        )
         gradient_output: GeneratorOutput = None
         if response._score is not None and float(response._score) > 0.9:
             log.debug(f"EvalFnToTextLoss: Skipping {pred} as the score is high enough.")
@@ -749,26 +752,23 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             f"Generator Gradient value: {gradient_value}, raw response: {gradient_output.raw_response}"
         )
         # TODO: make it a debug feature
-        # prompt_str = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
-        var_gradient = Parameter(
-            name=f"{response.name}_to_{pred.name}_grad",
-            # gradient_prompt=prompt_str,  # trace the prompt
+        var_gradient = Gradient(
             data=gradient_value,
-            requires_opt=True,
-            role_desc=f"feedback for {pred.name}",
-            score=response._score,  # add score to gradient
-            param_type=ParameterType.GRADIENT,
-            from_response_id=response.id,
             data_id=response.data_id,
+            score=response._score,  # add score to gradient
+            from_response=response,
+            to_pred=pred,
         )
+        var_gradient.add_context(
+            GradientContext(
+                context=conversation_str,
+                response_desc=response.role_desc,
+                variable_desc=pred.role_desc,  # parameter_desc
+            )
+        )
+        var_gradient.add_prompt(backward_engine_prompt_str)
         pred.add_gradient(var_gradient)
         pred.set_score(response._score)
-
-        pred.gradients_context[var_gradient] = GradientContext(
-            context=conversation_str,
-            response_desc=response.role_desc,
-            variable_desc=pred.role_desc,  # parameter_desc
-        )
 
     def _run_callbacks(
         self,
