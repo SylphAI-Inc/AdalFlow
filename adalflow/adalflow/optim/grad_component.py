@@ -2,7 +2,9 @@
 
 from typing import TYPE_CHECKING
 from collections import OrderedDict
+import uuid
 import logging
+from copy import deepcopy
 
 if TYPE_CHECKING:
     from adalflow.core.generator import BackwardEngine
@@ -12,6 +14,7 @@ from adalflow.optim.types import ParameterType
 
 from adalflow.core.component import Component
 from adalflow.optim.function import BackwardContext
+
 
 __all__ = ["GradComponent"]
 log = logging.getLogger(__name__)
@@ -31,10 +34,12 @@ class GradComponent(Component):
     """
     backward_engine: "BackwardEngine"
     _component_type = "grad"
+    id = None
 
     def __init__(self, *args, **kwargs):
         super().__init__()
         super().__setattr__("backward_engine", None)
+        super().__setattr__("id", str(uuid.uuid4()))
 
     def __call__(self, *args, **kwargs):
         if self.training:
@@ -59,7 +64,7 @@ class GradComponent(Component):
         3. Return the parameter object.
         """
 
-        from adalflow.optim.parameter import Parameter
+        from adalflow.optim.parameter import Parameter, OutputParameter
 
         log.debug(
             f"Forwarding through {self.name} with args: {args} and kwargs: {kwargs}"
@@ -117,14 +122,20 @@ class GradComponent(Component):
 
         # 4. Create a Parameter object to trace the forward pass
         input_args.update(kwargs)
-        response = Parameter(
+        response = OutputParameter(
             data=call_response,
             name=self.name + "_output",
             role_desc=self.name + " response",
             param_type=ParameterType.OUTPUT,
+            data_id=kwargs.get("id", None),
         )
         response.set_predecessors(predecessors)
-        response.trace_forward_pass(input_args=input_args, full_response=call_response)
+        response.trace_forward_pass(
+            input_args=input_args,
+            full_response=call_response,
+            id=self.id,
+            name=self.name,
+        )
         response.set_grad_fn(
             BackwardContext(
                 backward_fn=self.backward,
@@ -141,6 +152,7 @@ class GradComponent(Component):
 
         Subclass should implement this method if you need additional backward logic.
         """
+
         log.info(f"GradComponent backward: {response.name}")
         children_params = response.predecessors
 
@@ -159,3 +171,22 @@ class GradComponent(Component):
                 pred.add_score_to_trace(
                     trace_id=id, score=response._score, is_teacher=self.teacher_mode
                 )
+
+            # pass the current gradient to pred
+
+            for grad in response.gradients:
+                # make a copy of the gradient
+                grad = deepcopy(grad)
+                # grad.from_response_id = response.id
+                # grad.name = f"{grad.name}_to_{pred.name}"
+                pred.add_gradient(grad)
+            # pred.add_gradient(
+            #     gradient=Parameter(
+            #         name=f"gradient",
+            #         data=response.get_gradient_and_context_text(
+            #             skip_correct_sample=True
+            #         ),
+            #         param_type=ParameterType.GRADIENT,
+            #         from_response_id=response.id,
+            #     )
+            # )

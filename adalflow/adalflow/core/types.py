@@ -406,6 +406,9 @@ class FunctionExpression(DataClass):
 
     The benefits are less failed function calls.
     """
+    question: Optional[str] = field(
+        default=None, metadata={"desc": "The question to ask the LLM"}
+    )
     thought: Optional[str] = field(
         default=None, metadata={"desc": "Why the function is called"}
     )

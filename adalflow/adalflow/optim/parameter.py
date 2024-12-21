@@ -14,7 +14,6 @@ from typing import (
     TYPE_CHECKING,
 )
 from pyvis.network import Network
-from collections import defaultdict
 import logging
 import os
 from dataclasses import dataclass, field
@@ -46,14 +45,30 @@ class GradientContext:
     )
 
 
+@dataclass(frozen=True)
+class ComponentNode(DataClass):
+    """Used to represent a node in the component graph."""
+
+    id: str = field(metadata={"desc": "The unique id of the component"})
+    name: str = field(metadata={"desc": "The name of the component"})
+    type: Literal["INPUT", "COMPONENT"] = field(
+        metadata={"desc": "The type of the node"}, default="COMPONENT"
+    )
+
+
 @dataclass
-class ComponentTrace:
+class ComponentTrace(DataClass):
+    name: str = field(metadata={"desc": "The name of the component"}, default=None)
+    id: str = field(metadata={"desc": "The unique id of the component"}, default=None)
     input_args: Dict[str, Any] = field(
         metadata={"desc": "The input arguments of the GradComponent forward"},
         default=None,
     )
     full_response: object = field(
         metadata={"desc": "The full response of the GradComponent output"}, default=None
+    )
+    raw_response: str = field(
+        metadata={"desc": "The raw response of the generator"}, default=None
     )
     api_kwargs: Dict[str, Any] = field(
         metadata={
@@ -75,26 +90,46 @@ class ScoreTrace:
     )
 
 
+# COMBINED_GRADIENTS_TEMPLATE = r"""
+# {% if combined_gradients %}
+# Batch size: {{ combined_gradients|length }}
+# {% endif %}
+# {% for g in combined_gradients %}
+# {% set gradient = g[0] %}
+# {% set gradient_context = g[1] %}
+
+# {% if gradient_context %}
+# {{loop.index}}.
+# <CONTEXT>{{gradient_context.context}}</CONTEXT>
+# {% endif %}
+
+# {% if gradient.data %}
+#   {% if gradient_context %}
+# {#The output is used as <{{gradient_context.response_desc}}>#}
+# <FEEDBACK>{{gradient.data}}</FEEDBACK>
+# {% else %}
+# <FEEDBACK>{{gradient.data}}</FEEDBACK>
+# {% endif %}
+# {% endif %}
+# {% endfor %}"""
+
+
 COMBINED_GRADIENTS_TEMPLATE = r"""
 {% if combined_gradients %}
 Batch size: {{ combined_gradients|length }}
 {% endif %}
 {% for g in combined_gradients %}
-{% set gradient = g[0] %}
-{% set gradient_context = g[1] %}
+{% set gradient = g %}
 
-{% if gradient_context %}
+{% if gradient.context %}
 {{loop.index}}.
-<CONTEXT>{{gradient_context.context}}</CONTEXT>
+<CONTEXT>{{gradient.context}}</CONTEXT>
 {% endif %}
 
 {% if gradient.data %}
-  {% if gradient_context %}
 {#The output is used as <{{gradient_context.response_desc}}>#}
+<SCORE>{{gradient.score}}</SCORE>
 <FEEDBACK>{{gradient.data}}</FEEDBACK>
-{% else %}
-<FEEDBACK>{{gradient.data}}</FEEDBACK>
-{% endif %}
 {% endif %}
 {% endfor %}"""
 
@@ -140,34 +175,31 @@ class Parameter(Generic[T]):
     predecessors: Set["Parameter"] = set()  # Predecessors of the parameter
     peers: Set["Parameter"] = set()  # Peers of the parameter
     # TODO: input_args should be OrderedDict to keep the order of args
-    input_args: Dict[str, Any] = None  # Input arguments of the GradComponent forward
-    full_response: object = None  # Full response of the GradComponent output
+    # input_args: Dict[str, Any] = None  # Input arguments of the GradComponent forward
+    # full_response: object = None  # Full response of the GradComponent output
     eval_input: object = None  # Eval input passing to the eval_fn or evaluator you use
     successor_map_fn: Dict[str, Callable] = (
         None  # Map function to get the data from the output
     )
-    from_response_id: str = (
-        None  # for parameterType GRADIENT, the id of the response parameter
-    )
+
     backward_engine_disabled: bool = (
         False  # Disable the backward engine for the parameter
     )
 
-    component_trace: ComponentTrace = None  # Trace of the component
+    # component_trace: ComponentTrace = None  # Trace of the component
     tgd_optimizer_trace: "TGDOptimizerTrace" = None  # Trace of the TGD optimizer
 
     def __init__(
         self,
         *,
-        id: Optional[str] = None,
+        id: Optional[str] = None,  # unique id of the parameter
         data: T = None,  # for generator output, the data will be set up as raw_response
         data_id: str = None,  # for tracing the data item in the training/val/test set
         requires_opt: bool = True,
         role_desc: str = "",
         param_type: ParameterType = ParameterType.NONE,
         name: str = None,  # name is used to refer to the parameter in the prompt, easier to read for humans
-        gradient_prompt: str = None,
-        raw_response: str = None,  # use this to track the raw response of generator instead of the data (can be parsed)
+        # raw_response: str = None,  # use this to track the raw response of generator instead of the data (can be parsed)
         instruction_to_optimizer: str = None,
         instruction_to_backward_engine: str = None,
         score: Optional[float] = None,
@@ -193,19 +225,13 @@ class Parameter(Generic[T]):
         self.data_type = type(data)
 
         self.set_eval_fn_input(eval_input=data)
-        self.gradients: List[Parameter] = []  # <FEEDBACK>gradient.data</FEEDBACK>
-        self.gradient_prompt: str = (
-            gradient_prompt  # the whole llm prompt to compute the gradient
-        )
-        self.gradients_context: Dict[Parameter, GradientContext] = defaultdict(
-            lambda: None
-        )  # input and output from an operator, each operator should have a template
-        # <CONVERSATION>...</CONVERSATION>
+        self.gradients: List[Gradient] = []  # <FEEDBACK>gradient.data</FEEDBACK>
+
         self.grad_fn = None
 
         self.previous_data = None  # used to store the previous data
         # context of the forward pass
-        self.raw_response = raw_response
+        # self.raw_response = raw_response
 
         self.instruction_to_optimizer: str = instruction_to_optimizer
         self.instruction_to_backward_engine: str = instruction_to_backward_engine
@@ -224,9 +250,9 @@ class Parameter(Generic[T]):
         self._previous_demos: List[DataClass] = []
         self.eval_input = eval_input
 
-        self.from_response_id = from_response_id  # for gradient parameter
+        # self.from_response_id = from_response_id  # for gradient parameter
         self.successor_map_fn = successor_map_fn or {}
-        self.component_trace = ComponentTrace()
+        # self.component_trace = ComponentTrace()
 
     def map_to_successor(self, successor: object) -> T:
         """Apply the map function to the successor based on the successor's id."""
@@ -245,14 +271,76 @@ class Parameter(Generic[T]):
         from_response_ids = [g.from_response_id for g in self.gradients]
         return response_id in from_response_ids
 
-    def add_gradient(self, gradient: "Parameter"):
-        if gradient.param_type != ParameterType.GRADIENT:
-            raise ValueError("Cannot add non-gradient parameter to gradients list.")
+    # ############################################################################################################
+    # Handle gradients and context
+    # ############################################################################################################
+    def add_gradient(self, gradient: "Gradient"):
+        # if gradient.param_type != ParameterType.GRADIENT:
+        #     raise ValueError("Cannot add non-gradient parameter to gradients list.")
 
         if gradient.from_response_id is None:
             raise ValueError("Gradient must have a from_response_id.")
 
         self.gradients.append(gradient)
+
+    def reset_gradients(self):
+        self.gradients = []
+
+    # def reset_gradients_context(self):
+    #     self.gradients_context = defaultdict(lambda: None)
+
+    def get_gradients_names(self) -> str:
+        names = [g.name for g in self.gradients]
+        names = ", ".join(names)
+        return names
+
+    def get_gradient_and_context_text(self, skip_correct_sample: bool = False) -> str:
+        """Aggregates and returns:
+        1. the gradients
+        2. the context text for which the gradients are computed
+
+        Sort the gradients from the lowest score to the highest score.
+        Highlight the gradients with the lowest score to the optimizer.
+        """
+        from adalflow.core.prompt_builder import Prompt
+
+        # print(
+        #     f"len of gradients: {len(self.gradients)}, scores: {[g._score for g in self.gradients]} for {self.name}"
+        # )
+
+        # sore gradients by the _score from low to high
+        self.gradients = sorted(
+            self.gradients, key=lambda x: x.score if x.score is not None else 1
+        )
+        # print the score for the sorted gradients
+        lowest_score_gradients = []
+        for i, g in enumerate(self.gradients):
+            if skip_correct_sample:
+                if g.score > 0.5:
+                    continue
+            lowest_score_gradients.append(g)
+            print(f"{i} Score: {g.score} for {g.name}, {type(g.score)}")
+
+        # gradient_context_combined = list(
+        #     zip(
+        #         lowest_score_gradients,
+        #         [self.gradients_context[g] for g in lowest_score_gradients],
+        #     )
+        # )
+        # set all gradients value to None
+        # for g in self.gradients:
+        #     g.data = None
+
+        gradient_context_combined_str = Prompt(
+            template=COMBINED_GRADIENTS_TEMPLATE,
+            prompt_kwargs={"combined_gradients": lowest_score_gradients},
+        )().strip()
+
+        return gradient_context_combined_str
+
+    ############################################################################################################
+    # Setters and getters
+    ############################################################################################################
 
     def set_predecessors(self, predecessors: List["Parameter"] = None):
         if predecessors is None:
@@ -300,13 +388,21 @@ class Parameter(Generic[T]):
     ############################################################################################################
     #  Trace component, include trace_forward_pass & trace_api_kwargs for now
     ############################################################################################################
-    def trace_forward_pass(self, input_args: Dict[str, Any], full_response: object):
-        r"""Trace the forward pass of the parameter."""
-        self.input_args = input_args
-        self.full_response = full_response
-        # TODO: remove the input_args and full_response to use component_trace
-        self.component_trace.input_args = input_args
-        self.component_trace.full_response = full_response
+    # def trace_forward_pass(
+    #     self,
+    #     input_args: Dict[str, Any],
+    #     full_response: object,
+    #     id: str = None,
+    #     name: str = None,
+    # ):
+    #     r"""Trace the forward pass of the parameter. Adding the component information to the trace"""
+    #     self.input_args = input_args
+    #     self.full_response = full_response
+    #     # TODO: remove the input_args and full_response to use component_trace
+    #     self.component_trace.input_args = input_args
+    #     self.component_trace.full_response = full_response
+    #     self.component_trace.id = id
+    #     self.component_trace.name = name
 
     def trace_api_kwargs(self, api_kwargs: Dict[str, Any]):
         r"""Trace the api_kwargs for components like Generator and Retriever that pass to the model client."""
@@ -421,61 +517,6 @@ class Parameter(Generic[T]):
             self.data_type = type(data)
         self.data = data
 
-    def reset_gradients(self):
-        self.gradients = []
-
-    def reset_gradients_context(self):
-        self.gradients_context = defaultdict(lambda: None)
-
-    def get_gradients_names(self) -> str:
-        names = [g.name for g in self.gradients]
-        names = ", ".join(names)
-        return names
-
-    def get_gradient_and_context_text(self, skip_correct_sample: bool = False) -> str:
-        """Aggregates and returns:
-        1. the gradients
-        2. the context text for which the gradients are computed
-
-        Sort the gradients from the lowest score to the highest score.
-        Highlight the gradients with the lowest score to the optimizer.
-        """
-        from adalflow.core.prompt_builder import Prompt
-
-        # print(
-        #     f"len of gradients: {len(self.gradients)}, scores: {[g._score for g in self.gradients]} for {self.name}"
-        # )
-
-        # sore gradients by the _score from low to high
-        self.gradients = sorted(
-            self.gradients, key=lambda x: x._score if x._score is not None else 1
-        )
-        # print the score for the sorted gradients
-        lowest_score_gradients = []
-        for i, g in enumerate(self.gradients):
-            if skip_correct_sample:
-                if g._score > 0.5:
-                    continue
-            lowest_score_gradients.append(g)
-            print(f"{i} Score: {g._score} for {g.name}, {type(g._score)}")
-
-        gradient_context_combined = list(
-            zip(
-                lowest_score_gradients,
-                [self.gradients_context[g] for g in lowest_score_gradients],
-            )
-        )
-        # set all gradients value to None
-        # for g in self.gradients:
-        #     g.data = None
-
-        gradient_context_combined_str = Prompt(
-            template=COMBINED_GRADIENTS_TEMPLATE,
-            prompt_kwargs={"combined_gradients": gradient_context_combined},
-        )().strip()
-
-        return gradient_context_combined_str
-
     # TODO: dont use short value
     def get_short_value(self, n_words_offset: int = 10) -> str:
         """
@@ -515,20 +556,20 @@ class Parameter(Generic[T]):
         build_graph(root)
         return nodes, edges
 
-    def report_cycle(cycle_nodes: List["Parameter"]):
-        """
-        Report the detected cycle and provide guidance to the user on how to avoid it.
-        """
-        cycle_names = [node.name for node in cycle_nodes]
-        log.warning(f"Cycle detected: {' -> '.join(cycle_names)}")
-        print(f"Cycle detected in the graph: {' -> '.join(cycle_names)}")
+    # def report_cycle(cycle_nodes: List["Parameter"]):
+    #     """
+    #     Report the detected cycle and provide guidance to the user on how to avoid it.
+    #     """
+    #     cycle_names = [node.name for node in cycle_nodes]
+    #     log.warning(f"Cycle detected: {' -> '.join(cycle_names)}")
+    #     print(f"Cycle detected in the graph: {' -> '.join(cycle_names)}")
 
-        # Provide guidance on how to avoid the cycle
-        print("To avoid the cycle, consider the following strategies:")
-        print("- Modify the graph structure to remove cyclic dependencies.")
-        print(
-            "- Check the relationships between these nodes to ensure no feedback loops."
-        )
+    #     # Provide guidance on how to avoid the cycle
+    #     print("To avoid the cycle, consider the following strategies:")
+    #     print("- Modify the graph structure to remove cyclic dependencies.")
+    #     print(
+    #         "- Check the relationships between these nodes to ensure no feedback loops."
+    #     )
 
     def backward(
         self,
@@ -766,6 +807,7 @@ class Parameter(Generic[T]):
             if filepath
             else os.path.join(root_path, "graphs", filename)
         )
+        final_path = f"{filepath}.{format}"
         print(f"Saving graph to {filepath}.{format}")
 
         def wrap_text(text, width):
@@ -799,6 +841,7 @@ class Parameter(Generic[T]):
 
             node_label = (
                 f"<table border='0' cellborder='1' cellspacing='0'>"
+                f"<tr><td><b><font color='{label_color}'>Name: </font></b></td><td>{wrap_and_escape(n.id)}</td></tr>"
                 f"<tr><td><b><font color='{label_color}'>Name: </font></b></td><td>{wrap_and_escape(n.name)}</td></tr>"
                 f"<tr><td><b><font color='{label_color}'>Role: </font></b></td><td>{wrap_and_escape(n.role_desc.capitalize())}</td></tr>"
                 f"<tr><td><b><font color='{label_color}'>Value: </font></b></td><td>{wrap_and_escape(n.data)}</td></tr>"
@@ -812,7 +855,11 @@ class Parameter(Generic[T]):
                 node_label += f"<tr><td><b><font color='{label_color}'>Requires Optimization: </font ></b></td><td>{{'Yes'}}</td></tr>"
             if n.param_type:
                 node_label += f"<tr><td><b><font color='{label_color}'>Type: </font></b></td><td>{wrap_and_escape(n.param_type.name)}</td></tr>"
-            if full_trace and n.component_trace.api_kwargs is not None:
+            if (
+                full_trace
+                and hasattr(n, "component_trace")
+                and n.component_trace.api_kwargs is not None
+            ):
                 node_label += f"<tr><td><b><font color='{label_color}'> API kwargs: </font></b></td><td>{wrap_and_escape(str(n.component_trace.api_kwargs))}</td></tr>"
 
             # show the score for intermediate nodes
@@ -822,21 +869,31 @@ class Parameter(Generic[T]):
                 node_label += f"<tr><td><b><font color='{label_color}'>Gradients: </font></b></td><td>{wrap_and_escape(n.get_gradients_names())}</td></tr>"
                 # add a list of each gradient with short value
                 # combine the gradients and context
-                combined_gradients_contexts = zip(
-                    n.gradients, [n.gradients_context[g] for g in n.gradients]
-                )
-                for g, context in combined_gradients_contexts:
-                    gradient_context = context
+                # combined_gradients_contexts = zip(
+                #     n.gradients, [n.gradients_context[g] for g in n.gradients]
+                # )
+                # if "output" in n.name:
+                print(f"Node: {n.name}, \n gradients: {n.gradients}")
+                for g in n.gradients:
+                    gradient_context = g.context
                     log.info(f"Gradient context display: {gradient_context}")
                     log.info(f"data: {g.data}")
                     node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.name} Feedback: </font></b></td><td>{wrap_and_escape(g.data)}</td></tr>"
                     if gradient_context != "":
                         node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.name} Context: </font></b></td><td>{wrap_and_escape(gradient_context)}</td></tr>"
+                    if g.prompt:
+                        node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.name} Prompt: </font></b></td><td>{wrap_and_escape(g.prompt)}</td></tr>"
             if len(n._traces.values()) > 0:
                 node_label += f"<tr><td><b><font color='{label_color}'>Traces: keys: </font></b></td><td>{wrap_and_escape(str(n._traces.keys()))}</td></tr>"
                 node_label += f"<tr><td><b><font color='{label_color}'>Traces: values: </font></b></td><td>{wrap_and_escape(str(n._traces.values()))}</td></tr>"
             if n.tgd_optimizer_trace is not None:
                 node_label += f"<tr><td><b><font color='{label_color}'>TGD Optimizer Trace: </font></b></td><td>{wrap_and_escape(str(n.tgd_optimizer_trace))}</td></tr>"
+
+            # show component trace, id and name
+            if hasattr(n, "component_trace") and n.component_trace.id is not None:
+                node_label += f"<tr><td><b><font color='{label_color}'>Component Trace ID: </font></b></td><td>{wrap_and_escape(str(n.component_trace.id))}</td></tr>"
+            if hasattr(n, "component_trace") and n.component_trace.name is not None:
+                node_label += f"<tr><td><b><font color='{label_color}'>Component Trace Name: </font></b></td><td>{wrap_and_escape(str(n.component_trace.name))}</td></tr>"
 
             node_label += "</table>"
             # check if the name exists in dot
@@ -854,7 +911,7 @@ class Parameter(Generic[T]):
             for g in n.gradients:
 
                 log.info(f"Gradient: {g.name}, {g.to_dict()}")
-                log.info(f"Gradient prompt: {g.gradient_prompt}")
+                log.info(f"Gradient prompt: {g.prompt}")
         for n1, n2 in edges:
             dot.edge(n1.name, n2.name)
 
@@ -904,7 +961,280 @@ class Parameter(Generic[T]):
         self.draw_interactive_html_graph(
             filepath=filepath, nodes=[n for n in nodes], edges=edges
         )
-        return {"graph_path": filepath, "root_path": f"{filepath}_root.json"}
+        output = {"graph_path": final_path, "root_path": f"{filepath}_root.json"}
+        print(f"Graph saved as {filepath}.{format}")
+        return output
+
+    def draw_output_subgraph(
+        self,
+        add_grads: bool = True,
+        format: str = "png",
+        rankdir: str = "TB",
+        filepath: str = None,
+    ) -> Dict:
+        """
+        Build and visualize a subgraph containing only OUTPUT parameters.
+
+        Args:
+            add_grads (bool): Whether to include gradient edges.
+            format (str): Format for output (e.g., png, svg).
+            rankdir (str): Graph layout direction ("LR" or "TB").
+            filepath (str): Path to save the graph.
+        """
+
+        # TODO: improve the pathes
+        assert rankdir in ["LR", "TB"]
+        from adalflow.utils.global_config import get_adalflow_default_root_path
+
+        try:
+            from graphviz import Digraph
+
+        except ImportError as e:
+            raise ImportError(
+                "Please install graphviz using 'pip install graphviz' to use this feature"
+            ) from e
+
+        root_path = get_adalflow_default_root_path()
+        # # prepare the log directory
+        # log_dir = os.path.join(root_path, "logs")
+
+        # # Set up TensorBoard logging
+        # writer = SummaryWriter(log_dir)
+
+        filename = f"trace_component_output_graph_{self.name}_id_{self.id}"
+        filepath = (
+            os.path.join(filepath, filename)
+            if filepath
+            else os.path.join(root_path, "graphs", filename)
+        )
+
+        # Step 1: Collect OUTPUT nodes and edges
+        nodes, edges = self._collect_output_subgraph()
+
+        # Step 2: Render using Graphviz
+        filename = f"output_subgraph_{self.name}_{self.id}"
+        filepath = filepath or f"./{filename}"
+        print(f"Saving OUTPUT subgraph to {filepath}.{format}")
+
+        dot = Digraph(format=format, graph_attr={"rankdir": rankdir})
+        node_ids = set()
+
+        for node in nodes:
+            node_label = f"""
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td><b>Name:</b></td><td>{node.name}</td></tr>
+                <tr><td><b>Type:</b></td><td>{node.param_type}</td></tr>
+                <tr><td><b>Value:</b></td><td>{node.get_short_value()}</td></tr>"""
+            # add the component trace id and name
+            if node.component_trace.id is not None:
+                node_label += f"<tr><td><b>Component Trace ID:</b></td><td>{node.component_trace.id}</td></tr>"
+            if node.component_trace.name is not None:
+                node_label += f"<tr><td><b>Component Trace Name:</b></td><td>{node.component_trace.name}</td></tr>"
+
+            node_label += "</table>"
+            dot.node(
+                name=node.id,
+                label=f"<{node_label}>",
+                shape="plaintext",
+                color="lightblue" if node.requires_opt else "gray",
+            )
+            node_ids.add(node.id)
+
+        for source, target in edges:
+            if source.id in node_ids and target.id in node_ids:
+                dot.edge(source.id, target.id)
+
+        # Step 3: Save and render
+        dot.render(filepath, cleanup=True)
+        print(f"Graph saved as {filepath}.{format}")
+        return {"output_subgraph": filepath}
+
+    def draw_component_subgraph(
+        self,
+        format: str = "png",
+        rankdir: str = "TB",
+        filepath: str = None,
+    ):
+        """
+        Build and visualize a subgraph containing only OUTPUT parameters.
+
+        Args:
+            format (str): Format for output (e.g., png, svg).
+            rankdir (str): Graph layout direction ("LR" or "TB").
+            filepath (str): Path to save the graph.
+        """
+        assert rankdir in ["LR", "TB"]
+        from adalflow.utils.global_config import get_adalflow_default_root_path
+
+        try:
+            from graphviz import Digraph
+        except ImportError as e:
+            raise ImportError(
+                "Please install graphviz using 'pip install graphviz' to use this feature"
+            ) from e
+
+        # Step 1: Collect OUTPUT nodes and edges
+        component_nodes, edges, component_nodes_orders = (
+            self._collect_component_subgraph()
+        )
+        root_path = get_adalflow_default_root_path()
+
+        # Step 2: Setup graph rendering
+        filename = f"output_component_{self.name}_{self.id}.{format}"
+        filepath = filepath or f"./{filename}"
+
+        filepath = (
+            os.path.join(filepath, filename)
+            if filepath
+            else os.path.join(root_path, "graphs", filename)
+        )
+        print(f"Saving OUTPUT subgraph to {filepath}")
+
+        dot = Digraph(format=format, graph_attr={"rankdir": rankdir})
+
+        # Add nodes
+        for node in component_nodes:
+            node_label = f"""
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td><b>Name:</b></td><td>{node.name}</td></tr>
+                <tr><td><b>TYPE:</b></td><td>{node.type}</td></tr>
+                """
+            #                 <tr><td><b>ID:</b></td><td>{node.id}</td></tr>
+
+            # add the list of orders
+            if node.id in component_nodes_orders:
+                node_label += f"<tr><td><b>Order:</b></td><td>{component_nodes_orders[node.id]}</td></tr>"
+            node_label += "</table>"
+            dot.node(
+                name=node.id,
+                label=f"<{node_label}>",
+                shape="plaintext",
+                color="lightblue",
+            )
+
+        # Add edges with order labels
+        for source_id, target_id, edge_order in edges:
+            dot.edge(source_id, target_id)  # , label=str(edge_order), color="black")
+
+        # Step 3: Save and render
+        dot.render(filepath, cleanup=True)
+        print(f"Graph saved as {filepath}")
+        return {"component_graph": f"{filepath}"}
+
+    def _collect_output_subgraph(
+        self,
+    ) -> Tuple[Set["Parameter"], List[Tuple["Parameter", "Parameter"]]]:
+        """
+        Collect nodes of type OUTPUT and their relationships.
+
+        Returns:
+            nodes (Set[Parameter]): Set of OUTPUT nodes.
+            edges (List[Tuple[Parameter, Parameter]]): Edges between OUTPUT nodes.
+        """
+        output_nodes = set()
+        edges = []
+
+        visited = set()  # check component_trace.id and name
+
+        def traverse(node: "Parameter"):
+            if node in visited:
+                return
+            visited.add(node)
+
+            # Add OUTPUT nodes to the set
+            if (
+                node.param_type == ParameterType.OUTPUT
+                or "OUTPUT" in node.param_type.name
+            ):
+                output_nodes.add(node)
+
+            # Traverse predecessors and add edges
+            for pred in node.predecessors:
+                if (
+                    pred.param_type == ParameterType.OUTPUT
+                    or "OUTPUT" in pred.param_type.name
+                ):
+                    edges.append((pred, node))
+                traverse(pred)
+
+        traverse(self)
+        return output_nodes, edges
+
+    def _collect_component_subgraph(
+        self,
+    ) -> Tuple[Set[ComponentNode], List[Tuple[str, str]]]:
+        """
+        Collect OUTPUT nodes and their relationships as ComponentNodes.
+
+        Returns:
+            component_nodes (Set[ComponentNode]): Set of component nodes (id and name only).
+            edges (List[Tuple[str, str]]): Edges between component IDs.
+        """
+        component_nodes = set()  # To store component nodes as ComponentNode
+        component_nodes_orders: Dict[str, List[int]] = (
+            {}
+        )  # To store component nodes order
+        edges = []  # To store edges between component IDs
+
+        visited = set()  # Track visited parameters to avoid cycles
+        edge_counter = [0]  # Mutable counter for edge order tracking
+
+        def traverse(node: "Parameter"):
+            if node in visited:
+                return
+            visited.add(node)
+
+            # Check if node is of OUTPUT type
+            if (
+                node.param_type == ParameterType.OUTPUT
+                or "OUTPUT" in node.param_type.name
+            ):
+                component_id = node.component_trace.id or f"unknown_id_{uuid.uuid4()}"
+                component_name = node.component_trace.name or "Unknown Component"
+
+                # Create a ComponentNode and add to the set
+                component_node = ComponentNode(id=component_id, name=component_name)
+                component_nodes.add(component_node)
+
+                # Traverse predecessors and add edges
+                for pred in node.predecessors:
+                    if pred.param_type != ParameterType.OUTPUT:
+                        continue
+                    pred_id = pred.component_trace.id or f"unknown_id_{uuid.uuid4()}"
+                    pred_name = pred.component_trace.name or "Unknown Component"
+
+                    # Add edge if predecessor is also of OUTPUT type
+                    if (
+                        pred.param_type == ParameterType.OUTPUT
+                        or "OUTPUT" in pred.param_type.name
+                    ):
+                        edges.append((pred_id, component_id, edge_counter[0]))
+                        component_nodes.add(ComponentNode(id=pred_id, name=pred_name))
+                        edge_counter[0] += 1
+
+                    if pred.param_type == ParameterType.INPUT:
+                        pred_id = pred.id
+                        pred_name = pred.name
+                        pred_node = ComponentNode(
+                            id=pred_id, name=pred_name, type="INPUT"
+                        )
+                        component_nodes.add(pred_node)
+                        # add an edge from input to the first output
+                        edges.append((pred_id, component_id, edge_counter[0]))
+                        edge_counter[0] += 1
+
+                    traverse(pred)
+
+        # Start traversal from the current parameter
+        traverse(self)
+        # Reverse the edge order
+        # total_edges = len(edges)
+        # edges = [
+        #     (source, target, (total_edges - 1) - edge_number)
+        #     for idx, (source, target, edge_number) in enumerate(edges)
+        # ]
+
+        return component_nodes, edges, component_nodes_orders
 
     def to_dict(self):
         return {
@@ -918,17 +1248,11 @@ class Parameter(Generic[T]):
             "predecessors": [pred.to_dict() for pred in self.predecessors],
             "gradients": [grad.to_dict() for grad in self.gradients],
             "previous_data": self.previous_data,
-            "gradients_context": [
-                (k.name, v) for k, v in self.gradients_context.items()
-            ],
             "grad_fn": str(
                 self.grad_fn
             ),  # Simplify for serialization, modify as needed
-            "gradient_prompt": str(self.gradient_prompt),
-            "raw_response": self.raw_response,
             "score": self._score,
             "traces": {k: v.to_dict() for k, v in self._traces.items()},
-            "input_args": self.input_args,
             # demos
             "demos": [d.to_dict() for d in self._demos],
         }
@@ -946,21 +1270,267 @@ class Parameter(Generic[T]):
             predecessors=predecessors,
             gradients=[cls.from_dict(grad) for grad in data["gradients"]],
             previous_data=data["previous_data"],
-            gradient_prompt=data["gradient_prompt"],
-            raw_response=data["raw_response"],
-            input_args=data["input_args"],
             score=data["score"],
             # demos
             demos=[DataClass.from_dict(d) for d in data["demos"]],
         )
         # Reconstruct gradients_context from the list of tuples
-        param.gradients_context = defaultdict(
-            lambda: None, {cls.from_dict(k): v for k, v in data["gradients_context"]}
-        )
         param._traces = {k: DataClass.from_dict(v) for k, v in data["traces"].items()}
         return param
 
     # TODO: very hard to read directly, need to simplify and let users use to_dict for better readability
     def __repr__(self):
         return f"Parameter(name={self.name}, requires_opt={self.requires_opt}, param_type={self.param_type}, role_desc={self.role_desc}, data={self.data}, predecessors={self.predecessors}, gradients={self.gradients},\
-            raw_response={self.raw_response}, input_args={self.input_args}, traces={self._traces})"
+            traces={self._traces})"
+
+
+# TODO: separate the Parameter class into different classes and each class will have its own methods instead of all in one class
+class InputParameter(Parameter):
+    """One of the simplest types of parameters, representing an input to the system.
+    Input parameter will not be trainable, but serves a tracing purpose in the computation graph.
+    """
+
+    def __init__(
+        self,
+        name: str,
+        role_desc: str,
+        data: Any,
+        requires_opt: bool = False,
+        param_type: ParameterType = ParameterType.INPUT,
+    ):
+        super().__init__(
+            name=name,
+            role_desc=role_desc,
+            data=data,
+            requires_opt=requires_opt,
+            param_type=param_type,
+        )
+
+
+class HyperParameter(Parameter):
+    """One of the simplest types of parameters, representing a hyperparameter to the system."""
+
+    def __init__(
+        self,
+        name: str,
+        role_desc: str,
+        data: Any,
+        requires_opt: bool = False,
+        param_type: ParameterType = ParameterType.HYPERPARAM,
+    ):
+        super().__init__(
+            name=name,
+            role_desc=role_desc,
+            data=data,
+            requires_opt=requires_opt,
+            param_type=param_type,
+        )
+
+
+class PromptParameter(Parameter):
+
+    def __init__(
+        self,
+        name: str,
+        role_desc: str,
+        data: Any,
+        requires_opt: bool = True,
+        param_type: ParameterType = ParameterType.PROMPT,
+    ):
+        super().__init__(
+            name=name,
+            role_desc=role_desc,
+            data=data,
+            requires_opt=requires_opt,
+            param_type=param_type,
+        )
+
+
+class DemoParameter(Parameter):
+
+    def __init__(
+        self,
+        name: str,
+        role_desc: str,
+        data: Any,
+        requires_opt: bool = True,
+        param_type: ParameterType = ParameterType.DEMOS,
+    ):
+        super().__init__(
+            name=name,
+            role_desc=role_desc,
+            data=data,
+            requires_opt=requires_opt,
+            param_type=param_type,
+        )
+
+
+class OutputParameter(Parameter):
+    __doc__ = r"""The output parameter is the most complex type of parameter in the system.
+
+    It will trace the predecessors, set up a grad_fn, store gradients, and trace the forward pass by tracking the component_trace.
+    """
+    component_trace: ComponentTrace = (
+        None  # Trace of the component that produced this output
+    )
+
+    def __init__(
+        self,
+        *,
+        id: Optional[str] = None,  # unique id of the parameter
+        data: T = None,  # for generator output, the data will be set up as raw_response
+        data_id: str = None,  # for tracing the data item in the training/val/test set
+        requires_opt: bool = True,
+        role_desc: str = "",
+        param_type: ParameterType = ParameterType.OUTPUT,
+        name: str = None,  # name is used to refer to the parameter in the prompt, easier to read for humans
+        instruction_to_optimizer: str = None,
+        instruction_to_backward_engine: str = None,
+        score: Optional[float] = None,
+        eval_input: object = None,
+        from_response_id: Optional[str] = None,
+        successor_map_fn: Optional[Dict[str, Callable]] = None,
+    ):
+        super().__init__(
+            id=id,
+            data=data,
+            data_id=data_id,
+            requires_opt=requires_opt,
+            role_desc=role_desc,
+            param_type=param_type,
+            name=name,
+            instruction_to_optimizer=instruction_to_optimizer,
+            instruction_to_backward_engine=instruction_to_backward_engine,
+            score=score,
+            eval_input=eval_input,
+            from_response_id=from_response_id,
+            successor_map_fn=successor_map_fn,
+        )
+        self.component_trace = ComponentTrace()
+
+    ############################################################################################################
+    #  Trace component, include trace_forward_pass & trace_api_kwargs for now
+    ############################################################################################################
+    def trace_forward_pass(
+        self,
+        input_args: Dict[str, Any],
+        full_response: object,
+        id: str = None,
+        name: str = None,
+    ):
+        r"""Trace the forward pass of the parameter. Adding the component information to the trace"""
+        self.input_args = input_args
+        self.full_response = full_response
+        # TODO: remove the input_args and full_response to use component_trace
+        self.component_trace.input_args = input_args
+        self.component_trace.full_response = full_response
+        self.component_trace.id = id
+        self.component_trace.name = name
+
+    def trace_api_kwargs(self, api_kwargs: Dict[str, Any]):
+        r"""Trace the api_kwargs for components like Generator and Retriever that pass to the model client."""
+        self.component_trace.api_kwargs = api_kwargs
+
+    def to_dict(self):
+        super_dict = super().to_dict()
+        super_dict.update(
+            {
+                "component_trace": self.component_trace.to_dict(),
+            }
+        )
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        component_trace = ComponentTrace.from_dict(data["component_trace"])
+        return super().from_dict(data).update({"component_trace": component_trace})
+
+    def __repr__(self):
+        super_repr = super().__repr__()
+        # replace first Parameter with OutputParameter
+        super_repr = super_repr.replace("Parameter", "OutputParameter")
+        return super_repr
+
+
+# gradients= List[Gradient]
+
+
+@dataclass
+class Gradient(DataClass):
+    __doc__ = r"""It will handle gradients and feedbacks.
+
+    It tracks the d_from_response_id / d_to_pred_id and the score of the whole response.
+
+    if two gradients have the same data_id, different from_response_id, and same from_response_component_id, this is a cycle component structure.
+    """
+    data_id: Optional[str] = None  # the id of the response from data in the dataset
+    from_response_id: str = (
+        None  # the id of the response from which the gradient is calculated
+    )
+    from_response_component_id: str = (
+        None  # the id of the component from which the gradient is calculated
+    )
+    to_pred_id: str = (
+        None  # the id of the parameter to which the gradient is calculated and attached to d(from_response_id) / d(to_pred_id)
+    )
+
+    score: Optional[float] = None
+
+    context: GradientContext = None
+    data: Any = None
+    prompt: Optional[str] = None  # the LLM prompt to generate the gradient
+
+    def __init__(
+        self,
+        *,
+        from_response: "Parameter",
+        to_pred: "Parameter",
+        id: Optional[str] = None,  # the id of the gradient
+        score: Optional[float] = None,
+        data_id: Optional[str] = None,
+        data: Any = None,
+    ):
+        self.id = id or str(uuid.uuid4())
+        self._generate_name(from_response, to_pred)
+        self.from_response_component_id = from_response.component_trace.id
+        if not self.from_response_component_id:
+            raise ValueError(
+                "The from_response_component_id should not be None. Please ensure the component_trace is set."
+            )
+        self.from_response_id = from_response.id
+        self.to_pred_id = to_pred.id
+        self.score = score
+        self.data_id = data_id
+        self.data = data
+
+    def _generate_name(self, response: "Parameter", pred: "Parameter"):
+        self.name = f"d_{response.name}_/_{pred.name}({response.id}_/_{pred.id})"
+        self.role_desc = f"Gradient from {response.name} to {pred.name}"
+
+    def add_context(self, context: GradientContext):
+        self.context = context
+
+    def add_data(self, data: Any):
+        self.data = data
+
+    def add_prompt(self, prompt: str):
+        self.prompt = prompt
+
+
+# Move the gradients representation to this class.
+@dataclass
+class Gradients(DataClass):
+    gradients: List[Gradient]
+
+    def __init__(self, gradients: List[Gradient]):
+        self.gradients = gradients
+
+    def to_dict(self):
+        return {"gradients": [g.to_dict() for g in self.gradients]}
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        gradients = [Gradient.from_dict(g) for g in data["gradients"]]
+        return cls(gradients)
+
+    def __repr__(self):
+        return f"Gradients(gradients={self.gradients})"

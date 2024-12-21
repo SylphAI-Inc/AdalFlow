@@ -146,6 +146,9 @@ if __name__ == "__main__":
     # NOTE:
     # continue from last best, 1 bootstrap, (both input and rational)86.1 val, 86.1 test (not really better)
     # TrecClassifierAdal/constrained_max_steps_12_2ffa7_run_2.json
+    # 1086s
+    # 0.88 validation (the steps are not right, it shows 56 steps)
+    # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json
 
 
 # theory: all few-shots demo or instruction, all so that the llm can reason better. Once it reches to its limits, no more shots can help or further instruction can.
