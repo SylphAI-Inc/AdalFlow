@@ -64,7 +64,7 @@ class GradComponent(Component):
         3. Return the parameter object.
         """
 
-        from adalflow.optim.parameter import Parameter
+        from adalflow.optim.parameter import Parameter, OutputParameter
 
         log.debug(
             f"Forwarding through {self.name} with args: {args} and kwargs: {kwargs}"
@@ -122,7 +122,7 @@ class GradComponent(Component):
 
         # 4. Create a Parameter object to trace the forward pass
         input_args.update(kwargs)
-        response = Parameter(
+        response = OutputParameter(
             data=call_response,
             name=self.name + "_output",
             role_desc=self.name + " response",

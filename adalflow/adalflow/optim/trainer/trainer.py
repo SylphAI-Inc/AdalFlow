@@ -953,11 +953,9 @@ class Trainer(Component):
         total_loss = sum_ops([copy(failed_loss)])
         total_loss.backward()
 
-        failed_debug_files = failed_loss.draw_graph(
-            filepath=debug_path, full_trace=True
-        )
-        failed_output_file = failed_loss.draw_output_subgraph(filepath=debug_path)
-        failed_component_file = failed_loss.draw_component_subgraph(filepath=debug_path)
+        failed_debug_files = total_loss.draw_graph(filepath=debug_path, full_trace=True)
+        failed_output_file = total_loss.draw_output_subgraph(filepath=debug_path)
+        failed_component_file = total_loss.draw_component_subgraph(filepath=debug_path)
         failed_debug_files.update(failed_output_file)
         failed_debug_files.update(failed_component_file)
 

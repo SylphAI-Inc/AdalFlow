@@ -21,7 +21,12 @@ from adalflow.optim.grad_component import GradComponent
 from adalflow.core.base_data_class import DataClass
 
 
-from adalflow.optim.parameter import Parameter, GradientContext, Gradient
+from adalflow.optim.parameter import (
+    Parameter,
+    GradientContext,
+    Gradient,
+    OutputParameter,
+)
 from adalflow.optim.types import ParameterType
 
 from adalflow.core.prompt_builder import Prompt
@@ -523,7 +528,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             if output and not output.error
             else f"Error: {output.error}, raw_response: {output.raw_response}"
         )
-        response: Parameter = Parameter(
+        response: Parameter = OutputParameter(
             data=param_data,
             name=self.name + "_output",
             role_desc=f"Output from (llm) {self.name}",
@@ -740,6 +745,11 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             gradient_output: GeneratorOutput = backward_engine(
                 prompt_kwargs=backward_engine_prompt_kwargs
             )
+            if not isinstance(gradient_output, GeneratorOutput):
+                raise ValueError(
+                    f"Generator: Backward Engine should return a GeneratorOutput. Got {gradient_output} instead."
+                )
+
         # USE this to trace each node's input and output, all nodes can be visualized
         log.info(
             f"Generator Backward Engine Prompt: {backward_engine.get_prompt( **backward_engine_prompt_kwargs)}"
@@ -747,9 +757,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         gradient_value = (
             gradient_output.data
             or backward_engine.failure_message_to_optimizer(gradient_output)
-        )
-        log.info(
-            f"Generator Gradient value: {gradient_value}, raw response: {gradient_output.raw_response}"
         )
         # TODO: make it a debug feature
         var_gradient = Gradient(
@@ -947,7 +954,11 @@ class BackwardEngine(Generator):  # it is a generator with defaule template
 
     __doc__ = """The backward engine is a Generator with a default template for the backward pass.
 
-    If you want to customize the template, you can create your own backward engine"""
+    If you want to customize the template, you can create your own backward engine.
+
+    Yet, we will forever keep the training mode to False for the backward engine.
+    This is achieved by making forward the same as call.
+    """
 
     def __init__(self, **kwargs):
         if kwargs is None:
@@ -964,6 +975,10 @@ class BackwardEngine(Generator):  # it is a generator with defaule template
         if output and output.error is not None and "429" in output.error:
             raise ValueError(f"Error in the backward engine: {output.error}")
         return output
+
+    def forward(self, **kwargs):
+        r"""Forward pass for the backward engine."""
+        return self.call(**kwargs)
 
     @staticmethod
     def failure_message_to_optimizer(

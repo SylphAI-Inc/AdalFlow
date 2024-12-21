@@ -11,7 +11,12 @@ if TYPE_CHECKING:
     from adalflow.core import ModelClient
     from adalflow.core.generator import BackwardEngine
 from adalflow.core.types import GeneratorOutput
-from adalflow.optim.parameter import Parameter, GradientContext, Gradient
+from adalflow.optim.parameter import (
+    Parameter,
+    GradientContext,
+    Gradient,
+    OutputParameter,
+)
 from adalflow.optim.types import ParameterType
 
 from adalflow.core.prompt_builder import Prompt
@@ -24,44 +29,6 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
 
 
 log = logging.getLogger(__name__)
-
-###  Loss/Score Information  ###
-# LOSS_CONVERSATION_TEMPLATE_STRING = r"""
-# The variable is passed to the eval function and compared with a target/ground truth value.
-
-# <EVAL_FUNC_DESCRIPTION>: {{eval_fn_desc}}
-# <INPUTS>: {{input_str}}
-# <OUTPUTS/SCORE>: {{response_value}}
-# {% if metadata %}
-# Note: {{metadata}}
-# {% endif %}"""
-
-
-# Does not have gradient on the output, the loss function of the backpropagation chain
-# CONVERSATION_START_INSTRUCTION_STRING_FN_BASE = r"""You will give feedback to a variable with the following role:
-# <ROLE> {{variable_desc}} </ROLE>.
-# Here is an evaluation of the variable using the eval function:
-# {{conversation}}"""
-
-# Has the gradient on the output, the layer in the backpropagation chain
-# Conversation will be provided differently.
-
-# ### Variable Information ###
-# CONVERSATION_START_INSTRUCTION_STRING_FN = r"""
-# TARGET VARIABLE:
-# <NAME> {{variable_name}} </NAME>
-# <ROLE> {{variable_desc}} </ROLE>
-# <VARIABLE> {{variable_value}} </VARIABLE>
-# {{conversation_str}}
-# """
-
-# Third part of the user prompt
-# OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>
-# Your only goal is to clearly states how it obtained the "<OUTPUTS/SCORE>".
-# Especially when the score is low.
-# Be CONCISE.
-# If you have enough context, add a more specific feedback on how it failed.
-# </OBJECTIVE_FUNCTION>"""
 
 
 OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. The <INPUTS/SCORE> was later used as "{{response_name}}: {{response_desc}}".
@@ -141,6 +108,7 @@ class EvalFnToTextLoss(LossComponent):
         kwargs: Dict[str, Parameter],
         response_desc: str = None,
         metadata: Dict[str, str] = None,  # additional notes on the input kwargs
+        id: str = None,
     ) -> Parameter:
         if response_desc is None:
             response_desc = "Output of EvalFnToTextLoss."
@@ -161,15 +129,22 @@ class EvalFnToTextLoss(LossComponent):
 
         # Create a parameter
         # TODO: improve the readability of the input and response
-        eval_param: Parameter = Parameter(
+        eval_param: Parameter = OutputParameter(
             name=self.name + "_output",
             data=score,
             requires_opt=True,
             role_desc=response_desc,
             score=score,
             param_type=ParameterType.LOSS_OUTPUT,
+            data_id=id,
         )
         eval_param.set_predecessors(predesessors)
+        eval_param.trace_forward_pass(
+            input_args=kwargs,
+            full_response=score,
+            id=self.id,
+            name=self.name,
+        )
 
         log.info(f"EvalFnToTextLoss: Input: {kwargs}, Output: {eval_param}")
         eval_param.set_grad_fn(

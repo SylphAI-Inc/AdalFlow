@@ -46,7 +46,7 @@ class GradientContext:
 
 
 @dataclass(frozen=True)
-class ComponentNode:
+class ComponentNode(DataClass):
     """Used to represent a node in the component graph."""
 
     id: str = field(metadata={"desc": "The unique id of the component"})
@@ -57,7 +57,7 @@ class ComponentNode:
 
 
 @dataclass
-class ComponentTrace:
+class ComponentTrace(DataClass):
     name: str = field(metadata={"desc": "The name of the component"}, default=None)
     id: str = field(metadata={"desc": "The unique id of the component"}, default=None)
     input_args: Dict[str, Any] = field(
@@ -66,6 +66,9 @@ class ComponentTrace:
     )
     full_response: object = field(
         metadata={"desc": "The full response of the GradComponent output"}, default=None
+    )
+    raw_response: str = field(
+        metadata={"desc": "The raw response of the generator"}, default=None
     )
     api_kwargs: Dict[str, Any] = field(
         metadata={
@@ -172,8 +175,8 @@ class Parameter(Generic[T]):
     predecessors: Set["Parameter"] = set()  # Predecessors of the parameter
     peers: Set["Parameter"] = set()  # Peers of the parameter
     # TODO: input_args should be OrderedDict to keep the order of args
-    input_args: Dict[str, Any] = None  # Input arguments of the GradComponent forward
-    full_response: object = None  # Full response of the GradComponent output
+    # input_args: Dict[str, Any] = None  # Input arguments of the GradComponent forward
+    # full_response: object = None  # Full response of the GradComponent output
     eval_input: object = None  # Eval input passing to the eval_fn or evaluator you use
     successor_map_fn: Dict[str, Callable] = (
         None  # Map function to get the data from the output
@@ -183,7 +186,7 @@ class Parameter(Generic[T]):
         False  # Disable the backward engine for the parameter
     )
 
-    component_trace: ComponentTrace = None  # Trace of the component
+    # component_trace: ComponentTrace = None  # Trace of the component
     tgd_optimizer_trace: "TGDOptimizerTrace" = None  # Trace of the TGD optimizer
 
     def __init__(
@@ -196,7 +199,7 @@ class Parameter(Generic[T]):
         role_desc: str = "",
         param_type: ParameterType = ParameterType.NONE,
         name: str = None,  # name is used to refer to the parameter in the prompt, easier to read for humans
-        raw_response: str = None,  # use this to track the raw response of generator instead of the data (can be parsed)
+        # raw_response: str = None,  # use this to track the raw response of generator instead of the data (can be parsed)
         instruction_to_optimizer: str = None,
         instruction_to_backward_engine: str = None,
         score: Optional[float] = None,
@@ -228,7 +231,7 @@ class Parameter(Generic[T]):
 
         self.previous_data = None  # used to store the previous data
         # context of the forward pass
-        self.raw_response = raw_response
+        # self.raw_response = raw_response
 
         self.instruction_to_optimizer: str = instruction_to_optimizer
         self.instruction_to_backward_engine: str = instruction_to_backward_engine
@@ -247,9 +250,9 @@ class Parameter(Generic[T]):
         self._previous_demos: List[DataClass] = []
         self.eval_input = eval_input
 
-        self.from_response_id = from_response_id  # for gradient parameter
+        # self.from_response_id = from_response_id  # for gradient parameter
         self.successor_map_fn = successor_map_fn or {}
-        self.component_trace = ComponentTrace()
+        # self.component_trace = ComponentTrace()
 
     def map_to_successor(self, successor: object) -> T:
         """Apply the map function to the successor based on the successor's id."""
@@ -385,21 +388,21 @@ class Parameter(Generic[T]):
     ############################################################################################################
     #  Trace component, include trace_forward_pass & trace_api_kwargs for now
     ############################################################################################################
-    def trace_forward_pass(
-        self,
-        input_args: Dict[str, Any],
-        full_response: object,
-        id: str = None,
-        name: str = None,
-    ):
-        r"""Trace the forward pass of the parameter. Adding the component information to the trace"""
-        self.input_args = input_args
-        self.full_response = full_response
-        # TODO: remove the input_args and full_response to use component_trace
-        self.component_trace.input_args = input_args
-        self.component_trace.full_response = full_response
-        self.component_trace.id = id
-        self.component_trace.name = name
+    # def trace_forward_pass(
+    #     self,
+    #     input_args: Dict[str, Any],
+    #     full_response: object,
+    #     id: str = None,
+    #     name: str = None,
+    # ):
+    #     r"""Trace the forward pass of the parameter. Adding the component information to the trace"""
+    #     self.input_args = input_args
+    #     self.full_response = full_response
+    #     # TODO: remove the input_args and full_response to use component_trace
+    #     self.component_trace.input_args = input_args
+    #     self.component_trace.full_response = full_response
+    #     self.component_trace.id = id
+    #     self.component_trace.name = name
 
     def trace_api_kwargs(self, api_kwargs: Dict[str, Any]):
         r"""Trace the api_kwargs for components like Generator and Retriever that pass to the model client."""
@@ -852,7 +855,11 @@ class Parameter(Generic[T]):
                 node_label += f"<tr><td><b><font color='{label_color}'>Requires Optimization: </font ></b></td><td>{{'Yes'}}</td></tr>"
             if n.param_type:
                 node_label += f"<tr><td><b><font color='{label_color}'>Type: </font></b></td><td>{wrap_and_escape(n.param_type.name)}</td></tr>"
-            if full_trace and n.component_trace.api_kwargs is not None:
+            if (
+                full_trace
+                and hasattr(n, "component_trace")
+                and n.component_trace.api_kwargs is not None
+            ):
                 node_label += f"<tr><td><b><font color='{label_color}'> API kwargs: </font></b></td><td>{wrap_and_escape(str(n.component_trace.api_kwargs))}</td></tr>"
 
             # show the score for intermediate nodes
@@ -865,6 +872,8 @@ class Parameter(Generic[T]):
                 # combined_gradients_contexts = zip(
                 #     n.gradients, [n.gradients_context[g] for g in n.gradients]
                 # )
+                # if "output" in n.name:
+                print(f"Node: {n.name}, \n gradients: {n.gradients}")
                 for g in n.gradients:
                     gradient_context = g.context
                     log.info(f"Gradient context display: {gradient_context}")
@@ -881,9 +890,9 @@ class Parameter(Generic[T]):
                 node_label += f"<tr><td><b><font color='{label_color}'>TGD Optimizer Trace: </font></b></td><td>{wrap_and_escape(str(n.tgd_optimizer_trace))}</td></tr>"
 
             # show component trace, id and name
-            if n.component_trace.id is not None:
+            if hasattr(n, "component_trace") and n.component_trace.id is not None:
                 node_label += f"<tr><td><b><font color='{label_color}'>Component Trace ID: </font></b></td><td>{wrap_and_escape(str(n.component_trace.id))}</td></tr>"
-            if n.component_trace.name is not None:
+            if hasattr(n, "component_trace") and n.component_trace.name is not None:
                 node_label += f"<tr><td><b><font color='{label_color}'>Component Trace Name: </font></b></td><td>{wrap_and_escape(str(n.component_trace.name))}</td></tr>"
 
             node_label += "</table>"
@@ -1189,6 +1198,8 @@ class Parameter(Generic[T]):
 
                 # Traverse predecessors and add edges
                 for pred in node.predecessors:
+                    if pred.param_type != ParameterType.OUTPUT:
+                        continue
                     pred_id = pred.component_trace.id or f"unknown_id_{uuid.uuid4()}"
                     pred_name = pred.component_trace.name or "Unknown Component"
 
@@ -1240,10 +1251,8 @@ class Parameter(Generic[T]):
             "grad_fn": str(
                 self.grad_fn
             ),  # Simplify for serialization, modify as needed
-            "raw_response": self.raw_response,
             "score": self._score,
             "traces": {k: v.to_dict() for k, v in self._traces.items()},
-            "input_args": self.input_args,
             # demos
             "demos": [d.to_dict() for d in self._demos],
         }
@@ -1261,8 +1270,6 @@ class Parameter(Generic[T]):
             predecessors=predecessors,
             gradients=[cls.from_dict(grad) for grad in data["gradients"]],
             previous_data=data["previous_data"],
-            raw_response=data["raw_response"],
-            input_args=data["input_args"],
             score=data["score"],
             # demos
             demos=[DataClass.from_dict(d) for d in data["demos"]],
@@ -1274,12 +1281,14 @@ class Parameter(Generic[T]):
     # TODO: very hard to read directly, need to simplify and let users use to_dict for better readability
     def __repr__(self):
         return f"Parameter(name={self.name}, requires_opt={self.requires_opt}, param_type={self.param_type}, role_desc={self.role_desc}, data={self.data}, predecessors={self.predecessors}, gradients={self.gradients},\
-            raw_response={self.raw_response}, input_args={self.input_args}, traces={self._traces})"
+            traces={self._traces})"
 
 
 # TODO: separate the Parameter class into different classes and each class will have its own methods instead of all in one class
 class InputParameter(Parameter):
-    """One of the simplest types of parameters, representing an input to the system."""
+    """One of the simplest types of parameters, representing an input to the system.
+    Input parameter will not be trainable, but serves a tracing purpose in the computation graph.
+    """
 
     def __init__(
         self,
@@ -1357,22 +1366,92 @@ class DemoParameter(Parameter):
 
 
 class OutputParameter(Parameter):
+    __doc__ = r"""The output parameter is the most complex type of parameter in the system.
+
+    It will trace the predecessors, set up a grad_fn, store gradients, and trace the forward pass by tracking the component_trace.
+    """
+    component_trace: ComponentTrace = (
+        None  # Trace of the component that produced this output
+    )
 
     def __init__(
         self,
-        name: str,
-        role_desc: str,
-        data: Any,
+        *,
+        id: Optional[str] = None,  # unique id of the parameter
+        data: T = None,  # for generator output, the data will be set up as raw_response
+        data_id: str = None,  # for tracing the data item in the training/val/test set
         requires_opt: bool = True,
+        role_desc: str = "",
         param_type: ParameterType = ParameterType.OUTPUT,
+        name: str = None,  # name is used to refer to the parameter in the prompt, easier to read for humans
+        instruction_to_optimizer: str = None,
+        instruction_to_backward_engine: str = None,
+        score: Optional[float] = None,
+        eval_input: object = None,
+        from_response_id: Optional[str] = None,
+        successor_map_fn: Optional[Dict[str, Callable]] = None,
     ):
         super().__init__(
-            name=name,
-            role_desc=role_desc,
+            id=id,
             data=data,
+            data_id=data_id,
             requires_opt=requires_opt,
+            role_desc=role_desc,
             param_type=param_type,
+            name=name,
+            instruction_to_optimizer=instruction_to_optimizer,
+            instruction_to_backward_engine=instruction_to_backward_engine,
+            score=score,
+            eval_input=eval_input,
+            from_response_id=from_response_id,
+            successor_map_fn=successor_map_fn,
         )
+        self.component_trace = ComponentTrace()
+
+    ############################################################################################################
+    #  Trace component, include trace_forward_pass & trace_api_kwargs for now
+    ############################################################################################################
+    def trace_forward_pass(
+        self,
+        input_args: Dict[str, Any],
+        full_response: object,
+        id: str = None,
+        name: str = None,
+    ):
+        r"""Trace the forward pass of the parameter. Adding the component information to the trace"""
+        self.input_args = input_args
+        self.full_response = full_response
+        # TODO: remove the input_args and full_response to use component_trace
+        self.component_trace.input_args = input_args
+        self.component_trace.full_response = full_response
+        self.component_trace.id = id
+        self.component_trace.name = name
+
+    def trace_api_kwargs(self, api_kwargs: Dict[str, Any]):
+        r"""Trace the api_kwargs for components like Generator and Retriever that pass to the model client."""
+        self.component_trace.api_kwargs = api_kwargs
+
+    def to_dict(self):
+        super_dict = super().to_dict()
+        super_dict.update(
+            {
+                "component_trace": self.component_trace.to_dict(),
+            }
+        )
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        component_trace = ComponentTrace.from_dict(data["component_trace"])
+        return super().from_dict(data).update({"component_trace": component_trace})
+
+    def __repr__(self):
+        super_repr = super().__repr__()
+        # replace first Parameter with OutputParameter
+        super_repr = super_repr.replace("Parameter", "OutputParameter")
+        return super_repr
+
+
+# gradients= List[Gradient]
 
 
 @dataclass
@@ -1380,10 +1459,15 @@ class Gradient(DataClass):
     __doc__ = r"""It will handle gradients and feedbacks.
 
     It tracks the d_from_response_id / d_to_pred_id and the score of the whole response.
-    """
 
+    if two gradients have the same data_id, different from_response_id, and same from_response_component_id, this is a cycle component structure.
+    """
+    data_id: Optional[str] = None  # the id of the response from data in the dataset
     from_response_id: str = (
         None  # the id of the response from which the gradient is calculated
+    )
+    from_response_component_id: str = (
+        None  # the id of the component from which the gradient is calculated
     )
     to_pred_id: str = (
         None  # the id of the parameter to which the gradient is calculated and attached to d(from_response_id) / d(to_pred_id)
@@ -1393,7 +1477,6 @@ class Gradient(DataClass):
 
     context: GradientContext = None
     data: Any = None
-    data_id: Optional[str] = None  # the id of the response from data in the dataset
     prompt: Optional[str] = None  # the LLM prompt to generate the gradient
 
     def __init__(
@@ -1408,6 +1491,11 @@ class Gradient(DataClass):
     ):
         self.id = id or str(uuid.uuid4())
         self._generate_name(from_response, to_pred)
+        self.from_response_component_id = from_response.component_trace.id
+        if not self.from_response_component_id:
+            raise ValueError(
+                "The from_response_component_id should not be None. Please ensure the component_trace is set."
+            )
         self.from_response_id = from_response.id
         self.to_pred_id = to_pred.id
         self.score = score
@@ -1426,3 +1514,23 @@ class Gradient(DataClass):
 
     def add_prompt(self, prompt: str):
         self.prompt = prompt
+
+
+# Move the gradients representation to this class.
+@dataclass
+class Gradients(DataClass):
+    gradients: List[Gradient]
+
+    def __init__(self, gradients: List[Gradient]):
+        self.gradients = gradients
+
+    def to_dict(self):
+        return {"gradients": [g.to_dict() for g in self.gradients]}
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        gradients = [Gradient.from_dict(g) for g in data["gradients"]]
+        return cls(gradients)
+
+    def __repr__(self):
+        return f"Gradients(gradients={self.gradients})"

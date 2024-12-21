@@ -129,7 +129,7 @@ You are part of an optimization system designed to refine variables based on fee
 
 ### Notes:
 - In the absence of specific feedback, you may rephrase the initial variable to improve clarity or specificity without altering its core meaning.
-- When feedback is provided, refine the variable with more detailed instructions or adjustments to directly address the feedback.
+- When specific feedback is provided, you can either rephrase or refine the variable with more detailed instructions or adjustments to directly or indirectly address the feedback.
 
 {{output_format_str}}
 

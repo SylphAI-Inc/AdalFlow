@@ -301,7 +301,7 @@ class MultiHopRetrieverCycle(adal.Retriever):
             name="question",
             data=input,
             role_desc="The question to be answered",
-            requires_opt=True,
+            requires_opt=False,
             param_type=ParameterType.INPUT,
         )
         # context_param = adal.Parameter(

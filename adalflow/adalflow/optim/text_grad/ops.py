@@ -4,7 +4,7 @@ from typing import List
 import logging
 
 from adalflow.optim.function import BackwardContext
-from adalflow.optim.parameter import Parameter, Gradient
+from adalflow.optim.parameter import Parameter, Gradient, OutputParameter
 from adalflow.optim.types import ParameterType
 from adalflow.optim.grad_component import GradComponent
 
@@ -58,7 +58,7 @@ class Sum(GradComponent):
         role_descriptions = set([p.role_desc for p in params])
         role_descriptions = ", ".join(role_descriptions)
 
-        total = Parameter(
+        total = OutputParameter(
             data=concat_values,
             role_desc=f"A combination of a list of variables: {role_descriptions}",
             requires_opt=any([p.requires_opt for p in params]),
@@ -67,6 +67,12 @@ class Sum(GradComponent):
             param_type=ParameterType.SUM_OUTPUT,
         )
         total.set_predecessors(params)
+        total.trace_forward_pass(
+            input_args=params,
+            full_response=concat_values,
+            id=total.id,
+            name=total.name,
+        )
 
         log.info("Sum forward", extra={"total": total.data})
 
