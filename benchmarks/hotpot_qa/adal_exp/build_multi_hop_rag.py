@@ -360,6 +360,7 @@ class MultiHopRetrieverCycle(adal.Retriever):
             )
 
         context.param_type = ParameterType.RETRIEVER_OUTPUT
+        context.requires_opt = True
         # used as the final outptu
 
         # convert the context to the retriever output

@@ -199,12 +199,10 @@ class Parameter(Generic[T]):
         role_desc: str = "",
         param_type: ParameterType = ParameterType.NONE,
         name: str = None,  # name is used to refer to the parameter in the prompt, easier to read for humans
-        # raw_response: str = None,  # use this to track the raw response of generator instead of the data (can be parsed)
         instruction_to_optimizer: str = None,
         instruction_to_backward_engine: str = None,
         score: Optional[float] = None,
         eval_input: object = None,
-        from_response_id: Optional[str] = None,
         successor_map_fn: Optional[Dict[str, Callable]] = None,
     ):
         self.id = id or str(uuid.uuid4())
@@ -231,7 +229,6 @@ class Parameter(Generic[T]):
 
         self.previous_data = None  # used to store the previous data
         # context of the forward pass
-        # self.raw_response = raw_response
 
         self.instruction_to_optimizer: str = instruction_to_optimizer
         self.instruction_to_backward_engine: str = instruction_to_backward_engine
@@ -250,9 +247,7 @@ class Parameter(Generic[T]):
         self._previous_demos: List[DataClass] = []
         self.eval_input = eval_input
 
-        # self.from_response_id = from_response_id  # for gradient parameter
         self.successor_map_fn = successor_map_fn or {}
-        # self.component_trace = ComponentTrace()
 
     def map_to_successor(self, successor: object) -> T:
         """Apply the map function to the successor based on the successor's id."""
@@ -281,18 +276,30 @@ class Parameter(Generic[T]):
         if gradient.from_response_id is None:
             raise ValueError("Gradient must have a from_response_id.")
 
+        start_order = len(self.gradients)
+        gradient.order = start_order
+
         self.gradients.append(gradient)
+        # sort the gradients by the data_id, response_component_id, and score
+        self.sort_gradients()
 
     def reset_gradients(self):
         self.gradients = []
-
-    # def reset_gradients_context(self):
-    #     self.gradients_context = defaultdict(lambda: None)
 
     def get_gradients_names(self) -> str:
         names = [g.name for g in self.gradients]
         names = ", ".join(names)
         return names
+
+    def get_gradients_str(self) -> str:
+        if not self.gradients:
+            return ""
+
+        gradients_str = ""
+        for i, g in enumerate(self.gradients):
+            gradients_str += f"{i}. {g.data}\n"
+
+        return gradients_str
 
     def get_gradient_and_context_text(self, skip_correct_sample: bool = False) -> str:
         """Aggregates and returns:
@@ -308,6 +315,9 @@ class Parameter(Generic[T]):
         #     f"len of gradients: {len(self.gradients)}, scores: {[g._score for g in self.gradients]} for {self.name}"
         # )
 
+        if not self.gradients:
+            return ""
+
         # sore gradients by the _score from low to high
         self.gradients = sorted(
             self.gradients, key=lambda x: x.score if x.score is not None else 1
@@ -321,22 +331,29 @@ class Parameter(Generic[T]):
             lowest_score_gradients.append(g)
             print(f"{i} Score: {g.score} for {g.name}, {type(g.score)}")
 
-        # gradient_context_combined = list(
-        #     zip(
-        #         lowest_score_gradients,
-        #         [self.gradients_context[g] for g in lowest_score_gradients],
-        #     )
-        # )
-        # set all gradients value to None
-        # for g in self.gradients:
-        #     g.data = None
-
         gradient_context_combined_str = Prompt(
             template=COMBINED_GRADIENTS_TEMPLATE,
             prompt_kwargs={"combined_gradients": lowest_score_gradients},
         )().strip()
 
         return gradient_context_combined_str
+
+    def merge_gradients_for_cycle_components(self):
+        """Merge data_id, from_response_component_id into the same gradient"""
+
+    def sort_gradients(self):
+        """With rules mentioned in Graient class, we will track the gradients by data_id, then response_component_id, then score"""
+
+        self.gradients = sorted(
+            self.gradients,
+            key=lambda x: (
+                x.data_id,
+                x.from_response_component_id,
+                -x.order if x.order is not None else 0,
+                x.from_response_id,
+                x.score,
+            ),
+        )
 
     ############################################################################################################
     # Setters and getters
@@ -384,29 +401,6 @@ class Parameter(Generic[T]):
         self.tgd_optimizer_trace = TGDOptimizerTrace(
             api_kwargs=api_kwargs, output=response
         )
-
-    ############################################################################################################
-    #  Trace component, include trace_forward_pass & trace_api_kwargs for now
-    ############################################################################################################
-    # def trace_forward_pass(
-    #     self,
-    #     input_args: Dict[str, Any],
-    #     full_response: object,
-    #     id: str = None,
-    #     name: str = None,
-    # ):
-    #     r"""Trace the forward pass of the parameter. Adding the component information to the trace"""
-    #     self.input_args = input_args
-    #     self.full_response = full_response
-    #     # TODO: remove the input_args and full_response to use component_trace
-    #     self.component_trace.input_args = input_args
-    #     self.component_trace.full_response = full_response
-    #     self.component_trace.id = id
-    #     self.component_trace.name = name
-
-    def trace_api_kwargs(self, api_kwargs: Dict[str, Any]):
-        r"""Trace the api_kwargs for components like Generator and Retriever that pass to the model client."""
-        self.component_trace.api_kwargs = api_kwargs
 
     def set_eval_fn_input(self, eval_input: object):
         r"""Set the input for the eval_fn."""
@@ -834,7 +828,7 @@ class Parameter(Generic[T]):
             return wrap_text(text, width)
 
         nodes, edges = self.trace_graph(self)
-        dot = Digraph(format=format, graph_attr={"rankdir": rankdir})
+        dot = Digraph(format=format, graph_attr={"rankdir": rankdir, "dpi": "300"})
         node_names = set()
         for n in nodes:
             label_color = "darkblue"
@@ -879,10 +873,10 @@ class Parameter(Generic[T]):
                     log.info(f"Gradient context display: {gradient_context}")
                     log.info(f"data: {g.data}")
                     node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.name} Feedback: </font></b></td><td>{wrap_and_escape(g.data)}</td></tr>"
-                    if gradient_context != "":
-                        node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.name} Context: </font></b></td><td>{wrap_and_escape(gradient_context)}</td></tr>"
-                    if g.prompt:
-                        node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.name} Prompt: </font></b></td><td>{wrap_and_escape(g.prompt)}</td></tr>"
+                    # if gradient_context != "":
+                    #     node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.name} Context: </font></b></td><td>{wrap_and_escape(gradient_context)}</td></tr>"
+                    # if g.prompt:
+                    #     node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.name} Prompt: </font></b></td><td>{wrap_and_escape(g.prompt)}</td></tr>"
             if len(n._traces.values()) > 0:
                 node_label += f"<tr><td><b><font color='{label_color}'>Traces: keys: </font></b></td><td>{wrap_and_escape(str(n._traces.keys()))}</td></tr>"
                 node_label += f"<tr><td><b><font color='{label_color}'>Traces: values: </font></b></td><td>{wrap_and_escape(str(n._traces.values()))}</td></tr>"
@@ -1198,10 +1192,14 @@ class Parameter(Generic[T]):
 
                 # Traverse predecessors and add edges
                 for pred in node.predecessors:
-                    if pred.param_type != ParameterType.OUTPUT:
-                        continue
-                    pred_id = pred.component_trace.id or f"unknown_id_{uuid.uuid4()}"
-                    pred_name = pred.component_trace.name or "Unknown Component"
+                    # if pred.param_type != ParameterType.OUTPUT:
+                    #     continue
+                    pred_id = f"unknown_id_{uuid.uuid4()}"
+                    pred_name = "Unknown Component"
+
+                    if hasattr(pred, "component_trace"):
+                        pred_id = pred.component_trace.id
+                        pred_name = pred.component_trace.name
 
                     # Add edge if predecessor is also of OUTPUT type
                     if (
@@ -1388,7 +1386,6 @@ class OutputParameter(Parameter):
         instruction_to_backward_engine: str = None,
         score: Optional[float] = None,
         eval_input: object = None,
-        from_response_id: Optional[str] = None,
         successor_map_fn: Optional[Dict[str, Callable]] = None,
     ):
         super().__init__(
@@ -1403,7 +1400,6 @@ class OutputParameter(Parameter):
             instruction_to_backward_engine=instruction_to_backward_engine,
             score=score,
             eval_input=eval_input,
-            from_response_id=from_response_id,
             successor_map_fn=successor_map_fn,
         )
         self.component_trace = ComponentTrace()
@@ -1463,12 +1459,15 @@ class Gradient(DataClass):
     if two gradients have the same data_id, different from_response_id, and same from_response_component_id, this is a cycle component structure.
     """
     data_id: Optional[str] = None  # the id of the response from data in the dataset
-    from_response_id: str = (
-        None  # the id of the response from which the gradient is calculated
-    )
     from_response_component_id: str = (
         None  # the id of the component from which the gradient is calculated
     )
+    order: Optional[int] = None  # the order of the gradient in the list of gradients
+
+    from_response_id: str = (
+        None  # the id of the response from which the gradient is calculated
+    )
+
     to_pred_id: str = (
         None  # the id of the parameter to which the gradient is calculated and attached to d(from_response_id) / d(to_pred_id)
     )
@@ -1501,6 +1500,7 @@ class Gradient(DataClass):
         self.score = score
         self.data_id = data_id
         self.data = data
+        self.order = None
 
     def _generate_name(self, response: "Parameter", pred: "Parameter"):
         self.name = f"d_{response.name}_/_{pred.name}({response.id}_/_{pred.id})"

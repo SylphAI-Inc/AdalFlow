@@ -267,12 +267,14 @@ class EvalFnToTextLoss(LossComponent):
             prompt_kwargs=backward_engine_prompt_kwargs
         )
         gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
+        print(f"Backward engine prompt: {gradient_prompt}")
         gradient_value_data = (
             gradient_value.data
             or backward_engine.failure_message_to_optimizer(
                 gradient_response=gradient_value
             )
         )
+        print(f"gradient_value_data: {gradient_value_data}")
 
         log.debug(f"EvalFnToTextLoss: Gradient for {pred}: {gradient_value_data}")
 
@@ -298,6 +300,7 @@ class EvalFnToTextLoss(LossComponent):
         # TODO: not really useful
         pred.set_score(response.data)
         print(f"setting pred name {pred.name} score to {response.data}")
+        print(f"gradient_param: {pred.gradients}")
 
         # TODO: reduce meta
 

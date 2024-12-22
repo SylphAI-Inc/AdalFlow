@@ -2,6 +2,7 @@ r"""The base class for all retrievers who in particular retrieve documents from 
 
 from typing import List, Optional, Generic, Any, Callable, TYPE_CHECKING, Union
 import logging
+from copy import deepcopy
 
 from adalflow.core.types import (
     RetrieverQueriesType,
@@ -167,3 +168,9 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
                 pred.add_score_to_trace(
                     trace_id=id, score=response._score, is_teacher=self.teacher_mode
                 )
+
+            # pass the gradients
+            for grad in response.gradients:
+                # make a copy of the gradient
+                grad = deepcopy(grad)
+                pred.add_gradient(grad)

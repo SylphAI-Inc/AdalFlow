@@ -135,6 +135,15 @@ def train(
     print(trainer)
 
     train_dataset, val_dataset, test_dataset = load_datasets()
+
+    # replace the train dataset for debug
+    # if debug:
+    #     train_dataset = train_dataset[:2]
+    #     data: HotPotQAData = train_dataset[0]
+    #     data.question = "Brown State Fishing Lake is in a country that has a population of how many inhabitants?"
+    #     data.answer = "9,984"
+    #     print(f"train_dataset: {train_dataset}")
+
     trainer.fit(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
@@ -157,7 +166,7 @@ if __name__ == "__main__":
 
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     train(
-        debug=True,
+        debug=False,
         max_steps=12,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )

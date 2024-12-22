@@ -459,7 +459,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 prompt_kwargs[k] = Parameter(
                     data=v,
                     name=f"{self.name}_{k}",
-                    requires_opt=True,
+                    requires_opt=False,
                     param_type=ParameterType.INPUT,
                     data_id=id,
                 )
@@ -701,6 +701,11 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         if is_intermediate_node:  # TODO: this will always be true
             conv_ins_template = CONVERSATION_START_INSTRUCTION_CHAIN
             obj_ins_template = OBJECTIVE_INSTRUCTION_CHAIN
+            response_gradient = response.get_gradients_str()
+            if not response_gradient:
+                raise ValueError(
+                    f"Generator: No gradient found for {response}. Please check the response. pred: {pred}"
+                )
 
         instruction_str = Prompt(
             template=conv_ins_template,
@@ -714,9 +719,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             template=obj_ins_template,
             prompt_kwargs={
                 "response_desc": response.role_desc,
-                "response_gradient": response.get_gradient_and_context_text(
-                    skip_correct_sample=True
-                ),
+                "response_gradient": response_gradient,
                 "instruction_to_backward_engine": pred.instruction_to_backward_engine,
             },
         )()
@@ -728,6 +731,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         backward_engine_prompt_str = backward_engine.get_prompt(
             **backward_engine_prompt_kwargs
         )
+        print(f"Backward engine prompt: {backward_engine_prompt_str}")
         gradient_output: GeneratorOutput = None
         if response._score is not None and float(response._score) > 0.9:
             log.debug(f"EvalFnToTextLoss: Skipping {pred} as the score is high enough.")
@@ -749,6 +753,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 raise ValueError(
                     f"Generator: Backward Engine should return a GeneratorOutput. Got {gradient_output} instead."
                 )
+        print(f"Backward engine gradient: {gradient_output}")
 
         # USE this to trace each node's input and output, all nodes can be visualized
         log.info(

@@ -9,17 +9,18 @@ Reference: TextGrad: Automatic “Differentiation” via Text."""
 ### System prompt and the template is shared by all GradComponent ###
 
 FEEDBACK_ENGINE_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
-You are the feedback engine in an optimization system.
+You are the feedback engine in an optimization system consits of multiple components.
 
-Your task is to provide intelligent and creative feedback for the target variable enclosed in <VARIABLE></VARIABLE> tags,
+Your task is to provide intelligent and creative feedback in each component for the target variable enclosed in <VARIABLE></VARIABLE> tags,
 so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION></OBJECTIVE_FUNCTION> tags.
 
 1. Focus on the downstream OBJECTIVE without proposing new versions of the variable.
-2. Feedback examples: "Since language models have the X failure mode...", "Adding X can fix this error because...", "Removing X can improve the objective function because...", "Changing X to Y would fix the mistake..."
-3. Consider the variable in the context of its peers if provided.
-
-Remember:
-Be specific, concise, critical, and direct.
+2. From <CONVERSATION></CONVERSATION> section, you can find how the variable is obtained and used.
+3. The variable might have other peers that are used together to instruct the language model. But only focus on the target variable.
+4. As there might be peers, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
+In such cases, you can just say "There is no noticeable error or I have no feedback on this variable.".
+5. Reasoning about what is the variable's role in this component (you can infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
+6. Be specific, concise, critical, and direct.
 <END_OF_SYSTEM_PROMPT>
 <CONVERSATION>
 {{conversation_sec}}
@@ -29,7 +30,7 @@ Be specific, concise, critical, and direct.
 ##############################################
 # Loss Component
 ##############################################
-
+# 2. Feedback examples: "Since language models have the X failure mode...", "Adding X can fix this error because...", "Removing X can improve the objective function because...", "Changing X to Y would fix the mistake..."
 
 # Objective instruction for LLM as gradComponent with user custom instruction
 
@@ -39,9 +40,10 @@ Be specific, concise, critical, and direct.
 # Note: {{instruction_to_backward_engine}}
 # {% endif %}
 # </OBJECTIVE_FUNCTION>"""
+# Your only goal is to clearly states how it obtained the "<OUTPUTS/SCORE>".
 
 OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>
-Your only goal is to clearly states how it obtained the "<OUTPUTS/SCORE>".
+Your task is to provide the response specific feedback based on the ground truth and the score in the "<OUTPUTS/SCORE>".
 Especially when the score is low.
 Be CONCISE.
 Be specific on why it has a low score.
@@ -81,6 +83,7 @@ Here is a conversation with the language model (LM):
 {{conversation_str}}
 """
 
+# For the generator in the chain,
 OBJECTIVE_INSTRUCTION_CHAIN = r"""
 This conversation is part of a larger system. The <LM_OUTPUT> was later used as {{response_desc}}.
 <OBJECTIVE_FUNCTION>

@@ -401,7 +401,9 @@ class Trainer(Component):
             batch_size = self.train_batch_size
 
             train_loader = DataLoader(
-                train_dataset, batch_size=batch_size, shuffle=True
+                train_dataset,
+                batch_size=batch_size,
+                shuffle=True,  # if not debug else False,
             )
         val_dataset = val_dataset or self.val_dataset
         test_dataset = test_dataset or self.test_dataset
@@ -926,7 +928,6 @@ class Trainer(Component):
             raise ValueError("No losses found in the dataset.")
         # Handle case where one or both losses are None
         if correct_loss is None or failed_loss is None:
-
             # Sort all_losses by their data values
             all_losses.sort(key=lambda x: x.data, reverse=True)  # Highest to lowest
 
@@ -948,12 +949,16 @@ class Trainer(Component):
         debug_files.update(debug_output_file)
         debug_files.update(debug_component_file)
 
-        # draw graph on a single loss
+        # zero grad
+        self._zero_grad_text_optimizers()
 
+        # draw graph on a single loss
         total_loss = sum_ops([copy(failed_loss)])
         total_loss.backward()
 
-        failed_debug_files = total_loss.draw_graph(filepath=debug_path, full_trace=True)
+        failed_debug_files = total_loss.draw_graph(
+            filepath=debug_path, full_trace=False
+        )
         failed_output_file = total_loss.draw_output_subgraph(filepath=debug_path)
         failed_component_file = total_loss.draw_component_subgraph(filepath=debug_path)
         failed_debug_files.update(failed_output_file)
