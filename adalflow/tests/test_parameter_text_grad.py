@@ -8,7 +8,7 @@ from adalflow.optim.parameter import Parameter, GradientContext
 class TestGradientContext(unittest.TestCase):
     def test_gradient_context_initialization(self):
         context = GradientContext(
-            context="Sample context",
+            input_output="Sample context",
             response_desc="Sample response description",
             variable_desc="Sample variable description",
         )
@@ -23,7 +23,7 @@ class TestParameter(unittest.TestCase):
         self.param2 = Parameter(data="Gradient 2", name="param2")
         self.param1.gradients.append(self.param2)
         self.param1.gradients_context[self.param2] = GradientContext(
-            context="Conversation context",
+            input_output="Conversation context",
             response_desc="Response description",
             variable_desc="Variable description",
         )

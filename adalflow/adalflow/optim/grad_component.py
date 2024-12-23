@@ -189,7 +189,7 @@ class GradComponent(Component):
                         variable_desc=pred.role_desc,
                         response_desc=response.name,
                         # context=f"""""",  # TODO: check the forward pass component trace
-                        context=f"""{response.component_trace}""",
+                        input_output=f"""{response.component_trace}""",
                     )
                 )
 

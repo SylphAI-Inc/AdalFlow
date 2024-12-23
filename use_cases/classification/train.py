@@ -151,6 +151,9 @@ if __name__ == "__main__":
     # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json
     # 0.8958 validations -> 81 steps
     # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json
+    # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_05739_run_1.json 12 steps, 85.42% test both positve and negative gradients, 1472 seconds
+    # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_63dec_run_1.json 86.81% test on only negative gradients. with past history, 987 seconds
+    # no past history, 83% only. 84 /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_ca5ac_run_1.json
 
 
 # theory: all few-shots demo or instruction, all so that the llm can reason better. Once it reches to its limits, no more shots can help or further instruction can.

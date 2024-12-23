@@ -1956,7 +1956,11 @@ class Trainer(Component):
             )
             # check subset validation score
             val_score = val_output.avg_score
-            if val_score > subset_score:
+            if (
+                val_score == subset_score
+                and subset_score >= self.batch_val_score_threshold
+            ) or val_score > subset_score:  # allow perfect subset to pass
+
                 print(f"Pass subset check: {val_score} > {subset_score}")
                 self._track_effectiveness("subset", True)
 

@@ -168,7 +168,7 @@ if __name__ == "__main__":
 
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     train(
-        debug=True,
+        debug=False,
         max_steps=12,
         strategy="random",
         # resume_from_ckpt="/Users/liyin/Documents/test/LightRAG/.adalflow/ckpt/MultiHopRAGCycleAdal/constrained_max_steps_12_69e07_run_1.json",

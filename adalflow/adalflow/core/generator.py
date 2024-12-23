@@ -773,7 +773,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         )
         var_gradient.add_context(
             GradientContext(
-                context=conversation_str,
+                input_output=conversation_str,
                 response_desc=response.role_desc,
                 variable_desc=pred.role_desc,  # parameter_desc
             )

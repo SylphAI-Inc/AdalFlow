@@ -295,7 +295,7 @@ class EvalFnToTextLoss(LossComponent):
         gradient_param.add_prompt(gradient_prompt)
         gradient_param.add_context(
             GradientContext(
-                context=conversation_str,
+                input_output=conversation_str,
                 response_desc=response.role_desc,
                 variable_desc=pred.role_desc,
             )

@@ -120,27 +120,34 @@ You must base on the following examples when modifying the {{variable_desc}}:
 # """
 
 OPTIMIZER_SYSTEM_PROMPT = r"""
-You are part of an optimization system designed to refine variables based on feedback generated from a batch of input data.
+You are an optimizer and your task is to improve a variable based on feedback from a batch of input data points.
+
+The variable is either input or output of a functional component where the component schema will be provided.
 
 ### Your Responsibilities:
 1. **Address Feedback**: Resolve concerns raised in the feedback while preserving the positive aspects of the original variable.
-2. **Preserve Intent**: Ensure that the new variable maintains the same overall intent and purpose as the original.
-3. **Leverage Context**: Consider past performance patterns (when available) to retain good qualities in the variable.
-4. **Peer Awareness**:
-   - If a peer variable will be optimized separately, avoid overlapping its scope.
-   - If a peer variable is not being optimized, overlap is permitted when necessary to address the feedback effectively.
+2. **Peer Awareness**:
+   - If a peer will be optimized itself, do not overlap with its scope.
+   - Otherwise, you can overlap if it helps address the feedback effectively.
+3. Observe past performance patterns (when available) to retain good qualities in the variable.
 
 ### Notes:
-- In the absence of specific feedback, you may rephrase the initial variable to improve clarity or specificity without altering its core meaning.
-- When specific feedback is provided, you can either rephrase or refine the variable with more detailed instructions or adjustments to directly or indirectly address the feedback.
+1. You can eliminate unnecessary words or phrases to improve clarity.
+2. Add new elements or rephrase to address the feedback. When no feedback is provided(high batch performance), you rephrase the variable.
+3. Be creative. If adding new elements, be concise.
 
 {{output_format_str}}
 
 {% if instruction_to_optimizer %}
-5. **Additional User Instructions**: {{instruction_to_optimizer}}
+4. **Additional User Instructions**: {{instruction_to_optimizer}}
 {% endif %}
 """
 # 5. **Batch Consistency**: Do not optimize the variable to fit only one specific sample if the batch size is larger than 1. Ensure the variable remains applicable to the entire batch.
+
+# 2. **Preserve Intent**: Ensure that the new variable maintains the same overall intent and purpose as the original.
+
+# - In the absence of specific feedback, you may rephrase the initial variable to improve clarity or specificity without altering its core meaning.
+# - When specific feedback is provided, you can either rephrase or refine the variable with more detailed instructions or adjustments to directly or indirectly address the feedback.
 
 
 @dataclass
@@ -165,7 +172,7 @@ class TGDData(DataClass):
 
 
 @dataclass
-class TGDOptimizerTrace:
+class TGDOptimizerTrace(DataClass):
     api_kwargs: Dict[str, Any] = field(
         metadata={
             "desc": "The api_kwargs for components like Generator and Retriever that pass to the model client"
@@ -231,7 +238,13 @@ class TGDOptimizer(TextOptimizer):
             prompt_kwargs={
                 # "new_variable_start_tag": new_variable_tags[0],
                 # "new_variable_end_tag": new_variable_tags[1],
-                "output_format_str": self.output_parser.get_output_format_str(),
+                "output_format_str": """Your output should be formatted as a standard JSON instance with the following schema:
+```
+{
+    "reasoning": "Why the variable is proposed this way (str) (required)",
+    "proposed_variable": "The proposed variable (str) (required)"
+}
+```"""
             },
         )
         self.variable_and_peers_info = Prompt(
@@ -364,7 +377,8 @@ class TGDOptimizer(TextOptimizer):
         )
 
         # variable_grad = param.get_gradients_str()
-        variable_grad = param.get_gradient_and_context_text()
+        # variable_grad = param.get_gradient_and_context_text(skip_correct_sample=False)
+        variable_grad = param.get_gradients_component_schema(skip_correct_sample=False)
 
         user_prompt_kwargs = {
             "variable_and_peers_info": variable_and_peer_info,

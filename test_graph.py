@@ -48,7 +48,7 @@ def generate_node_html(node, output_dir="node_pages"):
         file.write(
             f"""
         <!DOCTYPE html>
-        <html lang="en">
+    <html lang="en">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">

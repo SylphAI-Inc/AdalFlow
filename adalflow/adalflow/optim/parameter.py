@@ -30,13 +30,19 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class GradientContext:
+class GradientContext(DataClass):
+    """GradientContext is used to describe the component's function and trace its input and output.
+
+    To get the component's function desc, use GradientContext.to_yaml_signature()
+    To get the data: use instance.to_yaml()
+    """
+
     variable_desc: str = field(
         metadata={"desc": "The description of the target parameter"}
     )
     # from template LOSS_CONVERSATION_TEMPLATE_STRING
     # LLM_CONVERSATION_TEMPLATE from backward_engine_prompt
-    context: str = field(
+    input_output: str = field(
         metadata={
             "desc": "The context of the gradient in form of a conversation indicating \
                 the relation of the current parameter to the response parameter"
@@ -44,17 +50,6 @@ class GradientContext:
     )
     response_desc: str = field(
         metadata={"desc": "The description of the response parameter"}
-    )
-
-
-@dataclass(frozen=True)
-class ComponentNode(DataClass):
-    """Used to represent a node in the component graph."""
-
-    id: str = field(metadata={"desc": "The unique id of the component"})
-    name: str = field(metadata={"desc": "The name of the component"})
-    type: Literal["INPUT", "COMPONENT"] = field(
-        metadata={"desc": "The type of the node"}, default="COMPONENT"
     )
 
 
@@ -92,48 +87,51 @@ class ScoreTrace:
     )
 
 
-# COMBINED_GRADIENTS_TEMPLATE = r"""
-# {% if combined_gradients %}
-# Batch size: {{ combined_gradients|length }}
-# {% endif %}
-# {% for g in combined_gradients %}
-# {% set gradient = g[0] %}
-# {% set gradient_context = g[1] %}
+@dataclass(frozen=True)
+class ComponentNode(DataClass):
+    """Used to represent a node in the component graph."""
 
-# {% if gradient_context %}
-# {{loop.index}}.
-# <CONTEXT>{{gradient_context.context}}</CONTEXT>
-# {% endif %}
-
-# {% if gradient.data %}
-#   {% if gradient_context %}
-# {#The output is used as <{{gradient_context.response_desc}}>#}
-# <FEEDBACK>{{gradient.data}}</FEEDBACK>
-# {% else %}
-# <FEEDBACK>{{gradient.data}}</FEEDBACK>
-# {% endif %}
-# {% endif %}
-# {% endfor %}"""
+    id: str = field(metadata={"desc": "The unique id of the component"})
+    name: str = field(metadata={"desc": "The name of the component"})
+    type: Literal["INPUT", "COMPONENT"] = field(
+        metadata={"desc": "The type of the node"}, default="COMPONENT"
+    )
 
 
 COMBINED_GRADIENTS_TEMPLATE = r"""
-{% if combined_gradients %}
-Batch size: {{ combined_gradients|length }}
+{% if component_schema %}
+<COMPONENT_SCHEMA>
+Gradients are from {{ component_schema | length }} components.
+{% for component_id, schema in component_schema.items() %}
+id: {{ component_id }}
+{{ schema }}
+{% endfor %}
+</COMPONENT_SCHEMA>
 {% endif %}
+<DESCRIPTION>
+If same data_id appears multiple times, it means this component/variable is called multiple times in the same order as it appears in the gradient list.
+Use this info to have more clarity while reasoning and proposing new variable
+</DESCRIPTION>
+{% if combined_gradients %}
 {% for g in combined_gradients %}
 {% set gradient = g %}
 
-{% if gradient.context %}
+{% if gradient['context'] %}
 {{loop.index}}.
-<CONTEXT>{{gradient.context}}</CONTEXT>
+data_id: {{gradient['data_id']}}
+INPUT_OUTPUT: {{gradient['context']}}
 {% endif %}
 
-{% if gradient.data %}
+{% if gradient['score'] is not none %}
 {#The output is used as <{{gradient_context.response_desc}}>#}
-<SCORE>{{gradient.score}}</SCORE>
-<FEEDBACK>{{gradient.data}}</FEEDBACK>
+<SCORE>{{gradient['score']}}</SCORE>
+<FEEDBACK>{{gradient['gradient']}}</FEEDBACK>
 {% endif %}
-{% endfor %}"""
+{% endfor %}
+{% endif %}
+"""
+
+# Batch size: {{ combined_gradients|length }}
 
 
 class Parameter(Generic[T]):
@@ -321,9 +319,9 @@ class Parameter(Generic[T]):
             return ""
 
         # sore gradients by the _score from low to high
-        self.gradients = sorted(
-            self.gradients, key=lambda x: x.score if x.score is not None else 1
-        )
+        # self.gradients = sorted(
+        #     self.gradients, key=lambda x: x.score if x.score is not None else 1
+        # )
         # print the score for the sorted gradients
         lowest_score_gradients = []
         for i, g in enumerate(self.gradients):
@@ -333,10 +331,103 @@ class Parameter(Generic[T]):
             lowest_score_gradients.append(g)
             print(f"{i} Score: {g.score} for {g.name}, {type(g.score)}")
 
+        gradient_context_combined_str = ""
+        if lowest_score_gradients and len(lowest_score_gradients) > 0:
+
+            # parse the gradients and context.
+            gradients_and_context: List[Dict[str, Any]] = (
+                []
+            )  # {gradient: data, context: GradientContext.input_output}
+            for g in lowest_score_gradients:
+                gradients_and_context.append(
+                    {
+                        "data_id": g.data_id,
+                        "gradient": g.data,
+                        "context": g.context.input_output,
+                        "score": g.score,
+                    }
+                )
+
+            gradient_context_combined_str = Prompt(
+                template=COMBINED_GRADIENTS_TEMPLATE,
+                prompt_kwargs={"combined_gradients": gradients_and_context},
+            )().strip()
+
+        # get component id: gradient
+        component_id_to_gradient: Dict[str, Gradient] = {}
+        for g in lowest_score_gradients:
+            component_id_to_gradient[g.from_response_component_id] = g
+
+        componend_id_to_schema: Dict[str, str] = {}
+        for id, g in component_id_to_gradient.items():
+            componend_id_to_schema[id] = g.context.to_yaml(exclude={"input_output"})
+
+        # if there are multiple successors, there will be multiple component schemas
+
+        return gradient_context_combined_str
+
+    def get_gradients_component_schema(self, skip_correct_sample: bool = False) -> str:
+        """Aggregates and returns:
+        1. the gradients
+        2. the context text for which the gradients are computed
+
+        Sort the gradients from the lowest score to the highest score.
+        Highlight the gradients with the lowest score to the optimizer.
+        """
+        from adalflow.core.prompt_builder import Prompt
+
+        # print(
+        #     f"len of gradients: {len(self.gradients)}, scores: {[g._score for g in self.gradients]} for {self.name}"
+        # )
+
+        if not self.gradients:
+            return ""
+
+        # sore gradients by the _score from low to high
+        # self.gradients = sorted(
+        #     self.gradients, key=lambda x: x.score if x.score is not None else 1
+        # )
+        # print the score for the sorted gradients
+        lowest_score_gradients = []
+        for i, g in enumerate(self.gradients):
+            if skip_correct_sample:
+                if g.score > 0.5:
+                    continue
+            lowest_score_gradients.append(g)
+            print(f"{i} Score: {g.score} for {g.name}, {type(g.score)}")
+
+        # get component id: gradient
+        component_id_to_gradient: Dict[str, Gradient] = {}
+        for g in lowest_score_gradients:
+            component_id_to_gradient[g.from_response_component_id] = g
+
+        componend_id_to_schema: Dict[str, str] = {}
+        for id, g in component_id_to_gradient.items():
+            componend_id_to_schema[id] = g.context.to_yaml(exclude=["input_output"])
+
+        # parse the gradients and context.
+        gradients_and_context: List[Dict[str, Any]] = (
+            []
+        )  # {gradient: data, context: GradientContext.input_output}
+        for g in lowest_score_gradients:
+            gradients_and_context.append(
+                {
+                    "data_id": g.data_id,
+                    "gradient": g.data,
+                    "context": g.context.input_output,
+                    "score": g.score,
+                }
+            )
+
         gradient_context_combined_str = Prompt(
             template=COMBINED_GRADIENTS_TEMPLATE,
-            prompt_kwargs={"combined_gradients": lowest_score_gradients},
+            prompt_kwargs={
+                "combined_gradients": gradients_and_context,
+                "component_schema": componend_id_to_schema,
+            },
         )().strip()
+
+        # if there are multiple successors, there will be multiple component schemas
 
         return gradient_context_combined_str
 
@@ -398,6 +489,7 @@ class Parameter(Generic[T]):
     # Trace the tgd optimizer data
     ############################################################################################################
     def trace_optimizer(self, api_kwargs: Dict[str, Any], response: "TGDData"):
+        r"""Trace the inputs and output of a TGD optimizer."""
         from adalflow.optim.text_grad.tgd_optimizer import TGDOptimizerTrace
 
         self.tgd_optimizer_trace = TGDOptimizerTrace(
@@ -620,6 +712,11 @@ class Parameter(Generic[T]):
 
         gradients_json = json.dumps(gradients, indent=4, ensure_ascii=False)
 
+        optimizer_trace = None
+        if node.tgd_optimizer_trace:
+            optimizer_trace = node.tgd_optimizer_trace.to_json_obj()
+            optimizer_trace = json.dumps(optimizer_trace, indent=4, ensure_ascii=False)
+
         with open(filename, "w") as file:
             file.write(
                 f"""
@@ -648,6 +745,7 @@ class Parameter(Generic[T]):
                 <p><b>Requires Optimization:</b> {node.requires_opt}</p>
                 <p><b>Type:</b> {node.param_type.value} ({node.param_type.description})</p>
                 <pre><b>Gradients:</b>\n{gradients_json}</pre>
+                <pre><b>TGD Optimizer Trace:</b>\n{optimizer_trace}</pre>
 
             </body>
             </html>
