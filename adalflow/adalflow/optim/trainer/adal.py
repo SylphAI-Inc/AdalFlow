@@ -85,7 +85,7 @@ class AdalComponent(Component):
         return [
             PromptData(p.id, p.name, p.data, p.requires_opt)
             for p in self.task.parameters()
-            # if p.requires_opt
+            if p.requires_opt
         ]
 
     def prepare_task(self, sample: Any, *args, **kwargs) -> Tuple[Callable, Dict]:
@@ -478,9 +478,17 @@ class AdalComponent(Component):
         # TODO: let use decide which mode to be
         self.task.eval()
         self.task.use_teacher(mode=False)  # ensure the teacher is not used
-        completed_y_preds, completed_samples, index_to_score = self.pred_step(
-            batch, batch_idx, num_workers, running_eval=True, min_score=minimum_score
-        )
+        try:
+            completed_y_preds, completed_samples, index_to_score = self.pred_step(
+                batch,
+                batch_idx,
+                num_workers,
+                running_eval=True,
+                min_score=minimum_score,
+            )
+        except Exception as e:
+            raise ValueError(f"Error in validation step: {e}")
+
         if index_to_score:
             # compute score from index_to_score
 
@@ -493,12 +501,15 @@ class AdalComponent(Component):
                 avg_score=avg_score, per_item_scores=acc_list
             )
         else:
+            try:
 
-            eval_results = self.evaluate_samples(
-                samples=completed_samples,
-                y_preds=completed_y_preds,
-                num_workers=num_workers,
-            )
+                eval_results = self.evaluate_samples(
+                    samples=completed_samples,
+                    y_preds=completed_y_preds,
+                    num_workers=num_workers,
+                )
+            except Exception as e:
+                raise ValueError(f"Error in evaluation: {e}")
         return eval_results
 
     def loss_step(

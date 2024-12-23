@@ -26,7 +26,7 @@ class TrecClassifierAdal(adal.AdalComponent):
         eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
         loss_fn = adal.EvalFnToTextLoss(
             eval_fn=eval_fn,
-            eval_fn_desc="exact_match: 1 if str(y) == str(y_gt) else 0",
+            eval_fn_desc="exact_match: 1 if str(y) == str(y_gt) else 0. When the LLM prediction failed with format parsing which results with errors, we set y_pred = -1",
         )
         super().__init__(
             task=task,
@@ -52,7 +52,7 @@ class TrecClassifierAdal(adal.AdalComponent):
         self, sample: TRECExtendedData, y_pred: adal.Parameter, *args, **kwargs
     ) -> Tuple[Callable[..., Any], Dict]:
         full_response = y_pred.full_response
-        y_label = -1
+        y_label = -1  # default value for failed prediction
         if (
             full_response
             and full_response.data is not None
@@ -67,7 +67,7 @@ class TrecClassifierAdal(adal.AdalComponent):
             eval_input=sample.class_name,
             requires_opt=False,
         )
-        return self.loss_fn, {"kwargs": {"y": y_pred, "y_gt": y_gt}}
+        return self.loss_fn, {"kwargs": {"y": y_pred, "y_gt": y_gt}, "id": sample.id}
 
 
 def train(
@@ -113,7 +113,7 @@ def train(
         # val_dataset=val_dataset,
         # test_dataset=test_dataset,
         debug=debug,
-        resume_from_ckpt="/Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json",
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json",
     )
 
 
@@ -148,6 +148,8 @@ if __name__ == "__main__":
     # TrecClassifierAdal/constrained_max_steps_12_2ffa7_run_2.json
     # 1086s
     # 0.88 validation (the steps are not right, it shows 56 steps)
+    # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json
+    # 0.8958 validations -> 81 steps
     # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json
 
 

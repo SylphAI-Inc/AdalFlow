@@ -105,7 +105,7 @@ def train(
     bootstrap_shots: int = 4,
     max_steps=1,
     num_workers=4,
-    strategy="constrained",
+    strategy="random",
     optimization_order="sequential",
     debug=False,
     resume_from_ckpt=None,
@@ -155,7 +155,9 @@ def train(
 if __name__ == "__main__":
     from use_cases.config import gpt_3_model
 
-    log = adal.get_logger(level="DEBUG", enable_console=False)
+    # log = adal.get_logger(
+    #     level="DEBUG", enable_console=False, filename="multi_hop_rag_cycle.log"
+    # )
 
     adal.setup_env()
 
@@ -166,7 +168,9 @@ if __name__ == "__main__":
 
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     train(
-        debug=False,
+        debug=True,
         max_steps=12,
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
+        strategy="random",
+        # resume_from_ckpt="/Users/liyin/Documents/test/LightRAG/.adalflow/ckpt/MultiHopRAGCycleAdal/constrained_max_steps_12_69e07_run_1.json",
     )
+    # the best 0.74

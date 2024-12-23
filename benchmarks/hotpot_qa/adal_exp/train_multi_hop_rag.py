@@ -117,7 +117,7 @@ def train(
         text_optimizer_model_config=gpt_4o_model,  # gpt3.5 is not enough to be used as a good optimizer, it struggles for long contenxt
         backward_engine_model_config=gpt_4o_model,
     )
-    print(adal_component)
+    # print(adal_component)
     trainer = adal.Trainer(
         train_batch_size=train_batch_size,
         adaltask=adal_component,
@@ -146,7 +146,7 @@ def train(
 if __name__ == "__main__":
     from use_cases.config import gpt_3_model
 
-    log = adal.get_logger(level="DEBUG", enable_console=False)
+    # log = adal.get_logger(level="DEBUG", enable_console=False)
 
     adal.setup_env()
 
@@ -157,7 +157,7 @@ if __name__ == "__main__":
 
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     train(
-        debug=False,
+        debug=True,
         max_steps=12,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )
@@ -181,3 +181,4 @@ if __name__ == "__main__":
     # feedback while seeing the gt + y
     # only negative feedback /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_f5506_run_1.json 0.62 -> 0.7
     # /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_b4aa5_run_1.json 0.74 pass rate 8 32
+    # random cycle rag: /Users/liyin/.adalflow/ckpt/MultiHopRAGCycleAdal/random_max_steps_12_82bd2_run_1.json 0.64

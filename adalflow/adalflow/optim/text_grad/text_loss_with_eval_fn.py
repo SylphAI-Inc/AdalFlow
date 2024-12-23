@@ -182,7 +182,7 @@ class EvalFnToTextLoss(LossComponent):
     @staticmethod
     def _backward_through_one_predecessor(
         pred: Parameter,
-        inputs_string: str,
+        kwargs: Dict[str, Parameter],
         response: Parameter,
         eval_fn_desc: str,
         backward_engine: "BackwardEngine",
@@ -217,11 +217,17 @@ class EvalFnToTextLoss(LossComponent):
 
         instruction_str, objective_str = None, None
 
+        # convert kwargs to key, (value, type(eval_input))
+
+        inputs = {}
+        for k, v in kwargs.items():
+            inputs[k] = (v, str(type(v.eval_input)))
+
         # response information
         conversation_str = Prompt(
             LOSS_CONVERSATION_TEMPLATE_STRING,
             prompt_kwargs={
-                "input_str": inputs_string,
+                "inputs": inputs,
                 "eval_fn_desc": eval_fn_desc,
                 "response_value": response.data,
                 "metadata": json.dumps(metadata) if metadata else None,
@@ -328,13 +334,6 @@ class EvalFnToTextLoss(LossComponent):
 
         # go through all child parameters
         if backward_engine and not response.backward_engine_disabled:
-            # Convert all input arguments to string
-            inputs_string = "\n\n".join(
-                [
-                    f"({k}) (role: {v.role_desc}), data: {v.data}, input_to_eval_fn: {v.eval_input}, data_type: {type(v.eval_input)}"
-                    for k, v in kwargs.items()
-                ]
-            )
             for pred in children_params:
                 if not pred.requires_opt:
                     log.debug(
@@ -344,7 +343,7 @@ class EvalFnToTextLoss(LossComponent):
 
                 self._backward_through_one_predecessor(
                     pred,
-                    inputs_string,
+                    kwargs,
                     response,
                     eval_fn_desc,
                     backward_engine,

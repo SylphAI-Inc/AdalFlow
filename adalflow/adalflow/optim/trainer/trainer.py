@@ -951,10 +951,15 @@ class Trainer(Component):
 
         # zero grad
         self._zero_grad_text_optimizers()
+        # revert
+        self._revert_text_optimizers()
+
+        total_loss.reset_all_gradients()
 
         # draw graph on a single loss
         total_loss = sum_ops([copy(failed_loss)])
         total_loss.backward()
+        self._propose_text_optimizers()
 
         failed_debug_files = total_loss.draw_graph(
             filepath=debug_path, full_trace=False
@@ -1576,8 +1581,10 @@ class Trainer(Component):
         self._zero_grad_text_optimizers()
 
         num_epochs = self._estimate_num_epochs(train_loader, self.max_steps)
+        print(f"num_epochs: {num_epochs}, max_steps: {self.max_steps}")
         total_steps = starting_step
         for epoch in tqdm(range(num_epochs), desc="Epoch"):
+            print(f"Epoch: {epoch}")
             for steps, batch in enumerate((pbar := tqdm(train_loader, position=0))):
                 total_steps += 1
                 if total_steps > self.max_steps + starting_step:
@@ -1586,14 +1593,26 @@ class Trainer(Component):
                 self._zero_grad_text_optimizers()
                 pbar.set_description(f"Training Step: {total_steps}")
                 self.adaltask.train()  # this will turn everything to train mode
-                self.train()
-                y_preds = self.adaltask.train_step(batch, steps, self.num_workers)
-                losses = self.adaltask.loss_step(
-                    batch, y_preds, steps, self.num_workers
-                )
+                # self.train()
+                try:
+                    y_preds = self.adaltask.train_step(batch, steps, self.num_workers)
+                except Exception as e:
+                    print(f"Error in train step: {e}")
+                    raise e
+                try:
+                    losses = self.adaltask.loss_step(
+                        batch, y_preds, steps, self.num_workers
+                    )
+                except Exception as e:
+                    print(f"Error in loss step: {e}")
+                    raise e
                 total_loss = sum_ops(losses)
                 print("Loss backward...")
-                total_loss.backward()
+                try:
+                    total_loss.backward()
+                except Exception as e:
+                    print(f"Error in backward: {e}")
+                    raise e
                 print("Optimizer propose...")
                 self._propose_text_optimizers()
                 new_prompts = self.adaltask._get_param_values()
@@ -1606,6 +1625,7 @@ class Trainer(Component):
                     self.num_workers,
                     minimum_score=last_val_score,
                 )
+                print(f"Val output: {val_output}")
                 val_score = val_output.avg_score
 
                 if val_score > last_val_score:
@@ -1631,7 +1651,6 @@ class Trainer(Component):
                     #     self._add_failed_proposals_text_optimizers() # track failed proposals
 
                     print(f"Optimizer revert: {val_score} <= {last_val_score}")
-                    # self.optimizer.revert()
                     self._revert_text_optimizers()
                     # save the score, no change
                     self._add_one_step_in_trainer_results(
@@ -1643,10 +1662,10 @@ class Trainer(Component):
                         attempted_val_score=val_score,
                     )
 
-                print(f"Saving checkpoint to {self.ckpt_file}")
+                print(f" {total_steps}, Saving checkpoint to {self.ckpt_file}")
                 save_json(trainer_results.to_dict(), self.ckpt_file)
             save_json(trainer_results.to_dict(), self.ckpt_file)  # checkpoint
-            return trainer_results
+        return trainer_results
 
     @staticmethod
     def _add_one_step_in_trainer_results(
@@ -1905,6 +1924,8 @@ class Trainer(Component):
         )
         print(f"Subset batch acc: {subset_score}")
 
+        self.adaltask.train()
+
         # compute the subset loss
         subset_losses = [all_losses[i] for i in subset_indices]
 
@@ -2018,6 +2039,8 @@ class Trainer(Component):
 
         if not val_score_increased:
             print("No proposal can improve the subset and full set, and val set")
+            self._zero_grad_text_optimizers()
+            subset_loss.reset_all_gradients()
             # save the score, no change
             self._add_one_step_in_trainer_results(
                 trainer_results,
@@ -2070,7 +2093,7 @@ class Trainer(Component):
         trainer_results: TrainerResult = None,
         starting_step: int = 0,
     ) -> TrainerResult:
-        from adalflow.optim.parameter import Parameter
+        from adalflow.optim.parameter import OutputParameter
 
         logger.info("Fitting using Textual Gradient Descent with constraints")
         trainer_results = (
@@ -2086,7 +2109,8 @@ class Trainer(Component):
 
         num_epochs = self._estimate_num_epochs(train_loader, self.max_steps)
         total_steps = starting_step
-        all_samples, all_losses, all_y_preds = [], [], []
+        all_samples, all_losses = [], []
+        all_y_preds: List[OutputParameter] = []
         for epoch in tqdm(range(num_epochs), desc="Epoch"):
             for steps, batch in enumerate((pbar := tqdm(train_loader, position=0))):
                 total_steps += 1
@@ -2105,7 +2129,7 @@ class Trainer(Component):
                 all_samples.extend(batch)
                 all_losses.extend(losses)
                 all_y_preds.extend(
-                    [y.full_response for y in y_preds if isinstance(y, Parameter)]
+                    [y.full_response for y in y_preds if isinstance(y, OutputParameter)]
                 )
 
                 all_samples, all_losses, all_y_preds = (
@@ -2121,85 +2145,5 @@ class Trainer(Component):
                     )
                 )
 
-                # check optimizer stages to see if the proposal was accepted so far
-                # if not self._check_optimizer_proposal():
-                #     print(
-                #         "No proposal can improve the subset and full set, go to next step"
-                #     )
-
-                #     self._add_one_step_in_trainer_results(
-                #         trainer_results,
-                #         trainer_results.val_scores[-1],
-                #         trainer_results.test_scores[-1],
-                #         trainer_results.prompts[-1],
-                #         total_steps,
-                #     )
-                #     continue
-
-                # # prune the correct sample size if its too big, same with error samples
-                # # run the tests as any other optimizer
-                # if self.adaltask.validate_condition(steps, total_steps):
-                #     # set the batch size to the size of the validation set
-                #     last_val_score = trainer_results.val_scores[-1]
-                #     val_output = self.adaltask.validation_step(
-                #         val_dataset,
-                #         total_steps,
-                #         self.num_workers,
-                #         minimum_score=last_val_score,
-                #     )
-                #     val_score = val_output.avg_score
-
-                #     if val_score > last_val_score:
-                #         print(f"Optimizer step: {val_score} > {last_val_score}")
-                #         # self.optimizer.step()
-                #         self._add_history_text_optimizers(
-                #             val_score
-                #         )  # track top performor
-                #         self._step_text_optimizers()
-
-                #         # save the score
-                #         step_result = {
-                #             "val_score": val_score,
-                #         }
-
-                #         self._track_effectiveness("valset", True)
-
-                #         # test the model
-                #         if test_dataset is not None:
-                #             test_output = self.adaltask.validation_step(
-                #                 test_dataset,
-                #                 steps,
-                #                 self.num_workers,
-                #             )
-                #             step_result["test_score"] = test_output.avg_score
-                #         else:
-                #             step_result["test_score"] = None
-                #         step_result["prompts"] = self.adaltask._get_param_values()
-                #         step_result["step"] = total_steps
-                #         self._add_one_step_in_trainer_results(
-                #             trainer_results,
-                #             **step_result,
-                #         )
-
-                #         # reset the moving batch
-
-                #         all_samples, all_losses, all_y_preds = [], [], []
-
-                #     else:
-                #         print(f"Optimizer revert: {val_score} <= {last_val_score}")
-                #         self._revert_text_optimizers()
-                #         # self._add_failed_proposals_text_optimizers() # track failed proposals
-                #         self._track_effectiveness("valset", False)
-                #         self._add_one_step_in_trainer_results(
-                #             trainer_results,
-                #             trainer_results.val_scores[-1],
-                #             trainer_results.test_scores[-1],
-                #             trainer_results.prompts[-1],
-                #             total_steps,
-                #             attempted_val_score=val_score,
-                #         )
-
-                # trainer_results.effective_measure = self._effective_measure
-                # save_json(trainer_results.to_dict(), self.ckpt_file)
         save_json(trainer_results.to_dict(), self.ckpt_file)
         return trainer_results

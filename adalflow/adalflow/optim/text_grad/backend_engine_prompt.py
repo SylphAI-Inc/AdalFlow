@@ -19,7 +19,7 @@ so that the optimizer can optimize this variable to improve the objective enclos
 3. The variable might have other peers that are used together to instruct the language model. But only focus on the target variable.
 4. As there might be peers, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
 In such cases, you can just say "There is no noticeable error or I have no feedback on this variable.".
-5. Reasoning about what is the variable's role in this component (you can infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
+5. When you reason, really think about the variable's role in the component(infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
 6. Be specific, concise, critical, and direct.
 <END_OF_SYSTEM_PROMPT>
 <CONVERSATION>
@@ -64,9 +64,17 @@ TARGET VARIABLE:
 LOSS_CONVERSATION_TEMPLATE_STRING = r"""
 The variable is passed to the eval function and compared with a target/ground truth value.
 
-<EVAL_FUNC_DESCRIPTION>: {{eval_fn_desc}}
-<INPUTS>: {{input_str}}
-<OUTPUTS/SCORE>: {{response_value}}
+EVAL_FUNC: {{eval_fn_desc}}
+
+INPUTS:
+{% for key, (value, eval_type) in inputs.items() %}
+({{ key }}) (role: {{ value.role_desc }}),
+full response: {{ value.data }},
+input_to_eval_fn: {{ value.eval_input }},
+data_type: {{ eval_type }}
+{% endfor %}
+
+OUTPUTS/SCORE: {{response_value}}
 {% if metadata %}
 Note: {{metadata}}
 {% endif %}"""

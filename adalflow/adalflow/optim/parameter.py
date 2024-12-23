@@ -34,14 +34,16 @@ class GradientContext:
     variable_desc: str = field(
         metadata={"desc": "The description of the target parameter"}
     )
-    response_desc: str = field(
-        metadata={"desc": "The description of the response parameter"}
-    )
+    # from template LOSS_CONVERSATION_TEMPLATE_STRING
+    # LLM_CONVERSATION_TEMPLATE from backward_engine_prompt
     context: str = field(
         metadata={
             "desc": "The context of the gradient in form of a conversation indicating \
-                the relation of the current parameter to the response parameter (gradient)"
+                the relation of the current parameter to the response parameter"
         }
+    )
+    response_desc: str = field(
+        metadata={"desc": "The description of the response parameter"}
     )
 
 
@@ -471,10 +473,6 @@ class Parameter(Generic[T]):
         self.previous_data = None
         self.proposing = False
 
-        # reset the gradients and context
-        # self.reset_gradients()
-        # self.reset_gradients_context()
-
         # cant reset gradients yet for the loss
         if include_demos:
             self._demos = self._previous_demos
@@ -488,9 +486,6 @@ class Parameter(Generic[T]):
         self.previous_data = None
         self.proposing = False
 
-        # reset the gradients and context
-        # self.reset_gradients()
-        # self.reset_gradients_context()
         if include_demos:
             self._previous_demos = []
 
@@ -533,6 +528,12 @@ class Parameter(Generic[T]):
         )
         return short_value
 
+    def reset_all_gradients(self):
+        """Traverse the graph and reset the gradients for all nodes."""
+        nodes, _ = Parameter.trace_graph(self)
+        for node in nodes:
+            node.reset_gradients()
+
     @staticmethod
     def trace_graph(
         root: "Parameter",
@@ -549,21 +550,6 @@ class Parameter(Generic[T]):
 
         build_graph(root)
         return nodes, edges
-
-    # def report_cycle(cycle_nodes: List["Parameter"]):
-    #     """
-    #     Report the detected cycle and provide guidance to the user on how to avoid it.
-    #     """
-    #     cycle_names = [node.name for node in cycle_nodes]
-    #     log.warning(f"Cycle detected: {' -> '.join(cycle_names)}")
-    #     print(f"Cycle detected in the graph: {' -> '.join(cycle_names)}")
-
-    #     # Provide guidance on how to avoid the cycle
-    #     print("To avoid the cycle, consider the following strategies:")
-    #     print("- Modify the graph structure to remove cyclic dependencies.")
-    #     print(
-    #         "- Check the relationships between these nodes to ensure no feedback loops."
-    #     )
 
     def backward(
         self,
@@ -599,58 +585,75 @@ class Parameter(Generic[T]):
                 log.debug(f"Calling gradient function for {node.name}")
                 node.grad_fn()
 
-    # def backward(
-    #     self,
-    # ):  # engine should be the llm or customized backwards function to pass feedback
+    @staticmethod
+    def generate_node_html(node: "Parameter", output_dir="node_pages"):
+        """Generate an HTML page for a specific node."""
+        import json
 
-    #     # topological sort of all the predecessors of the current parameter in the graph
-    #     log.debug(f"Backward pass for {self.data}, backward function: {self.grad_fn}")
-    #     topo: List[Parameter] = []
-    #     visited = set()
-    #     in_stack = set()  # Nodes currently being visited to detect cycles
-    #     cycle_detected = False  # Flag to check if any cycle was detected
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
 
-    #     def build_topo(node: Parameter, stack: Set[Parameter] = set()):
-    #         nonlocal cycle_detected
+        filename = f"{output_dir}/{node.name}.html"
 
-    #         if stack is None:
-    #             stack = []
+        # inspect everything about the gradients
+        # gradients = ""
+        # for i, g in enumerate(node.gradients):
+        #     # Format each gradient as YAML with proper indentation and replace \n\n\n with actual line breaks
+        #     gradient_yaml = g.to_yaml().replace("\\n", "\n").replace("\n\n\n", "\n")
+        #     gradients += f"{i}:\n{gradient_yaml}\n"
 
-    #         # If the node is already in the stack, we have detected a cycle
-    #         if node in in_stack:
-    #             cycle_detected = True
-    #             cycle_nodes = stack + [node]  # The cycle includes the current path
-    #             self.report_cycle(cycle_nodes)
-    #             return False  # Stop further processing due to cycle
-    #         if node in visited:
-    #             return
-    #         visited.add(node)
-    #         in_stack.add(node)
-    #         stack.append(node)
-    #         for pred in node.predecessors:
-    #             build_topo(pred)
-    #         topo.append(node)
-    #         stack.pop()  # Backtrack, remove the node from the current path
+        # Gather gradients as JSON objects
+        gradients = []
+        for i, g in enumerate(node.gradients):
+            gradients.append(
+                g.to_json_obj()
+            )  # Use to_json_obj for proper JSON object structure
 
-    #         in_stack.remove(node)  # Remove from the stack after processing
-    #         return True
+        data_json = None
+        if isinstance(node.data, dict):
+            data_json = data_json
+        elif isinstance(node.data, DataClass):
+            data_json = node.data.to_json_obj()
+        else:
+            data_json = str(node.data)
+            data_json = {"data": data_json}
 
-    #     # build_topo(self)
-    #     if not build_topo(self):
-    #         log.error("Cycle detected, stopping backward pass.")
-    #         return  # Stop the backward pass due to cycle detection
-    #     # backpropagation
+        gradients_json = json.dumps(gradients, indent=4, ensure_ascii=False)
 
-    #     self.gradients = set()
-    #     for node in reversed(topo):
-    #         if not node.requires_opt:
-    #             log.debug(f"Skipping {node.name} as it does not require optimization")
-    #             continue
-    #         node.gradients = _check_and_reduce_gradients(node)
-    #         log.debug(f"v: {node.data}, grad_fn: {node.grad_fn}, {node.get_grad_fn()}")
-    #         if node.get_grad_fn() is not None:  # gradient function takes in the engine
-    #             log.debug(f"Calling gradient function for {node.name}")
-    #             node.grad_fn()
+        with open(filename, "w") as file:
+            file.write(
+                f"""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>{node.name}</title>
+                <style>
+                    pre {{
+                        background-color: #f5f5f5;
+                        padding: 10px;
+                        border-radius: 5px;
+                        overflow-x: auto;
+                    }}
+                </style>
+            </head>
+            <body>
+                <h1>Details for Node: {node.name}</h1>
+                <p><b>ID:</b> {node.id}</p>
+                <p><b>Role:</b> {node.role_desc}</p>
+                <pre><b>Data:</b> \n{json.dumps(data_json, indent=4)}</pre>
+                <p><b>Data ID:</b> {node.data_id}</p>
+                <p><b>Previous Value:</b> {node.previous_data}</p>
+                <p><b>Requires Optimization:</b> {node.requires_opt}</p>
+                <p><b>Type:</b> {node.param_type.value} ({node.param_type.description})</p>
+                <pre><b>Gradients:</b>\n{gradients_json}</pre>
+
+            </body>
+            </html>
+            """
+            )
+        print(f"Generated HTML for node: {node.name} at {filename}")
 
     def draw_interactive_html_graph(
         self,
@@ -678,11 +681,26 @@ class Parameter(Generic[T]):
         # Create a pyvis Network instance
         net = Network(height="750px", width="100%", directed=True)
 
+        # different color per node type
+        node_colors = {
+            ParameterType.PROMPT: "lightblue",
+            ParameterType.DEMOS: "orange",
+            ParameterType.INPUT: "gray",
+            ParameterType.OUTPUT: "green",
+            ParameterType.GENERATOR_OUTPUT: "purple",
+            ParameterType.RETRIEVER_OUTPUT: "red",
+            ParameterType.LOSS_OUTPUT: "pink",
+            ParameterType.SUM_OUTPUT: "blue",
+        }
+
         # Add nodes to the graph
         node_ids = set()
         for node in nodes:
+            self.generate_node_html(node, output_dir=filepath)
+
             label = (
-                f"<b>Name:</b> {node.name}<br>"
+                f"""<div style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background: white; position: relative; font-family: Arial, sans-serif;">"""
+                f"<b>Name:</b> {node.name[0:10]}<br>"
                 f"<b>Role:</b> {node.role_desc.capitalize()}<br>"
                 f"<b>Value:</b> {node.data}<br>"
                 f"<b>Data ID:</b> {node.data_id}<br>"
@@ -690,18 +708,16 @@ class Parameter(Generic[T]):
             if node.proposing:
                 label += "<b>Proposing:</b> Yes<br>"
                 label += f"<b>Previous Value:</b> {node.previous_data}<br>"
-            if node.requires_opt:
-                label += "<b>Requires Optimization:</b> Yes<br>"
+            label += f"<b>Requires Optimization:</b> {node.requires_opt}<br>"
             if node.param_type:
-                label += f"<b>Type:</b> {node.param_type}<br>"
-            if node.gradients:
-                label += f"<b>Gradients:</b> {node.get_gradients_names()}<br>"
+                label += f"<b>Type:</b> {node.param_type.value}<br>"
 
             net.add_node(
-                node.id,
-                label=node.name,
+                n_id=node.id,
+                label=node.name[0:16],
                 title=label,
-                color="lightblue" if node.proposing else "orange",
+                color=node_colors.get(node.param_type, "gray"),
+                url=f"{filepath}/{node.name}.html",
             )
             node_ids.add(node.id)
 
@@ -718,25 +734,58 @@ class Parameter(Generic[T]):
         net.toggle_physics(True)
         net.template = Template(
             """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
-            <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-network.min.css" rel="stylesheet" />
-        </head>
-        <body>
-            <div id="mynetwork" style="height: {{ height }};"></div>
-            <script type="text/javascript">
-                var nodes = new vis.DataSet({{ nodes | safe }});
-                var edges = new vis.DataSet({{ edges | safe }});
-                var container = document.getElementById('mynetwork');
-                var data = { nodes: nodes, edges: edges };
-                var options = {{ options | safe }};
-                var network = new vis.Network(container, data, options);
-            </script>
-        </body>
-        </html>
-        """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-network.min.css" rel="stylesheet" />
+        <style>
+            #tooltip {
+                display: none;
+                position: absolute;
+                max-width: 300px;
+                border: 1px solid #ccc;
+                padding: 10px;
+                background: white;
+                z-index: 1000;
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                line-height: 1.5;
+            }
+            #tooltip button {
+                display: block;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="tooltip">
+            <div id="tooltip-content"></div>
+            <button onclick="document.getElementById('tooltip').style.display='none'">Close</button>
+        </div>
+        <div id="mynetwork" style="height: {{ height }};"></div>
+        <script type="text/javascript">
+            var nodes = new vis.DataSet({{ nodes | safe }});
+            var edges = new vis.DataSet({{ edges | safe }});
+            var container = document.getElementById('mynetwork');
+            var data = { nodes: nodes, edges: edges };
+            var options = {{ options | safe }};
+            var network = new vis.Network(container, data, options);
+
+            // Handle node click to open a link
+            network.on("click", function (params) {
+                if (params.nodes.length > 0) {
+                    const nodeId = params.nodes[0];
+                    const node = nodes.get(nodeId);
+                    if (node.url) {
+                        window.open(node.url, '_blank');
+                    }
+                }
+            });
+        </script>
+    </body>
+    </html>
+    """
         )
 
         # Save the graph as an HTML file
@@ -774,12 +823,6 @@ class Parameter(Generic[T]):
                 "Please install graphviz using 'pip install graphviz' to use this feature"
             ) from e
 
-        # try:
-        #     from tensorboardX import SummaryWriter
-        # except ImportError as e:
-        #     raise ImportError(
-        #         "Please install tensorboardX using 'pip install tensorboardX' to use this feature"
-        #     ) from e
         assert rankdir in ["LR", "TB"]
         try:
             import textwrap
@@ -910,45 +953,7 @@ class Parameter(Generic[T]):
             dot.edge(n1.name, n2.name)
 
         dot.render(filepath, format=format, cleanup=True)
-        # from PIL import Image
-        # try:
-        #     import matplotlib.pyplot as plt
-        # except ImportError as e:
-        #     raise ImportError(
-        #         "Please install matplotlib using 'pip install matplotlib' to use this feature"
-        #     ) from e
-        #     ) from e
-        # from io import BytesIO
-        # import numpy as np
 
-        # # Read the rendered image file into memory using matplotlib
-        # with open(f"{filepath}.{format}", "rb") as f:
-        #     image_bytes = f.read()
-
-        # # Use matplotlib to read the image from bytes
-        # image = plt.imread(BytesIO(image_bytes), format=format)
-
-        # # Ensure the image is in the format [H, W, C]
-        # if image.ndim == 2:  # Grayscale image
-        #     image = np.expand_dims(image, axis=2)
-
-        # Read the rendered image file
-        # writer.add_image("graph", image, dataformats="HWC", global_step=1)
-        # writer.close()
-
-        # filename = f"{filepath}_prompts.json"
-        # prompts = {}
-        # for n in nodes:
-        #     prompts[n.name] = {
-        #         "raw_response": n.raw_response,
-        #     }
-        #     for g in n.gradients:
-        #         prompts[g.name] = {
-        #             "gradient_prompt": g.gradient_prompt,
-        #         }
-
-        # save_json(prompts, filename)
-        # save root node to_dict to json
         save_json(self.to_dict(), f"{filepath}_root.json")
 
         # draw interactive graph
@@ -1371,6 +1376,7 @@ class OutputParameter(Parameter):
     component_trace: ComponentTrace = (
         None  # Trace of the component that produced this output
     )
+    full_response: object = None  # The full response from the component
 
     def __init__(
         self,
@@ -1422,6 +1428,8 @@ class OutputParameter(Parameter):
         self.component_trace.full_response = full_response
         self.component_trace.id = id
         self.component_trace.name = name
+        # just for convenience to trace full response separately
+        self.full_response = full_response
 
     def trace_api_kwargs(self, api_kwargs: Dict[str, Any]):
         r"""Trace the api_kwargs for components like Generator and Retriever that pass to the model client."""
@@ -1434,6 +1442,11 @@ class OutputParameter(Parameter):
                 "component_trace": self.component_trace.to_dict(),
             }
         )
+
+    # def to_json(self):
+    #     import json
+
+    #     return json.dumps(self.to_dict())
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -1478,6 +1491,8 @@ class Gradient(DataClass):
     data: Any = None
     prompt: Optional[str] = None  # the LLM prompt to generate the gradient
 
+    is_default_copy: bool = False  # whether the gradient is a default copy
+
     def __init__(
         self,
         *,
@@ -1512,6 +1527,12 @@ class Gradient(DataClass):
     def add_data(self, data: Any):
         self.data = data
 
+    def update_from_to(self, from_response: "Parameter", to_pred: "Parameter"):
+        self.from_response_id = from_response.id
+        self.to_pred_id = to_pred.id
+        self._generate_name(from_response, to_pred)
+        self.from_response_component_id = from_response.component_trace.id
+
     def add_prompt(self, prompt: str):
         self.prompt = prompt
 
@@ -1519,7 +1540,9 @@ class Gradient(DataClass):
 # Move the gradients representation to this class.
 @dataclass
 class Gradients(DataClass):
-    gradients: List[Gradient]
+    gradients: List[Gradient] = field(
+        default_factory=list, metadata={"desc": "The list of gradients"}
+    )
 
     def __init__(self, gradients: List[Gradient]):
         self.gradients = gradients

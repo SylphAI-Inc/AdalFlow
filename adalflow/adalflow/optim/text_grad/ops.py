@@ -4,7 +4,7 @@ from typing import List
 import logging
 
 from adalflow.optim.function import BackwardContext
-from adalflow.optim.parameter import Parameter, Gradient, OutputParameter
+from adalflow.optim.parameter import Parameter, OutputParameter
 from adalflow.optim.types import ParameterType
 from adalflow.optim.grad_component import GradComponent
 
@@ -33,7 +33,10 @@ def sum_ops(params: List[Parameter]) -> Parameter:
 # TODO: make all loss functions to support batch losses
 # TODO: use a temlate to format the concatenated values
 class Sum(GradComponent):
-    __doc__ = """The class to define a sum operation on a list of parameters, such as losses or gradients."""
+    __doc__ = """The class to define a sum operation on a list of parameters, such as losses or gradients.
+
+    It enables gradients combination of a batch of data samples.
+    """
 
     name = "Sum"
 
@@ -120,37 +123,12 @@ class Sum(GradComponent):
             }
             log.info(f"""Idempotent sum backward: {extra}""")
 
-            param_gradient = Gradient(
-                # name=f"sum_to_{param.name}_grad",
-                data=param_gradient_value,
-                data_id=summation.data_id,
-                # role_desc=f"Feedback to {param.role_desc}",
-                score=summation._score,
-                from_response=summation,
-                to_pred=param,
-            )
-            param.add_gradient(param_gradient)
-            log.debug(f"Added gradient to {param.role_desc}: {param_gradient.data}")
-
-        #             var_gradient = Gradient(
-        #     # name=f"{response.name}({response.id})_to_{pred.name}({pred.id})_grad",
-        #     # gradient_prompt=prompt_str,  # trace the prompt
-        #     data=gradient_value,
-        #     data_id=response.data_id,
-        #     # requires_opt=True,
-        #     # role_desc=f"feedback for {pred.name}",
-        #     score=response._score,  # add score to gradient
-        #     # param_type=ParameterType.GRADIENT,
-        #     # from_response_id=response.id,
-        #     from_response=response,
-        #     to_pred=pred,
-        # )
-        # var_gradient.add_context(
-        #     GradientContext(
-        #         context=conversation_str,
-        #         response_desc=response.role_desc,
-        #         variable_desc=pred.role_desc,  # parameter_desc
-        #     )
-        # )
-        # pred.add_gradient(var_gradient)
-        # pred.set_score(response._score)
+            # param_gradient = Gradient(
+            #     data=param_gradient_value,
+            #     data_id=summation.data_id,
+            #     score=summation._score,
+            #     from_response=summation,
+            #     to_pred=param,
+            # )
+            # param.add_gradient(param_gradient)
+            # log.debug(f"Added gradient to {param.role_desc}: {param_gradient.data}")

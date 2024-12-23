@@ -124,7 +124,7 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
         top_k = Parameter(
             data=top_k or self.top_k,
             name="top_k",
-            requires_opt=True,
+            requires_opt=False,
             param_type=ParameterType.HYPERPARAM,
         )
         if input is None:

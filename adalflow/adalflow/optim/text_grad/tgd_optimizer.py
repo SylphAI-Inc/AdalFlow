@@ -19,6 +19,7 @@ from adalflow.optim.parameter import Parameter
 from adalflow.core.base_data_class import DataClass
 from adalflow.tracing.decorators import trace_generator_states
 from adalflow.utils.logger import printc
+from adalflow.core.types import GeneratorOutput
 
 
 if TYPE_CHECKING:
@@ -48,7 +49,9 @@ TEXT_GRAD_DESC_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 {{optimizer_system_prompt}}
 <END_OF_SYSTEM_PROMPT>
 <START_OF_USER_MESSAGE>
-
+<START_OF_VARIABLE_AND_PEERS_INFO>
+{{variable_and_peers_info}}
+<END_OF_VARIABLE_AND_PEERS_INFO>
 {# OPRO past history #}
 {% if past_history %}
 <START_OF_HISTORY_PERFORMANCE>
@@ -360,11 +363,14 @@ class TGDOptimizer(TextOptimizer):
             variable=param.get_param_info(), peers=param.peers  # param.peers
         )
 
+        # variable_grad = param.get_gradients_str()
+        variable_grad = param.get_gradient_and_context_text()
+
         user_prompt_kwargs = {
             "variable_and_peers_info": variable_and_peer_info,
-            "variable_grad": param.get_gradient_and_context_text(
-                skip_correct_sample=False
-            ),
+            "variable_grad": variable_grad,  # param.get_gradient_and_context_text(
+            #   skip_correct_sample=False
+            # ),
             # constraints
             "constraint_text": self.constraint_text if self.do_constrained else None,
             # in-context examples
@@ -434,19 +440,28 @@ class TGDOptimizer(TextOptimizer):
                 **user_prompt_kwargs,
             }
             # turn off cache
-            response = self.llm_optimizer.call(
-                prompt_kwargs=prompt_kwargs, use_cache=not no_cache
-            )
+            try:
+                response: GeneratorOutput = self.llm_optimizer.call(
+                    prompt_kwargs=prompt_kwargs, use_cache=not no_cache
+                )
+            except Exception as e:
+                printc(f"Error in the optimizer: {e}", color="red")
+                raise e
+            if not isinstance(response, GeneratorOutput):
+                raise TypeError(f"Wrong response type: {type(response)}")
+
             prompt_str = self.llm_optimizer.get_prompt(**prompt_kwargs)
             log.debug(f"TGD LLM optimizer prompt: {prompt_str}")
+            printc(f"TGD LLM optimizer prompt:: {prompt_str}", color="blue")
             proposed_data: TGDData = (
                 response.data
-                if response.data
+                if response.data is not None
                 else TGDData(
                     reasoning="No reasoning", proposed_variable=response.raw_response
                 )
             )
             log.info(f"Response from the optimizer: {response}")
+            printc(f"Response from the optimizer: {response}", color="blue")
             # extract the improved variable from the response
             # TODO: make it more robust
             # improved_variable = extract_new_variable(proposed_data)

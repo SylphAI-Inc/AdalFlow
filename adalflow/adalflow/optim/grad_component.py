@@ -152,6 +152,7 @@ class GradComponent(Component):
 
         Subclass should implement this method if you need additional backward logic.
         """
+        from adalflow.optim.parameter import GradientContext
 
         log.info(f"GradComponent backward: {response.name}")
         children_params = response.predecessors
@@ -174,11 +175,27 @@ class GradComponent(Component):
 
             # pass the current gradient to pred
 
+            # TODO: each gradcomponent will have its own context, but
+            # passing the successor's gradient.data to the current.
+
             for grad in response.gradients:
                 # make a copy of the gradient
                 grad = deepcopy(grad)
+                # update the gradient context and from and to
+                grad.update_from_to(response, pred)
+                grad.is_default_copy = True
+                grad.add_context(
+                    GradientContext(
+                        variable_desc=pred.role_desc,
+                        response_desc=response.name,
+                        # context=f"""""",  # TODO: check the forward pass component trace
+                        context=f"""{response.component_trace}""",
+                    )
+                )
+
                 # grad.from_response_id = response.id
                 # grad.name = f"{grad.name}_to_{pred.name}"
+
                 pred.add_gradient(grad)
             # pred.add_gradient(
             #     gradient=Parameter(
