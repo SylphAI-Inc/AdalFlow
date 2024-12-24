@@ -160,6 +160,11 @@ class GradComponent(Component):
         if response.get_gradient_and_context_text().strip() == "":
             log.info(f"Generator: Backward: No gradient found for {response}.")
 
+        # backward the backward engine disable signal
+        if response.backward_engine_disabled:
+            for pred in children_params:
+                pred.backward_engine_disabled = True
+
         for pred in children_params:
             pred.set_score(response._score)
             from adalflow.utils.logger import printc

@@ -159,7 +159,7 @@ if __name__ == "__main__":
 
     ckpt = train(
         debug=False,
-        max_steps=12,
+        max_steps=1,
         strategy=set_strategy,
         exclude_input_fields_from_bootstrap_demos=True,
     )
@@ -179,3 +179,4 @@ if __name__ == "__main__":
     # 0.86->0.94 val, 0.79 -> 0.93 with only negative gradients /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_7a649_run_1.json
 
     # without gradients -> 0.9 on tests
+    # without positive gradients -> /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_8ac70_run_1.json 0.84->0.94 val, 0.82 -> 0.88 test

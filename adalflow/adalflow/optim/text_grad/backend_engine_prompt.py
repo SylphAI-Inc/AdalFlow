@@ -21,6 +21,9 @@ so that the optimizer can optimize this variable to improve the objective enclos
 In such cases, you can just say "There is no noticeable error".
 5. When you reason, really think about the variable's role in the component(infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
 6. Be specific, concise, critical, and direct.
+
+If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
+
 <END_OF_SYSTEM_PROMPT>
 <CONVERSATION>
 {{conversation_sec}}
@@ -144,6 +147,8 @@ PEER_VARIABLE: EMPTY
 # a list of variables
 ALL_PRED_INFO = r"""
 <VARIABLES>
+{% if variables %}
+Length of the list: {{variables|length}}
 {% for variable in variables %}
 {{loop.index}}.
 NAME: {{variable.name}},
@@ -151,7 +156,10 @@ TYPE: {{variable.param_type}},
 ROLE: {{variable.role_desc}}
 WILL_BE_OPTIMIZED: {{variable.requires_opt}}
 VARIABLE: {{variable.data}}
-{% endfor %}"""
+{% endfor %}
+{% endif %}
+</VARIABLES>
+"""
 
 OUTPUT_INSTRUCTION = r"""
 You will create a feedback for each of the variable in the list above.

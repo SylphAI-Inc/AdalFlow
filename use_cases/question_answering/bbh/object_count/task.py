@@ -37,12 +37,12 @@ class ObjectCountTaskPipeline(adal.Component):
             param_type=ParameterType.PROMPT,
             instruction_to_optimizer="You can try to show examples to see if it helps.",
         )
-        # few_shot_demos = adal.Parameter(
-        #     data=None,
-        #     role_desc="To provide few shot demos to the language model",
-        #     requires_opt=False,
-        #     param_type=ParameterType.DEMOS,
-        # )
+        few_shot_demos = adal.Parameter(
+            data=None,
+            role_desc="To provide few shot demos to the language model",
+            requires_opt=True,
+            param_type=ParameterType.DEMOS,
+        )
 
         self.llm_counter = adal.Generator(
             model_client=model_client,
@@ -50,7 +50,7 @@ class ObjectCountTaskPipeline(adal.Component):
             template=few_shot_template,
             prompt_kwargs={
                 "system_prompt": system_prompt,
-                # "few_shot_demos": few_shot_demos,
+                "few_shot_demos": few_shot_demos,
             },
             output_processors=parse_integer_answer,
             use_cache=True,

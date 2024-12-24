@@ -37,7 +37,7 @@ from adalflow.optim.function import BackwardContext
 from adalflow.utils.cache import CachedEngine
 from adalflow.tracing.callback_manager import CallbackManager
 from adalflow.utils.global_config import get_adalflow_default_root_path
-from adalflow.core.string_parser import ListParser
+from adalflow.core.string_parser import JsonParser
 
 
 from adalflow.optim.text_grad.backend_engine_prompt import (
@@ -628,6 +628,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             log.debug(
                 f"Generator: Backward engine is set for the generator. {backward_engine}"
             )
+            if response.backward_engine_disabled:
+                for pred in children_params:
+                    pred.backward_engine_disabled = True
+                return
             if not all_pred_at_once:
                 for pred in children_params:
                     if not pred.requires_opt or pred.param_type == ParameterType.DEMOS:
@@ -646,16 +650,22 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                         is_intermediate_node=is_intermediate_node,
                     )
             else:
-                # 2nd approach, backward all that need opt at once.
-                self._backward_through_all_predecessors(
-                    children_params=children_params,
-                    response=response,
-                    prompt_kwargs=prompt_kwargs,
-                    template=template,
-                    backward_engine=backward_engine,
-                    prompt_str=prompt_str,
-                    is_intermediate_node=is_intermediate_node,
-                )
+                backward = False
+                for pred in children_params:
+                    if pred.requires_opt and pred.param_type == ParameterType.PROMPT:
+                        backward = True
+                        break
+                if backward:
+                    # 2nd approach, backward all that need opt at once.
+                    self._backward_through_all_predecessors(
+                        children_params=children_params,
+                        response=response,
+                        prompt_kwargs=prompt_kwargs,
+                        template=template,
+                        backward_engine=backward_engine,
+                        prompt_str=prompt_str,
+                        is_intermediate_node=is_intermediate_node,
+                    )
         else:
             log.debug("Backward engine is not set for the generator. No text gradient.")
 
@@ -669,7 +679,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         prompt_str: str,
         is_intermediate_node: bool = False,
     ):
-        parser = ListParser()
+        parser = JsonParser()
         # instruction and objective is the same for all the children
         instruction_str, objective_str = None, None
 
@@ -748,6 +758,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             gradient_output: GeneratorOutput = backward_engine(
                 prompt_kwargs=backward_engine_prompt_kwargs
             )
+            print(f"gradient_output: {gradient_output}")
             if not isinstance(gradient_output, GeneratorOutput):
                 raise ValueError(
                     f"Generator: Backward Engine should return a GeneratorOutput. Got {gradient_output} instead."
@@ -767,6 +778,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                     response_gradient_list = [failure_message] * len(children_params)
                 print(f"failure_message: {failure_message}")
 
+        print(f"response_gradient_list: {response_gradient_list}")
+
         # generate the gradient for each child
         for i, pred in enumerate(children_params):
             if not pred.requires_opt or pred.param_type == ParameterType.DEMOS:
@@ -775,8 +788,15 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 )
                 continue
 
+            gradient_data = (
+                response_gradient_list[i]
+                if response_gradient_list and len(response_gradient_list) > i
+                else "Failed to get the gradient."
+            )
+            print(f"i: {i}, gradient_data: {gradient_data}")
+
             var_gradient = Gradient(
-                data=response_gradient_list[i],
+                data=gradient_data,
                 data_id=response.data_id,
                 score=response._score,  # add score to gradient
                 from_response=response,

@@ -142,10 +142,7 @@ id: {{ component_id }}
 {% endfor %}
 </COMPONENT_SCHEMA>
 {% endif %}
-<DESCRIPTION>
-If the same DataID has multiple gradients, it means this component/variable is called multiple times in the same order as it appears in the gradient list.
-Use this info to have more clarity while reasoning and proposing new variables.
-</DESCRIPTION>
+
 {% if combined_gradients %}
 {% for group in combined_gradients %}
 <DataID: {{ group.data_id }}>
@@ -160,9 +157,11 @@ INPUT_OUTPUT: {{ gradient.context }}
 {% endfor %}
 </DataID>
 
+
 {% endfor %}
 {% endif %}
 """
+# Use this info to have more clarity while reasoning and proposing new variables.
 
 # {% if combined_gradients %}
 # {# Group gradients by data_id #}
@@ -1729,6 +1728,8 @@ class Gradient(DataClass):
         self.to_pred_id = to_pred.id
         self.score = score
         self.data_id = data_id
+        if self.data_id is None:
+            raise ValueError("The data_id should not be None.")
         self.data = data
         self.order = None
 

@@ -1975,24 +1975,24 @@ class Trainer(Component):
                     self._demo_optimizers_revert()
                 continue
             # validate the full set
-            move_batch_result = self.adaltask.validation_step(
-                all_samples, steps, self.num_workers
-            )
-            new_move_batch_score = move_batch_result.avg_score
-            if new_move_batch_score >= move_batch_score:
-                print(f"Pass full check: {new_move_batch_score} >= {move_batch_score}")
-                self._track_effectiveness("fullset", True)
-                # break
-            else:
-                print(
-                    f"Fail full check, try next proposal: {new_move_batch_score} < {move_batch_score}"
-                )
-                self._track_effectiveness("fullset", False)
-                # self._add_failed_proposals_text_optimizers()
-                self._revert_text_optimizers()
-                if include_demo_optimizers:
-                    self._demo_optimizers_revert()
-                continue
+            # move_batch_result = self.adaltask.validation_step(
+            #     all_samples, steps, self.num_workers
+            # )
+            # new_move_batch_score = move_batch_result.avg_score
+            # if new_move_batch_score >= move_batch_score:
+            #     print(f"Pass full check: {new_move_batch_score} >= {move_batch_score}")
+            #     self._track_effectiveness("fullset", True)
+            #     # break
+            # else:
+            #     print(
+            #         f"Fail full check, try next proposal: {new_move_batch_score} < {move_batch_score}"
+            #     )
+            #     self._track_effectiveness("fullset", False)
+            #     # self._add_failed_proposals_text_optimizers()
+            #     self._revert_text_optimizers()
+            #     if include_demo_optimizers:
+            #         self._demo_optimizers_revert()
+            #     continue
 
             # check on the validation set
             # set the batch size to the size of the validation set
@@ -2011,7 +2011,9 @@ class Trainer(Component):
                 self._step_text_optimizers()
                 self._add_history_text_optimizers(val_score)
 
-                self._demo_optimizers_step()
+                if include_demo_optimizers:
+
+                    self._demo_optimizers_step()
 
                 # test the model
                 test_score = None
@@ -2037,7 +2039,8 @@ class Trainer(Component):
                 self._track_effectiveness("valset", False)
                 # self.optimizer.revert()
                 self._revert_text_optimizers()
-                self._demo_optimizers_revert()
+                if include_demo_optimizers:
+                    self._demo_optimizers_revert()
 
                 continue
 

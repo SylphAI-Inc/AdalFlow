@@ -12,30 +12,9 @@ class TestGradientContext(unittest.TestCase):
             response_desc="Sample response description",
             variable_desc="Sample variable description",
         )
-        self.assertEqual(context.context, "Sample context")
+        self.assertEqual(context.input_output, "Sample context")
         self.assertEqual(context.response_desc, "Sample response description")
         self.assertEqual(context.variable_desc, "Sample variable description")
-
-
-class TestParameter(unittest.TestCase):
-    def setUp(self):
-        self.param1 = Parameter(data="Gradient 1", name="param1")
-        self.param2 = Parameter(data="Gradient 2", name="param2")
-        self.param1.gradients.append(self.param2)
-        self.param1.gradients_context[self.param2] = GradientContext(
-            input_output="Conversation context",
-            response_desc="Response description",
-            variable_desc="Variable description",
-        )
-
-    def test_get_gradient_text(self):
-        expected_output = """Batch size: 1
-
-1.
-<CONTEXT>Conversation context</CONTEXT>
-
-<FEEDBACK>Gradient 2</FEEDBACK>"""
-        self.assertEqual(self.param1.get_gradient_and_context_text(), expected_output)
 
 
 #     def test_get_gradient_and_context_text(self):
@@ -83,7 +62,6 @@ class TestUpdatePrompt(unittest.TestCase):
         # Check if each variable value is in the generated output
         # self.assertIn("Role description", result)
         # self.assertIn("short value", result)
-        self.assertIn("gradient and context text", result)
         # self.assertIn("<start>", result)
         # self.assertIn("<end>", result)
         self.assertIn("Some constraint text", result)

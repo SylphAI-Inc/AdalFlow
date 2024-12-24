@@ -333,23 +333,27 @@ class EvalFnToTextLoss(LossComponent):
         log.info(f"response_gradient_context: {response_gradient_context}")
 
         # go through all child parameters
-        if backward_engine and not response.backward_engine_disabled:
-            for pred in children_params:
-                if not pred.requires_opt:
-                    log.debug(
-                        f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
-                    )
-                    continue
+        if backward_engine:
+            if not response.backward_engine_disabled:
+                for pred in children_params:
+                    if not pred.requires_opt:
+                        log.debug(
+                            f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
+                        )
+                        continue
 
-                self._backward_through_one_predecessor(
-                    pred,
-                    kwargs,
-                    response,
-                    eval_fn_desc,
-                    backward_engine,
-                    is_intermediate_node,
-                    metadata,
-                )
+                    self._backward_through_one_predecessor(
+                        pred,
+                        kwargs,
+                        response,
+                        eval_fn_desc,
+                        backward_engine,
+                        is_intermediate_node,
+                        metadata,
+                    )
+            else:  # recursively disable backward for all children
+                for pred in children_params:
+                    pred.backward_engine_disabled = True
         # backward for the score for the demo
         for pred in children_params:
             # if not pred.requires_opt:

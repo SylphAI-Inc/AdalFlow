@@ -634,14 +634,16 @@ class AgenticRAG(adal.GradComponent):
         )
 
         def dspy_retriever_as_tool(input: str) -> List[str]:
+            r"""Retrieves the top k passages from using input as the query"""
             output = self.dspy_retriever(input=input)
             parsed_output = output
             if isinstance(output, adal.Parameter):
                 parsed_output = output.data
             return parsed_output[0].documents
 
-        def generator_as_tool(input: str) -> str:
-            output = self.llm(input=input)
+        def generator_as_tool(input: str, context: List[str]) -> str:
+            r"""Generates the answer to the question using the context"""
+            output = self.llm(prompt_kwargs={"question": input, "context": context})
             return output
 
         self.agent = ReActAgent(

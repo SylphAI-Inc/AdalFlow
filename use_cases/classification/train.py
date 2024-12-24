@@ -10,6 +10,7 @@ from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from use_cases.config import (
     gpt_3_model,
     gpt_4o_model,
+    gpt_4o_mini_model,
 )
 
 
@@ -86,8 +87,8 @@ def train(
     adal_component = TrecClassifierAdal(
         model_client=model_client,
         model_kwargs=model_kwargs,
-        text_optimizer_model_config=gpt_4o_model,
-        backward_engine_model_config=gpt_4o_model,
+        text_optimizer_model_config=gpt_4o_mini_model,
+        backward_engine_model_config=gpt_4o_mini_model,
         teacher_model_config=gpt_4o_model,
     )
     print(adal_component)
@@ -156,6 +157,7 @@ if __name__ == "__main__":
     # no past history, 83% only. 84 /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_ca5ac_run_1.json
     # past history, both gradients, 88.89% in 12 steps /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_b4612_run_1.json 1477s
     # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_f1e5a_run_1.json 811s 89.58% both positive and negative gradients
+    # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_05a8e_run_1.json 1518 85.41% only negative gradients
 
 
 # theory: all few-shots demo or instruction, all so that the llm can reason better. Once it reches to its limits, no more shots can help or further instruction can.

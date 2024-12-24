@@ -139,7 +139,7 @@ The variable is either input or output of a functional component where the compo
 {{output_format_str}}
 
 {% if instruction_to_optimizer %}
-4. **Additional User Instructions**: {{instruction_to_optimizer}}
+**Additional User Instructions**: {{instruction_to_optimizer}}
 {% endif %}
 """
 

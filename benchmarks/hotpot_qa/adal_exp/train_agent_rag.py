@@ -72,7 +72,7 @@ class AgenticRAGAdal(adal.AdalComponent):
         pred.eval_input = (
             pred.data[-1].observation if pred.data and pred.data[-1] else ""
         )
-        return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}}
+        return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}, "id": sample.id}
 
 
 # Note: diagnose is quite helpful, it helps you to quickly check if the evalfunction is the right metrics
@@ -154,9 +154,9 @@ if __name__ == "__main__":
 
     # train_diagnose(**gpt_3_model)
 
-    # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     train(
-        debug=True,
+        debug=False,
         max_steps=2,
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )
+    # 0.68 on val without training, 0.74on the second step. 0.84 test
+    # /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_2_029cb_run_1.json

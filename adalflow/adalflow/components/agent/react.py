@@ -110,32 +110,22 @@ class AppendStepHistory(GradComponent):
         return step_history
 
 
-class StepHistoryToOutput(GradComponent):
-    def __init__(self):
-        super().__init__()
+# class GeneroutorOutputToStepOutput(GradComponent):
+#     def __init__(self):
+#         super().__init__()
 
-    def call(self, step_history: List[StepOutput]) -> Any:
-        """Convert the step_history to the final output."""
-        if not step_history:
-            return None
-        return step_history[-1].observation
-
-
-class GeneroutorOutputToStepOutput(GradComponent):
-    def __init__(self):
-        super().__init__()
-
-    def call(
-        self,
-        generator_output: GeneratorOutput,
-        step_output: StepOutput,
-        step: int,
-        execute_action: Any,
-    ) -> StepOutput:
-        """Convert the generator output to the step output."""
-        return execute_action_fn(generator_output, step_output, step, execute_action)
+#     def call(
+#         self,
+#         generator_output: GeneratorOutput,
+#         step_output: StepOutput,
+#         step: int,
+#         execute_action: Any,
+#     ) -> StepOutput:
+#         """Convert the generator output to the step output."""
+#         return execute_action_fn(generator_output, step_output, step, execute_action)
 
 
+# TODO: make execute_action_fn to a GradComponent to enable the training of the tools too.
 def execute_action_fn(
     x: GeneratorOutput, step_output: StepOutput, step: int, execute_action: Any
 ) -> StepOutput:
@@ -284,11 +274,8 @@ class ReActAgent(GradComponent):
             model_kwargs=model_kwargs,
         )
 
-        # self.step_history: Union[List[StepOutput], Parameter] = None
         # added this component to the computation graph
         self.append_step_history = AppendStepHistory()
-        self.step_history_to_output = StepHistoryToOutput()
-        # self.generator_output_to_step_output = GeneroutorOutputToStepOutput()
 
     def _init_tools(
         self,
@@ -329,12 +316,6 @@ class ReActAgent(GradComponent):
         tools.append(finish)
         self.tool_manager: ToolManager = ToolManager(tools=tools)
 
-    # def reset(self):
-    #     r"""Reset the agent to start a new query."""
-    #     self.step_history = None
-    #     # if isinstance(self.step_history, Parameter):
-    #     #     self.step_history = self.step_history.data
-
     # TODO: add async execution
     def _execute_action(self, action_step: StepOutput) -> Optional[StepOutput]:
         """Parse the action string to a function call and execute it. Update the action_step with the result."""
@@ -366,10 +347,6 @@ class ReActAgent(GradComponent):
         """
         from functools import partial
 
-        # prompt_kwargs["step_history"] = self.step_history
-
-        # step_history = prompt_kwargs["step_history"]
-        # add step history to the prompt_kwargs
         prompt_kwargs["step_history"] = step_history
 
         log.debug(
@@ -382,33 +359,6 @@ class ReActAgent(GradComponent):
 
         # create a new step output
         step_output: StepOutput = StepOutput(step=step)
-
-        # def execute_action_fn(x: GeneratorOutput, step_output: StepOutput = step_output) ->StepOutput:
-        #     """Execute the action and update the step_output."""
-        #     if x.error:
-        #         error_msg = f"Error planning step {step}: {x.error}"
-        #         step_output.observation = error_msg
-        #         log.error(error_msg)
-        #     else:
-        #         try:
-        #             fun_expr: FunctionExpression = x.data
-        #             step_output.action = fun_expr
-        #             log.debug(f"Step {step}: {fun_expr}")
-
-        #             if step_output and step_output.action:
-        #                 step_output = self._execute_action(step_output)
-        #                 printc(f"Step {step}: \n{step_output}\n_______\n", color="blue")
-        #                 return step_output
-        #             else:
-        #                 printc(f"Failed to parse response for step {step}", color="red")
-        #                 log.error(f"Failed to parse response for step {step}")
-        #                 return step_output
-        #         except Exception as e:
-        #             error_msg = f"Error parsing response for step {step}: {e}"
-        #             step_output.observation = error_msg
-        #             log.error(error_msg)
-        #             printc(error_msg, color="red")
-        #             return step_output
 
         # connecting two generators in the computation graph, it will set up self.step_history
         if isinstance(response, Parameter):
@@ -426,49 +376,20 @@ class ReActAgent(GradComponent):
                         f"Error: {x} does not have full_response attribute."
                     )
 
-            def map_fn2(x: Parameter) -> GeneratorOutput:
-                if x and hasattr(x, "full_response"):
-                    return x.full_response
-                else:
-                    raise ValueError(
-                        f"Error: {x} does not have full_response attribute."
-                    )
-
-            def map_parameter_to_step_output(x: Parameter) -> StepOutput:
-                if x and x.data:
-                    return x.data
-                else:
-                    raise ValueError(f"Error: {x} does not have data attribute.")
-
             # Bind `step_output` to a specific value using partial
             preinitialized_map_fn = partial(map_fn, step_output=step_output)
             # execute the function and get the output
-            # response.add_successor_map_fn(
-            #     successor=self.generator_output_to_step_output, map_fn=map_fn2
-            # )
-            # output = self.generator_output_to_step_output.forward(
-            #     response, step_output, step, self._execute_action
-            # )
-            # # add the output to the step history
-            # output.add_successor_map_fn(
-            #     successor=self.append_step_history, map_fn=map_parameter_to_step_output
-            # )
 
             # # connect response to append_step_history
             response.add_successor_map_fn(
                 successor=self.append_step_history, map_fn=preinitialized_map_fn
             )
 
-            # # call self.append_step_history with the response
-            # self.step_history = self.append_step_history.forward(
-            #     output, self.step_history
-            # )
             step_history = self.append_step_history.forward(response, step_history)
             # connect step_history to the next planner
             step_history.add_successor_map_fn(
                 successor=self.planner, map_fn=lambda x: x.data
             )
-            # printc(f"step_history 2: {self.step_history}", color="yellow")
             # convert step history back to data
             return step_history
 
@@ -476,28 +397,6 @@ class ReActAgent(GradComponent):
             execute_action_fn(response, step_output, step, self._execute_action)
             step_history.append(step_output)
             return step_history
-
-        # if response_generator_output.error:
-        #     error_msg = f"Error planning step {step}: {response_generator_output.error}"
-        #     step_output.observation = error_msg
-        #     log.error(error_msg)
-        # else:
-        #     try:
-        #         fun_expr: FunctionExpression = response_generator_output.data
-        #         step_output.action = fun_expr
-        #         log.debug(f"Step {step}: {fun_expr}")
-
-        #         if step_output and step_output.action:
-        #             step_output = self._execute_action(step_output)
-        #             printc(f"Step {step}: \n{step_output}\n_______\n", color="blue")
-        #         else:
-        #             log.error(f"Failed to parse response for step {step}")
-        #     except Exception as e:
-        #         error_msg = f"Error parsing response for step {step}: {e}"
-        #         step_output.observation = error_msg
-        #         log.error(error_msg)
-
-        return response
 
     def _check_last_step(
         self, step_history: Union["Parameter", List[str]] = None
@@ -532,13 +431,6 @@ class ReActAgent(GradComponent):
         last_step: StepOutput = None
         if isinstance(step_history, Parameter):
             try:
-
-                # last_step = self.step_history.add_successor_map_fn(
-                #     self.step_history_to_output, map_fn=lambda x: x.data
-                # )
-                # # self.step_history.draw_graph()
-                # last_step = self.step_history_to_output.forward(self.step_history)
-                # printc(f"last_step: {last_step.data}", color="yellow")
                 return step_history
 
             except Exception as e:
@@ -601,26 +493,18 @@ class ReActAgent(GradComponent):
                 step_history = self._run_one_step(
                     step, prompt_kwargs, model_kwargs, id, step_history
                 )
-                # if (
-                #     self.step_history[-1].function
-                #     and self.step_history[-1].function.name == "finish"
-                # ):
+
                 if self._check_last_step(step_history):
                     break
-                # if self._is_step_output_last_step(step_output):
-                #     break
+
             except Exception as e:
                 log.error(f"Error running step {step}: {e}")
 
-        # answer = self.step_history[-1].observation
-        # answer = self._get_answer()
         answer = self._get_answer(step_history)
         if self.training:
             return answer
         # wrap the output
         output = ReActOutput(step_history=step_history, id=id, answer=answer)
-        # printc(f"answer:\n {answer}", color="green")
-        # log.info(f"step_history: {self.step_history}")
         return output
 
     def _extra_repr(self) -> str:

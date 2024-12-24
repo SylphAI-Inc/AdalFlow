@@ -57,7 +57,7 @@ class TestReActAgent(unittest.TestCase):
         )
 
         result = self.react_agent.call("What is 2 + 2?")
-        self.assertEqual(result.observation, "Simple answer")
+        self.assertEqual(result.answer, "Simple answer")
 
     @patch.object(ReActAgent, "planner", create=True)
     def test_complex_query_execution(self, mock_planner):
@@ -76,7 +76,7 @@ class TestReActAgent(unittest.TestCase):
         ]
 
         result = self.react_agent.call("Add 2 and 3, then return the result.")
-        self.assertEqual(result.observation, 12)
+        self.assertEqual(result.answer, 12)
 
     @patch.object(ReActAgent, "planner", create=True)
     def test_error_handling(self, mock_planner):
@@ -89,7 +89,7 @@ class TestReActAgent(unittest.TestCase):
         )
 
         result = self.react_agent.call("Simulate an error.")
-        self.assertIn("Error occurred", result.observation)
+        self.assertIn("Error occurred", result.answer)
 
 
 if __name__ == "__main__":
