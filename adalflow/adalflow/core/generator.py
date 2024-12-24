@@ -37,10 +37,14 @@ from adalflow.optim.function import BackwardContext
 from adalflow.utils.cache import CachedEngine
 from adalflow.tracing.callback_manager import CallbackManager
 from adalflow.utils.global_config import get_adalflow_default_root_path
+from adalflow.core.string_parser import ListParser
+
 
 from adalflow.optim.text_grad.backend_engine_prompt import (
     FEEDBACK_ENGINE_TEMPLATE,
     LLM_CONVERSATION_TEMPLATE,
+    ALL_PRED_INFO,
+    OUTPUT_INSTRUCTION,
     VARIABLE_AND_PEERS_INFO,
     # CONVERSATION_START_INSTRUCTION_BASE,
     CONVERSATION_START_INSTRUCTION_CHAIN,
@@ -581,6 +585,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 template=self.template,
                 prompt_str=self.get_prompt(**combined_prompt_kwargs),
                 id=id,
+                all_pred_at_once=True,
             )
         )
         return response
@@ -594,6 +599,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         prompt_str: str,
         backward_engine: Optional["Generator"] = None,
         id: Optional[str] = None,  # the id of the input
+        all_pred_at_once: bool = True,
     ) -> Parameter:
 
         log.info(f"Generator: Backward: {response.name}")
@@ -622,15 +628,27 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             log.debug(
                 f"Generator: Backward engine is set for the generator. {backward_engine}"
             )
-            for pred in children_params:
-                if not pred.requires_opt or pred.param_type == ParameterType.DEMOS:
-                    log.debug(
-                        f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
-                    )
-                    continue
+            if not all_pred_at_once:
+                for pred in children_params:
+                    if not pred.requires_opt or pred.param_type == ParameterType.DEMOS:
+                        log.debug(
+                            f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
+                        )
+                        continue
 
-                self._backward_through_one_predecessor(
-                    pred=pred,
+                    self._backward_through_one_predecessor(
+                        pred=pred,
+                        response=response,
+                        prompt_kwargs=prompt_kwargs,
+                        template=template,
+                        backward_engine=backward_engine,
+                        prompt_str=prompt_str,
+                        is_intermediate_node=is_intermediate_node,
+                    )
+            else:
+                # 2nd approach, backward all that need opt at once.
+                self._backward_through_all_predecessors(
+                    children_params=children_params,
                     response=response,
                     prompt_kwargs=prompt_kwargs,
                     template=template,
@@ -640,6 +658,140 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 )
         else:
             log.debug("Backward engine is not set for the generator. No text gradient.")
+
+    @staticmethod
+    def _backward_through_all_predecessors(
+        children_params: List[Parameter],
+        response: Parameter,
+        prompt_kwargs: Dict[str, str],
+        template: str,
+        backward_engine: "BackwardEngine",
+        prompt_str: str,
+        is_intermediate_node: bool = False,
+    ):
+        parser = ListParser()
+        # instruction and objective is the same for all the children
+        instruction_str, objective_str = None, None
+
+        # 1. Generate the conversation string
+        input_prompt_kwargs = {
+            k: v.data if isinstance(v, Parameter) else v
+            for k, v in prompt_kwargs.items()
+        }
+
+        conversation_prompt_kwargs = {
+            "input_value": input_prompt_kwargs,
+            "llm_output": response.data,
+        }
+
+        conversation_str = Prompt(
+            prompt_kwargs=conversation_prompt_kwargs,
+            template=LLM_CONVERSATION_TEMPLATE,
+        )()
+
+        all_pred_info = Prompt(
+            prompt_kwargs={"variables": children_params},
+            template=ALL_PRED_INFO,
+        )()
+
+        conv_ins_template = None  # CONVERSATION_START_INSTRUCTION_BASE
+        obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
+        if is_intermediate_node:  # TODO: this will always be true
+            conv_ins_template = CONVERSATION_START_INSTRUCTION_CHAIN
+            obj_ins_template = OBJECTIVE_INSTRUCTION_CHAIN
+            response_gradient = response.get_gradients_str()
+            if not response_gradient:
+                raise ValueError(
+                    f"Generator: No gradient found for {response}. Please check the response."
+                )
+
+        # replace variable and peers with all_pred_info
+
+        instruction_str = Prompt(
+            template=conv_ins_template,
+            prompt_kwargs={
+                "variable_and_peers_info": all_pred_info,
+                "conversation_str": conversation_str,
+            },
+        )()
+        objective_str = Prompt(
+            template=obj_ins_template,
+            prompt_kwargs={
+                "response_desc": response.role_desc,
+                "response_gradient": response_gradient,
+                "instruction_to_backward_engine": response.instruction_to_backward_engine,
+            },
+        )()
+
+        backward_engine_prompt_kwargs = {
+            "conversation_sec": instruction_str,
+            "objective_instruction_sec": objective_str,
+            "output_format_str": OUTPUT_INSTRUCTION,
+        }
+
+        backward_engine_prompt_str = backward_engine.get_prompt(
+            **backward_engine_prompt_kwargs
+        )
+        print(f"Backward engine prompt: {backward_engine_prompt_str}")
+
+        gradient_output: GeneratorOutput = None
+        response_gradient_list = [""] * len(children_params)
+        if response._score is not None and float(response._score) > 0.9:
+            manual_response_1 = f"You get score: {response._score}."
+            response_gradient_list = [manual_response_1] * len(children_params)
+            raw_response = str(response_gradient_list)
+            gradient_output = GeneratorOutput(
+                data=response_gradient_list, raw_response=raw_response
+            )
+        else:
+
+            gradient_output: GeneratorOutput = backward_engine(
+                prompt_kwargs=backward_engine_prompt_kwargs
+            )
+            if not isinstance(gradient_output, GeneratorOutput):
+                raise ValueError(
+                    f"Generator: Backward Engine should return a GeneratorOutput. Got {gradient_output} instead."
+                )
+
+            # parse the list of gradients
+
+            try:
+                response_gradient_list = parser.call(gradient_output.data)
+                print(f"response_gradient_list: {response_gradient_list}")
+            except Exception as e:
+                log.error(f"Error parsing the response_gradient_list: {e}")
+                failure_message = backward_engine.failure_message_to_optimizer(
+                    gradient_output
+                )
+                if failure_message:
+                    response_gradient_list = [failure_message] * len(children_params)
+                print(f"failure_message: {failure_message}")
+
+        # generate the gradient for each child
+        for i, pred in enumerate(children_params):
+            if not pred.requires_opt or pred.param_type == ParameterType.DEMOS:
+                log.debug(
+                    f"Generator: Skipping {pred} as it does not require optimization."
+                )
+                continue
+
+            var_gradient = Gradient(
+                data=response_gradient_list[i],
+                data_id=response.data_id,
+                score=response._score,  # add score to gradient
+                from_response=response,
+                to_pred=pred,
+            )
+            var_gradient.add_context(
+                GradientContext(
+                    input_output=conversation_str,
+                    response_desc=response.role_desc,
+                    variable_desc=pred.role_desc,  # parameter_desc
+                )
+            )
+            var_gradient.add_prompt(backward_engine_prompt_str)
+            pred.add_gradient(var_gradient)
+            pred.set_score(response._score)
 
     @staticmethod
     def _backward_through_one_predecessor(

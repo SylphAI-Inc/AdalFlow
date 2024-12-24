@@ -170,7 +170,8 @@ if __name__ == "__main__":
     train(
         debug=False,
         max_steps=12,
-        strategy="random",
+        strategy="constrained",
         # resume_from_ckpt="/Users/liyin/Documents/test/LightRAG/.adalflow/ckpt/MultiHopRAGCycleAdal/constrained_max_steps_12_69e07_run_1.json",
     )
     # the best 0.74
+    # /Users/liyin/.adalflow/ckpt/MultiHopRAGCycleAdal/constrained_max_steps_12_75fb6_run_1.json 0.7 no positive gradients

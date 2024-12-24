@@ -18,7 +18,7 @@ so that the optimizer can optimize this variable to improve the objective enclos
 2. From <CONVERSATION></CONVERSATION> section, you can find how the variable is obtained and used.
 3. The variable might have other peers that are used together to instruct the language model. But only focus on the target variable.
 4. As there might be peers, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
-In such cases, you can just say "There is no noticeable error or I have no feedback on this variable.".
+In such cases, you can just say "There is no noticeable error".
 5. When you reason, really think about the variable's role in the component(infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
 6. Be specific, concise, critical, and direct.
 <END_OF_SYSTEM_PROMPT>
@@ -26,6 +26,9 @@ In such cases, you can just say "There is no noticeable error or I have no feedb
 {{conversation_sec}}
 </CONVERSATION>
 {{objective_instruction_sec}}
+{% if output_format_str %}
+{{output_format_str}}
+{% endif %}
 """
 ##############################################
 # Loss Component
@@ -43,7 +46,7 @@ In such cases, you can just say "There is no noticeable error or I have no feedb
 # Your only goal is to clearly states how it obtained the "<OUTPUTS/SCORE>".
 
 OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>
-Your task is to provide the response specific feedback based on the ground truth and the score in the "<OUTPUTS/SCORE>".
+Your task is to provide the response with specific feedback based on the ground truth and the score in the "<OUTPUTS/SCORE>".
 Especially when the score is low.
 Be CONCISE.
 Be specific on why it has a low score.
@@ -138,6 +141,24 @@ PEER_VARIABLE: EMPTY
 {% endif %}
 """
 
+# a list of variables
+ALL_PRED_INFO = r"""
+<VARIABLES>
+{% for variable in variables %}
+{{loop.index}}.
+NAME: {{variable.name}},
+TYPE: {{variable.param_type}},
+ROLE: {{variable.role_desc}}
+WILL_BE_OPTIMIZED: {{variable.requires_opt}}
+VARIABLE: {{variable.data}}
+{% endfor %}"""
+
+OUTPUT_INSTRUCTION = r"""
+You will create a feedback for each of the variable in the list above.
+If a variable will not be optimied, you just output empty string.
+Your output will be a list of strings with the same length as the list above.
+"""
+
 
 # # When the parameter has no gradient, it is the start of the backpropagation chain, used as a loss function
 # CONVERSATION_START_INSTRUCTION_BASE = r"""
@@ -146,3 +167,7 @@ PEER_VARIABLE: EMPTY
 # Here is an evaluation of the variable using a language model:
 # {{conversation_str}}
 # """
+
+##############################################
+# Backward multiple peers at the same time
+##############################################

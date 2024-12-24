@@ -13,6 +13,7 @@ from typing import (
     Callable,
     TYPE_CHECKING,
 )
+from collections import defaultdict
 from pyvis.network import Network
 import logging
 import os
@@ -98,6 +99,39 @@ class ComponentNode(DataClass):
     )
 
 
+# COMBINED_GRADIENTS_TEMPLATE = r"""
+# {% if component_schema %}
+# <COMPONENT_SCHEMA>
+# Gradients are from {{ component_schema | length }} components.
+# {% for component_id, schema in component_schema.items() %}
+# id: {{ component_id }}
+# {{ schema }}
+# {% endfor %}
+# </COMPONENT_SCHEMA>
+# {% endif %}
+# <DESCRIPTION>
+# If same data_id appears multiple times, it means this component/variable is called multiple times in the same order as it appears in the gradient list.
+# Use this info to have more clarity while reasoning and proposing new variable
+# </DESCRIPTION>
+# {% if combined_gradients %}
+# {% for g in combined_gradients %}
+# {% set gradient = g %}
+
+# {% if gradient['context'] %}
+# {{loop.index}}.
+# data_id: {{gradient['data_id']}}
+# INPUT_OUTPUT: {{gradient['context']}}
+# {% endif %}
+
+# {% if gradient['score'] is not none %}
+# {#The output is used as <{{gradient_context.response_desc}}>#}
+# <SCORE>{{gradient['score']}}</SCORE>
+# <FEEDBACK>{{gradient['gradient']}}</FEEDBACK>
+# {% endif %}
+# {% endfor %}
+# {% endif %}
+# """
+
 COMBINED_GRADIENTS_TEMPLATE = r"""
 {% if component_schema %}
 <COMPONENT_SCHEMA>
@@ -109,27 +143,48 @@ id: {{ component_id }}
 </COMPONENT_SCHEMA>
 {% endif %}
 <DESCRIPTION>
-If same data_id appears multiple times, it means this component/variable is called multiple times in the same order as it appears in the gradient list.
-Use this info to have more clarity while reasoning and proposing new variable
+If the same DataID has multiple gradients, it means this component/variable is called multiple times in the same order as it appears in the gradient list.
+Use this info to have more clarity while reasoning and proposing new variables.
 </DESCRIPTION>
 {% if combined_gradients %}
-{% for g in combined_gradients %}
-{% set gradient = g %}
-
-{% if gradient['context'] %}
-{{loop.index}}.
-data_id: {{gradient['data_id']}}
-INPUT_OUTPUT: {{gradient['context']}}
+{% for group in combined_gradients %}
+<DataID: {{ group.data_id }}>
+<AVERAGE_SCORE>{{ group.average_score|round(2) }}</AVERAGE_SCORE>
+{% for gradient in group.gradients %}
+{{ loop.index }}.
+INPUT_OUTPUT: {{ gradient.context }}
+{% if gradient.score is not none %}
+<SCORE>{{ gradient.score }}</SCORE>
+<FEEDBACK>{{ gradient.gradient }}</FEEDBACK>
 {% endif %}
+{% endfor %}
+</DataID>
 
-{% if gradient['score'] is not none %}
-{#The output is used as <{{gradient_context.response_desc}}>#}
-<SCORE>{{gradient['score']}}</SCORE>
-<FEEDBACK>{{gradient['gradient']}}</FEEDBACK>
-{% endif %}
 {% endfor %}
 {% endif %}
 """
+
+# {% if combined_gradients %}
+# {# Group gradients by data_id #}
+# {% set grouped_gradients = {} %}
+# {% for g in combined_gradients %}
+# {% set _ = grouped_gradients.setdefault(g['data_id'], []).append(g) %}
+# {% endfor %}
+
+# {# Render grouped gradients #}
+# {% for data_id, gradients in grouped_gradients.items() %}
+# <DataID: {{ data_id }}>
+# {% for gradient in gradients %}
+# {{loop.index}}.
+# INPUT_OUTPUT: {{gradient['context']}}
+# {% if gradient['score'] is not none %}
+# <SCORE>{{gradient['score']}}</SCORE>
+# <FEEDBACK>{{gradient['gradient']}}</FEEDBACK>
+# {% endif %}
+# {% endfor %}
+# </DataID>
+# {% endfor %}
+# {% endif %}
 
 # Batch size: {{ combined_gradients|length }}
 
@@ -335,22 +390,53 @@ class Parameter(Generic[T]):
         if lowest_score_gradients and len(lowest_score_gradients) > 0:
 
             # parse the gradients and context.
-            gradients_and_context: List[Dict[str, Any]] = (
-                []
-            )  # {gradient: data, context: GradientContext.input_output}
+            # gradients_and_context: List[Dict[str, Any]] = (
+            #     []
+            # )  # {gradient: data, context: GradientContext.input_output}
+            # for g in lowest_score_gradients:
+            #     gradients_and_context.append(
+            #         {
+            #             "data_id": g.data_id,
+            #             "gradient": g.data,
+            #             "context": g.context.input_output,
+            #             "score": g.score,
+            #         }
+            #     )
+
+            # group gradients by data_id and calculate average scores
+            grouped_gradients = defaultdict(
+                lambda: {"gradients": [], "score_sum": 0, "count": 0}
+            )
             for g in lowest_score_gradients:
-                gradients_and_context.append(
+                group = grouped_gradients[g.data_id]
+                group["gradients"].append(
                     {
-                        "data_id": g.data_id,
                         "gradient": g.data,
                         "context": g.context.input_output,
                         "score": g.score,
                     }
                 )
+                group["score_sum"] += g.score if g.score is not None else 0
+                group["count"] += 1
+
+            # Calculate average scores and sort groups
+            grouped_list = []
+            for data_id, group in grouped_gradients.items():
+                average_score = (
+                    group["score_sum"] / group["count"] if group["count"] > 0 else 0
+                )
+                grouped_list.append(
+                    {
+                        "data_id": data_id,
+                        "average_score": average_score,
+                        "gradients": group["gradients"],
+                    }
+                )
+            sorted_groups = sorted(grouped_list, key=lambda x: x["average_score"])
 
             gradient_context_combined_str = Prompt(
                 template=COMBINED_GRADIENTS_TEMPLATE,
-                prompt_kwargs={"combined_gradients": gradients_and_context},
+                prompt_kwargs={"combined_gradients": sorted_groups},
             )().strip()
 
         # get component id: gradient
@@ -396,6 +482,37 @@ class Parameter(Generic[T]):
             lowest_score_gradients.append(g)
             print(f"{i} Score: {g.score} for {g.name}, {type(g.score)}")
 
+        # Group gradients by `data_id` and calculate average scores
+        grouped_gradients = defaultdict(
+            lambda: {"gradients": [], "score_sum": 0, "count": 0}
+        )
+        for g in lowest_score_gradients:
+            group = grouped_gradients[g.data_id]
+            group["gradients"].append(
+                {
+                    "gradient": g.data,
+                    "context": g.context.input_output,
+                    "score": g.score,
+                }
+            )
+            group["score_sum"] += g.score if g.score is not None else 0
+            group["count"] += 1
+
+        # Calculate average scores and sort groups
+        grouped_list = []
+        for data_id, group in grouped_gradients.items():
+            average_score = (
+                group["score_sum"] / group["count"] if group["count"] > 0 else 0
+            )
+            grouped_list.append(
+                {
+                    "data_id": data_id,
+                    "average_score": average_score,
+                    "gradients": group["gradients"],
+                }
+            )
+        sorted_groups = sorted(grouped_list, key=lambda x: x["average_score"])
+
         # get component id: gradient
         component_id_to_gradient: Dict[str, Gradient] = {}
         for g in lowest_score_gradients:
@@ -422,7 +539,7 @@ class Parameter(Generic[T]):
         gradient_context_combined_str = Prompt(
             template=COMBINED_GRADIENTS_TEMPLATE,
             prompt_kwargs={
-                "combined_gradients": gradients_and_context,
+                "combined_gradients": sorted_groups,
                 "component_schema": componend_id_to_schema,
             },
         )().strip()

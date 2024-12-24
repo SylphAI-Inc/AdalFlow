@@ -130,11 +130,11 @@ The variable is either input or output of a functional component where the compo
    - If a peer will be optimized itself, do not overlap with its scope.
    - Otherwise, you can overlap if it helps address the feedback effectively.
 3. Observe past performance patterns (when available) to retain good qualities in the variable.
+4. Be Creative. If adding new elements, be concise.
 
 ### Notes:
-1. You can eliminate unnecessary words or phrases to improve clarity.
-2. Add new elements or rephrase to address the feedback. When no feedback is provided(high batch performance), you rephrase the variable.
-3. Be creative. If adding new elements, be concise.
+1. Add new elements or rephrase to address the feedback.
+2. You can also eliminate unnecessary words to improve clarity.
 
 {{output_format_str}}
 
@@ -142,12 +142,8 @@ The variable is either input or output of a functional component where the compo
 4. **Additional User Instructions**: {{instruction_to_optimizer}}
 {% endif %}
 """
-# 5. **Batch Consistency**: Do not optimize the variable to fit only one specific sample if the batch size is larger than 1. Ensure the variable remains applicable to the entire batch.
 
-# 2. **Preserve Intent**: Ensure that the new variable maintains the same overall intent and purpose as the original.
-
-# - In the absence of specific feedback, you may rephrase the initial variable to improve clarity or specificity without altering its core meaning.
-# - When specific feedback is provided, you can either rephrase or refine the variable with more detailed instructions or adjustments to directly or indirectly address the feedback.
+# When no feedback is provided(high batch performance), you rephrase the variable.
 
 
 @dataclass
@@ -378,7 +374,7 @@ class TGDOptimizer(TextOptimizer):
 
         # variable_grad = param.get_gradients_str()
         # variable_grad = param.get_gradient_and_context_text(skip_correct_sample=False)
-        variable_grad = param.get_gradients_component_schema(skip_correct_sample=False)
+        variable_grad = param.get_gradients_component_schema(skip_correct_sample=True)
 
         user_prompt_kwargs = {
             "variable_and_peers_info": variable_and_peer_info,

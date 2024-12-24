@@ -96,7 +96,7 @@ class TRECClassifierStructuredOutput(adal.Component):
         prompt_kwargs = {
             "input_str": adal.Parameter(
                 data=input_str,
-                requires_opt=True,
+                requires_opt=False,
                 role_desc="input to the LLM",
                 param_type=adal.ParameterType.INPUT,
             )
