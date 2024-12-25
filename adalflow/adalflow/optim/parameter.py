@@ -751,6 +751,8 @@ class Parameter(Generic[T]):
         def build_graph(node: "Parameter"):
             if node in nodes:
                 return
+            if node is None:
+                raise ValueError("Node is None")
             nodes.add(node)
             for pred in node.predecessors:
                 edges.add((pred, node))
@@ -1171,9 +1173,7 @@ class Parameter(Generic[T]):
         save_json(self.to_dict(), f"{filepath}_root.json")
 
         # draw interactive graph
-        self.draw_interactive_html_graph(
-            filepath=filepath, nodes=[n for n in nodes], edges=edges
-        )
+        self.draw_interactive_html_graph(filepath=filepath, nodes=nodes, edges=edges)
         output = {"graph_path": final_path, "root_path": f"{filepath}_root.json"}
         print(f"Graph saved as {filepath}.{format}")
         return output

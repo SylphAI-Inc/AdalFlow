@@ -35,6 +35,7 @@ class GradComponent(Component):
     backward_engine: "BackwardEngine"
     _component_type = "grad"
     id = None
+    _component_desc = "GradComponent"
 
     def __init__(self, *args, **kwargs):
         super().__init__()

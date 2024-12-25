@@ -123,6 +123,7 @@ OPTIMIZER_SYSTEM_PROMPT = r"""
 You are an optimizer and your task is to improve a variable based on feedback from a batch of input data points.
 
 The variable is either input or output of a functional component where the component schema will be provided.
+If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
 
 ### Your Responsibilities:
 1. **Address Feedback**: Resolve concerns raised in the feedback while preserving the positive aspects of the original variable.

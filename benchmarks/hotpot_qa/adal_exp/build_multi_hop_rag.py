@@ -1,7 +1,7 @@
 """We will use dspy's retriever to keep that the same and only use our generator and optimizer"""
 
 import dspy
-from typing import List
+from typing import List, Optional, Dict
 from dataclasses import dataclass, field
 
 import adalflow as adal
@@ -603,6 +603,7 @@ from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import (
 )
 
 
+# TODO: agent needs storage for the context instead of all in the step history.
 class AgenticRAG(adal.GradComponent):
     def __init__(self, model_client, model_kwargs):
         super().__init__()
@@ -633,17 +634,41 @@ class AgenticRAG(adal.GradComponent):
             output_processors=self.llm_parser,
         )
 
-        def dspy_retriever_as_tool(input: str) -> List[str]:
-            r"""Retrieves the top k passages from using input as the query"""
-            output = self.dspy_retriever(input=input)
+        self.context = []
+
+        def dspy_retriever_as_tool(
+            input: str,
+            context_variables: Dict,
+            id: Optional[str] = None,
+        ) -> List[str]:
+            r"""Retrieves the top k passages from using input as the query and save the documents in context_variables(Dict)'s context.
+
+            Example: dspy_retriever_as_tool(subquery, context_variables=context_variables)
+            Ensure you get all the context to answer the original question.
+            """
+            output = self.dspy_retriever(input=input, id=id)
             parsed_output = output
             if isinstance(output, adal.Parameter):
                 parsed_output = output.data
-            return parsed_output[0].documents
+            documents = parsed_output[0].documents
+            if context_variables:
+                context_variables["context"].extend(documents)
+            return documents
 
-        def generator_as_tool(input: str, context: List[str]) -> str:
-            r"""Generates the answer to the question using the context"""
-            output = self.llm(prompt_kwargs={"question": input, "context": context})
+        def generator_as_tool(
+            input: str,
+            context_variables: Dict,
+            id: Optional[str] = None,
+        ) -> str:
+            r"""Generates the answer to the question(input) and the context from the context_variables(Dict).
+            You have to always call generator_as_tool before finish to get the answer.
+            Example: generator_as_tool(original question, context_variables=context_variables)
+            """
+            context = context_variables["context"]
+            print(f"context: {context}")
+            output = self.llm(
+                prompt_kwargs={"question": input, "context": context}, id=id
+            )
             return output
 
         self.agent = ReActAgent(
@@ -652,6 +677,7 @@ class AgenticRAG(adal.GradComponent):
             tools=[dspy_retriever_as_tool, generator_as_tool],
             model_client=model_client,
             model_kwargs=model_kwargs,
+            context_variables={"context": []},
         )
 
     def forward(self, *args, **kwargs) -> Parameter:
@@ -736,7 +762,7 @@ def test_agent_rag():
 
     task.train()
 
-    output = task.forward(input=question)
+    output = task.forward(input=question, id="1")
     # print(output)
     output.draw_graph()
     output.draw_output_subgraph()
