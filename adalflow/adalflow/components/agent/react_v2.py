@@ -435,7 +435,7 @@ class ReActAgent(GradComponent):
                 successor=tmp_action_str_to_step_output, map_fn=lambda x: x.data
             )
             action_step = tmp_action_str_to_step_output.forward(
-                action_str=func.data,
+                action_str=response.data,
                 step=action_step.step,
                 result=result,
                 func=func,
@@ -467,6 +467,7 @@ class ReActAgent(GradComponent):
         """Run one step of the agent. Plan and execute the action for the step.
         Need to deal with both train and eval mode on the self.planner.
         """
+        printc("start running one step", color="yellow")
 
         prompt_kwargs["step_history"] = step_history
         printc(
@@ -502,6 +503,9 @@ class ReActAgent(GradComponent):
             step_output.add_successor_map_fn(
                 successor=self.append_step_history, map_fn=lambda x: x.data
             )
+            step_history.add_successor_map_fn(
+                successor=self.append_step_history, map_fn=lambda x: x.data
+            )
 
             step_history = self.append_step_history.forward(step_output, step_history)
             # connect step_history to the next planner
@@ -530,13 +534,15 @@ class ReActAgent(GradComponent):
 
         last_step: StepOutput = None
         if isinstance(step_history, Parameter):
-            try:
-                step_history = step_history.data
-                last_step = step_history[-1]
+            # try:
+            printc(f"step_history: {step_history}", color="yellow")
+            step_history_data = step_history.data
+            printc(f"step_history: {step_history}", color="yellow")
+            last_step = step_history_data[-1]
 
-            except Exception as e:
-                log.error(f"Error getting data from Parameter: {e}")
-                return False
+            # except Exception as e:
+            #     log.error(f"Error getting data from Parameter: {e}")
+            #     return False
         else:
             last_step = step_history[-1]
 
@@ -618,7 +624,9 @@ class ReActAgent(GradComponent):
         for i in range(self.max_steps):
             step = i + 1
             # try:
-            self._run_one_step(step, prompt_kwargs, model_kwargs, id, step_history)
+            step_history = self._run_one_step(
+                step, prompt_kwargs, model_kwargs, id, step_history
+            )
 
             if self._check_last_step(step_history):
                 break

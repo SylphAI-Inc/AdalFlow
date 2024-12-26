@@ -767,6 +767,7 @@ def test_agent_rag():
     task = AgenticRAG(
         **gpt_3_model,
     )
+    print(task)
 
     question = "How many storeys are in the castle that David Gregory inherited?"
 

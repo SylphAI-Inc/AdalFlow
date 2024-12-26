@@ -156,7 +156,6 @@ class FunctionTool(GradComponent):
             raise ValueError("FunctionTool is asynchronous, use acall instead")
         output, error = None, None
         try:
-            print(f"self.component: {self.component.training}")
             output = self.fn(*args, **kwargs)
         except Exception as e:
             log.error(f"Error at calling {self.fn}: {e}")

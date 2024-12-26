@@ -13,6 +13,7 @@ from typing import (
     overload,
     Literal,
 )
+import warnings
 import logging
 from copy import deepcopy
 import asyncio
@@ -76,7 +77,7 @@ class ToolManager(GradComponent):
         super().__init__()
         nest_asyncio.apply()  # Apply nest_asyncio to handle nested loops
         # super(LocalDB, self).__init__()
-        self.tools = [
+        tools = [
             (
                 FunctionTool(fn=deepcopy(tool))
                 if not isinstance(tool, FunctionTool)
@@ -84,7 +85,7 @@ class ToolManager(GradComponent):
             )
             for tool in tools
         ]
-        self.tools = ComponentList(self.tools)
+        self.tools = ComponentList(tools)
         self._context_map = {tool.definition.func_name: tool for tool in self.tools}
         self._additional_context = additional_context or {}
         self.context = {**self._context_map, **self._additional_context}
@@ -250,8 +251,20 @@ class ToolManager(GradComponent):
                         tool: FunctionTool = context[func.data.name]
                         print(f"tool training: {tool.training}")
                         output = tool.forward(*func.data.args, **func.data.kwargs)
+                        # handle the untainable function
                         if not isinstance(output, Parameter):
-                            raise ValueError(f"Error executing function: {output}")
+                            warnings.warn(
+                                f"Error executing function: {output}", UserWarning
+                            )
+                            output = Parameter(
+                                name=func.data.name,
+                                data=output,
+                                eval_input=func.eval_input,
+                                requires_opt=False,
+                                param_type=ParameterType.OUTPUT,
+                            )
+                            return output
+
                         output.predecessors.add(func)
                         return output
                     else:
