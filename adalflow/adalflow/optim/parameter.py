@@ -1607,6 +1607,7 @@ class OutputParameter(Parameter):
         score: Optional[float] = None,
         eval_input: object = None,
         successor_map_fn: Optional[Dict[str, Callable]] = None,
+        full_response: Optional[Any] = None,
     ):
         super().__init__(
             id=id,
@@ -1623,6 +1624,7 @@ class OutputParameter(Parameter):
             successor_map_fn=successor_map_fn,
         )
         self.component_trace = ComponentTrace()
+        self.full_response = full_response
 
     ############################################################################################################
     #  Trace component, include trace_forward_pass & trace_api_kwargs for now

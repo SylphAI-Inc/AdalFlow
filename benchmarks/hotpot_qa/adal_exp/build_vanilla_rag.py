@@ -102,7 +102,9 @@ Question: {{question}}
 # Demonstrating how to wrap other retriever to adalflow retriever and be applied in training pipeline
 # as a subclass of retriever which is a subclass of GradComponent, we dont need to do additional implementation
 # data processing has already done
-class DspyRetriever(Retriever):
+
+
+class DspyRetriever(Retriever, adal.GradComponent):
     def __init__(self, top_k: int = 3):
         super().__init__()
         self.top_k = top_k
@@ -131,6 +133,18 @@ class DspyRetriever(Retriever):
         )
         # print(f"final_output: {final_output}")
         return final_output
+
+    def forward(self, *args, **kwargs):
+        # Explicitly use adal.GradComponent's forward method
+        output = adal.GradComponent.forward(self, *args, **kwargs)
+        print(f"output: {output}")
+        return output
+
+    def __call__(self, *args, **kwargs):
+        if self.training:
+            return adal.GradComponent.forward(self, *args, **kwargs)
+        else:
+            return self.call(*args, **kwargs)
 
 
 task_desc_str = r"""Answer questions with short factoid answers.

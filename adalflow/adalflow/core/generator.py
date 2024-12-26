@@ -528,7 +528,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         log.debug(f"Predecessors: {predecessors} for generator {self.name}")
         param_data = (
-            output.raw_response
+            # output.raw_response
+            output.data
             if output and not output.error
             else f"Error: {output.error}, raw_response: {output.raw_response}"
         )
@@ -538,11 +539,13 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             role_desc=f"Output from (llm) {self.name}",
             param_type=ParameterType.GENERATOR_OUTPUT,
             data_id=id,
+            full_response=output.data,  # the data structure
         )
         response.set_predecessors(predecessors)
         response.trace_forward_pass(
             input_args=input_args, full_response=output, id=self.id, name=self.name
         )
+        # setattr(response, "full_response", output)
         # *** special to the generator ***
         response.trace_api_kwargs(api_kwargs=self._trace_api_kwargs)
         # attach the demo to the demo parameter

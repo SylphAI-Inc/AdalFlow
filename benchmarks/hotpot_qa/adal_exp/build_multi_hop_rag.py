@@ -593,7 +593,7 @@ class MultiHopRAGCycle(VanillaRAG):
         )
 
 
-from adalflow.components.agent.react import ReActAgent
+from adalflow.components.agent.react_v2 import ReActAgent
 
 
 from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import (
@@ -646,35 +646,45 @@ class AgenticRAG(adal.GradComponent):
             Example: dspy_retriever_as_tool(subquery, context_variables=context_variables)
             Ensure you get all the context to answer the original question.
             """
+            print(f"training: {self.dspy_retriever.training}")
             output = self.dspy_retriever(input=input, id=id)
             parsed_output = output
             if isinstance(output, adal.Parameter):
                 parsed_output = output.data
+                return output
             documents = parsed_output[0].documents
             if context_variables:
                 context_variables["context"].extend(documents)
             return documents
 
-        def generator_as_tool(
-            input: str,
-            context_variables: Dict,
-            id: Optional[str] = None,
-        ) -> str:
-            r"""Generates the answer to the question(input) and the context from the context_variables(Dict).
-            You have to always call generator_as_tool before finish to get the answer.
-            Example: generator_as_tool(original question, context_variables=context_variables)
-            """
-            context = context_variables["context"]
-            print(f"context: {context}")
-            output = self.llm(
-                prompt_kwargs={"question": input, "context": context}, id=id
-            )
-            return output
+        # def generator_as_tool(
+        #     input: str,
+        #     context_variables: Dict,
+        #     id: Optional[str] = None,
+        # ) -> str:
+        #     r"""Generates the answer to the question(input) and the context from the context_variables(Dict).
+        #     Example: generator_as_tool(original question, context_variables=context_variables)
+
+        #     YOU MUST call generator_as_tool once to produce the final answer.
+        #     """
+        #     context = context_variables["context"]
+        #     print(f"context: {context}")
+        #     output = self.llm(
+        #         prompt_kwargs={"question": input, "context": context}, id=id
+        #     )
+        #     return output
+
+        from adalflow.core.func_tool import FunctionTool
+
+        tools = [
+            FunctionTool(dspy_retriever_as_tool, component=self.dspy_retriever),
+            # FunctionTool(generator_as_tool, component=self.llm),
+        ]
 
         self.agent = ReActAgent(
-            max_steps=6,
-            add_llm_as_fallback=False,
-            tools=[dspy_retriever_as_tool, generator_as_tool],
+            max_steps=3,
+            add_llm_as_fallback=True,
+            tools=tools,
             model_client=model_client,
             model_kwargs=model_kwargs,
             context_variables={"context": []},
@@ -761,12 +771,16 @@ def test_agent_rag():
     question = "How many storeys are in the castle that David Gregory inherited?"
 
     task.train()
+    task(input=question, id="1")
 
-    output = task.forward(input=question, id="1")
+    # output =
     # print(output)
-    output.draw_graph()
-    output.draw_output_subgraph()
-    output.draw_component_subgraph()
+    # output.draw_graph()
+    # output.draw_output_subgraph()
+    # output.draw_component_subgraph()
+
+    # task.eval()
+    # output = task(input=question, id="1")
 
 
 def test_multi_hop_retriever2():

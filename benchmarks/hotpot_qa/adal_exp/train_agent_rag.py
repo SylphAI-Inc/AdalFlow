@@ -46,6 +46,7 @@ class AgenticRAGAdal(adal.AdalComponent):
         if self.task.training:
             return self.task.forward, {"input": sample.question, "id": sample.id}
         else:
+            print("eval mode")
             return self.task.call, {"input": sample.question, "id": sample.id}
 
     # TODO: use two map fn to make the cde even simpler
@@ -92,6 +93,7 @@ def train_diagnose(
         teacher_model_config=gpt_3_model,
         text_optimizer_model_config=gpt_3_model,
     )
+    trainset = trainset[:1]
     trainer = adal.Trainer(adaltask=adal_component)
     trainer.diagnose(dataset=trainset, split="train")
     # trainer.diagnose(dataset=valset, split="val")
@@ -154,8 +156,12 @@ if __name__ == "__main__":
 
     # train_diagnose(**gpt_3_model)
 
+    # train_diagnose(
+    #     **gpt_3_model,
+    # )
+
     train(
-        debug=False,
+        debug=True,
         max_steps=2,
     )
     # 0.68 on val without training, 0.74on the second step. 0.84 test

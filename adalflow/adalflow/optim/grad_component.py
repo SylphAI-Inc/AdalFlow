@@ -121,6 +121,10 @@ class GradComponent(Component):
 
         call_response = self.call(*unwrapped_args, **unwrapped_kwargs)
 
+        if isinstance(call_response, Parameter):
+            predecessors.append(call_response)
+            return call_response
+
         # 4. Create a Parameter object to trace the forward pass
         input_args.update(kwargs)
         response = OutputParameter(

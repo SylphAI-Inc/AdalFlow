@@ -193,6 +193,7 @@ class Trainer(Component):
             print(diagnose)
         """
         # 1. track all intermediate outputs
+        self.adaltask.eval()
         if not self.ckpt_path:
             trainer_state = self.gather_trainer_states()
             self.prep_ckpt_file_path(trainer_state)
@@ -229,6 +230,9 @@ class Trainer(Component):
             file_name = os.path.basename(log_path)
             logger.debug(f"Loading log file: {file_name}")
             logs = load_jsonl(log_path)
+            if not logs or len(logs) == 0:
+                print(f"Log file {log_path} is empty. This llm is not called at all.")
+                continue
             try:
                 logs_dict = {log["output"]["id"]: log for log in logs}
             except KeyError:
@@ -2136,8 +2140,9 @@ class Trainer(Component):
                 all_samples.extend(batch)
                 all_losses.extend(losses)
                 all_y_preds.extend(
-                    [y.full_response for y in y_preds if isinstance(y, OutputParameter)]
+                    [y.data for y in y_preds if isinstance(y, OutputParameter)]
                 )
+                printc(f"y_preds: {y_preds[0]}")
 
                 all_samples, all_losses, all_y_preds = (
                     self._text_grad_constraint_propose_step(
