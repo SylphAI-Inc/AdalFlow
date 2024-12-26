@@ -30,6 +30,7 @@ __all__ = ["DEFAULT_REACT_AGENT_SYSTEM_PROMPT", "ReActAgent"]
 
 
 react_agent_task_desc = r"""{# role/task description #}
+You are a helpful assistant.
 Answer the user's query using the tools provided below with minimal steps and maximum accuracy.
 {# REACT instructions #}
 Each step you will read the previous Thought, Action, and Observation(execution result of the action) and then provide the next Thought and Action.
@@ -58,8 +59,6 @@ You available tools are:
 {{tool}}
 ------------------------
 {% endfor %}
-RULES:
-- When the function is a class method and when class_instance exists, use <class_instance_value>.<func_name> to call instead (NOT the CLASS NAME)
 <END_OF_TOOLS>
 {% endif %}
 {# Context Variables #}
@@ -123,25 +122,25 @@ class AppendStepHistory(GradComponent):
         return step_history
 
 
-# class ExecuteAction(GradComponent):
-#     def __init__(self):
-#         super().__init__()
-#         self.name = "ExecuteAction"
-#         self._component_desc = "Execute the action and output the new step_output."
+class ExecuteAction(GradComponent):
+    def __init__(self):
+        super().__init__()
+        self.name = "ExecuteAction"
+        self._component_desc = "Execute the action and output the new step_output."
 
-#     def call(
-#         self,
-#         response: GeneratorOutput,
-#         step_output: StepOutput,
-#         execute_action: Callable,
-#         id: Optional[str] = None,
-#     ) -> StepOutput:
-#         """Parse the action string to a function call and execute it. Update the action_step with the result."""
-#         step = step_output.step
-#         output = execute_action_fn(response, step_output, step, execute_action, id)
-#         if isinstance(output, Parameter):
-#             output = output.full_response
-#         return output
+    def call(
+        self,
+        response: GeneratorOutput,
+        step_output: StepOutput,
+        execute_action: Callable,
+        id: Optional[str] = None,
+    ) -> StepOutput:
+        """Parse the action string to a function call and execute it. Update the action_step with the result."""
+        step = step_output.step
+        output = execute_action_fn(response, step_output, step, execute_action, id)
+        if isinstance(output, Parameter):
+            output = output.full_response
+        return output
 
 
 class FunctionOutputToStepOutput(GradComponent):
@@ -283,11 +282,7 @@ class ReActAgent(GradComponent):
         self.add_llm_as_fallback = add_llm_as_fallback
         self.context_variables = context_variables
 
-        tools = self._init_tools(tools, model_client, model_kwargs)
-        self.tool_manager: ToolManager = ToolManager(
-            tools=tools,
-            additional_context={"context_variables": self.context_variables},
-        )
+        self._init_tools(tools, model_client, model_kwargs)
 
         ouput_data_class = FunctionExpression
         example = FunctionExpression.from_function(
@@ -318,12 +313,11 @@ class ReActAgent(GradComponent):
             output_processors=output_parser,
             model_client=model_client,
             model_kwargs=model_kwargs,
-            use_cache=True,
         )
 
         # added this component to the computation graph
         self.append_step_history = AppendStepHistory()
-        # self.execute_action = ExecuteAction()
+        self.execute_action = ExecuteAction()
         self.function_output_to_step_output = FunctionOutputToStepOutput()
 
     def _init_tools(
@@ -333,12 +327,7 @@ class ReActAgent(GradComponent):
         model_kwargs: Dict,
     ):
         r"""Initialize the tools."""
-        try:
-            tools = [deepcopy(tool) for tool in tools]
-        except Exception:
-            from copy import copy
-
-            tools = [copy(tool) for tool in tools]
+        tools = deepcopy(tools)
         _additional_llm_tool = (
             Generator(model_client=model_client, model_kwargs=model_kwargs)
             if self.add_llm_as_fallback
@@ -368,93 +357,41 @@ class ReActAgent(GradComponent):
         if self.add_llm_as_fallback:
             tools.append(llm_tool)
         tools.append(finish)
-        return tools
+        self.tool_manager: ToolManager = ToolManager(
+            tools=tools,
+            additional_context={"context_variables": self.context_variables},
+        )
 
+    # TODO: add async execution
     def _execute_action(
-        self,
-        action_step: StepOutput,
-        response: Union[Parameter, GeneratorOutput],
-        id: Optional[str] = None,
+        self, action_step: StepOutput, id: Optional[str] = None
     ) -> Optional[StepOutput]:
         """Parse the action string to a function call and execute it. Update the action_step with the result."""
-        # extract the action from the response
+        action = action_step.action
+        try:
 
-        if isinstance(response, Parameter):
-
-            class ActionStrToStepOutput(GradComponent):
-                def __init__(self):
-                    super().__init__()
-                    self.name = "ActionStrToStepOutput"
-                    self._component_desc = "Convert the action string to StepOutput."
-
-                def call(
-                    self,
-                    action_str: FunctionExpression,
-                    step: int,
-                    result: Union[FunctionOutput, Parameter],
-                    func: Function,
-                ) -> StepOutput:
-                    """Convert the action string to StepOutput."""
-                    step_output = StepOutput(step=step)
-                    step_output.action = action_str
-                    step_output.function = func
-                    # printc(f"result: {result}", color="blue")
-                    result = result.data if isinstance(result, Parameter) else result
-                    if isinstance(result, FunctionOutput):
-                        step_output.observation = (
-                            result.output.data
-                            if isinstance(result.output, Parameter)
-                            else result.output
-                        )
-
-                    return step_output
-
-            tmp_action_str_to_step_output = ActionStrToStepOutput()
-
-            # printc(f"response: {response}", color="yellow")
-            # TO FunctionExpression
-            response.add_successor_map_fn(
-                successor=self.tool_manager, map_fn=lambda x: x.full_response
-            )
-
-            func: Union[Function, Parameter] = self.tool_manager(
-                expr_or_fun=response, step="parse"
-            )
-            printc(f"tool_manager: {self.tool_manager.training}", color="red")
-            if not isinstance(func, Parameter):
-                raise ValueError(f"Expected Parameter, but got {type(func)}: {func}")
-            # printc(f"func: {func}", color="yellow")
+            fun: Function = self.tool_manager.parse_func_expr(action)
             # replace the id
-            if isinstance(func, Parameter):
-                func.data.kwargs["id"] = id
+            fun.kwargs["id"] = id
 
-                func.add_successor_map_fn(self.tool_manager, lambda x: x.data)
-
-            result: Parameter = self.tool_manager(expr_or_fun=func, step="execute")
-            # printc(f"result: {result}", color="red")
-            result.add_successor_map_fn(
-                successor=tmp_action_str_to_step_output, map_fn=lambda x: x.data
-            )
-            action_step = tmp_action_str_to_step_output.forward(
-                action_str=response.data,
-                step=action_step.step,
-                result=result,
-                func=func,
-            )
+            result: Union[FunctionOutput, Parameter] = self.tool_manager(fun)
+            action_step.function = fun
+            if isinstance(result, Parameter):
+                result.add_successor_map_fn(
+                    successor=self.function_output_to_step_output,
+                    map_fn=lambda x: x.data,
+                )
+                action_step: StepOutput = self.function_output_to_step_output(
+                    output=result, step_output=action_step
+                )
+            else:
+                action_step.observation = result.output
 
             return action_step
-            # except Exception as e:
-            #     log.error(f"Error executing {response}: {e}")
-            #     # pass the error as observation so that the agent can continue and correct the error in the next step
-            #     # action_step.observation = f"Error executing {response}: {e}"
-            #     # return action_step
-            #     raise e
-        else:
-            # normal pass
-            fun: Function = self.tool_manager(expr_or_fun=response.data, step="parse")
-            action_step.function = fun
-            result: FunctionOutput = self.tool_manager(expr_or_fun=fun, step="execute")
-            action_step.observation = result.output
+        except Exception as e:
+            log.error(f"Error executing {action}: {e}")
+            # pass the error as observation so that the agent can continue and correct the error in the next step
+            action_step.observation = f"Error executing {action}: {e}"
             return action_step
 
     def _run_one_step(
@@ -464,48 +401,36 @@ class ReActAgent(GradComponent):
         model_kwargs: Dict,
         id: Optional[str] = None,
         step_history: Union["Parameter", List[str]] = None,
-    ) -> Union[List[StepOutput], Parameter]:
+    ) -> Union[StepOutput, Parameter]:
         """Run one step of the agent. Plan and execute the action for the step.
         Need to deal with both train and eval mode on the self.planner.
         """
-        printc("start running one step", color="yellow")
 
         prompt_kwargs["step_history"] = step_history
-        # printc(
-        #     f"prompt_kwargs 1: {prompt_kwargs}, training: {self.planner.training}",
-        #     color="yellow",
-        # )
-
-        prompt_str = self.planner.get_prompt(**prompt_kwargs)
-        printc(f"prompt_str: {prompt_str}", color="red")
-        # return [StepOutput(step=step, action=None, observation="test")]
 
         log.debug(
             f"Running step {step} with prompt: {self.planner.prompt(**prompt_kwargs)}"
         )
-        try:
 
-            response: Union[GeneratorOutput, Parameter] = self.planner(
-                prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs, id=id
-            )
-        except Exception as e:
-            log.error(f"Error planning step {step}: {e}")
-            return None
+        response: Union[GeneratorOutput, Parameter] = self.planner(
+            prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs, id=id
+        )
 
         # create a new step output
         step_output: StepOutput = StepOutput(step=step)
 
         # connecting two generators in the computation graph, it will set up self.step_history
         if isinstance(response, Parameter):
-            # printc(f"response: {response}", color="yellow")
+            # get the full response
+            def map_fn(x: Parameter) -> GeneratorOutput:
+                return x.full_response
 
-            step_output: Parameter = self._execute_action(step_output, response, id)
+            response.add_successor_map_fn(successor=self.execute_action, map_fn=map_fn)
 
-            printc(f"step_output: {step_output}", color="red")
-            step_output.add_successor_map_fn(
-                successor=self.append_step_history, map_fn=lambda x: x.data
+            step_output: Parameter = self.execute_action.forward(
+                response, step_output, self._execute_action, id
             )
-            step_history.add_successor_map_fn(
+            step_output.add_successor_map_fn(
                 successor=self.append_step_history, map_fn=lambda x: x.data
             )
 
@@ -515,15 +440,13 @@ class ReActAgent(GradComponent):
                 successor=self.planner, map_fn=lambda x: x.data
             )
             # convert step history back to data
-            # printc(f"step_history: {step_history.data}", color="yellow")
+            printc(f"step_history: {step_history.data}", color="yellow")
             return step_history
 
         else:
-
-            step_output = self._execute_action(
-                action_step=step_output, response=response, id=id
+            step_output = execute_action_fn(
+                response, step_output, step, self._execute_action, id
             )
-            printc(f"step_output: {step_output}", color="red")
             step_history.append(step_output)
             return step_history
 
@@ -536,13 +459,13 @@ class ReActAgent(GradComponent):
 
         last_step: StepOutput = None
         if isinstance(step_history, Parameter):
-            # try:
-            step_history_data = step_history.data
-            last_step = step_history_data[-1]
+            try:
+                step_history = step_history.data
+                last_step = step_history[-1]
 
-            # except Exception as e:
-            #     log.error(f"Error getting data from Parameter: {e}")
-            #     return False
+            except Exception as e:
+                log.error(f"Error getting data from Parameter: {e}")
+                return False
         else:
             last_step = step_history[-1]
 
@@ -560,7 +483,6 @@ class ReActAgent(GradComponent):
         last_step: StepOutput = None
         if isinstance(step_history, Parameter):
             try:
-                # printc(f"step_history: {step_history}", color="yellow")
                 return step_history
 
             except Exception as e:
@@ -568,15 +490,11 @@ class ReActAgent(GradComponent):
                 return None
         else:
             last_step = step_history[-1]
-            # printc(f"last_step: {last_step}", color="yellow")
 
             return last_step.observation
 
-    def call(self, *args, **kwargs) -> ReActOutput:
-        output = self.bicall(*args, **kwargs)
-        if not isinstance(output, ReActOutput):
-            raise ValueError(f"Expected ReActOutput, but got {type(output)}")
-        return output
+    def call(self, *args, **kwargs):
+        return self.bicall(*args, **kwargs)
 
     def forward(self, *args, **kwargs) -> Parameter:
         return self.bicall(*args, **kwargs)
@@ -623,74 +541,24 @@ class ReActAgent(GradComponent):
         printc(f"input_query: {input}", color="red")
         for i in range(self.max_steps):
             step = i + 1
-            # try:
-            step_history = self._run_one_step(
-                step, prompt_kwargs, model_kwargs, id, step_history
-            )
+            try:
+                step_history = self._run_one_step(
+                    step, prompt_kwargs, model_kwargs, id, step_history
+                )
 
-            if self._check_last_step(step_history):
-                break
+                if self._check_last_step(step_history):
+                    break
 
-            # except Exception as e:
-            #     log.error(f"Error running step {step}: {e}")
-            # step_output = StepOutput(
-            #     step=step, observation=f"Error: {e}", action=None
-            # )
-            # step_history.append(step_output)
+            except Exception as e:
+                log.error(f"Error running step {step}: {e}")
 
         answer = self._get_answer(step_history)
-        printc(f"answer: {answer}", color="yellow")
         if self.training:
             return answer
         # wrap the output
         output = ReActOutput(step_history=step_history, id=id, answer=answer)
-
         return output
 
     def _extra_repr(self) -> str:
         s = f"max_steps={self.max_steps}, add_llm_as_fallback={self.add_llm_as_fallback}, "
         return s
-
-
-if __name__ == "__main__":
-    from adalflow.components.model_client import OpenAIClient
-    from adalflow.utils import setup_env
-    from adalflow.core.func_tool import FunctionTool
-
-    setup_env()
-
-    class App(GradComponent):
-        def __init__(self):
-            super().__init__()
-            self.llm_tool = Generator(
-                model_client=OpenAIClient(),
-                model_kwargs={"model": "gpt-3.5-turbo"},
-            )
-
-            def llm_as_tool(input: str, id: Optional[str] = None) -> str:
-                """Used as a calculator tool."""
-                printc(f"llm_as_tool: {input}", color="yellow")
-
-                return self.llm_tool(prompt_kwargs={"input_str": input}, id=id)
-
-            self.react_agent = ReActAgent(
-                tools=[FunctionTool(llm_as_tool, component=self.llm_tool)],
-                max_steps=2,
-                add_llm_as_fallback=False,
-                model_client=OpenAIClient(),
-                model_kwargs={"model": "gpt-3.5-turbo"},
-            )
-
-        def call(self, input: str, id: Optional[str] = None) -> Union[str, "Parameter"]:
-            return self.react_agent(input, id=id)
-
-        def forward(
-            self, input: str, id: Optional[str] = None
-        ) -> Union[str, "Parameter"]:
-            return self.react_agent(input, id=id)
-
-    app = App()
-    app.train()
-    output = app("I want to multiply 3 and 4.", id="123")
-    print(output)
-    output.draw_graph()

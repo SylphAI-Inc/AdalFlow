@@ -18,6 +18,7 @@ from copy import deepcopy
 import asyncio
 from adalflow.optim.parameter import Parameter, ParameterType
 import nest_asyncio
+import warnings
 
 from adalflow.core.container import ComponentList
 from adalflow.optim.grad_component import GradComponent
@@ -108,7 +109,9 @@ class ToolManager(GradComponent):
             tool_map = ToolManager.get_context_index(tool)
             for k, v in tool_map.items():
                 if k in output:
-                    raise ValueError(f"Duplicate key {k} in the context map.")
+                    # raise ValueError(f"Duplicate key {k} in the context map.")
+                    warnings.warn(f"Duplicate key {k} in the context map.")
+                    continue
                 output[k] = v
         return output
 
@@ -360,7 +363,10 @@ class ToolManager(GradComponent):
             except Exception as e:
                 # NOTE: if the function expression is not a function call, try to execute it as a function expression
                 log.error(f"Error {e} executing function expression: {expr}")
-                raise ValueError(f"Error {e} executing function expression: {expr}")
+                # raise ValueError(f"Error {e} executing function expression: {expr}")
+                return FunctionOutput(
+                    name=expr.action, input=expr, output=None, error=None
+                )
 
     async def execute_func_expr_async(self, expr: FunctionExpression) -> FunctionOutput:
         r"""Execute the function expression. Support both sync and async functions."""

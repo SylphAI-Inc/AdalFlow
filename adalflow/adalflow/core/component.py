@@ -890,6 +890,18 @@ class Component:
     def __repr__(self):
         # We treat the extra repr like the sub-module, one item per line
         extra_lines = []
+        # add training mode
+        status = ""
+        if self.training:
+            status = "training: True"
+        else:
+            status = "training: False"
+        # add teacher mode
+        if self.teacher_mode:
+            status += ", teacher_mode: True"
+        else:
+            status += ", teacher_mode: False"
+        extra_lines.append(status)
         extra_repr = self._extra_repr()
         # empty string will be split into list ['']
         if extra_repr:
