@@ -1671,8 +1671,10 @@ class OutputParameter(Parameter):
 
     def __repr__(self):
         super_repr = super().__repr__()
-        # replace first Parameter with OutputParameter
-        super_repr = super_repr.replace("Parameter", "OutputParameter")
+        start = super_repr.find("Parameter")
+        if start == 0:
+            end = start + len("Parameter")
+            super_repr = super_repr[:start] + "OutputParameter" + super_repr[end:]
         return super_repr
 
 

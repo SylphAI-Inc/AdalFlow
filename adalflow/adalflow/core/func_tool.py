@@ -4,7 +4,8 @@ This helps to standardize the tool interface and metadata to communicate with th
 """
 
 from typing import Any, Optional, Callable, Awaitable, Union
-from inspect import iscoroutinefunction
+from inspect import iscoroutinefunction, ismethod, isfunction
+import inspect
 import logging
 import asyncio
 import nest_asyncio
@@ -39,6 +40,21 @@ def is_running_in_event_loop() -> bool:
         return False
 
 
+def find_instance_name_from_self(instance):
+    """
+    Attempt to find the variable name of the instance in the calling context.
+
+    :param instance: The instance to find the name for.
+    :return: The variable name of the instance, if found; otherwise, None.
+    """
+    # Inspect the calling stack frame
+    frame = inspect.stack()[2].frame
+    for var_name, var_obj in frame.f_locals.items():
+        if var_obj is instance:
+            return var_name
+    return None
+
+
 FunctionType = Union[Callable[..., Any], Awaitable[Callable[..., Any]]]
 
 
@@ -50,6 +66,32 @@ class FunctionTool(GradComponent):
     container for a function that orchestrates the function formatting(to LLM), parsing, and execution.
 
     Function be used by LLM as a tool to achieve a specific task.
+
+    What function can you pass as a tool?
+    1. Any unbound function you wrote outside of a class.
+    2. Any class method you wrote in your component. It can call `self` and other methods inside of your component.
+    3. When the function is using a trainable component, and you can directly use the component's method as a tool or wrap it in a function. But you need to make sure to pass the component to the tool.
+
+    Here are some examples:
+
+    .. code-block:: python
+
+        from adalflow.core.func_tool import FunctionTool
+        class AgenticRAG(GradComponent):
+            def __init__(self, ...):
+                super().__init__()
+                self.retriever = Retriever()
+                self.llm = Generator()
+
+                def retriever_as_tool(input: str) -> str:
+                    r"Used as a retriever tool."
+                    return self.retriever(input)
+
+                tools = [FunctionTool(retriever_as_tool, component=self.retriever),
+                            FunctionTool(self.llm.__call__, component=self.llm)]
+                # if you have trainable component, this will ensure it can be trained together with your whole task pipeline
+                # if you dont want to train them and simply treating them as a tool, you can call like this
+                # tools = [FunctionTool(retriever_as_tool), FunctionTool(self.llm.__call__, component=self.llm)]
 
     Features:
     - Supports both synchronous and asynchronous functions via ``call`` and ``acall``.
@@ -89,15 +131,55 @@ class FunctionTool(GradComponent):
     def is_async(self) -> bool:
         return self._is_async
 
+    # def _create_fn_definition(self) -> FunctionDefinition:
+    #     name = self.fn.__name__
+    #     docstring = self.fn.__doc__
+    #     description = f"{docstring}"
+    #     description = f"{name}{signature(self.fn)}\n{docstring}"
+    #     # description = f"{name}{signature(self.fn)}\n{docstring}"
+    #     fn_parameters = get_fun_schema(name, self.fn)
+    #     return FunctionDefinition(
+    #         func_name=name, func_desc=description, func_parameters=fn_parameters
+    #     )
+
     def _create_fn_definition(self) -> FunctionDefinition:
         name = self.fn.__name__
         docstring = self.fn.__doc__
-        description = f"{docstring}"
-        description = f"{name}{signature(self.fn)}\n{docstring}"
-        # description = f"{name}{signature(self.fn)}\n{docstring}"
+        signature_str = str(signature(self.fn))
+
+        # Get the class that owns the method, if applicable
+        cls_name = None
+        # cls_docstring = None
+        instance = None
+        if ismethod(self.fn):  # Check if it’s a bound method
+            instance = self.fn.__self__
+            instance = find_instance_name_from_self(instance)
+            if name == "__call__" and not instance:
+                raise ValueError(
+                    "Please provide a name for the instance in the calling context"
+                )
+            cls_name = self.fn.__self__.__class__.__name__
+            # cls_docstring = getdoc(self.fn.__self__.__class__)
+        elif isfunction(self.fn):  # Unbound method
+            cls_name = self.fn.__qualname__.split(".")[0]
+
+        # Build the description
+        description = f"{name}{signature_str}\n"
+        if cls_name:
+            description += f"Belongs to class: {cls_name}\n"
+        if docstring:
+            description += f"Method docstring: {docstring}\n"
+        # if cls_docstring:
+        #     description += f"Class docstring: {cls_docstring}\n"
+
+        # Get function parameters schema
         fn_parameters = get_fun_schema(name, self.fn)
+
         return FunctionDefinition(
-            func_name=name, func_desc=description, func_parameters=fn_parameters
+            func_name=name,
+            func_desc=description,
+            func_parameters=fn_parameters,
+            class_instance=instance,
         )
 
     def forward(self, *args, **kwargs) -> Parameter:

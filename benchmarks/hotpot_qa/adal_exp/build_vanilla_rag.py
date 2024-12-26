@@ -140,11 +140,19 @@ class DspyRetriever(Retriever, adal.GradComponent):
         print(f"output: {output}")
         return output
 
-    def __call__(self, *args, **kwargs):
+    # def __call__(self, *args, **kwargs):
+    #     r"""Retrieves the top k passages from using input as the query"""
+    #     if self.training:
+    #         return adal.GradComponent.forward(self, *args, **kwargs)
+    #     else:
+    #         return self.call(*args, **kwargs)
+
+    def __call__(self, input: str, top_k: Optional[int] = None, id: str = None):
+        r"""Retrieves the top k relevant passages from using input as the subquery to obtain context for question"""
         if self.training:
-            return adal.GradComponent.forward(self, *args, **kwargs)
+            return adal.GradComponent.forward(self, input=input, top_k=top_k, id=id)
         else:
-            return self.call(*args, **kwargs)
+            return self.call(input=input, top_k=top_k, id=id)
 
 
 task_desc_str = r"""Answer questions with short factoid answers.

@@ -13,7 +13,6 @@ from typing import (
     overload,
     Literal,
 )
-import warnings
 import logging
 from copy import deepcopy
 import asyncio
@@ -29,6 +28,8 @@ from adalflow.core.types import (
     Function,
     FunctionExpression,
 )
+from adalflow.utils import printc
+
 
 from adalflow.core.functional import (
     parse_function_call_expr,
@@ -62,9 +63,6 @@ class ToolManager(GradComponent):
 
     yaml and json definitions are for quick access to the definitions of the tools.
     If you need more specification, such as using exclude field, you can use the function_definitions.
-    Args:
-
-
     """
 
     def __init__(
@@ -76,7 +74,6 @@ class ToolManager(GradComponent):
     ):
         super().__init__()
         nest_asyncio.apply()  # Apply nest_asyncio to handle nested loops
-        # super(LocalDB, self).__init__()
         tools = [
             (
                 FunctionTool(fn=deepcopy(tool))
@@ -86,20 +83,56 @@ class ToolManager(GradComponent):
             for tool in tools
         ]
         self.tools = ComponentList(tools)
-        self._context_map = {tool.definition.func_name: tool for tool in self.tools}
+        self._context_map = self.create_context_map_from_tools(self.tools)
         self._additional_context = additional_context or {}
         self.context = {**self._context_map, **self._additional_context}
         log.info(
             f"Initialized ToolManager with {len(self.tools)} tools and additional context {self._additional_context}"
         )
 
+    @staticmethod
+    def get_context_index(tool: FunctionTool) -> Dict[str, object]:
+        index = tool.definition.func_name
+        if tool.definition.class_instance:
+            index = f"{tool.definition.class_instance}.{index}"
+        output = {index: tool}
+        if tool.definition.func_name == "__call__":
+            # add another index of directly using the classinstance
+            output[f"{tool.definition.class_instance}"] = tool
+        return output
+
+    @staticmethod
+    def create_context_map_from_tools(tools: List[FunctionTool]) -> Dict[str, object]:
+        output: Dict[str, object] = {}
+        for tool in tools:
+            tool_map = ToolManager.get_context_index(tool)
+            for k, v in tool_map.items():
+                if k in output:
+                    raise ValueError(f"Duplicate key {k} in the context map.")
+                output[k] = v
+        return output
+
     @property
     def yaml_definitions(self) -> List[str]:
-        return [tool.definition.to_yaml() for tool in self.tools]
+        output = []
+        for tool in self.tools:
+            if not tool.definition.class_instance:
+                output.append(tool.definition.to_yaml(exclude=["class_instance"]))
+            else:
+                output.append(tool.definition.to_yaml())
+            output.append(tool.definition.to_yaml(exclude=["class_instance"]))
+        return output
 
     @property
     def json_definitions(self) -> List[str]:
-        return [tool.definition.to_json() for tool in self.tools]
+        output = []
+        for tool in self.tools:
+            if not tool.definition.class_instance:
+                output.append(tool.definition.to_json(exclude=["class_instance"]))
+            else:
+                output.append(tool.definition.to_json())
+            output.append(tool.definition.to_json(exclude=["class_instance"]))
+        return output
 
     @property
     def function_definitions(self) -> List[FunctionDefinition]:
@@ -214,17 +247,6 @@ class ToolManager(GradComponent):
         else:
             return self.call(expr_or_fun=expr_or_fun, step=step)
 
-    # def forward(
-    #     self, *, expr_or_fun: Parameter, step: Literal["execute"] = "execute"
-    # ) -> Parameter:
-    #     if not isinstance(expr_or_fun, Parameter):
-    #         expr_or_fun = expr_or_fun.data
-
-    #         if isinstance(expr_or_fun, Function) and step == "execute":
-    #             tool: FunctionTool = self.context[expr_or_fun.data.name]
-
-    #     output = self.call(expr_or_fun, step=step)
-
     def execute_func(
         self, func: Union[Function, Parameter]
     ) -> Union[FunctionOutput, Parameter]:
@@ -248,14 +270,15 @@ class ToolManager(GradComponent):
                     context: Dict[str, object] = {},
                 ):
                     if isinstance(func, Parameter):
+                        printc(f"context: {context}", color="yellow")
                         tool: FunctionTool = context[func.data.name]
                         print(f"tool training: {tool.training}")
                         output = tool.forward(*func.data.args, **func.data.kwargs)
                         # handle the untainable function
                         if not isinstance(output, Parameter):
-                            warnings.warn(
-                                f"Error executing function: {output}", UserWarning
-                            )
+                            # warnings.info(
+                            #     f"Error executing function: {output}", UserWarning
+                            # )
                             output = Parameter(
                                 name=func.data.name,
                                 data=output,

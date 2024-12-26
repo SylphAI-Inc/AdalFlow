@@ -305,8 +305,13 @@ AsyncCallable = Callable[..., Awaitable[Any]]
 @dataclass
 class FunctionDefinition(DataClass):
     __doc__ = r"""The data modeling of a function definition, including the name, description, and parameters."""
-
-    func_name: str = field(metadata={"desc": "The name of the tool"})
+    class_instance: Optional[Any] = field(
+        default=None,
+        metadata={"desc": "The instance of the class this function belongs to"},
+    )
+    func_name: str = field(
+        metadata={"desc": "The name of the tool"}, default=required_field
+    )
     func_desc: Optional[str] = field(
         default=None, metadata={"desc": "The description of the tool"}
     )

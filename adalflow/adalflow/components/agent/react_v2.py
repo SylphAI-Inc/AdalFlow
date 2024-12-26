@@ -30,7 +30,6 @@ __all__ = ["DEFAULT_REACT_AGENT_SYSTEM_PROMPT", "ReActAgent"]
 
 
 react_agent_task_desc = r"""{# role/task description #}
-You are a helpful assistant.
 Answer the user's query using the tools provided below with minimal steps and maximum accuracy.
 {# REACT instructions #}
 Each step you will read the previous Thought, Action, and Observation(execution result of the action) and then provide the next Thought and Action.
@@ -59,6 +58,8 @@ You available tools are:
 {{tool}}
 ------------------------
 {% endfor %}
+RULES:
+- When the function is a class method and when class_instance exists, use <class_instance_value>.<func_name> to call instead (NOT the CLASS NAME)
 <END_OF_TOOLS>
 {% endif %}
 {# Context Variables #}
@@ -422,7 +423,7 @@ class ReActAgent(GradComponent):
             printc(f"tool_manager: {self.tool_manager.training}", color="red")
             if not isinstance(func, Parameter):
                 raise ValueError(f"Expected Parameter, but got {type(func)}: {func}")
-            printc(f"func: {func}", color="yellow")
+            # printc(f"func: {func}", color="yellow")
             # replace the id
             if isinstance(func, Parameter):
                 func.data.kwargs["id"] = id
@@ -430,7 +431,7 @@ class ReActAgent(GradComponent):
                 func.add_successor_map_fn(self.tool_manager, lambda x: x.data)
 
             result: Parameter = self.tool_manager(expr_or_fun=func, step="execute")
-            printc(f"result: {result}", color="red")
+            # printc(f"result: {result}", color="red")
             result.add_successor_map_fn(
                 successor=tmp_action_str_to_step_output, map_fn=lambda x: x.data
             )
@@ -470,12 +471,13 @@ class ReActAgent(GradComponent):
         printc("start running one step", color="yellow")
 
         prompt_kwargs["step_history"] = step_history
-        printc(
-            f"prompt_kwargs 1: {prompt_kwargs}, training: {self.planner.training}",
-            color="yellow",
-        )
+        # printc(
+        #     f"prompt_kwargs 1: {prompt_kwargs}, training: {self.planner.training}",
+        #     color="yellow",
+        # )
 
-        # prompt_str = self.planner.get_prompt(**prompt_kwargs)
+        prompt_str = self.planner.get_prompt(**prompt_kwargs)
+        printc(f"prompt_str: {prompt_str}", color="red")
         # return [StepOutput(step=step, action=None, observation="test")]
 
         log.debug(
@@ -495,7 +497,7 @@ class ReActAgent(GradComponent):
 
         # connecting two generators in the computation graph, it will set up self.step_history
         if isinstance(response, Parameter):
-            printc(f"response: {response}", color="yellow")
+            # printc(f"response: {response}", color="yellow")
 
             step_output: Parameter = self._execute_action(step_output, response, id)
 
@@ -513,7 +515,7 @@ class ReActAgent(GradComponent):
                 successor=self.planner, map_fn=lambda x: x.data
             )
             # convert step history back to data
-            printc(f"step_history: {step_history.data}", color="yellow")
+            # printc(f"step_history: {step_history.data}", color="yellow")
             return step_history
 
         else:
@@ -535,9 +537,7 @@ class ReActAgent(GradComponent):
         last_step: StepOutput = None
         if isinstance(step_history, Parameter):
             # try:
-            printc(f"step_history: {step_history}", color="yellow")
             step_history_data = step_history.data
-            printc(f"step_history: {step_history}", color="yellow")
             last_step = step_history_data[-1]
 
             # except Exception as e:
@@ -560,7 +560,7 @@ class ReActAgent(GradComponent):
         last_step: StepOutput = None
         if isinstance(step_history, Parameter):
             try:
-                printc(f"step_history: {step_history}", color="yellow")
+                # printc(f"step_history: {step_history}", color="yellow")
                 return step_history
 
             except Exception as e:
@@ -568,7 +568,7 @@ class ReActAgent(GradComponent):
                 return None
         else:
             last_step = step_history[-1]
-            printc(f"last_step: {last_step}", color="yellow")
+            # printc(f"last_step: {last_step}", color="yellow")
 
             return last_step.observation
 
@@ -639,11 +639,12 @@ class ReActAgent(GradComponent):
             # step_history.append(step_output)
 
         answer = self._get_answer(step_history)
+        printc(f"answer: {answer}", color="yellow")
         if self.training:
             return answer
         # wrap the output
         output = ReActOutput(step_history=step_history, id=id, answer=answer)
-        # printc(f"output: {output}", color="yellow")
+
         return output
 
     def _extra_repr(self) -> str:

@@ -677,7 +677,7 @@ class AgenticRAG(adal.GradComponent):
         from adalflow.core.func_tool import FunctionTool
 
         tools = [
-            FunctionTool(dspy_retriever_as_tool, component=self.dspy_retriever),
+            FunctionTool(self.dspy_retriever.__call__, component=self.dspy_retriever),
             # FunctionTool(generator_as_tool, component=self.llm),
         ]
 

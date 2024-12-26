@@ -31,6 +31,8 @@ class GradComponent(Component):
     The __call__ method will check if the component is in training mode,
     and call the `forward` method to return a `Parameter` object if it is in training mode,
     otherwise, it will call the `call` method to return the output such as "GeneratorOutput", "RetrieverOutput", etc.
+
+    Note: Avoid using the attributes and methods that are defined here and in the `Component` class unless you are overriding them.
     """
     backward_engine: "BackwardEngine"
     _component_type = "grad"
