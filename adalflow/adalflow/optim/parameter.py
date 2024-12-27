@@ -1094,7 +1094,6 @@ class Parameter(Generic[T]):
                 #     n.gradients, [n.gradients_context[g] for g in n.gradients]
                 # )
                 # if "output" in n.name:
-                print(f"Node: {n.name}, \n gradients: {n.gradients}")
                 for g in n.gradients:
                     gradient_context = g.context
                     log.info(f"Gradient context display: {gradient_context}")
@@ -1141,8 +1140,14 @@ class Parameter(Generic[T]):
         save_json(self.to_dict(), f"{filepath}_root.json")
 
         # draw interactive graph
-        self.draw_interactive_html_graph(filepath=filepath, nodes=nodes, edges=edges)
-        output = {"graph_path": final_path, "root_path": f"{filepath}_root.json"}
+        graph_file: Dict[str, str] = self.draw_interactive_html_graph(
+            filepath=filepath, nodes=nodes, edges=edges
+        )
+        output = {
+            "graph_path": final_path,
+            "root_path": f"{filepath}_root.json",
+            "interactive_html_graph": graph_file["graph_path"],
+        }
         print(f"Graph saved as {filepath}.{format}")
         return output
 
@@ -1163,7 +1168,6 @@ class Parameter(Generic[T]):
             filepath (str): Path to save the graph.
         """
 
-        # TODO: improve the pathes
         assert rankdir in ["LR", "TB"]
         from adalflow.utils.global_config import get_adalflow_default_root_path
 
@@ -1176,13 +1180,8 @@ class Parameter(Generic[T]):
             ) from e
 
         root_path = get_adalflow_default_root_path()
-        # # prepare the log directory
-        # log_dir = os.path.join(root_path, "logs")
 
-        # # Set up TensorBoard logging
-        # writer = SummaryWriter(log_dir)
-
-        filename = f"trace_component_output_graph_{self.name}_id_{self.id}"
+        filename = f"trace_component_output_graph_{self.name}_id_{self.id}.{format}"
         filepath = (
             os.path.join(filepath, filename)
             if filepath
@@ -1193,9 +1192,7 @@ class Parameter(Generic[T]):
         nodes, edges = self._collect_output_subgraph()
 
         # Step 2: Render using Graphviz
-        filename = f"output_subgraph_{self.name}_{self.id}"
-        filepath = filepath or f"./{filename}"
-        print(f"Saving OUTPUT subgraph to {filepath}.{format}")
+        print(f"Saving OUTPUT subgraph to {filepath}")
 
         dot = Digraph(format=format, graph_attr={"rankdir": rankdir})
         node_ids = set()
@@ -1230,7 +1227,7 @@ class Parameter(Generic[T]):
 
         # Step 3: Save and render
         dot.render(filepath, cleanup=True)
-        print(f"Graph saved as {filepath}.{format}")
+        print(f"Graph saved as {filepath}")
         return {"output_subgraph": filepath}
 
     def draw_component_subgraph(

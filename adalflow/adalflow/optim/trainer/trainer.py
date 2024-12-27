@@ -963,29 +963,29 @@ class Trainer(Component):
         debug_files.update(debug_component_file)
 
         # zero grad
-        # self._zero_grad_text_optimizers()
-        # # revert
-        # self._revert_text_optimizers()
+        self._zero_grad_text_optimizers()
+        # revert
+        self._revert_text_optimizers()
 
-        # total_loss.reset_all_gradients()
+        total_loss.reset_all_gradients()
 
-        # # draw graph on a single loss
-        # total_loss = sum_ops([copy(failed_loss)])
-        # total_loss.backward()
-        # self._propose_text_optimizers()
+        # draw graph on a single loss
+        total_loss = sum_ops([copy(failed_loss)])
+        total_loss.backward()
+        self._propose_text_optimizers()
 
-        # failed_debug_files = total_loss.draw_graph(
-        #     filepath=debug_path, full_trace=False
-        # )
-        # failed_output_file = total_loss.draw_output_subgraph(filepath=debug_path)
-        # failed_component_file = total_loss.draw_component_subgraph(filepath=debug_path)
-        # failed_debug_files.update(failed_output_file)
-        # failed_debug_files.update(failed_component_file)
+        failed_debug_files = total_loss.draw_graph(
+            filepath=debug_path, full_trace=False
+        )
+        failed_output_file = total_loss.draw_output_subgraph(filepath=debug_path)
+        failed_component_file = total_loss.draw_component_subgraph(filepath=debug_path)
+        failed_debug_files.update(failed_output_file)
+        failed_debug_files.update(failed_component_file)
 
-        # for k, v in failed_debug_files.items():
-        #     if k in debug_files:
-        #         k = f"failed_{k}"
-        #     debug_files[k] = v
+        for k, v in failed_debug_files.items():
+            if k in debug_files:
+                k = f"failed_{k}"
+            debug_files[k] = v
 
         return debug_files
 
