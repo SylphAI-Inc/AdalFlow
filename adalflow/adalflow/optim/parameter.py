@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 import uuid
 from adalflow.optim.types import ParameterType
 from adalflow.core.base_data_class import DataClass
+from adalflow.utils.logger import printc
 
 if TYPE_CHECKING:
     from adalflow.optim.text_grad.tgd_optimizer import TGDData, TGDOptimizerTrace
@@ -75,6 +76,11 @@ class ComponentTrace(DataClass):
         default=None,
     )
 
+    def to_context_str(self):
+        output = f"""<INPUT>: {self.input_args}. <OUTPUT>: {self.full_response}"""
+        printc(f"output: {output}")
+        return output
+
 
 # TODO: use this to better trace the score
 @dataclass
@@ -98,39 +104,6 @@ class ComponentNode(DataClass):
         metadata={"desc": "The type of the node"}, default="COMPONENT"
     )
 
-
-# COMBINED_GRADIENTS_TEMPLATE = r"""
-# {% if component_schema %}
-# <COMPONENT_SCHEMA>
-# Gradients are from {{ component_schema | length }} components.
-# {% for component_id, schema in component_schema.items() %}
-# id: {{ component_id }}
-# {{ schema }}
-# {% endfor %}
-# </COMPONENT_SCHEMA>
-# {% endif %}
-# <DESCRIPTION>
-# If same data_id appears multiple times, it means this component/variable is called multiple times in the same order as it appears in the gradient list.
-# Use this info to have more clarity while reasoning and proposing new variable
-# </DESCRIPTION>
-# {% if combined_gradients %}
-# {% for g in combined_gradients %}
-# {% set gradient = g %}
-
-# {% if gradient['context'] %}
-# {{loop.index}}.
-# data_id: {{gradient['data_id']}}
-# INPUT_OUTPUT: {{gradient['context']}}
-# {% endif %}
-
-# {% if gradient['score'] is not none %}
-# {#The output is used as <{{gradient_context.response_desc}}>#}
-# <SCORE>{{gradient['score']}}</SCORE>
-# <FEEDBACK>{{gradient['gradient']}}</FEEDBACK>
-# {% endif %}
-# {% endfor %}
-# {% endif %}
-# """
 
 COMBINED_GRADIENTS_TEMPLATE = r"""
 {% if component_schema %}
@@ -161,31 +134,6 @@ INPUT_OUTPUT: {{ gradient.context }}
 {% endfor %}
 {% endif %}
 """
-# Use this info to have more clarity while reasoning and proposing new variables.
-
-# {% if combined_gradients %}
-# {# Group gradients by data_id #}
-# {% set grouped_gradients = {} %}
-# {% for g in combined_gradients %}
-# {% set _ = grouped_gradients.setdefault(g['data_id'], []).append(g) %}
-# {% endfor %}
-
-# {# Render grouped gradients #}
-# {% for data_id, gradients in grouped_gradients.items() %}
-# <DataID: {{ data_id }}>
-# {% for gradient in gradients %}
-# {{loop.index}}.
-# INPUT_OUTPUT: {{gradient['context']}}
-# {% if gradient['score'] is not none %}
-# <SCORE>{{gradient['score']}}</SCORE>
-# <FEEDBACK>{{gradient['gradient']}}</FEEDBACK>
-# {% endif %}
-# {% endfor %}
-# </DataID>
-# {% endfor %}
-# {% endif %}
-
-# Batch size: {{ combined_gradients|length }}
 
 
 class Parameter(Generic[T]):
@@ -215,6 +163,14 @@ class Parameter(Generic[T]):
 
     1. https://github.com/karpathy/micrograd/blob/master/micrograd/engine.py
     """
+
+    allowed_types = {
+        ParameterType.NONE,
+        ParameterType.PROMPT,
+        ParameterType.DEMOS,
+        ParameterType.HYPERPARAM,
+        ParameterType.INPUT,
+    }
 
     id: str = None  # Unique id of the parameter
     name: str = None  # Name of the parameter, easier to read for humans
@@ -272,6 +228,13 @@ class Parameter(Generic[T]):
                 else f"param_{self.id}"
             )
         self.param_type = param_type
+        # allow subclasses to override allowed_types dynamically
+        allowed_types = getattr(self.__class__, "allowed_types", set())
+        if param_type not in allowed_types:
+            raise ValueError(
+                f"{param_type.name} is not allowed for {self.__class__.__name__}"
+            )
+
         self.data = data  # often string and will be used in the prompts
         self.requires_opt = requires_opt
         self.data_type = type(data)
@@ -790,7 +753,12 @@ class Parameter(Generic[T]):
             if not node.requires_opt:
                 log.debug(f"Skipping {node.name} as it does not require optimization")
                 continue
-            log.debug(f"v: {node.data}, grad_fn: {node.grad_fn}, {node.get_grad_fn()}")
+            component_name = None
+            if hasattr(node, "component_trace"):
+                component_name = node.component_trace.name
+            printc(
+                f"node: {node.name}, component: {component_name}, grad_fn: {node.grad_fn}."
+            )
             if node.get_grad_fn() is not None:  # gradient function takes in the engine
                 log.debug(f"Calling gradient function for {node.name}")
                 node.grad_fn()
@@ -857,6 +825,7 @@ class Parameter(Generic[T]):
                 <h1>Details for Node: {node.name}</h1>
                 <p><b>ID:</b> {node.id}</p>
                 <p><b>Role:</b> {node.role_desc}</p>
+                <p><b>DataType:</b> {str(type(node.data))}</p>
                 <pre><b>Data:</b> \n{json.dumps(data_json, indent=4)}</pre>
                 <p><b>Data ID:</b> {node.data_id}</p>
                 <p><b>Previous Value:</b> {node.previous_data}</p>
@@ -1239,9 +1208,12 @@ class Parameter(Generic[T]):
                 <tr><td><b>Type:</b></td><td>{node.param_type}</td></tr>
                 <tr><td><b>Value:</b></td><td>{node.get_short_value()}</td></tr>"""
             # add the component trace id and name
-            if node.component_trace.id is not None:
+            if hasattr(node, "component_trace") and node.component_trace.id is not None:
                 node_label += f"<tr><td><b>Component Trace ID:</b></td><td>{node.component_trace.id}</td></tr>"
-            if node.component_trace.name is not None:
+            if (
+                hasattr(node, "component_trace")
+                and node.component_trace.name is not None
+            ):
                 node_label += f"<tr><td><b>Component Trace Name:</b></td><td>{node.component_trace.name}</td></tr>"
 
             node_label += "</table>"
@@ -1307,19 +1279,20 @@ class Parameter(Generic[T]):
 
         # Add nodes
         for node in component_nodes:
-            node_label = f"""
-            <table border="0" cellborder="1" cellspacing="0">
-                <tr><td><b>Name:</b></td><td>{node.name}</td></tr>
-                <tr><td><b>TYPE:</b></td><td>{node.type}</td></tr>
-                """
-            #                 <tr><td><b>ID:</b></td><td>{node.id}</td></tr>
+            node_label = """
+            <table border="0" cellborder="1" cellspacing="0">"""
+
+            if node.name:
+                node_label += """<tr><td><b>Name:</b></td><td>{node.name}</td></tr>"""
+            if node.type:
+                node_label += """<tr><td><b>TYPE:</b></td><td>{node.type}</td></tr>"""
 
             # add the list of orders
             if node.id in component_nodes_orders:
                 node_label += f"<tr><td><b>Order:</b></td><td>{component_nodes_orders[node.id]}</td></tr>"
             node_label += "</table>"
             dot.node(
-                name=node.id,
+                name=node.id if node.id else "id missing",
                 label=f"<{node_label}>",
                 shape="plaintext",
                 color="lightblue",
@@ -1416,7 +1389,7 @@ class Parameter(Generic[T]):
                     pred_id = f"unknown_id_{uuid.uuid4()}"
                     pred_name = "Unknown Component"
 
-                    if hasattr(pred, "component_trace"):
+                    if hasattr(pred, "component_trace") and pred.component_trace.id:
                         pred_id = pred.component_trace.id
                         pred_name = pred.component_trace.name
 
@@ -1587,6 +1560,12 @@ class OutputParameter(Parameter):
 
     It will trace the predecessors, set up a grad_fn, store gradients, and trace the forward pass by tracking the component_trace.
     """
+    allowed_types = {
+        ParameterType.OUTPUT,
+        ParameterType.LOSS_OUTPUT,
+        ParameterType.GENERATOR_OUTPUT,
+        ParameterType.SUM_OUTPUT,
+    }
     component_trace: ComponentTrace = (
         None  # Trace of the component that produced this output
     )
@@ -1623,6 +1602,7 @@ class OutputParameter(Parameter):
             eval_input=eval_input,
             successor_map_fn=successor_map_fn,
         )
+
         self.component_trace = ComponentTrace()
         self.full_response = full_response
 

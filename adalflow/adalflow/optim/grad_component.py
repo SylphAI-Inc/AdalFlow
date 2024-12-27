@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 from collections import OrderedDict
 import uuid
 import logging
-from copy import deepcopy
 
 if TYPE_CHECKING:
     from adalflow.core.generator import BackwardEngine
@@ -124,11 +123,16 @@ class GradComponent(Component):
         call_response = self.call(*unwrapped_args, **unwrapped_kwargs)
 
         if isinstance(call_response, Parameter):
+            raise ValueError("A GradComponent call should not return Parameter")
             predecessors.append(call_response)
             return call_response
 
         # 4. Create a Parameter object to trace the forward pass
-        input_args.update(kwargs)
+        # input_args.update(kwargs)
+        # use unwrapped args  and unwrapped kwargs to trace the forward pass
+        tracing_args = {i: v for i, v in enumerate(unwrapped_args)}
+        tracing_args.update(**unwrapped_kwargs)
+
         response = OutputParameter(
             data=call_response,
             name=self.name + "_output",
@@ -138,7 +142,7 @@ class GradComponent(Component):
         )
         response.set_predecessors(predecessors)
         response.trace_forward_pass(
-            input_args=input_args,
+            input_args=tracing_args,
             full_response=call_response,
             id=self.id,
             name=self.name,
@@ -172,14 +176,9 @@ class GradComponent(Component):
             for pred in children_params:
                 pred.backward_engine_disabled = True
 
-        for pred in children_params:
+        for _, pred in enumerate(children_params):
             pred.set_score(response._score)
-            from adalflow.utils.logger import printc
 
-            printc(
-                f"Retriever: Backward: {pred.name} set_score: {response._score}, {response.name}",
-                "blue",
-            )
             if pred.param_type == ParameterType.DEMOS:
                 pred.add_score_to_trace(
                     trace_id=id, score=response._score, is_teacher=self.teacher_mode
@@ -192,7 +191,7 @@ class GradComponent(Component):
 
             for grad in response.gradients:
                 # make a copy of the gradient
-                grad = deepcopy(grad)
+                # grad = deepcopy(grad)
                 # update the gradient context and from and to
                 grad.update_from_to(response, pred)
                 grad.is_default_copy = True
@@ -200,22 +199,8 @@ class GradComponent(Component):
                     GradientContext(
                         variable_desc=pred.role_desc,
                         response_desc=response.name,
-                        # context=f"""""",  # TODO: check the forward pass component trace
-                        input_output=f"""{response.component_trace}""",
+                        input_output=f"""{response.component_trace.to_context_str()}""",
                     )
                 )
 
-                # grad.from_response_id = response.id
-                # grad.name = f"{grad.name}_to_{pred.name}"
-
                 pred.add_gradient(grad)
-            # pred.add_gradient(
-            #     gradient=Parameter(
-            #         name=f"gradient",
-            #         data=response.get_gradient_and_context_text(
-            #             skip_correct_sample=True
-            #         ),
-            #         param_type=ParameterType.GRADIENT,
-            #         from_response_id=response.id,
-            #     )
-            # )

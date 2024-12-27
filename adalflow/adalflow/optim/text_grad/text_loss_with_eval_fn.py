@@ -202,9 +202,7 @@ class EvalFnToTextLoss(LossComponent):
             log.info(
                 f"EvalFnToTextLoss: Gradient already computed for {pred.role_desc} with respect to {response.role_desc}"
             )
-            # print(
-            #     f"Gradient already computed for {pred.role_desc} with respect to {response.role_desc}"
-            # )
+
             return
 
         if backward_engine is None:
@@ -273,14 +271,14 @@ class EvalFnToTextLoss(LossComponent):
             prompt_kwargs=backward_engine_prompt_kwargs
         )
         gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
-        print(f"Backward engine prompt: {gradient_prompt}")
+        # print(f"Backward engine prompt: {gradient_prompt}")
         gradient_value_data = (
             gradient_value.data
             or backward_engine.failure_message_to_optimizer(
                 gradient_response=gradient_value
             )
         )
-        print(f"gradient_value_data: {gradient_value_data}")
+        # print(f"gradient_value_data: {gradient_value_data}")
 
         log.debug(f"EvalFnToTextLoss: Gradient for {pred}: {gradient_value_data}")
 
@@ -305,8 +303,8 @@ class EvalFnToTextLoss(LossComponent):
         # backward the end to end score
         # TODO: not really useful
         pred.set_score(response.data)
-        print(f"setting pred name {pred.name} score to {response.data}")
-        print(f"gradient_param: {pred.gradients}")
+        # print(f"setting pred name {pred.name} score to {response.data}")
+        # print(f"gradient_param: {pred.gradients}")
 
         # TODO: reduce meta
 
@@ -452,10 +450,8 @@ if __name__ == "__main__":
     )
     # model.set_mock_output(mock_output_data="4")
     model.train()
-    print(f"model.train: {model.training}")
 
     y: Parameter = model(prompt_kwargs={"input_str": x})
-    print(f"y: {y}")
 
     loss = eval_fn_to_text_loss(
         {
@@ -468,9 +464,7 @@ if __name__ == "__main__":
             ),
         }
     )
-    print(f"loss: {loss}")
     loss.backward()
-    print(loss.to_dict())
     assert len(loss.predecessors) == 2
     assert len(y.predecessors) == 2
     dot = loss.draw_graph(add_grads=True, filepath="real_data")

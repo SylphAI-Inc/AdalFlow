@@ -16,7 +16,7 @@ from typing import (
 import logging
 from copy import deepcopy
 import asyncio
-from adalflow.optim.parameter import Parameter, ParameterType
+from adalflow.optim.parameter import Parameter, ParameterType, OutputParameter
 import nest_asyncio
 import warnings
 
@@ -282,10 +282,9 @@ class ToolManager(GradComponent):
                             # warnings.info(
                             #     f"Error executing function: {output}", UserWarning
                             # )
-                            output = Parameter(
+                            output = OutputParameter(
                                 name=func.data.name,
                                 data=output,
-                                eval_input=func.eval_input,
                                 requires_opt=False,
                                 param_type=ParameterType.OUTPUT,
                             )

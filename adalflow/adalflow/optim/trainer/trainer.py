@@ -941,42 +941,51 @@ class Trainer(Component):
             print("Assigned correct_loss and failed_loss from sorted losses.")
 
         total_loss = sum_ops([copy(correct_loss), copy(failed_loss)])
+
+        t0 = time.time()
+
         total_loss.backward()
+        t1 = time.time()
+        printc(f"finish loss backward in {t1-t0} seconds")
         # test optimizer
         self._propose_text_optimizers()
+        t2 = time.time()
+        printc(f"finish text optimizer step in {t2-t1} seconds")
 
         debug_files: Dict = total_loss.draw_graph(filepath=debug_path, full_trace=True)
-
+        t3 = time.time()
+        printc(f"finish draw_graph step in {t3-t2} seconds")
         debug_output_file = total_loss.draw_output_subgraph(filepath=debug_path)
-
+        t4 = time.time()
+        printc(f"finish draw_output_subgraph step in {t4-t3} seconds")
         debug_component_file = total_loss.draw_component_subgraph(filepath=debug_path)
         debug_files.update(debug_output_file)
         debug_files.update(debug_component_file)
 
         # zero grad
-        self._zero_grad_text_optimizers()
-        # revert
-        self._revert_text_optimizers()
+        # self._zero_grad_text_optimizers()
+        # # revert
+        # self._revert_text_optimizers()
 
-        total_loss.reset_all_gradients()
+        # total_loss.reset_all_gradients()
 
-        # draw graph on a single loss
-        total_loss = sum_ops([copy(failed_loss)])
-        total_loss.backward()
-        self._propose_text_optimizers()
+        # # draw graph on a single loss
+        # total_loss = sum_ops([copy(failed_loss)])
+        # total_loss.backward()
+        # self._propose_text_optimizers()
 
-        failed_debug_files = total_loss.draw_graph(
-            filepath=debug_path, full_trace=False
-        )
-        failed_output_file = total_loss.draw_output_subgraph(filepath=debug_path)
-        failed_component_file = total_loss.draw_component_subgraph(filepath=debug_path)
-        failed_debug_files.update(failed_output_file)
-        failed_debug_files.update(failed_component_file)
+        # failed_debug_files = total_loss.draw_graph(
+        #     filepath=debug_path, full_trace=False
+        # )
+        # failed_output_file = total_loss.draw_output_subgraph(filepath=debug_path)
+        # failed_component_file = total_loss.draw_component_subgraph(filepath=debug_path)
+        # failed_debug_files.update(failed_output_file)
+        # failed_debug_files.update(failed_component_file)
 
-        for k, v in failed_debug_files.items():
-            if k in debug_files:
-                k = f"failed_{k}"
-            debug_files[k] = v
+        # for k, v in failed_debug_files.items():
+        #     if k in debug_files:
+        #         k = f"failed_{k}"
+        #     debug_files[k] = v
 
         return debug_files
 

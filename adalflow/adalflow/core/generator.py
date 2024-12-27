@@ -51,6 +51,7 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
     OBJECTIVE_INSTRUCTION_BASE,
     OBJECTIVE_INSTRUCTION_CHAIN,
 )
+from adalflow.utils.logger import printc
 
 __all__ = ["Generator", "BackwardEngine", "create_teacher_generator"]
 
@@ -761,7 +762,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             gradient_output: GeneratorOutput = backward_engine(
                 prompt_kwargs=backward_engine_prompt_kwargs
             )
-            print(f"gradient_output: {gradient_output}")
             if not isinstance(gradient_output, GeneratorOutput):
                 raise ValueError(
                     f"Generator: Backward Engine should return a GeneratorOutput. Got {gradient_output} instead."
@@ -771,7 +771,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
             try:
                 response_gradient_list = parser.call(gradient_output.data)
-                print(f"response_gradient_list: {response_gradient_list}")
             except Exception as e:
                 log.error(f"Error parsing the response_gradient_list: {e}")
                 failure_message = backward_engine.failure_message_to_optimizer(
@@ -779,9 +778,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 )
                 if failure_message:
                     response_gradient_list = [failure_message] * len(children_params)
-                print(f"failure_message: {failure_message}")
-
-        print(f"response_gradient_list: {response_gradient_list}")
+                printc(f"failure_message: {failure_message}", color="red")
 
         # generate the gradient for each child
         for i, pred in enumerate(children_params):
@@ -796,7 +793,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 if response_gradient_list and len(response_gradient_list) > i
                 else "Failed to get the gradient."
             )
-            print(f"i: {i}, gradient_data: {gradient_data}")
 
             var_gradient = Gradient(
                 data=gradient_data,

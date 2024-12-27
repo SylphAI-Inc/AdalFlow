@@ -675,7 +675,7 @@ class AgenticRAG(adal.GradComponent):
         ]
 
         self.agent = ReActAgent(
-            max_steps=3,
+            max_steps=4,
             add_llm_as_fallback=True,
             tools=tools,
             model_client=model_client,

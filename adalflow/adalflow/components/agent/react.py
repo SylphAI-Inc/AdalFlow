@@ -29,13 +29,12 @@ log = logging.getLogger(__name__)
 __all__ = ["DEFAULT_REACT_AGENT_SYSTEM_PROMPT", "ReActAgent"]
 
 
-react_agent_task_desc = r"""{# role/task description #}
+react_agent_task_desc = r"""
 Answer the user's query using the tools provided below with minimal steps and maximum accuracy.
-{# REACT instructions #}
+
 Each step you will read the previous Thought, Action, and Observation(execution result of the action) and then provide the next Thought and Action.
 
 <START_OF_TASK_SPEC>
-{# Task specification to teach the agent how to think using 'divide and conquer' strategy #}
 - For simple queries: Directly call the ``finish`` action and provide the answer.
 - For complex queries:
     - Step 1: Read the user query and potentially divide it into subqueries. And get started with the first subquery.
@@ -115,12 +114,42 @@ class AppendStepHistory(GradComponent):
         """Append the step_output to the step_history."""
         if not step_history:
             step_history = []
-        # make a copy step_history for better tracking
         step_history = deepcopy(step_history)
 
         step_history.append(step_output)
-        # printc(f"step_history: {step_history}", color="yellow")
         return step_history
+
+
+class FunctionOutputToStepOutput(GradComponent):
+    def __init__(self):
+        super().__init__()
+        self.name = "FunctionOutputToStepOutput"
+        self._component_desc = "Convert the FunctionOutput to StepOutput"
+
+    def call(
+        self,
+        action_str: FunctionExpression,
+        step: int,
+        result: Union[FunctionOutput, Parameter],
+        func: Function,
+        id: Optional[str] = None,
+    ) -> StepOutput:
+        """Convert the action string to StepOutput."""
+        step_output = StepOutput(step=step)
+        if not isinstance(action_str, FunctionExpression):
+            raise ValueError(f"Expected FunctionExpression, but got {type(action_str)}")
+        step_output.action = action_str
+        step_output.function = func
+        # printc(f"result: {result}", color="blue")
+        result = result.data if isinstance(result, Parameter) else result
+        if isinstance(result, FunctionOutput):
+            step_output.observation = (
+                result.output.data
+                if isinstance(result.output, Parameter)
+                else result.output
+            )
+
+        return step_output
 
 
 @dataclass
@@ -309,41 +338,9 @@ class ReActAgent(GradComponent):
 
         if isinstance(response, Parameter):
 
-            class ActionStrToStepOutput(GradComponent):
-                def __init__(self):
-                    super().__init__()
-                    self.name = "ActionStrToStepOutput"
-                    self._component_desc = "Convert the action string to StepOutput."
-
-                def call(
-                    self,
-                    action_str: FunctionExpression,
-                    step: int,
-                    result: Union[FunctionOutput, Parameter],
-                    func: Function,
-                ) -> StepOutput:
-                    """Convert the action string to StepOutput."""
-                    step_output = StepOutput(step=step)
-                    if not isinstance(action_str, FunctionExpression):
-                        raise ValueError(
-                            f"Expected FunctionExpression, but got {type(action_str)}"
-                        )
-                    step_output.action = action_str
-                    step_output.function = func
-                    # printc(f"result: {result}", color="blue")
-                    result = result.data if isinstance(result, Parameter) else result
-                    if isinstance(result, FunctionOutput):
-                        step_output.observation = (
-                            result.output.data
-                            if isinstance(result.output, Parameter)
-                            else result.output
-                        )
-
-                    return step_output
-
             try:
 
-                tmp_action_str_to_step_output = ActionStrToStepOutput()
+                function_output_to_step_output = FunctionOutputToStepOutput()
 
                 # printc(f"response: {response}", color="yellow")
                 # TO FunctionExpression
@@ -354,7 +351,6 @@ class ReActAgent(GradComponent):
                 func: Union[Function, Parameter] = self.tool_manager(
                     expr_or_fun=response, step="parse"
                 )
-                printc(f"tool_manager: {self.tool_manager.training}", color="red")
                 if not isinstance(func, Parameter):
                     raise ValueError(
                         f"Expected Parameter, but got {type(func)}: {func}"
@@ -369,10 +365,13 @@ class ReActAgent(GradComponent):
                 result: Parameter = self.tool_manager(expr_or_fun=func, step="execute")
                 # printc(f"result: {result}", color="red")
                 result.add_successor_map_fn(
-                    successor=tmp_action_str_to_step_output, map_fn=lambda x: x.data
+                    successor=function_output_to_step_output, map_fn=lambda x: x.data
                 )
-                action_step = tmp_action_str_to_step_output.forward(
-                    action_str=response.data,
+                response.add_successor_map_fn(
+                    successor=function_output_to_step_output, map_fn=lambda x: x.data
+                )
+                action_step = function_output_to_step_output.forward(
+                    action_str=response,
                     step=action_step.step,
                     result=result,
                     func=func,
@@ -498,7 +497,12 @@ class ReActAgent(GradComponent):
 
             step_output: Parameter = self._execute_action(step_output, response, id)
 
-            printc(f"step_output: {step_output}", color="red")
+            # printc(f"step_output: {step_output}", color="red")
+            if not isinstance(step_output, Parameter):
+                raise ValueError(
+                    f"Ensure step_output to be Parameter at training mode. Got {type(step_output)}.\n\
+                        Please check the observation for error details: {step_output}"
+                )
             step_output.add_successor_map_fn(
                 successor=self.append_step_history, map_fn=lambda x: x.data
             )
@@ -546,7 +550,10 @@ class ReActAgent(GradComponent):
     def _get_answer(
         self, step_history: Union["Parameter", List[str]] = None
     ) -> Union[str, "Parameter"]:
-        """Get the final answer from the step history."""
+        """Get the final answer from the step history.
+
+        When in training mode, we pass the whole step_history to the backward engine to find the feedback
+        """
         if not step_history:
             return None
 
@@ -626,11 +633,11 @@ class ReActAgent(GradComponent):
                 raise e  # the only place to raise the error for debugging. In normal cases, the agent should not raise an error.
 
         answer = self._get_answer(step_history)
-        printc(f"answer: {answer}", color="yellow")
         if self.training:
             return answer
         # wrap the output
         output = ReActOutput(step_history=step_history, id=id, answer=answer)
+        printc(f"answer: {output}", color="yellow")
 
         return output
 
