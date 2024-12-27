@@ -1,0 +1,48 @@
+name: Generate Architecture Diagram
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+          
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz graphviz-dev
+          python -m pip install --upgrade pip
+          pip install diagrams
+          
+      - name: List directory before
+        run: ls -la
+        
+      - name: Create architecture diagram
+        run: |
+          python architecture_generator.py
+          ls -la
+          
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -f architecture.png
+          git status
+          git commit -m "Update architecture diagram [skip ci]" || echo "No changes to commit"
+          git push || echo "No changes to push"
