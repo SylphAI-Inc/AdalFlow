@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from adalflow.core.base_data_class import DataClass
 from copy import deepcopy
 import logging
+import traceback
 
 
 from adalflow.core.generator import Generator
@@ -231,6 +232,7 @@ class ReActAgent(GradComponent):
         # template for the planner
         template: Optional[str] = None,  # allow users to customize the template
         context_variables: Optional[Dict] = None,  # context variables
+        debug: bool = False,
     ):
         super().__init__()
         template = template or DEFAULT_REACT_AGENT_SYSTEM_PROMPT
@@ -239,6 +241,7 @@ class ReActAgent(GradComponent):
 
         self.add_llm_as_fallback = add_llm_as_fallback
         self.context_variables = context_variables
+        self.debug = debug
 
         tools = self._init_tools(tools, model_client, model_kwargs)
         self.tool_manager: ToolManager = ToolManager(
@@ -311,8 +314,8 @@ class ReActAgent(GradComponent):
                 response = output.data if output else None
                 return response
             except Exception as e:
-                log.error(f"Error using the generator: {e}")
-                print(f"Error using the generator: {e}")
+                log.error(f"Error using the llm_tool: {e}")
+                print(f"Error using the llm_tool: {e}")
 
             return None
 
@@ -406,6 +409,7 @@ class ReActAgent(GradComponent):
             step_output.observation = error_msg
             step_output.action = None
             log.error(error_msg)
+            return step_output
         else:
             try:
                 fun_expr: FunctionExpression = x.data
@@ -426,17 +430,21 @@ class ReActAgent(GradComponent):
                     step_output.observation = result.output
 
                     # step_output = execute_action(step_output, id)
-                    printc(f"Step {step}: \n{step_output}\n_______\n", color="blue")
+                    if self.debug:
+                        printc(f"Step {step}: \n{step_output}\n_______\n", color="blue")
                     return step_output
                 else:
-                    printc(f"Failed to parse response for step {step}", color="red")
+                    if self.debug:
+
+                        printc(f"Failed to parse response for step {step}", color="red")
                     log.error(f"Failed to parse response for step {step}")
                     return step_output
             except Exception as e:
                 error_msg = f"Error parsing response for step {step}: {e}"
                 step_output.observation = error_msg
                 log.error(error_msg)
-                printc(error_msg, color="red")
+                if self.debug:
+                    printc(error_msg, color="red")
                 return step_output
 
     def _run_one_step(
@@ -450,7 +458,8 @@ class ReActAgent(GradComponent):
         """Run one step of the agent. Plan and execute the action for the step.
         Need to deal with both train and eval mode on the self.planner.
         """
-        printc(f"step: {step}", color="yellow")
+        if self.debug:
+            printc(f"step: {step}", color="yellow")
 
         prompt_kwargs["step_history"] = step_history
         step_history_value = (
@@ -465,14 +474,6 @@ class ReActAgent(GradComponent):
                 raise ValueError(
                     f"Expected StepOutput, but got {type(step)}, all steps: {step_history_value}"
                 )
-        # printc(
-        #     f"prompt_kwargs 1: {prompt_kwargs}, training: {self.planner.training}",
-        #     color="yellow",
-        # )
-
-        # prompt_str = self.planner.get_prompt(**prompt_kwargs)
-        # printc(f"prompt_str: {prompt_str}", color="red")
-        # return [StepOutput(step=step, action=None, observation="test")]
 
         log.debug(
             f"Running step {step} with prompt: {self.planner.prompt(**prompt_kwargs)}"
@@ -482,51 +483,71 @@ class ReActAgent(GradComponent):
             response: Union[GeneratorOutput, Parameter] = self.planner(
                 prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs, id=id
             )
+        # except Exception as e:
+        #     error_msg = f"Error happened in planner response: {e}. Training mode: {self.planner.training}"
+        #     raise ValueError(
+        #         error_msg
+        #     )  # raise the error for debugging as this should not happen in normal cases.
+
         except Exception as e:
-            error_msg = f"Error happened in planner response: {e}. Training mode: {self.planner.training}"
-            raise ValueError(
-                error_msg
-            )  # raise the error for debugging as this should not happen in normal cases.
+            error_msg = f"Error happened in planner response at step {step}: {e}.\n"
+            error_msg += (
+                f"Prompt kwargs: {prompt_kwargs}\nModel kwargs: {model_kwargs}\n"
+            )
+            error_msg += f"Traceback:\n{traceback.format_exc()}"
+            raise RuntimeError(error_msg)
 
         # create a new step output
         step_output: StepOutput = StepOutput(step=step)
 
-        # connecting two generators in the computation graph, it will set up self.step_history
-        if self.training and isinstance(response, Parameter):
-            # printc(f"response: {response}", color="yellow")
+        try:
 
-            step_output: Parameter = self._execute_action(step_output, response, id)
+            if self.training and isinstance(response, Parameter):
+                # printc(f"response: {response}", color="yellow")
 
-            # printc(f"step_output: {step_output}", color="red")
-            if not isinstance(step_output, Parameter):
-                raise ValueError(
-                    f"Ensure step_output to be Parameter at training mode. Got {type(step_output)}.\n\
-                        Please check the observation for error details: {step_output}"
+                step_output: Parameter = self._execute_action(step_output, response, id)
+
+                # printc(f"step_output: {step_output}", color="red")
+                if not isinstance(step_output, Parameter):
+                    raise ValueError(
+                        f"Ensure step_output to be Parameter at training mode. Got {type(step_output)}.\n\
+                            Please check the observation for error details: {step_output}"
+                    )
+                step_output.add_successor_map_fn(
+                    successor=self.append_step_history, map_fn=lambda x: x.data
                 )
-            step_output.add_successor_map_fn(
-                successor=self.append_step_history, map_fn=lambda x: x.data
-            )
-            step_history.add_successor_map_fn(
-                successor=self.append_step_history, map_fn=lambda x: x.data
-            )
+                step_history.add_successor_map_fn(
+                    successor=self.append_step_history, map_fn=lambda x: x.data
+                )
 
-            step_history = self.append_step_history.forward(step_output, step_history)
-            # connect step_history to the next planner
-            step_history.add_successor_map_fn(
-                successor=self.planner, map_fn=lambda x: x.data
-            )
-            # convert step history back to data
-            # printc(f"step_history: {step_history.data}", color="yellow")
-            return step_history
+                step_history = self.append_step_history.forward(
+                    step_output, step_history
+                )
+                # connect step_history to the next planner
+                step_history.add_successor_map_fn(
+                    successor=self.planner, map_fn=lambda x: x.data
+                )
+                return step_history
 
-        else:
+            else:
 
-            step_output: StepOutput = self._execute_action(
-                action_step=step_output, response=response, id=id
-            )
-            printc(f"step_output: {step_output}", color="red")
-            step_history.append(step_output)
-            return step_history
+                step_output: StepOutput = self._execute_action(
+                    action_step=step_output, response=response, id=id
+                )
+                if not step_output:
+                    raise RuntimeError(
+                        f"Error executing action at step {step}: {step_output}"
+                    )
+
+                if self.debug:
+                    printc(f"step_output: {step_output}", color="red")
+                step_history.append(step_output)
+                return step_history
+        except Exception as e:
+            error_msg = f"Error during execution at step {step}: {e}.\n"
+            error_msg += f"Step output: {step_output}\nResponse: {response}\n"
+            error_msg += f"Traceback:\n{traceback.format_exc()}"
+            raise RuntimeError(error_msg)
 
     def _check_last_step(
         self, step_history: Union["Parameter", List[str]] = None
@@ -630,6 +651,7 @@ class ReActAgent(GradComponent):
                     break
             except Exception as e:
                 log.error(f"Error running step {step}: {e}")
+                printc(f"Error running step {step}: {e}", color="red")
                 raise e  # the only place to raise the error for debugging. In normal cases, the agent should not raise an error.
 
         answer = self._get_answer(step_history)
@@ -637,7 +659,8 @@ class ReActAgent(GradComponent):
             return answer
         # wrap the output
         output = ReActOutput(step_history=step_history, id=id, answer=answer)
-        printc(f"answer: {output}", color="yellow")
+        if self.debug:
+            printc(f"answer: {output}", color="yellow")
 
         return output
 

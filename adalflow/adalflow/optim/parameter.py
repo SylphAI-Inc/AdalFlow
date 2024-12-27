@@ -78,7 +78,6 @@ class ComponentTrace(DataClass):
 
     def to_context_str(self):
         output = f"""<INPUT>: {self.input_args}. <OUTPUT>: {self.full_response}"""
-        printc(f"output: {output}")
         return output
 
 

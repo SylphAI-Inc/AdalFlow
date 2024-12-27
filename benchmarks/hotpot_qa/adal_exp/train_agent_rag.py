@@ -161,7 +161,7 @@ if __name__ == "__main__":
     # )
 
     train(
-        debug=True,
+        debug=False,
         max_steps=2,
     )
     # 0.68 on val without training, 0.74on the second step. 0.84 test
