@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import Mock, patch
 from adalflow.core.func_tool import FunctionTool
 from adalflow.core.types import FunctionExpression, GeneratorOutput
-from adalflow.components.agent.react import ReActAgent
+from adalflow.components.agent.react import ReActAgent, StepOutput
 from adalflow.components.model_client.openai_client import OpenAIClient
 
 
@@ -84,6 +84,16 @@ class TestReActAgent(unittest.TestCase):
             ),
         ]
 
+        # mock the agent to run the first step
+        step_output = self.react_agent._run_one_step(
+            step=1, step_history=[], prompt_kwargs={}, model_kwargs={}
+        )
+        print(f"step_output 1: {step_output}")
+        self.assertEqual(len(step_output), 1)
+        self.assertTrue(isinstance(step_output[0], StepOutput))
+        self.assertTrue(step_output[0].action)
+        self.assertTrue(isinstance(step_output[0].action, FunctionExpression))
+
         result = self.react_agent.call("Add 2 and 3, then multiply by 4.")
         print(f"result: {result}")
         self.assertEqual(result.answer, 12)
@@ -100,11 +110,11 @@ class TestReActAgent(unittest.TestCase):
         # no action
 
         # check error raised
-        with self.assertRaises(ValueError):
+        # with self.assertRaises(ValueError):
 
-            result = self.react_agent.call("Simulate an error.")
-            print(f"result 2: {result}")
-            self.assertIn("Error occurred", result.answer)
+        result = self.react_agent.call("Simulate an error.")
+        print(f"result 2: {result}")
+        self.assertIn("Error occurred", result.answer)
 
 
 from adalflow.optim.grad_component import GradComponent

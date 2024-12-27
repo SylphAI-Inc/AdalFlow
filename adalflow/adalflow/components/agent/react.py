@@ -123,78 +123,6 @@ class AppendStepHistory(GradComponent):
         return step_history
 
 
-# class ExecuteAction(GradComponent):
-#     def __init__(self):
-#         super().__init__()
-#         self.name = "ExecuteAction"
-#         self._component_desc = "Execute the action and output the new step_output."
-
-#     def call(
-#         self,
-#         response: GeneratorOutput,
-#         step_output: StepOutput,
-#         execute_action: Callable,
-#         id: Optional[str] = None,
-#     ) -> StepOutput:
-#         """Parse the action string to a function call and execute it. Update the action_step with the result."""
-#         step = step_output.step
-#         output = execute_action_fn(response, step_output, step, execute_action, id)
-#         if isinstance(output, Parameter):
-#             output = output.full_response
-#         return output
-
-
-class FunctionOutputToStepOutput(GradComponent):
-    def __init__(self):
-        super().__init__()
-        self.name = "FunctionOutputToStepOutput"
-        self._component_desc = "Convert the FunctionOutput to StepOutput."
-
-    def call(self, output: FunctionOutput, step_output: StepOutput) -> StepOutput:
-        """Convert the FunctionOutput to StepOutput."""
-
-        temp_result = output.output
-        if isinstance(temp_result, Parameter):
-            step_output.observation = temp_result.data
-        else:
-            step_output.observation = temp_result
-        return step_output
-        # step_output = StepOutput(step=step)
-        # step_output.observation = output.output
-        # return step_output
-
-
-# TODO: make execute_action_fn to a GradComponent to enable the training of the tools too.
-def execute_action_fn(
-    x: GeneratorOutput, step_output: StepOutput, step: int, execute_action: Any, id=None
-) -> StepOutput:
-    """Execute the action and update the step_output."""
-    if x.error:
-        error_msg = f"Error planning step {step}: {x.error}"
-        step_output.observation = error_msg
-        log.error(error_msg)
-    else:
-        try:
-            fun_expr: FunctionExpression = x.data
-            step_output.action = fun_expr
-            log.debug(f"Step {step}: {fun_expr}")
-
-            if step_output and step_output.action:
-                step_output = execute_action(step_output, id)
-                printc(f"Step {step}: \n{step_output}\n_______\n", color="blue")
-                return step_output
-            else:
-                printc(f"Failed to parse response for step {step}", color="red")
-                log.error(f"Failed to parse response for step {step}")
-                return step_output
-        except Exception as e:
-            error_msg = f"Error parsing response for step {step}: {e}"
-            step_output.observation = error_msg
-            log.error(error_msg)
-            printc(error_msg, color="red")
-            return step_output
-
-
 @dataclass
 class ReActOutput(DataClass):
     r"""Similar to GeneratorOutput, but with additional step history and final answer."""
@@ -323,8 +251,6 @@ class ReActAgent(GradComponent):
 
         # added this component to the computation graph
         self.append_step_history = AppendStepHistory()
-        # self.execute_action = ExecuteAction()
-        self.function_output_to_step_output = FunctionOutputToStepOutput()
 
     def _init_tools(
         self,
@@ -398,6 +324,10 @@ class ReActAgent(GradComponent):
                 ) -> StepOutput:
                     """Convert the action string to StepOutput."""
                     step_output = StepOutput(step=step)
+                    if not isinstance(action_str, FunctionExpression):
+                        raise ValueError(
+                            f"Expected FunctionExpression, but got {type(action_str)}"
+                        )
                     step_output.action = action_str
                     step_output.function = func
                     # printc(f"result: {result}", color="blue")
@@ -411,53 +341,104 @@ class ReActAgent(GradComponent):
 
                     return step_output
 
-            tmp_action_str_to_step_output = ActionStrToStepOutput()
+            try:
 
-            # printc(f"response: {response}", color="yellow")
-            # TO FunctionExpression
-            response.add_successor_map_fn(
-                successor=self.tool_manager, map_fn=lambda x: x.full_response
-            )
+                tmp_action_str_to_step_output = ActionStrToStepOutput()
 
-            func: Union[Function, Parameter] = self.tool_manager(
-                expr_or_fun=response, step="parse"
-            )
-            printc(f"tool_manager: {self.tool_manager.training}", color="red")
-            if not isinstance(func, Parameter):
-                raise ValueError(f"Expected Parameter, but got {type(func)}: {func}")
-            # printc(f"func: {func}", color="yellow")
-            # replace the id
-            if isinstance(func, Parameter):
-                func.data.kwargs["id"] = id
+                # printc(f"response: {response}", color="yellow")
+                # TO FunctionExpression
+                response.add_successor_map_fn(
+                    successor=self.tool_manager, map_fn=lambda x: x.full_response
+                )
 
-                func.add_successor_map_fn(self.tool_manager, lambda x: x.data)
+                func: Union[Function, Parameter] = self.tool_manager(
+                    expr_or_fun=response, step="parse"
+                )
+                printc(f"tool_manager: {self.tool_manager.training}", color="red")
+                if not isinstance(func, Parameter):
+                    raise ValueError(
+                        f"Expected Parameter, but got {type(func)}: {func}"
+                    )
+                # printc(f"func: {func}", color="yellow")
+                # replace the id
+                if isinstance(func, Parameter):
+                    func.data.kwargs["id"] = id
 
-            result: Parameter = self.tool_manager(expr_or_fun=func, step="execute")
-            # printc(f"result: {result}", color="red")
-            result.add_successor_map_fn(
-                successor=tmp_action_str_to_step_output, map_fn=lambda x: x.data
-            )
-            action_step = tmp_action_str_to_step_output.forward(
-                action_str=response.data,
-                step=action_step.step,
-                result=result,
-                func=func,
-            )
+                    func.add_successor_map_fn(self.tool_manager, lambda x: x.data)
 
-            return action_step
-            # except Exception as e:
-            #     log.error(f"Error executing {response}: {e}")
-            #     # pass the error as observation so that the agent can continue and correct the error in the next step
-            #     # action_step.observation = f"Error executing {response}: {e}"
-            #     # return action_step
-            #     raise e
+                result: Parameter = self.tool_manager(expr_or_fun=func, step="execute")
+                # printc(f"result: {result}", color="red")
+                result.add_successor_map_fn(
+                    successor=tmp_action_str_to_step_output, map_fn=lambda x: x.data
+                )
+                action_step = tmp_action_str_to_step_output.forward(
+                    action_str=response.data,
+                    step=action_step.step,
+                    result=result,
+                    func=func,
+                )
+
+                return action_step
+
+            except Exception as e:
+                log.error(f"Error executing {response}: {e}")
+                # pass the error as observation so that the agent can continue and correct the error in the next step
+                action_step.observation = f"Error executing {response}: {e}"
+                return action_step
         else:
-            # normal pass
-            fun: Function = self.tool_manager(expr_or_fun=response.data, step="parse")
-            action_step.function = fun
-            result: FunctionOutput = self.tool_manager(expr_or_fun=fun, step="execute")
-            action_step.observation = result.output
-            return action_step
+
+            return self._execute_action_eval_mode(
+                x=response,
+                step_output=action_step,
+                step=action_step.step,
+                id=id,
+            )
+
+    def _execute_action_eval_mode(
+        self,
+        x: GeneratorOutput,
+        step_output: StepOutput,
+        step: int,
+        id=None,
+    ) -> StepOutput:
+        """Execute the action and update the step_output."""
+        if x.error:
+            error_msg = f"Error planning step {step}: {x.error}"
+            step_output.observation = error_msg
+            step_output.action = None
+            log.error(error_msg)
+        else:
+            try:
+                fun_expr: FunctionExpression = x.data
+                step_output.action = fun_expr
+                log.debug(f"Step {step}: {fun_expr}")
+
+                if step_output and step_output.action:
+
+                    fun: Function = self.tool_manager(
+                        expr_or_fun=fun_expr, step="parse"
+                    )
+
+                    step_output.function = fun
+
+                    result: FunctionOutput = self.tool_manager(
+                        expr_or_fun=fun, step="execute"
+                    )
+                    step_output.observation = result.output
+
+                    # step_output = execute_action(step_output, id)
+                    printc(f"Step {step}: \n{step_output}\n_______\n", color="blue")
+                    return step_output
+                else:
+                    printc(f"Failed to parse response for step {step}", color="red")
+                    log.error(f"Failed to parse response for step {step}")
+                    return step_output
+            except Exception as e:
+                error_msg = f"Error parsing response for step {step}: {e}"
+                step_output.observation = error_msg
+                log.error(error_msg)
+                printc(error_msg, color="red")
+                return step_output
 
     def _run_one_step(
         self,
@@ -470,16 +451,28 @@ class ReActAgent(GradComponent):
         """Run one step of the agent. Plan and execute the action for the step.
         Need to deal with both train and eval mode on the self.planner.
         """
-        printc("start running one step", color="yellow")
+        printc(f"step: {step}", color="yellow")
 
         prompt_kwargs["step_history"] = step_history
+        step_history_value = (
+            step_history.data if isinstance(step_history, Parameter) else step_history
+        )
+        for step in step_history_value:
+            if not step:
+                raise ValueError(
+                    f"Expected StepOutput, but got {type(step)}, all steps: {step_history_value}"
+                )
+            if not isinstance(step, StepOutput):
+                raise ValueError(
+                    f"Expected StepOutput, but got {type(step)}, all steps: {step_history_value}"
+                )
         # printc(
         #     f"prompt_kwargs 1: {prompt_kwargs}, training: {self.planner.training}",
         #     color="yellow",
         # )
 
-        prompt_str = self.planner.get_prompt(**prompt_kwargs)
-        printc(f"prompt_str: {prompt_str}", color="red")
+        # prompt_str = self.planner.get_prompt(**prompt_kwargs)
+        # printc(f"prompt_str: {prompt_str}", color="red")
         # return [StepOutput(step=step, action=None, observation="test")]
 
         log.debug(
@@ -491,14 +484,16 @@ class ReActAgent(GradComponent):
                 prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs, id=id
             )
         except Exception as e:
-            log.error(f"Error planning step {step}: {e}")
-            return None
+            error_msg = f"Error happened in planner response: {e}. Training mode: {self.planner.training}"
+            raise ValueError(
+                error_msg
+            )  # raise the error for debugging as this should not happen in normal cases.
 
         # create a new step output
         step_output: StepOutput = StepOutput(step=step)
 
         # connecting two generators in the computation graph, it will set up self.step_history
-        if isinstance(response, Parameter):
+        if self.training and isinstance(response, Parameter):
             # printc(f"response: {response}", color="yellow")
 
             step_output: Parameter = self._execute_action(step_output, response, id)
@@ -522,7 +517,7 @@ class ReActAgent(GradComponent):
 
         else:
 
-            step_output = self._execute_action(
+            step_output: StepOutput = self._execute_action(
                 action_step=step_output, response=response, id=id
             )
             printc(f"step_output: {step_output}", color="red")
@@ -620,11 +615,15 @@ class ReActAgent(GradComponent):
         printc(f"input_query: {input}", color="red")
         for i in range(self.max_steps):
             step = i + 1
-            step_history = self._run_one_step(
-                step, prompt_kwargs, model_kwargs, id, step_history
-            )
-            if self._check_last_step(step_history):
-                break
+            try:
+                step_history = self._run_one_step(
+                    step, prompt_kwargs, model_kwargs, id, step_history
+                )
+                if self._check_last_step(step_history):
+                    break
+            except Exception as e:
+                log.error(f"Error running step {step}: {e}")
+                raise e  # the only place to raise the error for debugging. In normal cases, the agent should not raise an error.
 
         answer = self._get_answer(step_history)
         printc(f"answer: {answer}", color="yellow")

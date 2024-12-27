@@ -1,7 +1,7 @@
 """We will use dspy's retriever to keep that the same and only use our generator and optimizer"""
 
 import dspy
-from typing import List, Optional, Dict
+from typing import List, Optional
 from dataclasses import dataclass, field
 
 import adalflow as adal
@@ -12,6 +12,7 @@ from adalflow.core.retriever import Retriever
 
 from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import DspyRetriever
 from adalflow.utils.logger import printc
+from adalflow.components.agent.react import ReActAgent
 
 colbertv2_wiki17_abstracts = dspy.ColBERTv2(
     url="http://20.102.90.50:2017/wiki17_abstracts"
@@ -593,57 +594,45 @@ class MultiHopRAGCycle(VanillaRAG):
         )
 
 
-from adalflow.components.agent.react_v2 import ReActAgent
-
-
-from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import (
-    answer_template,
-    AnswerData,
-    task_desc_str,
-)
-
-
 # TODO: agent needs storage for the context instead of all in the step history.
 class AgenticRAG(adal.GradComponent):
     def __init__(self, model_client, model_kwargs):
         super().__init__()
 
         self.dspy_retriever = DspyRetriever(top_k=3)
-        self.llm_parser = adal.DataClassParser(
-            data_class=AnswerData, return_data_class=True, format_type="json"
-        )
-        self.llm = adal.Generator(
-            model_client=model_client,
-            model_kwargs=model_kwargs,
-            template=answer_template,
-            prompt_kwargs={
-                "task_desc_str": adal.Parameter(
-                    data=task_desc_str,
-                    role_desc="Task description for the language model",
-                    param_type=adal.ParameterType.PROMPT,
-                    requires_opt=True,
-                ),
-                "few_shot_demos": adal.Parameter(
-                    data=None,
-                    requires_opt=None,
-                    role_desc="To provide few shot demos to the language model",
-                    param_type=adal.ParameterType.DEMOS,
-                ),
-                "output_format_str": self.llm_parser.get_output_format_str(),
-            },
-            output_processors=self.llm_parser,
-        )
+        # self.llm_parser = adal.DataClassParser(
+        #     data_class=AnswerData, return_data_class=True, format_type="json"
+        # )
+        # self.llm = adal.Generator(
+        #     model_client=model_client,
+        #     model_kwargs=model_kwargs,
+        #     template=answer_template,
+        #     prompt_kwargs={
+        #         "task_desc_str": adal.Parameter(
+        #             data=task_desc_str,
+        #             role_desc="Task description for the language model",
+        #             param_type=adal.ParameterType.PROMPT,
+        #             requires_opt=True,
+        #         ),
+        #         "few_shot_demos": adal.Parameter(
+        #             data=None,
+        #             requires_opt=None,
+        #             role_desc="To provide few shot demos to the language model",
+        #             param_type=adal.ParameterType.DEMOS,
+        #         ),
+        #         "output_format_str": self.llm_parser.get_output_format_str(),
+        #     },
+        #     output_processors=self.llm_parser,
+        # )
 
         self.context = []
 
         def dspy_retriever_as_tool(
             input: str,
-            context_variables: Dict,
+            # context_variables: Dict,
             id: Optional[str] = None,
         ) -> List[str]:
             r"""Retrieves the top k passages from using input as the query and save the documents in context_variables(Dict)'s context.
-
-            Example: dspy_retriever_as_tool(subquery, context_variables=context_variables)
             Ensure you get all the context to answer the original question.
             """
             print(f"training: {self.dspy_retriever.training}")
@@ -653,8 +642,8 @@ class AgenticRAG(adal.GradComponent):
                 parsed_output = output.data
                 return output
             documents = parsed_output[0].documents
-            if context_variables:
-                context_variables["context"].extend(documents)
+            # if context_variables:
+            #     context_variables["context"].extend(documents)
             return documents
 
         # def generator_as_tool(
@@ -679,6 +668,10 @@ class AgenticRAG(adal.GradComponent):
         tools = [
             FunctionTool(self.dspy_retriever.__call__, component=self.dspy_retriever),
             # FunctionTool(generator_as_tool, component=self.llm),
+        ]  # NOTE: agent is not doing well to call component methods at this moment
+
+        tools = [
+            FunctionTool(dspy_retriever_as_tool, component=self.dspy_retriever),
         ]
 
         self.agent = ReActAgent(

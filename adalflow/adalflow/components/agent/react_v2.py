@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from adalflow.core.base_data_class import DataClass
 from copy import deepcopy
 import logging
+import warnings
 
 
 from adalflow.core.generator import Generator
@@ -384,8 +385,11 @@ class ReActAgent(GradComponent):
                 action_step: StepOutput = self.function_output_to_step_output(
                     output=result, step_output=action_step
                 )
-            else:
+            elif isinstance(result, FunctionOutput):
                 action_step.observation = result.output
+            else:
+                warnings.warn(f"Fails to parse the result: {result}")
+                action_step.observation = result
 
             return action_step
         except Exception as e:
