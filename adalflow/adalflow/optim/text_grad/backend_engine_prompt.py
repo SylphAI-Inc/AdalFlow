@@ -9,7 +9,7 @@ Reference: TextGrad: Automatic “Differentiation” via Text."""
 ### System prompt and the template is shared by all GradComponent ###
 
 FEEDBACK_ENGINE_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
-You are the feedback engine in an optimization system consits of multiple components.
+You are the feedback engine in an optimization system consisting of multiple components.
 
 Your task is to provide intelligent and creative feedback in each component for the target variable enclosed in <VARIABLE></VARIABLE> tags,
 so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION></OBJECTIVE_FUNCTION> tags.

@@ -104,7 +104,7 @@ Question: {{question}}
 # data processing has already done
 
 
-class DspyRetriever(Retriever, adal.GradComponent):
+class DspyRetriever(Retriever):
     def __init__(self, top_k: int = 3):
         super().__init__()
         self.top_k = top_k
@@ -134,11 +134,11 @@ class DspyRetriever(Retriever, adal.GradComponent):
         # print(f"final_output: {final_output}")
         return final_output
 
-    def forward(self, *args, **kwargs):
-        # Explicitly use adal.GradComponent's forward method
-        output = adal.GradComponent.forward(self, *args, **kwargs)
-        print(f"output: {output}")
-        return output
+    # def forward(self, *args, **kwargs):
+    #     # Explicitly use adal.GradComponent's forward method
+    #     output = adal.GradComponent.forward(self, *args, **kwargs)
+    #     print(f"output: {output}")
+    #     return output
 
     # def __call__(self, *args, **kwargs):
     #     r"""Retrieves the top k passages from using input as the query"""

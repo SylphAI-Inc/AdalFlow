@@ -391,7 +391,6 @@ class MultiHopRetriever(adal.Retriever):
         )
 
         # Grad Component
-        # self.query_generators: List[adal.Generator] = []
         self.query_generators: adal.ComponentList[adal.Generator] = adal.ComponentList()
         self.retrievers: List[Retriever] = []
         self.deduplicaters: List[adal.GradComponent] = []
@@ -442,28 +441,6 @@ Think step by step.""",
         seen = set()
         return [x for x in seq if not (x in seen or seen.add(x))]
 
-    # def call(self, *, question: str, id: str = None) -> adal.RetrieverOutput:
-    #     context = []
-    #     print(f"question: {question}")
-    #     for i in range(self.max_hops):
-    #         gen_out = self.query_generators[i](
-    #             prompt_kwargs={
-    #                 "context": self.context_to_str(context),
-    #                 "question": question,
-    #             },
-    #             id=id,
-    #         )
-
-    #         query = gen_out.data.query if gen_out.data and gen_out.data.query else None
-
-    #         print(f"query {i}: {query}")
-
-    #         retrieve_out = self.retrievers[i].call(input=query)
-    #         passages = retrieve_out[0].documents
-    #         context = self.deduplicate(context + passages)
-    #     out = [adal.RetrieverOutput(documents=context, query=query, doc_indices=[])]
-    #     return out
-
     # TODO: simplify and avoid the need where users need to write two methods (call and forward)
     def call(self, *, input: str, id: str = None) -> List[adal.RetrieverOutput]:
         # assemble the foundamental building blocks
@@ -484,7 +461,7 @@ Think step by step.""",
 
         for i in range(self.max_hops):
 
-            gen_out = self.query_generators[i].forward(
+            gen_out: Parameter = self.query_generators[i].forward(
                 prompt_kwargs={
                     "context": context,  # can be a list or a parameter
                     "question": adal.Parameter(
@@ -550,11 +527,11 @@ Think step by step.""",
 
         return context
 
-    def backward(self, *args, **kwargs):
+    # def backward(self, *args, **kwargs):
 
-        printc(f"MultiHopRetriever backward: {args}", "yellow")
-        super().backward(*args, **kwargs)
-        return
+    #     printc(f"MultiHopRetriever backward: {args}", "yellow")
+    #     super().backward(*args, **kwargs)
+    #     return
 
 
 from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import VanillaRAG

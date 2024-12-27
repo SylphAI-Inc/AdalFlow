@@ -88,8 +88,10 @@ User query:
 Your previous steps:
 {% for history in step_history %}
 Step {{ loop.index }}.
+{% if history.action %}
 "Thought": "{{history.action.thought}}",
 "Action": "{{history.action.action}}",
+{% endif %}
 "Observation": "{{history.observation}}"
 ------------------------
 {% endfor %}

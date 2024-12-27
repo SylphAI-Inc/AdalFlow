@@ -2,7 +2,6 @@ r"""The base class for all retrievers who in particular retrieve documents from 
 
 from typing import List, Optional, Generic, Any, Callable, TYPE_CHECKING, Union
 import logging
-from copy import deepcopy
 
 from adalflow.core.types import (
     RetrieverQueriesType,
@@ -14,8 +13,8 @@ from adalflow.core.types import (
 from adalflow.optim.grad_component import GradComponent
 
 if TYPE_CHECKING:
-    from adalflow.core.generator import Generator
-from adalflow.optim.parameter import Parameter
+    pass
+from adalflow.optim.parameter import Parameter, OutputParameter
 from adalflow.optim.types import ParameterType
 
 log = logging.getLogger(__name__)
@@ -129,7 +128,11 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
         )
         if input is None:
             raise ValueError("Input cannot be empty")
-        response = super().forward(input, top_k=top_k, id=id, **kwargs)
+        response: OutputParameter = super().forward(input, top_k=top_k, id=id, **kwargs)
+        if not isinstance(response, OutputParameter):
+            raise ValueError(
+                f"Retriever forward: Expect OutputParameter, but got {type(response)}"
+            )
         response.trace_forward_pass(
             input_args={"input": input, "top_k": top_k},
             full_response=response,
@@ -141,36 +144,36 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
         )  # be more specific about the type
         return response
 
-    def backward(
-        self,
-        response: Parameter,
-        id: Optional[str] = None,
-        backward_engine: Optional["Generator"] = None,
-    ):
-        r"""Backward the response to pass the score to predecessors.
-        Function as a relay component"""
-        log.info(f"Retriever backward: {response.name}")
-        children_params = response.predecessors
+    # def backward(
+    #     self,
+    #     response: Parameter,
+    #     id: Optional[str] = None,
+    #     backward_engine: Optional["Generator"] = None,
+    # ):
+    #     r"""Backward the response to pass the score to predecessors.
+    #     Function as a relay component"""
+    #     log.info(f"Retriever backward: {response.name}")
+    #     children_params = response.predecessors
 
-        # is_chain = True
-        if response.get_gradient_and_context_text().strip() == "":
-            log.info(f"Generator: Backward: No gradient found for {response}.")
+    #     # is_chain = True
+    #     if response.get_gradient_and_context_text().strip() == "":
+    #         log.info(f"Generator: Backward: No gradient found for {response}.")
 
-        for pred in children_params:
-            pred.set_score(response._score)
-            from adalflow.utils.logger import printc
+    #     for pred in children_params:
+    #         pred.set_score(response._score)
+    #         from adalflow.utils.logger import printc
 
-            printc(
-                f"Retriever: Backward: {pred.name} set_score: {response._score}, {response.name}",
-                "blue",
-            )
-            if pred.param_type == ParameterType.DEMOS:
-                pred.add_score_to_trace(
-                    trace_id=id, score=response._score, is_teacher=self.teacher_mode
-                )
+    #         printc(
+    #             f"Retriever: Backward: {pred.name} set_score: {response._score}, {response.name}",
+    #             "blue",
+    #         )
+    #         if pred.param_type == ParameterType.DEMOS:
+    #             pred.add_score_to_trace(
+    #                 trace_id=id, score=response._score, is_teacher=self.teacher_mode
+    #             )
 
-            # pass the gradients
-            for grad in response.gradients:
-                # make a copy of the gradient
-                grad = deepcopy(grad)
-                pred.add_gradient(grad)
+    #         # pass the gradients
+    #         for grad in response.gradients:
+    #             # make a copy of the gradient
+    #             grad = deepcopy(grad)
+    #             pred.add_gradient(grad)

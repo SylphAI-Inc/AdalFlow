@@ -59,7 +59,7 @@ class ObjectCountAdalComponent(adal.AdalComponent):
             requires_opt=False,
         )
         pred.eval_input = pred.full_response.data
-        return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}}
+        return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}, "id": sample.id}
 
 
 # TODO: make the train diagnose on the student model and the teacher model automatcally

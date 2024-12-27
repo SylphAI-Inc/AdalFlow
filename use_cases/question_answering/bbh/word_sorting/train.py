@@ -89,7 +89,8 @@ class WordSortingAdalComponent(adal.AdalComponent):
                 "pred_answer": pred,
                 "gt_answer": y_gt,
                 "question": question_param,
-            }
+            },
+            "id": sample.id,
         }
 
 
