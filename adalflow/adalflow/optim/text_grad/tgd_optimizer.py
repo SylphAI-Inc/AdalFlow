@@ -373,8 +373,6 @@ class TGDOptimizer(TextOptimizer):
             variable=param.get_param_info(), peers=param.peers  # param.peers
         )
 
-        # variable_grad = param.get_gradients_str()
-        # variable_grad = param.get_gradient_and_context_text(skip_correct_sample=False)
         variable_grad = param.get_gradients_component_schema(skip_correct_sample=True)
 
         user_prompt_kwargs = {

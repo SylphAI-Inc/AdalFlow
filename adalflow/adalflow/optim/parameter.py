@@ -183,9 +183,6 @@ class Parameter(Generic[T]):
     proposing: bool = False  # State of the parameter
     predecessors: Set["Parameter"] = set()  # Predecessors of the parameter
     peers: Set["Parameter"] = set()  # Peers of the parameter
-    # TODO: input_args should be OrderedDict to keep the order of args
-    # input_args: Dict[str, Any] = None  # Input arguments of the GradComponent forward
-    # full_response: object = None  # Full response of the GradComponent output
     eval_input: object = None  # Eval input passing to the eval_fn or evaluator you use
     successor_map_fn: Dict[str, Callable] = (
         None  # Map function to get the data from the output
@@ -195,8 +192,11 @@ class Parameter(Generic[T]):
         False  # Disable the backward engine for the parameter
     )
 
-    # component_trace: ComponentTrace = None  # Trace of the component
     tgd_optimizer_trace: "TGDOptimizerTrace" = None  # Trace of the TGD optimizer
+
+    data_in_prompt: Callable = (
+        None  # Callable to get the str of the data to be used in the prompt
+    )
 
     def __init__(
         self,
@@ -213,6 +213,7 @@ class Parameter(Generic[T]):
         score: Optional[float] = None,
         eval_input: object = None,
         successor_map_fn: Optional[Dict[str, Callable]] = None,
+        data_in_prompt: Callable = None,
     ):
         self.id = id or str(uuid.uuid4())
         self.data_id = data_id
@@ -264,6 +265,7 @@ class Parameter(Generic[T]):
         self.eval_input = eval_input
 
         self.successor_map_fn = successor_map_fn or {}
+        self.data_in_prompt = lambda x: x.data if not data_in_prompt else data_in_prompt
 
     def map_to_successor(self, successor: object) -> T:
         """Apply the map function to the successor based on the successor's id."""
@@ -545,10 +547,11 @@ class Parameter(Generic[T]):
         self.grad_fn = grad_fn
 
     def get_param_info(self):
+        """Used to represent the parameter in the prompt."""
         return {
             "name": self.name,
             "role_desc": self.role_desc,
-            "data": self.data,
+            "data": self.data_in_prompt(self),
             "param_type": self.param_type,
         }
 

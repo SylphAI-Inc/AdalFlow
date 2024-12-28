@@ -11,7 +11,7 @@ Reference: TextGrad: Automatic “Differentiation” via Text."""
 FEEDBACK_ENGINE_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 You are the feedback engine in an optimization system consisting of multiple components.
 
-Your task is to provide intelligent and creative feedback in each component for the target variable enclosed in <VARIABLE></VARIABLE> tags,
+Your task is to provide intelligent and creative feedback in each component for the target variable enclosed in <VARIABLE></VARIABLE> or <VARIABLES></VARIABLES> tags
 so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION></OBJECTIVE_FUNCTION> tags.
 
 1. Focus on the downstream OBJECTIVE without proposing new versions of the variable.
@@ -58,11 +58,12 @@ e.g. "The retrieved context is not enough to answer the question so the problem 
 
 
 ### Variable to get feedback on, often it is pred in the loss component
+# pass parameter.get_param_info() to get the variable info
 LOSS_CONVERSATION_START_INSTRUCTION_STRING_FN = r"""
 TARGET VARIABLE:
-<NAME> {{variable_name}} </NAME>
-<ROLE> {{variable_desc}} </ROLE>
-<VARIABLE> {{variable_value}} </VARIABLE>
+<NAME> {{variable.name}} </NAME>
+<ROLE> {{variable.role_desc}} </ROLE>
+<VARIABLE> {{variable.data}} </VARIABLE>
 {{conversation_str}}
 """
 
@@ -123,7 +124,7 @@ VARIABLE_AND_PEERS_INFO = r"""
 {{variable.name}}
 <TYPE> {{variable.param_type}} </TYPE>
 <ROLE> {{variable.role_desc}} </ROLE>
-<VARIABLE> {{variable.data}} </VARIABLE>
+<VARIABLE>{{ variable.data}}</VARIABLE>
 <END_OF_VARIABLE_DESC>
 {% if peers %}
 <VARIBLE_PEERS>
@@ -155,7 +156,7 @@ NAME: {{variable.name}},
 TYPE: {{variable.param_type}},
 ROLE: {{variable.role_desc}}
 WILL_BE_OPTIMIZED: {{variable.requires_opt}}
-VARIABLE: {{variable.data}}
+VARIABLE: {{ variable.data}}
 {% endfor %}
 {% endif %}
 </VARIABLES>

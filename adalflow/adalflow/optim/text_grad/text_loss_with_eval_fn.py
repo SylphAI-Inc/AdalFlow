@@ -242,9 +242,7 @@ class EvalFnToTextLoss(LossComponent):
         instruction_str = Prompt(
             conv_ins_template,
             prompt_kwargs={
-                "variable_desc": pred.role_desc,
-                "variable_name": pred.name,
-                "variable_value": pred.data,
+                "variable": pred.get_param_info(),
                 "conversation_str": conversation_str,
             },
         )()

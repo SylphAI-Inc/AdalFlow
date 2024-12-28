@@ -100,9 +100,16 @@ Step {{ loop.index }}.
 <END_OF_USER_QUERY>
 """
 
+
 # We have parameters react_agent_task_desc, tools, output_format_str, input_str, step_history
 # react_agent_task_desc is trainable per use case
 # step_history is a list to track the history, where each time it will be updated with the current step output
+def map_step_history_to_prompt(x: Parameter) -> str:
+    output = []
+    for i, step in enumerate(x.data):
+        step_str = f"Step {i + 1}.\n"
+        output.append(step_str + step.to_prompt_str())
+    return "\n".join(output)
 
 
 class AppendStepHistory(GradComponent):
@@ -121,6 +128,12 @@ class AppendStepHistory(GradComponent):
 
         step_history.append(step_output)
         return step_history
+
+    def forward(self, *args, **kwargs) -> Parameter:
+        """Customize how the data is shown in the prompt."""
+        output = super().forward(*args, **kwargs)
+        output.data_in_prompt = map_step_history_to_prompt
+        return output
 
 
 class FunctionOutputToStepOutput(GradComponent):
@@ -621,12 +634,15 @@ class ReActAgent(GradComponent):
         r"""prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs."""
         # initialize step_history in both training and eval mode
         step_history = None
+
         if self.training:
+
             step_history = Parameter(
                 data=[],
                 param_type=ParameterType.INPUT,
                 name="step_history",
                 requires_opt=True,
+                data_in_prompt=map_step_history_to_prompt,
             )
         else:
             step_history = []

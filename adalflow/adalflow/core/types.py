@@ -13,7 +13,6 @@ from typing import (
     Literal,
     Callable,
     Awaitable,
-    Type,
 )
 from collections import OrderedDict
 from dataclasses import (
@@ -25,6 +24,7 @@ from uuid import UUID
 from datetime import datetime
 import uuid
 import logging
+import json
 
 from adalflow.core.base_data_class import DataClass, required_field
 from adalflow.core.tokenizer import Tokenizer
@@ -521,36 +521,19 @@ class StepOutput(DataClass, Generic[T]):
         default=None, metadata={"desc": "The execution result shown for this action"}
     )
 
-    @classmethod
-    def with_action_type(cls, action_type: Type[T]) -> Type["StepOutput[T]"]:
-        """
-        Create a new StepOutput class with the specified action type.
-
-        Use this if you want to create schema for StepOutput with a specific action type.
-
-        Args:
-            action_type (Type[T]): The type to set for the action attribute.
-
-        Returns:
-            Type[StepOutput[T]]: A new subclass of StepOutput with the specified action type.
-
-        Example:
-
-        .. code-block:: python
-
-            from adalflow.core.types import StepOutput, FunctionExpression
-
-            StepOutputWithFunctionExpression = StepOutput.with_action_type(FunctionExpression)
-        """
-        # Create a new type variable map
-        type_var_map = {T: action_type}
-
-        # Create a new subclass with the updated type
-        new_cls = type(cls.__name__, (cls,), {"__type_var_map__": type_var_map})
-
-        # Update the __annotations__ to reflect the new type of action
-        new_cls.__annotations__["action"] = action_type
-        return new_cls
+    def to_prompt_str(self) -> str:
+        output: Dict[str, Any] = {}
+        if self.action and isinstance(self.action, FunctionExpression):
+            if self.action.thought:
+                output["thought"] = self.action.thought
+            output["action"] = self.action.action if self.action else None
+        if self.observation:
+            output["observation"] = (
+                self.observation.to_dict()
+                if hasattr(self.observation, "to_dict")
+                else str(self.observation)
+            )
+        return json.dumps(output)
 
 
 #######################################################################################
