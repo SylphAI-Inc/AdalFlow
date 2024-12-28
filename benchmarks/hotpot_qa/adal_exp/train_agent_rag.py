@@ -162,8 +162,8 @@ if __name__ == "__main__":
 
     train(
         debug=False,
-        max_steps=8,
-        resume_from_ckpt="/Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_4_dca7e_run_1.json",
+        max_steps=12,
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_4_dca7e_run_1.json",
     )
     # 0.68 on val without training, 0.74on the second step. 0.84 test
     # /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_2_029cb_run_1.json
