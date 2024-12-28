@@ -161,10 +161,12 @@ if __name__ == "__main__":
     # )
 
     train(
-        debug=True,
-        max_steps=12,
+        debug=False,
+        max_steps=8,
+        resume_from_ckpt="/Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_4_dca7e_run_1.json",
     )
     # 0.68 on val without training, 0.74on the second step. 0.84 test
     # /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_2_029cb_run_1.json
     # 0.7, 0.72 /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_2_b7523_run_1.json
     # 208.085706949234s, 2 steps, maximum 4 steps allow for an agent.
+    # 0.72->0.74, 4 steps, 366s, /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_4_dca7e_run_1.json [Already faster, still lots to optimize]

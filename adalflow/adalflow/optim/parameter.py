@@ -787,6 +787,8 @@ class Parameter(Generic[T]):
             )  # Use to_json_obj for proper JSON object structure
 
         data_json = None
+        node_data_type = str(type(node.data)).replace("<", "&lt;").replace(">", "&gt;")
+        printc(f"Node data type: {node_data_type}")
         if isinstance(node.data, dict):
             data_json = data_json
         elif isinstance(node.data, DataClass):
@@ -824,7 +826,7 @@ class Parameter(Generic[T]):
                 <h1>Details for Node: {node.name}</h1>
                 <p><b>ID:</b> {node.id}</p>
                 <p><b>Role:</b> {node.role_desc}</p>
-                <p><b>DataType:</b> {str(type(node.data))}</p>
+                <p><b>DataType:</b> {node_data_type}</p>
                 <pre><b>Data:</b> \n{json.dumps(data_json, indent=4)}</pre>
                 <p><b>Data ID:</b> {node.data_id}</p>
                 <p><b>Previous Value:</b> {node.previous_data}</p>

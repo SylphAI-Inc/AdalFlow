@@ -1,9 +1,10 @@
 """Base class for Autograd Components that can be called and backpropagated through."""
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Optional
 from collections import OrderedDict
 import uuid
 import logging
+from copy import deepcopy
 
 if TYPE_CHECKING:
     from adalflow.core.generator import BackwardEngine
@@ -13,9 +14,10 @@ from adalflow.optim.types import ParameterType
 
 from adalflow.core.component import Component
 from adalflow.optim.function import BackwardContext
+from adalflow.utils.registry import EntityMapping
 
 
-__all__ = ["GradComponent"]
+__all__ = ["GradComponent", "FunGradComponent", "fun_to_grad_component"]
 log = logging.getLogger(__name__)
 
 
@@ -84,6 +86,9 @@ class GradComponent(Component):
         for idx, arg in enumerate(args):
             input_args[f"arg_{idx}"] = arg
 
+        # Get data id from the kwargs
+        data_id = kwargs.get("id", None)
+
         # Add keyword args to the ordered dict, preserving order
         predecessors = []
         for v in input_args.values():
@@ -91,11 +96,15 @@ class GradComponent(Component):
                 predecessors.append(v)
                 if v.param_type == ParameterType.INPUT:
                     v.data_id = kwargs.get("id", None)
+                if data_id is None:
+                    data_id = v.data_id
         for v in kwargs.values():
             if isinstance(v, Parameter):
                 predecessors.append(v)
                 if v.param_type == ParameterType.INPUT:
                     v.data_id = kwargs.get("id", None)
+                if data_id is None:
+                    data_id = v.data_id
 
         # 2. unwrap the parameter object to take only the data, successor_map_fn: lambda x: x.data in default
         # unwrap args
@@ -123,7 +132,9 @@ class GradComponent(Component):
         call_response = self.call(*unwrapped_args, **unwrapped_kwargs)
 
         if isinstance(call_response, Parameter):
-            raise ValueError("A GradComponent call should not return Parameter")
+            raise ValueError(
+                f"A GradComponent call should not return Parameter, got {call_response.name}"
+            )
             predecessors.append(call_response)
             return call_response
 
@@ -138,20 +149,20 @@ class GradComponent(Component):
             name=self.name + "_output",
             role_desc=self.name + " response",
             param_type=ParameterType.OUTPUT,
-            data_id=kwargs.get("id", None),
+            data_id=data_id,
         )
         response.set_predecessors(predecessors)
         response.trace_forward_pass(
             input_args=tracing_args,
             full_response=call_response,
-            id=self.id,
+            id=self.id,  # this is component id
             name=self.name,
         )
         response.set_grad_fn(
             BackwardContext(
                 backward_fn=self.backward,
                 response=response,
-                id=kwargs.get("id", None),
+                id=data_id,
             )
         )
         return response
@@ -190,11 +201,13 @@ class GradComponent(Component):
             # passing the successor's gradient.data to the current.
 
             for grad in response.gradients:
-                # make a copy of the gradient
-                # grad = deepcopy(grad)
+                # NOTE: make a copy of the gradient, we should not modify the original gradient
+                grad = deepcopy(grad)
                 # update the gradient context and from and to
-                grad.update_from_to(response, pred)
-                grad.is_default_copy = True
+                # grad.update_from_to(response, pred)
+                grad.is_default_copy = (
+                    True  # response and pred will keep the original gradient
+                )
                 grad.add_context(
                     GradientContext(
                         variable_desc=pred.role_desc,
@@ -204,3 +217,106 @@ class GradComponent(Component):
                 )
 
                 pred.add_gradient(grad)
+
+
+class FunGradComponent(GradComponent):
+    r"""Wraps a function as a GradComponent.
+
+    Args:
+        fun (Callable): The function to be wrapped.
+
+    Examples:
+
+    function = lambda x: x + 1
+    fun_component = FunComponent(function)
+    print(fun_component(1))  # 2
+    """
+
+    def __init__(self, fun: Optional[Callable] = None, afun: Optional[Callable] = None):
+        super().__init__()
+        self.fun_name = fun.__name__
+        EntityMapping.register(self.fun_name, fun)
+
+    def call(self, *args, **kwargs):
+        fun = EntityMapping.get(self.fun_name)
+        return fun(*args, **kwargs)
+
+    def _extra_repr(self) -> str:
+        return super()._extra_repr() + f"fun_name={self.fun_name}"
+
+
+def fun_to_grad_component(fun) -> FunGradComponent:
+    r"""Helper function to convert a function into a Component with
+    its own class name.
+
+    Can be used as both a decorator and a function.
+
+    Args:
+        fun (Callable): The function to be wrapped.
+    Returns:
+        FunComponent: The component that wraps the function.
+
+    Examples:
+    1. As a decorator:
+        >>> @fun_to_component
+        >>> def my_function(x):
+        >>>     return x + 1
+        >>> # is equivalent to
+        >>> class MyFunctionComponent(FunComponent):
+        >>>     def __init__(self):
+        >>>         super().__init__(my_function)
+
+    2. As a function:
+        >>> my_function_component = fun_to_component(my_function)
+    """
+
+    # Split the function name by underscores, capitalize each part, and join them back together
+    class_name = (
+        "".join(part.capitalize() for part in fun.__name__.split("_")) + "GradComponent"
+    )
+    # register the function
+    EntityMapping.register(fun.__name__, fun)
+    # Define a new component class dynamically
+    component_class = type(
+        class_name,
+        (FunGradComponent,),
+        {"__init__": lambda self: FunGradComponent.__init__(self, fun)},
+    )
+    # register the component
+    EntityMapping.register(class_name, component_class)
+
+    return component_class()
+
+
+if __name__ == "__main__":
+    # Test FunGradComponent
+    from adalflow.optim.parameter import Parameter
+
+    def my_function(x):
+        return x + 1
+
+    my_function_component = fun_to_grad_component(my_function)
+    print(my_function_component)  # 2
+    # eval mode
+    output = my_function_component(1)
+    print(output)
+    # training mode
+    my_function_component.train()
+    output = my_function_component(Parameter(data=1, name="input"))
+    print(output)
+
+    # now test the decorator
+    @fun_to_grad_component
+    def my_function(x):
+        return x + 1
+
+    print(my_function(1))
+    # eval mode
+    output = my_function(1)
+    print(output)
+    assert output == 2
+
+    # training mode
+    my_function.train()
+    output = my_function(Parameter(data=1, name="input"))
+    print(output)

@@ -407,7 +407,7 @@ class Trainer(Component):
             train_loader = DataLoader(
                 train_dataset,
                 batch_size=batch_size,
-                shuffle=True,  # if not debug else False,
+                shuffle=True if not debug else False,
             )
         val_dataset = val_dataset or self.val_dataset
         test_dataset = test_dataset or self.test_dataset

@@ -107,6 +107,7 @@ class FunctionTool(GradComponent):
                  - via sandboxed execute directionly using ``sandbox_exec``.
 
 
+    A FunctionTool allows other GradComponent(as a tool) to pass through correctly.
     """
 
     def __init__(
@@ -237,6 +238,9 @@ class FunctionTool(GradComponent):
         if self._is_async:
             raise ValueError("FunctionTool is asynchronous, use acall instead")
         output, error = None, None
+
+        # NOTE: special case:
+        # self.fn can have both train and eval mode or untrainable as a function.
         try:
             output = self.fn(*args, **kwargs)
         except Exception as e:
@@ -247,6 +251,10 @@ class FunctionTool(GradComponent):
         print(f"typeof output: {type(output)}")
 
         if isinstance(output, Parameter):
+            if not self.training:
+                raise ValueError(
+                    f"FunctionTool {self.definition.func_name} is in eval mode, but the output is Parameter"
+                )
             print("output is Parameter")
             output.data = FunctionOutput(
                 name=self.definition.func_name,

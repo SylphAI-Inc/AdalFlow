@@ -16,7 +16,7 @@ from typing import (
 import logging
 from copy import deepcopy
 import asyncio
-from adalflow.optim.parameter import Parameter, ParameterType, OutputParameter
+from adalflow.optim.parameter import Parameter, ParameterType
 import nest_asyncio
 import warnings
 
@@ -55,6 +55,71 @@ def run_async_in_new_loop(coro):
     finally:
         loop.close()
         asyncio.set_event_loop(None)
+
+
+class CallFunctionTool(GradComponent):
+    __doc__ = """Contains other unit gradcomponent such as calling
+                a FunctionTool"""
+
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, func: Parameter, context: Dict[str, object]):
+        return self.bicall(func, context=context)
+
+    def call(self, func: Function, context: Dict[str, object]) -> FunctionOutput:
+        return self.bicall(func, context=context)
+
+    def bicall(
+        self,
+        func: Union[Function, Parameter],
+        context: Dict[str, object] = {},
+    ):
+        if isinstance(func, Parameter):
+            # data = func.successor_map_fn(func)
+            printc(f"context: {context}", color="yellow")
+            tool: FunctionTool = context[func.data.name]
+            print(f"tool training: {tool.training}")
+            output = tool.forward(*func.data.args, **func.data.kwargs)
+
+            from adalflow.optim.grad_component import fun_to_grad_component
+
+            # this will automatically create the outputparam, and connect output, func to the outputParam
+            @fun_to_grad_component
+            def dummy_pass_through_for_untrainable_fn(output, func):
+                return output
+
+            # NOTE: special case: handle the function which is not a grad_component
+            # here we have to specifically converts it to a parameter and handles the predecessors
+            # there is no trainable parameters inside of the tool but the tool response itself can be optimized by response optimizer
+            if not isinstance(output, Parameter):
+                return dummy_pass_through_for_untrainable_fn.forward(output, func)
+            else:
+                # reconnect the predecessor for tracing as it is not done in tool.forward
+                output.predecessors.add(func)
+            return output
+        else:
+            tool: FunctionTool = context[func.name]
+            output = tool.call(*func.args, **func.kwargs)
+            return output
+
+
+class FunctionExperssionToFunction(GradComponent):
+    def __init__(self):
+        super().__init__()
+
+    def call(self, expr: FunctionExpression, context: Dict[str, object]):
+        print("DummpyGradComponent call")
+        print(expr)
+
+        expr_str = expr.action
+        func_name, args, kwargs = parse_function_call_expr(expr_str, context)
+        return Function(
+            name=func_name,
+            args=args,
+            kwargs=kwargs,
+            thought=expr.thought,
+        )
 
 
 # TODO: good to track all the failed function calls
@@ -149,35 +214,10 @@ class ToolManager(GradComponent):
         if isinstance(expr, Parameter):
             try:
 
-                class FunctionExperssionToFunction(GradComponent):
-                    def __init__(self):
-                        super().__init__()
-
-                    def call(
-                        self, expr: FunctionExpression, context: Dict[str, object]
-                    ):
-                        print("DummpyGradComponent call")
-                        print(expr)
-
-                        expr_str = expr.action
-                        func_name, args, kwargs = parse_function_call_expr(
-                            expr_str, context
-                        )
-                        return Function(
-                            name=func_name,
-                            args=args,
-                            kwargs=kwargs,
-                            thought=expr.thought,
-                        )
-
                 dummy = FunctionExperssionToFunction()
                 print("FunctionExperssionToFunction")
-                # expr.add_successor_map_fn(dummy, map_fn=lambda x: x.data)
                 return dummy.forward(expr, context=self.context)
 
-                # expr_str = expr.action
-                # func_name, args, kwargs = parse_function_call_expr(expr_str, self.context)
-                # return Function(name=func_name, args=args, kwargs=kwargs)
             except Exception as e:
                 log.error(f"Error {e} parsing function call expression: {expr}")
                 raise ValueError(f"Error {e} parsing function call expression: {expr}")
@@ -218,6 +258,10 @@ class ToolManager(GradComponent):
         expr_or_fun: Union[FunctionExpression, Function],
         step: Literal["execute"] = "execute",
     ) -> Union[FunctionOutput, Function, Parameter]:
+        if not isinstance(expr_or_fun, (Function, FunctionExpression)):
+            raise ValueError(
+                f"expr_or_fun should be either a Function or FunctionExpression. Got {expr_or_fun}"
+            )
         if step == "parse":
             if isinstance(expr_or_fun, Function):
                 return expr_or_fun
@@ -229,8 +273,9 @@ class ToolManager(GradComponent):
 
     def forward(
         self,
+        *,
         expr_or_fun: Union[FunctionExpression, Function, Parameter],
-        step: str = "execute",
+        step: Literal["parse", "execute"] = "execute",
     ) -> Union[FunctionOutput, Function, Parameter]:
         if isinstance(expr_or_fun, Parameter):
             if step == "execute":
@@ -248,7 +293,8 @@ class ToolManager(GradComponent):
                         f"Only function call expressions are supported for now. Got {expr_or_fun.data}"
                     )
         else:
-            return self.call(expr_or_fun=expr_or_fun, step=step)
+            raise ValueError(f"expr_or_fun should be a Parameter. Got {expr_or_fun}")
+            # return self.call(expr_or_fun=expr_or_fun, step=step)
 
     def execute_func(
         self, func: Union[Function, Parameter]
@@ -257,48 +303,8 @@ class ToolManager(GradComponent):
 
         if isinstance(func, Parameter):
 
-            class GetFunctionTool(GradComponent):
-                def __init__(self):
-                    super().__init__()
-
-                def forward(self, func: Parameter, context: Dict[str, object]):
-                    return self.bicall(func, context=context)
-
-                def call(self, func: FunctionOutput, context: Dict[str, object]):
-                    return self.bicall(func, context=context)
-
-                def bicall(
-                    self,
-                    func: Union[FunctionOutput, Parameter],
-                    context: Dict[str, object] = {},
-                ):
-                    if isinstance(func, Parameter):
-                        printc(f"context: {context}", color="yellow")
-                        tool: FunctionTool = context[func.data.name]
-                        print(f"tool training: {tool.training}")
-                        output = tool.forward(*func.data.args, **func.data.kwargs)
-                        # handle the untainable function
-                        if not isinstance(output, Parameter):
-                            # warnings.info(
-                            #     f"Error executing function: {output}", UserWarning
-                            # )
-                            output = OutputParameter(
-                                name=func.data.name,
-                                data=output,
-                                requires_opt=False,
-                                param_type=ParameterType.OUTPUT,
-                            )
-                            return output
-
-                        output.predecessors.add(func)
-                        return output
-                    else:
-                        tool: FunctionTool = context[func.name]
-                        output = tool.call(*func.args, **func.kwargs)
-                        return output
-
-            tool = GetFunctionTool()
-            return tool.forward(func, context=self.context)
+            call_func_tool = CallFunctionTool()
+            return call_func_tool.forward(func, context=self.context)
         else:
             try:
                 tool: FunctionTool = self.context[func.name]

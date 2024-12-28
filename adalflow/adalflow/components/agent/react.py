@@ -133,7 +133,7 @@ class FunctionOutputToStepOutput(GradComponent):
         self,
         action_str: FunctionExpression,
         step: int,
-        result: Union[FunctionOutput, Parameter],
+        result: FunctionOutput,
         func: Function,
         id: Optional[str] = None,
     ) -> StepOutput:
@@ -143,14 +143,8 @@ class FunctionOutputToStepOutput(GradComponent):
             raise ValueError(f"Expected FunctionExpression, but got {type(action_str)}")
         step_output.action = action_str
         step_output.function = func
-        # printc(f"result: {result}", color="blue")
-        result = result.data if isinstance(result, Parameter) else result
-        if isinstance(result, FunctionOutput):
-            step_output.observation = (
-                result.output.data
-                if isinstance(result.output, Parameter)
-                else result.output
-            )
+
+        step_output.observation = result.output
 
         return step_output
 
@@ -365,14 +359,15 @@ class ReActAgent(GradComponent):
                 if isinstance(func, Parameter):
                     func.data.kwargs["id"] = id
 
-                    func.add_successor_map_fn(self.tool_manager, lambda x: x.data)
-
                 result: Parameter = self.tool_manager(expr_or_fun=func, step="execute")
                 # printc(f"result: {result}", color="red")
                 result.add_successor_map_fn(
                     successor=function_output_to_step_output, map_fn=lambda x: x.data
                 )
                 response.add_successor_map_fn(
+                    successor=function_output_to_step_output, map_fn=lambda x: x.data
+                )
+                func.add_successor_map_fn(
                     successor=function_output_to_step_output, map_fn=lambda x: x.data
                 )
                 action_step = function_output_to_step_output.forward(
