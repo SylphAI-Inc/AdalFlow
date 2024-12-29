@@ -95,14 +95,17 @@ Quick Start
 Example Usage
 -----------
 
-Here are some example queries you can try:
+1. **Demo Version (app.py)**
+   - Ask about Alice (software engineer)
+   - Ask about Bob (data scientist)
+   - Ask about the company cafeteria
+   - Test memory with follow-up questions
 
-.. code-block:: text
-
-    "What does the RAG class do?"
-    "Can you explain how the memory system works?"
-    "Show me the implementation of text splitting"
-    "How is the conversation context maintained?"
+2. **Repository Analysis (app_repo.py)**
+   - Enter your repository path
+   - Click "Load Repository"
+   - Ask questions about classes, functions, or code structure
+   - View implementation details in expandable sections
 
 Implementation Details
 -------------------
