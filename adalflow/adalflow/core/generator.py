@@ -37,7 +37,7 @@ from adalflow.optim.function import BackwardContext
 from adalflow.utils.cache import CachedEngine
 from adalflow.tracing.callback_manager import CallbackManager
 from adalflow.utils.global_config import get_adalflow_default_root_path
-from adalflow.core.string_parser import JsonParser
+from adalflow.core.string_parser import JsonParser, Parser
 
 
 from adalflow.optim.text_grad.backend_engine_prompt import (
@@ -105,7 +105,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         template: Optional[str] = None,
         prompt_kwargs: Optional[Dict] = {},
         # args for the output processing
-        output_processors: Optional[Component] = None,
+        output_processors: Optional[Parser] = None,
         name: Optional[str] = None,
         # args for the cache
         cache_path: Optional[str] = None,
@@ -151,6 +151,11 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self.model_client = model_client
 
         self.output_processors = output_processors
+
+        if output_processors and (not isinstance(output_processors, Parser)):
+            raise ValueError(
+                f"output_processors should be a Parser instance, got {type(output_processors)}"
+            )
 
         self.set_parameters(prompt_kwargs)
 

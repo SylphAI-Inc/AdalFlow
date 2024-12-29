@@ -153,10 +153,12 @@ class Trainer(Component):
         self._subset_effect_count = {"pass": 0, "fail": 0}
         self._fullset_effect_count = {"pass": 0, "fail": 0}
         self._valset_effect_count = {"pass": 0, "fail": 0}
+        self._demo_valset_effect_count = {"pass": 0, "fail": 0}
         self._effective_measure = {
             "subset": self._subset_effect_count,
             "fullset": self._fullset_effect_count,
             "valset": self._valset_effect_count,
+            "demo_valset": self._demo_valset_effect_count,
         }
         self._raw_shots = raw_shots
         self._bootstrap_shots = bootstrap_shots
@@ -496,6 +498,13 @@ class Trainer(Component):
             self.adaltask._set_param_values(prompts)
             starting_step = len(trainer_results.steps) - 1
 
+        else:
+            trainer_results = (
+                self._pre_fit(val_dataset, test_dataset)
+                if trainer_results is None
+                else trainer_results
+            )
+
         if debug:
             print("Debugging mode")
             text_grad_debug_path, few_shot_demo_debug_path = None, None
@@ -543,23 +552,21 @@ class Trainer(Component):
             def run_text_optimizers(starting_step: int, trainer_results: TrainerResult):
                 if len(self.text_optimizers) > 0:
                     if self.strategy == "random":
-                        trainer_results = self._fit_text_grad_random(
+                        self._fit_text_grad_random(
                             train_loader,
                             val_dataset,
                             test_dataset,
                             trainer_results,
                             starting_step=starting_step,
                         )
-                        starting_step += self.max_steps
                     elif self.strategy == "constrained":
-                        trainer_results = self._fit_text_grad_constraint(
+                        self._fit_text_grad_constraint(
                             train_loader,
                             val_dataset,
                             test_dataset,
                             trainer_results=trainer_results,
                             starting_step=starting_step,
                         )
-                        starting_step += self.max_steps
                     else:
                         raise ValueError(f"Strategy {self.strategy} not supported")
 
@@ -577,9 +584,13 @@ class Trainer(Component):
 
             if self.sequential_order == ["text", "demo"]:
                 run_text_optimizers(starting_step, trainer_results)
+                starting_step += self.max_steps
+                print(f"Starting step: {starting_step}")
+                print("steps", trainer_results.steps)
                 run_demo_optimizers(starting_step, trainer_results)
             else:
                 run_demo_optimizers(starting_step, trainer_results)
+                starting_step += self.max_steps
                 run_text_optimizers(starting_step, trainer_results)
             # if len(self.text_optimizers) > 0:
             #     run_text_optimizers(starting_step, trainer_results)
@@ -1482,10 +1493,13 @@ class Trainer(Component):
                     minimum_score=last_val_score,
                 )
                 val_score = val_output.avg_score
+
                 if val_score > last_val_score:
                     print(
                         f"Pass validation: {val_score} > {trainer_results.val_scores[-1]}"
                     )
+                    self._track_effectiveness("demo_valset", True)
+
                     self._demo_optimizers_step()
                     for opt in self.demo_optimizers:
                         if opt.proposing:
@@ -1507,6 +1521,7 @@ class Trainer(Component):
                         attempted_val_score=val_score,
                     )
                 else:
+                    self._track_effectiveness("demo_valset", False)
                     print(f"Fail validation: {val_score} <= {last_val_score}, revert")
                     self._demo_optimizers_revert()
                     # ensure all demo optimizer are not proposing
@@ -1860,7 +1875,7 @@ class Trainer(Component):
         return subset_score, subset
 
     def _track_effectiveness(
-        self, stage: Literal["subset", "fullset", "valset"], pass_: bool
+        self, stage: Literal["subset", "fullset", "valset", "demo_valset"], pass_: bool
     ):
         if stage == "subset":
             if pass_:
@@ -1877,6 +1892,13 @@ class Trainer(Component):
                 self._valset_effect_count["pass"] += 1
             else:
                 self._valset_effect_count["fail"] += 1
+        elif stage == "demo_valset":
+            if pass_:
+                self._demo_valset_effect_count["pass"] += 1
+            else:
+                self._demo_valset_effect_count["fail"] += 1
+        else:
+            raise NotImplementedError(f"Stage {stage} not implemented")
 
     def _text_grad_constraint_propose_step(
         self,

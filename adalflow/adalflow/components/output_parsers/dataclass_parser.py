@@ -5,7 +5,7 @@ from typing import Any, Literal, List, Optional
 import logging
 
 from adalflow.core.prompt_builder import Prompt
-from adalflow.core.string_parser import YamlParser, JsonParser
+from adalflow.core.string_parser import YamlParser, JsonParser, Parser
 from adalflow.core.base_data_class import DataClass, DataClassFormatType
 from adalflow.core.base_data_class import ExcludeType, IncludeType
 
@@ -42,7 +42,7 @@ __________
 """
 
 
-class DataClassParser:
+class DataClassParser(Parser):
     __doc__ = r"""Made the structured output even simpler compared with JsonOutputParser and YamlOutputParser.
 
         1. Understands __input_fields__ and __output_fields__ from the DataClass (no need to use include/exclude to decide fields).

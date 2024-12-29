@@ -3,11 +3,11 @@
 import re
 
 from dataclasses import dataclass, field
-import adalflow as adal
 
 from adalflow.core import DataClass
 from adalflow.datasets.big_bench_hard import BigBenchHard
 from adalflow.utils.data import subset_dataset
+from adalflow.core import func_to_parser
 
 
 @dataclass
@@ -64,7 +64,7 @@ class QuestionAnswer(DataClass):
     )  # score can be used as weight for demo, weight = score (the higher the more likely to be sampled)
 
 
-@adal.fun_to_component
+@func_to_parser
 def parse_integer_answer(answer: str):
     """A function that parses the last integer from a string using regular expressions."""
     try:
@@ -81,7 +81,7 @@ def parse_integer_answer(answer: str):
     return answer
 
 
-@adal.fun_to_component
+@func_to_parser
 def extract_answer(answer: str) -> str:
     try:
         pattern = re.compile(r"Answer:\s*(.*)", re.DOTALL)

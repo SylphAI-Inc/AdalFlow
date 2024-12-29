@@ -40,7 +40,7 @@ class ObjectCountTaskPipeline(adal.Component):
         few_shot_demos = adal.Parameter(
             data=None,
             role_desc="To provide few shot demos to the language model",
-            requires_opt=False,
+            requires_opt=True,
             param_type=ParameterType.DEMOS,
         )
 
@@ -56,7 +56,7 @@ class ObjectCountTaskPipeline(adal.Component):
             use_cache=True,
         )
 
-    def call(
+    def bicall(
         self, question: str, id: str = None
     ) -> Union[adal.GeneratorOutput, adal.Parameter]:
         output = self.llm_counter(prompt_kwargs={"input_str": question}, id=id)

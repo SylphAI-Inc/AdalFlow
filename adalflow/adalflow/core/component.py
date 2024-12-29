@@ -3,7 +3,6 @@ It handles states recursively, such as training, components, parameters recursiv
 
 from collections import OrderedDict, namedtuple
 from typing import (
-    Callable,
     Dict,
     Any,
     Optional,
@@ -519,36 +518,86 @@ class Component:
     #     )
     #     plt.show()
 
+    def forward(self, *args, **kwargs):
+        """
+        User must override this for the training scenario
+        if bicall is not defined.
+        """
+        raise NotImplementedError("Subclasses must implement `forward` or `bicall`.")
+
+    def call(self, *args, **kwargs):
+        """
+        User must override this for the inference scenario
+        if bicall is not defined.
+        """
+        if self._has_bicall():
+            output = self.bicall(*args, **kwargs)
+            return output
+        raise NotImplementedError("Subclasses must implement `call` or `bicall`.")
+
+    def bicall(self, *args, **kwargs):
+        """
+        If the user provides a `bicall` method, then `__call__` will automatically
+        dispatch here for both training and inference scenarios. This can internally
+        decide how to handle training vs. inference, or just produce a single unified
+        output type.
+        """
+        # Default fallback if not overridden
+        raise NotImplementedError(
+            "Optional method. Implement to handle both scenarios in one place."
+        )
+
     def __call__(self, *args, **kwargs):
+        # 1. If `bicall` is defined by the user, use it
+        #    and let the `bicall` implementation handle
+        #    the difference between training vs. inference.
         from adalflow.optim.parameter import Parameter
 
+        print("has_bicall", self._has_bicall())
+
+        if self._has_bicall():
+            output = self.bicall(*args, **kwargs)
+
+            # Validation checks based on training or inference
+            if self.training:
+                # Ensure output is a Parameter in training
+                if not isinstance(output, Parameter):
+                    raise ValueError(
+                        f"Output should be of type Parameter in training mode, but got {type(output)}"
+                    )
+            else:
+                # Ensure output is not a Parameter in inference
+                if isinstance(output, Parameter):
+                    raise ValueError(
+                        f"Output should not be of type Parameter in inference mode, but got {type(output)}"
+                    )
+            return output
+
+        # 2. Otherwise, if `bicall` is not defined, fall back to forward / call
         if self.training:
             output = self.forward(*args, **kwargs)
-            print(f"{isinstance(output, Parameter)}")
-
+            # Validation for training
             if not isinstance(output, Parameter):
                 raise ValueError(
-                    f"Output should be of type Parameter, but got {type(output)}"
+                    f"Output should be of type Parameter in training mode, but got {type(output)}"
                 )
             return output
         else:
             output = self.call(*args, **kwargs)
+            # Validation for inference
             if isinstance(output, Parameter):
                 raise ValueError(
-                    f"Output should not be of type OutputParameter, but got {type(output)}"
+                    f"Output should not be of type Parameter in inference mode, but got {type(output)}"
                 )
             return output
 
-    def forward(self, *args, **kwargs):
-        r"""Forward pass for training mode."""
-        raise NotImplementedError(
-            f"Component {type(self).__name__} is missing the 'forward' method for training mode."
-        )
-
-    def call(self, *args, **kwargs):
-        raise NotImplementedError(
-            f"Component {type(self).__name__} is missing the required 'call' method."
-        )
+    def _has_bicall(self):
+        """
+        Helper method to check if this subclass has overridden bicall.
+        """
+        # The default `bicall` in this class raises NotImplementedError,
+        # so we can check if the method is still the same one as in `MyModule`.
+        return self.bicall.__func__ is not Component.bicall
 
     async def acall(self, *args, **kwargs):
         r"""API call, file io."""
@@ -958,76 +1007,6 @@ class Component:
             else:
                 init_args[key] = kwargs.get(key, param.default)
         return init_args
-
-
-# TODO: support async call
-class FunComponent(Component):
-    r"""Component that wraps a function.
-
-    Args:
-        fun (Callable): The function to be wrapped.
-
-    Examples:
-
-    function = lambda x: x + 1
-    fun_component = FunComponent(function)
-    print(fun_component(1))  # 2
-    """
-
-    def __init__(self, fun: Optional[Callable] = None, afun: Optional[Callable] = None):
-        super().__init__()
-        self.fun_name = fun.__name__
-        EntityMapping.register(self.fun_name, fun)
-
-    def call(self, *args, **kwargs):
-        fun = EntityMapping.get(self.fun_name)
-        return fun(*args, **kwargs)
-
-    def _extra_repr(self) -> str:
-        return super()._extra_repr() + f"fun_name={self.fun_name}"
-
-
-def fun_to_component(fun) -> FunComponent:
-    r"""Helper function to convert a function into a Component with
-    its own class name.
-
-    Can be used as both a decorator and a function.
-
-    Args:
-        fun (Callable): The function to be wrapped.
-    Returns:
-        FunComponent: The component that wraps the function.
-
-    Examples:
-    1. As a decorator:
-        >>> @fun_to_component
-        >>> def my_function(x):
-        >>>     return x + 1
-        >>> # is equivalent to
-        >>> class MyFunctionComponent(FunComponent):
-        >>>     def __init__(self):
-        >>>         super().__init__(my_function)
-
-    2. As a function:
-        >>> my_function_component = fun_to_component(my_function)
-    """
-
-    # Split the function name by underscores, capitalize each part, and join them back together
-    class_name = (
-        "".join(part.capitalize() for part in fun.__name__.split("_")) + "Component"
-    )
-    # register the function
-    EntityMapping.register(fun.__name__, fun)
-    # Define a new component class dynamically
-    component_class = type(
-        class_name,
-        (FunComponent,),
-        {"__init__": lambda self: FunComponent.__init__(self, fun)},
-    )
-    # register the component
-    EntityMapping.register(class_name, component_class)
-
-    return component_class()
 
 
 # TODO: not used yet, will further investigate dict mode

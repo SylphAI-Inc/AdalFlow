@@ -32,6 +32,8 @@ class AdalComponent(Component):
     1. Organize all parts for training a task pipeline in one place.
     2. Help with debugging and testing before the actual training.
     3. Adds multi-threading support for training and evaluation.
+
+    It has no need on call, forward, bicall, or __call__, so we need to overwrite the base ones.
     """
 
     task: Component
@@ -754,3 +756,15 @@ class AdalComponent(Component):
         s = f"eval_fn: {self.eval_fn.__name__}, backward_engine: {self.backward_engine}, "
         s += f"backward_engine_model_config: {self.backward_engine_model_config}, teacher_model_config: {self.teacher_model_config}, text_optimizer_model_config: {self.text_optimizer_model_config}"
         return s
+
+    def __call__(self, *args, **kwargs):
+        pass
+
+    def bicall(self, *args, **kwargs):
+        pass
+
+    def call(self, *args, **kwargs):
+        pass
+
+    def forward(self, *args, **kwargs):
+        pass

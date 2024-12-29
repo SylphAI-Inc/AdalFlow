@@ -131,6 +131,9 @@ def train(
     print(trainer)
 
     train_dataset, val_dataset, test_dataset = load_datasets()
+    # train_dataset = train_dataset[:4]
+    # val_dataset = val_dataset[:4]
+    # test_dataset = test_dataset[:4]
     ckpt, _ = trainer.fit(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
