@@ -24,18 +24,6 @@ Model Providers
          </a>
       </div>
       <div class="integration-item">
-         <a href="https://mistral.ai/" target="_blank">
-            <img src="../_static/logos/mistral.png" alt="Mistral AI">
-            <span>Mistral AI</span>
-         </a>
-      </div>
-      <div class="integration-item">
-         <a href="https://aws.amazon.com/bedrock/" target="_blank">
-            <img src="../_static/logos/aws-bedrock.png" alt="Amazon Bedrock">
-            <span>Amazon Bedrock</span>
-         </a>
-      </div>
-      <div class="integration-item">
          <a href="https://groq.com/" target="_blank">
             <img src="../_static/logos/groq.png" alt="Groq">
             <span>Groq</span>
@@ -61,22 +49,10 @@ Vector Databases
             <span>LanceDB</span>
          </a>
       </div>
-      <div class="integration-item">
-         <a href="https://www.pinecone.io/" target="_blank">
-            <img src="../_static/logos/pinecone.png" alt="Pinecone">
-            <span>Pinecone</span>
-         </a>
-      </div>
-      <div class="integration-item">
-         <a href="https://www.milvus.io/" target="_blank">
-            <img src="../_static/logos/milvus.png" alt="Milvus">
-            <span>Milvus</span>
-         </a>
-      </div>
    </div>
 
-Embedding Models
---------------
+Embedding and Reranking Models
+---------------------------
 
 .. raw:: html
 
@@ -91,6 +67,12 @@ Embedding Models
          <a href="https://platform.openai.com/docs/guides/embeddings" target="_blank">
             <img src="../_static/logos/openai.png" alt="OpenAI Embeddings">
             <span>OpenAI Embeddings</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://cohere.com/rerank" target="_blank">
+            <img src="../_static/logos/cohere.png" alt="Cohere Rerank">
+            <span>Cohere Rerank</span>
          </a>
       </div>
    </div>
@@ -132,26 +114,16 @@ Embedding Models
       }
    </style>
 
-Quick Start
-----------
-
-To use any of these integrations, first install AdalFlow with the appropriate extras:
-
-.. code-block:: bash
-
-   # For model providers
-   pip install "adalflow[openai,anthropic,mistral,bedrock,groq]"
-
-   # For vector databases
-   pip install "adalflow[qdrant,lancedb]"
-
-See the :ref:`installation guide <get_started-installation>` for more details.
-
 Usage Examples
 ------------
 
-Check out our tutorials for detailed examples of using these integrations:
+Have a look at our comprehensive :ref:`tutorials <tutorials-index>` featuring all of these integrations, including:
 
-- :ref:`Model Clients <tutorials-model_client>`
-- :ref:`Vector Databases <tutorials-database>`
-- :ref:`Embeddings <tutorials-embedder>`
+- Model Clients and LLM Integration
+- Vector Databases and RAG
+- Embeddings and Reranking
+- Agent Development
+- Evaluation and Optimization
+- Logging and Tracing
+
+Each tutorial provides practical examples and best practices for building production-ready LLM applications.
