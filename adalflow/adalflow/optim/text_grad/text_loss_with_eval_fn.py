@@ -25,19 +25,11 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
     LOSS_CONVERSATION_TEMPLATE_STRING,
     LOSS_CONVERSATION_START_INSTRUCTION_STRING_FN,
     OBJECTIVE_INSTRUCTION_BASE,
+    OBJECTIVE_INSTRUCTION_CHAIN,
 )
 
 
 log = logging.getLogger(__name__)
-
-
-OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. The <INPUTS/SCORE> was later used as "{{response_name}}: {{response_desc}}".
-<OBJECTIVE_FUNCTION>
-Your only goal is to clearly states how it obtained the "Eval output/score": {{response_gradient}}.
-Especially when the score is low.
-Be CONCISE.
-If you have enough context, add a more specific feedback on how it failed.
-</OBJECTIVE_FUNCTION>"""
 
 
 class EvalFnToTextLoss(LossComponent):
@@ -219,7 +211,7 @@ class EvalFnToTextLoss(LossComponent):
 
         inputs = {}
         for k, v in kwargs.items():
-            inputs[k] = (v, str(type(v.eval_input)))
+            inputs[k] = (v.get_param_info(), str(type(v.eval_input)))
 
         # response information
         conversation_str = Prompt(
@@ -227,7 +219,7 @@ class EvalFnToTextLoss(LossComponent):
             prompt_kwargs={
                 "inputs": inputs,
                 "eval_fn_desc": eval_fn_desc,
-                "response_value": response.data,
+                "response_value": response.get_prompt_data(),
                 "metadata": json.dumps(metadata) if metadata else None,
             },
         )()

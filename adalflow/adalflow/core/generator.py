@@ -518,6 +518,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 }
 
                 output = self.call(**input_args, id=id)
+                if not isinstance(output, GeneratorOutput):
+                    raise ValueError(
+                        f"Output should be of type GeneratorOutput, got {type(output)}"
+                    )
         # 2. Generate a Parameter object from the output
         combined_prompt_kwargs = compose_model_kwargs(self.prompt_kwargs, prompt_kwargs)
         # if self.data_map_func is None:
@@ -528,19 +532,26 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         ]
 
         log.debug(f"Predecessors: {predecessors} for generator {self.name}")
-        param_data = (
-            # output.raw_response
-            output.data
-            if output and not output.error
-            else f"Error: {output.error}, raw_response: {output.raw_response}"
-        )
+
+        def data_to_prompt_map_fn(data: Parameter) -> str:
+            data: GeneratorOutput = data.data
+            if data.data is not None:
+                return data.data
+            if data.error is not None:
+                return f"Response: {data.raw_response} parsed with error: {data.error}"
+            return f"Response: {data.raw_response}"
+
+        # TODO: all parameter should just wrap the whole output.
+        # this is for training.
+        param_data = output
         response: Parameter = OutputParameter(
             data=param_data,
             name=self.name + "_output",
             role_desc=f"Output from (llm) {self.name}",
             param_type=ParameterType.GENERATOR_OUTPUT,
             data_id=id,
-            full_response=output.data,  # the data structure
+            full_response=output,  # the data structure
+            data_in_prompt=data_to_prompt_map_fn,
         )
         response.set_predecessors(predecessors)
         response.trace_forward_pass(
@@ -582,10 +593,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 backward_fn=self.backward,
                 backward_engine=self.backward_engine,
                 response=response,
-                prompt_kwargs={
-                    k: v.data if isinstance(v, Parameter) else v
-                    for k, v in prompt_kwargs.items()
-                },
+                prompt_kwargs=prompt_kwargs,
                 template=self.template,
                 prompt_str=self.get_prompt(**combined_prompt_kwargs),
                 id=id,
@@ -594,7 +602,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         )
         return response
 
-    # == pytorch custom autograd function ==
     def backward(
         self,
         response: Parameter,  # the output of the forward pass
@@ -687,15 +694,15 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # instruction and objective is the same for all the children
         instruction_str, objective_str = None, None
 
-        # 1. Generate the conversation string
+        # 1. Generate the conversation input and output
         input_prompt_kwargs = {
-            k: v.data if isinstance(v, Parameter) else v
+            k: v.get_prompt_data() if isinstance(v, Parameter) else v
             for k, v in prompt_kwargs.items()
         }
 
         conversation_prompt_kwargs = {
             "input_value": input_prompt_kwargs,
-            "llm_output": response.data,
+            "llm_output": response.get_prompt_data(),
         }
 
         conversation_str = Prompt(
@@ -704,7 +711,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         )()
 
         all_pred_info = Prompt(
-            prompt_kwargs={"variables": children_params},
+            prompt_kwargs={"variables": [p.get_param_info() for p in children_params]},
             template=ALL_PRED_INFO,
         )()
 
@@ -849,10 +856,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         }
 
         conversation_prompt_kwargs = {
-            # "variable_name": pred.name,
-            # "variable_desc": pred.role_desc,
             "input_value": input_prompt_kwargs,
-            "llm_output": response.data,
+            "llm_output": response.get_prompt_data(),
         }
 
         conversation_str = Prompt(
@@ -912,10 +917,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 data=manual_response, raw_response=manual_response
             )
         else:
-            # manual_response = f"You get score: {response._score}."
-            # gradient_output = GeneratorOutput(
-            #     data=manual_response, raw_response=manual_response
-            # )
 
             gradient_output: GeneratorOutput = backward_engine(
                 prompt_kwargs=backward_engine_prompt_kwargs

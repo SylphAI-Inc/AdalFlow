@@ -265,7 +265,11 @@ class Parameter(Generic[T]):
         self.eval_input = eval_input
 
         self.successor_map_fn = successor_map_fn or {}
-        self.data_in_prompt = lambda x: x.data if not data_in_prompt else data_in_prompt
+
+        def default_prompt_map_fn(param: Parameter):
+            return param.data
+
+        self.data_in_prompt = data_in_prompt or default_prompt_map_fn
 
     def map_to_successor(self, successor: object) -> T:
         """Apply the map function to the successor based on the successor's id."""
@@ -308,6 +312,9 @@ class Parameter(Generic[T]):
         names = [g.name for g in self.gradients]
         names = ", ".join(names)
         return names
+
+    def get_prompt_data(self) -> str:
+        return self.data_in_prompt(self)
 
     def get_gradients_str(self) -> str:
         if not self.gradients:
@@ -551,8 +558,10 @@ class Parameter(Generic[T]):
         return {
             "name": self.name,
             "role_desc": self.role_desc,
-            "data": self.data_in_prompt(self),
+            "prompt_data": self.data_in_prompt(self),  # default to use all data
             "param_type": self.param_type,
+            "requires_opt": self.requires_opt,
+            "eval_input": self.eval_input,  # for output passing to the eval_fn
         }
 
     def set_peers(self, peers: List["Parameter"] = None):
@@ -688,7 +697,8 @@ class Parameter(Generic[T]):
         :type n_words_offset: int
         """
         # 1. ensure the data is a string
-        data = self.data
+        # data = self.data
+        data = self.get_prompt_data()
         if not isinstance(self.data, str):
             data = str(self.data)
         words = data.split(" ")
@@ -775,19 +785,14 @@ class Parameter(Generic[T]):
 
         filename = f"{output_dir}/{node.name}.html"
 
-        # inspect everything about the gradients
-        # gradients = ""
-        # for i, g in enumerate(node.gradients):
-        #     # Format each gradient as YAML with proper indentation and replace \n\n\n with actual line breaks
-        #     gradient_yaml = g.to_yaml().replace("\\n", "\n").replace("\n\n\n", "\n")
-        #     gradients += f"{i}:\n{gradient_yaml}\n"
-
         # Gather gradients as JSON objects
         gradients = []
         for i, g in enumerate(node.gradients):
-            gradients.append(
-                g.to_json_obj()
-            )  # Use to_json_obj for proper JSON object structure
+            gradient = g.to_json_obj()
+            for k, v in gradient.items():
+                if isinstance(v, str):
+                    gradient[k] = v.replace("<", "&lt;").replace(">", "&gt;")
+            gradients.append(gradient)
 
         data_json = None
         node_data_type = str(type(node.data)).replace("<", "&lt;").replace(">", "&gt;")
@@ -863,14 +868,11 @@ class Parameter(Generic[T]):
         """
         from jinja2 import Template
 
-        # Define the output file path
         output_file = "interactive_graph.html"
         final_file = filepath + "_" + output_file if filepath else output_file
 
-        # Create a pyvis Network instance
         net = Network(height="750px", width="100%", directed=True)
 
-        # different color per node type
         node_colors = {
             ParameterType.PROMPT: "lightblue",
             ParameterType.DEMOS: "orange",
@@ -919,7 +921,6 @@ class Parameter(Generic[T]):
                     f"Skipping edge from {source.name} to {target.name} as one of the nodes does not exist."
                 )
 
-        # Enable physics for better layout
         net.toggle_physics(True)
         net.template = Template(
             """
@@ -976,8 +977,6 @@ class Parameter(Generic[T]):
     </html>
     """
         )
-
-        # Save the graph as an HTML file
 
         net.show(final_file)
         print(f"Interactive graph saved to {final_file}")
@@ -1587,6 +1586,7 @@ class OutputParameter(Parameter):
         score: Optional[float] = None,
         eval_input: object = None,
         successor_map_fn: Optional[Dict[str, Callable]] = None,
+        data_in_prompt: Optional[Callable] = None,
         full_response: Optional[Any] = None,
     ):
         super().__init__(
@@ -1602,6 +1602,7 @@ class OutputParameter(Parameter):
             score=score,
             eval_input=eval_input,
             successor_map_fn=successor_map_fn,
+            data_in_prompt=data_in_prompt,
         )
 
         self.component_trace = ComponentTrace()

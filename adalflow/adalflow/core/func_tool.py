@@ -248,8 +248,6 @@ class FunctionTool(GradComponent):
             # raise ValueError(f"Error: {e}")
             error = str(e)
 
-        print(f"typeof output: {type(output)}")
-
         if isinstance(output, Parameter):
             if not self.training:
                 raise ValueError(

@@ -22,6 +22,7 @@ import warnings
 
 from adalflow.core.container import ComponentList
 from adalflow.optim.grad_component import GradComponent
+from adalflow.core.component import Component
 from adalflow.core.func_tool import FunctionTool
 from adalflow.core.types import (
     FunctionDefinition,
@@ -57,7 +58,7 @@ def run_async_in_new_loop(coro):
         asyncio.set_event_loop(None)
 
 
-class CallFunctionTool(GradComponent):
+class CallFunctionTool(Component):
     __doc__ = """Contains other unit gradcomponent such as calling
                 a FunctionTool"""
 
@@ -76,11 +77,13 @@ class CallFunctionTool(GradComponent):
         context: Dict[str, object] = {},
     ):
         if isinstance(func, Parameter):
-            # data = func.successor_map_fn(func)
             printc(f"context: {context}", color="yellow")
-            tool: FunctionTool = context[func.data.name]
+            func_data: Function = func.map_to_successor(self)
+            if not isinstance(func_data, Function):
+                raise ValueError(f"Error parsing function expression: {func}")
+            tool: FunctionTool = context[func_data.name]
             print(f"tool training: {tool.training}")
-            output = tool.forward(*func.data.args, **func.data.kwargs)
+            output = tool.forward(*func_data.args, **func_data.kwargs)
 
             from adalflow.optim.grad_component import fun_to_grad_component
 
@@ -108,24 +111,34 @@ class FunctionExperssionToFunction(GradComponent):
     def __init__(self):
         super().__init__()
 
-    def call(self, expr: FunctionExpression, context: Dict[str, object]):
-        print("DummpyGradComponent call")
-        print(expr)
+    def call(self, expr: FunctionExpression, context: Dict[str, object]) -> Function:
+
+        assert isinstance(
+            expr, FunctionExpression
+        ), f"Expected FunctionExpression, got {type(expr)}"
 
         expr_str = expr.action
         func_name, args, kwargs = parse_function_call_expr(expr_str, context)
-        return Function(
+        printc(
+            f"func_name: {func_name}, args: {args}, kwargs: {kwargs}", color="yellow"
+        )
+        output = Function(
             name=func_name,
             args=args,
             kwargs=kwargs,
             thought=expr.thought,
         )
+        printc(f"output: {output}", color="yellow")
+        return output
 
 
 # TODO: good to track all the failed function calls
 # Tool manager is a task component
-class ToolManager(GradComponent):
+class ToolManager(Component):
     __doc__ = r""""Manage a list of tools, context, and all ways to execute functions.
+
+
+    ToolManager is a task component that does not need its own backward function.
 
     yaml and json definitions are for quick access to the definitions of the tools.
     If you need more specification, such as using exclude field, you can use the function_definitions.
@@ -207,20 +220,27 @@ class ToolManager(GradComponent):
         return [tool.definition for tool in self.tools]
 
     def parse_func_expr(
-        self, expr: Union[FunctionExpression, Parameter]
+        self,
+        expr: Union[FunctionExpression, Parameter],
+        map_fn: Callable = lambda x: x.data,
     ) -> Union[Function, Parameter]:
         r"""Parse the function call expression."""
 
         if isinstance(expr, Parameter):
             try:
 
-                dummy = FunctionExperssionToFunction()
+                func = FunctionExperssionToFunction()
+                expr.add_successor_map_fn(func, map_fn=map_fn)
                 print("FunctionExperssionToFunction")
-                return dummy.forward(expr, context=self.context)
+                output = func.forward(expr, context=self.context)
+                print(f"output data: {output.data}")
+                return output
 
             except Exception as e:
-                log.error(f"Error {e} parsing function call expression: {expr}")
-                raise ValueError(f"Error {e} parsing function call expression: {expr}")
+                error_msg = (
+                    f"Error {e} parsing function call expression: {map_fn(expr)}"
+                )
+                return error_msg
         else:
             try:
                 expr_str = expr.action
@@ -276,35 +296,50 @@ class ToolManager(GradComponent):
         *,
         expr_or_fun: Union[FunctionExpression, Function, Parameter],
         step: Literal["parse", "execute"] = "execute",
+        map_fn: Callable = lambda x: x.data,  # how to map the parameter to the needed data
     ) -> Union[FunctionOutput, Function, Parameter]:
+        "Run a forward pass on the tool manager such as parsing function expression or executing function."
         if isinstance(expr_or_fun, Parameter):
+            expr_or_fun_data = map_fn(expr_or_fun)
+            print(f"expr_or_fun_data: {expr_or_fun_data}")
             if step == "execute":
-                if isinstance(expr_or_fun.data, Function):
-                    return self.execute_func(expr_or_fun)
+                if isinstance(expr_or_fun_data, Function):
+                    return self.execute_func(expr_or_fun, map_fn=map_fn)
                 else:
                     raise NotImplementedError(
-                        "Only function call expressions are supported for now."
+                        "Only Function expressions are supported for now."
                     )
             else:
-                if isinstance(expr_or_fun.data, FunctionExpression):
-                    return self.parse_func_expr(expr_or_fun)
+                if isinstance(expr_or_fun_data, FunctionExpression):
+                    print(f"start parsing: {expr_or_fun_data}")
+                    output = self.parse_func_expr(expr_or_fun, map_fn=map_fn)
+                    print(f"output 3: {output.data}")
+                    return output
                 else:
                     raise NotImplementedError(
-                        f"Only function call expressions are supported for now. Got {expr_or_fun.data}"
+                        f"Only function call expressions are supported for now. Got {expr_or_fun_data}"
                     )
         else:
             raise ValueError(f"expr_or_fun should be a Parameter. Got {expr_or_fun}")
             # return self.call(expr_or_fun=expr_or_fun, step=step)
 
     def execute_func(
-        self, func: Union[Function, Parameter]
+        self, func: Union[Function, Parameter], map_fn: Callable = lambda x: x.data
     ) -> Union[FunctionOutput, Parameter]:
         r"""Execute the function. If the function is async, use asyncio.run to execute it."""
 
         if isinstance(func, Parameter):
+            try:
 
-            call_func_tool = CallFunctionTool()
-            return call_func_tool.forward(func, context=self.context)
+                call_func_tool = CallFunctionTool()
+                func.add_successor_map_fn(call_func_tool, map_fn=map_fn)
+                return call_func_tool.forward(func, context=self.context)
+
+            except Exception as e:
+                log.error(f"Error {e} executing function: {func.data}")
+                error_msg = f"Error {e} executing function: {func.data}"
+                return error_msg
+
         else:
             try:
                 tool: FunctionTool = self.context[func.name]
@@ -342,12 +377,15 @@ class ToolManager(GradComponent):
             raise ValueError(f"Error {e} executing function: {func}")
 
     def execute_func_expr(
-        self, expr: Union[FunctionExpression, Parameter]
+        self,
+        expr: Union[FunctionExpression, Parameter],
+        map_fn: Callable = lambda x: x.data,
     ) -> Union[FunctionOutput, Parameter]:
         r"""Execute the function expression. Support both sync and async functions."""
 
         if isinstance(expr, Parameter):
-            func: Parameter = self.parse_func_expr(expr.data)
+
+            func: Parameter = self.parse_func_expr(expr, map_fn=map_fn)
             if not isinstance(func, Parameter):
                 raise ValueError(f"Error parsing function expression: {expr}")
 

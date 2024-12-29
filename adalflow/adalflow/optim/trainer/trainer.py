@@ -763,7 +763,7 @@ class Trainer(Component):
 
         # print(f"Teacher y_preds: {y_preds[0].to_dict()}")
 
-        y_preds_outputs = [p.full_response for p in y_preds]
+        y_preds_outputs = [p.data for p in y_preds]
 
         batch_eval: EvaluationResult = self.adaltask.evaluate_samples(
             batch, y_preds_outputs
@@ -824,7 +824,7 @@ class Trainer(Component):
             # for loss in losses_student:
             #     loss.backward()
             # Check the eval result
-            y_preds_outputs = [p.full_response for p in y_preds_student]
+            y_preds_outputs = [p.data for p in y_preds_student]
             eval_result = self.adaltask.evaluate_samples(batch, y_preds_outputs)
             print(f"Eval result: {eval_result.avg_score}")
             # eval_score_per_item = eval_result.per_item_scores
@@ -1116,7 +1116,7 @@ class Trainer(Component):
                 all_losses.extend(losses)  # student losses
                 # extract the non-parameter y_preds
                 all_y_preds.extend(
-                    [y.full_response for y in y_preds if isinstance(y, Parameter)]
+                    [y.data for y in y_preds if isinstance(y, Parameter)]
                 )
 
                 # for loss in losses:
@@ -1901,6 +1901,7 @@ class Trainer(Component):
                 raise ValueError("Loss should be a Parameter object")
         self.adaltask.eval()
         move_batch_eval = self.adaltask.evaluate_samples(all_samples, all_y_preds)
+        print(f"Moving batch eval: {move_batch_eval}")
         move_batch_score = move_batch_eval.avg_score
         move_batch_acc_score_list = move_batch_eval.per_item_scores
 

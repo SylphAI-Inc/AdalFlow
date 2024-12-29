@@ -519,11 +519,31 @@ class Component:
     #     )
     #     plt.show()
 
-    # TODO: do we need to disable this format of calling instead use call and acall extensively?
     def __call__(self, *args, **kwargs):
-        r"""In default, we use sync call."""
-        output = self.call(*args, **kwargs)
-        return output
+        from adalflow.optim.parameter import Parameter
+
+        if self.training:
+            output = self.forward(*args, **kwargs)
+            print(f"{isinstance(output, Parameter)}")
+
+            if not isinstance(output, Parameter):
+                raise ValueError(
+                    f"Output should be of type Parameter, but got {type(output)}"
+                )
+            return output
+        else:
+            output = self.call(*args, **kwargs)
+            if isinstance(output, Parameter):
+                raise ValueError(
+                    f"Output should not be of type OutputParameter, but got {type(output)}"
+                )
+            return output
+
+    def forward(self, *args, **kwargs):
+        r"""Forward pass for training mode."""
+        raise NotImplementedError(
+            f"Component {type(self).__name__} is missing the 'forward' method for training mode."
+        )
 
     def call(self, *args, **kwargs):
         raise NotImplementedError(

@@ -11,7 +11,6 @@ from dataclasses import is_dataclass
 from typing import Dict, Any, Optional, List
 import logging
 
-from adalflow.core.component import Component
 from adalflow.core.prompt_builder import Prompt
 from adalflow.core.string_parser import YamlParser, ListParser, JsonParser
 from adalflow.core.base_data_class import DataClass, DataClassFormatType
@@ -69,7 +68,7 @@ LIST_OUTPUT_FORMAT = r"""Your output should be formatted as a standard Python li
 YAML_OUTPUT_PARSER_OUTPUT_TYPE = Dict[str, Any]
 
 
-class OutputParser(Component):
+class OutputParser:
     __doc__ = r"""The abstract class for all output parsers.
 
     This interface helps users customize output parsers with consistent interfaces for the Generator.
@@ -87,6 +86,9 @@ class OutputParser(Component):
     def format_instructions(self) -> str:
         r"""Return the formatted instructions to use in prompt for the output format."""
         raise NotImplementedError("This is an abstract method.")
+
+    def __call__(self, *args: Any, **kwds: Any) -> Any:
+        return self.call(*args, **kwds)
 
     def call(self, input: str) -> Any:
         r"""Parse the output string to the desired format and return the parsed output."""

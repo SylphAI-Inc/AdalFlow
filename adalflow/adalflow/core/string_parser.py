@@ -5,7 +5,6 @@ From simple data types like boolean, integer, and float to more complex data typ
 from typing import Dict, List, Union
 import logging
 
-from adalflow.core.component import Component
 import adalflow.core.functional as F
 
 log = logging.getLogger(__name__)
@@ -13,11 +12,14 @@ log = logging.getLogger(__name__)
 BOOLEAN_PARSER_OUTPUT_TYPE = bool
 
 
-class Parser(Component):
+class Parser:
     __doc__ = r"""Base class for all string parsers."""
 
     def __init__(self):
         super().__init__()
+
+    def __call__(self, input: str) -> object:
+        return self.call(input)
 
     def call(self, input: str) -> object:
         raise NotImplementedError(

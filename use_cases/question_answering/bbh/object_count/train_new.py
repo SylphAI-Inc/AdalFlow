@@ -43,6 +43,7 @@ class ObjectCountAdalComponent(adal.AdalComponent):
         self, sample: Example, y_pred: adal.GeneratorOutput
     ) -> Tuple[float, Dict[str, Any]]:
         y_label = -1
+        print(f"y_pred: {y_pred}")
         if (
             y_pred is not None and y_pred.data is not None
         ):  # if y_pred and y_pred.data: might introduce bug when the data is 0
@@ -58,7 +59,7 @@ class ObjectCountAdalComponent(adal.AdalComponent):
             eval_input=sample.answer,
             requires_opt=False,
         )
-        pred.eval_input = pred.full_response.data
+        pred.eval_input = pred.data.data
         return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}, "id": sample.id}
 
 
@@ -159,7 +160,7 @@ if __name__ == "__main__":
 
     ckpt = train(
         debug=False,
-        max_steps=1,
+        max_steps=12,
         strategy=set_strategy,
         exclude_input_fields_from_bootstrap_demos=True,
     )
@@ -180,3 +181,7 @@ if __name__ == "__main__":
 
     # without gradients -> 0.9 on tests
     # without positive gradients -> /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_8ac70_run_1.json 0.84->0.94 val, 0.82 -> 0.88 test
+
+    # /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_1f358_run_1.json 1 val 0.96 val 955s
+    # 0.94 val, 0.89 test, /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_e1bb5_run_1.json 907s, with both positive and negatives
+    # 92, 91 test /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_18e8d_run_1.json 747s

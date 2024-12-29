@@ -45,12 +45,6 @@ class GradComponent(Component):
         super().__setattr__("backward_engine", None)
         super().__setattr__("id", str(uuid.uuid4()))
 
-    def __call__(self, *args, **kwargs):
-        if self.training:
-            return self.forward(*args, **kwargs)
-        else:
-            return self.call(*args, **kwargs)
-
     def set_backward_engine(self, backward_engine: "BackwardEngine", *args, **kwargs):
         raise NotImplementedError("set_backward_engine method is not implemented")
 
@@ -73,11 +67,6 @@ class GradComponent(Component):
         log.debug(
             f"Forwarding through {self.name} with args: {args} and kwargs: {kwargs}"
         )
-
-        # if "id" not in kwargs:
-        #     raise ValueError(
-        #         "id must be provided in the kwargs of a GradComponent for tracing."
-        #     )
 
         # 1. get all predecessors from all args and kwargs
         input_args = OrderedDict()

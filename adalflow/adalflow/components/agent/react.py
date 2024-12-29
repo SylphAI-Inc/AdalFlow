@@ -13,6 +13,7 @@ from adalflow.optim.grad_component import GradComponent
 from adalflow.optim.parameter import Parameter, ParameterType
 from adalflow.core.func_tool import FunctionTool, AsyncCallable
 from adalflow.core.tool_manager import ToolManager
+from adalflow.core.component import Component
 from adalflow.components.output_parsers import JsonOutputParser
 from adalflow.core.types import (
     StepOutput,
@@ -176,7 +177,7 @@ class ReActOutput(DataClass):
     answer: Any = field(metadata={"desc": "The final answer."}, default=None)
 
 
-class ReActAgent(GradComponent):
+class ReActAgent(Component):
     __doc__ = r"""ReActAgent uses generator as a planner that runs multiple and sequential functional call steps to generate the final response.
 
     Users need to set up:
@@ -241,7 +242,7 @@ class ReActAgent(GradComponent):
         # template for the planner
         template: Optional[str] = None,  # allow users to customize the template
         context_variables: Optional[Dict] = None,  # context variables
-        debug: bool = False,
+        debug: bool = True,
     ):
         super().__init__()
         template = template or DEFAULT_REACT_AGENT_SYSTEM_PROMPT
@@ -267,7 +268,9 @@ class ReActAgent(GradComponent):
         self._examples = examples + [example]
 
         output_parser = JsonOutputParser(
-            data_class=ouput_data_class, examples=self._examples, return_data_class=True
+            data_class=ouput_data_class,
+            examples=self._examples,
+            return_data_class=True,
         )
         prompt_kwargs = {
             "tools": self.tool_manager.yaml_definitions,
@@ -350,35 +353,110 @@ class ReActAgent(GradComponent):
 
         if isinstance(response, Parameter):
 
-            try:
+            def handle_error(response: Parameter, e: str):
+                from adalflow.optim.grad_component import fun_to_grad_component
 
-                function_output_to_step_output = FunctionOutputToStepOutput()
+                print(f"action_step: {action_step}")
 
-                # printc(f"response: {response}", color="yellow")
-                # TO FunctionExpression
+                @fun_to_grad_component
+                def set_step_output_with_error(
+                    step_output: StepOutput, error: str, response: Any
+                ):
+                    """Set the step_output with error."""
+                    step_output.observation = f"erro: {error} at {response.data}"
+                    return step_output
+
                 response.add_successor_map_fn(
-                    successor=self.tool_manager, map_fn=lambda x: x.full_response
+                    successor=set_step_output_with_error, map_fn=lambda x: x.data
                 )
+                return set_step_output_with_error.forward(action_step, e, response)
+
+            try:
+                function_output_to_step_output = FunctionOutputToStepOutput()
+                # TO FunctionExpression
 
                 func: Union[Function, Parameter] = self.tool_manager(
-                    expr_or_fun=response, step="parse"
+                    expr_or_fun=response, step="parse", map_fn=lambda x: x.data.data
                 )
+                # add action to the step_output
+                action_step.action = response.data.data
+                # parse failed
                 if not isinstance(func, Parameter):
                     raise ValueError(
                         f"Expected Parameter, but got {type(func)}: {func}"
                     )
+                if isinstance(func, str):
+                    # create dummy step output
+                    from adalflow.optim.grad_component import fun_to_grad_component
+
+                    @fun_to_grad_component
+                    def set_step_output_with_error(
+                        step_output: StepOutput, data: FunctionExpression, error: str
+                    ):
+                        """Set the step_output with error."""
+                        step_output.observation = f"Error in parsing the FunctionExperession to Function: {error}"
+                        return step_output
+
+                    response.add_successor_map_fn(
+                        successor=set_step_output_with_error,
+                        map_fn=lambda x: x.data.data,
+                    )
+                    action_step = set_step_output_with_error.forward(
+                        action_step, response, error=func
+                    )
+                    return action_step
+
+            except Exception as e:
+                e = f"{e} at parsing error at functionexpression: {response.data}"
+                return handle_error(response, e)
+
+            try:
+
                 # printc(f"func: {func}", color="yellow")
                 # replace the id
                 if isinstance(func, Parameter):
                     func.data.kwargs["id"] = id
 
-                result: Parameter = self.tool_manager(expr_or_fun=func, step="execute")
+                if self.debug:
+                    printc(f"func: {func.data}", color="yellow")
+
+                result: Parameter = self.tool_manager(
+                    expr_or_fun=func, step="execute", map_fn=lambda x: x.data
+                )
+
+                if isinstance(result, str):
+                    # create dummy step output
+                    from adalflow.optim.grad_component import fun_to_grad_component
+
+                    @fun_to_grad_component
+                    def set_step_output_with_error(step_output: StepOutput, data: str):
+                        """Set the step_output with error."""
+                        step_output.observation = f"Error {data} in executing action."
+
+                        return step_output
+
+                    response.add_successor_map_fn(
+                        successor=set_step_output_with_error,
+                        map_fn=lambda x: x.data.data,
+                    )
+                    action_step = set_step_output_with_error.forward(
+                        action_step, response
+                    )
+
+                    return action_step
+
+            except Exception as e:
+                e = f"{e} Error executing function: {func}"
+                return handle_error(response, e)
+
+            try:
                 # printc(f"result: {result}", color="red")
                 result.add_successor_map_fn(
                     successor=function_output_to_step_output, map_fn=lambda x: x.data
                 )
                 response.add_successor_map_fn(
-                    successor=function_output_to_step_output, map_fn=lambda x: x.data
+                    successor=function_output_to_step_output,
+                    map_fn=lambda x: x.data.data,
                 )
                 func.add_successor_map_fn(
                     successor=function_output_to_step_output, map_fn=lambda x: x.data
@@ -391,12 +469,11 @@ class ReActAgent(GradComponent):
                 )
 
                 return action_step
-
             except Exception as e:
-                log.error(f"Error executing {response}: {e}")
-                # pass the error as observation so that the agent can continue and correct the error in the next step
-                action_step.observation = f"Error executing {response}: {e}"
-                return action_step
+                e = f"{e} Error converting function output to step output: {result.data}"
+
+                return handle_error(response, e)
+
         else:
 
             return self._execute_action_eval_mode(
@@ -433,19 +510,15 @@ class ReActAgent(GradComponent):
                     )
 
                     step_output.function = fun
-
                     result: FunctionOutput = self.tool_manager(
                         expr_or_fun=fun, step="execute"
                     )
                     step_output.observation = result.output
-
-                    # step_output = execute_action(step_output, id)
                     if self.debug:
                         printc(f"Step {step}: \n{step_output}\n_______\n", color="blue")
                     return step_output
                 else:
                     if self.debug:
-
                         printc(f"Failed to parse response for step {step}", color="red")
                     log.error(f"Failed to parse response for step {step}")
                     return step_output
@@ -513,9 +586,36 @@ class ReActAgent(GradComponent):
         try:
 
             if self.training and isinstance(response, Parameter):
-                # printc(f"response: {response}", color="yellow")
 
-                step_output: Parameter = self._execute_action(step_output, response, id)
+                if not isinstance(response.data, GeneratorOutput):
+                    raise ValueError(
+                        f"Expected GeneratorOutput, but got {type(response.data)}, value: {response.data}"
+                    )
+
+                if not isinstance(response.data.data, FunctionExpression):
+                    from adalflow.optim.grad_component import fun_to_grad_component
+
+                    @fun_to_grad_component
+                    def set_step_output_with_error(
+                        step_output: StepOutput, data: GeneratorOutput
+                    ):
+                        """Set the step_output with error."""
+                        step_output.observation = f"Error {data.error} in parsing response: {data.raw_response}, data type: {type(data.data)}"
+                        return step_output
+
+                    response.add_successor_map_fn(
+                        successor=set_step_output_with_error,
+                        map_fn=lambda x: x.data,
+                    )
+                    step_output = set_step_output_with_error.forward(
+                        step_output, response
+                    )
+
+                else:
+
+                    step_output: Parameter = self._execute_action(
+                        step_output, response, id
+                    )
 
                 # printc(f"step_output: {step_output}", color="red")
                 if not isinstance(step_output, Parameter):
@@ -537,6 +637,10 @@ class ReActAgent(GradComponent):
                 step_history.add_successor_map_fn(
                     successor=self.planner, map_fn=lambda x: x.data
                 )
+                if self.debug:
+                    printc(
+                        f"step_history: {step_history.get_prompt_data()}", color="red"
+                    )
                 return step_history
 
             else:
@@ -689,7 +793,7 @@ if __name__ == "__main__":
 
     setup_env()
 
-    class App(GradComponent):
+    class App(Component):
         def __init__(self):
             super().__init__()
             self.llm_tool = Generator(
@@ -718,6 +822,8 @@ if __name__ == "__main__":
             self, input: str, id: Optional[str] = None
         ) -> Union[str, "Parameter"]:
             return self.react_agent(input, id=id)
+
+    # print(OutputParameter.__mro__)
 
     app = App()
     app.train()

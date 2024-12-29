@@ -7,9 +7,10 @@ from functools import lru_cache
 from jinja2 import Template, Environment, StrictUndefined, meta
 
 
-from adalflow.core.component import Component
 from adalflow.core.default_prompt_template import DEFAULT_ADALFLOW_SYSTEM_PROMPT
 from adalflow.optim.parameter import Parameter
+from dataclasses import dataclass
+from adalflow.core.base_data_class import DataClass
 
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,8 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
-class Prompt(Component):
+@dataclass
+class Prompt(DataClass):
     __doc__ = r"""Renders a text string(prompt) from a Jinja2 template string.
 
     In default, we use the :ref:`DEFAULT_ADALFLOW_SYSTEM_PROMPT<core-default_prompt_template>`  as the template.
@@ -124,6 +126,9 @@ class Prompt(Component):
             return prompt_str
         except Exception as e:
             raise ValueError(f"Error rendering Jinja2 template: {e}")
+
+    def __call__(self, *args: Any, **kwds: Any) -> Any:
+        return self.call(*args, **kwds)
 
     def call(self, **kwargs) -> str:
         """

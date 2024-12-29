@@ -369,8 +369,9 @@ class TGDOptimizer(TextOptimizer):
 
     def _get_user_prompt_kwargs(self, param: Parameter) -> Dict[str, str]:
 
+        peers_params = [p.get_param_info() for p in self.params if p.id != param.id]
         variable_and_peer_info = self.variable_and_peers_info.call(
-            variable=param.get_param_info(), peers=param.peers  # param.peers
+            variable=param.get_param_info(), peers=peers_params
         )
 
         variable_grad = param.get_gradients_component_schema(skip_correct_sample=True)
