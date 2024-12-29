@@ -612,7 +612,6 @@ class AgenticRAG(adal.GradComponent):
             r"""Retrieves the top k passages from using input as the query and save the documents in context_variables(Dict)'s context.
             Ensure you get all the context to answer the original question.
             """
-            print(f"training: {self.dspy_retriever.training}")
             output = self.dspy_retriever(input=input, id=id)
             parsed_output = output
             if isinstance(output, adal.Parameter):

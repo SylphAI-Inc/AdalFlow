@@ -163,7 +163,6 @@ class GradComponent(Component):
 
         Subclass should implement this method if you need additional backward logic.
         """
-        from adalflow.optim.parameter import GradientContext
 
         log.info(f"GradComponent backward: {response.name}")
         children_params = response.predecessors
@@ -197,13 +196,14 @@ class GradComponent(Component):
                 grad.is_default_copy = (
                     True  # response and pred will keep the original gradient
                 )
-                grad.add_context(
-                    GradientContext(
-                        variable_desc=pred.role_desc,
-                        response_desc=response.name,
-                        input_output=f"""{response.component_trace.to_context_str()}""",
-                    )
-                )
+                # NOTE: test of keep the initial gradient context
+                # grad.add_context(
+                #     GradientContext(
+                #         variable_desc=pred.role_desc,
+                #         response_desc=response.name,
+                #         input_output=f"""{response.component_trace.to_context_str()}""",
+                #     )
+                # )
 
                 pred.add_gradient(grad)
 

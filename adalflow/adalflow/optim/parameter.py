@@ -240,7 +240,7 @@ class Parameter(Generic[T]):
         self.data_type = type(data)
 
         self.set_eval_fn_input(eval_input=data)
-        self.gradients: List[Gradient] = []  # <FEEDBACK>gradient.data</FEEDBACK>
+        self.gradients: Set[Gradient] = set()
 
         self.grad_fn = None
 
@@ -301,12 +301,12 @@ class Parameter(Generic[T]):
         start_order = len(self.gradients)
         gradient.order = start_order
 
-        self.gradients.append(gradient)
+        self.gradients.add(gradient)
         # sort the gradients by the data_id, response_component_id, and score
         self.sort_gradients()
 
     def reset_gradients(self):
-        self.gradients = []
+        self.gradients = set()
 
     def get_gradients_names(self) -> str:
         names = [g.name for g in self.gradients]
@@ -534,6 +534,8 @@ class Parameter(Generic[T]):
                 x.score,
             ),
         )
+        # make it a set again
+        self.gradients = set(self.gradients)
 
     ############################################################################################################
     # Setters and getters
@@ -1738,24 +1740,44 @@ class Gradient(DataClass):
     def add_prompt(self, prompt: str):
         self.prompt = prompt
 
+    def __hash__(self):
+        # Use immutable and unique attributes to compute the hash
+        return hash((self.id, self.data_id, self.from_response_id, self.to_pred_id))
 
-# Move the gradients representation to this class.
-@dataclass
-class Gradients(DataClass):
-    gradients: List[Gradient] = field(
-        default_factory=list, metadata={"desc": "The list of gradients"}
+    def __eq__(self, other):
+        # Ensure equality comparison is based on the same unique attributes
+        if not isinstance(other, Gradient):
+            return False
+        return (
+            self.id == other.id
+            and self.data_id == other.data_id
+            and self.from_response_id == other.from_response_id
+            and self.to_pred_id == other.to_pred_id
+        )
+
+
+if __name__ == "__main__":
+
+    # test gradient hash and to_dict
+    from_response = OutputParameter(
+        name="p1",
+        role_desc="role1",
+        data=1,
     )
+    from_response.component_trace = ComponentTrace(id="1")
+    g1 = Gradient(
+        from_response=from_response,
+        to_pred=Parameter(name="p2", role_desc="role2", data=2),
+        data_id="1",
+    )
+    g2 = Gradient(
+        from_response=from_response,
+        to_pred=Parameter(name="p2", role_desc="role2", data=2),
+        data_id="1",
+    )
+    print(g1 == g2)
+    print(g1.__hash__())
+    print(g2.__hash__())
+    print(isinstance(g1, Gradient))  # Should print True
 
-    def __init__(self, gradients: List[Gradient]):
-        self.gradients = gradients
-
-    def to_dict(self):
-        return {"gradients": [g.to_dict() for g in self.gradients]}
-
-    @classmethod
-    def from_dict(cls, data: dict):
-        gradients = [Gradient.from_dict(g) for g in data["gradients"]]
-        return cls(gradients)
-
-    def __repr__(self):
-        return f"Gradients(gradients={self.gradients})"
+    print(g1.to_dict())

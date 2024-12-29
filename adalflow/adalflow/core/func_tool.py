@@ -253,7 +253,6 @@ class FunctionTool(GradComponent):
                 raise ValueError(
                     f"FunctionTool {self.definition.func_name} is in eval mode, but the output is Parameter"
                 )
-            print("output is Parameter")
             output.data = FunctionOutput(
                 name=self.definition.func_name,
                 # raw_input={"args": args, "kwargs": kwargs},

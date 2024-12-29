@@ -77,12 +77,12 @@ class CallFunctionTool(Component):
         context: Dict[str, object] = {},
     ):
         if isinstance(func, Parameter):
-            printc(f"context: {context}", color="yellow")
+            # printc(f"context: {context}", color="yellow")
             func_data: Function = func.map_to_successor(self)
             if not isinstance(func_data, Function):
                 raise ValueError(f"Error parsing function expression: {func}")
             tool: FunctionTool = context[func_data.name]
-            print(f"tool training: {tool.training}")
+            # print(f"tool training: {tool.training}")
             output = tool.forward(*func_data.args, **func_data.kwargs)
 
             from adalflow.optim.grad_component import fun_to_grad_component
@@ -119,16 +119,16 @@ class FunctionExperssionToFunction(GradComponent):
 
         expr_str = expr.action
         func_name, args, kwargs = parse_function_call_expr(expr_str, context)
-        printc(
-            f"func_name: {func_name}, args: {args}, kwargs: {kwargs}", color="yellow"
-        )
+        # printc(
+        #     f"func_name: {func_name}, args: {args}, kwargs: {kwargs}", color="yellow"
+        # )
         output = Function(
             name=func_name,
             args=args,
             kwargs=kwargs,
             thought=expr.thought,
         )
-        printc(f"output: {output}", color="yellow")
+        # printc(f"output: {output}", color="yellow")
         return output
 
 
@@ -231,9 +231,9 @@ class ToolManager(Component):
 
                 func = FunctionExperssionToFunction()
                 expr.add_successor_map_fn(func, map_fn=map_fn)
-                print("FunctionExperssionToFunction")
+                # print("FunctionExperssionToFunction")
                 output = func.forward(expr, context=self.context)
-                print(f"output data: {output.data}")
+                # print(f"output data: {output.data}")
                 return output
 
             except Exception as e:
@@ -301,7 +301,6 @@ class ToolManager(Component):
         "Run a forward pass on the tool manager such as parsing function expression or executing function."
         if isinstance(expr_or_fun, Parameter):
             expr_or_fun_data = map_fn(expr_or_fun)
-            print(f"expr_or_fun_data: {expr_or_fun_data}")
             if step == "execute":
                 if isinstance(expr_or_fun_data, Function):
                     return self.execute_func(expr_or_fun, map_fn=map_fn)
@@ -311,9 +310,7 @@ class ToolManager(Component):
                     )
             else:
                 if isinstance(expr_or_fun_data, FunctionExpression):
-                    print(f"start parsing: {expr_or_fun_data}")
                     output = self.parse_func_expr(expr_or_fun, map_fn=map_fn)
-                    print(f"output 3: {output.data}")
                     return output
                 else:
                     raise NotImplementedError(

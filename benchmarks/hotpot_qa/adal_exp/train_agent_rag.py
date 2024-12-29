@@ -161,7 +161,7 @@ if __name__ == "__main__":
     # )
 
     train(
-        debug=True,
+        debug=False,
         max_steps=12,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_4_dca7e_run_1.json",
     )
@@ -172,4 +172,5 @@ if __name__ == "__main__":
     # 0.72->0.74, 4 steps, 366s, /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_4_dca7e_run_1.json [Already faster, still lots to optimize]
 
     # 1246s, 12 steps, 0.8 val, /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_defe7_run_1.json
-    # v2149s, both gradients, 0.68 -> 0.78 /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_8a24a_run_1.json
+    # 2149s, both gradients, 0.68 -> 0.78 /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_8a24a_run_1.json
+    # /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_cdcb5_run_1.json 1728 s, 0.8
