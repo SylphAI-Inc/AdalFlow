@@ -158,3 +158,6 @@ class TrainerResult(DataClass):
     trainer_state: Dict[str, Any] = field(
         default=None, metadata={"desc": "Save the most detailed state of the trainer"}
     )
+    total_time: float = field(
+        default=0.0, metadata={"desc": "Total time taken for training"}
+    )

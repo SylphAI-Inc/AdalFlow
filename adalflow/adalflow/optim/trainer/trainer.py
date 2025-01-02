@@ -15,6 +15,8 @@ from adalflow.optim.optimizer import Optimizer, DemoOptimizer, TextOptimizer
 
 if TYPE_CHECKING:
     from adalflow.optim.parameter import Parameter
+    from adalflow.core.generator import BackwardPassSetup
+
 from adalflow.optim.types import (
     PromptData,
     TrainerResult,
@@ -82,6 +84,7 @@ class Trainer(Component):
     optimization_order: Literal["sequential", "mix"] = (
         "sequential"  # zero-shot first, bootstrap second
     )
+    sequential_order: List[str] = ["text", "demo"]
     max_steps: int
     optimizer: Optimizer = None
     ckpt_path: Optional[str] = None
@@ -98,7 +101,7 @@ class Trainer(Component):
     max_error_samples: Optional[int] = 2
     max_correct_samples: Optional[int] = 2
     debug: bool = False
-    sequential_order: List[str] = ["text", "demo"]
+    random_seed: int = None
 
     def __init__(
         self,
@@ -172,6 +175,9 @@ class Trainer(Component):
             exclude_input_fields_from_bootstrap_demos
         )
         self.sequential_order = sequential_order
+
+    def set_random_seed(self, seed: int):
+        self.random_seed = seed
 
     # TODO: need to support checkpoint resume too!
     def diagnose(self, dataset: Any, split: str = "train"):
@@ -376,6 +382,7 @@ class Trainer(Component):
         resume_from_ckpt: Optional[
             str
         ] = None,  # TODO: have a more comprehensive ckpt loading in the future
+        backward_pass_setup: Optional["BackwardPassSetup"] = None,
     ) -> Tuple[str, TrainerResult]:
         r"""
         train_loader: An iterable or collection of iterables specifying training samples.
@@ -383,6 +390,7 @@ class Trainer(Component):
         Returns:
             Tuple[str, TrainerResult]: Checkpoint file and the TrainerResult object
         """
+
         start_time = time.time()
 
         debug = debug or self.debug
@@ -410,6 +418,7 @@ class Trainer(Component):
                 train_dataset,
                 batch_size=batch_size,
                 shuffle=True if not debug else False,
+                seed=self.random_seed,
             )
         val_dataset = val_dataset or self.val_dataset
         test_dataset = test_dataset or self.test_dataset
@@ -461,7 +470,9 @@ class Trainer(Component):
 
         if len(self._get_trainable_text_params()) > 0:
             if self.adaltask.backward_engine is None:
-                self.adaltask.configure_backward_engine()
+                self.adaltask.configure_backward_engine(
+                    backward_pass_setup=backward_pass_setup
+                )
         else:
             print("No trainable text params to optimize")
             self.text_optimizers = []
@@ -592,23 +603,13 @@ class Trainer(Component):
                 run_demo_optimizers(starting_step, trainer_results)
                 starting_step += self.max_steps
                 run_text_optimizers(starting_step, trainer_results)
-            # if len(self.text_optimizers) > 0:
-            #     run_text_optimizers(starting_step, trainer_results)
-
-            # if len(self.demo_optimizers) > 0:
-            #     run_demo_optimizers(starting_step, trainer_results)
-            # self.adaltask.configure_teacher_generator()  # attemp to use the newest teacher as
-            # self._fit_demos_random(
-            #     train_loader,
-            #     train_dataset,
-            #     val_dataset,
-            #     test_dataset,
-            #     trainer_results=trainer_results,
-            #     starting_step=starting_step,
-            # )
 
         end_time = time.time()
         print(f"Training time: {end_time - start_time}s")
+        trainer_results.total_time = end_time - start_time
+        # write the results to the checkpoint file
+        save_json(trainer_results.to_dict(), self.ckpt_file)
+
         print(f"ckpt_file: {self.ckpt_file}")
         return self.ckpt_file, trainer_results
 
@@ -747,7 +748,7 @@ class Trainer(Component):
         self.prep_ckpt_file_path()
         debug_path = os.path.join(self.ckpt_path, "debug_demos")
         os.makedirs(debug_path, exist_ok=True)
-        print(f"save to {debug_path}")
+        print(f"_fit_demos_one_step_for_debug save to {debug_path}")
 
         self.adaltask.train()
         self.adaltask.trace()
@@ -832,41 +833,11 @@ class Trainer(Component):
             self._demo_optimizers_add_scores(
                 [sample.id for sample in batch], batch_per_item_scores, is_teacher=False
             )
-            # for loss in losses_student:
-            #     loss.backward()
+
             # Check the eval result
             y_preds_outputs = [p.data for p in y_preds_student]
             eval_result = self.adaltask.evaluate_samples(batch, y_preds_outputs)
             print(f"Eval result: {eval_result.avg_score}")
-            # eval_score_per_item = eval_result.per_item_scores
-
-            # bootstrap a batch
-            # batch_for_teacher = []
-            # losses_teacher = []
-
-            # for i, (sample, item_score) in enumerate(zip(batch, eval_score_per_item)):
-
-            #     # use teacher
-            #     if sample.id in pred_teacher:
-            #         continue
-            #     # if item_score < 0.5:
-            #     pred_teacher.add(sample.id)
-            #     batch_for_teacher.append(sample)
-            # # run teacher, use teachers's output instead of the initial output (bootstrap)
-            # if len(batch_for_teacher) > 0:
-            #     print(f"Using teacher for {len(batch_for_teacher)} samples")
-            #     self.adaltask.use_teacher()
-            #     y_preds_teacher = self.adaltask.train_step(
-            #         batch_for_teacher, batch_idx, self.num_workers
-            #     )
-            #     losses_teacher: List[Parameter] = self.adaltask.loss_step(  # noqa F841
-            #         batch_for_teacher, y_preds_teacher, batch_idx, self.num_workers
-            #     )
-            #     self._demo_optimizers_add_scores(
-            #         [sample.id for sample in batch_for_teacher],
-            #         eval_score_per_item,
-            #         is_teacher=True,
-            #     )
 
             # loss_students backward
             for loss in losses_student:
@@ -1094,7 +1065,7 @@ class Trainer(Component):
             if trainer_results is None
             else trainer_results
         )
-        print(f"save to {self.ckpt_file}")
+        print(f"_fit_text_grad_demo_mix_constrained save to {self.ckpt_file}")
 
         if train_dataset is None:
             raise ValueError("train_dataset is required")
@@ -1267,7 +1238,7 @@ class Trainer(Component):
             if train_results is None
             else train_results
         )
-        print(f"save to {self.ckpt_file}")
+        print(f"_fit_text_grad_demo_mix_random save to {self.ckpt_file}")
 
         if train_dataset is None:
             raise ValueError("train_dataset is required")
@@ -1409,7 +1380,7 @@ class Trainer(Component):
             if trainer_results is None
             else trainer_results
         )
-        print(f"save to {self.ckpt_file}")
+        print(f"_fit_demos_random save to {self.ckpt_file}")
         print(f"Starting step: {starting_step}")
 
         self.adaltask.train()
@@ -1602,7 +1573,7 @@ class Trainer(Component):
             if trainer_results is None
             else trainer_results
         )
-        print(f"save to {self.ckpt_file}")
+        print(f"_fit_text_grad_random save to {self.ckpt_file}")
 
         self.adaltask.train()
         # self.optimizer.zero_grad()
@@ -1623,6 +1594,8 @@ class Trainer(Component):
                 self.adaltask.train()  # this will turn everything to train mode
                 # self.train()
                 try:
+                    # print(f"Batch: {batch}")
+                    # continue
                     y_preds = self.adaltask.train_step(batch, steps, self.num_workers)
                 except Exception as e:
                     print(f"Error in train step: {e}")
@@ -1659,6 +1632,8 @@ class Trainer(Component):
                 if val_score > last_val_score:
 
                     print(f"Optimizer step: {val_score} > {last_val_score}")
+                    # track the effectiveness
+                    self._track_effectiveness("valset", True)
                     # self.optimizer.step()
                     self._step_text_optimizers()
                     self._add_history_text_optimizers(val_score)  # track top performor
@@ -1680,6 +1655,7 @@ class Trainer(Component):
 
                     print(f"Optimizer revert: {val_score} <= {last_val_score}")
                     self._revert_text_optimizers()
+                    self._track_effectiveness("valset", False)
                     # save the score, no change
                     self._add_one_step_in_trainer_results(
                         trainer_results,
@@ -2139,13 +2115,14 @@ class Trainer(Component):
         from adalflow.optim.parameter import OutputParameter
 
         logger.info("Fitting using Textual Gradient Descent with constraints")
+        printc("Fitting using Textual Gradient Descent with constraints")
         trainer_results = (
             self._pre_fit(val_dataset, test_dataset)
             if trainer_results is None
             else trainer_results
         )
 
-        print(f"save to {self.ckpt_file}")
+        print(f"_fit_text_grad_constraint save to {self.ckpt_file}")
 
         self.adaltask.train()
         self._zero_grad_text_optimizers()
@@ -2155,6 +2132,7 @@ class Trainer(Component):
         all_samples, all_losses = [], []
         all_y_preds: List[OutputParameter] = []
         for epoch in tqdm(range(num_epochs), desc="Epoch"):
+            print(f"Epoch: {epoch}")
             for steps, batch in enumerate((pbar := tqdm(train_loader, position=0))):
                 total_steps += 1
                 if total_steps > self.max_steps + starting_step:
@@ -2163,6 +2141,8 @@ class Trainer(Component):
                 self._zero_grad_text_optimizers()
                 pbar.set_description(f"Training Step: {total_steps}")
                 self.adaltask.train()  # this will turn everything to train mode
+                # print(f"Batch: {batch}")
+                # continue
                 y_preds = self.adaltask.train_step(batch, steps, self.num_workers)
                 losses = self.adaltask.loss_step(
                     batch, y_preds, steps, self.num_workers

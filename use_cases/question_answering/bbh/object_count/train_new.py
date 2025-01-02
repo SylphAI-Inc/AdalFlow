@@ -96,6 +96,9 @@ def train_diagnose_teacher(
 
 # You will answer a reasoning question. Think step by step and double-check each calculation you make. Pay close attention to any numerical quantities in the text, converting written numbers into their numerical equivalents. Additionally, re-verify your final answer before concluding. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.
 # 0.98 val, 0.91 test
+from adalflow.core.generator import BackwardPassSetup
+
+
 def train(
     train_batch_size=4,  # larger batch size is not that effective, probably because of llm's lost in the middle
     raw_shots: int = 0,
@@ -107,6 +110,8 @@ def train(
     debug=False,
     resume_from_ckpt=None,
     exclude_input_fields_from_bootstrap_demos=False,
+    seed=None,
+    tg: bool = False,
 ):
     adal_component = ObjectCountAdalComponent(
         **gpt_3_model,
@@ -115,6 +120,13 @@ def train(
         backward_engine_model_config=gpt_4o_model,
     )
     print(adal_component)
+    backward_pass_setup = None
+    if tg:
+        backward_pass_setup = BackwardPassSetup(
+            all_pred_at_once=False,
+            compute_grad_for_errors_only=False,
+        )
+
     trainer = adal.Trainer(
         train_batch_size=train_batch_size,
         adaltask=adal_component,
@@ -124,21 +136,24 @@ def train(
         raw_shots=raw_shots,
         bootstrap_shots=bootstrap_shots,
         debug=debug,
-        weighted_sampling=True,
+        weighted_sampling=False,
         optimization_order=optimization_order,
         exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
     )
+    trainer.set_random_seed(seed)
     print(trainer)
 
     train_dataset, val_dataset, test_dataset = load_datasets()
     # train_dataset = train_dataset[:4]
     # val_dataset = val_dataset[:4]
     # test_dataset = test_dataset[:4]
+
     ckpt, _ = trainer.fit(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
         test_dataset=test_dataset,
         resume_from_ckpt=resume_from_ckpt,
+        backward_pass_setup=backward_pass_setup,
     )
     return ckpt
 
@@ -146,12 +161,18 @@ def train(
 if __name__ == "__main__":
     import json
 
+    import random
+
+    random.seed(2025)
+    # np.random.seed(2025)  # Set NumPy random seed
+
     # make the strategy configurable in the script
     import argparse
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--strategy", type=str, default="random")
+    parser.add_argument("--strategy", type=str, default="constrained")
+    parser.add_argument("--use_tg", action="store_true")
     parser.add_argument(
         "output_path", nargs="?", help="File path to save the checkpoint"
     )
@@ -160,12 +181,16 @@ if __name__ == "__main__":
 
     set_strategy = args.strategy
     set_output_path = args.output_path
+    use_tg = args.use_tg
 
     ckpt = train(
         debug=False,
         max_steps=12,
         strategy=set_strategy,
         exclude_input_fields_from_bootstrap_demos=True,
+        seed=2025,  # pass the numpy seed
+        tg=use_tg,
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_18e8d_run_1.json",
     )
     print(f"ckpt: {ckpt}")
     if set_output_path:
@@ -188,3 +213,6 @@ if __name__ == "__main__":
     # /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_1f358_run_1.json 1 val 0.96 val 955s
     # 0.94 val, 0.89 test, /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_e1bb5_run_1.json 907s, with both positive and negatives
     # 92, 91 test /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_18e8d_run_1.json 747s
+    # 96%  /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_18e8d_run_1.json
+    # (90%, 94%, 92%, 94%) 92.5 + 1.5
+    # (96%, 100%, 96%, 96% ) 97+ 1.73

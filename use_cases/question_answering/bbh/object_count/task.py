@@ -40,7 +40,7 @@ class ObjectCountTaskPipeline(adal.Component):
         few_shot_demos = adal.Parameter(
             data=None,
             role_desc="To provide few shot demos to the language model",
-            requires_opt=True,
+            requires_opt=False,
             param_type=ParameterType.DEMOS,
         )
 

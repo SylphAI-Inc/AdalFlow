@@ -9,6 +9,7 @@ from pathlib import Path
 
 from typing import Any, Dict, Optional, Union, Callable, Tuple, List
 import logging
+from dataclasses import dataclass, field
 
 
 from adalflow.core.types import (
@@ -63,6 +64,20 @@ DEBUG_MODE = os.environ.get("DEBUG_MODE", False)
 PromptArgType = Dict[str, Union[str, Parameter]]
 
 
+@dataclass
+class BackwardPassSetup(DataClass):
+    all_pred_at_once: bool = field(
+        default=True, metadata={"desc": "Backward all predecessors at once."}
+    )
+    threshold_score_to_compute_grad_for_errors: float = field(
+        default=0.9,
+        metadata={"desc": "Threshold score to compute gradient for errors."},
+    )
+    compute_grad_for_errors_only: bool = field(
+        default=False, metadata={"desc": "Compute gradient for errors only."}
+    )
+
+
 class Generator(GradComponent, CachedEngine, CallbackManager):
     __doc__ = """An user-facing orchestration component for LLM prediction.
 
@@ -94,6 +109,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     _kwargs: Dict[str, Any] = (
         {}
     )  # to create teacher generator from student TODO: might reaccess this
+
+    backward_pass_setup: BackwardPassSetup = (
+        BackwardPassSetup()
+    )  # default setup for the backward pass
 
     def __init__(
         self,
@@ -183,6 +202,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self._trace_api_kwargs: Dict[str, Any] = (
             {}
         )  # used by dynamic computation graph and backpropagation
+
+    def update_default_backward_pass_setup(self, setup: BackwardPassSetup):
+        self.backward_pass_setup = setup
 
     def set_cache_path(self, cache_path: str, model_client: object, model: str):
         """Set the cache path for the generator."""
@@ -593,6 +615,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             log.debug(f"Backward engine: {self.backward_engine}")
 
         # attach a funtion to compute gradient for predecessors
+
         response.set_grad_fn(
             BackwardContext(
                 backward_fn=self.backward,
@@ -602,7 +625,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 template=self.template,
                 prompt_str=self.get_prompt(**combined_prompt_kwargs),
                 id=id,
-                all_pred_at_once=True,
             )
         )
         return response
@@ -615,10 +637,15 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         prompt_str: str,
         backward_engine: Optional["Generator"] = None,
         id: Optional[str] = None,  # the id of the input
-        all_pred_at_once: bool = True,
     ) -> Parameter:
 
         log.info(f"Generator: Backward: {response.name}")
+
+        backward_pass_setup = backward_engine.backward_pass_setup
+        printc(
+            f"backward pass setup: {backward_pass_setup}, name: {self.name}",
+            color="red",
+        )
 
         children_params = response.predecessors
         is_intermediate_node = True
@@ -648,6 +675,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 for pred in children_params:
                     pred.backward_engine_disabled = True
                 return
+
+            all_pred_at_once = backward_pass_setup.all_pred_at_once
+
             if not all_pred_at_once:
                 for pred in children_params:
                     if not pred.requires_opt or pred.param_type == ParameterType.DEMOS:
@@ -663,6 +693,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                         template=template,
                         backward_engine=backward_engine,
                         prompt_str=prompt_str,
+                        backward_pass_setup=backward_pass_setup,
                         is_intermediate_node=is_intermediate_node,
                     )
             else:
@@ -680,6 +711,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                         template=template,
                         backward_engine=backward_engine,
                         prompt_str=prompt_str,
+                        backward_pass_setup=backward_pass_setup,
                         is_intermediate_node=is_intermediate_node,
                     )
         else:
@@ -693,6 +725,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         template: str,
         backward_engine: "BackwardEngine",
         prompt_str: str,
+        backward_pass_setup: BackwardPassSetup,
         is_intermediate_node: bool = False,
     ):
         parser = JsonParser()
@@ -762,8 +795,13 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         gradient_output: GeneratorOutput = None
         response_gradient_list = [""] * len(children_params)
-        if response._score is not None and float(response._score) > 0.9:
-            manual_response_1 = f"You get score: {response._score}."
+        if (
+            backward_pass_setup.compute_grad_for_errors_only
+            and response._score is not None
+            and float(response._score)
+            > backward_pass_setup.threshold_score_to_compute_grad_for_errors
+        ):
+            manual_response_1 = f"You get score: {response._score}. No noticable error."
             response_gradient_list = [manual_response_1] * len(children_params)
             raw_response = str(response_gradient_list)
             gradient_output = GeneratorOutput(
@@ -832,6 +870,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         template: str,
         backward_engine: "BackwardEngine",
         prompt_str: str,
+        backward_pass_setup: BackwardPassSetup,
         is_intermediate_node: bool = False,
     ):
         """Creating gradient/textual feedback for prompt type parameters."""
@@ -840,7 +879,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 f"Generator: Skipping {pred} as it does not require optimization."
             )
             return
-        log.debug(
+        printc(
             f"Generator: Backward through {pred}, is_intermediate_node: {is_intermediate_node}"
         )
 
@@ -872,8 +911,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         variable_dict = pred.get_param_info()
 
+        peers = [p.get_param_info() for p in pred.peers]
+
         variable_and_peers_info = Prompt(
-            prompt_kwargs={"variable": variable_dict, "peers": pred.peers},
+            prompt_kwargs={"variable": variable_dict, "peers": peers},
             template=VARIABLE_AND_PEERS_INFO,
         )()
 
@@ -914,10 +955,15 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         )
         print(f"Backward engine prompt: {backward_engine_prompt_str}")
         gradient_output: GeneratorOutput = None
-        if response._score is not None and float(response._score) > 0.9:
+        if (
+            backward_pass_setup.compute_grad_for_errors_only
+            and response._score is not None
+            and float(response._score)
+            > backward_pass_setup.threshold_score_to_compute_grad_for_errors
+        ):
             log.debug(f"EvalFnToTextLoss: Skipping {pred} as the score is high enough.")
             # TODO: plus score descriptions
-            manual_response = f"You get score: {response._score}."
+            manual_response = f"You get score: {response._score}. No noticable error."
             gradient_output = GeneratorOutput(
                 data=manual_response, raw_response=manual_response
             )

@@ -9,7 +9,7 @@ import logging as log
 
 if TYPE_CHECKING:
     from adalflow.core.model_client import ModelClient
-    from adalflow.core.generator import Generator, BackwardEngine
+    from adalflow.core.generator import Generator, BackwardEngine, BackwardPassSetup
     from adalflow.optim.parameter import Parameter
 
 from adalflow.core.component import Component
@@ -187,6 +187,7 @@ class AdalComponent(Component):
         self.configure_backward_engine_helper(
             model_client=self.backward_engine_model_config["model_client"],
             model_kwargs=self.backward_engine_model_config["model_kwargs"],
+            backward_pass_setup=kwargs.get("backward_pass_setup", None),
         )
 
     # def configure_backward_engine(self, *args, **kwargs):
@@ -594,6 +595,7 @@ class AdalComponent(Component):
         model_client: "ModelClient",
         model_kwargs: Dict[str, Any],
         template: Optional[str] = None,
+        backward_pass_setup: Optional["BackwardPassSetup"] = None,
     ):
         r"""Configure a backward engine for all generators in the task for bootstrapping examples."""
         from adalflow.core.generator import BackwardEngine
@@ -603,6 +605,8 @@ class AdalComponent(Component):
             model_kwargs=model_kwargs,
             template=template,
         )
+        if backward_pass_setup is not None:
+            self.backward_engine.update_default_backward_pass_setup(backward_pass_setup)
 
         # set all generator's backward engine
 

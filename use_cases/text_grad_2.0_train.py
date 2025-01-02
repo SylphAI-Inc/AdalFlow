@@ -1,6 +1,8 @@
 import subprocess
 import tempfile
 import json
+import numpy as np
+import argparse
 
 num_runs = 4
 # List of experiments to run
@@ -13,9 +15,25 @@ experiments = [
     # hotpot_qa_multi_hop_rag,
 ]
 
+# set up the strategy for each experiment
+
+argparser = argparse.ArgumentParser()
+argparser.add_argument("--strategy", type=str, default="constrained")
+argparser.add_argument("--use_tg", action="store_true")
+args = argparser.parse_args()
+
+strategy = args.strategy
+use_tg = args.use_tg
+
 # Optional: Arguments for each experiment (if needed)
+
+setup_str = f"--strategy {strategy}"
+
+if use_tg:
+    setup_str += " --use_tg"
+
 experiment_args = {
-    object_count: "--strategy constrained",
+    object_count: setup_str,
     # hotpot_qa_multi_hop_rag: "",
 }
 ckpt_values = {}
@@ -64,65 +82,72 @@ if __name__ == "__main__":
             if ckpt:
                 ckpt_values[ckpt_index] = ckpt
         # load all json files using the ckpt paths
-        highest_test_score, mean_test_score, standard_deviation = 0, 0, 0
-        past_highest_scores = []
-        # average pass rate, average pass prompts
-        average_pass_rate_list = []
-        average_pass_prompts_list = []
-        average_total_prompts = []
-        total_prompts = 0
-        highest_test_score_json_file = None
+        highest_test_score, last_test_score, mean_test_score, standard_deviation = (
+            0,
+            0,
+            0,
+            0,
+        )
+        last_test_scores = []
+        highest_val_scores = []
+        total_passes = (
+            []
+        )  # each is the number of unique val scores in the highest val scores
+        total_prompts = []  # how many prompts tried in total
+
+        past_highest_val_scores = []
+        # # average pass rate, average pass prompts
+        # average_pass_rate_list = []
+        # average_pass_prompts_list = []
+        # average_total_prompts = []
+        # highest_test_score_json_file = None
+        total_steps = []
+        training_times = []
         for experiment_index, ckpt in ckpt_values.items():
             with open(ckpt, "r") as f:
                 data = json.load(f)
                 print(f"Experiment: {experiment_index}")
                 print(f"Data: {data}")
-                _high_test_score = max(data["val_scores"])
-                print(f" val score: {data["val_scores"]}")
-                past_highest_scores.append(_high_test_score)
-                if _high_test_score > highest_test_score:
-                    highest_test_score = _high_test_score
-                    highest_test_score_json_file = ckpt
+                _high_val_score = max(data["val_scores"])
+                _unique_val_scores = len(set(data["val_scores"])) - 1
+                _last_test_score = data["test_scores"][-1]
                 # read the effective measures
                 effective_measures = data.get("effective_measure", {})
-                if not effective_measures:
-                    total_prompts = len(data["val_scores"]) - 1
-                    # count the total number of different test scores
-                    pass_num = len(set(data["val_scores"])) - 1
-                    average_pass_rate = pass_num / total_prompts
-                    average_pass_rate_list.append(average_pass_rate)
-                    average_pass_prompts_list.append(pass_num)
-                    average_total_prompts.append(total_prompts)
-                else:
-                    total_prompts = (
-                        effective_measures["subset"]["pass"]
-                        + effective_measures["subset"]["fail"]
-                    )
 
-                    pass_num = effective_measures["valset"]["pass"]
-                    total_val_prompts = (
-                        effective_measures["valset"]["pass"]
-                        + effective_measures["valset"]["fail"]
-                    )
-                    average_pass_rate = pass_num / total_val_prompts
-                    average_pass_rate_list.append(average_pass_rate)
-                    average_pass_prompts_list.append(pass_num)
-                    average_total_prompts.append(total_prompts)
-        # calculate the mean test score
-        mean_test_score = sum(past_highest_scores) / len(past_highest_scores)
-        # calculate the standard deviation
-        standard_deviation = sum(
-            [(x - mean_test_score) ** 2 for x in past_highest_scores]
-        ) / len(past_highest_scores)
-        standard_deviation = standard_deviation**0.5
-        # calculate the average pass rate
-        average_pass_rate = sum(average_pass_rate_list) / len(average_pass_rate_list)
-        # calculate the average pass prompts
-        average_pass_prompts = sum(average_pass_prompts_list) / len(
-            average_pass_prompts_list
-        )
-        # calculate the average total prompts
-        average_total_prompts = sum(average_total_prompts) / num_runs
+                _total_prompts = effective_measures.get("subset", {}).get(
+                    "pass", 0
+                ) + effective_measures.get("subset", {}).get("fail", 0)
+                _total_steps = len(data["steps"]) - 1
+                _training_time = data.get("total_time", 0)
+                # save the results in the lists
+                past_highest_val_scores.append(_high_val_score)
+                total_passes.append(_unique_val_scores)
+                total_prompts.append(_total_prompts)
+                last_test_scores.append(_last_test_score)
+                total_steps.append(_total_steps)
+                training_times.append(_training_time)
+
+        # ensure all steps are the same
+        assert all(
+            [step == total_steps[0] for step in total_steps]
+        ), "All steps should be the same"
+
+        # compute the metrics
+        mean_test_score = np.mean(last_test_scores)
+        std_test_score = np.std(last_test_scores)
+
+        # val scores
+        mean_val_score = np.mean(past_highest_val_scores)
+        std_val_score = np.std(past_highest_val_scores)
+
+        # pass rate total_passes / steps
+        average_pass_rate = np.mean(total_passes) / total_steps[0]
+
+        # average total prompts
+        average_total_prompts = np.mean(total_prompts)
+
+        # average training time
+        average_training_time = np.mean(training_times)
 
         # add these numbers in the ckpt_values
         index = f"{experiment}_summary"
@@ -131,14 +156,15 @@ if __name__ == "__main__":
                 "num_runs": num_runs,
                 "args": args,
             },
-            "highest_test_score": highest_test_score,
-            "mean_test_score": mean_test_score,
-            "standard_deviation": standard_deviation,
-            "highest_test_score_json_file": highest_test_score_json_file,
-            "average_pass_rate": average_pass_rate,
-            "average_pass_prompts": average_pass_prompts,
-            "average_total_prompts": average_total_prompts,
-            "past_highest_scores": past_highest_scores,
+            "metrics": {
+                "mean_test_score": mean_test_score,
+                "std_test_score": std_test_score,
+                "mean_val_score": mean_val_score,
+                "std_val_score": std_val_score,
+                "average_pass_rate": average_pass_rate,
+                "average_total_prompts": average_total_prompts,
+                "average_training_time": average_training_time,
+            },
         }
 
     print("\nAll Checkpoints:")
@@ -147,6 +173,6 @@ if __name__ == "__main__":
 
     # Save the results to a file
     with open(result_file, "w") as f:
-        json.dump(ckpt_values, f)
+        json.dump(ckpt_values, f, indent=4)
 
     print(f"\nResults saved to {result_file}")
