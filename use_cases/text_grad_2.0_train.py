@@ -7,11 +7,15 @@ import argparse
 num_runs = 4
 # List of experiments to run
 object_count = "use_cases/question_answering/bbh/object_count/train_new.py"
+trec_6_classification = "use_cases/classification/train.py"
 hotpot_qa_multi_hop_rag = "benchmarks/hotpot_qa/adal_exp/train_multi_hop_rag.py"
+hotpot_qa_vanilla_rag = "benchmarks/hotpot_qa/adal_exp/train_vanilla.py"
 
 ckpt_values = []
 experiments = [
-    object_count,
+    # object_count,
+    # trec_6_classification,
+    hotpot_qa_vanilla_rag,
     # hotpot_qa_multi_hop_rag,
 ]
 
@@ -20,10 +24,13 @@ experiments = [
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--strategy", type=str, default="constrained")
 argparser.add_argument("--use_tg", action="store_true")
+argparser.add_argument("--max_proposals_per_step", type=int, default=5)
+
 args = argparser.parse_args()
 
 strategy = args.strategy
 use_tg = args.use_tg
+max_proposals_per_step = args.max_proposals_per_step
 
 # Optional: Arguments for each experiment (if needed)
 
@@ -32,8 +39,13 @@ setup_str = f"--strategy {strategy}"
 if use_tg:
     setup_str += " --use_tg"
 
+setup_str += f" --max_proposals_per_step {max_proposals_per_step}"
+
+
 experiment_args = {
     object_count: setup_str,
+    trec_6_classification: setup_str,
+    hotpot_qa_vanilla_rag: setup_str,
     # hotpot_qa_multi_hop_rag: "",
 }
 ckpt_values = {}
@@ -117,6 +129,10 @@ if __name__ == "__main__":
                 _total_prompts = effective_measures.get("subset", {}).get(
                     "pass", 0
                 ) + effective_measures.get("subset", {}).get("fail", 0)
+                if _total_prompts == 0:
+                    _total_prompts = effective_measures.get("valset", {}).get(
+                        "pass", 0
+                    ) + effective_measures.get("valset", {}).get("fail", 0)
                 _total_steps = len(data["steps"]) - 1
                 _training_time = data.get("total_time", 0)
                 # save the results in the lists

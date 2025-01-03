@@ -18,7 +18,6 @@ so that the optimizer can optimize this variable to improve the objective enclos
 2. From <CONVERSATION></CONVERSATION> section, you can find how the variable is obtained and used.
 3. The variable might have other peers that are used together to instruct the language model. But only focus on the target variable.
 4. As there might be peers, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
-In such cases, you can just say "There is no noticeable error".
 5. When you reason, really think about the variable's role in the component(infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
 6. Be specific, concise, critical, and direct.
 
@@ -41,6 +40,8 @@ If the same DataID has multiple gradients, it means this component/variable is c
 ##############################################
 # Loss Component
 ##############################################
+# In such cases, you can just say "There is no noticeable error".
+
 # 2. Feedback examples: "Since language models have the X failure mode...", "Adding X can fix this error because...", "Removing X can improve the objective function because...", "Changing X to Y would fix the mistake..."
 
 # Objective instruction for LLM as gradComponent with user custom instruction

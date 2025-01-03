@@ -108,6 +108,8 @@ class TRECClassifierStructuredOutput(adal.Component):
     ) -> Union[adal.GeneratorOutput, adal.Parameter]:
         prompt_kwargs = self._prepare_input(question)
         output = self.llm(prompt_kwargs=prompt_kwargs, id=id)
+        if isinstance(output, adal.Parameter):
+            output.data_in_prompt = lambda x: x.data.raw_response
         return output
 
 

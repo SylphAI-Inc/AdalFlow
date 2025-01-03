@@ -74,7 +74,7 @@ class BackwardPassSetup(DataClass):
         metadata={"desc": "Threshold score to compute gradient for errors."},
     )
     compute_grad_for_errors_only: bool = field(
-        default=False, metadata={"desc": "Compute gradient for errors only."}
+        default=True, metadata={"desc": "Compute gradient for errors only."}
     )
 
 
@@ -562,11 +562,11 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         def data_to_prompt_map_fn(data: Parameter) -> str:
             data: GeneratorOutput = data.data
-            if data.data is not None:
-                return data.data
+            # if data.data is not None:
+            #     return data.data
             if data.error is not None:
                 return f"Response: {data.raw_response} parsed with error: {data.error}"
-            return f"Response: {data.raw_response}"
+            return f" {data.raw_response}"
 
         # TODO: all parameter should just wrap the whole output.
         # this is for training.

@@ -59,7 +59,7 @@ def prepare_datasets():
     len_train_dataset = len(org_train_dataset)
 
     org_test_dataset = dataset["test"]
-    eval_size = 6 * num_classes
+    eval_size = 18 * num_classes
 
     class_sampler = ClassSampler(
         org_train_dataset.select(
@@ -100,7 +100,7 @@ def prepare_datasets():
     labels = torch.tensor(org_test_dataset["coarse_label"])
     class_weights = calculate_class_weights(labels)
 
-    test_size = eval_size * 4
+    test_size = eval_size * 2
     # weighted sampling on the test dataset
     test_dataset_split = sample_subset_dataset(
         org_test_dataset, test_size, class_weights

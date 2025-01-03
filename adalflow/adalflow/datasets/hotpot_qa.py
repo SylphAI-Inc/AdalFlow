@@ -23,6 +23,14 @@ class HotPotQA(Dataset):
         size: int = None,
         **kwargs,
     ) -> None:
+        r"""
+        official_train: 15661
+        sampled_trainset: 11745
+        sampled_valset: 3916
+        test: 7405
+
+        You can specify the size of the dataset to load by setting the size parameter.
+        """
         if split not in ["train", "val", "test"]:
             raise ValueError("Split must be one of 'train', 'val', 'test'")
 
@@ -37,6 +45,7 @@ class HotPotQA(Dataset):
         data_path = prepare_dataset_path(self.root, self.task_name)
         # download and save
         split_csv_path = os.path.join(data_path, f"{split}.csv")
+        print(f"split_csv_path: {split_csv_path}")
         self._check_or_download_dataset(
             split_csv_path, split, only_hard_examples, keep_details
         )
@@ -103,7 +112,7 @@ class HotPotQA(Dataset):
         elif keep_details == "dev_titles":
             keys = ["id", "question", "answer", "supporting_facts"]
 
-        official_train = []
+        official_train = []  # 15661
         for raw_example in hf_official_train:
             if raw_example["level"] == "hard":
                 example = {k: raw_example[k] for k in keys}
@@ -113,21 +122,25 @@ class HotPotQA(Dataset):
                     del example["supporting_facts"]
 
                 official_train.append(example)
+        print(f"official_train: {len(official_train)}")
 
         rng = random.Random(0)
         rng.shuffle(official_train)
 
-        sampled_trainset = official_train[: len(official_train) * 75 // 100]
+        sampled_trainset = official_train[: len(official_train) * 75 // 100]  # 11745
+        print(f"sampled_trainset: {len(sampled_trainset)}")
 
-        sampled_valset = official_train[
+        sampled_valset = official_train[  # 3916
             len(official_train) * 75 // 100 :
         ]  # this is not the official dev set
+
+        print(f"sampled_valset: {len(sampled_valset)}")
 
         # for example in self._train:
         #     if keep_details == "dev_titles":
         #         del example["gold_titles"]
 
-        test = []
+        test = []  # 7405
         for raw_example in hf_official_dev:
             assert raw_example["level"] == "hard"
             example = {
@@ -140,20 +153,25 @@ class HotPotQA(Dataset):
             test.append(example)
 
         keys = ["id", "question", "answer", "gold_titles"]
+        data_path_dir = os.path.dirname(data_path)
         # save to csv
         for split, examples in zip(
             ["train", "val", "test"],
             [sampled_trainset, sampled_valset, test],
         ):
             # target_path = prepare_dataset_path(self.root, task_name, split)
-            save_csv(examples, f=data_path, fieldnames=keys)
+            target_path = os.path.join(data_path_dir, f"{split}.csv")
+            save_csv(examples, f=target_path, fieldnames=keys)
+            print(f"saved {split} to {target_path}")
 
         if split == "train":
             return sampled_trainset
         elif split == "val":
             return sampled_valset
-        else:
+        elif split == "test":
             return test
+        else:
+            raise ValueError("Split must be one of 'train', 'val', 'test'")
 
     def __getitem__(self, index) -> DataClass:
         return self.data[index]

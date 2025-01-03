@@ -112,6 +112,7 @@ def train(
     exclude_input_fields_from_bootstrap_demos=False,
     seed=None,
     tg: bool = False,
+    max_proposals_per_step: int = 5,
 ):
     adal_component = ObjectCountAdalComponent(
         **gpt_3_model,
@@ -139,6 +140,7 @@ def train(
         weighted_sampling=False,
         optimization_order=optimization_order,
         exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
+        max_proposals_per_step=max_proposals_per_step,
     )
     trainer.set_random_seed(seed)
     print(trainer)
@@ -173,6 +175,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--strategy", type=str, default="constrained")
     parser.add_argument("--use_tg", action="store_true")
+    parser.add_argument("--max_proposals_per_step", type=int, default=5)
     parser.add_argument(
         "output_path", nargs="?", help="File path to save the checkpoint"
     )
@@ -182,14 +185,16 @@ if __name__ == "__main__":
     set_strategy = args.strategy
     set_output_path = args.output_path
     use_tg = args.use_tg
+    max_proposals_per_step = args.max_proposals_per_step
 
     ckpt = train(
         debug=False,
-        max_steps=12,
+        max_steps=1,
         strategy=set_strategy,
         exclude_input_fields_from_bootstrap_demos=True,
         seed=2025,  # pass the numpy seed
         tg=use_tg,
+        max_proposals_per_step=max_proposals_per_step,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_18e8d_run_1.json",
     )
     print(f"ckpt: {ckpt}")

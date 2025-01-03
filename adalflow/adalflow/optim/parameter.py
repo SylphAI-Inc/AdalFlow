@@ -267,6 +267,8 @@ class Parameter(Generic[T]):
         self.successor_map_fn = successor_map_fn or {}
 
         def default_prompt_map_fn(param: Parameter):
+            # if isinstance(param.data, GeneratorOutput):
+            #     return param.data.raw_response
             return param.data
 
         self.data_in_prompt = data_in_prompt or default_prompt_map_fn
@@ -354,7 +356,6 @@ class Parameter(Generic[T]):
                 if g.score > 0.5:
                     continue
             lowest_score_gradients.append(g)
-            print(f"{i} Score: {g.score} for {g.name}, {type(g.score)}")
 
         gradient_context_combined_str = ""
         if lowest_score_gradients and len(lowest_score_gradients) > 0:
@@ -450,7 +451,6 @@ class Parameter(Generic[T]):
                 if g.score > 0.5:
                     continue
             lowest_score_gradients.append(g)
-            print(f"{i} Score: {g.score} for {g.name}, {type(g.score)}")
 
         # Group gradients by `data_id` and calculate average scores
         grouped_gradients = defaultdict(

@@ -11,6 +11,7 @@ from use_cases.config import (
     gpt_3_model,
     gpt_4o_model,
 )
+from adalflow.core.generator import BackwardPassSetup
 
 
 class TrecClassifierAdal(adal.AdalComponent):
@@ -81,6 +82,9 @@ def train(
     strategy="constrained",
     optimization_order="sequential",
     debug=False,
+    seed=None,
+    tg: bool = False,
+    max_proposals_per_step: int = 5,
 ):
     # TODO: ensure the teacher prompt gets updated with the new model
     adal_component = TrecClassifierAdal(
@@ -90,6 +94,12 @@ def train(
         backward_engine_model_config=gpt_4o_model,
         teacher_model_config=gpt_4o_model,
     )
+    backward_pass_setup = None
+    if tg:
+        backward_pass_setup = BackwardPassSetup(
+            all_pred_at_once=False,
+            compute_grad_for_errors_only=False,
+        )
     print(adal_component)
     trainer = adal.Trainer(
         train_batch_size=train_batch_size,
@@ -103,32 +113,71 @@ def train(
         weighted_sampling=True,
         optimization_order=optimization_order,
         exclude_input_fields_from_bootstrap_demos=False,
+        max_proposals_per_step=max_proposals_per_step,
     )
+    trainer.set_random_seed(seed)
     print(trainer)
 
     train_dataset, val_dataset, test_dataset = load_datasets()
-    trainer.fit(
+    ckpt, _ = trainer.fit(
         train_dataset=train_dataset,
-        val_dataset=test_dataset,
-        # val_dataset=val_dataset,
-        # test_dataset=test_dataset,
+        val_dataset=val_dataset,
+        test_dataset=test_dataset,
         debug=debug,
+        backward_pass_setup=backward_pass_setup,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json",
     )
+    return ckpt
 
 
 if __name__ == "__main__":
     # TODO:
     #     Evaluating step(6): 0.7333 across 30 samples, Max potential: 0.7778:  83%|▊| 30/36 [00:08<00:01,
     # Optimizer revert: 0.7096774193548387 <= 0.7777777777777778
-    train(
+    import json
+
+    import random
+
+    random.seed(2025)
+    # np.random.seed(2025)  # Set NumPy random seed
+
+    # make the strategy configurable in the script
+    import argparse
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--strategy", type=str, default="constrained")
+    parser.add_argument("--use_tg", action="store_true")
+    parser.add_argument("--max_proposals_per_step", type=int, default=5)
+    parser.add_argument(
+        "output_path", nargs="?", help="File path to save the checkpoint"
+    )
+
+    args = parser.parse_args()
+
+    set_strategy = args.strategy
+    set_output_path = args.output_path
+    use_tg = args.use_tg
+    max_proposals_per_step = args.max_proposals_per_step
+
+    ckpt = train(
         **gpt_3_model,
         debug=False,
         max_steps=12,
         strategy="constrained",
         optimization_order="sequential",
-    )
-    # val 0.694 -> 0.833, #test 0.8472 -> 0.833, adding more shots does not help
+        seed=2025,
+        tg=use_tg,
+        max_proposals_per_step=max_proposals_per_step,
+    )  # val 0.694 -> 0.833, #test 0.8472 -> 0.833, adding more shots does not help
+
+    if set_output_path:
+        with open(set_output_path, "w") as f:
+            json.dump({"ckpt": ckpt}, f)
+        print(f"Checkpoint saved to {set_output_path}")
+    else:
+        print("No file path provided for saving the checkpoint.")
+
     # NOTE: raw: 40, bootstrap: 4, max_steps: 8, strategy: random, val: 86.1, test: 86.8 (+4.2% compared with dspy)
     # NOTE: train task without output format: val: 0.67->0.805, test: 0.805-> 0.896 # best performing model (zero-shot)
     # NOTE: train with without output format, use new class_name: constrained_max_steps_12_bac8d_run_1.json
