@@ -3,8 +3,9 @@ from typing import Any, Callable, Dict, Tuple
 import adalflow as adal
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from adalflow.datasets.types import HotPotQAData
+from benchmarks.hotpot_qa.config import load_datasets
 
-from benchmarks.hotpot_qa._adal_train import load_datasets
+# from benchmarks.hotpot_qa._adal_train import load_datasets
 from benchmarks.hotpot_qa.adal_exp.build_multi_hop_rag import MultiHopRAG
 from use_cases.config import gpt_3_model, gpt_4o_model
 
@@ -26,9 +27,9 @@ class MultiHopRAGAdal(adal.AdalComponent):
             passages_per_hop=3,
             max_hops=2,
         )
-        eval_fn = AnswerMatchAcc(type="fuzzy_match").compute_single_item
+        eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
         loss_fn = adal.EvalFnToTextLoss(
-            eval_fn=eval_fn, eval_fn_desc="fuzzy_match: 1 if str(y) in str(y_gt) else 0"
+            eval_fn=eval_fn, eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0"
         )
         super().__init__(
             task=task,
@@ -71,7 +72,11 @@ class MultiHopRAGAdal(adal.AdalComponent):
             if pred.data and pred.data.data and pred.data.data.answer
             else ""
         )
-        return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}, "id": sample.id}
+        return self.loss_fn, {
+            "kwargs": {"y": pred, "y_gt": y_gt},
+            "id": sample.id,
+            "gt": sample.answer,
+        }
 
 
 from adalflow.core.generator import BackwardPassSetup
@@ -105,7 +110,7 @@ def train(
     raw_shots: int = 0,
     bootstrap_shots: int = 4,
     max_steps=1,
-    num_workers=4,
+    num_workers=10,
     strategy="constrained",
     optimization_order="sequential",
     debug=False,
@@ -117,7 +122,7 @@ def train(
 ):
     adal_component = MultiHopRAGAdal(
         **gpt_3_model,
-        teacher_model_config=gpt_3_model,
+        teacher_model_config=gpt_4o_model,
         text_optimizer_model_config=gpt_4o_model,  # gpt3.5 is not enough to be used as a good optimizer, it struggles for long contenxt
         backward_engine_model_config=gpt_4o_model,
     )
@@ -177,7 +182,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--strategy", type=str, default="constrained")
-    parser.add_argument("--use_tg", action="store_true")
+    parser.add_argument("--use_tg", action="store_false")
     parser.add_argument("--max_proposals_per_step", type=int, default=5)
     parser.add_argument(
         "output_path", nargs="?", help="File path to save the checkpoint"
@@ -197,10 +202,11 @@ if __name__ == "__main__":
 
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     ckpt = train(
-        debug=True,
+        debug=False,
         max_steps=12,
         seed=2025,  # pass the numpy seed
         tg=use_tg,
+        strategy=set_strategy,
         max_proposals_per_step=max_proposals_per_step,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )

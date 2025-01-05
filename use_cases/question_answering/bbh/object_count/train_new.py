@@ -189,7 +189,7 @@ if __name__ == "__main__":
 
     ckpt = train(
         debug=False,
-        max_steps=1,
+        max_steps=12,
         strategy=set_strategy,
         exclude_input_fields_from_bootstrap_demos=True,
         seed=2025,  # pass the numpy seed

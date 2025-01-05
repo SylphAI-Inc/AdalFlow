@@ -15,8 +15,8 @@ ckpt_values = []
 experiments = [
     # object_count,
     # trec_6_classification,
-    hotpot_qa_vanilla_rag,
-    # hotpot_qa_multi_hop_rag,
+    # hotpot_qa_vanilla_rag,
+    hotpot_qa_multi_hop_rag,
 ]
 
 # set up the strategy for each experiment
@@ -46,7 +46,7 @@ experiment_args = {
     object_count: setup_str,
     trec_6_classification: setup_str,
     hotpot_qa_vanilla_rag: setup_str,
-    # hotpot_qa_multi_hop_rag: "",
+    hotpot_qa_multi_hop_rag: setup_str,
 }
 ckpt_values = {}
 

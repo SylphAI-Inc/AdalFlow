@@ -68,7 +68,11 @@ class TrecClassifierAdal(adal.AdalComponent):
             eval_input=sample.class_name,
             requires_opt=False,
         )
-        return self.loss_fn, {"kwargs": {"y": y_pred, "y_gt": y_gt}, "id": sample.id}
+        return self.loss_fn, {
+            "kwargs": {"y": y_pred, "y_gt": y_gt},
+            "id": sample.id,
+            "gt": y_gt,
+        }
 
 
 def train(

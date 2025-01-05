@@ -4,6 +4,52 @@ from typing import List, Literal
 from adalflow.eval.base import BaseEvaluator, EvaluationResult
 from adalflow.optim.parameter import Parameter
 
+import re
+
+import string
+from collections import Counter
+
+
+def normalize_answer(s):
+
+    def remove_articles(text):
+        return re.sub(r"\b(a|an|the)\b", " ", text)
+
+    def white_space_fix(text):
+        return " ".join(text.split())
+
+    def remove_punc(text):
+        exclude = set(string.punctuation)
+        return "".join(ch for ch in text if ch not in exclude)
+
+    def lower(text):
+        return text.lower()
+
+    return white_space_fix(remove_articles(remove_punc(lower(s))))
+
+
+def f1_score(prediction, ground_truth):
+    prediction_tokens = normalize_answer(prediction).split()
+    ground_truth_tokens = normalize_answer(ground_truth).split()
+
+    common = Counter(prediction_tokens) & Counter(ground_truth_tokens)
+    num_same = sum(common.values())
+
+    if len(prediction_tokens) == len(ground_truth_tokens) == 0:
+        # Unlike most tasks, QReCC and SQuAD-2.0 assign 1.0 in this edge case. We don't for uniformity.
+        print(
+            "\n#> F1 Metric: Rare edge case of len(prediction_tokens) == len(ground_truth_tokens) == 0.\n"
+        )
+
+    if num_same == 0:
+        return 0
+
+    precision = 1.0 * num_same / len(prediction_tokens)
+    recall = 1.0 * num_same / len(ground_truth_tokens)
+    f1 = (2 * precision * recall) / (precision + recall)
+
+    return f1
+
 
 class AnswerMatchAcc(BaseEvaluator):
     r"""
@@ -27,12 +73,20 @@ class AnswerMatchAcc(BaseEvaluator):
         1.0
         >>> acc_list
         [1.0, 1.0, 1.0]
+
+    References:
+    1. HotpotQA: https://github.com/hotpotqa/hotpot/blob/master/hotpot_evaluate_v1.py
     """
 
     def __init__(
         self,
         type: Literal[
-            "exact_match", "fuzzy_match", "rouge_score", "bleu_score", "bert_score"
+            "exact_match",
+            "fuzzy_match",
+            "rouge_score",
+            "bleu_score",
+            "bert_score",
+            "f1_score",
         ] = "exact_match",
     ):
         self.type = type
@@ -81,11 +135,13 @@ class AnswerMatchAcc(BaseEvaluator):
                 f"Error converting pred_answer and gt_answer to string: {e}"
             )
         if self.type == "exact_match":
-            return 1.0 if y == y_gt else 0.0
+            return 1.0 if normalize_answer(y) == normalize_answer(y_gt) else 0.0
         elif self.type == "fuzzy_match":
-            y = y.lower()
-            y_gt = y_gt.lower()
+            y = normalize_answer(y)
+            y_gt = normalize_answer(y_gt)
             return 1.0 if y_gt in y else 0.0
+        elif self.type == "f1_score":
+            return f1_score(y, y_gt)
         elif self.type == "bert_score":
             from torchmetrics.text.bert import BERTScore
 

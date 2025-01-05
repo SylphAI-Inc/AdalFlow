@@ -47,6 +47,15 @@ def save_csv(
             writer.writeheader()
             for row in obj:
                 filtered_row = {k: v for k, v in row.items() if k in fieldnames}
+                # use json.dumps to serialize the object
+                for k, v in filtered_row.items():
+                    if (
+                        isinstance(v, dict)
+                        or isinstance(v, list)
+                        or isinstance(v, tuple)
+                        or isinstance(v, set)
+                    ):
+                        filtered_row[k] = json.dumps(v)
                 writer.writerow(filtered_row)
     except IOError as e:
         raise IOError(f"Error saving object to CSV file {f}: {e}")

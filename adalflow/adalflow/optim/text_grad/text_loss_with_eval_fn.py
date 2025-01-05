@@ -101,7 +101,16 @@ class EvalFnToTextLoss(LossComponent):
         response_desc: str = None,
         metadata: Dict[str, str] = None,  # additional notes on the input kwargs
         id: str = None,
+        gt: object = None,
     ) -> Parameter:
+        r"""
+        Args:
+            kwargs: The inputs to the eval_fn.
+            response_desc: Description of the output.
+            metadata: Additional notes on the input kwargs.
+            id: The unique identifier for the data point.
+            gt: The ground truth for the evaluation function.
+        """
         if response_desc is None:
             response_desc = "Output of EvalFnToTextLoss."
 
@@ -130,6 +139,7 @@ class EvalFnToTextLoss(LossComponent):
             param_type=ParameterType.LOSS_OUTPUT,
             data_id=id,
         )
+        eval_param.set_gt(gt)
         eval_param.set_predecessors(predesessors)
         eval_param.trace_forward_pass(
             input_args=kwargs,
@@ -139,6 +149,7 @@ class EvalFnToTextLoss(LossComponent):
         )
 
         log.info(f"EvalFnToTextLoss: Input: {kwargs}, Output: {eval_param}")
+        # extract ground truth from eval_inputs, anything
         eval_param.set_grad_fn(
             BackwardContext(
                 backward_fn=self.backward,
@@ -147,6 +158,7 @@ class EvalFnToTextLoss(LossComponent):
                 eval_fn_desc=self.eval_fn_desc,
                 kwargs=kwargs,
                 metadata=metadata,
+                # ground_truth=gt,
             )
         )
         return eval_param
@@ -178,6 +190,7 @@ class EvalFnToTextLoss(LossComponent):
         response: Parameter,
         eval_fn_desc: str,
         backward_engine: "BackwardEngine",
+        ground_truth: object = None,
         is_intermediate_node: bool = False,  # if the node is an intermediate node in the backpropagation chain
         metadata: Dict[str, str] = None,
     ):
@@ -286,6 +299,7 @@ class EvalFnToTextLoss(LossComponent):
                 input_output=conversation_str,
                 response_desc=response.role_desc,
                 variable_desc=pred.role_desc,
+                # ground_truth=ground_truth,
             )
         )
         pred.add_gradient(gradient_param)
@@ -293,6 +307,8 @@ class EvalFnToTextLoss(LossComponent):
         # backward the end to end score
         # TODO: not really useful
         pred.set_score(response.data)
+        pred.set_gt(ground_truth)
+        print(f"pred: {pred.name}, gt: {ground_truth}")
         # print(f"setting pred name {pred.name} score to {response.data}")
         # print(f"gradient_param: {pred.gradients}")
 
@@ -303,6 +319,7 @@ class EvalFnToTextLoss(LossComponent):
         response: Parameter,
         eval_fn_desc: str,
         kwargs: Dict[str, Parameter],
+        ground_truth: object = None,
         backward_engine: Optional[
             "BackwardEngine"
         ] = None,  # only needed for text prompt optimization
@@ -336,8 +353,9 @@ class EvalFnToTextLoss(LossComponent):
                         response,
                         eval_fn_desc,
                         backward_engine,
-                        is_intermediate_node,
-                        metadata,
+                        ground_truth=ground_truth,
+                        is_intermediate_node=is_intermediate_node,
+                        metadata=metadata,
                     )
             else:  # recursively disable backward for all children
                 for pred in children_params:

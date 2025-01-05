@@ -54,6 +54,10 @@ class GradientContext(DataClass):
         metadata={"desc": "The description of the response parameter"}
     )
 
+    # ground_truth: Any = field(
+    #     metadata={"desc": "The ground truth of the response parameter"}, default=None
+    # )
+
 
 @dataclass
 class ComponentTrace(DataClass):
@@ -197,6 +201,7 @@ class Parameter(Generic[T]):
     data_in_prompt: Callable = (
         None  # Callable to get the str of the data to be used in the prompt
     )
+    gt: object = None  # Ground truth of the parameter
 
     def __init__(
         self,
@@ -272,6 +277,7 @@ class Parameter(Generic[T]):
             return param.data
 
         self.data_in_prompt = data_in_prompt or default_prompt_map_fn
+        self.gt = None
 
     def map_to_successor(self, successor: object) -> T:
         """Apply the map function to the successor based on the successor's id."""
@@ -289,6 +295,16 @@ class Parameter(Generic[T]):
     def check_if_already_computed_gradient_respect_to(self, response_id: str) -> bool:
         from_response_ids = [g.from_response_id for g in self.gradients]
         return response_id in from_response_ids
+
+    ############################################################################################################
+    # Handle gt
+    ############################################################################################################
+    def set_gt(self, gt: object):
+
+        self.gt = gt
+
+    def get_gt(self) -> object:
+        return self.gt
 
     # ############################################################################################################
     # Handle gradients and context

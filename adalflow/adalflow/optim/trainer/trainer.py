@@ -180,7 +180,9 @@ class Trainer(Component):
         self.random_seed = seed
 
     # TODO: need to support checkpoint resume too!
-    def diagnose(self, dataset: Any, split: str = "train"):
+    def diagnose(
+        self, dataset: Any, split: str = "train", resume_from_ckpt: str = None
+    ):
         """Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent's default configure_callbacks
         Args:
             dataset: Any: Dataset to evaluate
@@ -201,6 +203,8 @@ class Trainer(Component):
             print(diagnose)
         """
         # 1. track all intermediate outputs
+        if resume_from_ckpt:
+            self.resume_params_from_ckpt(resume_from_ckpt)
         self.adaltask.eval()
         if not self.ckpt_path:
             trainer_state = self.gather_trainer_states()
@@ -234,7 +238,9 @@ class Trainer(Component):
         paths: Dict[str, List[str]] = {"Log": log_paths, "Diagnose": [], "Stats": []}
 
         # reorder the samples based on the score
+        stats_list: List[Dict] = []
         for log_path in log_paths:
+            stats_list = []
             file_name = os.path.basename(log_path)
             logger.debug(f"Loading log file: {file_name}")
             logs = load_jsonl(log_path)
@@ -257,7 +263,7 @@ class Trainer(Component):
 
             diagnose_file = os.path.join(log_dir, diagnose_filename)
             diagnose_items = []
-            stats_list: List[Dict] = []
+
             for i, log in enumerate(sorted_logs):
                 if log["score"] < 0.5:
                     diagnose_item = {
@@ -366,6 +372,32 @@ class Trainer(Component):
             + "You can visualize the complete computation graph at the paths shown above."
         )
         print(Fore.CYAN + "\n===================================================\n")
+
+    def resume_params_from_ckpt(self, ckpt_file: str):
+        """Resume the parameters from the checkpoint file"""
+        dict_data = load_json(ckpt_file)
+        # find the highest val score
+        trainer_results: TrainerResult = TrainerResult.from_dict(dict_data)
+        # restore the prompts to the adaltask
+        val_scores = []
+        test_scores = []
+        for step in trainer_results.step_results:
+            if step.val_score:
+                val_scores.append(step.val_score)
+            if step.test_score:
+                test_scores.append(step.test_score)
+        result_from_step = 0
+        if test_scores:
+            result_from_step = test_scores.index(max(test_scores))
+        elif val_scores:
+            result_from_step = val_scores.index(max(val_scores))
+        prompts: List[PromptData] = trainer_results.step_results[
+            result_from_step
+        ].prompt
+
+        print(f"Restoring prompts: {prompts[0]}")
+
+        self.adaltask._set_param_values(prompts)
 
     def fit(
         self,
@@ -519,12 +551,18 @@ class Trainer(Component):
         if debug:
             print("Debugging mode")
             text_grad_debug_path, few_shot_demo_debug_path = None, None
-            if len(self.text_optimizers) > 0:
+            if (
+                len(self.text_optimizers) > 0
+                and len(self._get_trainable_text_params()) > 0
+            ):
                 text_grad_debug_path = self._fit_text_grads_one_step_for_debug(
                     train_loader
                 )
 
-            if len(self.demo_optimizers) > 0:
+            if (
+                len(self.demo_optimizers) > 0
+                and len(self._get_trainable_demo_params()) > 0
+            ):
                 few_shot_demo_debug_path = self._fit_demos_one_step_for_debug(
                     train_loader, train_dataset, val_dataset, test_dataset
                 )
@@ -607,6 +645,13 @@ class Trainer(Component):
         end_time = time.time()
         print(f"Training time: {end_time - start_time}s")
         trainer_results.total_time = end_time - start_time
+        # test at the end
+        if test_dataset:
+            test_output = self.adaltask.validation_step(
+                test_dataset, 0, self.num_workers
+            )
+            test_score = test_output.avg_score
+            trainer_results.test_score = test_score
         # write the results to the checkpoint file
         save_json(trainer_results.to_dict(), self.ckpt_file)
 
@@ -1014,9 +1059,9 @@ class Trainer(Component):
         for text_optimizer in self.text_optimizers:
             text_optimizer.propose()
 
-    # def _add_failed_proposals_text_optimizers(self):
-    #     for opt in self.text_optimizers:
-    #         opt.add_failed_proposal()
+    def _add_failed_proposals_text_optimizers(self):
+        for opt in self.text_optimizers:
+            opt.add_failed_proposal()
 
     def _get_trainable_text_params(self):
         params = []
@@ -1334,10 +1379,12 @@ class Trainer(Component):
                     self._demo_optimizers_step()
 
                     # test the model
-                    test_output = self.adaltask.validation_step(
-                        test_dataset, total_steps, self.num_workers
-                    )
-                    test_score = test_output.avg_score
+                    test_score = None
+                    # if test_dataset is not None:
+                    #     test_output = self.adaltask.validation_step(
+                    #         test_dataset, total_steps, self.num_workers
+                    #     )
+                    #     test_score = test_output.avg_score
                     self._add_one_step_in_trainer_results(
                         trainer_results,
                         val_score,
@@ -1478,11 +1525,11 @@ class Trainer(Component):
 
                     # test the new prompts
                     test_score = None
-                    if test_dataset is not None:
-                        test_output = self.adaltask.validation_step(
-                            test_dataset, step, self.num_workers
-                        )
-                        test_score = test_output.avg_score
+                    # if test_dataset is not None:
+                    #     test_output = self.adaltask.validation_step(
+                    #         test_dataset, step, self.num_workers
+                    #     )
+                    #     test_score = test_output.avg_score
                     self._add_one_step_in_trainer_results(
                         trainer_results,
                         val_score,
@@ -1638,10 +1685,11 @@ class Trainer(Component):
                     self._step_text_optimizers()
                     self._add_history_text_optimizers(val_score)  # track top performor
                     # test the model
-                    test_output = self.adaltask.validation_step(
-                        test_dataset, total_steps, self.num_workers
-                    )
-                    test_score = test_output.avg_score
+                    # test_output = self.adaltask.validation_step(
+                    #     test_dataset, total_steps, self.num_workers
+                    # )
+                    # test_score = test_output.avg_score
+                    test_score = None
                     self._add_one_step_in_trainer_results(
                         trainer_results,
                         val_score,
@@ -1651,7 +1699,7 @@ class Trainer(Component):
                     )
                 else:
                     # if val_score < last_val_score:
-                    #     self._add_failed_proposals_text_optimizers() # track failed proposals
+                    self._add_failed_proposals_text_optimizers()  # track failed proposals
 
                     print(f"Optimizer revert: {val_score} <= {last_val_score}")
                     self._revert_text_optimizers()
@@ -1980,7 +2028,7 @@ class Trainer(Component):
                 print(
                     f"Fail subset check, try next proposal: {val_score} <= {subset_score}"
                 )
-                # self._add_failed_proposals_text_optimizers()
+                self._add_failed_proposals_text_optimizers()
                 self._track_effectiveness("subset", False)
                 self._revert_text_optimizers()
                 if include_demo_optimizers:
@@ -2029,11 +2077,11 @@ class Trainer(Component):
 
                 # test the model
                 test_score = None
-                if test_dataset is not None:
-                    test_output = self.adaltask.validation_step(
-                        test_dataset, total_steps, self.num_workers
-                    )
-                    test_score = test_output.avg_score
+                # if test_dataset is not None:
+                #     test_output = self.adaltask.validation_step(
+                #         test_dataset, total_steps, self.num_workers
+                #     )
+                #     test_score = test_output.avg_score
 
                 new_prompts = self.adaltask._get_param_values()
                 self._add_one_step_in_trainer_results(
@@ -2049,6 +2097,7 @@ class Trainer(Component):
             else:
                 print(f"Optimizer revert: {val_score} <= {last_val_score}")
                 self._track_effectiveness("valset", False)
+                self._add_failed_proposals_text_optimizers()
                 # self.optimizer.revert()
                 self._revert_text_optimizers()
                 if include_demo_optimizers:
@@ -2154,7 +2203,7 @@ class Trainer(Component):
                 all_y_preds.extend(
                     [y.data for y in y_preds if isinstance(y, OutputParameter)]
                 )
-                printc(f"y_preds: {y_preds[0]}")
+                # printc(f"y_preds: {y_preds[0]}")
 
                 all_samples, all_losses, all_y_preds = (
                     self._text_grad_constraint_propose_step(

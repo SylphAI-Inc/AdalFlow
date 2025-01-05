@@ -76,7 +76,7 @@ class WordSortingAdalComponent(adal.AdalComponent):
             eval_input=sample.answer,
             requires_opt=False,
         )
-        pred.eval_input = pred.full_response.data  # processed
+        pred.eval_input = pred.data.data  # processed
         question_param = adal.Parameter(
             name="question",
             data=sample.question,

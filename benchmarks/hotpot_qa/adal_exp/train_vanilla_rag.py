@@ -5,7 +5,7 @@ from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from adalflow.datasets.types import HotPotQAData
 
 from benchmarks.hotpot_qa.config import load_datasets
-from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import Vanilla
+from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import VanillaRAG
 from use_cases.config import gpt_3_model, gpt_4o_model, gpt_3_1106_model
 
 from adalflow.utils import printc
@@ -13,7 +13,7 @@ from adalflow.utils import printc
 
 # TODO: look more into the loss function
 # TODO: test LLM judge too.
-class VallinaAdal(adal.AdalComponent):
+class VallinaRAGAdal(adal.AdalComponent):
     def __init__(
         self,
         model_client: adal.ModelClient,
@@ -22,7 +22,7 @@ class VallinaAdal(adal.AdalComponent):
         teacher_model_config: Dict | None = None,
         text_optimizer_model_config: Dict | None = None,
     ):
-        task = Vanilla(
+        task = VanillaRAG(
             model_client=model_client,
             model_kwargs=model_kwargs,
             passages_per_hop=3,
@@ -43,17 +43,9 @@ class VallinaAdal(adal.AdalComponent):
     # tell the trainer how to call the task
     def prepare_task(self, sample: HotPotQAData) -> Tuple[Callable[..., Any], Dict]:
         if self.task.training:
-            return self.task.forward, {
-                "question": sample.question,
-                "context": sample.context,
-                "id": sample.id,
-            }
+            return self.task.forward, {"question": sample.question, "id": sample.id}
         else:
-            return self.task.call, {
-                "question": sample.question,
-                "context": sample.context,
-                "id": sample.id,
-            }
+            return self.task.call, {"question": sample.question, "id": sample.id}
 
     # TODO: use two map fn to make the cde even simpler
 
@@ -94,7 +86,7 @@ def train_diagnose(
 
     trainset, valset, testset = load_datasets()
 
-    adal_component = VallinaAdal(
+    adal_component = VallinaRAGAdal(
         model_client,
         model_kwargs,
         backward_engine_model_config=gpt_4o_model,
@@ -125,7 +117,7 @@ def train(
     tg: bool = False,
     max_proposals_per_step: int = 5,
 ):
-    adal_component = VallinaAdal(
+    adal_component = VallinaRAGAdal(
         **gpt_3_1106_model,
         teacher_model_config=gpt_4o_model,
         text_optimizer_model_config=gpt_4o_model,
@@ -160,12 +152,9 @@ def train(
     ckpt, _ = trainer.fit(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
-        # test_dataset=val_dataset[0:4],
         test_dataset=test_dataset,
         resume_from_ckpt=resume_from_ckpt,
     )
-    # diagnose the test set
-    # trainer.diagnose(dataset=test_dataset, split="test", resume_from_ckpt=ckpt)
     return ckpt
 
 
@@ -207,12 +196,12 @@ if __name__ == "__main__":
     # TODO: test debug mode
     ckpt = train(
         debug=False,
-        max_steps=1,
+        max_steps=12,
         seed=2025,  # pass the numpy seed
         tg=use_tg,
         strategy=set_strategy,
         max_proposals_per_step=max_proposals_per_step,
-        resume_from_ckpt="/Users/liyin/.adalflow/ckpt/VallinaAdal/random_max_steps_24_1511c_run_1.json",
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )
     print(f"ckpt: {ckpt}")
     if set_output_path:

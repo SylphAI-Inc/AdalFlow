@@ -8,8 +8,81 @@ Reference: TextGrad: Automatic “Differentiation” via Text."""
 # NOTE: having peers is important to keep the scope of the prompt consistent and not cross-reference with other variables
 ### System prompt and the template is shared by all GradComponent ###
 
-FEEDBACK_ENGINE_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
+# FEEDBACK_ENGINE_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
+# You are the feedback engine in an optimization system consisting of multiple components.
+
+# Your task is to provide intelligent and creative feedback in each component for the target variable enclosed in <TARGET_VARIABLE> or <VARIABLES> tags
+# so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION> tags.
+
+# Instructions:
+# 1. Understand the role of each variable in the component system BEFORE you give feedback.
+# 2. You MUST attribute the feedback to the correct variable only.
+# 3. Focus on the downstream objective without proposing new versions of the variable.
+# 4. From the <CONVERSATION> section, see how the variable is obtained and used.
+# 5. The variable might have peers also used to instruct the language model, but your feedback should only focus on the target variable.
+# 6. If the error is not directly related to the variable itself, you can say: \"There is no noticeable error.\"
+# 7. Be specific, concise, critical, and direct.
+# 8. If the same DataID appears multiple times, it means the component/variable is called repeatedly in the same order as it appears in the gradient list.
+
+
+# {% if output_format_str %}
+# {{output_format_str}}
+# {% endif %}
+
+# <END_OF_SYSTEM_PROMPT>
+# <START_OF_USER>
+# <CONVERSATION>
+# {{conversation_sec}}
+# </CONVERSATION>
+# <OBJECTIVE_INSTRUCTION>
+# {{objective_instruction_sec}}
+# </OBJECTIVE_INSTRUCTION>
+# <END_OF_USER>
+# """
+
+FEEDBACK_ENGINE_PEERS_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 You are the feedback engine in an optimization system consisting of multiple components.
+
+Your task is to provide intelligent and creative feedback in each component for the target variable enclosed in <TARGET_VARIABLE> or <VARIABLES> tags
+so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION> tags.
+
+About <VARIABLES> or <PEERS>:
+* If a variable is of type "output", it is the output of another predecessor component. In this case, you MUST attribute the error to the RIGHT variable.
+* If a variable plays no role to the error, simply state "This variable did not cause the error. No need to change the essense of this variable."
+
+1. Focus on the downstream OBJECTIVE without proposing new versions of the variable.
+2. From <CONVERSATION></CONVERSATION> section, you can find how the variable is obtained and used.
+3. The variable might have other peers that are used together to instruct the language model. But only focus on the target variable.
+4. As there might be peers, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
+5. When you reason, really think about the variable's role in the component(infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
+6. Be specific, concise, critical, and direct.
+
+
+{% if output_format_str %}
+{{output_format_str}}
+{% endif %}
+
+<END_OF_SYSTEM_PROMPT>
+<START_OF_USER>
+<CONVERSATION>
+{{conversation_sec}}
+</CONVERSATION>
+<OBJECTIVE_INSTRUCTION>
+{{objective_instruction_sec}}
+</OBJECTIVE_INSTRUCTION>
+<END_OF_USER>
+"""
+
+# <TASK_PIPELINE>
+# Here is a summary on the task pipeline you are optimizing:
+# retriever: retrieves relevant documents for the question. (Not trainable, you have no control)
+# LLM: Answer questions by reading the context  and reason the best answer.
+# </TASK_PIPELINE>
+# You are the feedback engine in an optimization system consisting of multiple components.
+FEEDBACK_ENGINE_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
+You are the feedback engine to provide feedback for a target variable in a compound LLM system.
+
+
 
 Your task is to provide intelligent and creative feedback in each component for the target variable enclosed in <VARIABLE></VARIABLE> or <VARIABLES></VARIABLES> tags
 so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION></OBJECTIVE_FUNCTION> tags.
@@ -20,6 +93,7 @@ so that the optimizer can optimize this variable to improve the objective enclos
 4. As there might be peers, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
 5. When you reason, really think about the variable's role in the component(infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
 6. Be specific, concise, critical, and direct.
+7. Maximum 3 sentences.
 
 If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
 
@@ -55,6 +129,22 @@ If the same DataID has multiple gradients, it means this component/variable is c
 # Your only goal is to clearly states how it obtained the "<OUTPUTS/SCORE>".
 
 
+# OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>
+# Your only goal is to clearly states how it obtained the "<OUTPUTS/SCORE>",
+# so that you can inform other components on the specific errors.
+# e.g. "The <gt> and <pred> are not an exact match, it differs by <difference>."
+# Especially when the score is low.
+# Be CONCISE. Be SPECIFIC.
+# </OBJECTIVE_FUNCTION>"""
+
+# OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>
+# Your task: Provide specific feedback based on the score in the \"<OUTPUTS/SCORE>\" value.
+# - Especially note when the score is low (e.g. 0.0).
+# - Be concise.
+# - Be specific about why the score is low. For example:
+#   The retrieved context is insufficient to answer the question accurately.
+# </OBJECTIVE_FUNCTION>"""
+
 OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>
 Your task is to provide the response with specific feedback based on the ground truth and the score in the "<OUTPUTS/SCORE>".
 Especially when the score is low.
@@ -65,6 +155,12 @@ e.g. "The retrieved context is not enough to answer the question so the problem 
 
 
 ### NOTE: Last node's feedback
+# OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. The <INPUTS/SCORE> was later used as "{{response_name}}: {{response_desc}}".
+# <OBJECTIVE_FUNCTION>
+# Your only goal is to clearly provide feedback on obtaining "Eval output/score": {{response_gradient}}.
+# Be CONCISE and specific on how it can be improved.
+# </OBJECTIVE_FUNCTION>"""
+
 OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. The <INPUTS/SCORE> was later used as "{{response_name}}: {{response_desc}}".
 <OBJECTIVE_FUNCTION>
 Your only goal is to clearly states how it obtained the "Eval output/score": {{response_gradient}}.
@@ -78,6 +174,24 @@ If you have enough context, add a more specific feedback on how it failed.
 # the input_output of a GradientContext
 
 # response_value -> response.get_prompt_data()
+# LOSS_CONVERSATION_TEMPLATE_STRING = r"""
+# The target variable is passed to the EVAL_FUNC and compared with the correct value.
+
+# EVAL_FUNC: {{eval_fn_desc}}
+
+# INPUTS:
+# {% for key, (value, eval_type) in inputs.items() %}
+# ({{ key }}) (role: {{ value.role_desc }}),
+# data: {{ value.prompt_data }},
+# input_to_eval_fn: {{ value.eval_input }},
+# data_type: {{ eval_type }}
+# {% endfor %}
+
+# OUTPUTS/SCORE: {{response_value}}
+# {% if metadata %}
+# Note: {{metadata}}
+# {% endif %}"""
+
 LOSS_CONVERSATION_TEMPLATE_STRING = r"""
 The variable is passed to the eval function and compared with a target/ground truth value.
 
@@ -149,6 +263,18 @@ Note: {{instruction_to_backward_engine}}
 </OBJECTIVE_FUNCTION>"""
 
 
+SUMMARY_TASK = """
+Here is a summary on the task pipeline you are optimizing:
+query_generator: "generates a sub-query based on the initial query"
+retriever: "retrieves relevant documents based on the sub-query"
+llm: "Answer a question with available context with exact answer extracted from the context"
+
+The query_generator is called twice in the pipeline.
+And the retrieved documents are deduplicated and combined to form the final context.
+The final context is then passed to the llm to generate the answer where we want to use the exact phrase from the context.
+"""
+
+
 VARIABLE_AND_PEERS_INFO = r"""
 <START_OF_VARIABLE_DESC>
 {{variable.name}}
@@ -202,12 +328,22 @@ VARIABLE: {{ variable.prompt_data}}
 # Description: {{variable_desc}}
 LLM_CONVERSATION_TEMPLATE = r"""
 LM_INPUT: {{input_value}}
-LM_OUTPUT: {{llm_output}}"""
+LM_OUTPUT: {{llm_output}}
+{% if gt %}
+GROUND_TRUTH: {{gt}}
+{% endif %}
+"""
 
+# OUTPUT_INSTRUCTION = r"""
+# You will create a feedback for each of the variable in the list above.
+# If a variable will not be optimied, you just output empty string for that variable..
+# NOTE: you MUST output a list of strings with the same length as the list above as ["...", "...", "..."]
+# """
 OUTPUT_INSTRUCTION = r"""
-You will create a feedback for each of the variable in the list above.
+You will create a feedback for each of the variable in the list.
 If a variable will not be optimied, you just output empty string.
-Your output will be a list of strings with the same length as the list above.
+Your output will be a list of strings with the SAME LENGTH as the <VARIABLES> list
+as format of ["...", "...", "..."]
 """
 
 

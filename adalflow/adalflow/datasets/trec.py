@@ -43,8 +43,6 @@ def sample_subset_dataset(dataset, num_samples: int, sample_weights):
 
 def prepare_datasets():
     from datasets import load_dataset
-    from datasets import Dataset as HFDataset
-    from adalflow.optim.sampler import ClassSampler
 
     dataset = load_dataset("trec")
     print(f"train: {len(dataset['train'])}, test: {len(dataset['test'])}")  # 5452, 500
@@ -59,19 +57,26 @@ def prepare_datasets():
     len_train_dataset = len(org_train_dataset)
 
     org_test_dataset = dataset["test"]
-    eval_size = 18 * num_classes
+    # eval_size = 18 * num_classes
 
-    class_sampler = ClassSampler(
-        org_train_dataset.select(
-            range(0, len_train_dataset // 3)
-        ),  # created huggingface dataset type
-        num_classes=num_classes,
-        get_data_key_fun=lambda x: x["coarse_label"],
-    )
+    # class_sampler = ClassSampler(
+    #     org_train_dataset.select(
+    #         range(0, len_train_dataset // 3)
+    #     ),  # created huggingface dataset type
+    #     num_classes=num_classes,
+    #     get_data_key_fun=lambda x: x["coarse_label"],
+    # )
 
-    eval_dataset_split = [sample.data for sample in class_sampler(eval_size)]
-    # convert this back to huggingface dataset
-    eval_dataset_split = HFDataset.from_list(eval_dataset_split)
+    # eval_dataset_split = [sample.data for sample in class_sampler(eval_size)]
+    # # convert this back to huggingface dataset
+    # eval_dataset_split = HFDataset.from_list(eval_dataset_split)
+
+    # sample eval from the first 1/3 of the train dataset
+    # eval_dataset_split = org_train_dataset.select(range(len_train_dataset // 3))
+    # # sample a subset of the eval dataset, just randomly sampling
+    # eval_dataset_split = sample_subset_dataset(
+    #     eval_dataset_split, eval_size, torch.ones(len(eval_dataset_split))
+    # )
 
     # (2) create train dataset from the last 2/3 of the train dataset, 100 samples per class
     train_dataset_split = org_train_dataset.select(
@@ -85,7 +90,7 @@ def prepare_datasets():
         train_dataset_split, train_size, class_weights
     )
     print(f"train example: {train_dataset_split[0]}")
-    print(f"train: {len(train_dataset_split)}, eval: {len(eval_dataset_split)}")
+    # print(f"train: {len(train_dataset_split)}, eval: {len(eval_dataset_split)}")
 
     # get the count for each class
     count_by_class: Dict[str, int] = {}
@@ -98,13 +103,22 @@ def prepare_datasets():
     # create the test dataset from the test dataset
     # weights for the test dataset
     labels = torch.tensor(org_test_dataset["coarse_label"])
-    class_weights = calculate_class_weights(labels)
+    # class_weights = calculate_class_weights(labels)
 
-    test_size = eval_size * 2
-    # weighted sampling on the test dataset
-    test_dataset_split = sample_subset_dataset(
-        org_test_dataset, test_size, class_weights
+    print(f"total test dataset: {len(org_test_dataset)}")
+
+    # shuff, and get the first 1/3 as validation, 2/3 as test
+    test_dataset_split = org_test_dataset.shuffle(seed=42)
+    eval_dataset_split = test_dataset_split.select(range(len(test_dataset_split) // 3))
+    test_dataset_split = test_dataset_split.select(
+        range(len(test_dataset_split) // 3, len(test_dataset_split))
     )
+
+    # test_size = eval_size * 2
+    # # weighted sampling on the test dataset
+    # test_dataset_split = sample_subset_dataset(
+    #     org_test_dataset, test_size, torch.ones(len(org_test_dataset))
+    # )
 
     print(
         f"train example: {train_dataset_split[0]}, type: {type(train_dataset_split[0])}"

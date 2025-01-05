@@ -161,3 +161,4 @@ class TrainerResult(DataClass):
     total_time: float = field(
         default=0.0, metadata={"desc": "Total time taken for training"}
     )
+    test_score: float = field(default=None, metadata={"desc": "Test score"})

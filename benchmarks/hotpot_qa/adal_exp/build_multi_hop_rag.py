@@ -379,6 +379,18 @@ class MultiHopRetrieverCycle(adal.Retriever):
         return context
 
 
+task_desc_str = """Write a simple search query that will help answer a complex question.
+
+You will receive a context(may contain relevant facts) and a question.
+Think step by step."""
+
+task_desc_str = """ You are a query assistant that helps search all relevant context to answer a multi-hop question.
+
+You will a question, and existing context(may contain relevant facts along with its sub-questions).
+Write a new simple search query to help retrieve the relevant context to answer the question.
+Think step by step."""
+
+
 class MultiHopRetriever(adal.Retriever):
     def __init__(self, model_client, model_kwargs, passages_per_hop=3, max_hops=2):
         super().__init__()
@@ -401,13 +413,13 @@ class MultiHopRetriever(adal.Retriever):
                     model_client=model_client,
                     model_kwargs=model_kwargs,
                     prompt_kwargs={
-                        "few_shot_demos": Parameter(
-                            name=f"few_shot_demos_{i}",
-                            data=None,
-                            role_desc="To provide few shot demos to the language model",
-                            requires_opt=True,
-                            param_type=ParameterType.DEMOS,
-                        ),
+                        # "few_shot_demos": Parameter(
+                        #     name=f"few_shot_demos_{i}",
+                        #     data=None,
+                        #     role_desc="To provide few shot demos to the language model",
+                        #     requires_opt=True,
+                        #     param_type=ParameterType.DEMOS,
+                        # ),
                         "task_desc_str": Parameter(
                             name="task_desc_str",
                             data="""Write a simple search query that will help answer a complex question.
@@ -534,7 +546,12 @@ Think step by step.""",
     #     return
 
 
-from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import VanillaRAG
+from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import (
+    VanillaRAG,
+    # task_desc_str,
+    # answer_template,
+    # AnswerData,
+)
 
 
 class MultiHopRAG(VanillaRAG):
@@ -552,6 +569,11 @@ class MultiHopRAG(VanillaRAG):
             passages_per_hop=passages_per_hop,
             max_hops=max_hops,
         )
+        # update the parameters to untainable
+        # task_desc_str and few_shot_demos
+        for name, param in self.llm.named_parameters():
+            param.requires_opt = False
+            printc(f"param: {name} requires_opt: {param.requires_opt}", "yellow")
 
 
 class MultiHopRAGCycle(VanillaRAG):
@@ -602,14 +624,14 @@ class AgenticRAG(adal.GradComponent):
         #     output_processors=self.llm_parser,
         # )
 
-        self.context = []
+        # self.context = []
 
         def dspy_retriever_as_tool(
             input: str,
             # context_variables: Dict,
             id: Optional[str] = None,
         ) -> List[str]:
-            r"""Retrieves the top k passages from using input as the query and save the documents in context_variables(Dict)'s context.
+            r"""Retrieves the top k passages from using input as the query.
             Ensure you get all the context to answer the original question.
             """
             output = self.dspy_retriever(input=input, id=id)
@@ -633,7 +655,7 @@ class AgenticRAG(adal.GradComponent):
         #     YOU MUST call generator_as_tool once to produce the final answer.
         #     """
         #     context = context_variables["context"]
-        #     print(f"context: {context}")
+        #     # print(f"context: {context}")
         #     output = self.llm(
         #         prompt_kwargs={"question": input, "context": context}, id=id
         #     )
@@ -648,6 +670,7 @@ class AgenticRAG(adal.GradComponent):
 
         tools = [
             FunctionTool(dspy_retriever_as_tool, component=self.dspy_retriever),
+            # FunctionTool(generator_as_tool, component=self.llm),
         ]
 
         self.agent = ReActAgent(
@@ -835,5 +858,5 @@ if __name__ == "__main__":
     # test_multi_hop_retriever2()
 
     # test_multi_hop_retriever_cycle()
-    # test_multi_hop_rag()
-    test_agent_rag()
+    test_multi_hop_rag()
+    # test_agent_rag()

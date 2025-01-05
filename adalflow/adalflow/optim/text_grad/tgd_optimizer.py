@@ -59,7 +59,14 @@ Here are the best past iterations of this variable along with the validation sco
 {% for history in past_history %}
 {{loop.index}}. {{history}}
 {% endfor %}
-IMPORTANT: Your goal is to generate new variable values that score higher than all previous iterations.
+IMPORTANT: Your goal is to generate new variable that score higher than all past iterations.
+{% if failed_proposals %}
+Here are the past failed proposals:
+{% for failed_proposal in failed_proposals %}
+{{loop.index}}. {{failed_proposal}}
+{% endfor %}
+{% endif %}
+You MUST Try a different approach from the failed proposals.
 <END_OF_HISTORY_PERFORMANCE>
 {% endif %}
 Here are the context and feedback for the variable:
@@ -119,8 +126,44 @@ You must base on the following examples when modifying the {{variable_desc}}:
 # {% endif %}
 # """
 
+# OPTIMIZER_SYSTEM_PROMPT = r"""
+# You are a prompt engineer who excels at refining existing prompts used in LLM in-context learning.
+
+# Your task:
+# - **Improve a variable** based on feedback from a batch of input data points.
+
+# ### Context and Requirements
+
+# 1. **Variable Usage**
+#    The variable is either an input or output of a functional component. The component schema will be provided.
+#    If the same DataID has multiple gradients, it indicates that this component/variable is called repeatedly in a compound system (with a cycle) in the same order that it appears in the gradient list.
+
+# 2. **Key Objectives**
+#    1. **Address Feedback**: Resolve concerns raised in the feedback while preserving the positive aspects of the original variable.
+#    2. **Peer Awareness**:
+#       - If a peer variable will be optimized separately, do not overlap with its scope.
+#    3. **Consistency with Past Performance**: Observe patterns from previous iterations and retain beneficial qualities.
+#    4. **Be Creative** in your improvements.
+
+# 3. **Additional Notes**
+#    - Add new elements to address each specific piece of feedback.
+#    - Rephrase or eliminate unnecessary words for clarity.
+
+# {% if instruction_to_optimizer %}
+# **User Instructions**: {{instruction_to_optimizer}}
+# {% endif %}
+# <START_OF_OUTPUT_FORMAT>
+# {{output_format_str}}
+# <END_OF_OUTPUT_FORMAT>
+# """
+# <TASK_PIPELINE>
+# Here is a summary on the task pipeline you are optimizing:
+# retriever: retrieves relevant documents for the question. (Not trainable, you have no control)
+# LLM: Answer questions by reading the context  and reason the best answer.
+# </TASK_PIPELINE>
 OPTIMIZER_SYSTEM_PROMPT = r"""
-You are an optimizer and your task is to improve a variable based on feedback from a batch of input data points.
+You are an excellent prompt engineer who works on optimizing a compound LLM system with in-context learning.
+Your task is to improve a variable based on feedback from a batch of input data points.
 
 The variable is either input or output of a functional component where the component schema will be provided.
 If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
@@ -133,9 +176,18 @@ If the same DataID has multiple gradients, it means this component/variable is c
 3. Observe past performance patterns (when available) to retain good qualities in the variable.
 4. Be Creative. If adding new elements, be concise.
 
-### Notes:
-1. Add new elements or rephrase to address the feedback.
-2. You can also eliminate unnecessary words to improve clarity.
+### Your available solutions.
+1. Add new elements to address each specific feedback.
+2. Add demonstration (e.g., input-reasoning-answer) for tasks that require strong reasoning skills.
+3. Rephrase(for more clarity) to address the feedback.
+4. You can also eliminate unnecessary words to improve clarity.
+
+### prompt engineering practices:
+1. Set Context and Role: Establish a specific identity or domain expertise for the AI to guide style, knowledge, and constraints.
+2. Demonstration: Construct input-reasoning-answer example especially for tasks that require strong reasoning skills.
+3. Be Specific and Clear: Clearly define instructions, desired format, and constraints to ensure accurate and relevant outputs.
+4. Leverage Constraints and Formatting: Explicitly direct how the answer should be structured (e.g., bullet points, tables, or tone).
+5. Self-Consistency / Verification Prompts: Prompt the model to check its own logic for errors, inconsistencies, or missing details.
 
 {{output_format_str}}
 
@@ -144,7 +196,54 @@ If the same DataID has multiple gradients, it means this component/variable is c
 {% endif %}
 """
 
+# <TASK_PIPELINE>
+# Here is a summary on the task pipeline you are optimizing:
+# query_generator(a trainable LLM): "generates a sub-query based on the initial query"
+# retriever: "retrieves relevant documents based on the sub-query"
+# llm(a trainable LLM): "Answer a question with available context with exact answer extracted from the context"
+# duplicator: "functional part to depulicate the documents, no trainable part, no need to have feedback or to be optimized."
+
+# The query_generator+ retriever is called twice in the pipeline as the question requires two sub-queries.
+# And the retrieved documents are deduplicated and combined to form the final context.
+# The final context is then passed to the llm to generate the answer where we want to use the exact phrase from the context.
+# </TASK_PIPELINE>
+# OPTIMIZER_SYSTEM_PROMPT = r"""
+# You are a prompt engineer exels at refining existing prompts used in LLM in-context learning.
+# Your task is to improve a variable based on feedback from a batch of input data points.
+
+# The variable is either input or output of a functional component where the component schema will be provided.
+# If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
+
+# ### YOU MUST ENSURE:
+# 1. **Address Feedback**: Resolve concerns raised in the feedback while preserving the positive aspects of the original variable.
+# 2. **Peer Awareness**:
+#    - If a peer will be optimized itself, do not overlap with its scope.
+# 3. Observe past performance patterns (when available) to retain good qualities in the variable.
+# 4. Be Creative.
+# 5. The new variable MUST have better performance than all previous iterations.
+
+# ### NOTES:
+# 1. Add new elements to address each specific feedback.
+# 2. rephrase to address the feedback.
+# 3. You can also eliminate unnecessary words to improve clarity.
+
+# ### Common prompt engineering practices:
+# 1. Set Context and Role: Establish a specific identity or domain expertise for the AI to guide style, knowledge, and constraints.
+# 2. Zero-Shot vs. Few-Shot Prompting: Decide whether to provide examples (few-shot) or none (zero-shot) to shape responses and format.
+# 3. Be Specific and Clear: Clearly define instructions, desired format, and constraints to ensure accurate and relevant outputs.
+# 4. Leverage Constraints and Formatting: Explicitly direct how the answer should be structured (e.g., bullet points, tables, or tone).
+# 5. Self-Consistency / Verification Prompts: Prompt the model to check its own logic for errors, inconsistencies, or missing details.
+
+# {% if instruction_to_optimizer %}
+# **More Instructions**: {{instruction_to_optimizer}}
+# {% endif %}
+
+# {{output_format_str}}
+# """
+
 # When no feedback is provided(high batch performance), you rephrase the variable.
+### Tips:
+# 1. Patterns like "think step by step" helps the model reason better. You should try to maintain the chain of thought.
 
 
 @dataclass
@@ -164,7 +263,11 @@ class Instruction(DataClass):
 
 @dataclass
 class TGDData(DataClass):
-    reasoning: str = field(metadata={"desc": "Why the variable is proposed this way"})
+    reasoning: str = field(
+        metadata={
+            "desc": "Which solution did you choose, which prompt engineering technique did you use? Why?"
+        }
+    )
     proposed_variable: str = field(metadata={"desc": "The proposed variable"})
 
 
@@ -204,7 +307,7 @@ class TGDOptimizer(TextOptimizer):
     params: ParamsT
     constraints: List[str]
     params_history: Dict[str, List[HistoryPrompt]] = {}  # id to history
-    # failed_proposals: Dict[str, List[HistoryPrompt]] = {}  # only need the value
+    failed_proposals: Dict[str, List[HistoryPrompt]] = {}  # only need the value
 
     def __init__(
         self,
@@ -217,7 +320,7 @@ class TGDOptimizer(TextOptimizer):
         in_context_examples: List[str] = None,  # TODO: in-context examples
         num_gradient_memory: int = 0,  # TODO: gradient memory and momentum, for now it is not useful
         max_past_history: int = 3,
-        # max_failed_proposals: int = 3,
+        max_failed_proposals: int = 3,
     ):
         from adalflow.core.generator import Generator
         from adalflow.core import Prompt
@@ -263,12 +366,12 @@ class TGDOptimizer(TextOptimizer):
         )
 
         self.max_past_history = max_past_history
-        # self.max_failed_proposals = max_failed_proposals
+        self.max_failed_proposals = max_failed_proposals
 
         # initate the past history for each parameter
         for param in self.params:
             self.params_history[param.id] = []
-            # self.failed_proposals[param.id] = []
+            self.failed_proposals[param.id] = []
 
     @property
     def constraint_text(self):
@@ -323,39 +426,39 @@ class TGDOptimizer(TextOptimizer):
             history.to_yaml(exclude=["id"]) for history in self.params_history[param_id]
         ]
 
-    # def add_failed_proposal(self):
-    #     """Save a copy of the current value of the parameter in the failed proposals."""
-    #     for param in self.params:
-    #         failed_proposal = HistoryPrompt(
-    #             id=param.id,
-    #             value=param.data,
-    #             eval_score=None,
-    #         )
-    #         self.failed_proposals[param.id].append(failed_proposal)
-    #         if len(self.failed_proposals[param.id]) > self.max_failed_proposals:
-    #             for _ in range(
-    #                 len(self.failed_proposals[param.id]) - self.max_failed_proposals
-    #             ):
-    #                 self.failed_proposals[param.id].pop()
-    #     # if param_id not in self.failed_proposals:
-    #     #     self.failed_proposals[param_id] = []
-    #     # failed_proposal = HistoryPrompt(
-    #     #     id=param_id,
-    #     #     value=value,
-    #     #     eval_score=None,
-    #     # )
-    #     # self.failed_proposals[param_id].append(failed_proposal)
-    #     # if len(self.failed_proposals[param_id]) > self.max_failed_proposals:
-    #     #     for _ in range(len(self.failed_proposals[param_id]) - self.max_failed_proposals):
-    #     #         self.failed_proposals[param_id].pop()
+    def add_failed_proposal(self):
+        """Save a copy of the current value of the parameter in the failed proposals."""
+        for param in self.params:
+            failed_proposal = HistoryPrompt(
+                id=param.id,
+                value=param.data,
+                eval_score=None,
+            )
+            self.failed_proposals[param.id].append(failed_proposal)
+            if len(self.failed_proposals[param.id]) > self.max_failed_proposals:
+                for _ in range(
+                    len(self.failed_proposals[param.id]) - self.max_failed_proposals
+                ):
+                    self.failed_proposals[param.id].pop()
+        # if param_id not in self.failed_proposals:
+        #     self.failed_proposals[param_id] = []
+        # failed_proposal = HistoryPrompt(
+        #     id=param_id,
+        #     value=value,
+        #     eval_score=None,
+        # )
+        # self.failed_proposals[param_id].append(failed_proposal)
+        # if len(self.failed_proposals[param_id]) > self.max_failed_proposals:
+        #     for _ in range(len(self.failed_proposals[param_id]) - self.max_failed_proposals):
+        #         self.failed_proposals[param_id].pop()
 
-    # def render_failed_proposals(self, param_id: str) -> List[str]:
-    #     if param_id not in self.failed_proposals:
-    #         return []
-    #     return [
-    #         history.to_yaml(exclude=["id", "eval_score"])
-    #         for history in self.failed_proposals[param_id]
-    #     ]
+    def render_failed_proposals(self, param_id: str) -> List[str]:
+        if param_id not in self.failed_proposals:
+            return []
+        return [
+            history.to_yaml(exclude=["id", "eval_score"])
+            for history in self.failed_proposals[param_id]
+        ]
 
     # TODO: optimize with adalflow template for better readability
     def get_gradient_memory_text(self, param: Parameter) -> str:
@@ -400,11 +503,11 @@ class TGDOptimizer(TextOptimizer):
                 self.render_history(param.id) if self.max_past_history else None
             ),
             # failed proposals
-            # "failed_proposals": (
-            #     self.render_failed_proposals(param.id)
-            #     if self.max_failed_proposals
-            #     else None
-            # ),
+            "failed_proposals": (
+                self.render_failed_proposals(param.id)
+                if self.max_failed_proposals
+                else None
+            ),
         }
 
         return user_prompt_kwargs

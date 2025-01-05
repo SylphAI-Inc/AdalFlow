@@ -4,7 +4,7 @@ import adalflow as adal
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from adalflow.datasets.types import HotPotQAData
 
-from benchmarks.hotpot_qa._adal_train import load_datasets
+from benchmarks.hotpot_qa.config import load_datasets
 from benchmarks.hotpot_qa.adal_exp.build_multi_hop_rag import AgenticRAG
 from use_cases.config import gpt_3_model, gpt_4o_model
 
@@ -30,7 +30,7 @@ class AgenticRAGAdal(adal.AdalComponent):
         )
         eval_fn = AnswerMatchAcc(type="fuzzy_match").compute_single_item
         loss_fn = adal.EvalFnToTextLoss(
-            eval_fn=eval_fn, eval_fn_desc="fuzzy_match: 1 if str(y) in str(y_gt) else 0"
+            eval_fn=eval_fn, eval_fn_desc="fuzzy_match: 1 if str(y_gt) in str(y) else 0"
         )
         super().__init__(
             task=task,
@@ -46,7 +46,7 @@ class AgenticRAGAdal(adal.AdalComponent):
         if self.task.training:
             return self.task.forward, {"input": sample.question, "id": sample.id}
         else:
-            print("eval mode")
+            # print("eval mode")
             return self.task.call, {"input": sample.question, "id": sample.id}
 
     # TODO: use two map fn to make the cde even simpler
@@ -56,6 +56,7 @@ class AgenticRAGAdal(adal.AdalComponent):
         # y_label = ""
         # if y_pred and y_pred.data and y_pred.data.answer:
         #     y_label = y_pred.data.answer
+
         return self.eval_fn, {"y": y_pred, "y_gt": sample.answer}
 
     # train mode: get the loss and get the data from the full_response
@@ -93,11 +94,14 @@ def train_diagnose(
         teacher_model_config=gpt_3_model,
         text_optimizer_model_config=gpt_3_model,
     )
-    trainset = trainset[:1]
+    trainset = trainset[:5]
     trainer = adal.Trainer(adaltask=adal_component)
     trainer.diagnose(dataset=trainset, split="train")
     # trainer.diagnose(dataset=valset, split="val")
     # trainer.diagnose(dataset=testset, split="test")
+
+
+from adalflow.core.generator import BackwardPassSetup
 
 
 def train(
@@ -111,6 +115,9 @@ def train(
     debug=False,
     resume_from_ckpt=None,
     exclude_input_fields_from_bootstrap_demos=True,
+    seed=None,
+    tg: bool = False,
+    max_proposals_per_step: int = 5,
 ):
     adal_component = AgenticRAGAdal(
         **gpt_3_model,
@@ -119,6 +126,12 @@ def train(
         backward_engine_model_config=gpt_4o_model,
     )
     print(adal_component)
+    backward_pass_setup = None
+    if tg:
+        backward_pass_setup = BackwardPassSetup(
+            all_pred_at_once=False,
+            compute_grad_for_errors_only=False,
+        )
     trainer = adal.Trainer(
         train_batch_size=train_batch_size,
         adaltask=adal_component,
@@ -132,16 +145,20 @@ def train(
         optimization_order=optimization_order,
         exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
         sequential_order=["text", "demo"],
+        max_proposals_per_step=max_proposals_per_step,
+        backward_pass_setup=backward_pass_setup,
     )
+    trainer.set_random_seed(seed)
     print(trainer)
 
     train_dataset, val_dataset, test_dataset = load_datasets()
-    trainer.fit(
+    ckpt, _ = trainer.fit(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
         test_dataset=test_dataset,
         resume_from_ckpt=resume_from_ckpt,
     )
+    return ckpt
 
 
 if __name__ == "__main__":
@@ -150,21 +167,55 @@ if __name__ == "__main__":
     log = adal.get_logger(level="DEBUG", enable_console=False)
 
     adal.setup_env()
+    import json
+
+    import random
+
+    random.seed(2025)
+
+    adal.setup_env()
+
+    import argparse
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--strategy", type=str, default="constrained")
+    parser.add_argument("--use_tg", action="store_false")
+    parser.add_argument("--max_proposals_per_step", type=int, default=5)
+    parser.add_argument(
+        "output_path", nargs="?", help="File path to save the checkpoint"
+    )
+
+    args = parser.parse_args()
+
+    set_strategy = args.strategy
+    set_output_path = args.output_path
+    use_tg = args.use_tg
+    max_proposals_per_step = args.max_proposals_per_step
 
     # task = MultiHopRAGAdal(**gpt_3_model)
     # print(task)
 
-    # train_diagnose(**gpt_3_model)
+    train_diagnose(**gpt_3_model)
+    exit()
 
-    # train_diagnose(
-    #     **gpt_3_model,
-    # )
-
-    train(
+    ckpt = train(
         debug=False,
         max_steps=12,
+        seed=2025,
+        tg=use_tg,
+        strategy=set_strategy,
+        max_proposals_per_step=max_proposals_per_step,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_4_dca7e_run_1.json",
     )
+    print(f"ckpt: {ckpt}")
+    if set_output_path:
+        with open(set_output_path, "w") as f:
+            json.dump({"ckpt": ckpt}, f)
+        print(f"Checkpoint saved to {set_output_path}")
+    else:
+        print("No file path provided for saving the checkpoint.")
+
     # 0.68 on val without training, 0.74on the second step. 0.84 test
     # /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_2_029cb_run_1.json
     # 0.7, 0.72 /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_2_b7523_run_1.json
@@ -174,3 +225,5 @@ if __name__ == "__main__":
     # 1246s, 12 steps, 0.8 val, /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_defe7_run_1.json
     # 2149s, both gradients, 0.68 -> 0.78 /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_8a24a_run_1.json
     # /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_cdcb5_run_1.json 1728 s, 0.8
+    # /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_735a7_run_1.json 0.58 -> 0.68 (separate gradients)  "pass": 17,
+    #       "fail": 35

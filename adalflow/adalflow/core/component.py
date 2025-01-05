@@ -553,8 +553,6 @@ class Component:
         #    the difference between training vs. inference.
         from adalflow.optim.parameter import Parameter
 
-        print("has_bicall", self._has_bicall())
-
         if self._has_bicall():
             output = self.bicall(*args, **kwargs)
 
