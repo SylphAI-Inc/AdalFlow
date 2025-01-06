@@ -1,6 +1,7 @@
 """OpenAI ModelClient integration."""
 
 import os
+import base64
 from typing import (
     Dict,
     Sequence,
@@ -50,6 +51,14 @@ from adalflow.components.model_client.utils import parse_embedding_response
 
 log = logging.getLogger(__name__)
 T = TypeVar("T")
+
+# Models that support multimodal inputs
+MULTIMODAL_MODELS = {
+    "gpt-4o",  # Versatile, high-intelligence flagship model
+    "gpt-4o-mini",  # Fast, affordable small model for focused tasks
+    "o1",  # Reasoning model that excels at complex, multi-step tasks
+    "o1-mini",  # Smaller reasoning model for complex tasks
+}
 
 
 # completion parsing functions and you can combine them into one singple chat completion parser
@@ -331,6 +340,102 @@ class OpenAIClient(ModelClient):
         ]  # unserializable object
         output = super().to_dict(exclude=exclude)
         return output
+
+    def _encode_image(self, image_path: str) -> str:
+        """Encode image to base64 string.
+
+        Args:
+            image_path: Path to image file.
+
+        Returns:
+            Base64 encoded image string.
+        """
+        with open(image_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode("utf-8")
+
+    def _prepare_image_content(
+        self, image_source: Union[str, Dict[str, Any]], detail: str = "auto"
+    ) -> Dict[str, Any]:
+        """Prepare image content for API request.
+
+        Args:
+            image_source: Either a path to local image or a URL.
+            detail: Image detail level ('auto', 'low', or 'high').
+
+        Returns:
+            Formatted image content for API request.
+        """
+        if isinstance(image_source, str):
+            if image_source.startswith(("http://", "https://")):
+                return {
+                    "type": "image_url",
+                    "image_url": {"url": image_source, "detail": detail},
+                }
+            else:
+                base64_image = self._encode_image(image_source)
+                return {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_image}",
+                        "detail": detail,
+                    },
+                }
+        return image_source
+
+    def generate(
+        self,
+        prompt: str,
+        images: Optional[
+            Union[str, List[str], Dict[str, Any], List[Dict[str, Any]]]
+        ] = None,
+        model_kwargs: Optional[Dict[str, Any]] = None,
+    ) -> GeneratorOutput:
+        """Generate text response for given prompt and optionally images.
+
+        Args:
+            prompt: Text prompt.
+            images: Optional image source(s) - can be path(s), URL(s), or formatted dict(s).
+            model_kwargs: Additional model parameters.
+
+        Returns:
+            GeneratorOutput containing the model's response.
+        """
+        model_kwargs = model_kwargs or {}
+        model = model_kwargs.get("model", "gpt-4o-mini")
+        max_tokens = model_kwargs.get("max_tokens", 300)
+        detail = model_kwargs.get("detail", "auto")
+
+        # Check if model supports multimodal inputs when images are provided
+        if images and model not in MULTIMODAL_MODELS:
+            return GeneratorOutput(
+                error=f"Model {model} does not support multimodal inputs. Supported models: {MULTIMODAL_MODELS}"
+            )
+
+        # Prepare message content
+        if images:
+            content = [{"type": "text", "text": prompt}]
+            if not isinstance(images, list):
+                images = [images]
+            for img in images:
+                content.append(self._prepare_image_content(img, detail))
+            messages = [{"role": "user", "content": content}]
+        else:
+            messages = [{"role": "user", "content": prompt}]
+
+        try:
+            response = self.client.chat.completions.create(
+                model=model,
+                messages=messages,
+                max_tokens=max_tokens,
+            )
+            return GeneratorOutput(
+                id=response.id,
+                data=response.choices[0].message.content,
+                usage=response.usage.model_dump() if response.usage else None,
+                raw_response=response.model_dump(),
+            )
+        except Exception as e:
+            return GeneratorOutput(error=str(e))
 
 
 # if __name__ == "__main__":

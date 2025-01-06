@@ -18,15 +18,22 @@ Multimodal Generation
 What you will learn?
 ------------------
 
-1. How to use the OpenAI multimodal client for image understanding
+1. How to use OpenAI's multimodal capabilities in AdalFlow
 2. Different ways to input images (local files, URLs)
 3. Controlling image detail levels
 4. Working with multiple images
 
-The OpenAIMultimodalClient
-------------------------
+Multimodal Support in OpenAIClient
+--------------------------------
 
-The :class:`OpenAIMultimodalClient` extends AdalFlow's model client capabilities to handle images along with text. It supports:
+The :class:`OpenAIClient` supports both text and image inputs. For multimodal generation, you can use the following models:
+
+- ``gpt-4o``: Versatile, high-intelligence flagship model
+- ``gpt-4o-mini``: Fast, affordable small model for focused tasks (default)
+- ``o1``: Reasoning model that excels at complex, multi-step tasks
+- ``o1-mini``: Smaller reasoning model for complex tasks
+
+The client supports:
 
 - Local image files (automatically encoded to base64)
 - Image URLs
@@ -42,16 +49,17 @@ First, install AdalFlow with OpenAI support:
 
     pip install "adalflow[openai]"
 
-Then you can use the client with the Generator:
+Then you can use the client with the Generator. By default, it uses ``gpt-4o-mini``, but you can specify any supported model:
 
 .. code-block:: python
 
-    from adalflow import Generator, OpenAIMultimodalClient
+    from adalflow import Generator, OpenAIClient
 
+    # Using the default gpt-4o-mini model
     generator = Generator(
-        model_client=OpenAIMultimodalClient(),
+        model_client=OpenAIClient(),
         model_kwargs={
-            "model": "gpt-4o-mini",
+            "model": "gpt-4o-mini",  # or "gpt-4o", "o1", "o1-mini"
             "max_tokens": 300
         }
     )
@@ -60,6 +68,15 @@ Then you can use the client with the Generator:
     response = generator(
         prompt="Describe this image.",
         images="https://example.com/image.jpg"
+    )
+
+    # Using the flagship model for more complex tasks
+    generator_flagship = Generator(
+        model_client=OpenAIClient(),
+        model_kwargs={
+            "model": "gpt-4o",
+            "max_tokens": 300
+        }
     )
 
 Image Detail Levels
@@ -74,7 +91,7 @@ The client supports three detail levels:
 .. code-block:: python
 
     generator = Generator(
-        model_client=OpenAIMultimodalClient(),
+        model_client=OpenAIClient(),
         model_kwargs={
             "model": "gpt-4o-mini",
             "detail": "high"  # or "low" or "auto"
@@ -111,6 +128,7 @@ The client handles:
 2. API Integration:
    - Proper message formatting for OpenAI's vision models
    - Error handling and response parsing
+   - Model compatibility checking
    - Usage tracking
 
 3. Output Format:
@@ -121,23 +139,33 @@ The client handles:
 Limitations
 ---------
 
-Be aware of these limitations when using the multimodal client:
+Be aware of these limitations when using multimodal features:
 
-1. Image Size:
+1. Model Support and Capabilities:
+   - Four models available with different strengths:
+     - ``gpt-4o``: Best for complex visual analysis and detailed understanding
+     - ``gpt-4o-mini``: Good balance of speed and accuracy for common tasks
+     - ``o1``: Excels at multi-step reasoning with visual inputs
+     - ``o1-mini``: Efficient for focused visual reasoning tasks
+   - The client will return an error if using an unsupported model with images
+
+2. Image Size and Format:
    - Maximum file size: 20MB per image
    - Supported formats: PNG, JPEG, WEBP, non-animated GIF
 
-2. Model Capabilities:
-   - Best for general visual understanding
+3. Common Limitations:
    - May struggle with:
-     - Small text
-     - Precise spatial relationships
-     - Complex graphs
-     - Non-Latin text
+     - Very small or blurry text
+     - Complex spatial relationships
+     - Detailed technical diagrams
+     - Non-Latin text or symbols
 
-3. Cost Considerations:
-   - Image inputs are metered in tokens
+4. Cost and Performance Considerations:
+   - Image inputs increase token usage
    - High detail mode uses more tokens
-   - Consider using low detail mode for cost efficiency
+   - Consider using:
+     - ``gpt-4o-mini`` for routine tasks
+     - ``o1-mini`` for basic reasoning tasks
+     - ``gpt-4o`` or ``o1`` for complex analysis
 
-For more details, see the :class:`OpenAIMultimodalClient` API reference.
+For more details, see the :class:`OpenAIClient` API reference.
