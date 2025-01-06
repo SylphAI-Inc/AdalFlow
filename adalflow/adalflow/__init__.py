@@ -61,6 +61,7 @@ from adalflow.components.model_client import (
     AnthropicAPIClient,
     CohereAPIClient,
     BedrockAPIClient,
+    OpenAIMultimodalClient,
 )
 
 # data pipeline
@@ -129,4 +130,5 @@ __all__ = [
     "AnthropicAPIClient",
     "CohereAPIClient",
     "BedrockAPIClient",
+    "OpenAIMultimodalClient",
 ]

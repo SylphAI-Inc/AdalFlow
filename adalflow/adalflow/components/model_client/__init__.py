@@ -64,6 +64,10 @@ get_probabilities = LazyImport(
     "adalflow.components.model_client.openai_client.get_probabilities",
     OptionalPackages.OPENAI,
 )
+OpenAIMultimodalClient = LazyImport(
+    "adalflow.components.model_client.openai_multimodal_client.OpenAIMultimodalClient",
+    OptionalPackages.OPENAI,
+)
 
 __all__ = [
     "CohereAPIClient",
@@ -76,6 +80,7 @@ __all__ = [
     "GroqAPIClient",
     "OpenAIClient",
     "GoogleGenAIClient",
+    "OpenAIMultimodalClient",
 ]
 
 for name in __all__:

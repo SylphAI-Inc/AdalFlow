@@ -215,3 +215,13 @@ def safe_import(
             raise ImportError(f"{install_message}")
 
     return return_modules[0] if len(return_modules) == 1 else return_modules
+
+
+OPTIONAL_PACKAGES = {
+    "openai": "openai",  # For OpenAI API clients
+    "transformers": "transformers",  # For local models
+    "torch": "torch",  # For PyTorch models
+    "anthropic": "anthropic",  # For Claude models
+    "groq": "groq",  # For Groq models
+    "cohere": "cohere",  # For Cohere models
+}
