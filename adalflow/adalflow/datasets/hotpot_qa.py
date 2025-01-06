@@ -1,6 +1,6 @@
 import random
 import os
-from typing import Literal
+from typing import Literal, List
 
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
@@ -198,10 +198,11 @@ class HotPotQA(Dataset):
             # target_path = prepare_dataset_path(self.root, task_name, split)
             target_path = os.path.join(data_path_dir, f"{split}.json")
             # filter the examples with only the keys
-            save_examples = []
+            save_examples: List[HotPotQAData] = []
             for example in examples:
                 save_example = {k: example[k] for k in keys if k in example}
-                save_examples.append(save_example)
+                save_example = HotPotQAData.from_dict(save_example)
+                save_examples.append(save_example.to_dict())
             save_json(save_examples, f=target_path)
             if split == "train":
                 print(f"train example: {examples[0]}")

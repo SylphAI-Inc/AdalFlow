@@ -281,19 +281,25 @@ class RetrieverOutput(DataClass):
     It is up to the subclass of Retriever to specify the type of query and document.
     """
 
-    doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
-    doc_scores: Optional[List[float]] = field(
+    id: str = field(default=None, metadata={"desc": "The unique id of the output"})
+
+    doc_indices: List[int] = field(
+        default=required_field, metadata={"desc": "List of document indices"}
+    )
+    doc_scores: List[float] = field(
         default=None, metadata={"desc": "List of document scores"}
     )
-    query: Optional[RetrieverQueryType] = field(
+    query: RetrieverQueryType = field(
         default=None, metadata={"desc": "The query used to retrieve the documents"}
     )
-    documents: Optional[List[RetrieverDocumentType]] = field(
+    documents: List[RetrieverDocumentType] = field(
         default=None, metadata={"desc": "List of retrieved documents"}
     )
 
 
-RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
+RetrieverOutputType = Union[
+    List[RetrieverOutput], RetrieverOutput
+]  # so to support multiple queries at once
 
 
 #######################################################################################

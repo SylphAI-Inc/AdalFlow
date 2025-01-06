@@ -49,8 +49,14 @@ Remember:
 <END_OF_TASK_SPEC>
 """
 
+# - In this case, you are working as a multi-hop retriever and your answer in finish MUST be verbatim short factoid responses from retrieved context.
+# - Answer with only the exact answer phrase, not a full sentence or paragraph.
+
 DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
 {{react_agent_task_desc}}
+
+- You have a maximum of {{max_steps}} steps to complete the task. Plan your steps carefully.
+
 {# Tools #}
 {% if tools %}
 <START_OF_TOOLS>
@@ -95,6 +101,8 @@ Step {{ loop.index }}.
 "Action": "{{history.action.action}}",
 {% endif %}
 "Observation": "{{history.observation}}"
+
+Current Step/Max Step: {{step_history|length + 1}} / {{max_steps}}
 ------------------------
 {% endfor %}
 </STEPS>
@@ -109,6 +117,14 @@ Step {{ loop.index }}.
 def map_step_history_to_prompt(x: Parameter) -> str:
     output = []
     for i, step in enumerate(x.data):
+        step_str = f"Step {i + 1}.\n"
+        output.append(step_str + step.to_prompt_str())
+    return "\n".join(output)
+
+
+def map_step_history_list_to_prompt(x: Parameter) -> str:
+    output = []
+    for i, step in enumerate(x.data.step_history):
         step_str = f"Step {i + 1}.\n"
         output.append(step_str + step.to_prompt_str())
     return "\n".join(output)
@@ -283,6 +299,7 @@ class ReActAgent(Component):
                 requires_opt=True,
             ),
             "context_variables": self.context_variables,
+            "max_steps": self.max_steps,
         }
         self.planner = Generator(
             template=template,
@@ -326,7 +343,7 @@ class ReActAgent(Component):
             return None
 
         def finish(answer: str, **kwargs) -> str:
-            """Finish the task with answer."""
+            """Finish the task with verbatim short factoid responses from retrieved context."""
             return answer
 
         self._finish = finish
@@ -676,8 +693,16 @@ class ReActAgent(Component):
             return None
 
         last_step: StepOutput = None
-        if isinstance(step_history, Parameter):
+        if isinstance(
+            step_history, Parameter
+        ):  # change the step history at the last step
             try:
+                output = ReActOutput(
+                    step_history=step_history.data,
+                    answer=str(step_history.data[-1].observation),
+                )
+                step_history.data = output
+                step_history.data_in_prompt = map_step_history_list_to_prompt
                 return step_history
 
             except Exception as e:
@@ -687,7 +712,7 @@ class ReActAgent(Component):
             last_step = step_history[-1]
             # printc(f"last_step: {last_step}", color="yellow")
 
-            return last_step.observation
+            return str(last_step.observation)
 
     def call(self, *args, **kwargs) -> ReActOutput:
         output = self.bicall(*args, **kwargs)

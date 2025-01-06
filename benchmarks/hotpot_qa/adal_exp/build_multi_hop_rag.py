@@ -53,8 +53,13 @@ Here are some examples:
 {% endif %}
 <END_OF_SYSTEM_PROMPT>
 <START_OF_USER>
-Context: {{context}}
 Question: {{question}}
+{% if last_query is not none %}
+Last Query: {{last_query}}
+{% endif %}
+{% if context is not none %}
+Context from last search query: {{context}}
+{% endif %}
 <END_OF_USER>
 """
 
@@ -75,160 +80,6 @@ class DeduplicateList(adal.GradComponent):
         printc(f"DeduplicateList backward: {args}", "yellow")
         return super().backward(*args, **kwargs)
 
-
-# User customize an auto-grad operator
-# Need this to be a GradComponent
-
-
-# NOTE: deprecated
-# class MultiHopRetriever(adal.Retriever):
-#     def __init__(self, model_client, model_kwargs, passages_per_hop=3, max_hops=2):
-#         super().__init__()
-
-#         self.passages_per_hop = passages_per_hop
-#         self.max_hops = max_hops
-
-#         self.data_parser = adal.DataClassParser(
-#             data_class=QueryRewritterData, return_data_class=True, format_type="json"
-#         )
-
-#         # Grad Component
-#         self.query_generators: List[adal.Generator] = []
-#         for i in range(self.max_hops):
-#             self.query_generators.append(
-#                 adal.Generator(
-#                     name=f"query_generator_{i}",
-#                     model_client=model_client,
-#                     model_kwargs=model_kwargs,
-#                     prompt_kwargs={
-#                         "few_shot_demos": Parameter(
-#                             name="few_shot_demos_1",
-#                             data=None,
-#                             role_desc="To provide few shot demos to the language model",
-#                             requires_opt=True,
-#                             param_type=ParameterType.DEMOS,
-#                         ),
-#                         "task_desc_str": Parameter(
-#                             name="task_desc_str",
-#                             data="""Write a simple search query that will help answer a complex question.
-
-# You will receive a context(may contain relevant facts) and a question.
-# Think step by step.""",
-#                             role_desc="Task description for the language model",
-#                             requires_opt=True,
-#                             param_type=ParameterType.PROMPT,
-#                         ),
-#                         "output_format_str": self.data_parser.get_output_format_str(),
-#                     },
-#                     template=query_template,
-#                     output_processors=self.data_parser,
-#                     use_cache=True,
-#                 )
-#             )
-#         self.retriever = DspyRetriever(top_k=passages_per_hop)
-#         self.deduplicater = DeduplicateList()
-
-#     @staticmethod
-#     def context_to_str(context: List[str]) -> str:
-#         return "\n".join(context)
-
-#     @staticmethod
-#     def deduplicate(seq: list[str]) -> list[str]:
-#         """
-#         Source: https://stackoverflow.com/a/480227/1493011
-#         """
-
-#         seen = set()
-#         return [x for x in seq if not (x in seen or seen.add(x))]
-
-#     def call(self, *, question: str, id: str = None) -> adal.RetrieverOutput:
-#         context = []
-#         print(f"question: {question}")
-#         for i in range(self.max_hops):
-#             gen_out = self.query_generators[i](
-#                 prompt_kwargs={
-#                     "context": self.context_to_str(context),
-#                     "question": question,
-#                 },
-#                 id=id,
-#             )
-
-#             query = gen_out.data.query if gen_out.data and gen_out.data.query else None
-
-#             print(f"query {i}: {query}")
-
-#             retrieve_out = self.retriever.call(input=query)
-#             passages = retrieve_out[0].documents
-#             context = self.deduplicate(context + passages)
-#         out = [adal.RetrieverOutput(documents=context, query=query, doc_indices=[])]
-#         return out
-
-#     def forward(self, *, question: str, id: str = None) -> adal.Parameter:
-#         # assemble the foundamental building blocks
-#         context = []
-#         print(f"question: {question}")
-#         # 1. make question a parameter as generator does not have it yet
-#         # can create the parameter at the leaf, but not the intermediate nodes
-#         question_param = adal.Parameter(
-#             name="question",
-#             data=question,
-#             role_desc="The question to be answered",
-#             requires_opt=True,
-#             param_type=ParameterType.INPUT,
-#         )
-#         context_param = adal.Parameter(
-#             name="context",
-#             data=context,
-#             role_desc="The context to be used for the query",
-#             requires_opt=True,
-#             param_type=ParameterType.INPUT,
-#         )
-#         context_param.add_successor_map_fn(
-#             successor=self.query_generators[0],
-#             map_fn=lambda x: self.context_to_str(x.data),
-#         )
-
-#         for i in range(self.max_hops):
-
-#             gen_out = self.query_generators[i].forward(
-#                 prompt_kwargs={
-#                     "context": context_param,
-#                     "question": question_param,
-#                 },
-#                 id=id,
-#             )
-
-#             success_map_fn = lambda x: (  # noqa E731
-#                 x.full_response.data.query
-#                 if x.full_response
-#                 and x.full_response.data
-#                 and x.full_response.data.query
-#                 else None
-#             )
-#             print(f"query {i}: {success_map_fn(gen_out)}")
-
-#             gen_out.add_successor_map_fn(
-#                 successor=self.retriever, map_fn=success_map_fn
-#             )
-
-#             retrieve_out = self.retriever.forward(input=gen_out)
-
-#             def retrieve_out_map_fn(x: adal.Parameter):
-#                 return x.data[0].documents if x.data and x.data[0].documents else []
-
-#             print(f"retrieve_out: {retrieve_out}")
-
-#             retrieve_out.add_successor_map_fn(
-#                 successor=self.deduplicater, map_fn=retrieve_out_map_fn
-#             )
-
-#             context_param = self.deduplicater.forward(
-#                 exisiting_list=context_param, new_list=retrieve_out
-#             )
-
-#         context_param.param_type = ParameterType.RETRIEVER_OUTPUT
-
-#         return context_param
 
 query_generator_task_desc = """Write a simple search query that will help answer a complex question.
 
@@ -379,19 +230,31 @@ class MultiHopRetrieverCycle(adal.Retriever):
         return context
 
 
-task_desc_str = """Write a simple search query that will help answer a complex question.
+# task_desc_str = """Write a simple search query that will help answer a complex question.
 
-You will receive a context(may contain relevant facts) and a question.
+# You will receive a context(may contain relevant facts) and a question.
+# Think step by step."""
+
+task_desc_str = """
+You will receive an original question, last search query, and the retrieved context from the last search query.
+Write the next search query to help retrieve all relevant context to answer the original question.
 Think step by step."""
 
-task_desc_str = """ You are a query assistant that helps search all relevant context to answer a multi-hop question.
 
-You will a question, and existing context(may contain relevant facts along with its sub-questions).
-Write a new simple search query to help retrieve the relevant context to answer the question.
-Think step by step."""
+trained_task_desc_strs = [
+    "You are tasked with formulating precise search queries using the original question, last search query, and its retrieved context. Prioritize identifying, emphasizing, and explicitly including all crucial entities, relationships, and geographical details mentioned in the question. Ensure comprehensive retrieval by focusing on key elements such as specific individuals (e.g., 'Kyrie Irving'), roles, or contextual details required for accuracy. Demonstrate reasoning by cross-referencing multiple sources and provide clear examples where necessary. Adapt queries to capture all nuances effectively for improved relevance and accuracy. Think step by step.",
+    "You will receive an original question, the last search query, and the retrieved context from that search. Write the next search query to ensure comprehensive retrieval of all relevant context needed to answer the original question. Emphasize identifying, precisely including, and verifying specific key entities, historical events, and factual names directly linked to the question within the context. Explicitly use the context to confirm and match critical entities to improve recall and ensure consistency with the targeted entities. Avoid irrelevant inclusions or false positives by cross-referencing data and verifying alignment accurately. Think step by step.",
+]
 
 
-class MultiHopRetriever(adal.Retriever):
+# task_desc_str = """ You are a query assistant that helps search all relevant context to answer a multi-hop question.
+
+# You will a question, and existing context(may contain relevant facts along with its sub-questions).
+# Write a new simple search query to help retrieve the relevant context to answer the question.
+# Think step by step."""
+
+
+class MultiHopRetriever(adal.Component):
     def __init__(self, model_client, model_kwargs, passages_per_hop=3, max_hops=2):
         super().__init__()
 
@@ -406,6 +269,7 @@ class MultiHopRetriever(adal.Retriever):
         self.query_generators: adal.ComponentList[adal.Generator] = adal.ComponentList()
         self.retrievers: List[Retriever] = []
         self.deduplicaters: List[adal.GradComponent] = []
+
         for i in range(self.max_hops):
             self.query_generators.append(
                 adal.Generator(
@@ -422,10 +286,8 @@ class MultiHopRetriever(adal.Retriever):
                         # ),
                         "task_desc_str": Parameter(
                             name="task_desc_str",
-                            data="""Write a simple search query that will help answer a complex question.
-
-You will receive a context(may contain relevant facts) and a question.
-Think step by step.""",
+                            # data=task_desc_str,
+                            data=trained_task_desc_strs[i],
                             role_desc="Task description for the language model",
                             requires_opt=True,
                             param_type=ParameterType.PROMPT,
@@ -453,29 +315,52 @@ Think step by step.""",
         seen = set()
         return [x for x in seq if not (x in seen or seen.add(x))]
 
-    # TODO: simplify and avoid the need where users need to write two methods (call and forward)
-    def call(self, *, input: str, id: str = None) -> List[adal.RetrieverOutput]:
-        # assemble the foundamental building blocks
-        printc(f"question: {input}", "yellow")
-        out = self.forward(input=input, id=id)
+    def call(self, *, input: str, id: str = None) -> adal.RetrieverOutput:
+        context = []
+        queries: List[str] = []
+        last_query = None
+        for i in range(self.max_hops):
+            gen_out = self.query_generators[i](
+                prompt_kwargs={
+                    "context": context,
+                    "question": input,
+                    "last_query": last_query,
+                },
+                id=id,
+            )
 
-        if not isinstance(out, adal.Parameter):
-            raise ValueError("The output should be a parameter")
+            query = gen_out.data.query if gen_out.data and gen_out.data.query else input
 
-        return out.data  # or full response its up to users
+            # print(f"query {i}: {query}")
+
+            retrieve_out = self.retrievers[i](input=query, id=id)
+
+            passages = retrieve_out.documents
+            context = self.deduplicate(context + passages)
+            queries.append(query)
+            last_query = query
+        out = adal.RetrieverOutput(
+            documents=context, query=queries, doc_indices=[], id=id
+        )
+        printc(f"queries: {queries}", "yellow")
+        return out
 
     def forward(self, *, input: str, id: str = None) -> adal.Parameter:
         # assemble the foundamental building blocks
         printc(f"question: {input}", "yellow")
-        context = []
+        # context = []
 
         queries: List[str] = []
+
+        context = []
+        last_query = None
 
         for i in range(self.max_hops):
 
             gen_out: Parameter = self.query_generators[i].forward(
                 prompt_kwargs={
-                    "context": context,  # can be a list or a parameter
+                    "context": context,
+                    "last_query": last_query,
                     "question": adal.Parameter(
                         name="question",
                         data=input,
@@ -488,17 +373,11 @@ Think step by step.""",
             )
 
             success_map_fn = lambda x: (  # noqa E731
-                x.full_response.data.query
-                if x.full_response
-                and x.full_response.data
-                and x.full_response.data.query
-                else (
-                    x.full_response.raw_response
-                    if x.full_response and x.full_response.raw_response
-                    else None
-                )
+                x.data.data.query
+                if x.data and x.data.data and x.data.data.query
+                else (x.data.raw_response if x.data and x.data.raw_response else None)
             )
-            print(f"query {i}: {success_map_fn(gen_out)}")
+            # printc(f"query {i}: {success_map_fn(gen_out)}")
 
             queries.append(success_map_fn(gen_out))
 
@@ -512,7 +391,7 @@ Think step by step.""",
             retrieve_out = self.retrievers[i].forward(input=gen_out, id=id)
 
             def retrieve_out_map_fn(x: adal.Parameter):
-                return x.data[0].documents if x.data and x.data[0].documents else []
+                return x.data.documents if x.data and x.data.documents else []
 
             # print(f"retrieve_out: {retrieve_out}")
 
@@ -523,17 +402,23 @@ Think step by step.""",
             context = self.deduplicaters[i].forward(
                 exisiting_list=context, new_list=retrieve_out
             )
+            last_query = success_map_fn(gen_out)
 
         context.param_type = ParameterType.RETRIEVER_OUTPUT
 
         def context_to_retrover_output(x):
-            return [
-                adal.RetrieverOutput(
-                    documents=x.data, query=[input] + queries, doc_indices=[]
-                )
-            ]
+            return adal.RetrieverOutput(
+                documents=x.data, query=[input] + queries, doc_indices=[], id=id
+            )
 
         context.data = context_to_retrover_output(context)
+
+        if not isinstance(context.data, adal.RetrieverOutput):
+            raise ValueError(
+                f"The output should be a list of RetrieverOutput, got {type(context.data)}"
+            )
+
+        printc(f"queries: {queries}", "yellow")
 
         printc(f"MultiHopRetriever grad fn: {context.grad_fn}", "yellow")
 

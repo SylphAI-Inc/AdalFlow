@@ -112,7 +112,7 @@ class DspyRetriever(Retriever):
 
     def call(
         self, input: str, top_k: Optional[int] = None, id: str = None
-    ) -> List[RetrieverOutput]:
+    ) -> RetrieverOutput:
 
         k = top_k or self.top_k
 
@@ -121,18 +121,15 @@ class DspyRetriever(Retriever):
 
         output = self.dspy_retriever(query_or_queries=input, k=k)
         # print(f"dsy_retriever output: {output}")
-        final_output: List[RetrieverOutput] = []
         documents = output.passages
 
-        final_output.append(
-            RetrieverOutput(
-                query=input,
-                documents=documents,
-                doc_indices=[],
-            )
+        return RetrieverOutput(
+            query=input,
+            documents=documents,
+            doc_indices=[],
         )
+
         # print(f"final_output: {final_output}")
-        return final_output
 
     # def forward(self, *args, **kwargs):
     #     # Explicitly use adal.GradComponent's forward method
@@ -147,12 +144,12 @@ class DspyRetriever(Retriever):
     #     else:
     #         return self.call(*args, **kwargs)
 
-    def __call__(self, input: str, top_k: Optional[int] = None, id: str = None):
-        r"""Retrieves the top k relevant passages from using input as the subquery to obtain context for question"""
-        if self.training:
-            return adal.GradComponent.forward(self, input=input, top_k=top_k, id=id)
-        else:
-            return self.call(input=input, top_k=top_k, id=id)
+    # def __call__(self, input: str, top_k: Optional[int] = None, id: str = None):
+    #     r"""Retrieves the top k relevant passages from using input as the subquery to obtain context for question"""
+    #     if self.training:
+    #         return adal.GradComponent.forward(self, input=input, top_k=top_k, id=id)
+    #     else:
+    #         return self.call(input=input, top_k=top_k, id=id)
 
 
 task_desc_str = r"""Answer questions with short factoid answers.
@@ -225,7 +222,7 @@ class VanillaRAG(adal.GradComponent):
         retriever_out = self.retriever.call(input=question, id=id)
 
         successor_map_fn = lambda x: (  # noqa E731
-            "\n\n".join(x[0].documents) if x and x[0] and x[0].documents else ""
+            "\n\n".join(x.documents) if x and x.documents else ""
         )
         retrieved_context = successor_map_fn(retriever_out)
 
@@ -238,29 +235,16 @@ class VanillaRAG(adal.GradComponent):
             prompt_kwargs=prompt_kwargs,
             id=id,
         )
-        # self.llm.print_prompt(**prompt_kwargs)
-        # print(f"retrieved_context: {retrieved_context}")
-        # print(f"retriever_out: {retriever_out}")
+
         return output
 
-    # def call(self, *, question: str, id: str = None) -> adal.GeneratorOutput:
-    #     self.train()
-    #     out = self.forward(question=question, id=id)
-    #     if not isinstance(out, adal.Parameter):
-    #         raise ValueError(
-    #             "This output should be a Parameter, please check the forward function"
-    #         )
-    #     self.eval()
-    #     return out.data
-
-    # TODO: add id in the retriever output
     def forward(self, question: str, id: str = None) -> adal.Parameter:
         if not self.training:
             raise ValueError("This component is not supposed to be called in eval mode")
         retriever_out = self.retriever.forward(input=question, id=id)
         successor_map_fn = lambda x: (  # noqa E731
-            "\n\n".join(x.data[0].documents)
-            if x.data and x.data[0] and x.data[0].documents
+            "\n\n".join(x.data.documents)
+            if x.data and x.data and x.data.documents
             else ""
         )
         retriever_out.add_successor_map_fn(successor=self.llm, map_fn=successor_map_fn)
@@ -279,8 +263,8 @@ class VanillaRAG(adal.GradComponent):
         retriever_out = self.retriever(input=question)
         if isinstance(retriever_out, adal.Parameter):
             successor_map_fn = lambda x: (  # noqa E731
-                "\n\n".join(x.data[0].documents)
-                if x.data and x.data[0] and x.data[0].documents
+                "\n\n".join(x.data.documents)
+                if x.data and x.data and x.data.documents
                 else ""
             )
             retriever_out.add_successor_map_fn(
@@ -289,7 +273,7 @@ class VanillaRAG(adal.GradComponent):
             # retriever_out.requires_opt = False
         else:
             successor_map_fn = lambda x: (  # noqa E731
-                "\n\n".join(x[0].documents) if x and x[0] and x[0].documents else ""
+                "\n\n".join(x.documents) if x and x.documents else ""
             )
             retrieved_context = successor_map_fn(retriever_out)
         prompt_kwargs = {

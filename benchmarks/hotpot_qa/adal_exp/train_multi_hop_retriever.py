@@ -1,22 +1,21 @@
-from typing import Any, Callable, Dict, Tuple
+from typing import Any, Callable, Dict, Tuple, List
 
 import adalflow as adal
-from adalflow.eval.answer_match_acc import AnswerMatchAcc
+from adalflow.eval.retriever_recall import RetrieverEvaluator
 from adalflow.datasets.types import HotPotQAData
-
 from benchmarks.hotpot_qa.config import load_datasets
-from benchmarks.hotpot_qa.adal_exp.build_multi_hop_rag import AgenticRAG
+
+from benchmarks.hotpot_qa.adal_exp.build_multi_hop_rag import (
+    MultiHopRetriever,
+)
 from use_cases.config import gpt_3_model, gpt_4o_model
-from adalflow.utils import printc
 
 
-# TODO: look more into the loss function
-# TODO: test LLM judge too.
-
-from adalflow.components.agent.react import ReActOutput
+def retriever_recall(y: List[str], y_gt: List[str]) -> float:
+    return RetrieverEvaluator().compute_single_item(y, y_gt)["recall"]
 
 
-class AgenticRAGAdal(adal.AdalComponent):
+class MultiHopRetrieverAdal(adal.AdalComponent):
     def __init__(
         self,
         model_client: adal.ModelClient,
@@ -25,19 +24,17 @@ class AgenticRAGAdal(adal.AdalComponent):
         teacher_model_config: Dict | None = None,
         text_optimizer_model_config: Dict | None = None,
     ):
-        task = AgenticRAG(
+        task = MultiHopRetriever(
             model_client=model_client,
             model_kwargs=model_kwargs,
+            passages_per_hop=3,
+            max_hops=2,
         )
-        eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item  # 0.55
+        eval_fn = retriever_recall
         loss_fn = adal.EvalFnToTextLoss(
-            eval_fn=eval_fn, eval_fn_desc="fuzzy_match: 1 if str(y_gt) in str(y) else 0"
+            eval_fn=eval_fn,
+            eval_fn_desc="recall: len(y_gt.intersection(y)) / len(y_gt)",
         )
-        # eval_fn = f1_score  # 0.38 (hand crafted the finish, exat match 0.25)
-
-        # loss_fn = adal.EvalFnToTextLoss(
-        #     eval_fn=eval_fn, eval_fn_desc="Computes the overlaps between y and y_gt"
-        # )
         super().__init__(
             task=task,
             eval_fn=eval_fn,
@@ -52,41 +49,55 @@ class AgenticRAGAdal(adal.AdalComponent):
         if self.task.training:
             return self.task.forward, {"input": sample.question, "id": sample.id}
         else:
-            # print("eval mode")
             return self.task.call, {"input": sample.question, "id": sample.id}
 
     # TODO: use two map fn to make the cde even simpler
 
     # eval mode: get the generator output, directly engage with the eval_fn
-    def prepare_eval(self, sample: HotPotQAData, y_pred: ReActOutput) -> float:
-        y_label = ""
-        if y_pred is not None and y_pred.answer:
-            y_label = y_pred.answer
+    def prepare_eval(self, sample: HotPotQAData, y_pred: adal.RetrieverOutput) -> float:
+        if isinstance(y_pred, adal.Parameter):
+            raise ValueError("y_pred is not a RetrieverOutput")
+        documents = y_pred.documents
+        # get titles by split |
+        y_pred_titles = []
+        for doc in documents:
+            title, content = doc.split("|")
+            y_pred_titles.append(title)
 
-        printc(f"eval y_label: {y_label}, y_gt: {sample.answer}")
-
-        return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
+        return self.eval_fn, {
+            "y": y_pred_titles,
+            "y_gt": list(sample.gold_titles),
+        }
 
     # train mode: get the loss and get the data from the full_response
     def prepare_loss(self, sample: HotPotQAData, pred: adal.Parameter):
         # prepare gt parameter
         y_gt = adal.Parameter(
             name="y_gt",
-            data=sample.answer,
-            eval_input=sample.answer,
+            data=sample.gold_titles,
+            eval_input=list(sample.gold_titles),
             requires_opt=False,
         )
 
+        pred_titles = []
+        for doc in pred.data.documents:
+            title, content = doc.split("|")
+            pred_titles.append(title)
+
         # pred's full_response is the output of the task pipeline which is GeneratorOutput
         # pred.eval_input = (
-        #     pred.data[-1].observation if pred.data and pred.data[-1] else ""
+        #     pred.data.do
+        #     if pred.data and pred.data.data and pred.data.data.answer
+        #     else ""
         # )
-        pred.eval_input = pred.data.answer if pred.data else ""
-        # pred.eval_input = (
-        #     pred.data[-1].observation if pred.data and pred.data[-1] else ""
-        # )
-        printc(f"loss eval_input: {pred.eval_input}")
-        return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}, "id": sample.id}
+        pred.eval_input = pred_titles
+        return self.loss_fn, {
+            "kwargs": {"y": pred, "y_gt": y_gt},
+            "id": sample.id,
+        }
+
+
+from adalflow.core.generator import BackwardPassSetup
 
 
 # Note: diagnose is quite helpful, it helps you to quickly check if the evalfunction is the right metrics
@@ -99,21 +110,17 @@ def train_diagnose(
 
     trainset, valset, testset = load_datasets()
 
-    adal_component = AgenticRAGAdal(
+    adal_component = MultiHopRetrieverAdal(
         model_client,
         model_kwargs,
         backward_engine_model_config=gpt_4o_model,
         teacher_model_config=gpt_3_model,
         text_optimizer_model_config=gpt_3_model,
     )
-    # trainset = trainset[:5]
     trainer = adal.Trainer(adaltask=adal_component)
-    # trainer.diagnose(dataset=trainset, split="train")
-    trainer.diagnose(dataset=valset, split="val")
-    # trainer.diagnose(dataset=testset, split="test")
-
-
-from adalflow.core.generator import BackwardPassSetup
+    # trainer.diagnose(dataset=trainset, split="train")  # 0.69 recall
+    # trainer.diagnose(dataset=valset, split="val")  # 0.675 recall
+    trainer.diagnose(dataset=testset, split="test")  # 0.71 (0.665)
 
 
 def train(
@@ -121,7 +128,7 @@ def train(
     raw_shots: int = 0,
     bootstrap_shots: int = 4,
     max_steps=1,
-    num_workers=4,
+    num_workers=10,
     strategy="constrained",
     optimization_order="sequential",
     debug=False,
@@ -131,19 +138,19 @@ def train(
     tg: bool = False,
     max_proposals_per_step: int = 5,
 ):
-    adal_component = AgenticRAGAdal(
+    adal_component = MultiHopRetrieverAdal(
         **gpt_3_model,
-        teacher_model_config=gpt_3_model,
+        teacher_model_config=gpt_4o_model,
         text_optimizer_model_config=gpt_4o_model,  # gpt3.5 is not enough to be used as a good optimizer, it struggles for long contenxt
         backward_engine_model_config=gpt_4o_model,
     )
-    print(adal_component)
     backward_pass_setup = None
     if tg:
         backward_pass_setup = BackwardPassSetup(
             all_pred_at_once=False,
             compute_grad_for_errors_only=False,
         )
+    # print(adal_component)
     trainer = adal.Trainer(
         train_batch_size=train_batch_size,
         adaltask=adal_component,
@@ -176,9 +183,10 @@ def train(
 if __name__ == "__main__":
     from use_cases.config import gpt_3_model
 
-    log = adal.get_logger(level="DEBUG", enable_console=False)
+    # log = adal.get_logger(level="DEBUG", enable_console=False)
 
     adal.setup_env()
+
     import json
 
     import random
@@ -211,14 +219,15 @@ if __name__ == "__main__":
     # train_diagnose(**gpt_3_model)
     # exit()
 
+    # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     ckpt = train(
         debug=False,
         max_steps=12,
-        seed=2025,
+        seed=2025,  # pass the numpy seed
         tg=use_tg,
         strategy=set_strategy,
         max_proposals_per_step=max_proposals_per_step,
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_4_dca7e_run_1.json",
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )
     print(f"ckpt: {ckpt}")
     if set_output_path:
@@ -228,14 +237,23 @@ if __name__ == "__main__":
     else:
         print("No file path provided for saving the checkpoint.")
 
-    # 0.68 on val without training, 0.74on the second step. 0.84 test
-    # /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_2_029cb_run_1.json
-    # 0.7, 0.72 /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_2_b7523_run_1.json
-    # 208.085706949234s, 2 steps, maximum 4 steps allow for an agent.
-    # 0.72->0.74, 4 steps, 366s, /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_4_dca7e_run_1.json [Already faster, still lots to optimize]
+    # notes for debug: if have nontype, delete all model cache and try again
+    #    raise ValueError(ValueError: score must be provided for each demo,
 
-    # 1246s, 12 steps, 0.8 val, /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_defe7_run_1.json
-    # 2149s, both gradients, 0.68 -> 0.78 /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_8a24a_run_1.json
-    # /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_cdcb5_run_1.json 1728 s, 0.8
-    # /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_735a7_run_1.json 0.58 -> 0.68 (separate gradients)  "pass": 17,
-    #       "fail": 35
+    # 12/11/2024
+    # demo only: /Users/liyin/Documents/test/LightRAG/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_8cdfc_run_9.json
+
+    # why text grad did not improve in the rag case? Do we need to improve the meta prompt?
+    # /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_2686e_run_1.json
+    # 0.58 -> 0.68 on the test split
+    # 0.72 text grad  /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_c1660_run_1.json
+    # try cycle next
+    #  0.66 /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_1d189_run_1.json
+    # no gradients 1021s (/Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_68e7e_run_1.json) -> 0.64 -> 0.68, pass 10/10+28
+    # no gradient but scores (positive & negative) /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_83871_run_1.json 0.64->0.66, test 0.64 -> 0.66
+    # no gradient but only negative score
+    # no gradient but score + teacher demonstration.
+    # feedback while seeing the gt + y
+    # only negative feedback /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_f5506_run_1.json 0.62 -> 0.7
+    # /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_b4aa5_run_1.json 0.74 pass rate 8 32
+    # random cycle rag: /Users/liyin/.adalflow/ckpt/MultiHopRAGCycleAdal/random_max_steps_12_82bd2_run_1.json 0.64

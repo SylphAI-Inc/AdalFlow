@@ -135,7 +135,7 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
             )
         response.trace_forward_pass(
             input_args={"input": input, "top_k": top_k},
-            full_response=response,
+            full_response=response.data,
             id=self.id,
             name=self.name,
         )
