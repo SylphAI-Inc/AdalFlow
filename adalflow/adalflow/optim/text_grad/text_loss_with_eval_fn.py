@@ -193,6 +193,8 @@ class EvalFnToTextLoss(LossComponent):
         metadata: Dict[str, str] = None,
     ):
         if not pred.requires_opt:
+            if response.score is not None:
+                pred.set_score(response.score)
             log.debug(
                 f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
             )
@@ -308,7 +310,8 @@ class EvalFnToTextLoss(LossComponent):
 
         # backward the end to end score
         # TODO: not really useful
-        pred.set_score(response.data)
+        if response.score is not None:
+            pred.set_score(response.score)
         pred.set_gt(ground_truth)
         print(f"pred: {pred.name}, gt: {ground_truth}")
         # print(f"setting pred name {pred.name} score to {response.data}")

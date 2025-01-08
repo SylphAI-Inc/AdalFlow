@@ -18,6 +18,7 @@ from adalflow.optim.parameter import (
 )
 from adalflow.optim.types import ParameterType
 from adalflow.core.types import GeneratorOutput
+from adalflow.utils import printc
 
 import json
 
@@ -212,7 +213,8 @@ class GradComponent(Component):
                 pred.backward_engine_disabled = True
 
         for _, pred in enumerate(children_params):
-            pred.set_score(response.score)
+            if response.score is not None:
+                pred.set_score(response.score)
 
             if pred.param_type == ParameterType.DEMOS:
                 pred.add_score_to_trace(
@@ -377,6 +379,8 @@ class GradComponent2(GradComponent):
         metadata: Dict[str, str] = None,
     ):
         if not pred.requires_opt:
+            if response.score is not None:
+                pred.set_score(response.score)
             log.debug(
                 f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
             )
@@ -492,7 +496,8 @@ class GradComponent2(GradComponent):
 
         # backward the end to end score
         # TODO: not really useful
-        pred.set_score(response.score)
+        if response.score is not None:
+            pred.set_score(response.score)
         pred.set_gt(ground_truth)
         print(f"pred: {pred.name}, gt: {ground_truth}")
         # print(f"setting pred name {pred.name} score to {response.data}")
@@ -533,9 +538,11 @@ class GradComponent2(GradComponent):
         else:
 
             for _, pred in enumerate(children_params):
+                if response.score is not None:
+                    pred.set_score(response.score)
+                printc(f"score score for pred name: {pred.name}")
                 if not pred.requires_opt:
                     continue
-                pred.set_score(response.score)
 
                 if pred.param_type == ParameterType.DEMOS:
                     pred.add_score_to_trace(

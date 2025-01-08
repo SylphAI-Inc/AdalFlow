@@ -337,7 +337,7 @@ class MultiHopRetriever(adal.Component):
                             data=task_desc_str,
                             # data=trained_task_desc_strs[i],
                             role_desc=f"Task description for {i+1}th LLM as a query generator",
-                            requires_opt=True,
+                            requires_opt=False,
                             param_type=ParameterType.PROMPT,
                         ),
                         "output_format_str": self.data_parser.get_output_format_str(),

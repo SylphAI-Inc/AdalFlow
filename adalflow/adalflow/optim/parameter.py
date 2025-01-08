@@ -615,7 +615,9 @@ class Parameter(Generic[T]):
         But this score is only used to relay the score to the demo parametr.
         """
         if not isinstance(score, float):
-            raise ValueError(f"score is not float, but {type(score)}")
+            raise ValueError(
+                f"score is not float, but {type(score)}, parameter name: {self.name}"
+            )
         self.score = score
 
     def add_dataclass_to_trace(self, trace: DataClass, is_teacher: bool = True):

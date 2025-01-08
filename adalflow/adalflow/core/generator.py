@@ -59,7 +59,7 @@ __all__ = ["Generator", "BackwardEngine", "create_teacher_generator"]
 
 log = logging.getLogger(__name__)
 
-DEBUG_MODE = os.environ.get("DEBUG_MODE", True)
+DEBUG_MODE = os.environ.get("DEBUG_MODE", False)
 
 PromptArgType = Dict[str, Union[str, Parameter]]
 
@@ -659,7 +659,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # backward score to the demo parameter
         for pred in children_params:
             # if pred.requires_opt:
-            pred.set_score(response.score)
+            if response.score is not None:
+                pred.set_score(response.score)
             log.debug(
                 f"backpropagate the score {response.score} to {pred.name}, is_teacher: {self.teacher_mode}"
             )
@@ -877,7 +878,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             )
             var_gradient.add_prompt(backward_engine_prompt_str)
             pred.add_gradient(var_gradient)
-            pred.set_score(response.score)
+            if response.score is not None:
+                pred.set_score(response.score)
 
     @staticmethod
     def _backward_through_one_predecessor(
@@ -1024,7 +1026,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         )
         var_gradient.add_prompt(backward_engine_prompt_str)
         pred.add_gradient(var_gradient)
-        pred.set_score(response.score)
+        if response.score is not None:
+            pred.set_score(response.score)
 
     def _run_callbacks(
         self,
