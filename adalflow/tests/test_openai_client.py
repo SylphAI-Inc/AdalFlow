@@ -39,9 +39,44 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
             ),
         }
         self.mock_response = ChatCompletion(**self.mock_response)
+        self.mock_vision_response = {
+            "id": "cmpl-4Q8Z5J9Z1Z5z5",
+            "created": 1635820005,
+            "object": "chat.completion",
+            "model": "gpt-4o",
+            "choices": [
+                {
+                    "message": {
+                        "content": "The image shows a beautiful sunset over mountains.",
+                        "role": "assistant",
+                    },
+                    "index": 0,
+                    "finish_reason": "stop",
+                }
+            ],
+            "usage": CompletionUsage(
+                completion_tokens=15, prompt_tokens=25, total_tokens=40
+            ),
+        }
+        self.mock_vision_response = ChatCompletion(**self.mock_vision_response)
         self.api_kwargs = {
             "messages": [{"role": "user", "content": "Hello"}],
             "model": "gpt-3.5-turbo",
+        }
+        self.vision_api_kwargs = {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "Describe this image"},
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": "https://example.com/image.jpg", "detail": "auto"},
+                        },
+                    ],
+                }
+            ],
+            "model": "gpt-4o",
         }
 
     def test_encode_image(self):
@@ -93,7 +128,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
     def test_convert_inputs_to_api_kwargs_with_images(self):
         # Test with single image URL
         model_kwargs = {
-            "model": "gpt-4-vision-preview",
+            "model": "gpt-4o",
             "images": "https://example.com/image.jpg",
         }
         result = self.client.convert_inputs_to_api_kwargs(
@@ -112,7 +147,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
 
         # Test with multiple images
         model_kwargs = {
-            "model": "gpt-4-vision-preview",
+            "model": "gpt-4o",
             "images": [
                 "https://example.com/image1.jpg",
                 "https://example.com/image2.jpg",
@@ -198,6 +233,60 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(output.usage.completion_tokens, 10)
         self.assertEqual(output.usage.prompt_tokens, 20)
         self.assertEqual(output.usage.total_tokens, 30)
+
+    @patch("adalflow.components.model_client.openai_client.AsyncOpenAI")
+    async def test_acall_llm_with_vision(self, MockAsyncOpenAI):
+        mock_async_client = AsyncMock()
+        MockAsyncOpenAI.return_value = mock_async_client
+
+        # Mock the vision model response
+        mock_async_client.chat.completions.create = AsyncMock(
+            return_value=self.mock_vision_response
+        )
+
+        # Call the _acall method with vision model
+        result = await self.client.acall(
+            api_kwargs=self.vision_api_kwargs, model_type=ModelType.LLM
+        )
+
+        # Assertions
+        MockAsyncOpenAI.assert_called_once()
+        mock_async_client.chat.completions.create.assert_awaited_once_with(
+            **self.vision_api_kwargs
+        )
+        self.assertEqual(result, self.mock_vision_response)
+
+    @patch(
+        "adalflow.components.model_client.openai_client.OpenAIClient.init_sync_client"
+    )
+    @patch("adalflow.components.model_client.openai_client.OpenAI")
+    def test_call_with_vision(self, MockSyncOpenAI, mock_init_sync_client):
+        mock_sync_client = Mock()
+        MockSyncOpenAI.return_value = mock_sync_client
+        mock_init_sync_client.return_value = mock_sync_client
+
+        # Mock the vision model response
+        mock_sync_client.chat.completions.create = Mock(return_value=self.mock_vision_response)
+
+        # Set the sync client
+        self.client.sync_client = mock_sync_client
+
+        # Call the call method with vision model
+        result = self.client.call(api_kwargs=self.vision_api_kwargs, model_type=ModelType.LLM)
+
+        # Assertions
+        mock_sync_client.chat.completions.create.assert_called_once_with(
+            **self.vision_api_kwargs
+        )
+        self.assertEqual(result, self.mock_vision_response)
+
+        # Test parse_chat_completion for vision model
+        output = self.client.parse_chat_completion(completion=self.mock_vision_response)
+        self.assertTrue(isinstance(output, GeneratorOutput))
+        self.assertEqual(output.raw_response, "The image shows a beautiful sunset over mountains.")
+        self.assertEqual(output.usage.completion_tokens, 15)
+        self.assertEqual(output.usage.prompt_tokens, 25)
+        self.assertEqual(output.usage.total_tokens, 40)
 
 
 if __name__ == "__main__":
