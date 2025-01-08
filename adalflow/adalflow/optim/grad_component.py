@@ -1,6 +1,6 @@
 """Base class for Autograd Components that can be called and backpropagated through."""
 
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING, Callable, Optional, Dict
 from collections import OrderedDict
 import uuid
 import logging
@@ -8,13 +8,29 @@ from copy import deepcopy
 
 if TYPE_CHECKING:
     from adalflow.core.generator import BackwardEngine
-    from adalflow.optim.parameter import Parameter
 
+    from adalflow.core import ModelClient
+from adalflow.optim.parameter import (
+    Parameter,
+    OutputParameter,
+    Gradient,
+    GradientContext,
+)
 from adalflow.optim.types import ParameterType
+from adalflow.core.types import GeneratorOutput
+
+import json
 
 from adalflow.core.component import Component
 from adalflow.optim.function import BackwardContext
 from adalflow.utils.registry import EntityMapping
+from adalflow.core.prompt_builder import Prompt
+from adalflow.optim.text_grad.backend_engine_prompt import (
+    LOSS_CONVERSATION_TEMPLATE_STRING,
+    LOSS_CONVERSATION_START_INSTRUCTION_STRING_FN,
+    OBJECTIVE_INSTRUCTION_BASE,
+    OBJECTIVE_INSTRUCTION_CHAIN,
+)
 
 
 __all__ = ["GradComponent", "FunGradComponent", "fun_to_grad_component"]
@@ -45,8 +61,27 @@ class GradComponent(Component):
         super().__setattr__("backward_engine", None)
         super().__setattr__("id", str(uuid.uuid4()))
 
-    def set_backward_engine(self, backward_engine: "BackwardEngine", *args, **kwargs):
-        raise NotImplementedError("set_backward_engine method is not implemented")
+    # def set_backward_engine(self, backward_engine: "BackwardEngine", *args, **kwargs):
+    #     raise NotImplementedError("set_backward_engine method is not implemented")
+    def set_backward_engine(
+        self,
+        backward_engine: "BackwardEngine" = None,
+        model_client: "ModelClient" = None,
+        model_kwargs: Dict[str, object] = None,
+    ):
+        from adalflow.core.generator import BackwardEngine
+
+        self.backward_engine = backward_engine
+        if not backward_engine:
+            log.info(
+                "EvalFnToTextLoss: No backward engine provided. Creating one using model_client and model_kwargs."
+            )
+            self.backward_engine = BackwardEngine(model_client, model_kwargs)
+        else:
+            if type(backward_engine) is not BackwardEngine:
+                raise TypeError(
+                    f"EvalFnToTextLoss: backward_engine must be an instance of BackwardEngine. Got {type(backward_engine)}."
+                )
 
     def call(self, *args, **kwargs):
         raise NotImplementedError("call method is not implemented")
@@ -152,6 +187,7 @@ class GradComponent(Component):
                 backward_fn=self.backward,
                 response=response,
                 id=data_id,
+                input_kwargs=kwargs,
             )
         )
         return response
@@ -176,11 +212,11 @@ class GradComponent(Component):
                 pred.backward_engine_disabled = True
 
         for _, pred in enumerate(children_params):
-            pred.set_score(response._score)
+            pred.set_score(response.score)
 
             if pred.param_type == ParameterType.DEMOS:
                 pred.add_score_to_trace(
-                    trace_id=id, score=response._score, is_teacher=self.teacher_mode
+                    trace_id=id, score=response.score, is_teacher=self.teacher_mode
                 )
 
             # pass the current gradient to pred
@@ -275,6 +311,245 @@ def fun_to_grad_component(fun) -> FunGradComponent:
     EntityMapping.register(class_name, component_class)
 
     return component_class()
+
+
+class GradComponent2(GradComponent):
+    "Graduable functional component"
+
+    def __init__(
+        self,
+        name: str,
+        desc: str,
+        backward_engine: Optional["BackwardEngine"] = None,
+        model_client: "ModelClient" = None,
+        model_kwargs: Dict[str, object] = None,
+    ):
+        super().__init__()
+        self.desc = desc
+        self.backward_engine = backward_engine
+        self.model_client = model_client
+        self.name = name or f"{self.__class__.__name__}"
+
+        self.backward_engine = None
+        if backward_engine is None:
+            log.info(
+                "EvalFnToTextLoss: No backward engine provided. Creating one using model_client and model_kwargs."
+            )
+            if model_client and model_kwargs:
+
+                self.set_backward_engine(backward_engine, model_client, model_kwargs)
+        else:
+            if not isinstance(backward_engine, BackwardEngine):
+                raise TypeError(
+                    "EvalFnToTextLoss: backward_engine must be an instance of BackwardEngine."
+                )
+            self.backward_engine = backward_engine
+
+    def set_backward_engine(
+        self,
+        backward_engine: "BackwardEngine" = None,
+        model_client: "ModelClient" = None,
+        model_kwargs: Dict[str, object] = None,
+    ):
+        from adalflow.core.generator import BackwardEngine
+
+        self.backward_engine = backward_engine
+        if not backward_engine:
+            log.info(
+                "EvalFnToTextLoss: No backward engine provided. Creating one using model_client and model_kwargs."
+            )
+            self.backward_engine = BackwardEngine(model_client, model_kwargs)
+        else:
+            if type(backward_engine) is not BackwardEngine:
+                raise TypeError(
+                    f"EvalFnToTextLoss: backward_engine must be an instance of BackwardEngine. Got {type(backward_engine)}."
+                )
+
+    @staticmethod
+    def _backward_through_one_predecessor(
+        pred: Parameter,
+        kwargs: Dict[str, Parameter],
+        response: Parameter,
+        desc: str,
+        backward_engine: "BackwardEngine",
+        ground_truth: object = None,
+        is_intermediate_node: bool = False,  # if the node is an intermediate node in the backpropagation chain
+        metadata: Dict[str, str] = None,
+    ):
+        if not pred.requires_opt:
+            log.debug(
+                f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
+            )
+            return
+        log.debug(
+            f"EvalFnToTextLoss: Backward through {pred}, is_intermediate_node: {is_intermediate_node}"
+        )
+
+        if pred.check_if_already_computed_gradient_respect_to(response.id):
+            log.info(
+                f"EvalFnToTextLoss: Gradient already computed for {pred.role_desc} with respect to {response.role_desc}"
+            )
+
+            return
+
+        if backward_engine is None:
+            log.error(
+                "EvalFnToTextLoss: backward_engine is required for text prompt optimization."
+            )
+            raise ValueError(
+                "EvalFnToTextLoss: backward_engine is required for text prompt optimization."
+            )
+
+        instruction_str, objective_str = None, None
+
+        # convert kwargs to key, (value, type(eval_input))
+
+        inputs = {}
+        for k, v in kwargs.items():
+            inputs[k] = (v.get_param_info(), str(type(v.eval_input)))
+
+        # response information
+        conversation_str = Prompt(
+            LOSS_CONVERSATION_TEMPLATE_STRING,
+            prompt_kwargs={
+                "inputs": inputs,
+                "eval_fn_desc": desc,
+                "response_value": response.get_prompt_data(),
+                "metadata": json.dumps(metadata) if metadata else None,
+            },
+        )()
+
+        conv_ins_template = LOSS_CONVERSATION_START_INSTRUCTION_STRING_FN
+        obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
+
+        if is_intermediate_node:
+            # conv_ins_template = CONVERSATION_START_INSTRUCTION_STRING_FN_CHAIN
+            obj_ins_template = OBJECTIVE_INSTRUCTION_CHAIN
+
+        instruction_str = Prompt(
+            conv_ins_template,
+            prompt_kwargs={
+                "variable": pred.get_param_info(),
+                "conversation_str": conversation_str,
+            },
+        )()
+        objective_str = Prompt(
+            obj_ins_template,
+            prompt_kwargs={
+                "response_name": response.name,
+                "response_desc": response.role_desc,
+                "response_gradient": response.data,
+            },
+        )()
+
+        log.info(f"EvalFnToTextLoss: Instruction: {instruction_str}")
+        log.info(f"EvalFnToTextLoss: Objective: {objective_str}")
+        log.info(f"EvalFnToTextLoss: Conversation: {conversation_str}")
+
+        # Compute the gradient
+        backward_engine_prompt_kwargs = {
+            "conversation_sec": instruction_str,
+            "objective_instruction_sec": objective_str,
+            # "evaluate_variable_instruction_sec": eval_str,
+        }
+        gradient_value: GeneratorOutput = backward_engine(
+            prompt_kwargs=backward_engine_prompt_kwargs
+        )
+        gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
+        # print(f"Backward engine prompt: {gradient_prompt}")
+        gradient_value_data = (
+            gradient_value.data
+            or backward_engine.failure_message_to_optimizer(
+                gradient_response=gradient_value
+            )
+        )
+
+        gradient_value_data = (
+            f"expected answer: {ground_truth},\n Feedback: {gradient_value_data}"
+        )
+        # print(f"gradient_value_data: {gradient_value_data}")
+
+        log.debug(f"EvalFnToTextLoss: Gradient for {pred}: {gradient_value_data}")
+
+        # score should be passed to grad
+        gradient_param = Gradient(
+            data=gradient_value_data,
+            data_id=response.data_id,
+            score=response.score,
+            from_response=response,
+            to_pred=pred,
+        )
+        gradient_param.add_prompt(gradient_prompt)
+        gradient_param.add_context(
+            GradientContext(
+                input_output=conversation_str,
+                response_desc=response.role_desc,
+                variable_desc=pred.role_desc,
+                # ground_truth=ground_truth,
+            )
+        )
+        pred.add_gradient(gradient_param)
+
+        # backward the end to end score
+        # TODO: not really useful
+        pred.set_score(response.score)
+        pred.set_gt(ground_truth)
+        print(f"pred: {pred.name}, gt: {ground_truth}")
+        # print(f"setting pred name {pred.name} score to {response.data}")
+        # print(f"gradient_param: {pred.gradients}")
+
+        # TODO: reduce meta
+
+    def backward(self, *, response: "OutputParameter", id: str = None, **kwargs):
+        """Backward pass of the function. In default, it will pass all the scores to the predecessors.
+
+        Note: backward is mainly used internally and better to only allow kwargs as the input.
+
+        Subclass should implement this method if you need additional backward logic.
+        """
+
+        log.info(f"GradComponent backward: {response.name}")
+        children_params = response.predecessors
+
+        input_kwargs = kwargs.get("input_kwargs", {})
+
+        is_intermediate_node = False
+        response_gradient_context = response.get_gradient_and_context_text().strip()
+        if response_gradient_context != "":
+            log.info("EvalFnToTextLoss is an intermediate node.")
+            is_intermediate_node = True
+
+        if response.get_gradient_and_context_text().strip() == "":
+            log.info(f"Generator: Backward: No gradient found for {response}.")
+
+        # backward the backward engine disable signal
+        if response.backward_engine_disabled:
+            for pred in children_params:
+                pred.backward_engine_disabled = True
+
+        if not self.backward_engine:
+            super().backward(response=response, id=id)
+
+        else:
+
+            for _, pred in enumerate(children_params):
+                if not pred.requires_opt:
+                    continue
+                pred.set_score(response.score)
+
+                if pred.param_type == ParameterType.DEMOS:
+                    pred.add_score_to_trace(
+                        trace_id=id, score=response.score, is_teacher=self.teacher_mode
+                    )
+
+                self._backward_through_one_predecessor(
+                    pred=pred,
+                    kwargs=input_kwargs,
+                    response=response,
+                    backward_engine=self.backward_engine,
+                    desc=self.desc,
+                    is_intermediate_node=is_intermediate_node,
+                )
 
 
 if __name__ == "__main__":

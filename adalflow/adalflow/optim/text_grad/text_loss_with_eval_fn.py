@@ -128,8 +128,6 @@ class EvalFnToTextLoss(LossComponent):
             eval_inputs[k] = v.eval_input
         score: float = self.eval_fn(**eval_inputs)
 
-        # Create a parameter
-        # TODO: improve the readability of the input and response
         eval_param: Parameter = OutputParameter(
             name=self.name + "_output",
             data=score,
@@ -158,7 +156,7 @@ class EvalFnToTextLoss(LossComponent):
                 eval_fn_desc=self.eval_fn_desc,
                 kwargs=kwargs,
                 metadata=metadata,
-                # ground_truth=gt,
+                ground_truth=gt,
             )
         )
         return eval_param
@@ -280,6 +278,10 @@ class EvalFnToTextLoss(LossComponent):
             or backward_engine.failure_message_to_optimizer(
                 gradient_response=gradient_value
             )
+        )
+
+        gradient_value_data = (
+            f"expected answer: {ground_truth},\n Feedback: {gradient_value_data}"
         )
         # print(f"gradient_value_data: {gradient_value_data}")
 

@@ -38,6 +38,9 @@ class HotPotQAData(Example):
         default=None,
     )
 
+    __input_fields__ = ["question"]
+    __output_fields__ = ["answer"]
+
     # @staticmethod
     # def from_dict(d: Dict[str, Any]) -> "HotPotQAData":
     #     # Preprocess gold_titles

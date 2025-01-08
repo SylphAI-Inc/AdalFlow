@@ -129,38 +129,16 @@ class DspyRetriever(Retriever):
             doc_indices=[],
         )
 
-        # print(f"final_output: {final_output}")
-
-    # def forward(self, *args, **kwargs):
-    #     # Explicitly use adal.GradComponent's forward method
-    #     output = adal.GradComponent.forward(self, *args, **kwargs)
-    #     print(f"output: {output}")
-    #     return output
-
-    # def __call__(self, *args, **kwargs):
-    #     r"""Retrieves the top k passages from using input as the query"""
-    #     if self.training:
-    #         return adal.GradComponent.forward(self, *args, **kwargs)
-    #     else:
-    #         return self.call(*args, **kwargs)
-
-    # def __call__(self, input: str, top_k: Optional[int] = None, id: str = None):
-    #     r"""Retrieves the top k relevant passages from using input as the subquery to obtain context for question"""
-    #     if self.training:
-    #         return adal.GradComponent.forward(self, input=input, top_k=top_k, id=id)
-    #     else:
-    #         return self.call(input=input, top_k=top_k, id=id)
-
 
 task_desc_str = r"""Answer questions with short factoid answers.
 
 You will receive context(contain relevant facts).
 Think step by step."""
 
-task_desc_str = r"""Answer questions with verbatim short factoid responses.
+# task_desc_str = r"""Answer questions with verbatim short factoid responses.
 
-You will receive context. Extract only the most relevant fact for a precise answer.
-"""
+# You will receive context. Extract only the most relevant fact for a precise answer.
+# """
 
 demo_str = r"""reasoning: \"Dragon Data, the producer of Dragon 32/64, was based in Port Talbot, Wales,\\\n  \\ while TK82C was a product of a Brazilian company, Microdigital Eletr\\xF4nica Ltda.\"\nanswer: 'No'\n\nreasoning: The context specifies that the live action sequel '102 Dalmatians' was\n  directed by Kevin Lima.\nanswer: Kevin Lima\n\nreasoning: The context specifically mentions that in the 1970 Michigan gubernatorial\n  election, Republican William Milliken defeated Democrat Sander Levin.\nanswer: William Milliken\n\nreasoning: The context states that 'Lost Songs from the Lost Years' is a compilation\n  by Cloud Cult, which is an experimental indie rock band from Duluth, Minnesota.\nanswer: Minnesota
 """
@@ -194,7 +172,8 @@ class VanillaRAG(adal.GradComponent):
                     # + "Given existing context, ensure the task instructions can maximize the performance.",
                 ),
                 "few_shot_demos": adal.Parameter(
-                    data=demo_str,
+                    # data=demo_str,
+                    data=None,
                     requires_opt=True,
                     role_desc="To provide few shot demos to the language model",
                     param_type=adal.ParameterType.DEMOS,

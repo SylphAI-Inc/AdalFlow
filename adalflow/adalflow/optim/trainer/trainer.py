@@ -27,7 +27,8 @@ from adalflow.eval.base import EvaluationResult
 from adalflow.optim.trainer.adal import AdalComponent
 from adalflow.optim.text_grad.ops import sum_ops
 
-from adalflow.utils import save_json, load_json
+from adalflow.utils import save_json
+from adalflow.utils.file_io import load_standard_json
 from adalflow.utils.cache import hash_text_sha1
 from adalflow.utils.data import DataLoader
 from adalflow.utils.logger import printc
@@ -209,6 +210,7 @@ class Trainer(Component):
         if not self.ckpt_path:
             trainer_state = self.gather_trainer_states()
             self.prep_ckpt_file_path(trainer_state)
+        printc(f"Checkpoint path: {self.ckpt_path}")
         save_path = os.path.join(self.ckpt_path, f"diagnose_{split}")
         logger.debug(f"Save diagnose to {save_path}")
         # One generator will be one file, all stats are in logger_metadata.json
@@ -375,21 +377,22 @@ class Trainer(Component):
 
     def resume_params_from_ckpt(self, ckpt_file: str):
         """Resume the parameters from the checkpoint file"""
-        dict_data = load_json(ckpt_file)
+        dict_data = load_standard_json(ckpt_file)
         # find the highest val score
         trainer_results: TrainerResult = TrainerResult.from_dict(dict_data)
         # restore the prompts to the adaltask
         val_scores = []
-        test_scores = []
+        # test_scores = []
         for step in trainer_results.step_results:
             if step.val_score:
                 val_scores.append(step.val_score)
-            if step.test_score:
-                test_scores.append(step.test_score)
+            # if step.test_score:
+            #     test_scores.append(step.test_score)
         result_from_step = 0
-        if test_scores:
-            result_from_step = test_scores.index(max(test_scores))
-        elif val_scores:
+        # if test_scores:
+        #     result_from_step = test_scores.index(max(test_scores))
+        if val_scores:
+            printc(f"Val scores: {val_scores}")
             result_from_step = val_scores.index(max(val_scores))
         prompts: List[PromptData] = trainer_results.step_results[
             result_from_step
@@ -517,20 +520,17 @@ class Trainer(Component):
         starting_step = 0
         if resume_from_ckpt:
             self.ckpt_file = resume_from_ckpt
-            dict_data = load_json(self.ckpt_file)
+            self.ckpt_path = os.path.dirname(self.ckpt_file)
+            dict_data = load_standard_json(self.ckpt_file)
             trainer_results: TrainerResult = TrainerResult.from_dict(dict_data)
             # restore the prompts to the adaltask
             val_scores = []
-            test_scores = []
             for step in trainer_results.step_results:
                 if step.val_score:
                     val_scores.append(step.val_score)
-                if step.test_score:
-                    test_scores.append(step.test_score)
             result_from_step = 0
-            if test_scores:
-                result_from_step = test_scores.index(max(test_scores))
-            elif val_scores:
+            if val_scores:
+                printc(f"Val scores: {val_scores}")
                 result_from_step = val_scores.index(max(val_scores))
             prompts: List[PromptData] = trainer_results.step_results[
                 result_from_step

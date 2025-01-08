@@ -44,21 +44,16 @@ class MultiHopRetrieverAdal(adal.AdalComponent):
             text_optimizer_model_config=text_optimizer_model_config,
         )
 
-    # tell the trainer how to call the task
     def prepare_task(self, sample: HotPotQAData) -> Tuple[Callable[..., Any], Dict]:
         if self.task.training:
             return self.task.forward, {"input": sample.question, "id": sample.id}
         else:
             return self.task.call, {"input": sample.question, "id": sample.id}
 
-    # TODO: use two map fn to make the cde even simpler
-
-    # eval mode: get the generator output, directly engage with the eval_fn
     def prepare_eval(self, sample: HotPotQAData, y_pred: adal.RetrieverOutput) -> float:
         if isinstance(y_pred, adal.Parameter):
             raise ValueError("y_pred is not a RetrieverOutput")
         documents = y_pred.documents
-        # get titles by split |
         y_pred_titles = []
         for doc in documents:
             title, content = doc.split("|")
@@ -69,9 +64,7 @@ class MultiHopRetrieverAdal(adal.AdalComponent):
             "y_gt": list(sample.gold_titles),
         }
 
-    # train mode: get the loss and get the data from the full_response
     def prepare_loss(self, sample: HotPotQAData, pred: adal.Parameter):
-        # prepare gt parameter
         y_gt = adal.Parameter(
             name="y_gt",
             data=sample.gold_titles,
@@ -84,25 +77,17 @@ class MultiHopRetrieverAdal(adal.AdalComponent):
             title, content = doc.split("|")
             pred_titles.append(title)
 
-        # pred's full_response is the output of the task pipeline which is GeneratorOutput
-        # pred.eval_input = (
-        #     pred.data.do
-        #     if pred.data and pred.data.data and pred.data.data.answer
-        #     else ""
-        # )
         pred.eval_input = pred_titles
         return self.loss_fn, {
             "kwargs": {"y": pred, "y_gt": y_gt},
             "id": sample.id,
+            "gt": y_gt.data,
         }
 
 
 from adalflow.core.generator import BackwardPassSetup
 
 
-# Note: diagnose is quite helpful, it helps you to quickly check if the evalfunction is the right metrics
-# i checked the eval which does fuzzy match, and found some yes and Yes are not matched, then converted both strings to lower and
-# the performances have gone up from 0.15 to 0.4
 def train_diagnose(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
@@ -125,8 +110,8 @@ def train_diagnose(
 
 def train(
     train_batch_size=4,  # larger batch size is not that effective, probably because of llm's lost in the middle
-    raw_shots: int = 0,
-    bootstrap_shots: int = 4,
+    raw_shots: int = 1,
+    bootstrap_shots: int = 1,
     max_steps=1,
     num_workers=10,
     strategy="constrained",
@@ -160,7 +145,7 @@ def train(
         raw_shots=raw_shots,
         bootstrap_shots=bootstrap_shots,
         debug=debug,
-        weighted_sampling=True,
+        weighted_sampling=False,
         optimization_order=optimization_order,
         exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
         sequential_order=["text", "demo"],
@@ -227,7 +212,9 @@ if __name__ == "__main__":
         tg=use_tg,
         strategy=set_strategy,
         max_proposals_per_step=max_proposals_per_step,
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
+        exclude_input_fields_from_bootstrap_demos=True,
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/MultiHopRetrieverAdal/constrained_max_steps_12_945bd_run_1.json",
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/MultiHopRetrieverAdal/constrained_max_steps_12_d7043_run_1.json",
     )
     print(f"ckpt: {ckpt}")
     if set_output_path:
@@ -237,23 +224,4 @@ if __name__ == "__main__":
     else:
         print("No file path provided for saving the checkpoint.")
 
-    # notes for debug: if have nontype, delete all model cache and try again
-    #    raise ValueError(ValueError: score must be provided for each demo,
-
-    # 12/11/2024
-    # demo only: /Users/liyin/Documents/test/LightRAG/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_8cdfc_run_9.json
-
-    # why text grad did not improve in the rag case? Do we need to improve the meta prompt?
-    # /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_2686e_run_1.json
-    # 0.58 -> 0.68 on the test split
-    # 0.72 text grad  /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_c1660_run_1.json
-    # try cycle next
-    #  0.66 /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_1d189_run_1.json
-    # no gradients 1021s (/Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_68e7e_run_1.json) -> 0.64 -> 0.68, pass 10/10+28
-    # no gradient but scores (positive & negative) /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_83871_run_1.json 0.64->0.66, test 0.64 -> 0.66
-    # no gradient but only negative score
-    # no gradient but score + teacher demonstration.
-    # feedback while seeing the gt + y
-    # only negative feedback /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_f5506_run_1.json 0.62 -> 0.7
-    # /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_b4aa5_run_1.json 0.74 pass rate 8 32
-    # random cycle rag: /Users/liyin/.adalflow/ckpt/MultiHopRAGCycleAdal/random_max_steps_12_82bd2_run_1.json 0.64
+    #

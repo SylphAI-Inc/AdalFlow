@@ -43,8 +43,8 @@ Reference: TextGrad: Automatic “Differentiation” via Text."""
 FEEDBACK_ENGINE_PEERS_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 You are the feedback engine in an optimization system consisting of multiple components.
 
-Your task is to provide intelligent and creative feedback in each component for the target variable enclosed in <TARGET_VARIABLE> or <VARIABLES> tags
-so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION> tags.
+A component can have multiple inputs, and you handle one that is enclosed in <TARGET_VARIABLE> or <VARIABLES> tags.
+You will provide intelligent and creative feedback so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION> tags.
 
 About <VARIABLES> or <PEERS>:
 * If a variable is of type "output", it is the output of another predecessor component. In this case, you MUST attribute the error to the RIGHT variable.
@@ -82,15 +82,13 @@ About <VARIABLES> or <PEERS>:
 FEEDBACK_ENGINE_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 You are the feedback engine to provide feedback for a target variable in a compound LLM system.
 
-
-
-Your task is to provide intelligent and creative feedback in each component for the target variable enclosed in <VARIABLE></VARIABLE> or <VARIABLES></VARIABLES> tags
-so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION></OBJECTIVE_FUNCTION> tags.
+The evaluation and feedback is backpropogated all the way to you, and you will assess the current component's inputs, output along with its feedback.
+A component can have multiple inputs, and you handle one that is enclosed in <TARGET_VARIABLE> or <VARIABLES> tags.
+You will provide intelligent and creative feedback so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION> tags.
 
 1. Focus on the downstream OBJECTIVE without proposing new versions of the variable.
 2. From <CONVERSATION></CONVERSATION> section, you can find how the variable is obtained and used.
-3. The variable might have other peers that are used together to instruct the language model. But only focus on the target variable.
-4. As there might be peers, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
+3. As there might be multiple precedessors, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
 5. When you reason, really think about the variable's role in the component(infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
 6. Be specific, concise, critical, and direct.
 7. Maximum 3 sentences.
@@ -146,13 +144,15 @@ If the same DataID has multiple gradients, it means this component/variable is c
 # </OBJECTIVE_FUNCTION>"""
 
 OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>
-Your task is to provide the response with specific feedback based on the ground truth and the score in the "<OUTPUTS/SCORE>".
+Your task is to provide the response with specific feedback based on the expected correct response (y_gt/ground_truth) and the score in the "<OUTPUTS/SCORE>".
 Especially when the score is low.
 Be CONCISE.
+
 Be specific on why it has a low score.
-e.g. "The retrieved context is not enough to answer the question so the problem relies on the retrieval part."
+Specify the difference between the expected correct response and the response.
 </OBJECTIVE_FUNCTION>"""
 
+# Be specific on why it has a low score.
 
 ### NOTE: Last node's feedback
 # OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. The <INPUTS/SCORE> was later used as "{{response_name}}: {{response_desc}}".
@@ -167,6 +167,7 @@ Your only goal is to clearly states how it obtained the "Eval output/score": {{r
 Especially when the score is low.
 Be CONCISE.
 If you have enough context, add a more specific feedback on how it failed.
+e.g. "The retrieved context is not enough to answer the question so the problem relies on the retrieval part."
 </OBJECTIVE_FUNCTION>"""
 
 ###  Loss/Score Information  ###
@@ -193,7 +194,7 @@ If you have enough context, add a more specific feedback on how it failed.
 # {% endif %}"""
 
 LOSS_CONVERSATION_TEMPLATE_STRING = r"""
-The variable is passed to the eval function and compared with a target/ground truth value.
+The variable is passed to the eval function and compared with a expected value(y_gt or ground_truth).
 
 EVAL_FUNC: {{eval_fn_desc}}
 
@@ -248,6 +249,21 @@ Note: {{metadata}}
 CONVERSATION_START_INSTRUCTION_CHAIN = r"""
 {{variable_and_peers_info}}
 
+{# system trainable variables #}
+{% if predecessors %}
+<START_OF_PRECESSORS>
+The target variable is used together with these predecessors variables besides of the peers:
+{% for system_variable in predecessors %}
+{{loop.index}}.
+Name: {{system_variable.name}}
+Type: {{system_variable.param_type}}
+Description: {{system_variable.role_desc}}
+WILL_BE_OPTIMIZED: {{system_variable.requires_opt}}
+Vaule: {{system_variable.prompt_data}}
+{% endfor %}
+<END_OF_PRECESSORS>
+{% endif %}
+
 Here is a conversation with the language model (LM):
 {{conversation_str}}
 """
@@ -275,6 +291,32 @@ The final context is then passed to the llm to generate the answer where we want
 """
 
 
+# VARIABLE_AND_PEERS_INFO = r"""
+# <START_OF_VARIABLE_DESC>
+# {{variable.name}}
+# <TYPE> {{variable.param_type}} </TYPE>
+# <ROLE> {{variable.role_desc}} </ROLE>
+# <VARIABLE>{{ variable.prompt_data}}</VARIABLE>
+# <END_OF_VARIABLE_DESC>
+# {% if peers %}
+# <VARIBLE_PEERS>
+# The variable is used together with the these peer variables to instruct the language model:
+# {% for peer in peers %}
+# {{loop.index}}.
+# PEER_NAME: {{peer.name}},
+# PEER_TYPE: {{peer.param_type}},
+# PEER_ROLE: {{peer.role_desc}}
+# WILL_BE_OPTIMIZED: {{peer.requires_opt}}
+# {% if peer.prompt_data %}
+# PEER_VARIABLE: {{peer.prompt_data}}
+# {% else %}
+# PEER_VARIABLE: EMPTY
+# {% endif %}
+# {% endfor %}
+# </VARIBLE_PEERS>
+# {% endif %}
+# """
+
 VARIABLE_AND_PEERS_INFO = r"""
 <START_OF_VARIABLE_DESC>
 {{variable.name}}
@@ -284,7 +326,6 @@ VARIABLE_AND_PEERS_INFO = r"""
 <END_OF_VARIABLE_DESC>
 {% if peers %}
 <VARIBLE_PEERS>
-The variable is used together with the these peer variables to instruct the language model:
 {% for peer in peers %}
 {{loop.index}}.
 PEER_NAME: {{peer.name}},
@@ -300,6 +341,9 @@ PEER_VARIABLE: EMPTY
 </VARIBLE_PEERS>
 {% endif %}
 """
+
+# The variable is used together with the these peer variables to instruct the language model on the task.
+# - Do not overlap with the scope of the peer.
 
 
 # a list of variables

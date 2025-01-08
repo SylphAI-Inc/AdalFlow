@@ -57,7 +57,7 @@ class Sum(GradComponent):
                 raise ValueError(
                     f"Sum operation only accepts a list of Parameters, got {type(param)}"
                 )
-        concat_values = ",".join([str(p.data) for p in params])  # to_dict
+        concat_values = ",".join([str(p.data) for p in params])  # default concatenation
         role_descriptions = set([p.role_desc for p in params])
         role_descriptions = ", ".join(role_descriptions)
 
@@ -66,7 +66,7 @@ class Sum(GradComponent):
             role_desc=f"A combination of a list of variables: {role_descriptions}",
             requires_opt=any([p.requires_opt for p in params]),
             name="sum",
-            score=sum([p._score for p in params]),  # total has a score
+            score=sum([p.score for p in params]),  # total has a score
             param_type=ParameterType.SUM_OUTPUT,
         )
         total.set_predecessors(params)
@@ -132,3 +132,12 @@ class Sum(GradComponent):
             # )
             # param.add_gradient(param_gradient)
             # log.debug(f"Added gradient to {param.role_desc}: {param_gradient.data}")
+
+
+if __name__ == "__main__":
+    # test the sum ops
+
+    a = Parameter(data=1)
+    b = Parameter(data=2)
+    c = sum_ops(List[a, b])
+    c.backward()

@@ -18,6 +18,7 @@ from adalflow.optim.optimizer import Optimizer
 from adalflow.optim.loss_component import LossComponent
 from adalflow.optim.types import PromptData
 from adalflow.eval.base import EvaluationResult
+from adalflow.optim.grad_component import GradComponent2, GradComponent
 
 from adalflow.optim.optimizer import DemoOptimizer, TextOptimizer
 
@@ -610,10 +611,13 @@ class AdalComponent(Component):
 
         # set all generator's backward engine
 
-        all_generators = self._find_all_generators()
-        for _, generator in all_generators:
-            generator.set_backward_engine(self.backward_engine)
-        print("Backward engine configured for all generators.")
+        all_grads = self._find_all_grad_components()
+        for _, grad in all_grads:
+            if hasattr(grad, "set_backward_engine") and callable(
+                getattr(grad, "set_backward_engine", None)
+            ):
+                grad.set_backward_engine(self.backward_engine)
+        print("Backward engine configured for GradComponents")
 
         if not self.loss_fn:
             raise ValueError("Loss function is not configured.")
@@ -668,6 +672,17 @@ class AdalComponent(Component):
                 all_generators.append((name, comp))
         log.debug(f"all_generators: {all_generators}")
         return all_generators
+
+    def _find_all_grad_components(self) -> List[Tuple[str, GradComponent2]]:
+        r"""Find all generators automatically from the task."""
+        # from adalflow.core import Generator
+
+        all_grads: List[Tuple[str, GradComponent2]] = []
+        for name, comp in self.task.named_components():
+            if isinstance(comp, GradComponent2) or isinstance(comp, GradComponent):
+                all_grads.append((name, comp))
+        log.debug(f"all_grads: {all_grads}")
+        return all_grads
 
     def _auto_generator_callbacks(self, save_dir: str = "traces") -> List[str]:
         r"""Automatically generate callbacks."""

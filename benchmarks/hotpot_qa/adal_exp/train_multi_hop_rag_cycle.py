@@ -23,14 +23,18 @@ class MultiHopRAGCycleAdal(adal.AdalComponent):
         task = MultiHopRAGCycle(
             model_client=model_client,
             model_kwargs=model_kwargs,
-            passages_per_hop=3,
+            passages_per_hop=2,
             max_hops=2,
         )
-        eval_fn = AnswerMatchAcc(type="fuzzy_match").compute_single_item
+        eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
         loss_fn = adal.EvalFnToTextLoss(
-            eval_fn=eval_fn,
-            eval_fn_desc="fuzzy_match: 1 if  str(y_gt) in str(y) in else 0",
+            eval_fn=eval_fn, eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0"
         )
+        # eval_fn = AnswerMatchAcc(type="fuzzy_match").compute_single_item
+        # loss_fn = adal.EvalFnToTextLoss(
+        #     eval_fn=eval_fn,
+        #     eval_fn_desc="fuzzy_match: 1 if  str(y_gt) in str(y) in else 0",
+        # )
         super().__init__(
             task=task,
             eval_fn=eval_fn,

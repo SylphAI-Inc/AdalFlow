@@ -121,7 +121,7 @@ id: {{ component_id }}
 
 {% if combined_gradients %}
 {% for group in combined_gradients %}
-<DataID: {{ group.data_id }}>
+<DataID: {{ loop.index }} >
 <AVERAGE_SCORE>{{ group.average_score|round(2) }}</AVERAGE_SCORE>
 {% for gradient in group.gradients %}
 {{ loop.index }}.
@@ -259,7 +259,7 @@ class Parameter(Generic[T]):
         self._traces: Dict[str, DataClass] = {}  # id to data items (DynamicDataClass)
         self._student_traces: Dict[str, DataClass] = {}  # id
 
-        self._score: float = (
+        self.score: float = (
             score  # end to end evaluation score, TODO: might have multiple scores if using multiple eval fns  # score is set in the gradients in the backward pass
         )
 
@@ -354,14 +354,10 @@ class Parameter(Generic[T]):
         """
         from adalflow.core.prompt_builder import Prompt
 
-        # print(
-        #     f"len of gradients: {len(self.gradients)}, scores: {[g._score for g in self.gradients]} for {self.name}"
-        # )
-
         if not self.gradients:
             return ""
 
-        # sore gradients by the _score from low to high
+        # sore gradients by the score from low to high
         # self.gradients = sorted(
         #     self.gradients, key=lambda x: x.score if x.score is not None else 1
         # )
@@ -618,7 +614,9 @@ class Parameter(Generic[T]):
 
         But this score is only used to relay the score to the demo parametr.
         """
-        self._score = score
+        if not isinstance(score, float):
+            raise ValueError(f"score is not float, but {type(score)}")
+        self.score = score
 
     def add_dataclass_to_trace(self, trace: DataClass, is_teacher: bool = True):
         r"""Called by the generator.forward to add a trace to the parameter.
@@ -818,7 +816,12 @@ class Parameter(Generic[T]):
         if isinstance(node.data, dict):
             data_json = data_json
         elif isinstance(node.data, DataClass):
-            data_json = node.data.to_json_obj()
+            try:
+                data_json = node.data.to_json_obj()
+            except Exception:
+
+                data_json = str(node.data)
+
         else:
             data_json = str(node.data)
             data_json = {"data": data_json}
@@ -1050,7 +1053,7 @@ class Parameter(Generic[T]):
             if filepath
             else os.path.join(root_path, "graphs", filename)
         )
-        final_path = f"{filepath}.{format}"
+        # final_path = f"{filepath}.{format}"
         print(f"Saving graph to {filepath}.{format}")
 
         def wrap_text(text, width):
@@ -1106,8 +1109,8 @@ class Parameter(Generic[T]):
                 node_label += f"<tr><td><b><font color='{label_color}'> API kwargs: </font></b></td><td>{wrap_and_escape(str(n.component_trace.api_kwargs))}</td></tr>"
 
             # show the score for intermediate nodes
-            if n._score is not None and len(n.predecessors) > 0:
-                node_label += f"<tr><td><b><font color='{label_color}'>Score: </font></b></td><td>{str(n._score)}</td></tr>"
+            if n.score is not None and len(n.predecessors) > 0:
+                node_label += f"<tr><td><b><font color='{label_color}'>Score: </font></b></td><td>{str(n.score)}</td></tr>"
             if add_grads:
                 node_label += f"<tr><td><b><font color='{label_color}'>Gradients: </font></b></td><td>{wrap_and_escape(n.get_gradients_names())}</td></tr>"
                 # add a list of each gradient with short value
@@ -1157,7 +1160,7 @@ class Parameter(Generic[T]):
         for n1, n2 in edges:
             dot.edge(n1.name, n2.name)
 
-        dot.render(filepath, format=format, cleanup=True)
+        # dot.render(filepath, format=format, cleanup=True)
 
         save_json(self.to_dict(), f"{filepath}_root.json")
 
@@ -1166,7 +1169,7 @@ class Parameter(Generic[T]):
             filepath=filepath, nodes=nodes, edges=edges
         )
         output = {
-            "graph_path": final_path,
+            # "graph_path": final_path,
             "root_path": f"{filepath}_root.json",
             "interactive_html_graph": graph_file["graph_path"],
         }
@@ -1459,7 +1462,7 @@ class Parameter(Generic[T]):
             "grad_fn": str(
                 self.grad_fn
             ),  # Simplify for serialization, modify as needed
-            "score": self._score,
+            "score": self.score,
             "traces": {k: v.to_dict() for k, v in self._traces.items()},
             # demos
             "demos": [d.to_dict() for d in self._demos],

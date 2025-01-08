@@ -45,13 +45,30 @@ class HistoryPrompt(DataClass):
 # {{loop.index}}. {{failed_proposal}}
 # {% endfor %}
 # {% endif %}
+
 TEXT_GRAD_DESC_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 {{optimizer_system_prompt}}
 <END_OF_SYSTEM_PROMPT>
 <START_OF_USER_MESSAGE>
+{# Variable and peers info #}
 <START_OF_VARIABLE_AND_PEERS_INFO>
 {{variable_and_peers_info}}
 <END_OF_VARIABLE_AND_PEERS_INFO>
+{# system trainable variables #}
+{% if system_variables %}
+<START_OF_SYSTEM_VARIABLES>
+The target variable is used together with these system variables besides of its peers:
+{% for system_variable in system_variables %}
+{{loop.index}}.
+Name: {{system_variable.name}}
+Type: {{system_variable.param_type}}
+Description: {{system_variable.role_desc}}
+WILL_BE_OPTIMIZED: {{system_variable.requires_opt}}
+Vaule: {{system_variable.prompt_data}}
+{% endfor %}
+Strategically plan the role of each system variable to collaborate with each other for final correct answer.
+<END_OF_SYSTEM_VARIABLES>
+{% endif %}
 {# OPRO past history #}
 {% if past_history %}
 <START_OF_HISTORY_PERFORMANCE>
@@ -60,6 +77,7 @@ Here are the best past iterations of this variable along with the validation sco
 {{loop.index}}. {{history}}
 {% endfor %}
 IMPORTANT: Your goal is to generate new variable that score higher than all past iterations.
+{# Momentum #}
 {% if failed_proposals %}
 Here are the past failed proposals:
 {% for failed_proposal in failed_proposals %}
@@ -73,15 +91,6 @@ Here are the context and feedback for the variable:
 <START_OF_CONTEXT_FEEDBACK>
 {{variable_grad}}
 <END_OF_CONTEXT_FEEDBACK>
-{# Momentum #}
-{% if past_values %}
-Here are the past iterations of this variable:
-<PAST_ITERATIONS>
-{{past_values}}
-</PAST_ITERATIONS>
-Similar feedbacks across different steps suggests that the modifications to the variable are insufficient.
-If this is the case, please make more significant changes to the variable.
-{% endif %}
 {# Constraints #}
 {% if constraint_text %}
 You must follow the following constraints:
@@ -168,13 +177,14 @@ Your task is to improve a variable based on feedback from a batch of input data 
 The variable is either input or output of a functional component where the component schema will be provided.
 If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
 
+When the LLM system is complicated with multiple system variables, you need to strategize the role of each
 ### Your Responsibilities:
 1. **Address Feedback**: Resolve concerns raised in the feedback while preserving the positive aspects of the original variable.
-2. **Peer Awareness**:
-   - If a peer will be optimized itself, do not overlap with its scope.
-   - Otherwise, you can overlap if it helps address the feedback effectively.
-3. Observe past performance patterns (when available) to retain good qualities in the variable.
-4. Be Creative. If adding new elements, be concise.
+2. Observe past performance patterns (when available) to retain good qualities in the variable.
+3. **System Awareness**: When other system variables are given, ensure you understand how this variable works in the whole system.
+   You have a choice to not update a variable if it is not responsible for the error. Just keep the `update` field as `False`.
+4. **Peer Awareness**: This variable works together with Peer variables, ensure you are aware of their roles and constraints.
+5. Be Creative. If adding new elements, be concise.
 
 ### Your available solutions.
 1. Add new elements to address each specific feedback.
@@ -265,10 +275,18 @@ class Instruction(DataClass):
 class TGDData(DataClass):
     reasoning: str = field(
         metadata={
-            "desc": "Which solution did you choose, which prompt engineering technique did you use? Why?"
+            "desc": "Which solution did you choose, which prompt engineering technique did you use? Why? Be Concise (maximum 2 sentences)"
         }
     )
-    proposed_variable: str = field(metadata={"desc": "The proposed variable"})
+    proposed_variable: str = field(
+        metadata={"desc": "The proposed variable"}, default=None
+    )
+    update: bool = field(
+        default=True,
+        metadata={
+            "desc": "Depending on the feedback, update the variable if it is responsible for the error, else, keep it"
+        },
+    )
 
 
 @dataclass
@@ -320,7 +338,7 @@ class TGDOptimizer(TextOptimizer):
         in_context_examples: List[str] = None,  # TODO: in-context examples
         num_gradient_memory: int = 0,  # TODO: gradient memory and momentum, for now it is not useful
         max_past_history: int = 3,
-        max_failed_proposals: int = 3,
+        max_failed_proposals: int = 2,
     ):
         from adalflow.core.generator import Generator
         from adalflow.core import Prompt
@@ -472,7 +490,12 @@ class TGDOptimizer(TextOptimizer):
 
     def _get_user_prompt_kwargs(self, param: Parameter) -> Dict[str, str]:
 
-        peers_params = [p.get_param_info() for p in self.params if p.id != param.id]
+        system_params = [
+            p.get_param_info()
+            for p in self.params
+            if p.id != param.id and p not in param.peers
+        ]
+        peers_params = [p.get_param_info() for p in param.peers]
         variable_and_peer_info = self.variable_and_peers_info.call(
             variable=param.get_param_info(), peers=peers_params
         )
@@ -508,6 +531,7 @@ class TGDOptimizer(TextOptimizer):
                 if self.max_failed_proposals
                 else None
             ),
+            "system_variables": system_params,
         }
 
         return user_prompt_kwargs
@@ -570,19 +594,21 @@ class TGDOptimizer(TextOptimizer):
                 response.data
                 if response.data is not None
                 else TGDData(
-                    reasoning="No reasoning", proposed_variable=response.raw_response
+                    reasoning="No reasoning",
+                    proposed_variable=response.raw_response,
+                    update=False,
                 )
             )
-            log.info(f"Response from the optimizer: {response}")
             printc(f"Response from the optimizer: {response}", color="blue")
-            # extract the improved variable from the response
-            # TODO: make it more robust
-            # improved_variable = extract_new_variable(proposed_data)
-            improved_variable = proposed_data.proposed_variable
-            param.propose_data(improved_variable)
+
+            log.info(f"Response from the optimizer: {response}")
+            if not proposed_data.update:
+                printc(f"No update is required for {param.name}", color="yellow")
+                param.propose_data(param.data)
+            else:
+                improved_variable = proposed_data.proposed_variable
+                param.propose_data(improved_variable)
             param.trace_optimizer(api_kwargs=prompt_str, response=response)
-            # print(f"prompt_str: {prompt_str}")
-            # print(f"response: {response}")
             if self.do_gradient_memory:
                 self.update_gradient_memory(param)
         self.proposing = True
@@ -641,4 +667,4 @@ if __name__ == "__main__":
         "past_history": histories,
     }
     response = prompt(**prompt_kwargs)
-    print(response)
+    # print(response)

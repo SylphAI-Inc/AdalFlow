@@ -139,7 +139,7 @@ def train(
         raw_shots=raw_shots,
         bootstrap_shots=bootstrap_shots,
         debug=debug,
-        weighted_sampling=True,
+        weighted_sampling=False,
         optimization_order=optimization_order,
         exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
         max_proposals_per_step=max_proposals_per_step,
@@ -201,6 +201,7 @@ if __name__ == "__main__":
         tg=use_tg,
         strategy=set_strategy,
         max_proposals_per_step=max_proposals_per_step,
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/VallinaRAGAdal/constrained_max_steps_12_5a4b4_run_1.json",
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )
     print(f"ckpt: {ckpt}")

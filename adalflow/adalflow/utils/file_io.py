@@ -139,6 +139,27 @@ def load_json(f: str) -> Any:
         raise IOError(f"Error loading JSON file {f}: {e}")
 
 
+def load_standard_json(f: str) -> Any:
+    """Standard Load a JSON file and deserialize it.
+    Args:
+        f (str): The file name of the JSON file to load.
+
+    Returns:
+        Any: The deserialized Python object.
+    """
+    if not os.path.exists(f):
+        raise FileNotFoundError(f"JSON file not found: {f}")
+
+    try:
+        with open(f, "r") as file:
+            data = json.load(file)
+            return data
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Error decoding JSON file {f}: {e}")
+    except Exception as e:
+        raise IOError(f"Error loading JSON file {f}: {e}")
+
+
 def load_pickle(f: str = "task.pickle") -> Optional[Mapping[str, Any]]:
     r"""Load the object from a pickle file.
 

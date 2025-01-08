@@ -152,6 +152,15 @@ class Prompt(DataClass):
             s += f", prompt_variables: {self.prompt_variables}"
         return s
 
+    def __repr__(self) -> str:
+        s = f"template: {self.template}"
+        prompt_kwargs_str = _convert_prompt_kwargs_to_str(self.prompt_kwargs)
+        if prompt_kwargs_str:
+            s += f", prompt_kwargs: {prompt_kwargs_str}"
+        if self.prompt_variables:
+            s += f", prompt_variables: {self.prompt_variables}"
+        return s
+
     @classmethod
     def from_dict(cls: type[T], data: Dict[str, Any]) -> T:
         obj = super().from_dict(data)

@@ -115,8 +115,13 @@ def _deserialize_object_hook(d: Dict[str, Any]) -> Any:
         # deseralize customized types
         # TODO: all customized data types need to be saved
         class_type = EntityMapping.get(class_name)
-        if class_type:
-            return class_type.from_dict(d)
+        try:
+            if class_type:
+                return class_type.from_dict(d)
+        except Exception as e:
+            # default to the original object
+            log.error(f"Error deserializing object {d}: {e}")
+            pass
     return d
 
 

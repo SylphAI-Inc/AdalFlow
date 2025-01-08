@@ -24,7 +24,7 @@ class MultiHopRAGAdal(adal.AdalComponent):
         task = MultiHopRAG(
             model_client=model_client,
             model_kwargs=model_kwargs,
-            passages_per_hop=3,
+            passages_per_hop=2,  # better with only two passages, ablation study 0.49 vs 0.52
             max_hops=2,
         )
         eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
@@ -107,8 +107,8 @@ def train_diagnose(
 
 def train(
     train_batch_size=4,  # larger batch size is not that effective, probably because of llm's lost in the middle
-    raw_shots: int = 0,
-    bootstrap_shots: int = 4,
+    raw_shots: int = 2,
+    bootstrap_shots: int = 2,
     max_steps=1,
     num_workers=10,
     strategy="constrained",
@@ -142,7 +142,7 @@ def train(
         raw_shots=raw_shots,
         bootstrap_shots=bootstrap_shots,
         debug=debug,
-        weighted_sampling=True,
+        weighted_sampling=False,
         optimization_order=optimization_order,
         exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
         sequential_order=["text", "demo"],
@@ -208,6 +208,7 @@ if __name__ == "__main__":
         tg=use_tg,
         strategy=set_strategy,
         max_proposals_per_step=max_proposals_per_step,
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_fde51_run_1.json",
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )
     print(f"ckpt: {ckpt}")
