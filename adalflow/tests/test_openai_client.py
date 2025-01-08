@@ -71,7 +71,10 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
                         {"type": "text", "text": "Describe this image"},
                         {
                             "type": "image_url",
-                            "image_url": {"url": "https://example.com/image.jpg", "detail": "auto"},
+                            "image_url": {
+                                "url": "https://example.com/image.jpg",
+                                "detail": "auto",
+                            },
                         },
                     ],
                 }
@@ -266,13 +269,17 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         mock_init_sync_client.return_value = mock_sync_client
 
         # Mock the vision model response
-        mock_sync_client.chat.completions.create = Mock(return_value=self.mock_vision_response)
+        mock_sync_client.chat.completions.create = Mock(
+            return_value=self.mock_vision_response
+        )
 
         # Set the sync client
         self.client.sync_client = mock_sync_client
 
         # Call the call method with vision model
-        result = self.client.call(api_kwargs=self.vision_api_kwargs, model_type=ModelType.LLM)
+        result = self.client.call(
+            api_kwargs=self.vision_api_kwargs, model_type=ModelType.LLM
+        )
 
         # Assertions
         mock_sync_client.chat.completions.create.assert_called_once_with(
@@ -283,7 +290,9 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         # Test parse_chat_completion for vision model
         output = self.client.parse_chat_completion(completion=self.mock_vision_response)
         self.assertTrue(isinstance(output, GeneratorOutput))
-        self.assertEqual(output.raw_response, "The image shows a beautiful sunset over mountains.")
+        self.assertEqual(
+            output.raw_response, "The image shows a beautiful sunset over mountains."
+        )
         self.assertEqual(output.usage.completion_tokens, 15)
         self.assertEqual(output.usage.prompt_tokens, 25)
         self.assertEqual(output.usage.total_tokens, 40)
