@@ -52,14 +52,6 @@ from adalflow.components.model_client.utils import parse_embedding_response
 log = logging.getLogger(__name__)
 T = TypeVar("T")
 
-# Models that support multimodal inputs
-MULTIMODAL_MODELS = {
-    "gpt-4o",  # Versatile, high-intelligence flagship model
-    "gpt-4o-mini",  # Fast, affordable small model for focused tasks
-    "o1",  # Reasoning model that excels at complex, multi-step tasks
-    "o1-mini",  # Smaller reasoning model for complex tasks
-}
-
 
 # completion parsing functions and you can combine them into one singple chat completion parser
 def get_first_message_content(completion: ChatCompletion) -> str:
@@ -108,7 +100,7 @@ def get_probabilities(completion: ChatCompletion) -> List[List[TokenLogProb]]:
 class OpenAIClient(ModelClient):
     __doc__ = r"""A component wrapper for the OpenAI API client.
 
-    Support both embedding and chat completion API.
+    Support both embedding and chat completion API, including multimodal capabilities.
 
     Users (1) simplify use ``Embedder`` and ``Generator`` components by passing OpenAIClient() as the model_client.
     (2) can use this as an example to create their own API client or extend this class(copying and modifing the code) in their own project.
@@ -119,6 +111,9 @@ class OpenAIClient(ModelClient):
         Instead
         - use :ref:`OutputParser<components-output_parsers>` for response parsing and formating.
 
+        For multimodal inputs, provide images in model_kwargs["images"] as a path, URL, or list of them.
+        The model must support vision capabilities (e.g., gpt-4o, gpt-4o-mini, o1, o1-mini).
+
     Args:
         api_key (Optional[str], optional): OpenAI API key. Defaults to None.
         chat_completion_parser (Callable[[Completion], Any], optional): A function to parse the chat completion to a str. Defaults to None.
@@ -127,6 +122,7 @@ class OpenAIClient(ModelClient):
     References:
         - Embeddings models: https://platform.openai.com/docs/guides/embeddings
         - Chat models: https://platform.openai.com/docs/guides/text-generation
+        - Vision models: https://platform.openai.com/docs/guides/vision
         - OpenAI docs: https://platform.openai.com/docs/introduction
     """
 
@@ -209,7 +205,7 @@ class OpenAIClient(ModelClient):
     def parse_embedding_response(
         self, response: CreateEmbeddingResponse
     ) -> EmbedderOutput:
-        r"""Parse the embedding response to a structure LightRAG components can understand.
+        r"""Parse the embedding response to a structure Adalflow components can understand.
 
         Should be called in ``Embedder``.
         """
@@ -227,7 +223,20 @@ class OpenAIClient(ModelClient):
     ) -> Dict:
         r"""
         Specify the API input type and output api_kwargs that will be used in _call and _acall methods.
-        Convert the Component's standard input, and system_input(chat model) and model_kwargs into API-specific format
+        Convert the Component's standard input, and system_input(chat model) and model_kwargs into API-specific format.
+        For multimodal inputs, images can be provided in model_kwargs["images"] as a string path, URL, or list of them.
+        The model specified in model_kwargs["model"] must support multimodal capabilities when using images.
+
+        Args:
+            input: The input text or messages to process
+            model_kwargs: Additional parameters including:
+                - images: Optional image source(s) as path, URL, or list of them
+                - detail: Image detail level ('auto', 'low', or 'high'), defaults to 'auto'
+                - model: The model to use (must support multimodal inputs if images are provided)
+            model_type: The type of model (EMBEDDER or LLM)
+
+        Returns:
+            Dict: API-specific kwargs for the model call
         """
 
         final_model_kwargs = model_kwargs.copy()
@@ -241,6 +250,8 @@ class OpenAIClient(ModelClient):
         elif model_type == ModelType.LLM:
             # convert input to messages
             messages: List[Dict[str, str]] = []
+            images = final_model_kwargs.pop("images", None)
+            detail = final_model_kwargs.pop("detail", "auto")
 
             if self._input_type == "messages":
                 system_start_tag = "<START_OF_SYSTEM_PROMPT>"
@@ -257,14 +268,29 @@ class OpenAIClient(ModelClient):
                 if match:
                     system_prompt = match.group(1)
                     input_str = match.group(2)
-
                 else:
                     print("No match found.")
                 if system_prompt and input_str:
                     messages.append({"role": "system", "content": system_prompt})
-                    messages.append({"role": "user", "content": input_str})
+                    if images:
+                        content = [{"type": "text", "text": input_str}]
+                        if isinstance(images, (str, dict)):
+                            images = [images]
+                        for img in images:
+                            content.append(self._prepare_image_content(img, detail))
+                        messages.append({"role": "user", "content": content})
+                    else:
+                        messages.append({"role": "user", "content": input_str})
             if len(messages) == 0:
-                messages.append({"role": "system", "content": input})
+                if images:
+                    content = [{"type": "text", "text": input}]
+                    if isinstance(images, (str, dict)):
+                        images = [images]
+                    for img in images:
+                        content.append(self._prepare_image_content(img, detail))
+                    messages.append({"role": "user", "content": content})
+                else:
+                    messages.append({"role": "system", "content": input})
             final_model_kwargs["messages"] = messages
         else:
             raise ValueError(f"model_type {model_type} is not supported")
@@ -349,9 +375,19 @@ class OpenAIClient(ModelClient):
 
         Returns:
             Base64 encoded image string.
+
+        Raises:
+            ValueError: If the file cannot be read or doesn't exist.
         """
-        with open(image_path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode("utf-8")
+        try:
+            with open(image_path, "rb") as image_file:
+                return base64.b64encode(image_file.read()).decode("utf-8")
+        except FileNotFoundError:
+            raise ValueError(f"Image file not found: {image_path}")
+        except PermissionError:
+            raise ValueError(f"Permission denied when reading image file: {image_path}")
+        except Exception as e:
+            raise ValueError(f"Error encoding image {image_path}: {str(e)}")
 
     def _prepare_image_content(
         self, image_source: Union[str, Dict[str, Any]], detail: str = "auto"
@@ -382,77 +418,23 @@ class OpenAIClient(ModelClient):
                 }
         return image_source
 
-    def generate(
-        self,
-        prompt: str,
-        images: Optional[
-            Union[str, List[str], Dict[str, Any], List[Dict[str, Any]]]
-        ] = None,
-        model_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> GeneratorOutput:
-        """Generate text response for given prompt and optionally images.
 
-        Args:
-            prompt: Text prompt.
-            images: Optional image source(s) - can be path(s), URL(s), or formatted dict(s).
-            model_kwargs: Additional model parameters.
-
-        Returns:
-            GeneratorOutput containing the model's response.
-        """
-        model_kwargs = model_kwargs or {}
-        model = model_kwargs.get("model", "gpt-4o-mini")
-        max_tokens = model_kwargs.get("max_tokens", 300)
-        detail = model_kwargs.get("detail", "auto")
-
-        # Check if model supports multimodal inputs when images are provided
-        if images and model not in MULTIMODAL_MODELS:
-            return GeneratorOutput(
-                error=f"Model {model} does not support multimodal inputs. Supported models: {MULTIMODAL_MODELS}"
-            )
-
-        # Prepare message content
-        if images:
-            content = [{"type": "text", "text": prompt}]
-            if not isinstance(images, list):
-                images = [images]
-            for img in images:
-                content.append(self._prepare_image_content(img, detail))
-            messages = [{"role": "user", "content": content}]
-        else:
-            messages = [{"role": "user", "content": prompt}]
-
-        try:
-            response = self.client.chat.completions.create(
-                model=model,
-                messages=messages,
-                max_tokens=max_tokens,
-            )
-            return GeneratorOutput(
-                id=response.id,
-                data=response.choices[0].message.content,
-                usage=response.usage.model_dump() if response.usage else None,
-                raw_response=response.model_dump(),
-            )
-        except Exception as e:
-            return GeneratorOutput(error=str(e))
-
-
+# Example usage:
 # if __name__ == "__main__":
 #     from adalflow.core import Generator
 #     from adalflow.utils import setup_env, get_logger
-
+#
 #     log = get_logger(level="DEBUG")
-
+#
 #     setup_env()
 #     prompt_kwargs = {"input_str": "What is the meaning of life?"}
-
+#
 #     gen = Generator(
 #         model_client=OpenAIClient(),
 #         model_kwargs={"model": "gpt-3.5-turbo", "stream": True},
 #     )
 #     gen_response = gen(prompt_kwargs)
 #     print(f"gen_response: {gen_response}")
-
+#
 #     for genout in gen_response.data:
 #         print(f"genout: {genout}")

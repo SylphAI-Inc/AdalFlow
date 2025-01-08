@@ -1513,6 +1513,46 @@ This is the function call that triggers the execution of the custom model client
 
     build_custom_model_client()
 
+
+OPENAI LLM Chat - Multimodal Example
+-------------------------------------------------
+
+The OpenAI client also supports multimodal inputs. Here's a quick example:
+
+.. code-block:: python
+
+    from adalflow import Generator, OpenAIClient
+
+    generator = Generator(
+        model_client=OpenAIClient(),
+        model_kwargs={
+            "model": "gpt-4o",
+            "max_tokens": 300
+        }
+    )
+
+    # Single image
+    response = generator(
+        prompt_kwargs={
+            "input_str": "What's in this image?",
+            "images": "path/to/image.jpg"  # Local file or URL
+        }
+    )
+
+    # Multiple images
+    response = generator(
+        prompt_kwargs={
+            "input_str": "Compare these images.",
+            "images": [
+                "path/to/first.jpg",
+                "https://example.com/second.jpg"
+            ]
+        }
+    )
+
+The client handles both local files and URLs, with support for PNG, JPEG, WEBP, and non-animated GIF formats.
+
+
 .. admonition:: API reference
    :class: highlight
 
