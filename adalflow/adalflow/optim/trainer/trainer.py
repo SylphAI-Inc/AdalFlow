@@ -609,6 +609,7 @@ class Trainer(Component):
                             starting_step=starting_step,
                         )
                     elif self.strategy == "constrained":
+                        # self.adaltask.configure_teacher_generator()  # use teacher as bootstrap intemediate results
                         self._fit_text_grad_constraint(
                             train_loader,
                             val_dataset,

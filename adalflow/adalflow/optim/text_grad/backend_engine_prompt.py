@@ -50,12 +50,11 @@ About <VARIABLES> or <PEERS>:
 * If a variable is of type "output", it is the output of another predecessor component. In this case, you MUST attribute the error to the RIGHT variable.
 * If a variable plays no role to the error, simply state "This variable did not cause the error. No need to change the essense of this variable."
 
-1. Focus on the downstream OBJECTIVE without proposing new versions of the variable.
-2. From <CONVERSATION></CONVERSATION> section, you can find how the variable is obtained and used.
-3. The variable might have other peers that are used together to instruct the language model. But only focus on the target variable.
-4. As there might be peers, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
-5. When you reason, really think about the variable's role in the component(infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
-6. Be specific, concise, critical, and direct.
+1. From <CONVERSATION></CONVERSATION> section, you can find how the variable is obtained and used.
+2. The variable might have other peers that are used together to instruct the language model. But only focus on the target variable.
+3. As there might be peers, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
+4. When you reason, really think about the variable's role in the component(infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
+5. Be specific, concise, critical, and direct.
 
 
 {% if output_format_str %}
@@ -72,6 +71,7 @@ About <VARIABLES> or <PEERS>:
 </OBJECTIVE_INSTRUCTION>
 <END_OF_USER>
 """
+# 1. Focus on the downstream OBJECTIVE without proposing new versions of the variable.
 
 # <TASK_PIPELINE>
 # Here is a summary on the task pipeline you are optimizing:
@@ -86,12 +86,11 @@ The evaluation and feedback is backpropogated all the way to you, and you will a
 A component can have multiple inputs, and you handle one that is enclosed in <TARGET_VARIABLE> or <VARIABLES> tags.
 You will provide intelligent and creative feedback so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION> tags.
 
-1. Focus on the downstream OBJECTIVE without proposing new versions of the variable.
-2. From <CONVERSATION></CONVERSATION> section, you can find how the variable is obtained and used.
-3. As there might be multiple precedessors, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
-5. When you reason, really think about the variable's role in the component(infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
-6. Be specific, concise, critical, and direct.
-7. Maximum 3 sentences.
+1. From <CONVERSATION></CONVERSATION> section, you can find how the variable is obtained and used.
+2. As there might be multiple precedessors, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
+3. When you reason, really think about the variable's role in the component(infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
+4. Be specific, concise, critical, and direct.
+5. Maximum 3 sentences.
 
 If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
 

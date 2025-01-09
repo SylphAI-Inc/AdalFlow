@@ -66,6 +66,16 @@ Context from last search query: {{context}}
 """
 
 
+@dataclass
+class QueriesOutput(adal.DataClass):
+    data: str = field(
+        metadata={"desc": "The joined queries"},
+    )
+    id: str = field(
+        metadata={"desc": "The id of the output"},
+    )
+
+
 class DeduplicateList(adal.GradComponent):
     def __init__(self):
         super().__init__()
@@ -105,10 +115,33 @@ class CombineList(GradComponent2):
 
         output = adal.RetrieverOutput(
             id=id,
-            query=f"query 1: {context_1.query}, query 2: {context_2.query}",
+            # query=f"query 1: {context_1.query}, query 2: {context_2.query}",
+            query=[context_1.query, context_2.query],
             documents=combined,
             doc_indices=[],
         )
+        return output
+
+
+class CombineQueries(GradComponent2):
+    def __init__(
+        self,
+        name="CombineTwoQueries using ','",
+        desc="combines two queries for evaluation",
+    ):
+        super().__init__(name=name, desc=desc)
+
+    def call(
+        self,
+        q_1: str,
+        q_2: str,
+        id: str = None,
+    ) -> QueriesOutput:
+
+        value = f"{q_1}, {q_2}"
+
+        output = QueriesOutput(data=value, id=id)
+
         return output
 
 
@@ -294,6 +327,13 @@ few_shot_demos = [
     "reasoning: The context provides information about Kirk Humphreys, the chairman of\n  The Humphreys Company, and his birth date as September 13, 1950. It also mentions\n  that he lost in a primary to former Congressman Tom Coburn, who is a medical doctor.\n  To determine who is older, we need to find the birth date of Tom Coburn.\nquery: Tom Coburn birth date\n\nquestion: In which century was football introduced to this region represented by FC\n  Espanya de Barcelona?\nanswer: 19th century",
 ]
 
+manual_task_desc_strs = [
+    "You will receive an question that requires 2 retrieveal steps to have enough context to answer. \
+    You are the first step, write a simple search query to retrieve the first part of the context. \
+    Think step by step.",
+    "You will receive an original question, last search query, and the retrieved context from the last search query. Write the next search query to help retrieve all relevant context to answer the original question. Think step by step.",
+]
+
 
 # task_desc_str = """ You are a query assistant that helps search all relevant context to answer a multi-hop question.
 
@@ -324,20 +364,20 @@ class MultiHopRetriever(adal.Component):
                     model_client=model_client,
                     model_kwargs=model_kwargs,
                     prompt_kwargs={
-                        "few_shot_demos": Parameter(
-                            name=f"few_shot_demos_{i}",
-                            # data=few_shot_demos[i],
-                            data=None,
-                            role_desc="To provide few shot demos to the language model",
-                            requires_opt=True,
-                            param_type=ParameterType.DEMOS,
-                        ),
+                        # "few_shot_demos": Parameter(
+                        #     name=f"few_shot_demos_{i}",
+                        #     # data=few_shot_demos[i],
+                        #     data=None,
+                        #     role_desc="To provide few shot demos to the language model",
+                        #     requires_opt=True,
+                        #     param_type=ParameterType.DEMOS,
+                        # ),
                         "task_desc_str": Parameter(
                             name="task_desc_str",
-                            data=task_desc_str,
-                            # data=trained_task_desc_strs[i],
+                            # data=task_desc_str,
+                            data=manual_task_desc_strs[i],
                             role_desc=f"Task description for {i+1}th LLM as a query generator",
-                            requires_opt=False,
+                            requires_opt=True,
                             param_type=ParameterType.PROMPT,
                         ),
                         "output_format_str": self.data_parser.get_output_format_str(),
@@ -351,6 +391,7 @@ class MultiHopRetriever(adal.Component):
             self.deduplicaters.append(DeduplicateList())
 
         self.combine_list = CombineList()
+        self.combine_queries = CombineQueries()
 
     @staticmethod
     def context_to_str(context: List[str]) -> str:
@@ -390,8 +431,33 @@ class MultiHopRetriever(adal.Component):
         out = adal.RetrieverOutput(
             documents=context, query=queries, doc_indices=[], id=id
         )
-        printc(f"queries 1: {queries}", "yellow")
         return out
+
+    def call2(self, *, input: str, id: str = None) -> str:
+        context = []
+        queries: List[str] = []
+        last_query = None
+        for i in range(self.max_hops):
+            gen_out = self.query_generators[i](
+                prompt_kwargs={
+                    "context": context,
+                    "question": input,
+                    "last_query": last_query,
+                },
+                id=id,
+            )
+
+            query = gen_out.data.query if gen_out.data and gen_out.data.query else input
+
+            retrieve_out = self.retrievers[i](input=query, id=id)
+
+            passages = retrieve_out.documents
+            context = self.deduplicate(context + passages)
+            queries.append(query)
+            last_query = query
+        out = ", ".join(queries)
+        query_output = QueriesOutput(data=out, id=id)
+        return query_output
 
     def forward(self, *, input: str, id: str = None) -> adal.Parameter:
         # assemble the foundamental building blocks
@@ -450,13 +516,23 @@ class MultiHopRetriever(adal.Component):
             # context = self.deduplicaters[i].forward(
             #     exisiting_list=context, new_list=retrieve_out
             # )
-            contexts.append(retrieve_out)
+            retrieve_out.data_in_prompt = lambda x: {
+                "query": x.data.query,
+                "documents": x.data.documents,
+            }
+            context = retrieve_out
             if i + 1 < self.max_hops:
-                retrieve_out.add_successor_map_fn(
+                context.add_successor_map_fn(
                     successor=self.query_generators[i + 1], map_fn=retrieve_out_map_fn
                 )
-
                 last_query = success_map_fn(gen_out)
+            contexts.append(retrieve_out)
+            # if i + 1 < self.max_hops:
+            #     retrieve_out.add_successor_map_fn(
+            #         successor=self.query_generators[i + 1], map_fn=retrieve_out_map_fn
+            #     )
+
+            #     last_query = success_map_fn(gen_out)
             # printc(f"retrieve_out, last_query: {last_query}")
 
         contexts[0].add_successor_map_fn(
@@ -472,7 +548,105 @@ class MultiHopRetriever(adal.Component):
             "query": x.data.query,
             "documents": x.data.documents,
         }
+
         return contexts_sum
+
+    # TODO: might need to support multiple output parameters
+    def forward2(self, *, input: str, id: str = None) -> List[adal.Parameter]:
+        r"""Experiment multiple output parameters for multiple evaluation."""
+        # assemble the foundamental building blocks
+        printc(f"question: {input}", "yellow")
+
+        queries: List[adal.Parameter] = []
+
+        context = []
+        last_query = None
+        contexts: List[Parameter] = []
+
+        for i in range(self.max_hops):
+            gen_out: Parameter = self.query_generators[i].forward(
+                prompt_kwargs={
+                    "context": context,
+                    "last_query": last_query,
+                    "question": adal.Parameter(
+                        name="question",
+                        data=input,
+                        role_desc="The question to be answered",
+                        requires_opt=False,
+                        param_type=ParameterType.INPUT,
+                    ),
+                },
+                id=id,
+            )
+
+            success_map_fn = lambda x: (  # noqa E731
+                x.data.data.query
+                if x.data and x.data.data and x.data.data.query
+                else (x.data.raw_response if x.data and x.data.raw_response else None)
+            )
+            # printc(f"query {i}: {success_map_fn(gen_out)}")
+
+            # queries.append(success_map_fn(gen_out))
+            queries.append(gen_out)
+
+            gen_out.add_successor_map_fn(
+                successor=self.retrievers[i], map_fn=success_map_fn
+            )
+
+            if success_map_fn(gen_out) is None:
+                raise ValueError(f"The query is None, please check the generator {i}")
+
+            retrieve_out = self.retrievers[i].forward(input=gen_out, id=id)
+
+            def retrieve_out_map_fn(x: adal.Parameter):
+                return x.data.documents if x.data and x.data.documents else []
+
+            # print(f"retrieve_out: {retrieve_out}")
+
+            # retrieve_out.add_successor_map_fn(
+            #     successor=self.deduplicaters[i], map_fn=retrieve_out_map_fn
+            # )
+            context = retrieve_out
+            if i + 1 < self.max_hops:
+                context.add_successor_map_fn(
+                    successor=self.query_generators[i + 1], map_fn=retrieve_out_map_fn
+                )
+
+            # context = self.deduplicaters[i].forward(
+            #     exisiting_list=context, new_list=retrieve_out
+            # )
+            contexts.append(retrieve_out)
+            if i + 1 < self.max_hops:
+                retrieve_out.add_successor_map_fn(
+                    successor=self.query_generators[i + 1], map_fn=retrieve_out_map_fn
+                )
+
+                last_query = success_map_fn(gen_out)
+            # printc(f"retrieve_out, last_query: {last_query}")
+
+        # contexts[0].add_successor_map_fn(
+        #     successor=self.combine_list, map_fn=lambda x: x.data
+        # )
+        # contexts[1].add_successor_map_fn(
+        #     successor=self.combine_list, map_fn=lambda x: x.data
+        # )
+        # contexts_sum = self.combine_list.forward(
+        #     context_1=contexts[0], context_2=contexts[1]
+        # )
+        # contexts_sum.data_in_prompt = lambda x: {
+        #     "query": x.data.query,
+        #     "documents": x.data.documents,
+        # }
+        # setattr(contexts_sum, "queries", [q.data.data.query for q in queries])
+        queries[0].add_successor_map_fn(
+            successor=self.combine_queries, map_fn=lambda x: x.data.data.query
+        )
+        queries[1].add_successor_map_fn(
+            successor=self.combine_queries, map_fn=lambda x: x.data.data.query
+        )
+        combined_queries = self.combine_queries.forward(q_1=queries[0], q_2=queries[1])
+        printc(f"queries: {combined_queries.data}", "yellow")
+        return combined_queries
 
 
 from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import (

@@ -499,9 +499,6 @@ class GradComponent2(GradComponent):
         if response.score is not None:
             pred.set_score(response.score)
         pred.set_gt(ground_truth)
-        print(f"pred: {pred.name}, gt: {ground_truth}")
-        # print(f"setting pred name {pred.name} score to {response.data}")
-        # print(f"gradient_param: {pred.gradients}")
 
         # TODO: reduce meta
 

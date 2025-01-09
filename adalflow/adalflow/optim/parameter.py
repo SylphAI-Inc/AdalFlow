@@ -614,6 +614,7 @@ class Parameter(Generic[T]):
 
         But this score is only used to relay the score to the demo parametr.
         """
+        score = float(score)
         if not isinstance(score, float):
             raise ValueError(
                 f"score is not float, but {type(score)}, parameter name: {self.name}"

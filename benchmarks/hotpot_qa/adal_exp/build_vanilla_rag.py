@@ -179,6 +179,12 @@ class VanillaRAG(adal.GradComponent):
                     param_type=adal.ParameterType.DEMOS,
                 ),
                 "output_format_str": self.llm_parser.get_output_format_str(),
+                # "output_format_str": adal.Parameter(
+                #     data=self.llm_parser.get_output_format_str(),
+                #     requires_opt=True,
+                #     param_type=adal.ParameterType.PROMPT,
+                #     role_desc="The output format string to ensure no failed json parsing",
+                # ),
             },
             template=answer_template,
             output_processors=self.llm_parser,
