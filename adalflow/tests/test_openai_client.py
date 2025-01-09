@@ -3,7 +3,7 @@ from unittest.mock import patch, AsyncMock, Mock
 import os
 import base64
 
-from openai.types import CompletionUsage
+from openai.types import CompletionUsage, Image
 from openai.types.chat import ChatCompletion
 
 from adalflow.core.types import ModelType, GeneratorOutput
@@ -23,7 +23,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
             "id": "cmpl-3Q8Z5J9Z1Z5z5",
             "created": 1635820005,
             "object": "chat.completion",
-            "model": "gpt-3.5-turbo",
+            "model": "gpt-4o",
             "choices": [
                 {
                     "message": {
@@ -59,9 +59,17 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
             ),
         }
         self.mock_vision_response = ChatCompletion(**self.mock_vision_response)
+        self.mock_image_response = [
+            Image(
+                url="https://example.com/generated_image.jpg",
+                b64_json=None,
+                revised_prompt="A white siamese cat sitting elegantly",
+                model="dall-e-3",
+            )
+        ]
         self.api_kwargs = {
             "messages": [{"role": "user", "content": "Hello"}],
-            "model": "gpt-3.5-turbo",
+            "model": "gpt-4o",
         }
         self.vision_api_kwargs = {
             "messages": [
@@ -80,6 +88,13 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
                 }
             ],
             "model": "gpt-4o",
+        }
+        self.image_generation_kwargs = {
+            "model": "dall-e-3",
+            "prompt": "a white siamese cat",
+            "size": "1024x1024",
+            "quality": "standard",
+            "n": 1,
         }
 
     def test_encode_image(self):
@@ -296,6 +311,111 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(output.usage.completion_tokens, 15)
         self.assertEqual(output.usage.prompt_tokens, 25)
         self.assertEqual(output.usage.total_tokens, 40)
+
+    def test_convert_inputs_to_api_kwargs_for_image_generation(self):
+        # Test basic image generation
+        result = self.client.convert_inputs_to_api_kwargs(
+            input="a white siamese cat",
+            model_kwargs={"model": "dall-e-3"},
+            model_type=ModelType.IMAGE_GENERATION,
+        )
+        self.assertEqual(result["prompt"], "a white siamese cat")
+        self.assertEqual(result["model"], "dall-e-3")
+        self.assertEqual(result["size"], "1024x1024")  # default
+        self.assertEqual(result["quality"], "standard")  # default
+        self.assertEqual(result["n"], 1)  # default
+
+        # Test image edit
+        test_image = "test_image.jpg"
+        test_mask = "test_mask.jpg"
+        try:
+            # Create test files
+            with open(test_image, "wb") as f:
+                f.write(b"fake image content")
+            with open(test_mask, "wb") as f:
+                f.write(b"fake mask content")
+
+            result = self.client.convert_inputs_to_api_kwargs(
+                input="a white siamese cat",
+                model_kwargs={
+                    "model": "dall-e-2",
+                    "image": test_image,
+                    "mask": test_mask,
+                },
+                model_type=ModelType.IMAGE_GENERATION,
+            )
+            self.assertEqual(result["prompt"], "a white siamese cat")
+            self.assertEqual(result["model"], "dall-e-2")
+            self.assertTrue(isinstance(result["image"], str))  # base64 encoded
+            self.assertTrue(isinstance(result["mask"], str))  # base64 encoded
+        finally:
+            # Cleanup
+            if os.path.exists(test_image):
+                os.remove(test_image)
+            if os.path.exists(test_mask):
+                os.remove(test_mask)
+
+    @patch("adalflow.components.model_client.openai_client.AsyncOpenAI")
+    async def test_acall_image_generation(self, MockAsyncOpenAI):
+        mock_async_client = AsyncMock()
+        MockAsyncOpenAI.return_value = mock_async_client
+
+        # Mock the image generation response
+        mock_async_client.images.generate = AsyncMock(
+            return_value=type('Response', (), {'data': self.mock_image_response})()
+        )
+
+        # Call the acall method with image generation
+        result = await self.client.acall(
+            api_kwargs=self.image_generation_kwargs,
+            model_type=ModelType.IMAGE_GENERATION,
+        )
+
+        # Assertions
+        MockAsyncOpenAI.assert_called_once()
+        mock_async_client.images.generate.assert_awaited_once_with(
+            **self.image_generation_kwargs
+        )
+        self.assertEqual(result, self.mock_image_response)
+
+        # Test parse_image_generation_response
+        output = self.client.parse_image_generation_response(result)
+        self.assertTrue(isinstance(output, GeneratorOutput))
+        self.assertEqual(output.data, "https://example.com/generated_image.jpg")
+
+    @patch(
+        "adalflow.components.model_client.openai_client.OpenAIClient.init_sync_client"
+    )
+    @patch("adalflow.components.model_client.openai_client.OpenAI")
+    def test_call_image_generation(self, MockSyncOpenAI, mock_init_sync_client):
+        mock_sync_client = Mock()
+        MockSyncOpenAI.return_value = mock_sync_client
+        mock_init_sync_client.return_value = mock_sync_client
+
+        # Mock the image generation response
+        mock_sync_client.images.generate = Mock(
+            return_value=type('Response', (), {'data': self.mock_image_response})()
+        )
+
+        # Set the sync client
+        self.client.sync_client = mock_sync_client
+
+        # Call the call method with image generation
+        result = self.client.call(
+            api_kwargs=self.image_generation_kwargs,
+            model_type=ModelType.IMAGE_GENERATION,
+        )
+
+        # Assertions
+        mock_sync_client.images.generate.assert_called_once_with(
+            **self.image_generation_kwargs
+        )
+        self.assertEqual(result, self.mock_image_response)
+
+        # Test parse_image_generation_response
+        output = self.client.parse_image_generation_response(result)
+        self.assertTrue(isinstance(output, GeneratorOutput))
+        self.assertEqual(output.data, "https://example.com/generated_image.jpg")
 
 
 if __name__ == "__main__":

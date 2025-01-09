@@ -36,6 +36,7 @@ from openai import (
 from openai.types import (
     Completion,
     CreateEmbeddingResponse,
+    Image,
 )
 from openai.types.chat import ChatCompletionChunk, ChatCompletion
 
@@ -114,6 +115,14 @@ class OpenAIClient(ModelClient):
         For multimodal inputs, provide images in model_kwargs["images"] as a path, URL, or list of them.
         The model must support vision capabilities (e.g., gpt-4o, gpt-4o-mini, o1, o1-mini).
 
+        For image generation, use model_type=ModelType.IMAGE_GENERATION and provide:
+        - model: "dall-e-3" or "dall-e-2"
+        - prompt: Text description of the image to generate
+        - size: "1024x1024", "1024x1792", or "1792x1024" for DALL-E 3; "256x256", "512x512", or "1024x1024" for DALL-E 2
+        - quality: "standard" or "hd" (DALL-E 3 only)
+        - n: Number of images to generate (1 for DALL-E 3, 1-10 for DALL-E 2)
+        - response_format: "url" or "b64_json"
+
     Args:
         api_key (Optional[str], optional): OpenAI API key. Defaults to None.
         chat_completion_parser (Callable[[Completion], Any], optional): A function to parse the chat completion to a str. Defaults to None.
@@ -123,6 +132,7 @@ class OpenAIClient(ModelClient):
         - Embeddings models: https://platform.openai.com/docs/guides/embeddings
         - Chat models: https://platform.openai.com/docs/guides/text-generation
         - Vision models: https://platform.openai.com/docs/guides/vision
+        - Image models: https://platform.openai.com/docs/guides/images
         - OpenAI docs: https://platform.openai.com/docs/introduction
     """
 
@@ -292,9 +302,53 @@ class OpenAIClient(ModelClient):
                 else:
                     messages.append({"role": "system", "content": input})
             final_model_kwargs["messages"] = messages
+        elif model_type == ModelType.IMAGE_GENERATION:
+            # For image generation, input is the prompt
+            final_model_kwargs["prompt"] = input
+            # Set defaults for DALL-E 3 if not specified
+            if "model" not in final_model_kwargs:
+                final_model_kwargs["model"] = "dall-e-3"
+            if "size" not in final_model_kwargs:
+                final_model_kwargs["size"] = "1024x1024"
+            if "quality" not in final_model_kwargs:
+                final_model_kwargs["quality"] = "standard"
+            if "n" not in final_model_kwargs:
+                final_model_kwargs["n"] = 1
+            if "response_format" not in final_model_kwargs:
+                final_model_kwargs["response_format"] = "url"
+
+            # Handle image edits and variations
+            if "image" in final_model_kwargs:
+                if isinstance(final_model_kwargs["image"], str):
+                    # If it's a file path, encode it
+                    if os.path.isfile(final_model_kwargs["image"]):
+                        final_model_kwargs["image"] = self._encode_image(final_model_kwargs["image"])
+                if "mask" in final_model_kwargs and isinstance(final_model_kwargs["mask"], str):
+                    if os.path.isfile(final_model_kwargs["mask"]):
+                        final_model_kwargs["mask"] = self._encode_image(final_model_kwargs["mask"])
         else:
             raise ValueError(f"model_type {model_type} is not supported")
         return final_model_kwargs
+
+    def parse_image_generation_response(self, response: List[Image]) -> GeneratorOutput:
+        """Parse the image generation response into a GeneratorOutput."""
+        try:
+            # Extract URLs or base64 data from the response
+            data = [img.url or img.b64_json for img in response]
+            # For single image responses, unwrap from list
+            if len(data) == 1:
+                data = data[0]
+            return GeneratorOutput(
+                data=data,
+                raw_response=str(response),
+            )
+        except Exception as e:
+            log.error(f"Error parsing image generation response: {e}")
+            return GeneratorOutput(
+                data=None,
+                error=str(e),
+                raw_response=str(response)
+            )
 
     @backoff.on_exception(
         backoff.expo,
@@ -320,6 +374,19 @@ class OpenAIClient(ModelClient):
                 self.chat_completion_parser = handle_streaming_response
                 return self.sync_client.chat.completions.create(**api_kwargs)
             return self.sync_client.chat.completions.create(**api_kwargs)
+        elif model_type == ModelType.IMAGE_GENERATION:
+            # Determine which image API to call based on the presence of image/mask
+            if "image" in api_kwargs:
+                if "mask" in api_kwargs:
+                    # Image edit
+                    response = self.sync_client.images.edit(**api_kwargs)
+                else:
+                    # Image variation
+                    response = self.sync_client.images.create_variation(**api_kwargs)
+            else:
+                # Image generation
+                response = self.sync_client.images.generate(**api_kwargs)
+            return response.data
         else:
             raise ValueError(f"model_type {model_type} is not supported")
 
@@ -346,6 +413,19 @@ class OpenAIClient(ModelClient):
             return await self.async_client.embeddings.create(**api_kwargs)
         elif model_type == ModelType.LLM:
             return await self.async_client.chat.completions.create(**api_kwargs)
+        elif model_type == ModelType.IMAGE_GENERATION:
+            # Determine which image API to call based on the presence of image/mask
+            if "image" in api_kwargs:
+                if "mask" in api_kwargs:
+                    # Image edit
+                    response = await self.async_client.images.edit(**api_kwargs)
+                else:
+                    # Image variation
+                    response = await self.async_client.images.create_variation(**api_kwargs)
+            else:
+                # Image generation
+                response = await self.async_client.images.generate(**api_kwargs)
+            return response.data
         else:
             raise ValueError(f"model_type {model_type} is not supported")
 
