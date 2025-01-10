@@ -1552,6 +1552,71 @@ The OpenAI client also supports multimodal inputs. Here's a quick example:
 
 The client handles both local files and URLs, with support for PNG, JPEG, WEBP, and non-animated GIF formats.
 
+OPENAI Image Generation
+-------------------------------------------------
+
+The OpenAI client supports image generation, editing, and variation creation through DALL-E models. First, you need to define a Generator class with the correct model type:
+
+.. code-block:: python
+
+    from adalflow import Generator
+    from adalflow.core.types import ModelType
+
+    class ImageGenerator(Generator):
+        """Generator subclass for image generation."""
+        model_type = ModelType.IMAGE_GENERATION
+
+Then you can use it like this:
+
+.. code-block:: python
+
+    from adalflow import OpenAIClient
+
+    generator = ImageGenerator(
+        model_client=OpenAIClient(),
+        model_kwargs={
+            "model": "dall-e-3",  # or "dall-e-2"
+            "size": "1024x1024",  # "1024x1024", "1024x1792", or "1792x1024" for DALL-E 3
+            "quality": "standard",  # "standard" or "hd" (DALL-E 3 only)
+            "n": 1  # Number of images (1 for DALL-E 3, 1-10 for DALL-E 2)
+        }
+    )
+
+    # Generate an image from text
+    response = generator(
+        prompt_kwargs={"input_str": "A white siamese cat in a space suit"}
+    )
+    # response.data will contain the image URL
+
+    # Edit an existing image
+    response = generator(
+        prompt_kwargs={"input_str": "Add a red hat"},
+        model_kwargs={
+            "model": "dall-e-2",
+            "image": "path/to/cat.png",  # Original image
+            "mask": "path/to/mask.png"   # Optional mask showing where to edit
+        }
+    )
+
+    # Create variations of an image
+    response = generator(
+        prompt_kwargs={"input_str": None},  # Not needed for variations
+        model_kwargs={
+            "model": "dall-e-2",
+            "image": "path/to/cat.png"  # Image to create variations of
+        }
+    )
+
+The client supports:
+
+- Image generation from text descriptions using DALL-E 3 or DALL-E 2
+- Image editing with optional masking (DALL-E 2)
+- Creating variations of existing images (DALL-E 2)
+- Both local file paths and base64-encoded images
+- Various image sizes and quality settings
+- Multiple output formats (URL or base64)
+
+The response will always be wrapped in a ``GeneratorOutput`` object, maintaining consistency with other AdalFlow operations. The generated image(s) will be available in the ``data`` field as either a URL or base64 string.
 
 .. admonition:: API reference
    :class: highlight
@@ -1563,3 +1628,4 @@ The client handles both local files and URLs, with support for PNG, JPEG, WEBP, 
    - :class:`components.model_client.anthropic_client.AnthropicAPIClient`
    - :class:`components.model_client.google_client.GoogleGenAIClient`
    - :class:`components.model_client.cohere_client.CohereAPIClient`
+
