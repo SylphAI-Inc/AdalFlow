@@ -308,7 +308,7 @@ class EvalFnToTextLoss(LossComponent):
                 input_output=conversation_str,
                 response_desc=response.role_desc,
                 variable_desc=pred.role_desc,
-                input=input,
+                # input=input,
                 # ground_truth=ground_truth,
             )
         )

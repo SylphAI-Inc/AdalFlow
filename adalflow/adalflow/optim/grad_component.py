@@ -323,8 +323,8 @@ class GradComponent2(GradComponent):
 
     def __init__(
         self,
-        name: str,
         desc: str,
+        name: Optional[str] = None,
         backward_engine: Optional["BackwardEngine"] = None,
         model_client: "ModelClient" = None,
         model_kwargs: Dict[str, object] = None,
@@ -532,7 +532,8 @@ class GradComponent2(GradComponent):
             for pred in children_params:
                 pred.backward_engine_disabled = True
 
-        if not self.backward_engine:
+        # use pass through gradient when there is one predecessor
+        if not self.backward_engine or len(children_params) < 2:
             super().backward(response=response, id=id)
 
         else:
@@ -540,7 +541,7 @@ class GradComponent2(GradComponent):
             for _, pred in enumerate(children_params):
                 if response.score is not None:
                     pred.set_score(response.score)
-                printc(f"score score for pred name: {pred.name}")
+                printc(f"score {response.score} for pred name: {pred.name}")
                 if not pred.requires_opt:
                     continue
 

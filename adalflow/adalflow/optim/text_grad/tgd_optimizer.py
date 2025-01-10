@@ -183,7 +183,7 @@ When the LLM system is complicated with multiple system variables, you need to s
 1. **Address Feedback**: Resolve concerns raised in the feedback while preserving the positive aspects of the original variable.
 2. Observe past performance patterns (when available) to retain good qualities in the variable.
 3. **System Awareness**: When other system variables are given, ensure you understand how this variable works in the whole system.
-   You have a choice to not update a variable if it is not responsible for the error. Just keep the `update` field as `False`.
+   You have a choice to not update a variable if it is not responsible for the error by  setting `update: false` and `proposed_variable: None`.
 You MUST not update variable when there is no clear error indicated in a multi-component system.
 4. **Peer Awareness**: This variable works together with Peer variables, ensure you are aware of their roles and constraints.
 5. Be Creative. If adding new elements, be concise.
@@ -280,14 +280,17 @@ class TGDData(DataClass):
             "desc": "Which solution did you choose, which prompt engineering technique did you use? Why? Be Concise (maximum 2 sentences)"
         }
     )
-    proposed_variable: str = field(
-        metadata={"desc": "The proposed variable"}, default=None
-    )
     update: bool = field(
         default=True,
         metadata={
             "desc": "Depending on the feedback, update the variable if it is responsible for the error, else, keep it"
         },
+    )
+    proposed_variable: str = field(
+        metadata={
+            "desc": "The proposed variable, ignoring the field when update:  false"
+        },
+        default=None,
     )
 
 

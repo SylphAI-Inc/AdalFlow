@@ -9,7 +9,7 @@ import traceback
 
 
 from adalflow.core.generator import Generator
-from adalflow.optim.grad_component import GradComponent
+from adalflow.optim.grad_component import GradComponent2
 from adalflow.optim.parameter import Parameter, ParameterType
 from adalflow.core.func_tool import FunctionTool, AsyncCallable
 from adalflow.core.tool_manager import ToolManager
@@ -130,11 +130,9 @@ def map_step_history_list_to_prompt(x: Parameter) -> str:
     return "\n".join(output)
 
 
-class AppendStepHistory(GradComponent):
+class AppendStepHistory(GradComponent2):
     def __init__(self):
-        super().__init__()
-        self.name = "AppendStepHistory"
-        self._component_desc = "Append the step_output to the step_history."
+        super().__init__(desc="Append the step_output to the step_history.")
 
     def call(
         self, step_output: StepOutput, step_history: List[StepOutput]
@@ -154,11 +152,9 @@ class AppendStepHistory(GradComponent):
         return output
 
 
-class FunctionOutputToStepOutput(GradComponent):
+class FunctionOutputToStepOutput(GradComponent2):
     def __init__(self):
-        super().__init__()
-        self.name = "FunctionOutputToStepOutput"
-        self._component_desc = "Convert the FunctionOutput to StepOutput"
+        super().__init__(desc="Convert the FunctionOutput to StepOutput")
 
     def call(
         self,
@@ -368,7 +364,7 @@ class ReActAgent(Component):
                 step_output: StepOutput, error: str, response: Any
             ):
                 """Set the step_output with error."""
-                step_output.observation = f"erro: {error} at {response.data}"
+                step_output.observation = f"error: {error} at {response.data}"
                 return step_output
 
             response.add_successor_map_fn(
@@ -418,7 +414,6 @@ class ReActAgent(Component):
                 return handle_error(response, e)
 
             try:
-
                 # printc(f"func: {func}", color="yellow")
                 # replace the id
                 if isinstance(func, Parameter):
@@ -497,7 +492,7 @@ class ReActAgent(Component):
         id=None,
     ) -> StepOutput:
         """Execute the action and update the step_output."""
-        if x.error:
+        if x.error or not x.data:
             error_msg = f"Error planning step {step}: {x.error}"
             step_output.observation = error_msg
             step_output.action = None
@@ -506,6 +501,7 @@ class ReActAgent(Component):
         else:
             try:
                 fun_expr: FunctionExpression = x.data
+                printc(f"Step {step}: {fun_expr}", color="blue")
                 step_output.action = fun_expr
                 log.debug(f"Step {step}: {fun_expr}")
 

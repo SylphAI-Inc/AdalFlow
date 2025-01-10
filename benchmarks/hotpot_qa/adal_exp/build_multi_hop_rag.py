@@ -723,7 +723,7 @@ class AgenticRAG(adal.GradComponent):
     def __init__(self, model_client, model_kwargs):
         super().__init__()
 
-        self.dspy_retriever = DspyRetriever(top_k=3)
+        self.dspy_retriever = DspyRetriever(top_k=2)
         # self.llm_parser = adal.DataClassParser(
         #     data_class=AnswerData, return_data_class=True, format_type="json"
         # )
@@ -756,7 +756,7 @@ class AgenticRAG(adal.GradComponent):
             # context_variables: Dict,
             id: Optional[str] = None,
         ) -> List[str]:
-            r"""Retrieves the top k passages from using input as the query.
+            r"""Retrieves the top 2 passages from using input as the query.
             Ensure you get all the context to answer the original question.
             """
             output = self.dspy_retriever(input=input, id=id)

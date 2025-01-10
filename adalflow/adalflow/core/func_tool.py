@@ -18,7 +18,7 @@ from adalflow.core.types import (
 )
 from adalflow.core import Component
 from adalflow.optim.parameter import Parameter
-from adalflow.optim.grad_component import GradComponent
+from adalflow.optim.grad_component import GradComponent2
 from adalflow.core.functional import (
     get_fun_schema,
 )
@@ -59,7 +59,7 @@ FunctionType = Union[Callable[..., Any], Awaitable[Callable[..., Any]]]
 
 
 # TODO: improve the support for async functions, similarly a component might be used as a tool
-class FunctionTool(GradComponent):
+class FunctionTool(GradComponent2):
     __doc__ = r"""Describing and executing a function via call with arguments.
 
 
@@ -116,7 +116,9 @@ class FunctionTool(GradComponent):
         component: Optional[Component] = None,
         definition: Optional[FunctionDefinition] = None,
     ):
-        super().__init__()
+        super().__init__(
+            name="FunctionTool", desc="A component calls and executes a function."
+        )
         nest_asyncio.apply()
         assert fn is not None, "fn must be provided"
 

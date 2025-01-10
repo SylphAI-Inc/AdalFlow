@@ -22,6 +22,8 @@ import uuid
 from adalflow.optim.types import ParameterType
 from adalflow.core.base_data_class import DataClass
 from adalflow.utils.logger import printc
+import html
+
 
 if TYPE_CHECKING:
     from adalflow.optim.text_grad.tgd_optimizer import TGDData, TGDOptimizerTrace
@@ -1229,19 +1231,29 @@ class Parameter(Generic[T]):
         node_ids = set()
 
         for node in nodes:
+            escaped_name = html.escape(node.name if node.name else "")
+            escaped_param_type = html.escape(
+                node.param_type.name if node.param_type else ""
+            )
+            escaped_value = html.escape(
+                node.get_short_value() if node.get_short_value() else ""
+            )
+
             node_label = f"""
             <table border="0" cellborder="1" cellspacing="0">
-                <tr><td><b>Name:</b></td><td>{node.name}</td></tr>
-                <tr><td><b>Type:</b></td><td>{node.param_type}</td></tr>
-                <tr><td><b>Value:</b></td><td>{node.get_short_value()}</td></tr>"""
+                <tr><td><b>Name:</b></td><td>{escaped_name}</td></tr>
+                <tr><td><b>Type:</b></td><td>{escaped_param_type}</td></tr>
+                <tr><td><b>Value:</b></td><td>{escaped_value}</td></tr>"""
             # add the component trace id and name
             if hasattr(node, "component_trace") and node.component_trace.id is not None:
-                node_label += f"<tr><td><b>Component Trace ID:</b></td><td>{node.component_trace.id}</td></tr>"
+                escaped_ct_id = html.escape(str(node.component_trace.id))
+                node_label += f"<tr><td><b>Component Trace ID:</b></td><td>{escaped_ct_id}</td></tr>"
             if (
                 hasattr(node, "component_trace")
                 and node.component_trace.name is not None
             ):
-                node_label += f"<tr><td><b>Component Trace Name:</b></td><td>{node.component_trace.name}</td></tr>"
+                escaped_ct_name = html.escape(str(node.component_trace.name))
+                node_label += f"<tr><td><b>Component Trace Name:</b></td><td>{escaped_ct_name}</td></tr>"
 
             node_label += "</table>"
             dot.node(

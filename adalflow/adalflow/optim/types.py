@@ -19,9 +19,9 @@ class ParameterType(Enum):
     3. Third element: whether the parameter is trainable.
 
     To access each element, use the following:
-    1. name: `ParameterType.PROMPT.name`
+    1. name: `ParameterType.PROMPT.value`
     2. description: `ParameterType.PROMPT.description`
-    3. trainable: `ParameterType.PROMPT.trainable`
+    3. trainable: `ParameterType.PROMPT.default_trainable`
     """
 
     # trainable parameters with optimizers

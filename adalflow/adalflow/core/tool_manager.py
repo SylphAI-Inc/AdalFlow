@@ -21,7 +21,7 @@ import nest_asyncio
 import warnings
 
 from adalflow.core.container import ComponentList
-from adalflow.optim.grad_component import GradComponent
+from adalflow.optim.grad_component import GradComponent2
 from adalflow.core.component import Component
 from adalflow.core.func_tool import FunctionTool
 from adalflow.core.types import (
@@ -107,9 +107,9 @@ class CallFunctionTool(Component):
             return output
 
 
-class FunctionExperssionToFunction(GradComponent):
+class FunctionExperssionToFunction(GradComponent2):
     def __init__(self):
-        super().__init__()
+        super().__init__(desc="Convert FunctionExpression to Function")
 
     def call(self, expr: FunctionExpression, context: Dict[str, object]) -> Function:
 
@@ -227,21 +227,21 @@ class ToolManager(Component):
         r"""Parse the function call expression."""
 
         if isinstance(expr, Parameter):
-            try:
+            # try:
 
-                func = FunctionExperssionToFunction()
-                expr.add_successor_map_fn(func, map_fn=map_fn)
-                # print("FunctionExperssionToFunction")
-                output = func.forward(expr, context=self.context)
-                # print(f"output data: {output.data}")
-                return output
+            func = FunctionExperssionToFunction()
+            expr.add_successor_map_fn(func, map_fn=map_fn)
+            # print("FunctionExperssionToFunction")
+            output = func.forward(expr, context=self.context)
+            # print(f"output data: {output.data}")
+            return output
 
-            except Exception as e:
-                error_msg = (
-                    f"Error {e} parsing function call expression: {map_fn(expr)}"
-                )
-                return error_msg
-        else:
+            #     except Exception as e:
+            #         error_msg = (
+            #             f"Error {e} parsing function call expression: {map_fn(expr)}"
+            #         )
+            #         return error_msg
+            # else:
             try:
                 expr_str = expr.action
                 func_name, args, kwargs = parse_function_call_expr(
@@ -278,6 +278,7 @@ class ToolManager(Component):
         expr_or_fun: Union[FunctionExpression, Function],
         step: Literal["execute"] = "execute",
     ) -> Union[FunctionOutput, Function, Parameter]:
+        print(f"self.training: {self.training}, expr_or_fun: {expr_or_fun}")
         if not isinstance(expr_or_fun, (Function, FunctionExpression)):
             raise ValueError(
                 f"expr_or_fun should be either a Function or FunctionExpression. Got {expr_or_fun}"
