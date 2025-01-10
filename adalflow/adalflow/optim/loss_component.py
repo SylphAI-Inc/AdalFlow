@@ -41,6 +41,9 @@ class LossComponent(Component):
     def set_backward_engine(self, backward_engine: "BackwardEngine", *args, **kwargs):
         raise NotImplementedError("set_backward_engine method is not implemented")
 
+    def disable_backward_engine(self):
+        self.backward_engine = None
+
     def forward(self, *args, **kwargs) -> "Parameter":
         r"""Default just wraps the call method."""
         raise NotImplementedError("forward method is not implemented")

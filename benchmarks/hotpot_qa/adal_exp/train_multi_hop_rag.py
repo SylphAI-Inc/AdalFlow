@@ -74,6 +74,7 @@ class MultiHopRAGAdal(adal.AdalComponent):
         )
         return self.loss_fn, {
             "kwargs": {"y": pred, "y_gt": y_gt},
+            "input": {"question": sample.question},
             "id": sample.id,
             "gt": sample.answer,
         }
@@ -202,7 +203,7 @@ if __name__ == "__main__":
 
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     ckpt = train(
-        debug=False,
+        debug=True,
         max_steps=12,
         seed=2025,  # pass the numpy seed
         tg=use_tg,

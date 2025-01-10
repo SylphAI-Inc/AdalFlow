@@ -135,6 +135,8 @@ task_desc_str = r"""Answer questions with short factoid answers.
 You will receive context(contain relevant facts).
 Think step by step."""
 
+task_desc_str_system_finetuned = "Generate a concise, factually accurate answer by synthesizing information from the provided context. If multiple sources are available, prioritize resolving ambiguities and cross-referencing data for consistency. Ensure the final answer directly addresses the question while considering specific numerical or descriptive criteria mentioned in the input."
+
 # task_desc_str = r"""Answer questions with verbatim short factoid responses.
 
 # You will receive context. Extract only the most relevant fact for a precise answer.
@@ -163,21 +165,29 @@ class VanillaRAG(adal.GradComponent):
             model_kwargs=model_kwargs,
             prompt_kwargs={
                 "task_desc_str": adal.Parameter(
+                    # data=task_desc_str_system_finetuned,
                     data=task_desc_str,
-                    role_desc="Task description for the language model",
+                    role_desc="""Task description for the language model,\
+                    used with the following template: \
+                    {{task_desc_str}} \
+                    {{output_format_str}}\
+                    <START_OF_USER>
+Context: {{context}}
+Question: {{question}}
+<END_OF_USER>""",
                     param_type=adal.ParameterType.PROMPT,
                     requires_opt=True,
                     instruction_to_backward_engine="You need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
                     instruction_to_optimizer="ou need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
                     # + "Given existing context, ensure the task instructions can maximize the performance.",
                 ),
-                "few_shot_demos": adal.Parameter(
-                    # data=demo_str,
-                    data=None,
-                    requires_opt=True,
-                    role_desc="To provide few shot demos to the language model",
-                    param_type=adal.ParameterType.DEMOS,
-                ),
+                # "few_shot_demos": adal.Parameter(
+                #     # data=demo_str,
+                #     data=None,
+                #     requires_opt=True,
+                #     role_desc="To provide few shot demos to the language model",
+                #     param_type=adal.ParameterType.DEMOS,
+                # ),
                 "output_format_str": self.llm_parser.get_output_format_str(),
                 # "output_format_str": adal.Parameter(
                 #     data=self.llm_parser.get_output_format_str(),

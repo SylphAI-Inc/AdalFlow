@@ -53,6 +53,9 @@ class GradientContext(DataClass):
     response_desc: str = field(
         metadata={"desc": "The description of the response parameter"}
     )
+    # input: Dict[str, Any] = field(
+    #     metadata={"desc": "The input to the whole system"}, default=None
+    # )
 
     # ground_truth: Any = field(
     #     metadata={"desc": "The ground truth of the response parameter"}, default=None

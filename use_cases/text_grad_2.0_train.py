@@ -13,10 +13,10 @@ hotpot_qa_vanilla_rag = "benchmarks/hotpot_qa/adal_exp/train_vanilla.py"
 
 ckpt_values = []
 experiments = [
-    # object_count,
+    object_count,
     # trec_6_classification,
     # hotpot_qa_vanilla_rag,
-    hotpot_qa_multi_hop_rag,
+    # hotpot_qa_multi_hop_rag,
 ]
 
 # set up the strategy for each experiment
@@ -122,7 +122,7 @@ if __name__ == "__main__":
                 print(f"Data: {data}")
                 _high_val_score = max(data["val_scores"])
                 _unique_val_scores = len(set(data["val_scores"])) - 1
-                _last_test_score = data["test_scores"][-1]
+                _last_test_score = data["test_score"]
                 # read the effective measures
                 effective_measures = data.get("effective_measure", {})
 

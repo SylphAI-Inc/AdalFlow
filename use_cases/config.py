@@ -51,10 +51,32 @@ gpt_4o_mini_model = {
     },
 }
 
+gpt_4_model = {
+    "model_client": OpenAIClient(),
+    "model_kwargs": {
+        "model": "gpt-4-turbo",
+        "temperature": 1,
+        "top_p": 0.99,
+        "max_tokens": 1000,
+        # "frequency_penalty": 1,  # high for nto repeating prompt
+    },
+}
+
 gpt_4o_model = {
     "model_client": OpenAIClient(),
     "model_kwargs": {
-        "model": "gpt-4o",
+        "model": "gpt-4o",  # gpt-4o-realtime-preview-2024-12-17
+        "temperature": 1,
+        "top_p": 0.99,
+        "max_tokens": 1000,
+        # "frequency_penalty": 1,  # high for nto repeating prompt
+    },
+}
+
+gpt_4o1_model = {
+    "model_client": OpenAIClient(),
+    "model_kwargs": {
+        "model": "o1-preview",
         "temperature": 1,
         "top_p": 0.99,
         "max_tokens": 1000,

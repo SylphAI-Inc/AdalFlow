@@ -76,7 +76,11 @@ class MultiHopRAGCycleAdal(adal.AdalComponent):
             if pred.data and pred.data.data and pred.data.data.answer
             else ""
         )
-        return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}, "id": sample.id}
+        return self.loss_fn, {
+            "kwargs": {"y": pred, "y_gt": y_gt},
+            "id": sample.id,
+            "input": {"question": sample.question},
+        }
 
 
 # Note: diagnose is quite helpful, it helps you to quickly check if the evalfunction is the right metrics

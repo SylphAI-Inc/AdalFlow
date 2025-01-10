@@ -29,9 +29,9 @@ class AgenticRAGAdal(adal.AdalComponent):
             model_client=model_client,
             model_kwargs=model_kwargs,
         )
-        eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item  # 0.55
+        eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
         loss_fn = adal.EvalFnToTextLoss(
-            eval_fn=eval_fn, eval_fn_desc="fuzzy_match: 1 if str(y_gt) in str(y) else 0"
+            eval_fn=eval_fn, eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0"
         )
         # eval_fn = f1_score  # 0.38 (hand crafted the finish, exat match 0.25)
 
@@ -63,7 +63,9 @@ class AgenticRAGAdal(adal.AdalComponent):
         if y_pred is not None and y_pred.answer:
             y_label = y_pred.answer
 
-        printc(f"eval y_label: {y_label}, y_gt: {sample.answer}")
+        printc(
+            f"eval y_label: {y_label}, y_gt: {sample.answer}, self.eval_fn: {self.eval_fn(y_label, sample.answer)}"
+        )
 
         return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
 
@@ -81,12 +83,18 @@ class AgenticRAGAdal(adal.AdalComponent):
         # pred.eval_input = (
         #     pred.data[-1].observation if pred.data and pred.data[-1] else ""
         # )
+        printc(f"pred data: {pred.data}")
         pred.eval_input = pred.data.answer if pred.data else ""
         # pred.eval_input = (
         #     pred.data[-1].observation if pred.data and pred.data[-1] else ""
         # )
-        printc(f"loss eval_input: {pred.eval_input}")
-        return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}, "id": sample.id}
+        # printc(f"loss eval_input: {pred.eval_input}")
+        return self.loss_fn, {
+            "kwargs": {"y": pred, "y_gt": y_gt},
+            "id": sample.id,
+            "gt": y_gt.eval_input,
+            "input": {"question": sample.question},
+        }
 
 
 # Note: diagnose is quite helpful, it helps you to quickly check if the evalfunction is the right metrics
@@ -106,10 +114,10 @@ def train_diagnose(
         teacher_model_config=gpt_3_model,
         text_optimizer_model_config=gpt_3_model,
     )
-    # trainset = trainset[:5]
+    trainset = trainset[:5]
     trainer = adal.Trainer(adaltask=adal_component)
-    # trainer.diagnose(dataset=trainset, split="train")
-    trainer.diagnose(dataset=valset, split="val")
+    trainer.diagnose(dataset=trainset, split="train")
+    # trainer.diagnose(dataset=valset, split="val")
     # trainer.diagnose(dataset=testset, split="test")
 
 
@@ -133,7 +141,7 @@ def train(
 ):
     adal_component = AgenticRAGAdal(
         **gpt_3_model,
-        teacher_model_config=gpt_3_model,
+        teacher_model_config=gpt_4o_model,
         text_optimizer_model_config=gpt_4o_model,  # gpt3.5 is not enough to be used as a good optimizer, it struggles for long contenxt
         backward_engine_model_config=gpt_4o_model,
     )
@@ -164,6 +172,9 @@ def train(
     print(trainer)
 
     train_dataset, val_dataset, test_dataset = load_datasets()
+    train_dataset = train_dataset[:4]
+    val_dataset = val_dataset[:4]
+    test_dataset = test_dataset[:4]
     ckpt, _ = trainer.fit(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
@@ -212,7 +223,7 @@ if __name__ == "__main__":
     # exit()
 
     ckpt = train(
-        debug=False,
+        debug=True,
         max_steps=12,
         seed=2025,
         tg=use_tg,

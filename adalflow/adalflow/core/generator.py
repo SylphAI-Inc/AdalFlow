@@ -377,6 +377,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             model_kwargs=composed_model_kwargs,
             model_type=self.model_type,
         )
+        # printc(f"api_kwargs: {api_kwargs}", color="red")
         return api_kwargs
 
     def _model_client_call(self, api_kwargs: Dict, use_cache: bool = False) -> Any:
@@ -545,6 +546,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                         self.model_kwargs, model_kwargs
                     ),
                 }
+                # printc(f"input_args: {input_args}", color="red")
 
                 output = self.call(**input_args, id=id)
                 if not isinstance(output, GeneratorOutput):
@@ -673,7 +675,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         # 1.backward for text-gradients
         if backward_engine:
-            log.debug(
+
+            printc(
                 f"Generator: Backward engine is set for the generator. {backward_engine}"
             )
             if response.backward_engine_disabled:
@@ -1062,7 +1065,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
     def call(
         self,
-        prompt_kwargs: Optional[Dict] = {},  # the input need to be passed to the prompt
+        prompt_kwargs: Optional[Dict] = {},  # supports both str and parameter value
         model_kwargs: Optional[Dict] = {},
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,

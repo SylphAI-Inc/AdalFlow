@@ -623,6 +623,7 @@ class Trainer(Component):
             def run_demo_optimizers(starting_step: int, trainer_results: TrainerResult):
                 if len(self.demo_optimizers) > 0:
                     self.adaltask.configure_teacher_generator()
+                    self.adaltask.disable_backward_engine()  # disable it to avoid backward engine for gradients
                     self._fit_demos_random(
                         train_loader,
                         train_dataset,
@@ -1085,6 +1086,14 @@ class Trainer(Component):
     def _revert_text_optimizers(self):
         for text_optimizer in self.text_optimizers:
             text_optimizer.revert()
+
+    def _increment_step_from_last_improvement_text_optimizers(self):
+        for text_optimizer in self.text_optimizers:
+            text_optimizer.increment_steps_from_last_improvement()
+
+    def _reset_steps_from_last_improvement_text_optimizers(self):
+        for text_optimizer in self.text_optimizers:
+            text_optimizer.reset_steps_from_last_improvement()
 
     def _check_optimizer_proposal(self):
         r"""Return True if all optimizers have proposed a new prompt"""
@@ -2094,6 +2103,7 @@ class Trainer(Component):
                 )
                 all_samples, all_losses, all_y_preds = [], [], []
                 val_score_increased = True
+                self._reset_steps_from_last_improvement_text_optimizers()
                 break
             else:
                 print(f"Optimizer revert: {val_score} <= {last_val_score}")
@@ -2105,7 +2115,6 @@ class Trainer(Component):
                     self._demo_optimizers_revert()
 
                 continue
-
         if not val_score_increased:
             print("No proposal can improve the subset and full set, and val set")
             self._zero_grad_text_optimizers()
@@ -2119,6 +2128,7 @@ class Trainer(Component):
                 total_steps,
                 attempted_val_score=val_score,
             )
+            self._increment_step_from_last_improvement_text_optimizers()
 
         print(f"Saving checkpoint to {self.ckpt_file}")
         trainer_results.effective_measure = self._effective_measure

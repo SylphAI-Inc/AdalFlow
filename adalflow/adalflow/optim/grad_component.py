@@ -84,6 +84,9 @@ class GradComponent(Component):
                     f"EvalFnToTextLoss: backward_engine must be an instance of BackwardEngine. Got {type(backward_engine)}."
                 )
 
+    def disable_backward_engine(self):
+        self.backward_engine = None
+
     def call(self, *args, **kwargs):
         raise NotImplementedError("call method is not implemented")
 
@@ -347,25 +350,25 @@ class GradComponent2(GradComponent):
                 )
             self.backward_engine = backward_engine
 
-    def set_backward_engine(
-        self,
-        backward_engine: "BackwardEngine" = None,
-        model_client: "ModelClient" = None,
-        model_kwargs: Dict[str, object] = None,
-    ):
-        from adalflow.core.generator import BackwardEngine
+    # def set_backward_engine(
+    #     self,
+    #     backward_engine: "BackwardEngine" = None,
+    #     model_client: "ModelClient" = None,
+    #     model_kwargs: Dict[str, object] = None,
+    # ):
+    #     from adalflow.core.generator import BackwardEngine
 
-        self.backward_engine = backward_engine
-        if not backward_engine:
-            log.info(
-                "EvalFnToTextLoss: No backward engine provided. Creating one using model_client and model_kwargs."
-            )
-            self.backward_engine = BackwardEngine(model_client, model_kwargs)
-        else:
-            if type(backward_engine) is not BackwardEngine:
-                raise TypeError(
-                    f"EvalFnToTextLoss: backward_engine must be an instance of BackwardEngine. Got {type(backward_engine)}."
-                )
+    #     self.backward_engine = backward_engine
+    #     if not backward_engine:
+    #         log.info(
+    #             "EvalFnToTextLoss: No backward engine provided. Creating one using model_client and model_kwargs."
+    #         )
+    #         self.backward_engine = BackwardEngine(model_client, model_kwargs)
+    #     else:
+    #         if type(backward_engine) is not BackwardEngine:
+    #             raise TypeError(
+    #                 f"EvalFnToTextLoss: backward_engine must be an instance of BackwardEngine. Got {type(backward_engine)}."
+    #             )
 
     @staticmethod
     def _backward_through_one_predecessor(

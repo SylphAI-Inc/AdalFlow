@@ -103,6 +103,7 @@ class EvalFnToTextLoss(LossComponent):
         metadata: Dict[str, str] = None,  # additional notes on the input kwargs
         id: str = None,
         gt: object = None,
+        input: Dict[str, object] = None,
     ) -> Parameter:
         r"""
         Args:
@@ -158,6 +159,7 @@ class EvalFnToTextLoss(LossComponent):
                 kwargs=kwargs,
                 metadata=metadata,
                 ground_truth=gt,
+                input=input,
             )
         )
         return eval_param
@@ -192,6 +194,7 @@ class EvalFnToTextLoss(LossComponent):
         ground_truth: object = None,
         is_intermediate_node: bool = False,  # if the node is an intermediate node in the backpropagation chain
         metadata: Dict[str, str] = None,
+        input: Dict[str, object] = None,  # system input
     ):
         if not pred.requires_opt:
             if response.score is not None:
@@ -231,6 +234,7 @@ class EvalFnToTextLoss(LossComponent):
         conversation_str = Prompt(
             LOSS_CONVERSATION_TEMPLATE_STRING,
             prompt_kwargs={
+                "system_question": input,
                 "inputs": inputs,
                 "eval_fn_desc": eval_fn_desc,
                 "response_value": response.get_prompt_data(),
@@ -304,6 +308,7 @@ class EvalFnToTextLoss(LossComponent):
                 input_output=conversation_str,
                 response_desc=response.role_desc,
                 variable_desc=pred.role_desc,
+                input=input,
                 # ground_truth=ground_truth,
             )
         )
@@ -330,6 +335,7 @@ class EvalFnToTextLoss(LossComponent):
             "BackwardEngine"
         ] = None,  # only needed for text prompt optimization
         metadata: Dict[str, str] = None,
+        input: Dict[str, object] = None,
     ):
         r"""Ensure to set backward_engine for the text prompt optimization. It can be None if you
         are only doing demo optimization and it will not have gradients but simply backpropagate the score.
@@ -362,6 +368,7 @@ class EvalFnToTextLoss(LossComponent):
                         ground_truth=ground_truth,
                         is_intermediate_node=is_intermediate_node,
                         metadata=metadata,
+                        input=input,
                     )
             else:  # recursively disable backward for all children
                 for pred in children_params:

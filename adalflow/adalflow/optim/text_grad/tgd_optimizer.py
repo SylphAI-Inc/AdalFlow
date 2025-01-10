@@ -50,6 +50,7 @@ TEXT_GRAD_DESC_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 {{optimizer_system_prompt}}
 <END_OF_SYSTEM_PROMPT>
 <START_OF_USER_MESSAGE>
+You are {{steps}} steps since your successful improvement.
 {# Variable and peers info #}
 <START_OF_VARIABLE_AND_PEERS_INFO>
 {{variable_and_peers_info}}
@@ -79,7 +80,7 @@ Here are the best past iterations of this variable along with the validation sco
 IMPORTANT: Your goal is to generate new variable that score higher than all past iterations.
 {# Momentum #}
 {% if failed_proposals %}
-Here are the past failed proposals:
+Here are the most recent failed proposals:
 {% for failed_proposal in failed_proposals %}
 {{loop.index}}. {{failed_proposal}}
 {% endfor %}
@@ -183,6 +184,7 @@ When the LLM system is complicated with multiple system variables, you need to s
 2. Observe past performance patterns (when available) to retain good qualities in the variable.
 3. **System Awareness**: When other system variables are given, ensure you understand how this variable works in the whole system.
    You have a choice to not update a variable if it is not responsible for the error. Just keep the `update` field as `False`.
+You MUST not update variable when there is no clear error indicated in a multi-component system.
 4. **Peer Awareness**: This variable works together with Peer variables, ensure you are aware of their roles and constraints.
 5. Be Creative. If adding new elements, be concise.
 
@@ -339,6 +341,7 @@ class TGDOptimizer(TextOptimizer):
         num_gradient_memory: int = 0,  # TODO: gradient memory and momentum, for now it is not useful
         max_past_history: int = 3,
         max_failed_proposals: int = 2,
+        steps_from_last_improvement: int = 0,
     ):
         from adalflow.core.generator import Generator
         from adalflow.core import Prompt
@@ -385,6 +388,7 @@ class TGDOptimizer(TextOptimizer):
 
         self.max_past_history = max_past_history
         self.max_failed_proposals = max_failed_proposals
+        self.steps_from_last_improvement = steps_from_last_improvement
 
         # initate the past history for each parameter
         for param in self.params:
@@ -404,6 +408,12 @@ class TGDOptimizer(TextOptimizer):
             for i, constraint in enumerate(self.constraints)
         ]
         return "\n".join(constraints_ordered)
+
+    def increment_steps_from_last_improvement(self):
+        self.steps_from_last_improvement += 1
+
+    def reset_steps_from_last_improvement(self):
+        self.steps_from_last_improvement = 0
 
     def add_score_to_params(self, val_score: float):
         for param in self.params:
@@ -532,6 +542,7 @@ class TGDOptimizer(TextOptimizer):
                 else None
             ),
             "system_variables": system_params,
+            "steps": self.steps_from_last_improvement,
         }
 
         return user_prompt_kwargs

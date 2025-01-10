@@ -79,12 +79,20 @@ About <VARIABLES> or <PEERS>:
 # LLM: Answer questions by reading the context  and reason the best answer.
 # </TASK_PIPELINE>
 # You are the feedback engine in an optimization system consisting of multiple components.
-FEEDBACK_ENGINE_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
-You are the feedback engine to provide feedback for a target variable in a compound LLM system.
+# You are the feedback engine to provide feedback for a target variable in a compound LLM system.
 
-The evaluation and feedback is backpropogated all the way to you, and you will assess the current component's inputs, output along with its feedback.
-A component can have multiple inputs, and you handle one that is enclosed in <TARGET_VARIABLE> or <VARIABLES> tags.
-You will provide intelligent and creative feedback so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION> tags.
+# The evaluation and feedback is backpropogated all the way to you, and you will assess the current component's inputs, output along with its feedback.
+# A component can have multiple inputs, and you handle one that is enclosed in <TARGET_VARIABLE> or <VARIABLES> tags.
+# You will provide intelligent and creative feedback so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION> tags.
+
+FEEDBACK_ENGINE_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
+You are a detective excel at determining the root cause of a system error.
+You start with an evaluation function that measures performance, and you receive the system input.
+The system can be a a compound system, potentially consisting of multiple components.
+You will receive feedback from your direct successor, and your goal is to investigate your component’s inputs and outputs to identify whether any of your input variables are causing the error.
+
+Your target input variable is enclosed in <TARGET_VARIABLE> (representing one of the input variables that may or may not be causing the error).
+Alternatively, it may be enclosed in <VARIABLES> tags (in which case you must pass feedback to all variables, indicating which ones cause the errors and which do not).
 
 1. From <CONVERSATION></CONVERSATION> section, you can find how the variable is obtained and used.
 2. As there might be multiple precedessors, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
@@ -192,23 +200,23 @@ e.g. "The retrieved context is not enough to answer the question so the problem 
 # Note: {{metadata}}
 # {% endif %}"""
 
-LOSS_CONVERSATION_TEMPLATE_STRING = r"""
-The variable is passed to the eval function and compared with a expected value(y_gt or ground_truth).
+# LOSS_CONVERSATION_TEMPLATE_STRING = r"""
+# The variable is passed to the eval function and compared with a expected value(y_gt or ground_truth).
 
-EVAL_FUNC: {{eval_fn_desc}}
+# EVAL_FUNC: {{eval_fn_desc}}
 
-INPUTS:
-{% for key, (value, eval_type) in inputs.items() %}
-({{ key }}) (role: {{ value.role_desc }}),
-data: {{ value.prompt_data }},
-input_to_eval_fn: {{ value.eval_input }},
-data_type: {{ eval_type }}
-{% endfor %}
+# INPUTS:
+# {% for key, (value, eval_type) in inputs.items() %}
+# ({{ key }}) (role: {{ value.role_desc }}),
+# data: {{ value.prompt_data }},
+# input_to_eval_fn: {{ value.eval_input }},
+# data_type: {{ eval_type }}
+# {% endfor %}
 
-OUTPUTS/SCORE: {{response_value}}
-{% if metadata %}
-Note: {{metadata}}
-{% endif %}"""
+# OUTPUTS/SCORE: {{response_value}}
+# {% if metadata %}
+# Note: {{metadata}}
+# {% endif %}"""
 
 
 ### Variable to get feedback on, often it is pred in the loss component
@@ -223,11 +231,12 @@ TARGET VARIABLE:
 
 ###  Loss/Score Information  ###
 LOSS_CONVERSATION_TEMPLATE_STRING = r"""
-The variable is passed to the eval function and compared with a target/ground truth value.
+The variable is passed to the eval function and compared with a target/ground truth value to get
+its score regarding to a SYSTEM_QUESTION: {{system_question}}.
 
 EVAL_FUNC: {{eval_fn_desc}}
 
-INPUTS:
+INPUTS to EVAL_FUNC:
 {% for key, (value, eval_type) in inputs.items() %}
 ({{ key }}) (role: {{ value.role_desc }}),
 data: {{ value.prompt_data }},

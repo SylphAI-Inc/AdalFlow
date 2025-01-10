@@ -151,6 +151,21 @@ You will receive a context(may contain relevant facts) and a question.
 Think step by step."""
 
 
+task_desc_str = """
+You will receive an original question, last search query, and the retrieved context from the last search query.
+Write the next search query to help retrieve all relevant context to answer the original question.
+Think step by step."""
+
+task_desc_str_system_finetuned = """
+Write a search query to identify key information step by step. Begin by extracting names or entities directly referenced in the question. Use retrieved data to iteratively refine subsequent queries, targeting specific attributes such as filmographies, roles, or numerical criteria (e.g., number of movies or TV shows). Adjust the query dynamically based on gaps or ambiguities in retrieved results.
+"""
+
+task_desc_system_finedtuned_separately = [
+    "Write a search query that extracts the key entity or fact required to begin answering the question. Focus on identifying specific names, titles, or roles directly referenced in the question. The query should aim to retrieve precise and relevant details (e.g., the name of a person, cast members of a movie, or associated facts) to refine understanding of the question.",
+    "Based on the retrieved results, refine the search query to target detailed information that resolves the question. Use retrieved entities or partial answers to adjust the query dynamically. If gaps or ambiguities remain, incorporate criteria from the original question (e.g., specific numbers, attributes, or context) to improve precision and relevance.",
+]
+
+
 class MultiHopRetrieverCycle(adal.Retriever):
     def __init__(self, model_client, model_kwargs, passages_per_hop=3, max_hops=2):
         super().__init__()
@@ -168,17 +183,27 @@ class MultiHopRetrieverCycle(adal.Retriever):
             model_client=model_client,
             model_kwargs=model_kwargs,
             prompt_kwargs={
-                "few_shot_demos": Parameter(
-                    name="few_shot_demos",
-                    data=None,
-                    role_desc="To provide few shot demos to the language model",
-                    requires_opt=False,
-                    param_type=ParameterType.DEMOS,
-                ),
+                # "few_shot_demos": Parameter(
+                #     name="few_shot_demos",
+                #     data=None,
+                #     role_desc="To provide few shot demos to the language model",
+                #     requires_opt=True,
+                #     param_type=ParameterType.DEMOS,
+                # ),
                 "task_desc_str": Parameter(
                     name="task_desc_str",
                     data=query_generator_task_desc,
-                    role_desc="Task description for the language model",
+                    # data=task_desc_str_system_finetuned,
+                    # data=task_desc_system_finedtuned_separately[0],
+                    role_desc="Task description for the language model. Used together with \
+                    the following template: \
+                    Question: {{question}} \
+{% if last_query is not none %} \
+Last Query: {{last_query}}\
+{% endif %}\
+{% if context is not none %}\
+Context from last search query: {{context}}\
+{% endif %}",
                     requires_opt=True,
                     param_type=ParameterType.PROMPT,
                 ),
@@ -220,18 +245,31 @@ class MultiHopRetrieverCycle(adal.Retriever):
             param_type=ParameterType.INPUT,
         )
         contexts = []
+        last_query = None
 
         for i in range(self.max_hops):
-            printc(f"hop: {i}", "yellow")
+            # printc(f"hop: {i}", "yellow")
 
             gen_out = self.query_generator.forward(
                 prompt_kwargs={
                     "context": context,
                     "question": question_param,
+                    "last_query": last_query,
+                    # "task_desc_str": task_desc_system_finedtuned_separately[
+                    #     i
+                    # ],  # replace this at runtime
                 },
                 id=id,
             )
-            printc(f"query {i}: {gen_out.data.data.query}", "yellow")
+            # prompt_kwargs = {
+            #     "context": context,
+            #     "question": question_param,
+            #     "last_query": last_query,
+            # }
+            # prompt = self.query_generator.get_prompt(**prompt_kwargs)
+            # printc(f"prompt: {prompt}", "yellow")
+
+            # printc(f"query {i}: {gen_out.data.data.query}", "yellow")
             # extract the query from the generator output
             success_map_fn = lambda x: (  # noqa E731
                 x.data.data.query
@@ -243,11 +281,22 @@ class MultiHopRetrieverCycle(adal.Retriever):
             gen_out.add_successor_map_fn(
                 successor=self.retriever, map_fn=success_map_fn
             )
-            printc(f"before retrieve_out: {success_map_fn(gen_out)}", "yellow")
+            # printc(f"before retrieve_out: {success_map_fn(gen_out)}", "yellow")
 
             # retrieve the passages
             retrieve_out: adal.Parameter = self.retriever.forward(input=gen_out, id=id)
-            printc(f"retrieve_out: {retrieve_out}", "yellow")
+            # printc(f"retrieve_out: {retrieve_out}", "yellow")
+
+            retrieve_out.data_in_prompt = lambda x: {
+                "query": x.data.query,
+                "documents": x.data.documents,
+            }
+            if i + 1 < self.max_hops:
+                last_query = gen_out
+
+                last_query.add_successor_map_fn(
+                    successor=self.query_generator, map_fn=success_map_fn
+                )
 
             def retrieve_out_map_fn(x: adal.Parameter):
                 return x.data.documents if x.data and x.data.documents else []
@@ -256,17 +305,13 @@ class MultiHopRetrieverCycle(adal.Retriever):
             retrieve_out.add_successor_map_fn(
                 successor=self.deduplicater, map_fn=retrieve_out_map_fn
             )
+            context = retrieve_out
+            if i + 1 < self.max_hops:
+                context.add_successor_map_fn(
+                    successor=self.query_generator, map_fn=retrieve_out_map_fn
+                )
 
             contexts.append(context)
-
-            # combine the context + deduplicated passages
-            context = self.deduplicater.forward(
-                exisiting_list=context, new_list=retrieve_out, id=id
-            )
-
-        # context_sum = EvalFnToTextLoss(
-        #     eval_fn =
-        # )
 
         contexts[0].add_successor_map_fn(
             successor=self.combine_list, map_fn=lambda x: x.data
@@ -278,38 +323,11 @@ class MultiHopRetrieverCycle(adal.Retriever):
         context_sum = self.combine_list.forward(contexts[0], contexts[1])
         return context_sum
 
-        # context_sum = sum_ops(contexts)  # put together a list of parameters
-
-        # # context.param_type = ParameterType.RETRIEVER_OUTPUT
-        # # context.requires_opt = True
-        # # # used as the final outptu
-
-        # # # convert the context to the retriever output
-        # # def context_to_retrover_output(x):
-        # #     return adal.RetrieverOutput(
-        # #         documents=x.data,
-        # #         query=[input] + [success_map_fn(gen_out)],
-        # #         doc_indices=[],
-        # #     )
-
-        # # context.data = context_to_retrover_output(context)
-        # deduplicated_context = set()
-        # for context in contexts:
-        #     deduplicated_context.update(set(context.data))
-        # context_sum.data = list(deduplicated_context)
-
-        # return context_sum
-
 
 # task_desc_str = """Write a simple search query that will help answer a complex question.
 
 # You will receive a context(may contain relevant facts) and a question.
 # Think step by step."""
-
-task_desc_str = """
-You will receive an original question, last search query, and the retrieved context from the last search query.
-Write the next search query to help retrieve all relevant context to answer the original question.
-Think step by step."""
 
 
 trained_task_desc_strs = [
@@ -374,9 +392,17 @@ class MultiHopRetriever(adal.Component):
                         # ),
                         "task_desc_str": Parameter(
                             name="task_desc_str",
-                            # data=task_desc_str,
-                            data=manual_task_desc_strs[i],
-                            role_desc=f"Task description for {i+1}th LLM as a query generator",
+                            data=task_desc_str,
+                            # data=manual_task_desc_strs[i],
+                            role_desc=f"""Task description for the {i+1}th language model."""
+                            + "Used together with the following template: \
+Question: {{question}} \
+{% if last_query is not none %} \
+Last Query: {{last_query}}\
+{% endif %}\
+{% if context is not none %}\
+Context from last search query: {{context}}\
+{% endif %}",
                             requires_opt=True,
                             param_type=ParameterType.PROMPT,
                         ),

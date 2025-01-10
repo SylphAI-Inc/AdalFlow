@@ -175,7 +175,7 @@ class AdalComponent(Component):
         return self._demo_optimizers + self._text_optimizers
 
     def configure_backward_engine(self, *args, **kwargs):
-        r"""Configure a backward engine for all generators in the task for bootstrapping examples."""
+        r"""Configure a backward engine for all GradComponent in the task for bootstrapping examples."""
         # check if backward engine is already configured
         if self.backward_engine:
             log.warning("Backward engine is already configured.")
@@ -190,6 +190,10 @@ class AdalComponent(Component):
             model_kwargs=self.backward_engine_model_config["model_kwargs"],
             backward_pass_setup=kwargs.get("backward_pass_setup", None),
         )
+
+    def disable_backward_engine(self):
+        r"""Disable the backward engine for all GradComponent in the task."""
+        self.disable_backward_engine_helper()
 
     # def configure_backward_engine(self, *args, **kwargs):
     #     raise NotImplementedError("configure_backward_engine method is not implemented")
@@ -590,6 +594,23 @@ class AdalComponent(Component):
             print(f"Configuring teacher generator for {teacher_generator}")
             generator.set_teacher_generator(teacher_generator)
         print("Teacher generator configured.")
+
+    def disable_backward_engine_helper(self):
+        r"""Disable the backward engine for all generators in the task."""
+        all_grads = self._find_all_grad_components()
+        for _, grad in all_grads:
+            if hasattr(grad, "disable_backward_engine") and callable(
+                getattr(grad, "disable_backward_engine", None)
+            ):
+                grad.disable_backward_engine()
+        print("Backward engine disabled for GradComponents")
+
+        if not self.loss_fn:
+            raise ValueError("Loss function is not configured.")
+
+        # configure it for loss_fn
+        if self.loss_fn:
+            self.loss_fn.disable_backward_engine()
 
     def configure_backward_engine_helper(
         self,
