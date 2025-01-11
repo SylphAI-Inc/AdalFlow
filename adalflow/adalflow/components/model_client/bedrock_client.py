@@ -1,7 +1,13 @@
 """AWS Bedrock ModelClient integration."""
-
+import json
 import os
-from typing import Dict, Optional, Any, Callable
+from typing import (
+    Dict,
+    Optional,
+    Any,
+    Callable,
+    Generator as GeneratorType
+)
 import backoff
 import logging
 
@@ -15,6 +21,7 @@ boto3 = safe_import(OptionalPackages.BOTO3.value[0], OptionalPackages.BOTO3.valu
 from botocore.config import Config
 
 log = logging.getLogger(__name__)
+log.level = logging.DEBUG
 
 bedrock_runtime_exceptions = boto3.client(
     service_name="bedrock-runtime",
@@ -25,7 +32,6 @@ bedrock_runtime_exceptions = boto3.client(
 def get_first_message_content(completion: Dict) -> str:
     r"""When we only need the content of the first message.
     It is the default parser for chat completion."""
-    return completion["output"]["message"]["content"][0]["text"]
     return completion["output"]["message"]["content"][0]["text"]
 
 
@@ -117,6 +123,7 @@ class BedrockAPIClient(ModelClient):
         self._aws_connection_timeout = aws_connection_timeout
         self._aws_read_timeout = aws_read_timeout
 
+        self._client = None
         self.session = None
         self.sync_client = self.init_sync_client()
         self.chat_completion_parser = (
@@ -158,16 +165,34 @@ class BedrockAPIClient(ModelClient):
     def init_async_client(self):
         raise NotImplementedError("Async call not implemented yet.")
 
-    def parse_chat_completion(self, completion):
-        log.debug(f"completion: {completion}")
+    @staticmethod
+    def parse_stream_response(completion: dict) -> str:
+        if "contentBlockDelta" in completion:
+            if delta_chunk := completion["contentBlockDelta"]["delta"]:
+                return delta_chunk["text"]
+        return ''
+
+    def handle_stream_response(self, stream: dict) -> GeneratorType:
         try:
-            data = completion["output"]["message"]["content"][0]["text"]
-            usage = self.track_completion_usage(completion)
-            return GeneratorOutput(data=None, usage=usage, raw_response=data)
+            for chunk in stream["stream"]:
+                log.debug(f"Raw chunk: {chunk}")
+                parsed_content = self.parse_stream_response(chunk)
+                yield parsed_content
         except Exception as e:
-            log.error(f"Error parsing completion: {e}")
+            print(f"Error in handle_stream_response: {e}")  # Debug print
+            raise
+
+    def parse_chat_completion(self, completion: dict) -> "GeneratorOutput":
+        """Parse the completion, and put it into the raw_response."""
+        try:
+            data = self.handle_stream_response(completion)
             return GeneratorOutput(
-                data=None, error=str(e), raw_response=str(completion)
+                data=None, error=None, raw_response=data
+            )
+        except Exception as e:
+            log.error(f"Error parsing the completion: {e}")
+            return GeneratorOutput(
+                data=None, error=str(e), raw_response=json.dumps(completion)
             )
 
     def track_completion_usage(self, completion: Dict) -> CompletionUsage:
@@ -184,12 +209,13 @@ class BedrockAPIClient(ModelClient):
 
         try:
             response = self._client.list_foundation_models()
-            models = response.get("models", [])
+            models = response.get("modelSummaries", [])
             for model in models:
                 print(f"Model ID: {model['modelId']}")
-                print(f"  Name: {model['name']}")
-                print(f"  Description: {model['description']}")
-                print(f"  Provider: {model['provider']}")
+                print(f"  Name: {model['modelName']}")
+                print(f"  Input Modalities: {model['inputModalities']}")
+                print(f"  Output Modalities: {model['outputModalities']}")
+                print(f"  Provider: {model['providerName']}")
                 print("")
         except Exception as e:
             print(f"Error listing models: {e}")
@@ -222,14 +248,26 @@ class BedrockAPIClient(ModelClient):
             bedrock_runtime_exceptions.ModelErrorException,
             bedrock_runtime_exceptions.ValidationException,
         ),
-        max_time=5,
+        max_time=2,
     )
-    def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
+    def call(
+        self,
+        api_kwargs: Dict = {},
+        model_type: ModelType = ModelType.UNDEFINED,
+        stream: bool = False
+    ) -> dict:
         """
         kwargs is the combined input and model_kwargs
         """
         if model_type == ModelType.LLM:
-            return self.sync_client.converse(**api_kwargs)
+            if "stream" in api_kwargs and api_kwargs.get("stream", False):
+                log.debug("Streaming call")
+                api_kwargs.pop("stream")  # stream is not a valid parameter for bedrock
+                self.chat_completion_parser = self.handle_stream_response
+                return self.sync_client.converse_stream(**api_kwargs)
+            else:
+                api_kwargs.pop("stream")
+                return self.sync_client.converse(**api_kwargs)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
 
