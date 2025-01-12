@@ -1,19 +1,13 @@
 """AWS Bedrock ModelClient integration."""
+
 import json
 import os
-from typing import (
-    Dict,
-    Optional,
-    Any,
-    Callable,
-    Generator as GeneratorType
-)
+from typing import Dict, Optional, Any, Callable, Generator as GeneratorType
 import backoff
 import logging
 
 from adalflow.core.model_client import ModelClient
 from adalflow.core.types import ModelType, CompletionUsage, GeneratorOutput
-from adalflow.utils import printc
 
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
@@ -166,6 +160,14 @@ class BedrockAPIClient(ModelClient):
         raise NotImplementedError("Async call not implemented yet.")
 
     def handle_stream_response(self, stream: dict) -> GeneratorType:
+        r"""Handle the stream response from bedrock. Yield the chunks.
+
+        Args:
+            stream (dict): The stream response generator from bedrock.
+
+        Returns:
+            GeneratorType: A generator that yields the chunks from bedrock stream.
+        """
         try:
             stream: GeneratorType = stream["stream"]
             for chunk in stream:
@@ -173,14 +175,31 @@ class BedrockAPIClient(ModelClient):
                 yield chunk
         except Exception as e:
             print(f"Error in handle_stream_response: {e}")  # Debug print
-            raise from e
+            raise
 
     def parse_chat_completion(self, completion: dict) -> "GeneratorOutput":
-        """Parse the completion, and put it into the raw_response."""
+        r"""Parse the completion, and assign it into the raw_response attribute.
+
+        If the completion is a stream, it will be handled by the handle_stream_response
+        method that returns a Generator. Otherwise, the completion will be parsed using
+        the get_first_message_content method.
+
+        Args:
+            completion (dict): The completion response from bedrock API call.
+
+        Returns:
+            GeneratorOutput: A generator output object with the parsed completion. May
+                return a generator if the completion is a stream.
+        """
         try:
+            usage = None
+            print(completion)
             data = self.chat_completion_parser(completion)
+            if not isinstance(data, GeneratorType):
+                # Streaming completion usage tracking is not implemented.
+                usage = self.track_completion_usage(completion)
             return GeneratorOutput(
-                data=None, error=None, raw_response=data
+                data=None, error=None, raw_response=data, usage=usage
             )
         except Exception as e:
             log.error(f"Error parsing the completion: {e}")
@@ -254,7 +273,9 @@ class BedrockAPIClient(ModelClient):
         if model_type == ModelType.LLM:
             if "stream" in api_kwargs and api_kwargs.get("stream", False):
                 log.debug("Streaming call")
-                api_kwargs.pop("stream")  # stream is not a valid parameter for bedrock
+                api_kwargs.pop(
+                    "stream", None
+                )  # stream is not a valid parameter for bedrock
                 self.chat_completion_parser = self.handle_stream_response
                 return self.sync_client.converse_stream(**api_kwargs)
             else:
