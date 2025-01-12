@@ -22,7 +22,6 @@ boto3 = safe_import(OptionalPackages.BOTO3.value[0], OptionalPackages.BOTO3.valu
 from botocore.config import Config
 
 log = logging.getLogger(__name__)
-log.level = logging.DEBUG
 
 bedrock_runtime_exceptions = boto3.client(
     service_name="bedrock-runtime",
@@ -174,7 +173,7 @@ class BedrockAPIClient(ModelClient):
                 yield chunk
         except Exception as e:
             print(f"Error in handle_stream_response: {e}")  # Debug print
-            raise
+            raise from e
 
     def parse_chat_completion(self, completion: dict) -> "GeneratorOutput":
         """Parse the completion, and put it into the raw_response."""
@@ -203,14 +202,14 @@ class BedrockAPIClient(ModelClient):
 
         try:
             response = self._client.list_foundation_models()
-            models = response.get("modelSummaries", [])
+            models = response.get("models", [])
             for model in models:
                 print(f"Model ID: {model['modelId']}")
-                print(f"  Name: {model['modelName']}")
-                print(f"  Input Modalities: {model['inputModalities']}")
-                print(f"  Output Modalities: {model['outputModalities']}")
-                print(f"  Provider: {model['providerName']}")
+                print(f"  Name: {model['name']}")
+                print(f"  Description: {model['description']}")
+                print(f"  Provider: {model['provider']}")
                 print("")
+
         except Exception as e:
             print(f"Error listing models: {e}")
 
@@ -255,7 +254,6 @@ class BedrockAPIClient(ModelClient):
         if model_type == ModelType.LLM:
             if "stream" in api_kwargs and api_kwargs.get("stream", False):
                 log.debug("Streaming call")
-                printc("Streaming")
                 api_kwargs.pop("stream")  # stream is not a valid parameter for bedrock
                 self.chat_completion_parser = self.handle_stream_response
                 return self.sync_client.converse_stream(**api_kwargs)
