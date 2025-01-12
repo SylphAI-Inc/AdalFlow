@@ -174,7 +174,7 @@ class BedrockAPIClient(ModelClient):
                 log.debug(f"Raw chunk: {chunk}")
                 yield chunk
         except Exception as e:
-            print(f"Error in handle_stream_response: {e}")  # Debug print
+            log.debug(f"Error in handle_stream_response: {e}")  # Debug print
             raise
 
     def parse_chat_completion(self, completion: dict) -> "GeneratorOutput":
@@ -193,7 +193,6 @@ class BedrockAPIClient(ModelClient):
         """
         try:
             usage = None
-            print(completion)
             data = self.chat_completion_parser(completion)
             if not isinstance(data, GeneratorType):
                 # Streaming completion usage tracking is not implemented.
