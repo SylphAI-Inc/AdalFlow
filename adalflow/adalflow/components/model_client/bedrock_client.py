@@ -13,6 +13,7 @@ import logging
 
 from adalflow.core.model_client import ModelClient
 from adalflow.core.types import ModelType, CompletionUsage, GeneratorOutput
+from adalflow.utils import printc
 
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
@@ -165,19 +166,12 @@ class BedrockAPIClient(ModelClient):
     def init_async_client(self):
         raise NotImplementedError("Async call not implemented yet.")
 
-    @staticmethod
-    def parse_stream_response(completion: dict) -> str:
-        if "contentBlockDelta" in completion:
-            if delta_chunk := completion["contentBlockDelta"]["delta"]:
-                return delta_chunk["text"]
-        return ''
-
     def handle_stream_response(self, stream: dict) -> GeneratorType:
         try:
-            for chunk in stream["stream"]:
+            stream: GeneratorType = stream["stream"]
+            for chunk in stream:
                 log.debug(f"Raw chunk: {chunk}")
-                parsed_content = self.parse_stream_response(chunk)
-                yield parsed_content
+                yield chunk
         except Exception as e:
             print(f"Error in handle_stream_response: {e}")  # Debug print
             raise
@@ -185,7 +179,7 @@ class BedrockAPIClient(ModelClient):
     def parse_chat_completion(self, completion: dict) -> "GeneratorOutput":
         """Parse the completion, and put it into the raw_response."""
         try:
-            data = self.handle_stream_response(completion)
+            data = self.chat_completion_parser(completion)
             return GeneratorOutput(
                 data=None, error=None, raw_response=data
             )
@@ -254,7 +248,6 @@ class BedrockAPIClient(ModelClient):
         self,
         api_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
-        stream: bool = False
     ) -> dict:
         """
         kwargs is the combined input and model_kwargs
@@ -262,11 +255,12 @@ class BedrockAPIClient(ModelClient):
         if model_type == ModelType.LLM:
             if "stream" in api_kwargs and api_kwargs.get("stream", False):
                 log.debug("Streaming call")
+                printc("Streaming")
                 api_kwargs.pop("stream")  # stream is not a valid parameter for bedrock
                 self.chat_completion_parser = self.handle_stream_response
                 return self.sync_client.converse_stream(**api_kwargs)
             else:
-                api_kwargs.pop("stream")
+                api_kwargs.pop("stream", None)
                 return self.sync_client.converse(**api_kwargs)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
