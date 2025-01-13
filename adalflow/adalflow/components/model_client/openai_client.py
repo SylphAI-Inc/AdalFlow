@@ -305,27 +305,23 @@ class OpenAIClient(ModelClient):
         elif model_type == ModelType.IMAGE_GENERATION:
             # For image generation, input is the prompt
             final_model_kwargs["prompt"] = input
-            # Set defaults for DALL-E 3 if not specified
+            # Ensure model is specified
             if "model" not in final_model_kwargs:
-                final_model_kwargs["model"] = "dall-e-3"
-            if "size" not in final_model_kwargs:
-                final_model_kwargs["size"] = "1024x1024"
-            if "quality" not in final_model_kwargs:
-                final_model_kwargs["quality"] = "standard"
-            if "n" not in final_model_kwargs:
-                final_model_kwargs["n"] = 1
-            if "response_format" not in final_model_kwargs:
-                final_model_kwargs["response_format"] = "url"
+                raise ValueError("model must be specified for image generation")
+            # Set defaults for DALL-E 3 if not specified
+            final_model_kwargs["size"] = final_model_kwargs.get("size", "1024x1024")
+            final_model_kwargs["quality"] = final_model_kwargs.get("quality", "standard")
+            final_model_kwargs["n"] = final_model_kwargs.get("n", 1)
+            final_model_kwargs["response_format"] = final_model_kwargs.get("response_format", "url")
 
             # Handle image edits and variations
-            if "image" in final_model_kwargs:
-                if isinstance(final_model_kwargs["image"], str):
-                    # If it's a file path, encode it
-                    if os.path.isfile(final_model_kwargs["image"]):
-                        final_model_kwargs["image"] = self._encode_image(final_model_kwargs["image"])
-                if "mask" in final_model_kwargs and isinstance(final_model_kwargs["mask"], str):
-                    if os.path.isfile(final_model_kwargs["mask"]):
-                        final_model_kwargs["mask"] = self._encode_image(final_model_kwargs["mask"])
+            image = final_model_kwargs.get("image")
+            if isinstance(image, str) and os.path.isfile(image):
+                final_model_kwargs["image"] = self._encode_image(image)
+            
+            mask = final_model_kwargs.get("mask")
+            if isinstance(mask, str) and os.path.isfile(mask):
+                final_model_kwargs["mask"] = self._encode_image(mask)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
         return final_model_kwargs
