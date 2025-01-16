@@ -58,6 +58,7 @@ class ModelType(Enum):
     EMBEDDER = auto()
     LLM = auto()
     RERANKER = auto()  # ranking model
+    IMAGE_GENERATION = auto()  # image generation models like DALL-E
     UNDEFINED = auto()
 
 
