@@ -118,7 +118,6 @@ COMBINED_GRADIENTS_TEMPLATE = r"""
 <COMPONENT_SCHEMA>
 Gradients are from {{ component_schema | length }} components.
 {% for component_id, schema in component_schema.items() %}
-id: {{ component_id }}
 {{ schema }}
 {% endfor %}
 </COMPONENT_SCHEMA>
@@ -142,6 +141,8 @@ INPUT_OUTPUT: {{ gradient.context }}
 {% endfor %}
 {% endif %}
 """
+
+# id: {{ component_id }}, remove using component id
 
 
 class Parameter(Generic[T]):

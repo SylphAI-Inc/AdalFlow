@@ -18,10 +18,11 @@ from adalflow.core.types import (
 )
 from adalflow.core import Component
 from adalflow.optim.parameter import Parameter
-from adalflow.optim.grad_component import GradComponent2
+from adalflow.optim.grad_component import FunGradComponent
 from adalflow.core.functional import (
     get_fun_schema,
 )
+from adalflow.utils import printc
 from inspect import signature
 
 AsyncCallable = Callable[..., Awaitable[Any]]
@@ -59,7 +60,7 @@ FunctionType = Union[Callable[..., Any], Awaitable[Callable[..., Any]]]
 
 
 # TODO: improve the support for async functions, similarly a component might be used as a tool
-class FunctionTool(GradComponent2):
+class FunctionTool(Component):
     __doc__ = r"""Describing and executing a function via call with arguments.
 
 
@@ -122,11 +123,20 @@ class FunctionTool(GradComponent2):
         nest_asyncio.apply()
         assert fn is not None, "fn must be provided"
 
-        self.fn = fn
+        # self.fn = fn  # it can be a function or component
         self.component = component  # pass it here to control the training mode
-        self._is_async = iscoroutinefunction(fn)
 
-        self.definition = definition or self._create_fn_definition()
+        if isinstance(fn, Component):
+            self.fn = fn.__call__
+        else:
+            self.fn = fn
+        self._is_async = iscoroutinefunction(fn)
+        if isinstance(fn, Component):
+            self.definition = (
+                definition or self._create_fn_definition_for_grad_component(fn)
+            )
+        else:
+            self.definition = definition or self._create_fn_definition()
         if self._is_async:
             log.info(f"FunctionTool: {fn} is async: {self._is_async}")
 
@@ -134,25 +144,32 @@ class FunctionTool(GradComponent2):
     def is_async(self) -> bool:
         return self._is_async
 
-    # def _create_fn_definition(self) -> FunctionDefinition:
-    #     name = self.fn.__name__
-    #     docstring = self.fn.__doc__
-    #     description = f"{docstring}"
-    #     description = f"{name}{signature(self.fn)}\n{docstring}"
-    #     # description = f"{name}{signature(self.fn)}\n{docstring}"
-    #     fn_parameters = get_fun_schema(name, self.fn)
-    #     return FunctionDefinition(
-    #         func_name=name, func_desc=description, func_parameters=fn_parameters
-    #     )
+    def _create_fn_definition_for_grad_component(
+        self, fn: FunGradComponent
+    ) -> FunctionDefinition:
+        name = fn.fun_name
+        docstring = fn.doc_string
+        signature_str = str(signature(fn.fun))
+        instance = None
+        return FunctionDefinition(
+            func_name=name,
+            func_desc=(
+                f"{name}{signature_str}\nDocstring:{docstring}"
+                if isinstance(docstring, str)
+                else f"{name}{signature_str}\nDocstring:{docstring.data}"
+            ),
+            func_parameters=get_fun_schema(name, fn.fun),
+            class_instance=instance,
+        )
 
     def _create_fn_definition(self) -> FunctionDefinition:
+
         name = self.fn.__name__
         docstring = self.fn.__doc__
         signature_str = str(signature(self.fn))
 
         # Get the class that owns the method, if applicable
         cls_name = None
-        # cls_docstring = None
         instance = None
         if ismethod(self.fn):  # Check if it’s a bound method
             instance = self.fn.__self__
@@ -162,7 +179,6 @@ class FunctionTool(GradComponent2):
                     "Please provide a name for the instance in the calling context"
                 )
             cls_name = self.fn.__self__.__class__.__name__
-            # cls_docstring = getdoc(self.fn.__self__.__class__)
         elif isfunction(self.fn):  # Unbound method
             cls_name = self.fn.__qualname__.split(".")[0]
 
@@ -171,9 +187,7 @@ class FunctionTool(GradComponent2):
         if cls_name:
             description += f"Belongs to class: {cls_name}\n"
         if docstring:
-            description += f"Method docstring: {docstring}\n"
-        # if cls_docstring:
-        #     description += f"Class docstring: {cls_docstring}\n"
+            description += f"Docstring: {docstring}\n"
 
         # Get function parameters schema
         fn_parameters = get_fun_schema(name, self.fn)
@@ -244,11 +258,12 @@ class FunctionTool(GradComponent2):
         # NOTE: special case:
         # self.fn can have both train and eval mode or untrainable as a function.
         try:
+            # printc(f"args: {args}, kwargs: {kwargs}, fn: {self.fn}", color="yellow")
             output = self.fn(*args, **kwargs)
+            # printc(f"output 1: {output}", color="yellow")
         except Exception as e:
             log.error(f"Error at calling {self.fn}: {e}")
-            # raise ValueError(f"Error: {e}")
-            error = str(e)
+            error = f"Error at calling {self.fn}: {e}"
 
         if isinstance(output, Parameter):
             if not self.training:
@@ -265,6 +280,7 @@ class FunctionTool(GradComponent2):
                 error=error,
             )
             return output
+        # printc(f"output: {output}", color="yellow")
         return FunctionOutput(
             name=self.definition.func_name,
             # raw_input={"args": args, "kwargs": kwargs},
@@ -494,3 +510,34 @@ if __name__ == "__main__":
     print(output)
     assert isinstance(output, FunctionOutput)
     assert isinstance(output.output, GeneratorOutput)
+
+    # grad component
+
+    from adalflow.optim.grad_component import fun_to_grad_component
+    from adalflow.optim.parameter import ParameterType
+
+    @fun_to_grad_component(
+        desc="Finish",
+        doc_string=Parameter(
+            data="Finish the task with verbatim short factoid responses from retrieved context.",
+            param_type=ParameterType.PROMPT,
+            requires_opt=True,
+            role_desc="Instruct how the agent creates the final answer from the step history.",
+            name="doc_string",
+        ),
+    )
+    def finish(answer: str, **kwargs) -> str:
+        # """Finish the task with verbatim short factoid responses from retrieved context."""
+        # printc(f"finish: {answer}", color="yellow")
+        return answer
+
+    finish_tool = FunctionTool(fn=finish, component=finish)
+
+    definition = finish_tool.definition
+    print(definition)
+    # call function
+    finish_tool.train()
+    output: Parameter = finish_tool(
+        "Finish the task with verbatim short factoid responses from retrieved context."
+    )
+    print(output)

@@ -676,7 +676,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # 1.backward for text-gradients
         if backward_engine:
 
-            printc(
+            log.debug(
                 f"Generator: Backward engine is set for the generator. {backward_engine}"
             )
             if response.backward_engine_disabled:
@@ -775,6 +775,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             conv_ins_template = CONVERSATION_START_INSTRUCTION_CHAIN
             obj_ins_template = OBJECTIVE_INSTRUCTION_CHAIN
             response_gradient = response.get_gradients_str()
+            # response_gradient = response.get_gradients_component_schema()
             # response_gradient = response.get_gradients_component_schema(
             #     skip_correct_sample=False
             # )
@@ -945,6 +946,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             conv_ins_template = CONVERSATION_START_INSTRUCTION_CHAIN
             obj_ins_template = OBJECTIVE_INSTRUCTION_CHAIN
             response_gradient = response.get_gradients_str()
+            # response_gradient = response.get_gradients_component_schema()
             if not response_gradient:
                 raise ValueError(
                     f"Generator: No gradient found for {response}. Please check the response. pred: {pred}"

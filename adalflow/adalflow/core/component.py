@@ -393,8 +393,8 @@ class Component:
             raise ValueError('parameter name can\'t contain "."')
         elif name == "":
             raise ValueError('parameter name can\'t be empty string ""')
-        elif hasattr(self, name) and name not in self._parameters:
-            raise KeyError("attribute '{}' already exists".format(name))
+        # elif hasattr(self, name) and name not in self._parameters:
+        #     raise KeyError("attribute '{}' already exists".format(name))
 
         if param is None:
             self._parameters[name] = None

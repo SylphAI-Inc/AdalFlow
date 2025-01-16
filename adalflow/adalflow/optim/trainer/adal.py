@@ -39,8 +39,9 @@ class AdalComponent(Component):
 
     task: Component
     # evaluator: Optional[BaseEvaluator]
-    eval_fn: Optional[Callable]
+    eval_fn: Optional[Callable]  # final eval score
     loss_fn: Optional[LossComponent]
+    loss_eval_fn: Optional[Callable]  # loss eval score and training subset eval fn
     backward_engine: Optional["BackwardEngine"]
     _demo_optimizers: Optional[List[DemoOptimizer]]
     _text_optimizers: Optional[List[TextOptimizer]]
@@ -50,6 +51,7 @@ class AdalComponent(Component):
         task: Component,
         # evaluator: Optional[BaseEvaluator] = None,
         eval_fn: Optional[Callable] = None,
+        loss_eval_fn: Optional[Callable] = None,
         loss_fn: Optional[LossComponent] = None,
         backward_engine: Optional["BackwardEngine"] = None,
         backward_engine_model_config: Optional[Dict] = None,
@@ -62,6 +64,7 @@ class AdalComponent(Component):
         self.task = task
         # self.evaluator = evaluator
         self.eval_fn = eval_fn
+        self.loss_eval_fn = loss_eval_fn
         self.loss_fn = loss_fn
         self.backward_engine = backward_engine
         if backward_engine and not isinstance(backward_engine, "BackwardEngine"):
@@ -143,15 +146,26 @@ class AdalComponent(Component):
         """
         raise NotImplementedError("prepare_loss method is not implemented")
 
-    # TODO: support more complicated evaluation
+    # TODO: Support multiple eval_fn with different metrics. using a dict[str, (Callable, Dict)] to store them.
     def prepare_eval(self, sample: Any, y_pred: Any, *args, **kwargs) -> float:
         r"""Tell Trainer how to eval in inference mode.
         Return the eval_fn and kwargs for one evaluation sample.
 
         Ensure the eval_fn is a callable that takes the predicted output and the ground truth output.
         Ensure the kwargs are setup correctly.
+
         """
         raise NotImplementedError("prepare_eval method is not implemented")
+
+    def prepare_loss_eval(self, sample: Any, y_pred: Any, *args, **kwargs) -> float:
+        r"""Tell Trainer how to eval in inference mode.
+        Return the eval_fn and kwargs for one evaluation sample.
+
+        Ensure the eval_fn is a callable that takes the predicted output and the ground truth output.
+        Ensure the kwargs are setup correctly.
+
+        """
+        raise NotImplementedError("prepare_loss_eval method is not implemented")
 
     # def configure_optimizers(self, *args, **kwargs) -> Optimizer:
     #     r"""Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too."""
@@ -204,8 +218,10 @@ class AdalComponent(Component):
         y_preds: List,
         metadata: Optional[Dict[str, Any]] = None,
         num_workers: int = 2,
+        use_loss_eval_fn: bool = False,
     ) -> EvaluationResult:
-        r"""Run evaluation on samples using parallel processing. Utilizes ``prepare_eval`` defined by the user.
+        r"""Evaluate predictions against the ground truth samples.
+        Run evaluation on samples using parallel processing. Utilizes ``prepare_eval`` defined by the user.
 
         Metadata is used for storing context that you can find from generator input.
 
@@ -218,6 +234,9 @@ class AdalComponent(Component):
         Returns:
             EvaluationResult: An object containing the average score and per-item scores.
         """
+        if use_loss_eval_fn and not self.loss_eval_fn:
+            raise ValueError("Loss eval function is not configured.")
+
         from adalflow.optim.parameter import Parameter
 
         if not isinstance(y_preds, list) or len(y_preds) == 0:
@@ -237,13 +256,22 @@ class AdalComponent(Component):
             for i, (sample, y_pred) in enumerate(zip(samples, y_preds)):
 
                 if metadata is None:
-                    eval_fn, kwargs = self.prepare_eval(sample, y_pred)
+                    if not use_loss_eval_fn:
+                        eval_fn, kwargs = self.prepare_eval(sample, y_pred)
+                    else:
+                        eval_fn, kwargs = self.prepare_loss_eval(sample, y_pred)
                     future = executor.submit(eval_fn, **kwargs)
                     # future = executor.submit(self.evaluate_one_sample, sample, y_pred)
                 else:
-                    eval_fn, kwargs = self.prepare_eval(
-                        sample, y_pred, metadata=metadata
-                    )
+                    if not use_loss_eval_fn:
+                        eval_fn, kwargs = self.prepare_eval(
+                            sample, y_pred, metadata=metadata
+                        )
+                    else:
+
+                        eval_fn, kwargs = self.prepare_eval(
+                            sample, y_pred, metadata=metadata
+                        )
                     future = executor.submit(eval_fn, **kwargs)
                     # future = executor.submit(
                     #     self.evaluate_one_sample, sample, y_pred, metadata=metadata
@@ -366,6 +394,7 @@ class AdalComponent(Component):
         num_workers: int = 2,
         running_eval: bool = False,
         min_score: Optional[float] = None,
+        # use_loss_eval_fn: bool = False,
     ):
         r"""Applies to both train and eval mode.
 
@@ -418,6 +447,7 @@ class AdalComponent(Component):
 
                 if running_eval and not isinstance(y_pred, Parameter):
                     # evaluate one sample
+
                     eval_fn, kwargs = self.prepare_eval(sample, y_pred)
                     score = eval_fn(**kwargs)
                     index_to_score[i] = score
@@ -455,6 +485,8 @@ class AdalComponent(Component):
         return completed_y_preds, completed_samples, index_to_score
 
     def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
+        r"""Run a training step and return the predicted outputs.
+        Likely a list of Parameters."""
         self.task.train()
         y_preds = self._train_step(batch, batch_idx, num_workers)
         for i, y_pred in enumerate(y_preds):
@@ -474,8 +506,12 @@ class AdalComponent(Component):
         batch_idx,
         num_workers: int = 2,
         minimum_score: Optional[float] = None,
+        use_loss_eval_fn: bool = False,
     ) -> EvaluationResult:
-        r"""If you require self.task.eval() to be called before validation, you can override this method as:
+        r"""
+        Evaluate a batch or the validate dataset by setting the batch=val_dataset.
+        Uses self.eval_fn to evaluate the samples.
+        If you require self.task.eval() to be called before validation, you can override this method as:
 
         .. code-block:: python
 
@@ -484,6 +520,12 @@ class AdalComponent(Component):
                 return super().validation_step(batch, batch_idx, num_workers)
         """
         # TODO: let use decide which mode to be
+        eval_fn = self.eval_fn
+        if use_loss_eval_fn:
+            eval_fn = self.loss_eval_fn
+            if not eval_fn:
+                raise ValueError("Loss eval function is not configured.")
+
         self.task.eval()
         self.task.use_teacher(mode=False)  # ensure the teacher is not used
         try:
@@ -493,6 +535,7 @@ class AdalComponent(Component):
                 num_workers,
                 running_eval=True,
                 min_score=minimum_score,
+                # use_loss_eval_fn=use_loss_eval_fn,
             )
         except Exception as e:
             raise ValueError(f"Error in validation step: {e}")
@@ -515,6 +558,7 @@ class AdalComponent(Component):
                     samples=completed_samples,
                     y_preds=completed_y_preds,
                     num_workers=num_workers,
+                    use_loss_eval_fn=use_loss_eval_fn,
                 )
             except Exception as e:
                 raise ValueError(f"Error in evaluation: {e}")

@@ -24,10 +24,9 @@ import json
 
 from adalflow.core.component import Component
 from adalflow.optim.function import BackwardContext
-from adalflow.utils.registry import EntityMapping
 from adalflow.core.prompt_builder import Prompt
 from adalflow.optim.text_grad.backend_engine_prompt import (
-    LOSS_CONVERSATION_TEMPLATE_STRING,
+    GRAD_COMPONENT_CONVERSATION_TEMPLATE_STRING,
     LOSS_CONVERSATION_START_INSTRUCTION_STRING_FN,
     OBJECTIVE_INSTRUCTION_BASE,
     OBJECTIVE_INSTRUCTION_CHAIN,
@@ -126,13 +125,28 @@ class GradComponent(Component):
                     v.data_id = kwargs.get("id", None)
                 if data_id is None:
                     data_id = v.data_id
-        for v in kwargs.values():
+        # printc(f"kwargs: {kwargs}")
+        # discard_keys = []
+        for k, v in kwargs.items():
             if isinstance(v, Parameter):
                 predecessors.append(v)
                 if v.param_type == ParameterType.INPUT:
                     v.data_id = kwargs.get("id", None)
                 if data_id is None:
                     data_id = v.data_id
+            # support list of Parameters by flattening them
+            elif isinstance(v, list):
+                for i, p in enumerate(v):
+                    if isinstance(p, Parameter):
+                        predecessors.append(p)
+                        # flat_key = f"{k}_{i}"
+                        # input_args[flat_key] = p
+                # pop the original list
+                # discard_keys.append(k)
+        # for k in discard_keys:
+        #     kwargs.pop(k)
+
+        # setattr(self, f"{k}_{i}", p)
 
         # 2. unwrap the parameter object to take only the data, successor_map_fn: lambda x: x.data in default
         # unwrap args
@@ -148,6 +162,14 @@ class GradComponent(Component):
         for k, v in kwargs.items():
             if isinstance(v, Parameter):
                 unwrapped_kwargs[k] = v.map_to_successor(self)
+            elif isinstance(v, list):
+                values = []
+                for p in v:
+                    if isinstance(p, Parameter):
+                        values.append(p.map_to_successor(self))
+                    else:
+                        values.append(p)
+                unwrapped_kwargs[k] = values
             else:
                 unwrapped_kwargs[k] = v
 
@@ -249,75 +271,6 @@ class GradComponent(Component):
                 pred.add_gradient(grad)
 
 
-class FunGradComponent(GradComponent):
-    r"""Wraps a function as a GradComponent.
-
-    Args:
-        fun (Callable): The function to be wrapped.
-
-    Examples:
-
-    function = lambda x: x + 1
-    fun_component = FunComponent(function)
-    print(fun_component(1))  # 2
-    """
-
-    def __init__(self, fun: Optional[Callable] = None, afun: Optional[Callable] = None):
-        super().__init__()
-        self.fun_name = fun.__name__
-        EntityMapping.register(self.fun_name, fun)
-
-    def call(self, *args, **kwargs):
-        fun = EntityMapping.get(self.fun_name)
-        return fun(*args, **kwargs)
-
-    def _extra_repr(self) -> str:
-        return super()._extra_repr() + f"fun_name={self.fun_name}"
-
-
-def fun_to_grad_component(fun) -> FunGradComponent:
-    r"""Helper function to convert a function into a Component with
-    its own class name.
-
-    Can be used as both a decorator and a function.
-
-    Args:
-        fun (Callable): The function to be wrapped.
-    Returns:
-        FunComponent: The component that wraps the function.
-
-    Examples:
-    1. As a decorator:
-        >>> @fun_to_component
-        >>> def my_function(x):
-        >>>     return x + 1
-        >>> # is equivalent to
-        >>> class MyFunctionComponent(FunComponent):
-        >>>     def __init__(self):
-        >>>         super().__init__(my_function)
-
-    2. As a function:
-        >>> my_function_component = fun_to_component(my_function)
-    """
-
-    # Split the function name by underscores, capitalize each part, and join them back together
-    class_name = (
-        "".join(part.capitalize() for part in fun.__name__.split("_")) + "GradComponent"
-    )
-    # register the function
-    EntityMapping.register(fun.__name__, fun)
-    # Define a new component class dynamically
-    component_class = type(
-        class_name,
-        (FunGradComponent,),
-        {"__init__": lambda self: FunGradComponent.__init__(self, fun)},
-    )
-    # register the component
-    EntityMapping.register(class_name, component_class)
-
-    return component_class()
-
-
 class GradComponent2(GradComponent):
     "Graduable functional component"
 
@@ -412,15 +365,24 @@ class GradComponent2(GradComponent):
         # convert kwargs to key, (value, type(eval_input))
 
         inputs = {}
+
         for k, v in kwargs.items():
-            inputs[k] = (v.get_param_info(), str(type(v.eval_input)))
+            if isinstance(v, Parameter):
+                inputs[k] = (v.get_param_info(), str(type(v.eval_input)))
+            elif isinstance(v, list):
+                # flat the list to multiple parameters
+
+                for i, p in enumerate(v):
+                    if isinstance(p, Parameter):
+                        flat_key = f"{k}_{i}"
+                        inputs[flat_key] = (p.get_param_info(), str(type(p.eval_input)))
 
         # response information
         conversation_str = Prompt(
-            LOSS_CONVERSATION_TEMPLATE_STRING,
+            GRAD_COMPONENT_CONVERSATION_TEMPLATE_STRING,
             prompt_kwargs={
                 "inputs": inputs,
-                "eval_fn_desc": desc,
+                "component_desc": desc,
                 "response_value": response.get_prompt_data(),
                 "metadata": json.dumps(metadata) if metadata else None,
             },
@@ -430,6 +392,7 @@ class GradComponent2(GradComponent):
         obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
 
         if is_intermediate_node:
+            printc(f"is_intermediate_node: {is_intermediate_node}")
             # conv_ins_template = CONVERSATION_START_INSTRUCTION_STRING_FN_CHAIN
             obj_ins_template = OBJECTIVE_INSTRUCTION_CHAIN
 
@@ -440,12 +403,18 @@ class GradComponent2(GradComponent):
                 "conversation_str": conversation_str,
             },
         )()
+        response_gradient = response.get_gradients_str()
+        # response_gradient = response.get_gradients_component_schema()
+        if not response_gradient:
+            raise ValueError(
+                f"Generator: No gradient found for {response}. Please check the response. pred: {pred}"
+            )
         objective_str = Prompt(
             obj_ins_template,
             prompt_kwargs={
                 "response_name": response.name,
                 "response_desc": response.role_desc,
-                "response_gradient": response.data,
+                "response_gradient": response_gradient,
             },
         )()
 
@@ -550,6 +519,8 @@ class GradComponent2(GradComponent):
                         trace_id=id, score=response.score, is_teacher=self.teacher_mode
                     )
 
+                printc(f"pred: {pred.name}, response: {response.name}")
+
                 self._backward_through_one_predecessor(
                     pred=pred,
                     kwargs=input_kwargs,
@@ -560,14 +531,194 @@ class GradComponent2(GradComponent):
                 )
 
 
+class FunGradComponent(GradComponent2):
+    # r"""Wraps a function as a GradComponent.
+
+    # Args:
+    #     fun (Callable): The function to be wrapped.
+
+    # Examples:
+
+    # function = lambda x: x + 1
+    # fun_component = FunComponent(function)
+    # print(fun_component(1))  # 2
+    # """
+
+    def __init__(
+        self,
+        fun: Optional[Callable] = None,
+        afun: Optional[Callable] = None,
+        desc: str = "",
+        doc_string=None,
+    ):
+        desc = desc or fun.__doc__ or f"Function: {fun.__name__}"
+
+        super().__init__(desc=desc, name=fun.__name__)
+        self.fun_name = fun.__name__
+        self.fun = fun
+        # set the docstring
+        self.doc_string = doc_string
+        print(f"fun doc: {self.doc_string}, desc: {desc}")
+        setattr(
+            self.fun,
+            "__doc__",
+            doc_string or fun.__doc__ or f"Function: {fun.__name__}",
+        )
+
+        setattr(self.fun, "__name__", fun.__name__)
+
+    # def __call__(self, *args, **kwargs):
+    #     output = super().__call__(*args, **kwargs)
+    #     # set __doc__ and __name__ for this function
+
+    # set normal function attributes
+    # self.__name__ = fun.__name__
+    # self.__doc__ = doc_string or fun.__doc__ or f"Function: {fun.__name__}"
+    # setattr(self, "__name__", fun.__name__)
+    # setattr(
+    #     self, "__doc__", doc_string or fun.__doc__ or f"Function: {fun.__name__}"
+    # )
+    # EntityMapping.register(self.fun_name, (fun, desc))
+
+    def call(self, *args, **kwargs):
+        # fun, desc = EntityMapping.get(self.fun_name)
+
+        # if isinstance(fun_doc_string, Parameter):
+        # remove the __doc__ keyword argument
+        kwargs.pop("doc_string", None)
+
+        return self.fun(*args, **kwargs)
+
+    def forward(self, *args, **kwargs) -> Parameter:
+        """add func_doc_string to the kwargs before calling the super().forward"""
+        kwargs["doc_string"] = self.doc_string
+        output = super().forward(*args, **kwargs)
+        return output
+
+    def _extra_repr(self) -> str:
+        return (
+            super()._extra_repr()
+            + f"fun_name={self.fun_name}, fun={self.fun.__name__}, fun_doc={self.fun.__doc__}"
+        )
+
+
+# def fun_to_grad_component(fun, desc: str = "") -> FunGradComponent:
+#     r"""Helper function to convert a function into a Component with
+#     its own class name.
+
+#     Can be used as both a decorator and a function.
+
+#     Args:
+#         fun (Callable): The function to be wrapped.
+#     Returns:
+#         FunComponent: The component that wraps the function.
+
+#     Examples:
+#     1. As a decorator:
+#         >>> @fun_to_component
+#         >>> def my_function(x):
+#         >>>     return x + 1
+#         >>> # is equivalent to
+#         >>> class MyFunctionComponent(FunComponent):
+#         >>>     def __init__(self):
+#         >>>         super().__init__(my_function)
+
+#     2. As a function:
+#         >>> my_function_component = fun_to_component(my_function)
+#     """
+
+#     # Split the function name by underscores, capitalize each part, and join them back together
+#     class_name = (
+#         "".join(part.capitalize() for part in fun.__name__.split("_")) + "GradComponent"
+#     )
+#     # register the function
+#     EntityMapping.register(fun.__name__, fun)
+#     # Define a new component class dynamically
+#     component_class = type(
+#         class_name,
+#         (FunGradComponent,),
+#         {"__init__": lambda self: FunGradComponent.__init__(self, fun, desc)},
+#     )
+#     # register the component
+#     EntityMapping.register(class_name, component_class)
+
+#     return component_class()
+
+
+def fun_to_grad_component(desc: str = "", doc_string=None) -> Callable:
+    """
+    Return a decorator that, when applied to a function `fun`,
+    wraps it in a GradComponent with the given `desc`.
+
+    Examples:
+
+    1. As a decorator:
+
+
+    ::code-block :: python
+
+        @fun_to_grad_component(desc="This is a test function", doc_string=Parameter(
+            data="Finish the task with verbatim short factoid responses from retrieved context.",
+            param_type=ParameterType.PROMPT,
+            requires_opt=True,
+            role_desc="Instruct how the agent creates the final answer from the step history.",
+        ))
+        def my_function(x):
+            return x + 1
+
+        print(my_function(1))
+
+    2. As a function:
+
+    ::code-block :: python
+
+        def my_function(x):
+            return x + 1
+
+        my_function_component = fun_to_grad_component(desc="This is a test function")(my_function)
+    """
+
+    def decorator(fun):
+        # 1) build the class name
+        class_name = (
+            "".join(part.capitalize() for part in fun.__name__.split("_"))
+            + "GradComponent"
+        )
+        # 2) register the function
+        # EntityMapping.register(fun.__name__, fun)
+        # 3) define the new class
+        printc(f"fun doc 1: {doc_string}, desc: {desc}")
+        component_class = type(
+            class_name,
+            (FunGradComponent,),
+            {
+                "__init__": lambda self: FunGradComponent.__init__(
+                    self, fun=fun, desc=desc, doc_string=doc_string
+                )
+            },
+        )
+        # 4) register the new component class
+        # EntityMapping.register(class_name, component_class)
+        # 5) return instance of that class
+        return component_class()
+
+    return decorator
+
+
 if __name__ == "__main__":
     # Test FunGradComponent
     from adalflow.optim.parameter import Parameter
 
     def my_function(x):
+        __doc__ = Parameter(  # noqa F841
+            data="Finish the task with verbatim short factoid responses from retrieved context.",
+            param_type=ParameterType.PROMPT,
+            requires_opt=True,
+            role_desc="Instruct how the agent creates the final answer from the step history.",
+        )
         return x + 1
 
-    my_function_component = fun_to_grad_component(my_function)
+    my_function_component = fun_to_grad_component()(my_function)
     print(my_function_component)  # 2
     # eval mode
     output = my_function_component(1)
@@ -578,8 +729,17 @@ if __name__ == "__main__":
     print(output)
 
     # now test the decorator
-    @fun_to_grad_component
+    @fun_to_grad_component(
+        desc="This is a test function",
+        doc_string=Parameter(
+            data="Finish the task with verbatim short factoid responses from retrieved context.",
+            param_type=ParameterType.PROMPT,
+            requires_opt=True,
+            role_desc="Instruct how the agent creates the final answer from the step history.",
+        ),
+    )
     def my_function(x):
+
         return x + 1
 
     print(my_function(1))
@@ -590,5 +750,6 @@ if __name__ == "__main__":
 
     # training mode
     my_function.train()
+    print(my_function)
     output = my_function(Parameter(data=1, name="input"))
     print(output)

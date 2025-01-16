@@ -103,6 +103,7 @@ class Trainer(Component):
     max_correct_samples: Optional[int] = 2
     debug: bool = False
     random_seed: int = None
+    skip_subset_val: bool = False
 
     def __init__(
         self,
@@ -130,6 +131,7 @@ class Trainer(Component):
         debug: bool = False,
         save_traces: bool = False,  # save traces in the few-shto demos
         sequential_order: List[str] = ["text", "demo"],
+        skip_subset_val: bool = False,
         *args,
         **kwargs,
     ) -> None:
@@ -176,6 +178,7 @@ class Trainer(Component):
             exclude_input_fields_from_bootstrap_demos
         )
         self.sequential_order = sequential_order
+        self.skip_subset_val = skip_subset_val
 
     def set_random_seed(self, seed: int):
         self.random_seed = seed
@@ -504,6 +507,7 @@ class Trainer(Component):
             self.demo_optimizers = []
 
         if len(self._get_trainable_text_params()) > 0:
+
             if self.adaltask.backward_engine is None:
                 self.adaltask.configure_backward_engine(
                     backward_pass_setup=backward_pass_setup
@@ -1956,7 +1960,12 @@ class Trainer(Component):
             if not isinstance(loss, Parameter):
                 raise ValueError("Loss should be a Parameter object")
         self.adaltask.eval()
-        move_batch_eval = self.adaltask.evaluate_samples(all_samples, all_y_preds)
+        use_eval_loss_fn = False
+        if self.adaltask.loss_eval_fn is not None:
+            use_eval_loss_fn = True
+        move_batch_eval = self.adaltask.evaluate_samples(
+            all_samples, all_y_preds, use_loss_eval_fn=use_eval_loss_fn
+        )
         print(f"Moving batch eval: {move_batch_eval}")
         move_batch_score = move_batch_eval.avg_score
         move_batch_acc_score_list = move_batch_eval.per_item_scores
@@ -2022,7 +2031,10 @@ class Trainer(Component):
             # valide the subset
             subset_samples = [all_samples[i] for i in subset_indices]
             val_output = self.adaltask.validation_step(
-                subset_samples, steps, self.num_workers
+                subset_samples,
+                steps,
+                self.num_workers,
+                use_loss_eval_fn=use_eval_loss_fn,
             )
             # check subset validation score
             val_score = val_output.avg_score

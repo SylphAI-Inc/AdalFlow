@@ -97,10 +97,10 @@ Alternatively, it may be enclosed in <VARIABLES> tags (in which case you must pa
 1. From <CONVERSATION></CONVERSATION> section, you can find how the variable is obtained and used.
 2. As there might be multiple precedessors, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
 3. When you reason, really think about the variable's role in the component(infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
-4. Be specific, concise, critical, and direct.
-5. Maximum 3 sentences.
-
-If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
+4. [Cycle]: If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
+   Ensure the feedback is aware of all sets of inputs and outputs.
+5. Be specific, concise, critical, and direct.
+6. Maximum 3 sentences.
 
 {% if output_format_str %}
 {{output_format_str}}
@@ -116,6 +116,9 @@ If the same DataID has multiple gradients, it means this component/variable is c
 </OBJECTIVE_INSTRUCTION>
 <END_OF_USER>
 """
+# 6. If you receive error, must find one pred with error!
+# 7. Ignore other metadata(noise such as id, data_id) in the data structure, only use the key(input) and key output that matters to infer the component functionality.
+
 ##############################################
 # Loss Component
 ##############################################
@@ -245,6 +248,22 @@ data_type: {{ eval_type }}
 {% endfor %}
 
 OUTPUTS/SCORE: {{response_value}}
+{% if metadata %}
+Note: {{metadata}}
+{% endif %}"""
+
+GRAD_COMPONENT_CONVERSATION_TEMPLATE_STRING = r"""
+COMPONENT_DESC: {{component_desc}}
+
+INPUTS:
+{% for key, (value, eval_type) in inputs.items() %}
+{{loop.index}}.
+KEY: {{ key }}.
+ROLE: {{ value.role_desc }},
+DATA: {{ value.prompt_data }},
+{% endfor %}
+
+OUTPUT: {{response_value}}
 {% if metadata %}
 Note: {{metadata}}
 {% endif %}"""
@@ -392,8 +411,9 @@ GROUND_TRUTH: {{gt}}
 # NOTE: you MUST output a list of strings with the same length as the list above as ["...", "...", "..."]
 # """
 OUTPUT_INSTRUCTION = r"""
-You will create a feedback for each of the variable in the list.
+You will create a feedback for each of the variables in the list.
 If a variable will not be optimied, you just output empty string.
+Give enough details on the feedback.
 Your output will be a list of strings with the SAME LENGTH as the <VARIABLES> list
 as format of ["...", "...", "..."]
 """

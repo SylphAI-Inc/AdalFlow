@@ -762,9 +762,9 @@ class AgenticRAG(adal.GradComponent):
             output = self.dspy_retriever(input=input, id=id)
             parsed_output = output
             if isinstance(output, adal.Parameter):
-                parsed_output = output.data
-                return output
-            documents = parsed_output[0].documents
+                parsed_output = output.data.documents
+                return parsed_output
+            documents = parsed_output.documents
             # if context_variables:
             #     context_variables["context"].extend(documents)
             return documents
@@ -799,12 +799,12 @@ class AgenticRAG(adal.GradComponent):
         ]
 
         self.agent = ReActAgent(
-            max_steps=4,
-            add_llm_as_fallback=True,
+            max_steps=3,
+            add_llm_as_fallback=False,
             tools=tools,
             model_client=model_client,
             model_kwargs=model_kwargs,
-            context_variables={"context": []},
+            context_variables=None,
         )
 
     def forward(self, *args, **kwargs) -> Parameter:
@@ -890,7 +890,9 @@ def test_agent_rag():
     question = "How many storeys are in the castle that David Gregory inherited?"
 
     task.train()
-    task(input=question, id="1")
+    output = task(input=question, id="1")
+    print(output.data)
+    output.draw_graph()
 
     # output =
     # print(output)
@@ -980,9 +982,9 @@ if __name__ == "__main__":
     ### Try the minimum effort to test on any task
 
     # get_logger(level="DEBUG")
-    test_multi_hop_retriever()
+    # test_multi_hop_retriever()
     # test_multi_hop_retriever2()
 
     # test_multi_hop_retriever_cycle()
     # test_multi_hop_rag()
-    # test_agent_rag()
+    test_agent_rag()

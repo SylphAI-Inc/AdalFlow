@@ -85,7 +85,7 @@ Here are the most recent failed proposals:
 {{loop.index}}. {{failed_proposal}}
 {% endfor %}
 {% endif %}
-You MUST Try a different approach from the failed proposals.
+You MUST try a different prompting technique from the failed proposals.
 <END_OF_HISTORY_PERFORMANCE>
 {% endif %}
 Here are the context and feedback for the variable:
@@ -171,6 +171,7 @@ You must base on the following examples when modifying the {{variable_desc}}:
 # retriever: retrieves relevant documents for the question. (Not trainable, you have no control)
 # LLM: Answer questions by reading the context  and reason the best answer.
 # </TASK_PIPELINE>
+# You MUST not update variable when there is no clear error indicated in a multi-component system.
 OPTIMIZER_SYSTEM_PROMPT = r"""
 You are an excellent prompt engineer who works on optimizing a compound LLM system with in-context learning.
 Your task is to improve a variable based on feedback from a batch of input data points.
@@ -179,14 +180,15 @@ The variable is either input or output of a functional component where the compo
 If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
 
 When the LLM system is complicated with multiple system variables, you need to strategize the role of each
-### Your Responsibilities:
+
+### INSTRUCTIONS:
 1. **Address Feedback**: Resolve concerns raised in the feedback while preserving the positive aspects of the original variable.
-2. Observe past performance patterns (when available) to retain good qualities in the variable.
+2. **History**: Observe past performance patterns to retain good qualities in the variable and past failed ones to try things differently.
 3. **System Awareness**: When other system variables are given, ensure you understand how this variable works in the whole system.
-   You have a choice to not update a variable if it is not responsible for the error by  setting `update: false` and `proposed_variable: None`.
-You MUST not update variable when there is no clear error indicated in a multi-component system.
+   You have a choice to not update a variable if it is not responsible for the error by SETTING `update: false` and `proposed_variable: None`.
 4. **Peer Awareness**: This variable works together with Peer variables, ensure you are aware of their roles and constraints.
-5. Be Creative. If adding new elements, be concise.
+5. **Batch Awareness**: You are optimizing a batch of input data, ensure the change applys to the whole batch (except while using demonstration.)
+6. **Be Creative**: Also while adding new elements, be concise.
 
 ### Your available solutions.
 1. Add new elements to address each specific feedback.
@@ -194,12 +196,14 @@ You MUST not update variable when there is no clear error indicated in a multi-c
 3. Rephrase(for more clarity) to address the feedback.
 4. You can also eliminate unnecessary words to improve clarity.
 
-### prompt engineering practices:
+
+### PROMPTING PRACTICES:
 1. Set Context and Role: Establish a specific identity or domain expertise for the AI to guide style, knowledge, and constraints.
-2. Demonstration: Construct input-reasoning-answer example especially for tasks that require strong reasoning skills.
+2. Demonstration: Construct examples(e.g., input-reasoning-answer) especially for tasks that require strong reasoning skills.
 3. Be Specific and Clear: Clearly define instructions, desired format, and constraints to ensure accurate and relevant outputs.
 4. Leverage Constraints and Formatting: Explicitly direct how the answer should be structured (e.g., bullet points, tables, or tone).
 5. Self-Consistency / Verification Prompts: Prompt the model to check its own logic for errors, inconsistencies, or missing details.
+6. (Use Less and at end of training) Trim unnecessary rules and instruction to the task: improve the accuracy by being more focused.
 
 {{output_format_str}}
 
@@ -207,6 +211,8 @@ You MUST not update variable when there is no clear error indicated in a multi-c
 **Additional User Instructions**: {{instruction_to_optimizer}}
 {% endif %}
 """
+# In this case, consider to refine the variable considering every single step's feedback to address some step's concerns.
+# 7. ** On Reasoning**: Think step by step on how the choosing prompting trick address the feedback on optimizing this component.
 
 # <TASK_PIPELINE>
 # Here is a summary on the task pipeline you are optimizing:
@@ -256,6 +262,9 @@ You MUST not update variable when there is no clear error indicated in a multi-c
 # When no feedback is provided(high batch performance), you rephrase the variable.
 ### Tips:
 # 1. Patterns like "think step by step" helps the model reason better. You should try to maintain the chain of thought.
+
+
+# list the prompting trick you use, why it is used according to the feedback and the system understanding.
 
 
 @dataclass

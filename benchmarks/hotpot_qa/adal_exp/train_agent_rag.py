@@ -30,8 +30,11 @@ class AgenticRAGAdal(adal.AdalComponent):
             model_kwargs=model_kwargs,
         )
         eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
+        loss_eval_fn = AnswerMatchAcc(type="f1_score").compute_single_item
+        # eval_fn = AnswerMatchAcc(type="f1_score").compute_single_item
         loss_fn = adal.EvalFnToTextLoss(
-            eval_fn=eval_fn, eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0"
+            eval_fn=loss_eval_fn,
+            eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0",
         )
         # eval_fn = f1_score  # 0.38 (hand crafted the finish, exat match 0.25)
 
@@ -41,6 +44,7 @@ class AgenticRAGAdal(adal.AdalComponent):
         super().__init__(
             task=task,
             eval_fn=eval_fn,
+            loss_eval_fn=loss_eval_fn,
             loss_fn=loss_fn,
             backward_engine_model_config=backward_engine_model_config,
             teacher_model_config=teacher_model_config,
@@ -59,15 +63,21 @@ class AgenticRAGAdal(adal.AdalComponent):
 
     # eval mode: get the generator output, directly engage with the eval_fn
     def prepare_eval(self, sample: HotPotQAData, y_pred: ReActOutput) -> float:
-        y_label = ""
-        if y_pred is not None and y_pred.answer:
-            y_label = y_pred.answer
+
+        y_label = y_pred.answer if isinstance(y_pred, ReActOutput) else y_pred
 
         printc(
             f"eval y_label: {y_label}, y_gt: {sample.answer}, self.eval_fn: {self.eval_fn(y_label, sample.answer)}"
         )
 
         return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
+
+    def prepare_loss_eval(self, sample: HotPotQAData, y_pred: ReActOutput) -> float:
+        y_label = y_pred.answer if isinstance(y_pred, ReActOutput) else y_pred
+        printc(
+            f"loss eval y_label: {y_label}, y_gt: {sample.answer}, self.eval_fn: {self.loss_eval_fn(y_label, sample.answer)}"
+        )
+        return self.loss_eval_fn, {"y": y_label, "y_gt": sample.answer}
 
     # train mode: get the loss and get the data from the full_response
     def prepare_loss(self, sample: HotPotQAData, pred: adal.Parameter):
@@ -83,8 +93,8 @@ class AgenticRAGAdal(adal.AdalComponent):
         # pred.eval_input = (
         #     pred.data[-1].observation if pred.data and pred.data[-1] else ""
         # )
-        printc(f"pred data: {pred.data}")
-        pred.eval_input = pred.data.answer if pred.data else ""
+        printc(f"pred data: {pred.data}, gt: {sample.answer}")
+        pred.eval_input = pred.data if pred.data else ""
         # pred.eval_input = (
         #     pred.data[-1].observation if pred.data and pred.data[-1] else ""
         # )
@@ -172,9 +182,10 @@ def train(
     print(trainer)
 
     train_dataset, val_dataset, test_dataset = load_datasets()
-    train_dataset = train_dataset[:4]
-    val_dataset = val_dataset[:4]
-    test_dataset = test_dataset[:4]
+    # train_dataset = train_dataset[:40]
+    # val_dataset = val_dataset[:40]
+    # test_dataset = test_dataset[:40]
+
     ckpt, _ = trainer.fit(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
@@ -223,12 +234,13 @@ if __name__ == "__main__":
     # exit()
 
     ckpt = train(
-        debug=True,
+        debug=False,
         max_steps=12,
         seed=2025,
         tg=use_tg,
         strategy=set_strategy,
         max_proposals_per_step=max_proposals_per_step,
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_387b2_run_1.json",
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_4_dca7e_run_1.json",
     )
     print(f"ckpt: {ckpt}")

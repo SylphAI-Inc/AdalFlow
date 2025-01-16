@@ -375,6 +375,7 @@ class Function(DataClass):
         default_factory=dict,
         metadata={"desc": "The keyword arguments of the function"},
     )
+    __output_fields__ = ["thought", "name", "kwargs"]
 
 
 _action_desc = """FuncName(<kwargs>) \

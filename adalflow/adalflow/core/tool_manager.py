@@ -88,15 +88,16 @@ class CallFunctionTool(Component):
             from adalflow.optim.grad_component import fun_to_grad_component
 
             # this will automatically create the outputparam, and connect output, func to the outputParam
-            @fun_to_grad_component
-            def dummy_pass_through_for_untrainable_fn(output, func):
+            @fun_to_grad_component()
+            def pass_through_output(output, func):
                 return output
 
             # NOTE: special case: handle the function which is not a grad_component
             # here we have to specifically converts it to a parameter and handles the predecessors
             # there is no trainable parameters inside of the tool but the tool response itself can be optimized by response optimizer
             if not isinstance(output, Parameter):
-                return dummy_pass_through_for_untrainable_fn.forward(output, func)
+                # printc(f"output 1: {output}, func: {func}", color="yellow")
+                return pass_through_output.forward(output, func)
             else:
                 # reconnect the predecessor for tracing as it is not done in tool.forward
                 output.predecessors.add(func)
@@ -153,7 +154,7 @@ class ToolManager(Component):
     ):
         super().__init__()
         nest_asyncio.apply()  # Apply nest_asyncio to handle nested loops
-        tools = [
+        processed_tools = [
             (
                 FunctionTool(fn=deepcopy(tool))
                 if not isinstance(tool, FunctionTool)
@@ -161,7 +162,11 @@ class ToolManager(Component):
             )
             for tool in tools
         ]
-        self.tools = ComponentList(tools)
+        # printc(
+        #     f"processed tools: {processed_tools}, len: {len(processed_tools)} and len tools: {len(tools)}",
+        #     color="yellow",
+        # )
+        self.tools = ComponentList(processed_tools)
         self._context_map = self.create_context_map_from_tools(self.tools)
         self._additional_context = additional_context or {}
         self.context = {**self._context_map, **self._additional_context}
@@ -201,7 +206,6 @@ class ToolManager(Component):
                 output.append(tool.definition.to_yaml(exclude=["class_instance"]))
             else:
                 output.append(tool.definition.to_yaml())
-            output.append(tool.definition.to_yaml(exclude=["class_instance"]))
         return output
 
     @property
@@ -241,7 +245,7 @@ class ToolManager(Component):
             #             f"Error {e} parsing function call expression: {map_fn(expr)}"
             #         )
             #         return error_msg
-            # else:
+        else:
             try:
                 expr_str = expr.action
                 func_name, args, kwargs = parse_function_call_expr(
@@ -278,7 +282,6 @@ class ToolManager(Component):
         expr_or_fun: Union[FunctionExpression, Function],
         step: Literal["execute"] = "execute",
     ) -> Union[FunctionOutput, Function, Parameter]:
-        print(f"self.training: {self.training}, expr_or_fun: {expr_or_fun}")
         if not isinstance(expr_or_fun, (Function, FunctionExpression)):
             raise ValueError(
                 f"expr_or_fun should be either a Function or FunctionExpression. Got {expr_or_fun}"
@@ -287,10 +290,12 @@ class ToolManager(Component):
             if isinstance(expr_or_fun, Function):
                 return expr_or_fun
             return self.parse_func_expr(expr_or_fun)
-        else:
+        elif step == "execute":
             if isinstance(expr_or_fun, Function):
                 return self.execute_func(expr_or_fun)
             return self.execute_func_expr(expr_or_fun)
+        else:
+            raise ValueError(f"step should be either 'parse' or 'execute'. Got {step}")
 
     def forward(
         self,
@@ -341,11 +346,14 @@ class ToolManager(Component):
         else:
             try:
                 tool: FunctionTool = self.context[func.name]
+                # printc(f"call tool: {tool}", color="yellow")
                 if tool.is_async:
                     return run_async_in_new_loop(tool.acall(*func.args, **func.kwargs))
 
                 else:
-                    return tool.call(*func.args, **func.kwargs)
+                    output = tool.call(*func.args, **func.kwargs)
+                    # printc(f"output: {output}", color="yellow")
+                    return output
             except Exception as e:
                 log.error(f"Error {e} executing function: {func}")
                 raise ValueError(f"Error {e} executing function: {func}")
