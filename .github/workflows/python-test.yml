@@ -14,7 +14,7 @@ jobs:
         python-version: ['3.9', '3.10', '3.11', '3.12']
 
     steps:
-      - uses: actions/checkout@v3 # Updated to the latest version
+      - uses: actions/checkout@v4 # Updated to the latest version
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4 # Updated to the latest version
         with:
