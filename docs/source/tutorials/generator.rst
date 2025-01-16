@@ -106,6 +106,161 @@ In particular, we created :class:`GeneratorOutput<core.types.GeneratorOutput>` t
 Whether to do further processing or terminate the pipeline whenever an error occurs is up to the user from here on.
 
 
+Basic Generator Tutorial
+=====================
+
+The Generator class is the core component in AdalFlow for interacting with AI models. This tutorial covers the essential concepts and patterns.
+
+What is a Generator?
+------------------
+
+A Generator is a unified interface for model interactions that:
+
+1. Takes input and formats it using a prompt template
+2. Sends the formatted input to an AI model
+3. Returns a standardized ``GeneratorOutput`` object
+
+Basic Usage
+----------
+
+Here's the simplest way to use a Generator:
+
+.. code-block:: python
+
+    from adalflow.core import Generator
+    from adalflow.components.model_client.openai_client import OpenAIClient
+
+    # Create a generator
+    gen = Generator(
+        model_client=OpenAIClient(),
+        model_kwargs={
+            "model": "gpt-4o-mini",
+            "temperature": 0.7
+        }
+    )
+
+    # Use the generator
+    response = gen({"input_str": "What is the capital of France?"})
+    print(response.raw_response)
+
+Understanding the Output
+----------------------
+
+Every Generator call returns a ``GeneratorOutput`` object:
+
+.. code-block:: python
+
+    response = gen({"input_str": "Hello"})
+    
+    # Access different parts of the response
+    print(response.raw_response)  # Raw model output
+    print(response.data)          # Processed data (if using output processors)
+    print(response.error)         # Error message if something went wrong
+    print(response.usage)         # Token usage information
+
+When to Create a Subclass
+-----------------------
+
+You should create a Generator subclass in two main cases:
+
+1. **Different Model Types**: When using non-LLM endpoints
+
+   .. code-block:: python
+
+    class ImageGenerator(Generator):
+        """For DALL-E and other image generation models"""
+        model_type = ModelType.IMAGE_GENERATION
+
+2. **Custom Processing**: When you need special input/output handling
+
+   .. code-block:: python
+
+    class CustomGenerator(Generator):
+        def _pre_call(self, prompt_kwargs, model_kwargs):
+            # Custom preprocessing
+            return super()._pre_call(prompt_kwargs, model_kwargs)
+
+When NOT to Subclass
+------------------
+
+Don't create a subclass for:
+
+1. **Model Parameters**: Use ``model_kwargs`` instead
+
+   .. code-block:: python
+
+    # Just pass parameters directly
+    gen = Generator(
+        model_client=client,
+        model_kwargs={
+            "model": "gpt-4o-mini",
+            "temperature": 0.9
+        }
+    )
+
+2. **Output Processing**: Use output processors
+
+   .. code-block:: python
+
+    from adalflow.components.output_processors import JsonParser
+
+    gen = Generator(
+        model_client=client,
+        output_processors=JsonParser()  # Process output as JSON
+    )
+
+Common Patterns
+-------------
+
+1. **Error Handling**:
+
+   .. code-block:: python
+
+    response = gen({"input_str": "Query"})
+    if response.error:
+        print(f"Error: {response.error}")
+    else:
+        print(response.raw_response)
+
+2. **Async Usage**:
+
+   .. code-block:: python
+
+    async def generate():
+        response = await gen.acall({"input_str": "Hello"})
+        print(response.raw_response)
+
+3. **Streaming**:
+
+   .. code-block:: python
+
+    gen = Generator(
+        model_client=client,
+        model_kwargs={"stream": True}
+    )
+    for chunk in gen({"input_str": "Tell me a story"}):
+        print(chunk)
+
+Model Types
+----------
+
+Generator supports different model types through ``ModelType``:
+
+- ``ModelType.LLM``: Text generation (default)
+- ``ModelType.IMAGE_GENERATION``: Image generation (DALL-E)
+- ``ModelType.EMBEDDER``: Text embeddings
+- ``ModelType.RERANKER``: Document reranking
+
+Best Practices
+------------
+
+1. Always check for errors in the response
+2. Use output processors for structured outputs
+3. Set model parameters in ``model_kwargs``
+4. Use async methods for better performance in async contexts
+5. Use streaming for long responses
+
+Remember: The Generator is designed to provide a consistent interface regardless of the underlying model or task. 
 
 Generator In Action
 ---------------------------------------
@@ -479,6 +634,72 @@ It will require users to define ``Parameter`` and pass it to the ``prompt_kwargs
 .. By default, LlamaIndex uses a global tokenizer for all token counting. This defaults to cl100k from tiktoken, which is the tokenizer to match the default LLM gpt-3.5-turbo.
 
 .. If you change the LLM, you may need to update this tokenizer to ensure accurate token counts, chunking, and prompting.
+
+Image Generation
+-------------------------------------------------
+
+The Generator class also supports image generation through DALL-E models. First, you need to define a Generator subclass with the correct model type:
+
+.. code-block:: python
+
+    from adalflow import Generator
+    from adalflow.core.types import ModelType
+
+    class ImageGenerator(Generator):
+        """Generator subclass for image generation."""
+        model_type = ModelType.IMAGE_GENERATION
+
+Then you can use it like this:
+
+.. code-block:: python
+
+    from adalflow import OpenAIClient
+
+    generator = ImageGenerator(
+        model_client=OpenAIClient(),
+        model_kwargs={
+            "model": "dall-e-3",  # or "dall-e-2"
+            "size": "1024x1024",  # "1024x1024", "1024x1792", or "1792x1024" for DALL-E 3
+            "quality": "standard",  # "standard" or "hd" (DALL-E 3 only)
+            "n": 1  # Number of images (1 for DALL-E 3, 1-10 for DALL-E 2)
+        }
+    )
+
+    # Generate an image from text
+    response = generator(
+        prompt_kwargs={"input_str": "A white siamese cat in a space suit"}
+    )
+    # response.data will contain the image URL
+
+    # Edit an existing image
+    response = generator(
+        prompt_kwargs={"input_str": "Add a red hat"},
+        model_kwargs={
+            "model": "dall-e-2",
+            "image": "path/to/cat.png",  # Original image
+            "mask": "path/to/mask.png"   # Optional mask showing where to edit
+        }
+    )
+
+    # Create variations of an image
+    response = generator(
+        prompt_kwargs={"input_str": None},  # Not needed for variations
+        model_kwargs={
+            "model": "dall-e-2",
+            "image": "path/to/cat.png"  # Image to create variations of
+        }
+    )
+
+The generator supports:
+
+- Image generation from text descriptions using DALL-E 3 or DALL-E 2
+- Image editing with optional masking (DALL-E 2)
+- Creating variations of existing images (DALL-E 2)
+- Both local file paths and base64-encoded images
+- Various image sizes and quality settings
+- Multiple output formats (URL or base64)
+
+The response will always be wrapped in a ``GeneratorOutput`` object, maintaining consistency with other AdalFlow operations. The generated image(s) will be available in the ``data`` field as either a URL or base64 string.
 
 .. admonition:: API reference
    :class: highlight
