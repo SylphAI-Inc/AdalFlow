@@ -29,8 +29,27 @@ class AnswerMatchAcc(BaseEvaluator):
         [1.0, 1.0, 1.0]
     """
 
-    def __init__(self, type: Literal["exact_match", "fuzzy_match"] = "exact_match"):
+    def __init__(
+        self,
+        type: Literal[
+            "exact_match", "fuzzy_match", "rouge_score", "bleu_score", "bert_score"
+        ] = "exact_match",
+    ):
         self.type = type
+        if self.type == "bert_score":
+            from torchmetrics.text.bert import BERTScore
+
+            self.bertscore = BERTScore()
+
+        elif self.type == "rouge_score":
+            from torchmetrics.text.rouge import ROUGEScore
+
+            self.rougescore = ROUGEScore()
+
+        elif self.type == "bleu_score":
+            from torchmetrics.text.bleu import BLEUScore
+
+            self.bleuscore = BLEUScore()
 
     def compute_single_item(
         self,
@@ -67,6 +86,37 @@ class AnswerMatchAcc(BaseEvaluator):
             y = y.lower()
             y_gt = y_gt.lower()
             return 1.0 if y_gt in y else 0.0
+        elif self.type == "bert_score":
+            from torchmetrics.text.bert import BERTScore
+
+            self.bertscore = BERTScore()
+            score = self.bertscore([y], [y_gt])
+            # get the data from the tensor
+            print(f"y: {[y]}, y_gt: {[y_gt]}, type: {type(y)}, type_gt: {type(y_gt)}")
+            print(score)
+            single_score = score["precision"].item()
+            return single_score
+        elif self.type == "rouge_score":
+            from torchmetrics.text.rouge import ROUGEScore
+
+            self.rougescore = ROUGEScore()
+            score = self.rougescore([y], [y_gt])
+            # get the data from the tensor
+            print(f"y: {[y]}, y_gt: {[y_gt]}, type: {type(y)}, type_gt: {type(y_gt)}")
+            print(score)
+            single_score = score["rouge1_precision"].item()
+            return single_score
+        elif self.type == "bleu_score":
+            from torchmetrics.text.bleu import BLEUScore
+
+            self.bleuscore = BLEUScore()
+            score = self.bleuscore([y], [y_gt])
+            # get the data from the tensor
+            print(f"y: {[y]}, y_gt: {[y_gt]}, type: {type(y)}, type_gt: {type(y_gt)}")
+            print(score)
+            single_score = score.item()
+            return single_score
+
         else:
             raise NotImplementedError
 

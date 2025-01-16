@@ -52,7 +52,9 @@ class BootstrapFewShot(DemoOptimizer):
             for param in params
             if param.requires_opt and param.param_type == ParameterType.DEMOS
         ]
-        log.info(f"BootstrapFewShot: {self.params}")
+        log.info(f"BootstrapFewShot: {[p.name for p in self.params]}")
+
+        print(f"BootstrapFewShot: {[p.name for p in self.params]}")
 
         self._raw_shots = raw_shots
         self._bootstrap_shots = bootstrap_shots
@@ -64,7 +66,11 @@ class BootstrapFewShot(DemoOptimizer):
             exclude_input_fields_from_bootstrap_demos
         )
 
+    # TODO: use the scores from the backward engine (optionally) on the demo parameters
+    # needs to make a decision on which
+    # this score does not make sense for multiple demo parameters
     def add_scores(self, ids: List[str], scores: List[float], is_teacher: bool = True):
+        r"""Add scores for each demo via _teacher_scores or _student_scores."""
         if len(ids) != len(scores):
             raise ValueError(
                 f"ids and scores must have the same length, got ids: {ids}, scores: {scores}"
@@ -114,10 +120,16 @@ class BootstrapFewShot(DemoOptimizer):
         weighted: bool = True,
     ):
         r"""Performs weighted sampling, ensure the score is in range [0, 1]. The higher score means better accuracy."""
-        # 1. sample from augmented demos
+        # 1. sample from augmented demos (from teacher)
         # set weights to be score
         # add 1 to all score to avoid negative weights
         augmented_options = list(augmented_demos.values())
+
+        # get the teacher scores length and the augmented demos length
+        len_teacher_scores = len(self._teacher_scores)
+        len_augmented_options = len(augmented_options)
+        print(f"len_teacher_scores: {len_teacher_scores}")
+        print(f"len_augmented_options: {len_augmented_options}")
         weights = None
         if weighted:
             weights: List[float] = []
@@ -223,6 +235,11 @@ class BootstrapFewShot(DemoOptimizer):
             if demo_param.requires_opt:
                 augmented_demos = demo_param._traces
                 demos = demo_param._student_traces
+
+                if len(augmented_demos) != len(demos):
+                    log.warning(
+                        f"augmented and raw demos must have the same length, got {len(augmented_demos)} and {len(demos)} \n {augmented_demos} \n and student demos {demos}"
+                    )
                 try:
                     sampled_augmented_demos, sampled_raw_demos = self.sample(
                         augmented_demos=augmented_demos,

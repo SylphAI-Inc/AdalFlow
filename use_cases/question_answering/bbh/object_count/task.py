@@ -40,7 +40,7 @@ class ObjectCountTaskPipeline(adal.Component):
         few_shot_demos = adal.Parameter(
             data=None,
             role_desc="To provide few shot demos to the language model",
-            requires_opt=True,
+            requires_opt=False,
             param_type=ParameterType.DEMOS,
         )
 
@@ -60,6 +60,14 @@ class ObjectCountTaskPipeline(adal.Component):
         self, question: str, id: str = None
     ) -> Union[adal.GeneratorOutput, adal.Parameter]:
         output = self.llm_counter(prompt_kwargs={"input_str": question}, id=id)
+        print(f"output: {output}, training: {self.training}")
+        if self.training:
+            if output.full_response.error and "429" in output.full_response.error:
+                raise ValueError("Rate limit exceeded")
+        else:
+            if output.error and "429" in output.error:
+                print("rate limit exceeded:")
+                raise ValueError("Rate limit exceeded")
         return output
 
 

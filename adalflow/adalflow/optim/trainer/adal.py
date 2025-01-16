@@ -249,13 +249,18 @@ class AdalComponent(Component):
             )
 
             for future in concurrent.futures.as_completed(futures):
-                i = futures[future]
-                acc_list[i] = (
-                    future.result()
-                )  # Place the result in the correct position
-                progress_bar.update(
-                    1
-                )  # Update progress bar after each result is collected
+                try:
+                    i = futures[future]
+                    acc_list[i] = (
+                        future.result()
+                    )  # Place the result in the correct position
+                    progress_bar.update(
+                        1
+                    )  # Update progress bar after each result is collected
+                except Exception as e:
+
+                    progress_bar.close()
+                    raise ValueError(f"Exception in task {i}: {e}")
 
         avg_score = float(np.mean(np.array(acc_list)))
         return EvaluationResult(avg_score=avg_score, per_item_scores=acc_list)
@@ -394,6 +399,11 @@ class AdalComponent(Component):
                 samples[i] = sample  # Keep the sample order aligned
                 # check the ordering
 
+                if isinstance(y_pred, Parameter):
+                    raise ValueError(f"y_pred_{i} is a Parameter, {y_pred}")
+
+                print(f"y_pred: {y_pred})")
+
                 assert (
                     y_pred.id == sample.id
                 ), f"ID mismatch: {y_pred.id} != {sample.id}, type: {type(y_pred)}"
@@ -469,14 +479,13 @@ class AdalComponent(Component):
         """
         # TODO: let use decide which mode to be
         self.task.eval()
+        self.task.use_teacher(mode=False)  # ensure the teacher is not used
         completed_y_preds, completed_samples, index_to_score = self.pred_step(
             batch, batch_idx, num_workers, running_eval=True, min_score=minimum_score
         )
         if index_to_score:
             # compute score from index_to_score
-            print(
-                f"completed_samples: {len(completed_samples)}, len: {len(list(index_to_score.values()))}"
-            )
+
             avg_score = np.mean(list(index_to_score.values())).item()
             acc_list = [None] * len(index_to_score)
             for i, score in index_to_score.items():
@@ -598,7 +607,9 @@ class AdalComponent(Component):
         if self.loss_fn:
             self.loss_fn.set_backward_engine(self.backward_engine)
 
-    def configure_callbacks(self, save_dir: Optional[str] = "traces", *args, **kwargs):
+    def configure_callbacks(
+        self, save_dir: Optional[str] = "traces", *args, **kwargs
+    ) -> List[str]:
         """In default we config the failure generator callback. User can overwrite this method to add more callbacks."""
         from adalflow.utils.global_config import get_adalflow_default_root_path
         import os
@@ -606,7 +617,7 @@ class AdalComponent(Component):
         if not save_dir:
             save_dir = "traces"
             save_dir = os.path.join(get_adalflow_default_root_path(), save_dir)
-        print(f"Saving traces to {save_dir}")
+        log.debug(f"Saving traces to {save_dir}")
         return self._auto_generator_callbacks(save_dir)
 
     def run_one_task_sample(self, sample: Any) -> Any:
@@ -640,9 +651,10 @@ class AdalComponent(Component):
         for name, comp in self.task.named_components():
             if isinstance(comp, Generator):
                 all_generators.append((name, comp))
+        log.debug(f"all_generators: {all_generators}")
         return all_generators
 
-    def _auto_generator_callbacks(self, save_dir: str = "traces"):
+    def _auto_generator_callbacks(self, save_dir: str = "traces") -> List[str]:
         r"""Automatically generate callbacks."""
         from adalflow.core.types import GeneratorOutput
         from adalflow.tracing.generator_call_logger import (
@@ -652,7 +664,7 @@ class AdalComponent(Component):
 
         all_generators = self._find_all_generators()
 
-        print(f"all_generators: {all_generators}")
+        log.debug(f"all_generators: {all_generators}")
 
         def _on_completion_callback(
             output: GeneratorOutput,
@@ -672,9 +684,10 @@ class AdalComponent(Component):
         # Register the callback for each generator
 
         file_paths = []
+        call_logger = GeneratorCallLogger(save_dir=save_dir)
         for name, generator in all_generators:
-            call_logger = GeneratorCallLogger(save_dir=save_dir)
-            call_logger.reset()
+
+            # call_logger.reset()
             call_logger.register_generator(name)
             logger_call = partial(call_logger.log_call, name)
             generator.register_callback(
@@ -682,10 +695,7 @@ class AdalComponent(Component):
             )
             file_path = call_logger.get_log_location(name)
             file_paths.append(file_path)
-            print(
-                f"Registered callback for {name}, file path: {file_path}",
-                end="\n",
-            )
+            log.debug(f"Registered callback for {name}, file path: {file_path}")
         return file_paths
 
     def configure_demo_optimizer_helper(self) -> List[DemoOptimizer]:

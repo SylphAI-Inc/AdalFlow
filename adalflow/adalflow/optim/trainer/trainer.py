@@ -27,11 +27,11 @@ from adalflow.optim.text_grad.ops import sum_ops
 from adalflow.utils import save_json, load_json
 from adalflow.utils.cache import hash_text_sha1
 from adalflow.utils.data import DataLoader
-
+from adalflow.utils.logger import printc
 from adalflow.optim.types import TrainerValidateStats
 
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Trainer(Component):
@@ -91,9 +91,10 @@ class Trainer(Component):
     batch_val_score_threshold: Optional[float] = (
         1.0  # when acc_score >= this threshold, skip this batch
     )
-    max_error_samples: Optional[int] = 8
-    max_correct_samples: Optional[int] = 8
+    max_error_samples: Optional[int] = 2
+    max_correct_samples: Optional[int] = 2
     debug: bool = False
+    sequential_order: List[str] = ["text", "demo"]
 
     def __init__(
         self,
@@ -105,8 +106,8 @@ class Trainer(Component):
         num_workers: int = 4,
         ckpt_path: str = None,
         batch_val_score_threshold: Optional[float] = 1.0,
-        max_error_samples: Optional[int] = 4,
-        max_correct_samples: Optional[int] = 4,
+        max_error_samples: Optional[int] = 2,
+        max_correct_samples: Optional[int] = 2,
         max_proposals_per_step: int = 5,
         train_loader: Optional[Any] = None,
         train_dataset: Optional[Any] = None,
@@ -119,6 +120,7 @@ class Trainer(Component):
         exclude_input_fields_from_bootstrap_demos: bool = False,
         debug: bool = False,
         save_traces: bool = False,  # save traces in the few-shto demos
+        sequential_order: List[str] = ["text", "demo"],
         *args,
         **kwargs,
     ) -> None:
@@ -161,6 +163,7 @@ class Trainer(Component):
         self.exclude_input_fields_from_bootstrap_demos = (
             exclude_input_fields_from_bootstrap_demos
         )
+        self.sequential_order = sequential_order
 
     # TODO: need to support checkpoint resume too!
     def diagnose(self, dataset: Any, split: str = "train"):
@@ -188,7 +191,8 @@ class Trainer(Component):
             trainer_state = self.gather_trainer_states()
             self.prep_ckpt_file_path(trainer_state)
         save_path = os.path.join(self.ckpt_path, f"diagnose_{split}")
-        print(f"Save diagnose to {save_path}")
+        logger.debug(f"Save diagnose to {save_path}")
+        # One generator will be one file, all stats are in logger_metadata.json
         log_paths = self.adaltask.configure_callbacks(save_dir=save_path)
         # 2. evaluate
         acc = self.adaltask.validation_step(dataset, 0, self.num_workers)
@@ -206,15 +210,18 @@ class Trainer(Component):
             raise ValueError(
                 "dataset should have an attribute id for tracking the samples"
             )
-        print(f"sorted_indices: {sorted_indices}")
+        logger.debug(f"sorted_indices: {sorted_indices}")
+
         sorted_scores = [acc_per_item_scores[i] for i in sorted_indices]
-        print(f"sorted_scores: {sorted_scores}")
+        logger.debug(f"sorted_scores: {sorted_scores}")
         sorted_dataset = [dataset[i] for i in sorted_indices]
+
+        paths: Dict[str, List[str]] = {"Log": log_paths, "Diagnose": [], "Stats": []}
 
         # reorder the samples based on the score
         for log_path in log_paths:
             file_name = os.path.basename(log_path)
-            print(f"Loading log file: {file_name}")
+            logger.debug(f"Loading log file: {file_name}")
             logs = load_jsonl(log_path)
             try:
                 logs_dict = {log["output"]["id"]: log for log in logs}
@@ -232,6 +239,7 @@ class Trainer(Component):
 
             diagnose_file = os.path.join(log_dir, diagnose_filename)
             diagnose_items = []
+            stats_list: List[Dict] = []
             for i, log in enumerate(sorted_logs):
                 if log["score"] < 0.5:
                     diagnose_item = {
@@ -252,16 +260,68 @@ class Trainer(Component):
                 "total_error_samples": len(diagnose_items),
                 "avg_score": acc_score,
             }
-            save_json(stats, os.path.join(log_dir, "stats.json"))
-            print(f"Total error samples: {len(diagnose_items)}")
-            print(f"Saved diagnose to {diagnose_file}")
+            stat_path = os.path.join(log_dir, "stats.json")
+            save_json(stats, stat_path)
+            logger.debug(f"Total error samples: {len(diagnose_items)}")
+            logger.debug(f"Saved diagnose to {diagnose_file}")
+            paths["Diagnose"].append(diagnose_file)
+            paths["Stats"].append(stat_path)
+            stats_list.append(stats)
 
-        return acc_score, acc_per_item_scores, log_paths
+        self.diagnose_report(
+            split=split,
+            acc_score=acc_score,
+            stats_list=stats_list,
+            log_paths=paths,
+        )
+
+    def diagnose_report(
+        self,
+        split: str,
+        acc_score: Optional[float] = None,
+        stats_list: Optional[List[Dict]] = None,
+        log_paths: Optional[Dict[str, List[str]]] = None,
+    ):
+        import colorama
+        from colorama import Fore
+
+        # Initialize colorama
+        colorama.init(autoreset=True)
+        print(Fore.CYAN + "\n================== DIAGNOSE REPORT ==================\n")
+
+        print(Fore.GREEN + f"✔ Split: {split}")
+
+        # Check the accuracy score
+        if acc_score is not None:
+            print(Fore.GREEN + f"✔ Overall accuracy score: {acc_score:.2f}")
+        else:
+            print(Fore.RED + "✘ Accuracy score not provided or calculated.")
+
+        # List the overall stats
+        if stats_list is not None and len(stats_list) > 0:
+            print(Fore.GREEN + "✔ Overall stats:")
+            for idx, item in enumerate(stats_list):
+                print(Fore.YELLOW + f"  - {idx + 1}: {item}")
+
+        # Check for log paths
+        if log_paths is not None:
+            for key, paths in log_paths.items():
+                if len(paths) > 0:
+                    print(Fore.GREEN + f"✔ {key} paths:")
+                    for idx, path in enumerate(paths):
+                        print(Fore.YELLOW + f"  - {key} {idx + 1}: {path}")
+
+        else:
+            print(Fore.RED + "✘ No log paths available.")
+
+        # General summary
+        print(Fore.GREEN + "\n✔ Diagnose report completed successfully!")
+        print(Fore.CYAN + "\n=====================================================\n")
 
     def debug_report(
         self,
-        text_grad_debug_path: Optional[str] = None,
-        few_shot_demo_debug_path: Optional[str] = None,
+        text_grad_debug_path: Optional[Dict[str, object]] = None,
+        few_shot_demo_debug_path: Optional[Dict[str, object]] = None,
     ):
         import colorama
         from colorama import Fore
@@ -273,7 +333,7 @@ class Trainer(Component):
         if text_grad_debug_path:
             print(Fore.GREEN + f"✔ Text grad debug path: {text_grad_debug_path}")
         else:
-            print(Fore.RED + "✘ Text grad debugging was not run.")
+            print(Fore.CYAN + "✘ Text grad debugging was not run.")
 
         if few_shot_demo_debug_path:
             print(
@@ -304,9 +364,12 @@ class Trainer(Component):
         resume_from_ckpt: Optional[
             str
         ] = None,  # TODO: have a more comprehensive ckpt loading in the future
-    ):
+    ) -> Tuple[str, TrainerResult]:
         r"""
         train_loader: An iterable or collection of iterables specifying training samples.
+
+        Returns:
+            Tuple[str, TrainerResult]: Checkpoint file and the TrainerResult object
         """
         start_time = time.time()
 
@@ -434,7 +497,7 @@ class Trainer(Component):
                     train_loader, train_dataset, val_dataset, test_dataset
                 )
             self.debug_report(text_grad_debug_path, few_shot_demo_debug_path)
-            return
+            return self.ckpt_file, trainer_results
 
         ########Run text_optimizers and demo optimizers in sequential order ########
         if (
@@ -443,7 +506,6 @@ class Trainer(Component):
             and len(self.text_optimizers) > 0
         ):
             if self.strategy == "random":
-
                 self._fit_text_grad_demo_mix_random(
                     train_loader,
                     train_dataset,
@@ -465,41 +527,67 @@ class Trainer(Component):
                 raise ValueError(f"Strategy {self.strategy} not supported")
 
         else:  # sequential, text first and demo second
-            if len(self.text_optimizers) > 0:
-                if self.strategy == "random":
-                    trainer_results = self._fit_text_grad_random(
+
+            def run_text_optimizers(starting_step: int, trainer_results: TrainerResult):
+                if len(self.text_optimizers) > 0:
+                    if self.strategy == "random":
+                        trainer_results = self._fit_text_grad_random(
+                            train_loader,
+                            val_dataset,
+                            test_dataset,
+                            trainer_results,
+                            starting_step=starting_step,
+                        )
+                        starting_step += self.max_steps
+                    elif self.strategy == "constrained":
+                        trainer_results = self._fit_text_grad_constraint(
+                            train_loader,
+                            val_dataset,
+                            test_dataset,
+                            trainer_results=trainer_results,
+                            starting_step=starting_step,
+                        )
+                        starting_step += self.max_steps
+                    else:
+                        raise ValueError(f"Strategy {self.strategy} not supported")
+
+            def run_demo_optimizers(starting_step: int, trainer_results: TrainerResult):
+                if len(self.demo_optimizers) > 0:
+                    self.adaltask.configure_teacher_generator()
+                    self._fit_demos_random(
                         train_loader,
-                        val_dataset,
-                        test_dataset,
-                        trainer_results,
-                        starting_step=starting_step,
-                    )
-                    starting_step += self.max_steps
-                elif self.strategy == "constrained":
-                    trainer_results = self._fit_text_grad_constraint(
-                        train_loader,
+                        train_dataset,
                         val_dataset,
                         test_dataset,
                         trainer_results=trainer_results,
                         starting_step=starting_step,
                     )
-                    starting_step += self.max_steps
-                else:
-                    raise ValueError(f"Strategy {self.strategy} not supported")
-            if len(self.demo_optimizers) > 0:
-                self.adaltask.configure_teacher_generator()  # attemp to use the newest teacher as
-                self._fit_demos_random(
-                    train_loader,
-                    train_dataset,
-                    val_dataset,
-                    test_dataset,
-                    trainer_results=trainer_results,
-                    starting_step=starting_step,
-                )
+
+            if self.sequential_order == ["text", "demo"]:
+                run_text_optimizers(starting_step, trainer_results)
+                run_demo_optimizers(starting_step, trainer_results)
+            else:
+                run_demo_optimizers(starting_step, trainer_results)
+                run_text_optimizers(starting_step, trainer_results)
+            # if len(self.text_optimizers) > 0:
+            #     run_text_optimizers(starting_step, trainer_results)
+
+            # if len(self.demo_optimizers) > 0:
+            #     run_demo_optimizers(starting_step, trainer_results)
+            # self.adaltask.configure_teacher_generator()  # attemp to use the newest teacher as
+            # self._fit_demos_random(
+            #     train_loader,
+            #     train_dataset,
+            #     val_dataset,
+            #     test_dataset,
+            #     trainer_results=trainer_results,
+            #     starting_step=starting_step,
+            # )
 
         end_time = time.time()
         print(f"Training time: {end_time - start_time}s")
         print(f"ckpt_file: {self.ckpt_file}")
+        return self.ckpt_file, trainer_results
 
     @staticmethod
     def _estimate_num_epochs(train_loader: Any, max_steps: int):
@@ -582,7 +670,7 @@ class Trainer(Component):
             self.ckpt_path = os.path.join(
                 default_root_path, "ckpt", self.adaltask.__class__.__name__
             )
-            print(f"Checkpoint path: {self.ckpt_path}")
+            logger.debug(f"Checkpoint path: {self.ckpt_path}")
         os.makedirs(self.ckpt_path, exist_ok=True)
         # list all existing checkpoints with the same file name prefix
         hash_key = (
@@ -627,7 +715,9 @@ class Trainer(Component):
 
     def _fit_demos_one_step_for_debug(
         self, train_loader, train_dataset: Any, val_dataset: Any, test_dataset: Any
-    ) -> str:
+    ) -> Dict[str, object]:
+        """Trace both the teacher and the student demos with scores and for sampling.
+        For demos: we need to run both the teacher mode and the student mode."""
 
         # get_logger(level="DEBUG")
         print("Fitting using Random Demo Optimizer")
@@ -659,7 +749,7 @@ class Trainer(Component):
                 f"Expected 2 traces, got {len(demo_params[0]._traces)}, traces: {demo_params[0]._traces}"
             )
 
-        print(f"Teacher y_preds: {y_preds[0].to_dict()}")
+        # print(f"Teacher y_preds: {y_preds[0].to_dict()}")
 
         y_preds_outputs = [p.full_response for p in y_preds]
 
@@ -676,7 +766,7 @@ class Trainer(Component):
         losses: List[Parameter] = self.adaltask.loss_step(
             batch, y_preds, 0, self.num_workers
         )
-        print(f"Losses: {losses[0].to_dict()}")
+        # print(f"Losses: {losses[0].to_dict()}")
         self._demo_optimizers_add_scores(
             [sample.id for sample in batch], batch_per_item_scores, is_teacher=True
         )
@@ -688,16 +778,20 @@ class Trainer(Component):
 
         print(f"Graph saved to {graph_path}")
 
-        # check the score
+        # check the score of one param
         for key, val in demo_params[0]._traces.items():
-            print(f"param: {key}, val: {val}")
+            print(f"param: {key}, {demo_params[0].name}, val: {val}")
             score = val.score
             if score is None:
                 raise ValueError("Score is None")
             print(f"param: {key}, score: {score}")
-        print(f"Loss after backward: {losses[0].to_dict()}")
+        # print(f"Loss after backward: {losses[0].to_dict()}")
 
         # tracking the bootstrap so we wont repeat the same samples
+
+        # 2. run student mode
+
+        demo_debug_result_path = None
 
         for batch_idx, batch in enumerate(train_loader):
             print(f"Training step: {batch_idx}")
@@ -717,43 +811,51 @@ class Trainer(Component):
             )
             # for loss in losses_student:
             #     loss.backward()
+            # Check the eval result
             y_preds_outputs = [p.full_response for p in y_preds_student]
             eval_result = self.adaltask.evaluate_samples(batch, y_preds_outputs)
             print(f"Eval result: {eval_result.avg_score}")
-            eval_score_per_item = eval_result.per_item_scores
+            # eval_score_per_item = eval_result.per_item_scores
 
-            # bootstrap
-            batch_for_teacher = []
-            losses_teacher = []
+            # bootstrap a batch
+            # batch_for_teacher = []
+            # losses_teacher = []
 
-            for i, (sample, item_score) in enumerate(zip(batch, eval_score_per_item)):
-                # use teacher
-                if sample.id in pred_teacher:
-                    continue
-                # if item_score < 0.5:
-                batch_for_teacher.append(sample)
-                pred_teacher.add(sample.id)
-            # run teacher, use teachers's output instead of the initial output (bootstrap)
-            if len(batch_for_teacher) > 0:
-                print(f"Using teacher for {len(batch_for_teacher)} samples")
-                self.adaltask.use_teacher()
-                y_preds_teacher = self.adaltask.train_step(
-                    batch_for_teacher, batch_idx, self.num_workers
-                )
-                losses_teacher: List[Parameter] = self.adaltask.loss_step(  # noqa F841
-                    batch_for_teacher, y_preds_teacher, batch_idx, self.num_workers
-                )
-                self._demo_optimizers_add_scores(
-                    [sample.id for sample in batch_for_teacher],
-                    eval_score_per_item,
-                    is_teacher=True,
-                )
+            # for i, (sample, item_score) in enumerate(zip(batch, eval_score_per_item)):
+
+            #     # use teacher
+            #     if sample.id in pred_teacher:
+            #         continue
+            #     # if item_score < 0.5:
+            #     pred_teacher.add(sample.id)
+            #     batch_for_teacher.append(sample)
+            # # run teacher, use teachers's output instead of the initial output (bootstrap)
+            # if len(batch_for_teacher) > 0:
+            #     print(f"Using teacher for {len(batch_for_teacher)} samples")
+            #     self.adaltask.use_teacher()
+            #     y_preds_teacher = self.adaltask.train_step(
+            #         batch_for_teacher, batch_idx, self.num_workers
+            #     )
+            #     losses_teacher: List[Parameter] = self.adaltask.loss_step(  # noqa F841
+            #         batch_for_teacher, y_preds_teacher, batch_idx, self.num_workers
+            #     )
+            #     self._demo_optimizers_add_scores(
+            #         [sample.id for sample in batch_for_teacher],
+            #         eval_score_per_item,
+            #         is_teacher=True,
+            #     )
+
+            # loss_students backward
+            for loss in losses_student:
+                loss.backward()
 
             # propose
             self._demo_optimizers_propose()
             graph_path = os.path.join(debug_path, "student_graph")
 
-            losses_student[0].draw_graph(filepath=graph_path)
+            demo_debug_result_path = losses_student[0].draw_graph(
+                filepath=graph_path
+            )  # noqa F841
 
             # test step
             self._demo_optimizers_step()
@@ -765,11 +867,13 @@ class Trainer(Component):
             opt_params = []
             for opt in self.demo_optimizers:
                 opt_params.extend(opt.params)
-            print(f"Opt params: {opt_params}")
+            # print(f"Opt params: {opt_params}")
             for name, param in self.adaltask.named_parameters():
 
                 if param.param_type == ParameterType.DEMOS:
-                    print(f"Demo param: {name}, value: {param.data}, param: {param}")
+                    print(
+                        f"Demo param: {name}, value: {param.data}, param: {param.name}"
+                    )
                     if param.data is None:
                         raise ValueError("Demo param data is None")
 
@@ -782,10 +886,12 @@ class Trainer(Component):
                     if len(param._demos) == 0:
                         raise ValueError(f"No demos found, param: {param}")
 
-        return debug_path
+        return demo_debug_result_path
 
-    def _fit_text_grads_one_step_for_debug(self, train_loader: Any) -> str:
-        print("Debugging fitting one step with batch size 2 for text optimizer")
+    def _fit_text_grads_one_step_for_debug(self, train_loader: Any) -> Dict[str, str]:
+        printc(
+            "Debugging fitting one step with batch size 2 for text optimizer", "blue"
+        )
 
         self.prep_ckpt_file_path()
         debug_path = os.path.join(self.ckpt_path, "debug_text_grads")
@@ -796,10 +902,13 @@ class Trainer(Component):
         self.adaltask.train()  # this will turn everything to train mode
         correct_loss = None
         failed_loss = None
-        print("Finding one successful and one failed loss")
+        all_losses = []
+        printc("Finding one successful and one failed loss", "blue")
         for batch in train_loader:
             y_preds = self.adaltask.train_step(batch, 0, self.num_workers)
             losses = self.adaltask.loss_step(batch, y_preds, 0, self.num_workers)
+            # Collect all losses
+            all_losses.extend(losses)
             for loss in losses:
                 if loss.data > 0.5:
                     correct_loss = loss
@@ -808,13 +917,27 @@ class Trainer(Component):
             if correct_loss is not None and failed_loss is not None:
                 print("Found correct and failed loss")
                 break
+
+        # Handle case where one or both losses are None
+        if correct_loss is None or failed_loss is None:
+            if not all_losses:
+                raise ValueError("No losses found in the dataset.")
+
+            # Sort all_losses by their data values
+            all_losses.sort(key=lambda x: x.data, reverse=True)  # Highest to lowest
+
+            # Assign first and last loss in sorted list
+            correct_loss = all_losses[0]
+            failed_loss = all_losses[-1]
+            print("Assigned correct_loss and failed_loss from sorted losses.")
+
         total_loss = sum_ops([correct_loss, failed_loss])
         total_loss.backward()
         # test optimizer
         self._propose_text_optimizers()
 
-        total_loss.draw_graph(filepath=debug_path)
-        return debug_path
+        debug_files = total_loss.draw_graph(filepath=debug_path, full_trace=True)
+        return debug_files
 
     def _set_demo_optimizers_dataset(self, train_dataset: Any):
         # init the dataset
@@ -829,6 +952,7 @@ class Trainer(Component):
         self, ids: List[str], scores: List[float], is_teacher: bool = True
     ):
         for opt in self.demo_optimizers:
+            # opt = cast(DemoOptimizer, opt)
             opt.add_scores(ids, scores, is_teacher)
 
     def _demo_optimizers_revert(self):
@@ -857,6 +981,10 @@ class Trainer(Component):
     def _propose_text_optimizers(self):
         for text_optimizer in self.text_optimizers:
             text_optimizer.propose()
+
+    # def _add_failed_proposals_text_optimizers(self):
+    #     for opt in self.text_optimizers:
+    #         opt.add_failed_proposal()
 
     def _get_trainable_text_params(self):
         params = []
@@ -899,7 +1027,7 @@ class Trainer(Component):
     ):
         from adalflow.optim.parameter import Parameter
 
-        log.info("Fitting using Textual Gradient Descent")
+        logger.info("Fitting using Textual Gradient Descent")
         trainer_results = (
             self._pre_fit(val_dataset, test_dataset)
             if trainer_results is None
@@ -935,7 +1063,7 @@ class Trainer(Component):
                 )
                 # moving batch
                 all_samples.extend(batch)
-                all_losses.extend(losses)
+                all_losses.extend(losses)  # student losses
                 # extract the non-parameter y_preds
                 all_y_preds.extend(
                     [y.full_response for y in y_preds if isinstance(y, Parameter)]
@@ -993,6 +1121,7 @@ class Trainer(Component):
                     print(
                         "No proposal can improve the subset and full set, go to next step"
                     )
+                    # self._add_failed_proposals_text_optimizers()
 
                     self._add_one_step_in_trainer_results(
                         trainer_results,
@@ -1001,6 +1130,7 @@ class Trainer(Component):
                         trainer_results.prompts[-1],
                         total_steps,
                     )
+
                     continue
 
                 # set the batch size to the size of the validation set
@@ -1065,7 +1195,7 @@ class Trainer(Component):
         train_results: TrainerResult = None,
         starting_step: int = 0,
     ):
-        log.info("Fitting using Textual Gradient Descent")
+        logger.info("Fitting using Textual Gradient Descent")
 
         trainer_results = (
             self._pre_fit(val_dataset, test_dataset)
@@ -1207,7 +1337,7 @@ class Trainer(Component):
         trainer_results: TrainerResult,
         starting_step: int,
     ):
-        log.info("Fitting using Random Demo Optimizer")
+        logger.info("Fitting using Random Demo Optimizer")
         # self.adaltask.train()
         trainer_results = (
             self._pre_fit(val_dataset, test_dataset)
@@ -1250,7 +1380,7 @@ class Trainer(Component):
                 loss.backward_engine_disabled = (
                     True  # temporary disable the backward engine
                 )
-                loss.backward()  # TODO: ensure no gradients in the backward, disable backward engine
+                loss.backward()  # TODO: ensure no gradients in the backward, disable backward engine, trace the score to each class instead
             # Trace the teacher run
             self.adaltask.use_teacher(True)
             self.adaltask.train()
@@ -1397,7 +1527,7 @@ class Trainer(Component):
         trainer_results: TrainerResult = None,
         starting_step: int = 0,
     ) -> TrainerResult:
-        log.info("Fitting using Textual Gradient Descent")
+        logger.info("Fitting using Textual Gradient Descent")
         trainer_results = (
             self._pre_fit(val_dataset, test_dataset)
             if trainer_results is None
@@ -1441,13 +1571,13 @@ class Trainer(Component):
                     minimum_score=last_val_score,
                 )
                 val_score = val_output.avg_score
-                self._add_history_text_optimizers(val_score)
 
                 if val_score > last_val_score:
+
                     print(f"Optimizer step: {val_score} > {last_val_score}")
                     # self.optimizer.step()
                     self._step_text_optimizers()
-
+                    self._add_history_text_optimizers(val_score)  # track top performor
                     # test the model
                     test_output = self.adaltask.validation_step(
                         test_dataset, total_steps, self.num_workers
@@ -1461,6 +1591,9 @@ class Trainer(Component):
                         total_steps,
                     )
                 else:
+                    # if val_score < last_val_score:
+                    #     self._add_failed_proposals_text_optimizers() # track failed proposals
+
                     print(f"Optimizer revert: {val_score} <= {last_val_score}")
                     # self.optimizer.revert()
                     self._revert_text_optimizers()
@@ -1606,6 +1739,9 @@ class Trainer(Component):
         all_y_preds,
         include_demo_optimizers: bool = False,
     ):
+        """Handles both the mixed training and the separate training.
+        When include_demo_optimizers is True, the demo optimizers are included in the training
+        """
         # comptute moving batch acc
         from adalflow.optim.parameter import Parameter
 
@@ -1677,6 +1813,7 @@ class Trainer(Component):
                 print(
                     f"Fail subset check, try next proposal: {val_score} <= {subset_score}"
                 )
+                # self._add_failed_proposals_text_optimizers()
                 self._track_effectiveness("subset", False)
                 self._revert_text_optimizers()
                 if include_demo_optimizers:
@@ -1696,6 +1833,7 @@ class Trainer(Component):
                     f"Fail full check, try next proposal: {new_move_batch_score} < {move_batch_score}"
                 )
                 self._track_effectiveness("fullset", False)
+                # self._add_failed_proposals_text_optimizers()
                 self._revert_text_optimizers()
                 if include_demo_optimizers:
                     self._demo_optimizers_revert()
@@ -1741,7 +1879,7 @@ class Trainer(Component):
     ) -> TrainerResult:
         from adalflow.optim.parameter import Parameter
 
-        log.info("Fitting using Textual Gradient Descent with constraints")
+        logger.info("Fitting using Textual Gradient Descent with constraints")
         trainer_results = (
             self._pre_fit(val_dataset, test_dataset)
             if trainer_results is None
@@ -1813,11 +1951,13 @@ class Trainer(Component):
                         minimum_score=last_val_score,
                     )
                     val_score = val_output.avg_score
-                    self._add_history_text_optimizers(val_score)
 
                     if val_score > last_val_score:
                         print(f"Optimizer step: {val_score} > {last_val_score}")
                         # self.optimizer.step()
+                        self._add_history_text_optimizers(
+                            val_score
+                        )  # track top performor
                         self._step_text_optimizers()
 
                         # save the score
@@ -1849,6 +1989,7 @@ class Trainer(Component):
                     else:
                         print(f"Optimizer revert: {val_score} <= {last_val_score}")
                         self._revert_text_optimizers()
+                        # self._add_failed_proposals_text_optimizers() # track failed proposals
                         self._track_effectiveness("valset", False)
                         self._add_one_step_in_trainer_results(
                             trainer_results,

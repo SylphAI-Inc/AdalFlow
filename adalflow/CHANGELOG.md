@@ -1,10 +1,23 @@
-## [0.2.7] - TO Be Released
+## [0.2.7] - 2025-01-16
+
 ### Added
 - `Memory` is completed with `call` and `add_dialog_turn` methods.
 - Integrated `LanceDB` in the `Retriever`
+- Multi-modal (image input and generation) in `OpenAIClient` along with tests.
+- `ComponentList` to support a list of components registered in a component. Added `test_componentlist` to test the `ComponentList`.
+
 ### Improved
+- Better diagnose report for `Trainer.diagnose`.
 - `BedrockAPIClient` added more details on setup, yet it is still in experimental stage.
 - `AzureAPIClient` added more details on setup, yet it is still in experimental stage.
+-  `Retriever` class:
+  - Support data id (field).
+- `GradComponent`: Support pass-through gradient for the `forward` method.
+
+Optimization
+- Aggregated all backward engine prompts in `backward_engine_prompt`.
+- Added `TGDData` for the optimizer to support reasoning at proposing new prompt.
+- Added `sequential_order` in the `Trainer` to support the sequential training order. Reorganized the trainer code.
 ## [0.2.6] - 2024-11-25
 ### Improved
 - Add default `max_tokens=512` to the `AnthropicAPIClient` to avoid the error when the user does not provide the `max_tokens` in the prompt.

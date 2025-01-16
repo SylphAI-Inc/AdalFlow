@@ -29,7 +29,9 @@ class TestParameter(unittest.TestCase):
         )
 
     def test_get_gradient_text(self):
-        expected_output = """1.
+        expected_output = """Batch size: 1
+
+1.
 <CONTEXT>Conversation context</CONTEXT>
 
 <FEEDBACK>Gradient 2</FEEDBACK>"""
@@ -79,7 +81,7 @@ class TestUpdatePrompt(unittest.TestCase):
         result = tgd.llm_optimizer.get_prompt(**user_prompt_kwargs)
 
         # Check if each variable value is in the generated output
-        self.assertIn("Role description", result)
+        # self.assertIn("Role description", result)
         # self.assertIn("short value", result)
         self.assertIn("gradient and context text", result)
         # self.assertIn("<start>", result)

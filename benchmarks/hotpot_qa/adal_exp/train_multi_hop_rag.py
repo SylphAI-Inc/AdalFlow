@@ -5,13 +5,13 @@ from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from adalflow.datasets.types import HotPotQAData
 
 from benchmarks.hotpot_qa._adal_train import load_datasets
-from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import VanillaRAG
+from benchmarks.hotpot_qa.adal_exp.build_multi_hop_rag import MultiHopRAG
 from use_cases.config import gpt_3_model, gpt_4o_model
 
 
 # TODO: look more into the loss function
 # TODO: test LLM judge too.
-class VallinaRAGAdal(adal.AdalComponent):
+class MultiHopRAGAdal(adal.AdalComponent):
     def __init__(
         self,
         model_client: adal.ModelClient,
@@ -20,10 +20,11 @@ class VallinaRAGAdal(adal.AdalComponent):
         teacher_model_config: Dict | None = None,
         text_optimizer_model_config: Dict | None = None,
     ):
-        task = VanillaRAG(
+        task = MultiHopRAG(
             model_client=model_client,
             model_kwargs=model_kwargs,
             passages_per_hop=3,
+            max_hops=2,
         )
         eval_fn = AnswerMatchAcc(type="fuzzy_match").compute_single_item
         loss_fn = adal.EvalFnToTextLoss(
@@ -85,7 +86,7 @@ def train_diagnose(
 
     trainset, valset, testset = load_datasets()
 
-    adal_component = VallinaRAGAdal(
+    adal_component = MultiHopRAGAdal(
         model_client,
         model_kwargs,
         backward_engine_model_config=gpt_4o_model,
@@ -110,10 +111,10 @@ def train(
     resume_from_ckpt=None,
     exclude_input_fields_from_bootstrap_demos=True,
 ):
-    adal_component = VallinaRAGAdal(
+    adal_component = MultiHopRAGAdal(
         **gpt_3_model,
-        teacher_model_config=gpt_4o_model,
-        text_optimizer_model_config=gpt_4o_model,
+        teacher_model_config=gpt_3_model,
+        text_optimizer_model_config=gpt_4o_model,  # gpt3.5 is not enough to be used as a good optimizer, it struggles for long contenxt
         backward_engine_model_config=gpt_4o_model,
     )
     print(adal_component)
@@ -129,6 +130,7 @@ def train(
         weighted_sampling=True,
         optimization_order=optimization_order,
         exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
+        sequential_order=["text", "demo"],
     )
     print(trainer)
 
@@ -144,23 +146,38 @@ def train(
 if __name__ == "__main__":
     from use_cases.config import gpt_3_model
 
+    log = adal.get_logger(level="DEBUG", enable_console=False)
+
     adal.setup_env()
 
-    # task = VallinaRAGAdal(**gpt_3_model)
+    # task = MultiHopRAGAdal(**gpt_3_model)
     # print(task)
 
     # train_diagnose(**gpt_3_model)
 
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
-    # TODO: test debug mode
     train(
         debug=False,
         max_steps=12,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )
-    # random_max_steps_12_ecf16_run_9.json, demo only, val 0.6 to 0.68,  test: 0.58-0.61
-    # random_max_steps_12_7c091_run_1.json,  prompt + demo, 0.58 -0.62, test: 0.55 - 0.58
-    # resume from random_max_steps_12_7c091_run_1.json
 
-    # demo only, no input, 4 shots, 0.58-> 0.62, VallinaRAGAdal/constrained_max_steps_12_b0a37_run_1.json
-    # this is the same as dspy's 20shots, because dspy does not use the weighted sampling
+    # notes for debug: if have nontype, delete all model cache and try again
+    #    raise ValueError(ValueError: score must be provided for each demo,
+
+    # 12/11/2024
+    # demo only: /Users/liyin/Documents/test/LightRAG/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_8cdfc_run_9.json
+
+    # why text grad did not improve in the rag case? Do we need to improve the meta prompt?
+    # /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_2686e_run_1.json
+    # 0.58 -> 0.68 on the test split
+    # 0.72 text grad  /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_c1660_run_1.json
+    # try cycle next
+    #  0.66 /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_1d189_run_1.json
+    # no gradients 1021s (/Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_68e7e_run_1.json) -> 0.64 -> 0.68, pass 10/10+28
+    # no gradient but scores (positive & negative) /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_83871_run_1.json 0.64->0.66, test 0.64 -> 0.66
+    # no gradient but only negative score
+    # no gradient but score + teacher demonstration.
+    # feedback while seeing the gt + y
+    # only negative feedback /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_f5506_run_1.json 0.62 -> 0.7
+    # /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_b4aa5_run_1.json 0.74 pass rate 8 32

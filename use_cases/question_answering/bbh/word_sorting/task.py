@@ -69,9 +69,7 @@ def test_word_sorting_task():
     task_pipeline = QuestionAnswerTaskPipeline(**gpt_3_model)
     print(task_pipeline)
 
-    train_dataset, val_dataset, test_dataset = load_datasets(
-        task_name="BBH_word_sorting"
-    )
+    train_dataset, val_dataset, test_dataset = load_datasets(task_name="word_sorting")
 
     example = train_dataset[0]
     question = example.question
