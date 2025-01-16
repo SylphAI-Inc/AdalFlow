@@ -272,10 +272,6 @@
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
 </div>
 
     </header>
@@ -582,121 +578,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-optim.optimizer">
-<span id="optimizer"></span><span id="optim-optimizer"></span><h1>optimizer<a class="headerlink" href="#module-optim.optimizer" title="Link to this heading">#</a></h1>
-<p>Base Classes for AdalFlow Optimizers, including Optimizer, TextOptimizer, and DemoOptimizer.</p>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#optim.optimizer.DemoOptimizer" title="optim.optimizer.DemoOptimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DemoOptimizer</span></code></a>([weighted, dataset, ...])</p></td>
-<td><p>Base class for all demo optimizers.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#optim.optimizer.Optimizer" title="optim.optimizer.Optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Optimizer</span></code></a>()</p></td>
-<td><p>Base class for all optimizers.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#optim.optimizer.TextOptimizer" title="optim.optimizer.TextOptimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextOptimizer</span></code></a>(*args, **kwargs)</p></td>
-<td><p>Base class for all text optimizers.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.optimizer.Optimizer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Optimizer</span></span><a class="reference internal" href="../../_modules/optim/optimizer.html#Optimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.optimizer.Optimizer" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Base class for all optimizers.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.optimizer.Optimizer.proposing">
-<span class="sig-name descname"><span class="pre">proposing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#optim.optimizer.Optimizer.proposing" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.optimizer.Optimizer.params">
-<span class="sig-name descname"><span class="pre">params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.optimizer.Optimizer.params" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.optimizer.Optimizer.state_dict">
-<span class="sig-name descname"><span class="pre">state_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/optimizer.html#Optimizer.state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.optimizer.Optimizer.state_dict" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.optimizer.Optimizer.propose">
-<span class="sig-name descname"><span class="pre">propose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/optimizer.html#Optimizer.propose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.optimizer.Optimizer.propose" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.optimizer.Optimizer.step">
-<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/optimizer.html#Optimizer.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.optimizer.Optimizer.step" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.optimizer.Optimizer.revert">
-<span class="sig-name descname"><span class="pre">revert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/optimizer.html#Optimizer.revert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.optimizer.Optimizer.revert" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.optimizer.TextOptimizer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TextOptimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/optimizer.html#TextOptimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.optimizer.TextOptimizer" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#optim.optimizer.Optimizer" title="optim.optimizer.Optimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></a></p>
-<p>Base class for all text optimizers.</p>
-<p>Text optimizer is via textual gradient descent, which is a variant of gradient descent that optimizes the text directly.
-It will generate new values for a given text prompt.This includes:
-- System prompt
-- output format
-- prompt template</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.optimizer.TextOptimizer.zero_grad">
-<span class="sig-name descname"><span class="pre">zero_grad</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/optimizer.html#TextOptimizer.zero_grad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.optimizer.TextOptimizer.zero_grad" title="Link to this definition">#</a></dt>
-<dd><p>Clear all the gradients of the parameters.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.optimizer.DemoOptimizer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DemoOptimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weighted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">DataClass</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_input_fields_from_bootstrap_demos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/optimizer.html#DemoOptimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.optimizer.DemoOptimizer" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#optim.optimizer.Optimizer" title="optim.optimizer.Optimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></a></p>
-<p>Base class for all demo optimizers.</p>
-<p>Demo optimizer are few-shot optimization, where it will sample raw examples from train dataset or bootstrap examples from the model’s output.
-It will work with a sampler to generate new values for a given text prompt.</p>
-<p>If bootstrap is used, it will require a teacher genearator to generate the examples.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.optimizer.DemoOptimizer.dataset">
-<span class="sig-name descname"><span class="pre">dataset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">DataClass</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.optimizer.DemoOptimizer.dataset" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.optimizer.DemoOptimizer.exclude_input_fields_from_bootstrap_demos">
-<span class="sig-name descname"><span class="pre">exclude_input_fields_from_bootstrap_demos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#optim.optimizer.DemoOptimizer.exclude_input_fields_from_bootstrap_demos" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.optimizer.DemoOptimizer.use_weighted_sampling">
-<span class="sig-name descname"><span class="pre">use_weighted_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weighted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/optimizer.html#DemoOptimizer.use_weighted_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.optimizer.DemoOptimizer.use_weighted_sampling" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.optimizer.DemoOptimizer.params">
-<span class="sig-name descname"><span class="pre">params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.optimizer.DemoOptimizer.params" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.optimizer.DemoOptimizer.config_shots">
-<span class="sig-name descname"><span class="pre">config_shots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/optimizer.html#DemoOptimizer.config_shots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.optimizer.DemoOptimizer.config_shots" title="Link to this definition">#</a></dt>
-<dd><p>Initialize the samples for each parameter.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.optimizer.DemoOptimizer.set_dataset">
-<span class="sig-name descname"><span class="pre">set_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">DataClass</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/optimizer.html#DemoOptimizer.set_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.optimizer.DemoOptimizer.set_dataset" title="Link to this definition">#</a></dt>
-<dd><p>Set the dataset for the optimizer.</p>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="optimizer">
+<span id="optim-optimizer"></span><h1>optimizer<a class="headerlink" href="#optimizer" title="Link to this heading">#</a></h1>
 </section>
 
 
@@ -733,44 +616,6 @@ It will work with a sampler to generate new values for a given text prompt.</p>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.Optimizer"><code class="docutils literal notranslate"><span class="pre">Optimizer</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.Optimizer.proposing"><code class="docutils literal notranslate"><span class="pre">Optimizer.proposing</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.Optimizer.params"><code class="docutils literal notranslate"><span class="pre">Optimizer.params</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.Optimizer.state_dict"><code class="docutils literal notranslate"><span class="pre">Optimizer.state_dict()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.Optimizer.propose"><code class="docutils literal notranslate"><span class="pre">Optimizer.propose()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.Optimizer.step"><code class="docutils literal notranslate"><span class="pre">Optimizer.step()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.Optimizer.revert"><code class="docutils literal notranslate"><span class="pre">Optimizer.revert()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.TextOptimizer"><code class="docutils literal notranslate"><span class="pre">TextOptimizer</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.TextOptimizer.zero_grad"><code class="docutils literal notranslate"><span class="pre">TextOptimizer.zero_grad()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.DemoOptimizer"><code class="docutils literal notranslate"><span class="pre">DemoOptimizer</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.DemoOptimizer.dataset"><code class="docutils literal notranslate"><span class="pre">DemoOptimizer.dataset</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.DemoOptimizer.exclude_input_fields_from_bootstrap_demos"><code class="docutils literal notranslate"><span class="pre">DemoOptimizer.exclude_input_fields_from_bootstrap_demos</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.DemoOptimizer.use_weighted_sampling"><code class="docutils literal notranslate"><span class="pre">DemoOptimizer.use_weighted_sampling()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.DemoOptimizer.params"><code class="docutils literal notranslate"><span class="pre">DemoOptimizer.params</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.DemoOptimizer.config_shots"><code class="docutils literal notranslate"><span class="pre">DemoOptimizer.config_shots()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.optimizer.DemoOptimizer.set_dataset"><code class="docutils literal notranslate"><span class="pre">DemoOptimizer.set_dataset()</span></code></a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

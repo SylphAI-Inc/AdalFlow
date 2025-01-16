@@ -272,10 +272,6 @@
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
 </div>
 
     </header>
@@ -587,105 +583,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-components.retriever.postgres_retriever">
-<span id="postgres-retriever"></span><span id="components-retriever-postgres-retriever"></span><h1>postgres_retriever<a class="headerlink" href="#module-components.retriever.postgres_retriever" title="Link to this heading">#</a></h1>
-<p>Leverage a postgres database to store and retrieve documents.</p>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.retriever.postgres_retriever.DistanceToOperator" title="components.retriever.postgres_retriever.DistanceToOperator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DistanceToOperator</span></code></a>(value[, names, module, ...])</p></td>
-<td><p>Enum for the distance to operator.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#components.retriever.postgres_retriever.PostgresRetriever" title="components.retriever.postgres_retriever.PostgresRetriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PostgresRetriever</span></code></a>(embedder[, top_k, ...])</p></td>
-<td><p>Use a postgres database to store and retrieve documents.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="components.retriever.postgres_retriever.DistanceToOperator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DistanceToOperator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/postgres_retriever.html#DistanceToOperator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.postgres_retriever.DistanceToOperator" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>Enum for the distance to operator.</p>
-<p>About pgvector:</p>
-<ol class="arabic simple">
-<li><p>L2 distance: &lt;-&gt;, inner product (&lt;#&gt;), cosine distance (&lt;=&gt;), and L1 distance (&lt;+&gt;, added in 0.7.0)</p></li>
-</ol>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="components.retriever.postgres_retriever.DistanceToOperator.L2">
-<span class="sig-name descname"><span class="pre">L2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&lt;-&gt;'</span></em><a class="headerlink" href="#components.retriever.postgres_retriever.DistanceToOperator.L2" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="components.retriever.postgres_retriever.DistanceToOperator.INNER_PRODUCT">
-<span class="sig-name descname"><span class="pre">INNER_PRODUCT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&lt;#&gt;'</span></em><a class="headerlink" href="#components.retriever.postgres_retriever.DistanceToOperator.INNER_PRODUCT" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="components.retriever.postgres_retriever.DistanceToOperator.COSINE">
-<span class="sig-name descname"><span class="pre">COSINE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&lt;=&gt;'</span></em><a class="headerlink" href="#components.retriever.postgres_retriever.DistanceToOperator.COSINE" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="components.retriever.postgres_retriever.DistanceToOperator.L1">
-<span class="sig-name descname"><span class="pre">L1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&lt;+&gt;'</span></em><a class="headerlink" href="#components.retriever.postgres_retriever.DistanceToOperator.L1" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="components.retriever.postgres_retriever.PostgresRetriever">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PostgresRetriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Embedder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'document'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_operator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#components.retriever.postgres_retriever.DistanceToOperator" title="components.retriever.postgres_retriever.DistanceToOperator"><span class="pre">DistanceToOperator</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DistanceToOperator.INNER_PRODUCT</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/postgres_retriever.html#PostgresRetriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.postgres_retriever.PostgresRetriever" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
-<p>Use a postgres database to store and retrieve documents.</p>
-<p>Users can follow this example and to customize the prompt or additionally ask it to output score along with the indices.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>top_k</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – top k documents to fetch. Defaults to 1.</p></li>
-<li><p><strong>database_url</strong> (<em>str</em>) – the database url to connect to. Defaults to postgresql://postgres:password&#64;localhost:5432/vector_db.</p></li>
-</ul>
-</dd>
-</dl>
-<p>References:
-[1] pgvector extension: <a class="github reference external" href="https://github.com/pgvector/pgvector">pgvector/pgvector</a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="components.retriever.postgres_retriever.PostgresRetriever.format_vector_search_query">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">format_vector_search_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_embedding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_operator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#components.retriever.postgres_retriever.DistanceToOperator" title="components.retriever.postgres_retriever.DistanceToOperator"><span class="pre">DistanceToOperator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/retriever/postgres_retriever.html#PostgresRetriever.format_vector_search_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.postgres_retriever.PostgresRetriever.format_vector_search_query" title="Link to this definition">#</a></dt>
-<dd><p>Formats a SQL query string to select all columns from a table, order the results
-by the distance or similarity score to a provided embedding, and also return
-that score.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>table_name</strong> (<em>str</em>) – The name of the table to query.</p></li>
-<li><p><strong>column</strong> (<em>str</em>) – The name of the column containing the vector data.</p></li>
-<li><p><strong>query_embedding</strong> (<em>list</em><em> or </em><em>str</em>) – The embedding vector to compare against.</p></li>
-<li><p><strong>top_k</strong> (<em>int</em>) – The number of top results to return.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A formatted SQL query string that includes the score.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.retriever.postgres_retriever.PostgresRetriever.retrieve_by_sql">
-<span class="sig-name descname"><span class="pre">retrieve_by_sql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/components/retriever/postgres_retriever.html#PostgresRetriever.retrieve_by_sql"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.postgres_retriever.PostgresRetriever.retrieve_by_sql" title="Link to this definition">#</a></dt>
-<dd><p>Retrieve documents from the postgres database.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.retriever.postgres_retriever.PostgresRetriever.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverOutput</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/components/retriever/postgres_retriever.html#PostgresRetriever.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.postgres_retriever.PostgresRetriever.call" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+  <section id="postgres-retriever">
+<span id="components-retriever-postgres-retriever"></span><h1>postgres_retriever<a class="headerlink" href="#postgres-retriever" title="Link to this heading">#</a></h1>
 </section>
 
 
@@ -722,35 +621,6 @@ that score.</p>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.postgres_retriever.DistanceToOperator"><code class="docutils literal notranslate"><span class="pre">DistanceToOperator</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.postgres_retriever.DistanceToOperator.L2"><code class="docutils literal notranslate"><span class="pre">DistanceToOperator.L2</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.postgres_retriever.DistanceToOperator.INNER_PRODUCT"><code class="docutils literal notranslate"><span class="pre">DistanceToOperator.INNER_PRODUCT</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.postgres_retriever.DistanceToOperator.COSINE"><code class="docutils literal notranslate"><span class="pre">DistanceToOperator.COSINE</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.postgres_retriever.DistanceToOperator.L1"><code class="docutils literal notranslate"><span class="pre">DistanceToOperator.L1</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.postgres_retriever.PostgresRetriever"><code class="docutils literal notranslate"><span class="pre">PostgresRetriever</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.postgres_retriever.PostgresRetriever.format_vector_search_query"><code class="docutils literal notranslate"><span class="pre">PostgresRetriever.format_vector_search_query()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.postgres_retriever.PostgresRetriever.retrieve_by_sql"><code class="docutils literal notranslate"><span class="pre">PostgresRetriever.retrieve_by_sql()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.postgres_retriever.PostgresRetriever.call"><code class="docutils literal notranslate"><span class="pre">PostgresRetriever.call()</span></code></a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

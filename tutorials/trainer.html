@@ -270,6 +270,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -443,6 +447,64 @@
   <section id="trainer">
 <span id="id1"></span><h1>Trainer<a class="headerlink" href="#trainer" title="Link to this heading">#</a></h1>
 <p>Coming soon!</p>
+<p>Diagnose mode</p>
+<p>A pipeline can consist of multiple generators or retrievers. Each</p>
+<section id="computation-graph">
+<h2>Computation graph<a class="headerlink" href="#computation-graph" title="Link to this heading">#</a></h2>
+<p>We design two types of graphs:</p>
+<ol class="arabic simple">
+<li><p>with a simple node-graph with consistent naming of each generator(component_name or automated name by the recursive tracing (need to be consistent eventually)) [Call it thumbnail] or a better name.</p></li>
+<li><p>with details for debugging and building the pipeline.</p></li>
+</ol>
+</section>
+<section id="evalfunction-score-s">
+<h2>EvalFunction + Score(s)<a class="headerlink" href="#evalfunction-score-s" title="Link to this heading">#</a></h2>
+<p>Currently we can assume we only support one eval_score, but eventually we need to suppport two scores, such as in the case of the multi-hop RAG.
+The last llm call will have one score, and the previous two generators can potentially have two scores. One is from the last score, and the second will be from the output of the multi-hop retriever.</p>
+<p>So, we need to assign a unique and global component id/name. [Score, component_id, component_name]</p>
+</section>
+<section id="observability">
+<h2>Observability<a class="headerlink" href="#observability" title="Link to this heading">#</a></h2>
+<p>Building blocks include: <cite>GeneratorCallLogger</cite>, <cite>RetrieverCallLogger</cite>, <cite>LossCallLogger</cite> where each only traces a single component.</p>
+<p>In <cite>AdalComponnet</cite>, <cite>configure_callbacks</cite> we need both <cite>_auto_generator_callbacks</cite> and <cite>_auto_retriever_callbacks</cite> to be able to trace the call of each component.</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><dl>
+<dt>for name, generator in all_generators:</dt><dd><p>call_logger = GeneratorCallLogger(save_dir=save_dir)
+call_logger.reset()
+call_logger.register_generator(name)
+logger_call = partial(call_logger.log_call, name)
+generator.register_callback(</p>
+<blockquote>
+<div><p>“on_complete”, partial(_on_completion_callback, logger_call=logger_call)</p>
+</div></blockquote>
+<p>)
+file_path = call_logger.get_log_location(name)
+file_paths.append(file_path)
+log.debug(f”Registered callback for {name}, file path: {file_path}”)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>so when tracing, the <cite>logger_metadata.json</cite> will look like this:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="nt">&quot;retriever.query_generators.0&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/diagnose_train/retriever.query_generators.0_call.jsonl&quot;</span><span class="p">,</span>
+<span class="nt">&quot;retriever.query_generators.1&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/diagnose_train/retriever.query_generators.1_call.jsonl&quot;</span><span class="p">,</span>
+<span class="nt">&quot;llm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/diagnose_train/llm_call.jsonl&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>TODO:
+- [ ] support multiple eval scores.
+- [ ] logger meta data</p>
+<blockquote>
+<div><dl class="simple">
+<dt>{</dt><dd><p>“llm”: “/Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/diagnose_train/llm_call.jsonl”</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>}
+- [ ] retriever log: call_logger = GeneratorCallLogger(save_dir=save_dir)</p>
+</section>
 </section>
 
 
@@ -461,6 +523,25 @@
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computation-graph">Computation graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evalfunction-score-s">EvalFunction + Score(s)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#observability">Observability</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

@@ -800,8 +800,8 @@ To note that the answer is in <cite>str</cite> format.</p>
 </section>
 <section id="diagnose-the-task-pipeline">
 <h3>Diagnose the task pipeline<a class="headerlink" href="#diagnose-the-task-pipeline" title="Link to this heading">#</a></h3>
-<p>To evaluate the task pipeline using the <a class="reference internal" href="../apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer" title="optim.trainer.trainer.Trainer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">diagnose</span></code></a> method provided by our trainer,
-we can take advantage of the <a class="reference internal" href="../apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent" title="optim.trainer.adal.AdalComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdalComponent</span></code></a> interface.
+<p>To evaluate the task pipeline using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">diagnose</span></code> method provided by our trainer,
+we can take advantage of the <code class="xref py py-class docutils literal notranslate"><span class="pre">AdalComponent</span></code> interface.
 This interface class should be subclassed, allowing us to leverage its parallel processing capabilities, callback configuration, optimizer configuration, and built-in support for the teacher/backward engine. The AdalComponent works similarly to how PyTorch Lightning’s LightningModule interacts with its Trainer.</p>
 <p>Here’s the minimum code required to get started on evaluating the task pipeline:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.datasets.types</span> <span class="kn">import</span> <span class="n">Example</span>
@@ -1061,7 +1061,7 @@ following the instruction to make correct proposal.</p>
 <p>For the text optimizer, we have two training strategy: <code class="docutils literal notranslate"><span class="pre">random</span></code> and <code class="docutils literal notranslate"><span class="pre">constrained</span></code>.
 The <code class="docutils literal notranslate"><span class="pre">random</span></code> strategy runs a batch of loss and backward propagation and then validate it on the <code class="docutils literal notranslate"><span class="pre">validation</span></code> and <code class="docutils literal notranslate"><span class="pre">test</span></code> dataset at each step.
 This is a standard training strategy, and it is used by libraries like <code class="docutils literal notranslate"><span class="pre">Dspy</span></code> and <code class="docutils literal notranslate"><span class="pre">Text-grad</span></code>.
-You can refer <a class="reference internal" href="../apis/optim/optim.trainer.html#optim.trainer.Trainer.fit" title="optim.trainer.Trainer.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">optim.trainer.Trainer.fit()</span></code></a> for more details.</p>
+You can refer <code class="xref py py-meth docutils literal notranslate"><span class="pre">optim.trainer.Trainer.fit()</span></code> for more details.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">constrained</span></code> strategy is unique to AdalFlow library where it runs a moving batch capped at maximum 20 samples, and it subsample the correct and failed samples (each maximum at 4).
 Before it runs the validations on the full <code class="docutils literal notranslate"><span class="pre">validation</span></code> and <code class="docutils literal notranslate"><span class="pre">test</span></code> dataset, it will run a validation on the moving sampled subset and the moving batch. It will try 5 proposals on the moving batch and only let a proposal that can beat the current subset and moving batch performance before it can be validated on the full dataset.
 We find it often more effective than the <code class="docutils literal notranslate"><span class="pre">random</span></code> strategy.</p>
@@ -1076,7 +1076,7 @@ With file names like:</p>
 </pre></div>
 </div>
 <p>Here is an example of how our ckpt file looks like: <a class="reference internal" href="../tutorials/ckpt_file.html"><span class="doc">ckpt_file</span></a>.
-This file is a direct <cite>to_dict</cite>  (json) representation of <a class="reference internal" href="../apis/optim/optim.types.html#optim.types.TrainerResult" title="optim.types.TrainerResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrainerResult</span></code></a>.</p>
+This file is a direct <cite>to_dict</cite>  (json) representation of <code class="xref py py-class docutils literal notranslate"><span class="pre">TrainerResult</span></code>.</p>
 </section>
 <section id="train-with-few-shot-bootstrap">
 <h2>Train with Few-shot Bootstrap<a class="headerlink" href="#train-with-few-shot-bootstrap" title="Link to this heading">#</a></h2>

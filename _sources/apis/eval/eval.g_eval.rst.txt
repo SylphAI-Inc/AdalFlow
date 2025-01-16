@@ -7,14 +7,3 @@ g_eval
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      GEvalJudgeEvaluator
-      GEvalLLMJudge
-      GEvalMetric
-      NLGTask
-

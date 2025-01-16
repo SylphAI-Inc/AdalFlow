@@ -584,11 +584,66 @@
                   
   <section id="module-core.container">
 <span id="container"></span><span id="core-container"></span><h1>container<a class="headerlink" href="#module-core.container" title="Link to this heading">#</a></h1>
-<p>Container component for composing multiple components, such as Sequential.</p>
+<p>Container component for composing multiple components, such as Sequential
+and ComponentList.</p>
+<p>This design draws inspiration from PyTorch’s modular
+container patterns, including <cite>nn.Sequential</cite> and <cite>nn.ModuleList</cite>. The
+<cite>Container</cite> component allows for grouping several components into one, enabling
+flexible and reusable model architectures.</p>
+<section id="design-motivation">
+<h2>Design Motivation:<a class="headerlink" href="#design-motivation" title="Link to this heading">#</a></h2>
+<p>This implementation follows the same principles as PyTorch’s component-based
+design, encouraging modularity, reusability, and extensibility. The <cite>Container</cite>
+component provides an easy way to manage multiple layers or other components,
+while ensuring that their parameters are properly registered and updated during
+training.</p>
+</section>
+<section id="credits">
+<h2>Credits:<a class="headerlink" href="#credits" title="Link to this heading">#</a></h2>
+<p>The design of this component takes inspiration from the PyTorch project
+(<a class="reference external" href="https://pytorch.org">https://pytorch.org</a>). PyTorch is an open-source deep learning framework,
+licensed under a BSD-style license. Although this code is not part of the
+official PyTorch library, it mirrors the same design principles.</p>
+<p>For more details on PyTorch’s licensing, refer to:
+<a class="github reference external" href="https://github.com/pytorch/pytorch/blob/main/LICENSE">pytorch/pytorch</a></p>
+</section>
+<section id="usage-example">
+<h2>Usage Example:<a class="headerlink" href="#usage-example" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><dl>
+<dt>class MyModule(nn.Module):</dt><dd><dl>
+<dt>def __init__(self):</dt><dd><p>super().__init__()</p>
+<dl>
+<dt>self.model = nn.Sequential(</dt><dd><blockquote>
+<div><p>nn.Conv2d(1,20,5),
+nn.ReLU(),
+nn.Conv2d(20,64,5),
+nn.ReLU()</p>
+</div></blockquote>
+<p>)</p>
+</dd>
+</dl>
+<p>self.linears = nn.ModuleList([nn.Linear(10, 10) for i in range(10)])</p>
+</dd>
+<dt>def forward(self, x):</dt><dd><p># ModuleList can act as an iterable, or be indexed using ints
+for i, l in enumerate(self.linears):</p>
+<blockquote>
+<div><p>x = self.linears[i // 2](x) + l(x)</p>
+</div></blockquote>
+<p>return x</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</section>
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sequential</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.container.ComponentList" title="core.container.ComponentList"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ComponentList</span></code></a>([components])</p></td>
+<td><p>Holds subcomponents in a list.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sequential</span></code></a>()</p></td>
 <td><p>A sequential container.</p></td>
 </tr>
 </tbody>
@@ -754,6 +809,58 @@ This can be useful for In-context learning training.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="core.container.ComponentList">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ComponentList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Component</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/container.html#ComponentList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.container.ComponentList" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<p>Holds subcomponents in a list.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">adalflow.core.ComponentList</span></code> can be indexed like a regular Python list, but
+the components it holds are properly registered, and will be visible by all
+<code class="xref py py-class docutils literal notranslate"><span class="pre">adalflow.core.Component</span></code> methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>components</strong> (<em>iterable</em><em>, </em><em>optional</em>) – an iterable of components to add</p>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example of how to use ComponentList</span>
+<span class="k">class</span> <span class="nc">MyComponents</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">llms</span> <span class="o">=</span> <span class="n">ComponentList</span><span class="p">([</span><span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.container.ComponentList.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/core/container.html#ComponentList.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.container.ComponentList.insert" title="Link to this definition">#</a></dt>
+<dd><p>Insert a component at the specified index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.container.ComponentList.pop">
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Component</span></span></span><a class="reference internal" href="../../_modules/core/container.html#ComponentList.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.container.ComponentList.pop" title="Link to this definition">#</a></dt>
+<dd><p>Remove and return a component at the given index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.container.ComponentList.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.container.ComponentList" title="core.container.ComponentList"><span class="pre">ComponentList</span></a></span></span><a class="reference internal" href="../../_modules/core/container.html#ComponentList.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.container.ComponentList.append" title="Link to this definition">#</a></dt>
+<dd><p>Append a component to the list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.container.ComponentList.extend">
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Component</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.container.ComponentList" title="core.container.ComponentList"><span class="pre">ComponentList</span></a></span></span><a class="reference internal" href="../../_modules/core/container.html#ComponentList.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.container.ComponentList.extend" title="Link to this definition">#</a></dt>
+<dd><p>Extend the list by appending multiple components.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -802,12 +909,22 @@ This can be useful for In-context learning training.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design-motivation">Design Motivation:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#credits">Credits:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage-example">Usage Example:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.Sequential"><code class="docutils literal notranslate"><span class="pre">Sequential</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.Sequential.call"><code class="docutils literal notranslate"><span class="pre">Sequential.call()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.Sequential.acall"><code class="docutils literal notranslate"><span class="pre">Sequential.acall()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.Sequential.append"><code class="docutils literal notranslate"><span class="pre">Sequential.append()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.Sequential.insert"><code class="docutils literal notranslate"><span class="pre">Sequential.insert()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.Sequential.extend"><code class="docutils literal notranslate"><span class="pre">Sequential.extend()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.ComponentList"><code class="docutils literal notranslate"><span class="pre">ComponentList</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.ComponentList.insert"><code class="docutils literal notranslate"><span class="pre">ComponentList.insert()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.ComponentList.pop"><code class="docutils literal notranslate"><span class="pre">ComponentList.pop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.ComponentList.append"><code class="docutils literal notranslate"><span class="pre">ComponentList.append()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.ComponentList.extend"><code class="docutils literal notranslate"><span class="pre">ComponentList.extend()</span></code></a></li>
 </ul>
 </li>
 </ul>

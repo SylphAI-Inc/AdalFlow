@@ -416,6 +416,7 @@
 <li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="output_parsers.html">Parser</a></li>
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
@@ -529,7 +530,7 @@ However, in real-world LLM applications, we can not avoid dealing with data stor
 <section id="data-models">
 <h2>Data Models<a class="headerlink" href="#data-models" title="Link to this heading">#</a></h2>
 <p>Besides of having a unified <cite>GeneratorOutput</cite>, <cite>EmbedderOutput</cite>, and <cite>RetrieverOutput</cite> data format,
-we provide mainly <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code></a> and <a class="reference internal" href="../apis/core/core.types.html#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code></a> to help with text document and conversational histor processing and data storage.</p>
+we provide mainly <code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code> to help with text document and conversational histor processing and data storage.</p>
 <p>We will explain the design of Document and DialogTurn. In this note, we will continue use these simple documents we used in the previous notes:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">org_documents</span> <span class="o">=</span><span class="p">[</span>
     <span class="p">{</span>
@@ -568,7 +569,7 @@ we provide mainly <a class="reference internal" href="../apis/core/core.types.ht
 </div>
 <section id="document">
 <h3>Document<a class="headerlink" href="#document" title="Link to this heading">#</a></h3>
-<p>The <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code></a> is used as Document data structure and to assist text processing in LLM applications.</p>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code> is used as Document data structure and to assist text processing in LLM applications.</p>
 <ol class="arabic simple">
 <li><p>A general document/text container with fields <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">meta_data</span></code>, and <code class="docutils literal notranslate"><span class="pre">id</span></code>.</p></li>
 <li><p>Assist text splitting with fields <code class="docutils literal notranslate"><span class="pre">parent_doc_id</span></code> and <code class="docutils literal notranslate"><span class="pre">order</span></code>.</p></li>
@@ -590,7 +591,7 @@ we provide mainly <a class="reference internal" href="../apis/core/core.types.ht
 </section>
 <section id="dialogturn">
 <h3>DialogTurn<a class="headerlink" href="#dialogturn" title="Link to this heading">#</a></h3>
-<p>The <a class="reference internal" href="../apis/core/core.types.html#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code></a> is only used as a data structure to a user-assistant conversation turn in LLM applications.
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code> is only used as a data structure to a user-assistant conversation turn in LLM applications.
 <strong>If we need to apply a text processing pipeline to a conversational history, we will use our text container``Document`` to store the text we need to use.</strong></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -958,8 +959,8 @@ Here is the code to prepare the relevant dialog turns.</p>
 <div class="highlight admonition">
 <p class="admonition-title">API References</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.db.html#core.db.LocalDB" title="core.db.LocalDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.db.LocalDB</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter" title="components.data_process.text_splitter.TextSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.data_process.text_splitter.TextSplitter</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.data_process.html#components.data_process.ToEmbeddings" title="components.data_process.ToEmbeddings"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.data_process.ToEmbeddings</span></code></a></p></li>

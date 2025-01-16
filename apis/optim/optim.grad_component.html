@@ -272,10 +272,6 @@
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
 </div>
 
     </header>
@@ -582,69 +578,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-optim.grad_component">
-<span id="grad-component"></span><span id="optim-grad-component"></span><h1>grad_component<a class="headerlink" href="#module-optim.grad_component" title="Link to this heading">#</a></h1>
-<p>Base class for Autograd Components that can be called and backpropagated through.</p>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#optim.grad_component.GradComponent" title="optim.grad_component.GradComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GradComponent</span></code></a>(*args, **kwargs)</p></td>
-<td><p>A base class to define interfaces for an auto-grad component/operator.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.grad_component.GradComponent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GradComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/grad_component.html#GradComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.grad_component.GradComponent" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
-<p>A base class to define interfaces for an auto-grad component/operator.</p>
-<p>Compared with <cite>Component</cite>, <cite>GradComponent</cite> defines three important interfaces:
-- <cite>forward</cite>: the forward pass of the function, returns a <cite>Parameter</cite> object that can be traced and backpropagated.
-- <cite>backward</cite>: the backward pass of the function, updates the gradients/prediction score backpropagated from a “loss” parameter.
-- <cite>set_backward_engine</cite>: set the backward engine(a form of generator) to the component, which is used to backpropagate the gradients using LLM.</p>
-<p>The __call__ method will check if the component is in training mode,
-and call the <cite>forward</cite> method to return a <cite>Parameter</cite> object if it is in training mode,
-otherwise, it will call the <cite>call</cite> method to return the output such as “GeneratorOutput”, “RetrieverOutput”, etc.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.grad_component.GradComponent.backward_engine">
-<span class="sig-name descname"><span class="pre">backward_engine</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../core/core.generator.html#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a></em><a class="headerlink" href="#optim.grad_component.GradComponent.backward_engine" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.grad_component.GradComponent.set_backward_engine">
-<span class="sig-name descname"><span class="pre">set_backward_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backward_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.generator.html#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/grad_component.html#GradComponent.set_backward_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.grad_component.GradComponent.set_backward_engine" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.grad_component.GradComponent.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/grad_component.html#GradComponent.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.grad_component.GradComponent.call" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.grad_component.GradComponent.acall">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/grad_component.html#GradComponent.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.grad_component.GradComponent.acall" title="Link to this definition">#</a></dt>
-<dd><p>Implement this for your async call.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.grad_component.GradComponent.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a></span></span><a class="reference internal" href="../../_modules/optim/grad_component.html#GradComponent.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.grad_component.GradComponent.forward" title="Link to this definition">#</a></dt>
-<dd><p>Default forward method for training:
-1. for all args and kwargs, if it is a <cite>Parameter</cite> object, it will be tracked as <cite>Predecessor</cite>.
-2. Trace input_args and full_response in the parameter object.
-3. Return the parameter object.</p>
-<p>TODO: all Gradcomponent should not allow args but only kwargs.
-For now, just check if id is in kwargs.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.grad_component.GradComponent.backward">
-<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/grad_component.html#GradComponent.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.grad_component.GradComponent.backward" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+  <section id="grad-component">
+<span id="optim-grad-component"></span><h1>grad_component<a class="headerlink" href="#grad-component" title="Link to this heading">#</a></h1>
 </section>
 
 
@@ -681,31 +616,6 @@ For now, just check if id is in kwargs.</p>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.grad_component.GradComponent"><code class="docutils literal notranslate"><span class="pre">GradComponent</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.grad_component.GradComponent.backward_engine"><code class="docutils literal notranslate"><span class="pre">GradComponent.backward_engine</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.grad_component.GradComponent.set_backward_engine"><code class="docutils literal notranslate"><span class="pre">GradComponent.set_backward_engine()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.grad_component.GradComponent.call"><code class="docutils literal notranslate"><span class="pre">GradComponent.call()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.grad_component.GradComponent.acall"><code class="docutils literal notranslate"><span class="pre">GradComponent.acall()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.grad_component.GradComponent.forward"><code class="docutils literal notranslate"><span class="pre">GradComponent.forward()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.grad_component.GradComponent.backward"><code class="docutils literal notranslate"><span class="pre">GradComponent.backward()</span></code></a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

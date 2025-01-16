@@ -270,10 +270,6 @@
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
 </div>
 
     </header>
@@ -444,48 +440,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-optim.function">
-<span id="function"></span><span id="optim-function"></span><h1>function<a class="headerlink" href="#module-optim.function" title="Link to this heading">#</a></h1>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#optim.function.BackwardContext" title="optim.function.BackwardContext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BackwardContext</span></code></a>(backward_fn[, backward_engine])</p></td>
-<td><p>Represents a context for backward computation.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.function.BackwardContext">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BackwardContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backward_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.generator.html#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/function.html#BackwardContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.function.BackwardContext" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Represents a context for backward computation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>backward_fn</strong> (<em>callable</em>) – The backward function to be called during backward computation.</p></li>
-<li><p><strong>args</strong> – Variable length argument list to be passed to the backward function.</p></li>
-<li><p><strong>kwargs</strong> – Arbitrary keyword arguments to be passed to the backward function.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Variables<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>backward_fn</strong> (<em>callable</em>) – The backward function to be called during backward computation.</p></li>
-<li><p><strong>fn_name</strong> (<em>str</em>) – The fully qualified name of the backward function.</p></li>
-<li><p><strong>args</strong> – Variable length argument list to be passed to the backward function.</p></li>
-<li><p><strong>kwargs</strong> – Arbitrary keyword arguments to be passed to the backward function.</p></li>
-</ul>
-</dd>
-<dt class="field-odd">Method __call__(backward_engine<span class="colon">:</span></dt>
-<dd class="field-odd"><p>EngineLM) -&gt; Any:
-Calls the backward function with the given backward engine and returns the result.</p>
-</dd>
-<dt class="field-even">Method __repr__() -&gt; str<span class="colon">:</span></dt>
-<dd class="field-even"><p>Returns a string representation of the BackwardContext object.</p>
-</dd>
-</dl>
-</dd></dl>
-
+  <section id="function">
+<span id="optim-function"></span><h1>function<a class="headerlink" href="#function" title="Link to this heading">#</a></h1>
 </section>
 
 
@@ -504,23 +460,6 @@ Calls the backward function with the given backward engine and returns the resul
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.function.BackwardContext"><code class="docutils literal notranslate"><span class="pre">BackwardContext</span></code></a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

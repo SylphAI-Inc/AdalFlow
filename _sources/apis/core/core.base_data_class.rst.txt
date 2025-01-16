@@ -7,25 +7,3 @@ base_data_class
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Functions
-
-   .. autosummary::
-
-      check_adal_dataclass
-      required_field
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      DataClass
-      DataClassFormatType
-      DynamicDataClassFactory
-
-   .. rubric:: Constants
-
-   .. autodata:: core.base_data_class.ExcludeType
-   .. autodata:: core.base_data_class.IncludeType
-

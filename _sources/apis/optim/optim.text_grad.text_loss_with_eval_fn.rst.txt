@@ -7,11 +7,3 @@ text_loss_with_eval_fn
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      EvalFnToTextLoss
-

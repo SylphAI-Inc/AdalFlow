@@ -416,6 +416,7 @@
 <li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="output_parsers.html">Parser</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
@@ -496,7 +497,15 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="embedder">
+  <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+   <a href="https://colab.research.google.com/github/SylphAI-Inc/LightRAG/blob/main/notebooks/tutorials/adalflow_embedder.ipynb" target="_blank" style="margin-right: 10px;">
+      <img alt="Try RAG playbook in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+   </a>
+   <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/adalflow_embedder.py" target="_blank" style="display: flex; align-items: center;">
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+      <span style="vertical-align: middle;"> Open Source Code</span>
+   </a>
+</div><section id="embedder">
 <span id="tutorials-embedder"></span><h1>Embedder<a class="headerlink" href="#embedder" title="Link to this heading">#</a></h1>
 <p>What you will learn?</p>
 <ol class="arabic simple">
@@ -504,14 +513,14 @@
 <li><p>When to use <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and how to use it?</p></li>
 <li><p>How to batch processing with <code class="docutils literal notranslate"><span class="pre">BatchEmbedder</span></code>?</p></li>
 </ol>
-<p><a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.Embedder" title="core.embedder.Embedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.Embedder</span></code></a> class is similar to <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, it is a user-facing component that orchestrates embedding models via <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> and <code class="docutils literal notranslate"><span class="pre">output_processors</span></code>.
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.Embedder</span></code> class is similar to <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, it is a user-facing component that orchestrates embedding models via <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> and <code class="docutils literal notranslate"><span class="pre">output_processors</span></code>.
 Compared with using <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> directly, <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> further simplify the interface and output a standard <code class="docutils literal notranslate"><span class="pre">EmbedderOutput</span></code> format.</p>
 <p>By switching the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>, you can use different embedding models in your task pipeline easily, or even embedd different data such as text, image, etc.</p>
 <section id="embedderoutput">
 <h2>EmbedderOutput<a class="headerlink" href="#embedderoutput" title="Link to this heading">#</a></h2>
-<p><a class="reference internal" href="../apis/core/core.types.html#core.types.EmbedderOutput" title="core.types.EmbedderOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.EmbedderOutput</span></code></a> is a standard output format of <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>. It is a subclass of <cite>DataClass</cite> and it contains the following core fields:</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.EmbedderOutput</span></code> is a standard output format of <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>. It is a subclass of <cite>DataClass</cite> and it contains the following core fields:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code>: a list of embeddings, each embedding if of type <a class="reference internal" href="../apis/core/core.types.html#core.types.Embedding" title="core.types.Embedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Embedding</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code>: a list of embeddings, each embedding if of type <code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Embedding</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">error</span></code>: Error message if any error occurs during the model inference stage. Failure in the output processing stage will raise an exception instead of setting this field.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">raw_response</span></code>: Used for failed model inference.</p></li>
 </ul>
@@ -597,7 +606,7 @@ Run the embedder and print the length and embedding dimension of the output.</p>
 <section id="use-output-processors">
 <h3>Use Output Processors<a class="headerlink" href="#use-output-processors" title="Link to this heading">#</a></h3>
 <p>If we want to decreate the embedding dimension to only 256 to save memory, we can customize an additional output processing step and pass it to embedder via the <code class="docutils literal notranslate"><span class="pre">output_processors</span></code> argument.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Embedding</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">EmbedderOutput</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="n">normalize_vector</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
@@ -612,14 +621,14 @@ Run the embedder and print the length and embedding dimension of the output.</p>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_dim</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">old_dim</span><span class="p">,</span> <span class="s2">&quot;new_dim should be less than old_dim&quot;</span>
 
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Embedding</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Embedding</span><span class="p">]:</span>
-        <span class="n">output</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Embedding</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">embedding</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+        <span class="n">output</span><span class="p">:</span> <span class="n">EmbedderOutput</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">embedding</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
             <span class="n">old_embedding</span> <span class="o">=</span> <span class="n">embedding</span><span class="o">.</span><span class="n">embedding</span>
             <span class="n">new_embedding</span> <span class="o">=</span> <span class="n">old_embedding</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_dim</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="p">:</span>
                 <span class="n">new_embedding</span> <span class="o">=</span> <span class="n">normalize_vector</span><span class="p">(</span><span class="n">new_embedding</span><span class="p">)</span>
             <span class="n">embedding</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">new_embedding</span>
-        <span class="k">return</span> <span class="n">output</span>
+        <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">data</span>
 
     <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">repr_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;old_dim=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">old_dim</span><span class="si">}</span><span class="s2">, new_dim=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">new_dim</span><span class="si">}</span><span class="s2">, normalize=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -659,7 +668,7 @@ Putting it all together, we can create a new embedder with the output processor.
 <section id="batchembedder">
 <h2>BatchEmbedder<a class="headerlink" href="#batchembedder" title="Link to this heading">#</a></h2>
 <p>Especially in data processing pipelines, you can often have more than 1000 queries to embed. We need to chunk our queries into smaller batches to avoid memory overflow.
-<a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.BatchEmbedder" title="core.embedder.BatchEmbedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code></a> is designed to handle this situation. For now, the code is rather simple, but in the future it can be extended to support multi-processing when you use AdalFlow in production data pipeline.</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code> is designed to handle this situation. For now, the code is rather simple, but in the future it can be extended to support multi-processing when you use AdalFlow in production data pipeline.</p>
 <p>The BatchEmbedder orchestrates the <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and handles the batching process. To use it, you need to pass the <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and the batch size to the constructor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">BatchEmbedder</span>
 
@@ -685,13 +694,13 @@ Putting it all together, we can create a new embedder with the output processor.
 <div class="highlight admonition">
 <p class="admonition-title">API reference</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.Embedder" title="core.embedder.Embedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.Embedder</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.BatchEmbedder" title="core.embedder.BatchEmbedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.EmbedderOutput" title="core.types.EmbedderOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.EmbedderOutput</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.Embedding" title="core.types.Embedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Embedding</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.Embedder</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.EmbedderOutput</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Embedding</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformersClient</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.normalize_vector" title="core.functional.normalize_vector"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.functional.normalize_vector</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.functional.normalize_vector</span></code></p></li>
 </ul>
 </div>
 </section>

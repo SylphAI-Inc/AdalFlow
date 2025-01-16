@@ -7,19 +7,3 @@ tgd_optimizer
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Functions
-
-   .. autosummary::
-
-      extract_new_variable
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      HistoryPrompt
-      Instruction
-      TGDOptimizer
-

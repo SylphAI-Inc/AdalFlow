@@ -416,6 +416,7 @@
 <li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
+
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Parser</a></li>
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
@@ -511,7 +512,7 @@
 <ul class="simple">
 <li><p><strong>String Parsers</strong>: it simply converts the string to the desired data type. They are located at <a class="reference internal" href="../apis/core/core.string_parser.html#core-string-parser"><span class="std std-ref">core.string_parser</span></a>.</p></li>
 <li><p><strong>Output Parsers</strong>: it orchestrates the parsing and output formatting(in yaml, json and more) process. They are located at <a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components-output-parsers-outputs"><span class="std std-ref">components.output_parsers.outputs</span></a>. <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonOutputParser</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">YamlOutputParser</span></code> can work with <span class="xref std std-ref">DataClass</span> for structured output.</p></li>
-<li><p><strong>DataClass Parser</strong>: On top of <cite>YamlOutputParser</cite> and <cite>JsonOutputParser</cite>, <a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code></a> is the most compatible to work with <span class="xref std std-ref">DataClass</span> for structured output.</p></li>
+<li><p><strong>DataClass Parser</strong>: On top of <cite>YamlOutputParser</cite> and <cite>JsonOutputParser</cite>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code> is the most compatible to work with <span class="xref std std-ref">DataClass</span> for structured output.</p></li>
 </ul>
 <section id="context">
 <h2>Context<a class="headerlink" href="#context" title="Link to this heading">#</a></h2>
@@ -582,27 +583,27 @@ And it is designed to be robust.</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.BooleanParser" title="core.string_parser.BooleanParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">BooleanParser</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">BooleanParser</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
 <td><p>Extracts the first boolean value from the text with <code class="docutils literal notranslate"><span class="pre">bool</span></code>. Supports both ‘True/False’ and ‘true/false’.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.IntParser" title="core.string_parser.IntParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntParser</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">IntParser</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
 <td><p>Extracts the first integer value from the text with <code class="docutils literal notranslate"><span class="pre">int</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.FloatParser" title="core.string_parser.FloatParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">FloatParser</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">FloatParser</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></td>
 <td><p>Extracts the first float value from the text with <code class="docutils literal notranslate"><span class="pre">float</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.ListParser" title="core.string_parser.ListParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">ListParser</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ListParser</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">list</span></code></p></td>
 <td><p>Extracts ‘[]’ and parses the first list string from the text. Uses both <cite>json.loads</cite> and <cite>yaml.safe_load</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.JsonParser" title="core.string_parser.JsonParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonParser</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonParser</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
 <td><p>Extracts ‘[]’ and ‘{}’ and parses JSON strings from the text. It resorts to <cite>yaml.safe_load</cite> for robust parsing.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.YamlParser" title="core.string_parser.YamlParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">YamlParser</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">YamlParser</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
 <td><p>Extracts ‘<code class="docutils literal notranslate"><span class="pre">`yaml`</span></code>’, ‘<code class="docutils literal notranslate"><span class="pre">`yml`</span></code>’ or the whole string and parses YAML strings from the text.</p></td>
 </tr>
@@ -616,7 +617,7 @@ With <code class="docutils literal notranslate"><span class="pre">from_dict</spa
 <section id="output-parsers">
 <h3>Output Parsers<a class="headerlink" href="#output-parsers" title="Link to this heading">#</a></h3>
 <p>The above parsers do not come with output format instructions.
-Thus, we created <a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser" title="components.output_parsers.outputs.OutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">OutputParser</span></code></a> to orchestrate both the formatting and parsing process.
+Thus, we created <code class="xref py py-class docutils literal notranslate"><span class="pre">OutputParser</span></code> to orchestrate both the formatting and parsing process.
 It is an abstract component with two main methods:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">format_instructions</span></code>: to generate the output format instructions for the prompt.</p></li>
@@ -632,7 +633,7 @@ Thus, <code class="docutils literal notranslate"><span class="pre">JsonOutputPar
 </section>
 <section id="dataclass-parser">
 <h3>DataClass Parser<a class="headerlink" href="#dataclass-parser" title="Link to this heading">#</a></h3>
-<p>To make things even easier for the developers, we created <a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code></a> which
+<p>To make things even easier for the developers, we created <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code> which
 understands <cite>__input_fields__</cite> and <cite>__output_fields__</cite> of the <cite>DataClass</cite>, and it is especially helpful to work on a training dataset where we will have both inputs and outputs.
 Users do not have to use <cite>exclude/include</cite> fields to specify the output fields, it will automatically understand the output fields from the <cite>DataClass</cite> instance.</p>
 <p>Below is an overview of its key components and functionalities.</p>
@@ -1108,13 +1109,13 @@ ________
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/core/core.string_parser.html#core-string-parser"><span class="std std-ref">string_parser</span></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.output_parsers.html#components-output-parsers"><span class="std std-ref">OutputParser</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser" title="components.output_parsers.outputs.JsonOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.JsonOutputParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.YamlOutputParser" title="components.output_parsers.outputs.YamlOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.YamlOutputParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser" title="components.output_parsers.outputs.OutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.OutputParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.BooleanOutputParser" title="components.output_parsers.outputs.BooleanOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.BooleanOutputParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.ListOutputParser" title="components.output_parsers.outputs.ListOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.ListOutputParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.dataclass_parser.DataClassParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.base_data_class.DataClass</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.JsonOutputParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.YamlOutputParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.OutputParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.BooleanOutputParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.ListOutputParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.dataclass_parser.DataClassParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.base_data_class.DataClass</span></code></p></li>
 </ul>
 </div>
 </section>

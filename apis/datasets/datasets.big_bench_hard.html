@@ -272,10 +272,6 @@
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
 </div>
 
     </header>
@@ -582,46 +578,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-datasets.big_bench_hard">
-<span id="big-bench-hard"></span><span id="datasets-big-bench-hard"></span><h1>big_bench_hard<a class="headerlink" href="#module-datasets.big_bench_hard" title="Link to this heading">#</a></h1>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datasets.big_bench_hard.BigBenchHard" title="datasets.big_bench_hard.BigBenchHard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BigBenchHard</span></code></a>([task_name, root, split])</p></td>
-<td><p>Big Bench Hard dataset for object counting task.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="datasets.big_bench_hard.BigBenchHard">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BigBenchHard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'object_counting'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'object_counting'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'train'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'val'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'test'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/datasets/big_bench_hard.html#BigBenchHard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datasets.big_bench_hard.BigBenchHard" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></p>
-<p>Big Bench Hard dataset for object counting task.</p>
-<p>You can find the task name from the following link:
-<a class="github reference external" href="https://github.com/suzgunmirac/BIG-Bench-Hard/tree/main/bbh">suzgunmirac/BIG-Bench-Hard</a></p>
-<p>Data will be saved to ~/.adalflow/cache_datasets/BBH_object_counting/{split}.csv
-if root is not specified.</p>
-<p>Size for each split:
-- train: 50 examples
-- val: 50 examples
-- test: 100 examples</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_name</strong> (<em>str</em>) – The name of the task. “{task_name}” is the task name in the dataset.</p></li>
-<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Root directory of the dataset to save the data. Defaults to ~/.adalflow/cache_datasets/task_name.</p></li>
-<li><p><strong>split</strong> (<em>str</em><em>, </em><em>optional</em>) – The dataset split, supports <code class="docutils literal notranslate"><span class="pre">&quot;train&quot;</span></code> (default), <code class="docutils literal notranslate"><span class="pre">&quot;val&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;test&quot;</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="datasets.big_bench_hard.BigBenchHard.get_default_task_instruction">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_task_instruction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/datasets/big_bench_hard.html#BigBenchHard.get_default_task_instruction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datasets.big_bench_hard.BigBenchHard.get_default_task_instruction" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+  <section id="big-bench-hard">
+<span id="datasets-big-bench-hard"></span><h1>big_bench_hard<a class="headerlink" href="#big-bench-hard" title="Link to this heading">#</a></h1>
 </section>
 
 
@@ -658,26 +616,6 @@ if root is not specified.</p>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datasets.big_bench_hard.BigBenchHard"><code class="docutils literal notranslate"><span class="pre">BigBenchHard</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datasets.big_bench_hard.BigBenchHard.get_default_task_instruction"><code class="docutils literal notranslate"><span class="pre">BigBenchHard.get_default_task_instruction()</span></code></a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

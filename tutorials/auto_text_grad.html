@@ -565,6 +565,9 @@ We introduce <code class="docutils literal notranslate"><span class="pre">GradCo
 <li><p># a forward will</p></li>
 </ul>
 </div></blockquote>
+<p>10/27</p>
+<p><strong>Score for weighted sampling in few-shot demo</strong></p>
+<p>Backpropagation is also used in few-shot demo especially at passing the score backward to predecessors and accumulate to the demo parameter.</p>
 <section id="generator-adaptation">
 <h3>Generator Adaptation<a class="headerlink" href="#generator-adaptation" title="Link to this heading">#</a></h3>
 <p>In auto-text grad, generator needs to be adapted as an operator that supports backpropagation to get “feedback”/”gradients” for the auto-diff optimizer.

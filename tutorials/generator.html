@@ -416,6 +416,7 @@
 <li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Generator</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="output_parsers.html">Parser</a></li>
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
@@ -517,7 +518,7 @@ It is a pipeline consisting of three subcomponents. By switching the prompt temp
 <p><span class="caption-text">Generator - The Orchestrator for LLM Prediction</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<p>The <a class="reference internal" href="../apis/core/core.generator.html#core.generator.Generator" title="core.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a> is designed to achieve the following goals:</p>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code> is designed to achieve the following goals:</p>
 <ol class="arabic simple">
 <li><p>Model Agnostic: The Generator should be able to call any LLM model with the same prompt.</p></li>
 <li><p>Unified interface: It manages the pipeline from prompt (input) -&gt; model call -&gt; output parsing, while still giving users full control over each part.</p></li>
@@ -541,7 +542,7 @@ If no output processor provided, it is decided by the model client and often ret
 They take two optional arguments:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code> (dict): This is combined with the <code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code> from the initial <code class="docutils literal notranslate"><span class="pre">Prompt</span></code> component and used to format the prompt.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> (dict): This is  combined with the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> from the initial model client, and along with <a class="reference internal" href="../apis/core/core.types.html#core.types.ModelType.LLM" title="core.types.ModelType.LLM"><code class="xref py py-const docutils literal notranslate"><span class="pre">ModelType.LLM</span></code></a>, it is passed to the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>.
+<li><p><code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> (dict): This is  combined with the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> from the initial model client, and along with <code class="xref py py-const docutils literal notranslate"><span class="pre">ModelType.LLM</span></code>, it is passed to the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>.
 The ModelClient will interpret all the inputs as <code class="docutils literal notranslate"><span class="pre">api_kwargs</span></code> specific to each model API provider.</p></li>
 </ul>
 <div class="admonition note">
@@ -558,7 +559,7 @@ The ModelClient will interpret all the inputs as <code class="docutils literal n
 Instead, <cite>Generator</cite> will always return an output record.
 We made this design choice because it can be really helpful to log various failed cases in your train/eval sets all together for further investigation and improvement.</p>
 </div>
-<p>In particular, we created <a class="reference internal" href="../apis/core/core.types.html#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeneratorOutput</span></code></a> to capture important information.</p>
+<p>In particular, we created <code class="xref py py-class docutils literal notranslate"><span class="pre">GeneratorOutput</span></code> to capture important information.</p>
 <ul class="simple">
 <li><p><cite>data</cite> (object) : Stores the final processed response after all three components in the pipeline, indicating <cite>success</cite>.</p></li>
 <li><p><cite>error</cite> (str): Contains the error message if any of the three components in the pipeline fail. When this is not <cite>None</cite>, it indicates <cite>failure</cite>.</p></li>
@@ -569,16 +570,164 @@ We made this design choice because it can be really helpful to log various faile
 <p>Whether to do further processing or terminate the pipeline whenever an error occurs is up to the user from here on.</p>
 </section>
 </section>
+</section>
+<section id="basic-generator-tutorial">
+<h1>Basic Generator Tutorial<a class="headerlink" href="#basic-generator-tutorial" title="Link to this heading">#</a></h1>
+<p>The Generator class is the core component in AdalFlow for interacting with AI models. This tutorial covers the essential concepts and patterns.</p>
+<section id="what-is-a-generator">
+<h2>What is a Generator?<a class="headerlink" href="#what-is-a-generator" title="Link to this heading">#</a></h2>
+<p>A Generator is a unified interface for model interactions that:</p>
+<ol class="arabic simple">
+<li><p>Takes input and formats it using a prompt template</p></li>
+<li><p>Sends the formatted input to an AI model</p></li>
+<li><p>Returns a standardized <code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code> object</p></li>
+</ol>
+</section>
+<section id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading">#</a></h2>
+<p>Here’s the simplest way to use a Generator:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client.openai_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+
+<span class="c1"># Create a generator</span>
+<span class="n">gen</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1"># Use the generator</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">gen</span><span class="p">({</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What is the capital of France?&quot;</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">raw_response</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="understanding-the-output">
+<h2>Understanding the Output<a class="headerlink" href="#understanding-the-output" title="Link to this heading">#</a></h2>
+<p>Every Generator call returns a <code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code> object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">gen</span><span class="p">({</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">})</span>
+
+<span class="c1"># Access different parts of the response</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">raw_response</span><span class="p">)</span>  <span class="c1"># Raw model output</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>          <span class="c1"># Processed data (if using output processors)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>         <span class="c1"># Error message if something went wrong</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">usage</span><span class="p">)</span>         <span class="c1"># Token usage information</span>
+</pre></div>
+</div>
+</section>
+<section id="when-to-create-a-subclass">
+<h2>When to Create a Subclass<a class="headerlink" href="#when-to-create-a-subclass" title="Link to this heading">#</a></h2>
+<p>You should create a Generator subclass in two main cases:</p>
+<ol class="arabic">
+<li><p><strong>Different Model Types</strong>: When using non-LLM endpoints</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ImageGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;For DALL-E and other image generation models&quot;&quot;&quot;</span>
+    <span class="n">model_type</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">IMAGE_GENERATION</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Custom Processing</strong>: When you need special input/output handling</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CustomGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_pre_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">):</span>
+        <span class="c1"># Custom preprocessing</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_pre_call</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="when-not-to-subclass">
+<h2>When NOT to Subclass<a class="headerlink" href="#when-not-to-subclass" title="Link to this heading">#</a></h2>
+<p>Don’t create a subclass for:</p>
+<ol class="arabic">
+<li><p><strong>Model Parameters</strong>: Use <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> instead</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Just pass parameters directly</span>
+<span class="n">gen</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.9</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Output Processing</strong>: Use output processors</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.output_processors</span> <span class="kn">import</span> <span class="n">JsonParser</span>
+
+<span class="n">gen</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+    <span class="n">output_processors</span><span class="o">=</span><span class="n">JsonParser</span><span class="p">()</span>  <span class="c1"># Process output as JSON</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="common-patterns">
+<h2>Common Patterns<a class="headerlink" href="#common-patterns" title="Link to this heading">#</a></h2>
+<ol class="arabic">
+<li><p><strong>Error Handling</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">gen</span><span class="p">({</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;Query&quot;</span><span class="p">})</span>
+<span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">raw_response</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Async Usage</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">generate</span><span class="p">():</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gen</span><span class="o">.</span><span class="n">acall</span><span class="p">({</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">})</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">raw_response</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Streaming</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;stream&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">({</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;Tell me a story&quot;</span><span class="p">}):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="model-types">
+<h2>Model Types<a class="headerlink" href="#model-types" title="Link to this heading">#</a></h2>
+<p>Generator supports different model types through <code class="docutils literal notranslate"><span class="pre">ModelType</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ModelType.LLM</span></code>: Text generation (default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ModelType.IMAGE_GENERATION</span></code>: Image generation (DALL-E)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ModelType.EMBEDDER</span></code>: Text embeddings</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ModelType.RERANKER</span></code>: Document reranking</p></li>
+</ul>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Always check for errors in the response</p></li>
+<li><p>Use output processors for structured outputs</p></li>
+<li><p>Set model parameters in <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code></p></li>
+<li><p>Use async methods for better performance in async contexts</p></li>
+<li><p>Use streaming for long responses</p></li>
+</ol>
+<p>Remember: The Generator is designed to provide a consistent interface regardless of the underlying model or task.</p>
+</section>
 <section id="generator-in-action">
 <h2>Generator In Action<a class="headerlink" href="#generator-in-action" title="Link to this heading">#</a></h2>
 <p>We will create a simple one-turn chatbot to demonstrate how to use the Generator.</p>
 <section id="minimum-example">
 <h3>Minimum Example<a class="headerlink" href="#minimum-example" title="Link to this heading">#</a></h3>
 <p>The minimum setup to initiate a generator in the code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">adalflow</span> <span class="k">as</span> <span class="nn">adal</span>
 <span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">GroqAPIClient</span>
 
-<span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+<span class="n">generator</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span>
     <span class="n">model_client</span><span class="o">=</span><span class="n">GroqAPIClient</span><span class="p">(),</span>
     <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;llama3-8b-8192&quot;</span><span class="p">},</span>
 <span class="p">)</span>
@@ -768,7 +917,7 @@ You:
 <h3>Switch the model_client<a class="headerlink" href="#switch-the-model-client" title="Link to this heading">#</a></h3>
 <p>Also, did you notice that we have already switched to using models from <cite>OpenAI</cite> in the above example?
 This demonstrates how easy it is to switch the <cite>model_client</cite> in the Generator, making it a truly model-agnostic component.
-We can even use <a class="reference internal" href="../apis/core/core.types.html#core.types.ModelClientType" title="core.types.ModelClientType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClientType</span></code></a> to switch the model client without handling multiple imports.</p>
+We can even use <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClientType</span></code> to switch the model client without handling multiple imports.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
 
 <span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
@@ -859,10 +1008,10 @@ We imported <code class="docutils literal notranslate"><span class="pre">Generat
 <h3>Examples Across the Library<a class="headerlink" href="#examples-across-the-library" title="Link to this heading">#</a></h3>
 <p>Besides these examples, LLM is like water, even in our library, we have components that have adpated Generator to various other functionalities.</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever" title="components.retriever.llm_retriever.LLMRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMRetriever</span></code></a> is a retriever that uses Generator to call LLM to retrieve the most relevant documents.</p></li>
-<li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge" title="eval.llm_as_judge.DefaultLLMJudge"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultLLMJudge</span></code></a> is a judge that uses Generator to call LLM to evaluate the quality of the response.</p></li>
-<li><p><a class="reference internal" href="../apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer" title="optim.text_grad.tgd_optimizer.TGDOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">TGDOptimizer</span></code></a> is an optimizer that uses Generator to call LLM to optimize the prompt.</p></li>
-<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReAct</span> <span class="pre">Agent</span> <span class="pre">Planner</span></code></a> is an LLM planner that uses Generator to plan and to call functions in ReAct Agent.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMRetriever</span></code> is a retriever that uses Generator to call LLM to retrieve the most relevant documents.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultLLMJudge</span></code> is a judge that uses Generator to call LLM to evaluate the quality of the response.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TGDOptimizer</span></code> is an optimizer that uses Generator to call LLM to optimize the prompt.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ReAct</span> <span class="pre">Agent</span> <span class="pre">Planner</span></code> is an LLM planner that uses Generator to plan and to call functions in ReAct Agent.</p></li>
 </ul>
 </section>
 </section>
@@ -879,22 +1028,83 @@ We imported <code class="docutils literal notranslate"><span class="pre">Generat
 <h2>Training<a class="headerlink" href="#training" title="Link to this heading">#</a></h2>
 <p>Generator in default support training mode.
 It will require users to define <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> and pass it to the <code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code>.</p>
+</section>
+<section id="image-generation">
+<h2>Image Generation<a class="headerlink" href="#image-generation" title="Link to this heading">#</a></h2>
+<p>The Generator class also supports image generation through DALL-E models. First, you need to define a Generator subclass with the correct model type:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
+
+<span class="k">class</span> <span class="nc">ImageGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generator subclass for image generation.&quot;&quot;&quot;</span>
+    <span class="n">model_type</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">IMAGE_GENERATION</span>
+</pre></div>
+</div>
+<p>Then you can use it like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+
+<span class="n">generator</span> <span class="o">=</span> <span class="n">ImageGenerator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;dall-e-3&quot;</span><span class="p">,</span>  <span class="c1"># or &quot;dall-e-2&quot;</span>
+        <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="s2">&quot;1024x1024&quot;</span><span class="p">,</span>  <span class="c1"># &quot;1024x1024&quot;, &quot;1024x1792&quot;, or &quot;1792x1024&quot; for DALL-E 3</span>
+        <span class="s2">&quot;quality&quot;</span><span class="p">:</span> <span class="s2">&quot;standard&quot;</span><span class="p">,</span>  <span class="c1"># &quot;standard&quot; or &quot;hd&quot; (DALL-E 3 only)</span>
+        <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="mi">1</span>  <span class="c1"># Number of images (1 for DALL-E 3, 1-10 for DALL-E 2)</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1"># Generate an image from text</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;A white siamese cat in a space suit&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+<span class="c1"># response.data will contain the image URL</span>
+
+<span class="c1"># Edit an existing image</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;Add a red hat&quot;</span><span class="p">},</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;dall-e-2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;image&quot;</span><span class="p">:</span> <span class="s2">&quot;path/to/cat.png&quot;</span><span class="p">,</span>  <span class="c1"># Original image</span>
+        <span class="s2">&quot;mask&quot;</span><span class="p">:</span> <span class="s2">&quot;path/to/mask.png&quot;</span>   <span class="c1"># Optional mask showing where to edit</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1"># Create variations of an image</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>  <span class="c1"># Not needed for variations</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;dall-e-2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;image&quot;</span><span class="p">:</span> <span class="s2">&quot;path/to/cat.png&quot;</span>  <span class="c1"># Image to create variations of</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The generator supports:</p>
+<ul class="simple">
+<li><p>Image generation from text descriptions using DALL-E 3 or DALL-E 2</p></li>
+<li><p>Image editing with optional masking (DALL-E 2)</p></li>
+<li><p>Creating variations of existing images (DALL-E 2)</p></li>
+<li><p>Both local file paths and base64-encoded images</p></li>
+<li><p>Various image sizes and quality settings</p></li>
+<li><p>Multiple output formats (URL or base64)</p></li>
+</ul>
+<p>The response will always be wrapped in a <code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code> object, maintaining consistency with other AdalFlow operations. The generated image(s) will be available in the <code class="docutils literal notranslate"><span class="pre">data</span></code> field as either a URL or base64 string.</p>
 <div class="highlight admonition">
 <p class="admonition-title">API reference</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../apis/core/core.generator.html#core.generator.Generator" title="core.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.generator.Generator</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.GeneratorOutput</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.generator.Generator</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.GeneratorOutput</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.default_prompt_template.html#id0" title="core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.ModelClientType" title="core.types.ModelClientType"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.ModelClientType</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.ModelType" title="core.types.ModelType"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.ModelType</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.JsonParser" title="core.string_parser.JsonParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.string_parser.JsonParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt" title="core.prompt_builder.Prompt"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.prompt_builder.Prompt</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger" title="tracing.generator_call_logger.GeneratorCallLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_call_logger.GeneratorCallLogger</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.ModelClientType</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.ModelType</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.string_parser.JsonParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.prompt_builder.Prompt</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_call_logger.GeneratorCallLogger</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger" title="tracing.generator_state_logger.GeneratorStateLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_state_logger.GeneratorStateLogger</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever" title="components.retriever.llm_retriever.LLMRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.llm_retriever.LLMRetriever</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge" title="eval.llm_as_judge.DefaultLLMJudge"><code class="xref py py-class docutils literal notranslate"><span class="pre">eval.llm_as_judge.DefaultLLMJudge</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer" title="optim.text_grad.tgd_optimizer.TGDOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.text_grad.tgd_optimizer.TGDOptimizer</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.llm_retriever.LLMRetriever</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">eval.llm_as_judge.DefaultLLMJudge</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.text_grad.tgd_optimizer.TGDOptimizer</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/utils/utils.config.html#utils.config.new_component" title="utils.config.new_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">utils.config.new_component()</span></code></a></p></li>
 </ul>
 </div>
@@ -947,11 +1157,23 @@ It will require users to define <code class="docutils literal notranslate"><span
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Generator</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design">Design</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-orchestrator">An Orchestrator</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generatoroutput">GeneratorOutput</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-generator-tutorial">Basic Generator Tutorial</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-generator">What is a Generator?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-usage">Basic Usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-the-output">Understanding the Output</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#when-to-create-a-subclass">When to Create a Subclass</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#when-not-to-subclass">When NOT to Subclass</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-patterns">Common Patterns</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-types">Model Types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#best-practices">Best Practices</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generator-in-action">Generator In Action</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimum-example">Minimum Example</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-template">Use Template</a></li>
@@ -964,7 +1186,11 @@ It will require users to define <code class="docutils literal notranslate"><span
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing">Tracing</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training">Training</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-generation">Image Generation</a></li>
 </ul>
+</li>
+</ul>
+
   </nav></div>
 
 </div></div>
