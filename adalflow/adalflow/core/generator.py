@@ -100,6 +100,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # args for the cache
         cache_path: Optional[str] = None,
         use_cache: bool = False,
+        # args for model type
+        model_type: ModelType = ModelType.LLM,
     ) -> None:
         r"""The default prompt is set to the DEFAULT_ADALFLOW_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
@@ -110,6 +112,17 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         - steps_str
         You can preset the prompt kwargs to fill in the variables in the prompt using prompt_kwargs.
         But you can replace the prompt and set any variables you want and use the prompt_kwargs to fill in the variables.
+
+        Args:
+            model_client (ModelClient): The model client to use for the generator.
+            model_kwargs (Dict[str, Any], optional): The model kwargs to pass to the model client. Defaults to {}. Please refer to :ref:`ModelClient<components-model_client>` for the details on how to set the model_kwargs for your specific model if it is from our library.
+            template (Optional[str], optional): The template for the prompt.  Defaults to :ref:`DEFAULT_ADALFLOW_SYSTEM_PROMPT<core-default_prompt_template>`.
+            prompt_kwargs (Optional[Dict], optional): The preset prompt kwargs to fill in the variables in the prompt. Defaults to None.
+            output_processors (Optional[Component], optional):  The output processors after model call. It can be a single component or a chained component via ``Sequential``. Defaults to None.
+            name (Optional[str], optional): The name of the generator. Defaults to None.
+            cache_path (Optional[str], optional): The path to save the cache. Defaults to None.
+            use_cache (bool, optional): Whether to use cache. Defaults to False.
+            model_type (ModelType, optional): The type of model (EMBEDDER, LLM, or IMAGE_GENERATION). Defaults to ModelType.LLM.
         """
 
         if not isinstance(model_client, ModelClient):
@@ -133,6 +146,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         CallbackManager.__init__(self)
 
         self.name = name or self.__class__.__name__
+        self.model_type = model_type
 
         self._init_prompt(template, prompt_kwargs)
 
@@ -163,6 +177,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             "name": name,
             "cache_path": cache_path,
             "use_cache": use_cache,
+            "model_type": model_type,
         }
         self._teacher: Optional["Generator"] = None
         self._trace_api_kwargs: Dict[str, Any] = (

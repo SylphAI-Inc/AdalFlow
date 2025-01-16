@@ -23,10 +23,6 @@ from dataclasses import dataclass
 from typing import List
 from numpy.linalg import norm
 
-class ImageGenerator(Generator):
-    """Generator subclass for image generation."""
-    model_type = ModelType.IMAGE_GENERATION
-
 def test_basic_generation():
     """Test basic text generation"""
     client = OpenAIClient()
@@ -61,14 +57,15 @@ def test_invalid_image_url():
 def test_invalid_image_generation():
     """Test DALL-E generation with invalid parameters"""
     client = OpenAIClient()
-    gen = ImageGenerator(
+    gen = Generator(
         model_client=client,
         model_kwargs={
             "model": "dall-e-3",
             "size": "invalid_size",  # Invalid size parameter
             "quality": "standard",
             "n": 1
-        }
+        },
+        model_type=ModelType.IMAGE_GENERATION
     )
     
     print("\n=== Testing Invalid DALL-E Parameters ===")
@@ -94,14 +91,15 @@ def test_vision_and_generation():
     print(f"Description: {vision_response.raw_response}")
 
     # 2. Test DALL-E Image Generation
-    dalle_gen = ImageGenerator(
+    dalle_gen = Generator(
         model_client=client,
         model_kwargs={
             "model": "dall-e-3",
             "size": "1024x1024",
             "quality": "standard",
             "n": 1
-        }
+        },
+        model_type=ModelType.IMAGE_GENERATION
     )
     
     # For image generation, input_str becomes the prompt
