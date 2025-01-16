@@ -362,7 +362,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
 
         # Mock the image generation response
         mock_async_client.images.generate = AsyncMock(
-            return_value=type('Response', (), {'data': self.mock_image_response})()
+            return_value=type("Response", (), {"data": self.mock_image_response})()
         )
 
         # Call the acall method with image generation
@@ -394,7 +394,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
 
         # Mock the image generation response
         mock_sync_client.images.generate = Mock(
-            return_value=type('Response', (), {'data': self.mock_image_response})()
+            return_value=type("Response", (), {"data": self.mock_image_response})()
         )
 
         # Set the sync client

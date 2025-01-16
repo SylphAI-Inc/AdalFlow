@@ -310,15 +310,19 @@ class OpenAIClient(ModelClient):
                 raise ValueError("model must be specified for image generation")
             # Set defaults for DALL-E 3 if not specified
             final_model_kwargs["size"] = final_model_kwargs.get("size", "1024x1024")
-            final_model_kwargs["quality"] = final_model_kwargs.get("quality", "standard")
+            final_model_kwargs["quality"] = final_model_kwargs.get(
+                "quality", "standard"
+            )
             final_model_kwargs["n"] = final_model_kwargs.get("n", 1)
-            final_model_kwargs["response_format"] = final_model_kwargs.get("response_format", "url")
+            final_model_kwargs["response_format"] = final_model_kwargs.get(
+                "response_format", "url"
+            )
 
             # Handle image edits and variations
             image = final_model_kwargs.get("image")
             if isinstance(image, str) and os.path.isfile(image):
                 final_model_kwargs["image"] = self._encode_image(image)
-            
+
             mask = final_model_kwargs.get("mask")
             if isinstance(mask, str) and os.path.isfile(mask):
                 final_model_kwargs["mask"] = self._encode_image(mask)
@@ -340,11 +344,7 @@ class OpenAIClient(ModelClient):
             )
         except Exception as e:
             log.error(f"Error parsing image generation response: {e}")
-            return GeneratorOutput(
-                data=None,
-                error=str(e),
-                raw_response=str(response)
-            )
+            return GeneratorOutput(data=None, error=str(e), raw_response=str(response))
 
     @backoff.on_exception(
         backoff.expo,
@@ -417,7 +417,9 @@ class OpenAIClient(ModelClient):
                     response = await self.async_client.images.edit(**api_kwargs)
                 else:
                     # Image variation
-                    response = await self.async_client.images.create_variation(**api_kwargs)
+                    response = await self.async_client.images.create_variation(
+                        **api_kwargs
+                    )
             else:
                 # Image generation
                 response = await self.async_client.images.generate(**api_kwargs)
