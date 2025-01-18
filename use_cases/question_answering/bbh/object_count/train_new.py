@@ -43,7 +43,6 @@ class ObjectCountAdalComponent(adal.AdalComponent):
         self, sample: Example, y_pred: adal.GeneratorOutput
     ) -> Tuple[float, Dict[str, Any]]:
         y_label = -1
-        print(f"y_pred: {y_pred}")
         if (
             y_pred is not None and y_pred.data is not None
         ):  # if y_pred and y_pred.data: might introduce bug when the data is 0
@@ -195,6 +194,7 @@ if __name__ == "__main__":
         seed=2025,  # pass the numpy seed
         tg=use_tg,
         max_proposals_per_step=max_proposals_per_step,
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_dc778_run_1.json",
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_18e8d_run_1.json",
     )
     print(f"ckpt: {ckpt}")

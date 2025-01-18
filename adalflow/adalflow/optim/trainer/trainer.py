@@ -544,6 +544,7 @@ class Trainer(Component):
 
             self.adaltask._set_param_values(prompts)
             starting_step = len(trainer_results.steps) - 1
+            self._add_history_text_optimizers(max(val_scores))
 
         else:
             trainer_results = (
@@ -721,6 +722,9 @@ class Trainer(Component):
         hash_key = hash_text_sha1(serialize(trainer_state))[0:5]
         trainer_state["hash_key"] = hash_key
         trainer_state["task_state_dict"] = self.adaltask.to_dict()
+        # trainer_state["text_optimizers"] = [
+        #     opt.to_dict() for opt in self.text_optimizers
+        # ]
         # restore_state = AdalComponent.from_dict(
         #     trainer_state["task_state_dict"]
         # )  # tODO: add a test for adalcomponent
@@ -1995,13 +1999,13 @@ class Trainer(Component):
         )
 
         move_batch_score = np.mean(np.array(move_batch_acc_score_list))
-        print(f"Moving batch acc: {move_batch_score}")
+        printc(f"Moving batch acc: {move_batch_score}")
 
         # create a subset with a more balanced error and correct samples
         subset_score, subset_indices = self._moving_batch_sample(
             move_batch_acc_score_list
         )
-        print(f"Subset batch acc: {subset_score}")
+        printc(f"Subset batch acc: {subset_score},{subset_score}")
 
         self.adaltask.train()
 
@@ -2036,19 +2040,21 @@ class Trainer(Component):
                 self.num_workers,
                 use_loss_eval_fn=use_eval_loss_fn,
             )
-            # check subset validation score
+            # check subset validation score and compare with subset score
             val_score = val_output.avg_score
             if (
                 val_score == subset_score
                 and subset_score >= self.batch_val_score_threshold
             ) or val_score > subset_score:  # allow perfect subset to pass
 
-                print(f"Pass subset check: {val_score} > {subset_score}")
+                printc(
+                    f"Pass subset check:{use_eval_loss_fn}, {val_score} > {subset_score}"
+                )
                 self._track_effectiveness("subset", True)
 
             else:
-                print(
-                    f"Fail subset check, try next proposal: {val_score} <= {subset_score}"
+                printc(
+                    f"Fail subset check, try next proposal: {use_eval_loss_fn}, {val_score} <= {subset_score}"
                 )
                 self._add_failed_proposals_text_optimizers()
                 self._track_effectiveness("subset", False)
@@ -2058,19 +2064,19 @@ class Trainer(Component):
                 continue
             # validate the full set
             # move_batch_result = self.adaltask.validation_step(
-            #     all_samples, steps, self.num_workers
+            #     all_samples, steps, self.num_workers, use_loss_eval_fn=use_eval_loss_fn
             # )
             # new_move_batch_score = move_batch_result.avg_score
             # if new_move_batch_score >= move_batch_score:
-            #     print(f"Pass full check: {new_move_batch_score} >= {move_batch_score}")
+            #     printc(f"Pass full check: {new_move_batch_score} >= {move_batch_score}")
             #     self._track_effectiveness("fullset", True)
             #     # break
             # else:
-            #     print(
+            #     printc(
             #         f"Fail full check, try next proposal: {new_move_batch_score} < {move_batch_score}"
             #     )
             #     self._track_effectiveness("fullset", False)
-            #     # self._add_failed_proposals_text_optimizers()
+            #     self._add_failed_proposals_text_optimizers()
             #     self._revert_text_optimizers()
             #     if include_demo_optimizers:
             #         self._demo_optimizers_revert()

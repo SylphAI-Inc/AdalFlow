@@ -86,10 +86,11 @@ About <VARIABLES> or <PEERS>:
 # You will provide intelligent and creative feedback so that the optimizer can optimize this variable to improve the objective enclosed in <OBJECTIVE_FUNCTION> tags.
 
 FEEDBACK_ENGINE_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
-You are a detective excel at determining the root cause of a system error.
+You MUST determining the root cause of a system error.
 You start with an evaluation function that measures performance, and you receive the system input.
 The system can be a a compound system, potentially consisting of multiple components.
-You will receive feedback from your direct successor, and your goal is to investigate your component’s inputs and outputs to identify whether any of your input variables are causing the error.
+You work on one component.
+You will receive feedback from your direct successor component, and your goal is to investigate your component’s inputs and outputs to identify whether any of your input variables are causing the error.
 
 Your target input variable is enclosed in <TARGET_VARIABLE> (representing one of the input variables that may or may not be causing the error).
 Alternatively, it may be enclosed in <VARIABLES> tags (in which case you must pass feedback to all variables, indicating which ones cause the errors and which do not).
@@ -97,10 +98,11 @@ Alternatively, it may be enclosed in <VARIABLES> tags (in which case you must pa
 1. From <CONVERSATION></CONVERSATION> section, you can find how the variable is obtained and used.
 2. As there might be multiple precedessors, and multi-components, it is possible that the feedback/error is not directly related to the variable itself.
 3. When you reason, really think about the variable's role in the component(infer from the CONVERSATION section) and the VARIABLE section before you provide feedback.
-4. [Cycle]: If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
+4. Be specific, concise, critical, and direct.
+5. Maximum 3 sentences.
+
+[Cycle]: If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
    Ensure the feedback is aware of all sets of inputs and outputs.
-5. Be specific, concise, critical, and direct.
-6. Maximum 3 sentences.
 
 {% if output_format_str %}
 {{output_format_str}}
@@ -291,13 +293,13 @@ Vaule: {{system_variable.prompt_data}}
 <END_OF_PRECESSORS>
 {% endif %}
 
-Here is a conversation with the language model (LM):
+Here is the inputs and output with this component(LM):
 {{conversation_str}}
 """
 
 # For the generator in the chain,
 OBJECTIVE_INSTRUCTION_CHAIN = r"""
-This conversation is part of a larger system. The <LM_OUTPUT> was later used as {{response_desc}}.
+This component is part of a larger system. The <LM_OUTPUT> was later used as {{response_desc}}.
 <OBJECTIVE_FUNCTION>
 Your goal is to give feedback to the variable to guide the LLM_OUTPUT according to feedback: {{response_gradient}}
 {% if instruction_to_backward_engine %}
@@ -346,7 +348,7 @@ The final context is then passed to the llm to generate the answer where we want
 
 VARIABLE_AND_PEERS_INFO = r"""
 <START_OF_VARIABLE_DESC>
-{{variable.name}}
+<NAME> {{variable.name}} </NAME>
 <TYPE> {{variable.param_type}} </TYPE>
 <ROLE> {{variable.role_desc}} </ROLE>
 <VARIABLE>{{ variable.prompt_data}}</VARIABLE>
@@ -412,7 +414,7 @@ GROUND_TRUTH: {{gt}}
 # """
 OUTPUT_INSTRUCTION = r"""
 You will create a feedback for each of the variables in the list.
-If a variable will not be optimied, you just output empty string.
+If a variable will not be optimized, you just output empty string.
 Give enough details on the feedback.
 Your output will be a list of strings with the SAME LENGTH as the <VARIABLES> list
 as format of ["...", "...", "..."]

@@ -131,7 +131,7 @@ Gradients are from {{ component_schema | length }} components.
 {{ loop.index }}.
 INPUT_OUTPUT: {{ gradient.context }}
 {% if gradient.score is not none %}
-<SCORE>{{ gradient.score }}</SCORE>
+<SCORE>{{ gradient.score | round(3) }}</SCORE>
 <FEEDBACK>{{ gradient.gradient }}</FEEDBACK>
 {% endif %}
 {% endfor %}

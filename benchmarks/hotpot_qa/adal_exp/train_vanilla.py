@@ -25,15 +25,19 @@ class VallinaAdal(adal.AdalComponent):
         task = Vanilla(
             model_client=model_client,
             model_kwargs=model_kwargs,
-            passages_per_hop=3,
+            passages_per_hop=2,
         )
         eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
+        loss_eval_fn = AnswerMatchAcc(type="f1_score").compute_single_item
+
         loss_fn = adal.EvalFnToTextLoss(
-            eval_fn=eval_fn, eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0"
+            eval_fn=loss_eval_fn,
+            eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0",
         )
         super().__init__(
             task=task,
             eval_fn=eval_fn,
+            loss_eval_fn=loss_eval_fn,
             loss_fn=loss_fn,
             backward_engine_model_config=backward_engine_model_config,
             teacher_model_config=teacher_model_config,
@@ -55,9 +59,6 @@ class VallinaAdal(adal.AdalComponent):
                 "id": sample.id,
             }
 
-    # TODO: use two map fn to make the cde even simpler
-
-    # eval mode: get the generator output, directly engage with the eval_fn
     def prepare_eval(self, sample: HotPotQAData, y_pred: adal.GeneratorOutput) -> float:
         y_label = ""
         if y_pred and y_pred.data and y_pred.data.answer:
@@ -65,9 +66,13 @@ class VallinaAdal(adal.AdalComponent):
         printc(f"y_label: {y_label}, y_gt: {sample.answer}")
         return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
 
-    # train mode: get the loss and get the data from the full_response
+    def prepare_loss_eval(self, sample: Any, y_pred: Any, *args, **kwargs) -> float:
+        y_label = ""
+        if y_pred and y_pred.data and y_pred.data.answer:
+            y_label = y_pred.data.answer
+        return self.loss_eval_fn, {"y": y_label, "y_gt": sample.answer}
+
     def prepare_loss(self, sample: HotPotQAData, pred: adal.Parameter):
-        # prepare gt parameter
         y_gt = adal.Parameter(
             name="y_gt",
             data=sample.answer,
@@ -75,7 +80,6 @@ class VallinaAdal(adal.AdalComponent):
             requires_opt=False,
         )
 
-        # pred's full_response is the output of the task pipeline which is GeneratorOutput
         pred.eval_input = (
             pred.data.data.answer
             if pred.data and pred.data.data and pred.data.data.answer

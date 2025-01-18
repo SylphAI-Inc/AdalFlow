@@ -20,18 +20,6 @@ colbertv2_wiki17_abstracts = dspy.ColBERTv2(
 dspy.settings.configure(rm=colbertv2_wiki17_abstracts)
 
 
-# def load_datasets():
-
-#     trainset = HotPotQA(split="train", size=20)
-#     valset = HotPotQA(split="val", size=50)
-#     testset = HotPotQA(split="test", size=50)
-#     print(f"trainset, valset: {len(trainset)}, {len(valset)}, example: {trainset[0]}")
-#     return trainset, valset, testset
-
-
-# task pipeline
-
-
 # dspy format
 # Follow the following format.
 # Context: may contain relevant facts
@@ -299,15 +287,15 @@ class Vanilla(adal.Component):
                     param_type=adal.ParameterType.PROMPT,
                     requires_opt=True,
                     instruction_to_backward_engine="You need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
-                    instruction_to_optimizer="ou need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
+                    instruction_to_optimizer="You need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
                     # + "Given existing context, ensure the task instructions can maximize the performance.",
                 ),
-                "few_shot_demos": adal.Parameter(
-                    data=None,
-                    requires_opt=True,
-                    role_desc="To provide few shot demos to the language model",
-                    param_type=adal.ParameterType.DEMOS,
-                ),
+                # "few_shot_demos": adal.Parameter(
+                #     data=None,
+                #     requires_opt=True,
+                #     role_desc="To provide few shot demos to the language model",
+                #     param_type=adal.ParameterType.DEMOS,
+                # ),
                 "output_format_str": self.llm_parser.get_output_format_str(),
             },
             template=answer_template,

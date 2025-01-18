@@ -47,7 +47,6 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
     ALL_PRED_INFO,
     OUTPUT_INSTRUCTION,
     VARIABLE_AND_PEERS_INFO,
-    # CONVERSATION_START_INSTRUCTION_BASE,
     CONVERSATION_START_INSTRUCTION_CHAIN,
     OBJECTIVE_INSTRUCTION_BASE,
     OBJECTIVE_INSTRUCTION_CHAIN,
@@ -67,7 +66,7 @@ PromptArgType = Dict[str, Union[str, Parameter]]
 @dataclass
 class BackwardPassSetup(DataClass):
     all_pred_at_once: bool = field(
-        default=False, metadata={"desc": "Backward all predecessors at once."}
+        default=True, metadata={"desc": "Backward all predecessors at once."}
     )
     threshold_score_to_compute_grad_for_errors: float = field(
         default=0.9,
@@ -769,6 +768,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             template=ALL_PRED_INFO,
         )()
 
+        printc(f"all_pred_info: {all_pred_info}")
+
         conv_ins_template = None  # CONVERSATION_START_INSTRUCTION_BASE
         obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
         if is_intermediate_node:  # TODO: this will always be true
@@ -821,7 +822,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             and float(response.score)
             > backward_pass_setup.threshold_score_to_compute_grad_for_errors
         ):
-            manual_response_1 = f"You get score: {response.score}. No noticable error."
+            manual_response_1 = f"Eval score: {response.score}. No noticeable error."
             response_gradient_list = [manual_response_1] * len(children_params)
             raw_response = str(response_gradient_list)
             gradient_output = GeneratorOutput(
@@ -991,7 +992,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         ):
             log.debug(f"EvalFnToTextLoss: Skipping {pred} as the score is high enough.")
             # TODO: plus score descriptions
-            manual_response = f"You get score: {response.score}. No noticable error."
+            manual_response = f"Eval score: {response.score}. No noticeable error."
             gradient_output = GeneratorOutput(
                 data=manual_response, raw_response=manual_response
             )

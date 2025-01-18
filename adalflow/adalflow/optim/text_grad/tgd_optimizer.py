@@ -7,7 +7,6 @@ Source code: https://github.com/google-deepmind/opro
 """
 
 from typing import List, Dict, TYPE_CHECKING, Optional, Any
-from collections import defaultdict
 import logging
 import re
 from dataclasses import field, dataclass
@@ -45,12 +44,14 @@ class HistoryPrompt(DataClass):
 # {{loop.index}}. {{failed_proposal}}
 # {% endfor %}
 # {% endif %}
+# You are {{steps}} steps since your successful improvement.
 
 TEXT_GRAD_DESC_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 {{optimizer_system_prompt}}
 <END_OF_SYSTEM_PROMPT>
 <START_OF_USER_MESSAGE>
-You are {{steps}} steps since your successful improvement.
+You are {{steps}} steps since your last improvement.
+Update the value more rapidly when steps are larger than 3.
 {# Variable and peers info #}
 <START_OF_VARIABLE_AND_PEERS_INFO>
 {{variable_and_peers_info}}
@@ -73,19 +74,22 @@ Strategically plan the role of each system variable to collaborate with each oth
 {# OPRO past history #}
 {% if past_history %}
 <START_OF_HISTORY_PERFORMANCE>
-Here are the best past iterations of this variable along with the validation score.
+Here are the best past iterations.
 {% for history in past_history %}
 {{loop.index}}. {{history}}
 {% endfor %}
 IMPORTANT: Your goal is to generate new variable that score higher than all past iterations.
 {# Momentum #}
 {% if failed_proposals %}
-Here are the most recent failed proposals:
+<START_OF_CURRENT_ITERATION>
+same batch, same feedback: Here are your tried value (scored <= {{best_score}}):
 {% for failed_proposal in failed_proposals %}
 {{loop.index}}. {{failed_proposal}}
 {% endfor %}
+Now try a different prompting technique from the above values:
+<END_OF_CURRENT_ITERATION>
 {% endif %}
-You MUST try a different prompting technique from the failed proposals.
+
 <END_OF_HISTORY_PERFORMANCE>
 {% endif %}
 Here are the context and feedback for the variable:
@@ -172,38 +176,96 @@ You must base on the following examples when modifying the {{variable_desc}}:
 # LLM: Answer questions by reading the context  and reason the best answer.
 # </TASK_PIPELINE>
 # You MUST not update variable when there is no clear error indicated in a multi-component system.
-OPTIMIZER_SYSTEM_PROMPT = r"""
-You are an excellent prompt engineer who works on optimizing a compound LLM system with in-context learning.
-Your task is to improve a variable based on feedback from a batch of input data points.
+
+# 1. **Address Feedback**: Resolve concerns raised in the feedback while preserving the positive aspects of the original variable.
+# 2. **History**: Observe past performance patterns to retain good qualities in the variable and past failed ones to try things differently.
+# 3. **System Awareness**: When other system variables are given, ensure you understand how this variable works in the whole system.
+#    You have a choice to not update a variable if it is not responsible for the error by SETTING `update: false` and `proposed_variable: None`.
+# 4. **Peer Awareness**: This variable works together with Peer variables, ensure you are aware of their roles and constraints.
+# 5. **Batch Awareness**: You are optimizing a batch of input data, ensure the change applys to the whole batch (except while using demonstration.)
+# 6. **Be Creative**: Also while adding new elements, be concise.
+
+# ### Your available solutions.
+# 1. Add new elements to address each specific feedback.
+# 2. Add demonstration (e.g., input-reasoning-answer pairs) for tasks that require strong reasoning skills.
+# 3. Rephrase(for more clarity) to address the feedback.
+# 4. You can also eliminate unnecessary words to improve clarity.
+
+
+### You can do the following:
+# 1. Add new elements to address each specific feedback.
+# 2. Add examples (e.g., input(optional)-reasoning(required)-answer pairs) for tasks that require strong reasoning skills. (replace, insert)
+# 3. Rephrase(for more clarity) to address the feedback.
+# 4. You can also eliminate unnecessary words to improve clarity.
+
+# TODO: for similar score, we will prefer shorter prompt
+# OPTIMIZER_SYSTEM_PROMPT = r"""
+# You are an excellent prompt engineer and you will optimize a compound LLM system with in-context learning.
+# You must improve a variable based on feedback from a batch of input data points.
+
+# The variable is either input or output of a functional component where the component schema will be provided.
+# If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
+
+# ### Your Responsibilities:
+# 1. **Address Feedback**: Resolve concerns raised in the feedback while preserving the positive aspects of the original variable.
+# 2. Observe past performance patterns to retain good qualities in the variable.
+# 3. **System Awareness**: When other system variables are given, ensure you understand how this variable works in the whole system.
+#    You have a choice to not update a variable if it is not responsible for the error. Just keep the `update` field as `False`.
+# You MUST not update variable when there is no clear error indicated in a multi-component system.
+
+# 4. **Peer Awareness**: This variable works together with Peer variables, ensure you are aware of their roles and constraints.
+# 5. Be Creative.
+
+# ### prompt engineering methods you can use:
+# 1. Set Context and Role: Establish a specific identity or domain expertise for the AI to guide style, knowledge, and constraints.
+# 2. Be Specific, Clear, and Grammarly correct: Clearly define instructions, desired format, and constraints to ensure accurate and relevant outputs with regards to the feedback.
+# 3. Examples: Construct (e.g., input(optional)-reasoning(required)-answer pairs) examples especially for tasks that require strong reasoning skills. can be one of <replace, insert, add>
+# 4. Leverage Constraints and Formatting: Explicitly direct how the answer should be structured (e.g., bullet points, tables, or tone).
+# 5. Self-Consistency / Verification Prompts: Prompt the model to check its own logic for errors, inconsistencies, or missing details.
+
+
+# If no improvement for more than 3 steps, try adding more examples.
+
+# {{output_format_str}}
+
+# {% if instruction_to_optimizer %}
+# **Additional User Instructions**: {{instruction_to_optimizer}}
+# {% endif %}
+# """
+
+# instruction and demonstration tuning.
+# You are an excellent prompt engineer who works on optimizing a compound LLM system with in-context learning.
+#    You have a choice to not update a variable if it is not responsible for the error by SETTING `update: false` and `proposed_variable: None`.
+
+OPTIMIZER_SYSTEM_PROMPT = r"""You are an excellent prompt engineer tasked with instruction and demonstration tuning a compound LLM system.
+Your task is to refine a variable/prompt based on feedback from a batch of input data points.
 
 The variable is either input or output of a functional component where the component schema will be provided.
 If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
 
-When the LLM system is complicated with multiple system variables, you need to strategize the role of each
+You Must edit the current variable with one of the following editing methods.
+You can not rewrite everything all at once:
 
-### INSTRUCTIONS:
-1. **Address Feedback**: Resolve concerns raised in the feedback while preserving the positive aspects of the original variable.
-2. **History**: Observe past performance patterns to retain good qualities in the variable and past failed ones to try things differently.
+Four Editing Methods:
+1. ADD new elements(instruction) to address each specific feedback.
+2. ADD Examples (e.g., input-reasoning-answer) for tasks that require strong reasoning skills.
+3. Rephrase(for more clarity) to address the feedback.
+4. DELETE unnecessary words to improve clarity.
+
+These prompting techniques can be a helpful direction.
+1. Set Context and Role: Establish a specific identity or domain expertise for the AI to guide style, knowledge, and constraints.
+2. Be Specific, Clear, and Grammarly correct: Clearly define instructions, desired format, and constraints to ensure accurate and relevant outputs with regards to the feedback.
+3. Illicit reasoning: "chain-of-thought" (e.g. "think step by step") helps the model reason better.
+4. Examples: Construct examples(e.g., input(optional)-reasoning(required)-answer) especially for tasks that require strong reasoning skills.
+5. Leverage Constraints and Formatting: Explicitly direct how the answer should be structured (e.g., bullet points, tables, or tone).
+6. Self-Consistency / Verification Prompts: Prompt the model to check its own logic for errors, inconsistencies, or missing details.
+
+You must stick to these instructions:
+1. **MUST Resolve concerns raised in the feedback** while preserving the positive aspects of the original variable.
+2. **Observe past performance patterns** to retain good qualities in the variable and past failed ones to try things differently.
 3. **System Awareness**: When other system variables are given, ensure you understand how this variable works in the whole system.
-   You have a choice to not update a variable if it is not responsible for the error by SETTING `update: false` and `proposed_variable: None`.
 4. **Peer Awareness**: This variable works together with Peer variables, ensure you are aware of their roles and constraints.
 5. **Batch Awareness**: You are optimizing a batch of input data, ensure the change applys to the whole batch (except while using demonstration.)
-6. **Be Creative**: Also while adding new elements, be concise.
-
-### Your available solutions.
-1. Add new elements to address each specific feedback.
-2. Add demonstration (e.g., input-reasoning-answer) for tasks that require strong reasoning skills.
-3. Rephrase(for more clarity) to address the feedback.
-4. You can also eliminate unnecessary words to improve clarity.
-
-
-### PROMPTING PRACTICES:
-1. Set Context and Role: Establish a specific identity or domain expertise for the AI to guide style, knowledge, and constraints.
-2. Demonstration: Construct examples(e.g., input-reasoning-answer) especially for tasks that require strong reasoning skills.
-3. Be Specific and Clear: Clearly define instructions, desired format, and constraints to ensure accurate and relevant outputs.
-4. Leverage Constraints and Formatting: Explicitly direct how the answer should be structured (e.g., bullet points, tables, or tone).
-5. Self-Consistency / Verification Prompts: Prompt the model to check its own logic for errors, inconsistencies, or missing details.
-6. (Use Less and at end of training) Trim unnecessary rules and instruction to the task: improve the accuracy by being more focused.
 
 {{output_format_str}}
 
@@ -252,6 +314,8 @@ When the LLM system is complicated with multiple system variables, you need to s
 # 4. Leverage Constraints and Formatting: Explicitly direct how the answer should be structured (e.g., bullet points, tables, or tone).
 # 5. Self-Consistency / Verification Prompts: Prompt the model to check its own logic for errors, inconsistencies, or missing details.
 
+# 6. (Use Less and at end of training) Trim unnecessary rules and instruction to the task: improve the accuracy by being more focused.
+
 # {% if instruction_to_optimizer %}
 # **More Instructions**: {{instruction_to_optimizer}}
 # {% endif %}
@@ -289,18 +353,17 @@ class TGDData(DataClass):
             "desc": "Which solution did you choose, which prompt engineering technique did you use? Why? Be Concise (maximum 2 sentences)"
         }
     )
-    update: bool = field(
-        default=True,
-        metadata={
-            "desc": "Depending on the feedback, update the variable if it is responsible for the error, else, keep it"
-        },
-    )
+
     proposed_variable: str = field(
-        metadata={
-            "desc": "The proposed variable, ignoring the field when update:  false"
-        },
+        metadata={"desc": "The proposed variable"},
         default=None,
     )
+    # update: bool = field(
+    #     default=True,
+    #     metadata={
+    #         "desc": "Depending on the feedback, update the variable if it is responsible for the error, else, keep it"
+    #     },
+    # )
 
 
 @dataclass
@@ -347,12 +410,10 @@ class TGDOptimizer(TextOptimizer):
         model_client: "ModelClient",
         model_kwargs: Dict[str, object] = {},
         constraints: List[str] = None,
-        # new_variable_tags: List[str] = ["<IMPROVED_VARIABLE>", "</IMPROVED_VARIABLE>"],
         optimizer_system_prompt: str = OPTIMIZER_SYSTEM_PROMPT,
         in_context_examples: List[str] = None,  # TODO: in-context examples
-        num_gradient_memory: int = 0,  # TODO: gradient memory and momentum, for now it is not useful
-        max_past_history: int = 3,
-        max_failed_proposals: int = 2,
+        max_past_history: int = 2,
+        max_failed_proposals: int = 2,  # quite effective
         steps_from_last_improvement: int = 0,
     ):
         from adalflow.core.generator import Generator
@@ -369,8 +430,6 @@ class TGDOptimizer(TextOptimizer):
         self.optimizer_system_prompt = Prompt(
             template=optimizer_system_prompt,
             prompt_kwargs={
-                # "new_variable_start_tag": new_variable_tags[0],
-                # "new_variable_end_tag": new_variable_tags[1],
                 "output_format_str": """Your output should be formatted as a standard JSON instance with the following schema:
 ```
 {
@@ -387,9 +446,6 @@ class TGDOptimizer(TextOptimizer):
         # self.new_variable_tags = new_variable_tags
         self.in_context_examples = in_context_examples or []
         self.do_in_context_examples = len(self.in_context_examples) > 0
-        self.num_gradient_memory = num_gradient_memory
-        self.gradient_memory_dict = defaultdict(list)  # id to num_gradient_memory
-        self.do_gradient_memory = self.num_gradient_memory > 0
 
         self.llm_optimizer = Generator(
             model_client=model_client,
@@ -479,7 +535,7 @@ class TGDOptimizer(TextOptimizer):
                 for _ in range(
                     len(self.failed_proposals[param.id]) - self.max_failed_proposals
                 ):
-                    self.failed_proposals[param.id].pop()
+                    self.failed_proposals[param.id].pop(0)
         # if param_id not in self.failed_proposals:
         #     self.failed_proposals[param_id] = []
         # failed_proposal = HistoryPrompt(
@@ -500,16 +556,6 @@ class TGDOptimizer(TextOptimizer):
             for history in self.failed_proposals[param_id]
         ]
 
-    # TODO: optimize with adalflow template for better readability
-    def get_gradient_memory_text(self, param: Parameter) -> str:
-        grad_memory = ""
-        variable_grad_memory = self.gradient_memory_dict[param.id][
-            -self.num_gradient_memory :
-        ]
-        for i, grad_info in enumerate(variable_grad_memory):
-            grad_memory += f"\n<FEEDBACK-{i+1}> {grad_info['value']}</FEEDBACK-{i+1}>\n"
-        return grad_memory
-
     def _get_user_prompt_kwargs(self, param: Parameter) -> Dict[str, str]:
 
         system_params = [
@@ -517,6 +563,7 @@ class TGDOptimizer(TextOptimizer):
             for p in self.params
             if p.id != param.id and p not in param.peers
         ]
+        printc(f"system_params: {system_params}", color="blue")
         peers_params = [p.get_param_info() for p in param.peers]
         variable_and_peer_info = self.variable_and_peers_info.call(
             variable=param.get_param_info(), peers=peers_params
@@ -537,12 +584,12 @@ class TGDOptimizer(TextOptimizer):
                 if self.do_in_context_examples
                 else None
             ),
-            # gradient memory
-            "past_values": (
-                self.get_gradient_memory_text(param)
-                if self.do_gradient_memory
-                else None
-            ),
+            # # gradient memory
+            # "past_values": (
+            #     self.get_gradient_memory_text(param)
+            #     if self.do_gradient_memory
+            #     else None
+            # ),
             # past history
             "past_history": (
                 self.render_history(param.id) if self.max_past_history else None
@@ -552,6 +599,11 @@ class TGDOptimizer(TextOptimizer):
                 self.render_failed_proposals(param.id)
                 if self.max_failed_proposals
                 else None
+            ),
+            "best_score": (
+                self.params_history[param.id][0].eval_score
+                if self.params_history[param.id]
+                else "N/A"
             ),
             "system_variables": system_params,
             "steps": self.steps_from_last_improvement,
@@ -568,6 +620,10 @@ class TGDOptimizer(TextOptimizer):
     def zero_grad(self):
         for p in self.params:
             p.reset_gradients()
+
+        # reset the failded proposals
+        for param in self.params:
+            self.failed_proposals[param.id] = []
 
     # TODO: in the future can propose multiple values at once
     def propose(self):
@@ -612,28 +668,34 @@ class TGDOptimizer(TextOptimizer):
 
             prompt_str = self.llm_optimizer.get_prompt(**prompt_kwargs)
             log.debug(f"TGD LLM optimizer prompt: {prompt_str}")
-            printc(f"TGD LLM optimizer prompt:: {prompt_str}", color="blue")
+            printc(f"TGD LLM optimizer prompt: {prompt_str}", color="blue")
             proposed_data: TGDData = (
                 response.data
                 if response.data is not None
                 else TGDData(
                     reasoning="No reasoning",
                     proposed_variable=response.raw_response,
-                    update=False,
+                    # update=False,
                 )
             )
             printc(f"Response from the optimizer: {response}", color="blue")
 
             log.info(f"Response from the optimizer: {response}")
-            if not proposed_data.update:
-                printc(f"No update is required for {param.name}", color="yellow")
-                param.propose_data(param.data)
-            else:
-                improved_variable = proposed_data.proposed_variable
+            # if not proposed_data.update:
+            #     printc(f"No update is required for {param.name}", color="yellow")
+            #     param.propose_data(param.data)
+            # else:  # TODO: should always trace the initial data
+            improved_variable = proposed_data.proposed_variable
+            if (
+                improved_variable
+                and improved_variable != param.data
+                and improved_variable != ""
+            ):
                 param.propose_data(improved_variable)
+            else:
+                param.propose_data(param.data)
             param.trace_optimizer(api_kwargs=prompt_str, response=response)
-            if self.do_gradient_memory:
-                self.update_gradient_memory(param)
+
         self.proposing = True
 
     def revert(self):
@@ -646,6 +708,9 @@ class TGDOptimizer(TextOptimizer):
             param.revert_data()
             param.trace_optimizer(api_kwargs=None, response=None)
         self.proposing = False
+        # # reset the failed proposals
+        # for param in self.params:
+        #     self.failed_proposals[param.id] = []
 
     def step(self):
         """Discard the previous value and keep the proposed value."""
@@ -657,6 +722,23 @@ class TGDOptimizer(TextOptimizer):
             param.step_data()
 
         self.proposing = False
+        # # reset the failed proposals
+        # for param in self.params:
+        #     self.failed_proposals[param.id] = []
+
+    def to_dict(self):
+        return {
+            "template": TEXT_GRAD_DESC_TEMPLATE,
+            "optimizer_system_prompt": OPTIMIZER_SYSTEM_PROMPT,
+            "VARIABLE_AND_PEERS_INFO": VARIABLE_AND_PEERS_INFO,
+            "params": self.params,
+            "constraints": self.constraints,
+            "params_history": self.params_history,
+            "failed_proposals": self.failed_proposals,
+            "max_past_history": self.max_past_history,
+            "max_failed_proposals": self.max_failed_proposals,
+            "steps_from_last_improvement": self.steps_from_last_improvement,
+        }
 
 
 if __name__ == "__main__":

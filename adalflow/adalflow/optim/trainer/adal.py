@@ -19,6 +19,7 @@ from adalflow.optim.loss_component import LossComponent
 from adalflow.optim.types import PromptData
 from adalflow.eval.base import EvaluationResult
 from adalflow.optim.grad_component import GradComponent2, GradComponent
+from adalflow.utils import printc
 
 from adalflow.optim.optimizer import DemoOptimizer, TextOptimizer
 
@@ -394,17 +395,17 @@ class AdalComponent(Component):
         num_workers: int = 2,
         running_eval: bool = False,
         min_score: Optional[float] = None,
-        # use_loss_eval_fn: bool = False,
-    ):
-        r"""Applies to both train and eval mode.
+        use_loss_eval_fn: bool = False,
+    ) -> Tuple[List["Parameter"], List, Dict[int, float]]:
+        r"""Applies to only the eval mode.
 
-        If you require self.task.train() to be called before training, you can override this method as:
-
-        .. code-block:: python
-
-            def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
-                self.task.train()
-                return super().train_step(batch, batch_idx, num_workers)
+        Args:
+            batch (Any): The input batch to predict.
+            batch_idx (int): The index of the batch.
+            num_workers (int): Number of worker threads for parallel processing.
+            running_eval: bool = False,
+        Returns:
+            Tuple[List["Parameter"], List, Dict[int, float]]: The predicted outputs, the samples, and the scores.
         """
         from adalflow.optim.parameter import Parameter
 
@@ -448,7 +449,10 @@ class AdalComponent(Component):
                 if running_eval and not isinstance(y_pred, Parameter):
                     # evaluate one sample
 
-                    eval_fn, kwargs = self.prepare_eval(sample, y_pred)
+                    if not use_loss_eval_fn:
+                        eval_fn, kwargs = self.prepare_eval(sample, y_pred)
+                    else:
+                        eval_fn, kwargs = self.prepare_loss_eval(sample, y_pred)
                     score = eval_fn(**kwargs)
                     index_to_score[i] = score
                     eval_score = np.mean(list(index_to_score.values())).item()
@@ -535,7 +539,7 @@ class AdalComponent(Component):
                 num_workers,
                 running_eval=True,
                 min_score=minimum_score,
-                # use_loss_eval_fn=use_loss_eval_fn,
+                use_loss_eval_fn=use_loss_eval_fn,
             )
         except Exception as e:
             raise ValueError(f"Error in validation step: {e}")
@@ -818,7 +822,7 @@ class AdalComponent(Component):
     def configure_text_optimizer_helper(
         self, model_client: "ModelClient", model_kwargs: Dict[str, Any]
     ) -> List[TextOptimizer]:
-        r"""One text optimizer can handle multiple text parameters."""
+        r"""Text optimizer hands prompt parameter type. One text optimizer can handle multiple text parameters."""
         from adalflow.optim.text_grad.tgd_optimizer import TGDOptimizer
         from adalflow.optim.parameter import ParameterType
 
@@ -833,6 +837,10 @@ class AdalComponent(Component):
 
         to = TGDOptimizer(
             params=parameters, model_client=model_client, model_kwargs=model_kwargs
+        )
+
+        printc(
+            f"Text optimizer configured for {len(parameters)} parameters. names: { [(p.name, p.data) for p in parameters] }"
         )
         return [to]
 

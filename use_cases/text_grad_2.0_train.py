@@ -115,6 +115,8 @@ if __name__ == "__main__":
         # highest_test_score_json_file = None
         total_steps = []
         training_times = []
+        subset_pass_rate = []
+        valset_pass_rate = []
         for experiment_index, ckpt in ckpt_values.items():
             with open(ckpt, "r") as f:
                 data = json.load(f)
@@ -135,6 +137,12 @@ if __name__ == "__main__":
                     ) + effective_measures.get("valset", {}).get("fail", 0)
                 _total_steps = len(data["steps"]) - 1
                 _training_time = data.get("total_time", 0)
+                _subset_pass = effective_measures.get("subset", {}).get("pass", 0)
+                _subset_fail = effective_measures.get("subset", {}).get("fail", 0)
+                _valset_pass = effective_measures.get("valset", {}).get("pass", 0)
+                _valset_fail = effective_measures.get("valset", {}).get("fail", 0)
+                subset_pass_rate.append(_subset_pass / (_subset_pass + _subset_fail))
+                valset_pass_rate.append(_valset_pass / (_valset_pass + _valset_fail))
                 # save the results in the lists
                 past_highest_val_scores.append(_high_val_score)
                 total_passes.append(_unique_val_scores)
@@ -165,6 +173,12 @@ if __name__ == "__main__":
         # average training time
         average_training_time = np.mean(training_times)
 
+        # subset pass rate
+        average_subset_pass_rate = np.mean(subset_pass_rate)
+
+        # valset pass rate
+        average_valset_pass_rate = np.mean(valset_pass_rate)
+
         # add these numbers in the ckpt_values
         index = f"{experiment}_summary"
         ckpt_values[index] = {
@@ -180,6 +194,8 @@ if __name__ == "__main__":
                 "average_pass_rate": average_pass_rate,
                 "average_total_prompts": average_total_prompts,
                 "average_training_time": average_training_time,
+                "average_subset_pass_rate": average_subset_pass_rate,
+                "average_valset_pass_rate": average_valset_pass_rate,
             },
         }
 
