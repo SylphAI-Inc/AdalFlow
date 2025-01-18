@@ -13,8 +13,8 @@ hotpot_qa_vanilla_rag = "benchmarks/hotpot_qa/adal_exp/train_vanilla.py"
 
 ckpt_values = []
 experiments = [
-    object_count,
-    # trec_6_classification,
+    # object_count,
+    trec_6_classification,
     # hotpot_qa_vanilla_rag,
     # hotpot_qa_multi_hop_rag,
 ]

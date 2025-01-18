@@ -681,13 +681,21 @@ class Trainer(Component):
             )
             test_score = test_output.avg_score
         trainer_results = TrainerResult(
-            steps=[], val_scores=[], test_scores=[], step_results=[], prompts=[]
+            steps=[], val_scores=[], test_scores=[], step_results=[]
         )
         trainer_results.val_scores.append(val_score)
         trainer_results.test_scores.append(test_score)
         prompts = self.adaltask._get_param_values()
-        trainer_results.prompts.append(prompts)
+        # trainer_results.prompts.append(prompts)
         trainer_results.steps.append(0)
+        # add step result
+        step_result = TrainerStepResult(
+            step=0,
+            val_score=val_score,
+            test_score=test_score,
+            prompt=prompts,
+        )
+        trainer_results.step_results.append(step_result)
         print(f"Initial validation score: {val_score}")
         print(f"Initial test score: {test_score}")
         return trainer_results
@@ -1944,7 +1952,7 @@ class Trainer(Component):
 
     def _text_grad_constraint_propose_step(
         self,
-        steps: int,
+        current_step: int,
         all_samples,
         all_losses: List["Parameter"],
         all_y_preds,
@@ -1952,7 +1960,6 @@ class Trainer(Component):
         trainer_results: TrainerResult = None,
         val_dataset: Any = None,
         test_dataset: Any = None,
-        total_steps: int = 0,
     ):
         """Handles both the mixed training and the separate training.
         When include_demo_optimizers is True, the demo optimizers are included in the training
@@ -2036,7 +2043,7 @@ class Trainer(Component):
             subset_samples = [all_samples[i] for i in subset_indices]
             val_output = self.adaltask.validation_step(
                 subset_samples,
-                steps,
+                current_step,
                 self.num_workers,
                 use_loss_eval_fn=use_eval_loss_fn,
             )
@@ -2086,7 +2093,7 @@ class Trainer(Component):
             # set the batch size to the size of the validation set
             val_output = self.adaltask.validation_step(
                 val_dataset,
-                total_steps,
+                current_step,
                 self.num_workers,
                 minimum_score=last_val_score,
             )
@@ -2117,7 +2124,7 @@ class Trainer(Component):
                     val_score,
                     test_score,
                     new_prompts,
-                    total_steps,
+                    current_step,
                 )
                 all_samples, all_losses, all_y_preds = [], [], []
                 val_score_increased = True
@@ -2143,7 +2150,7 @@ class Trainer(Component):
                 last_val_score,
                 trainer_results.test_scores[-1],
                 trainer_results.prompts[-1],
-                total_steps,
+                current_step,
                 attempted_val_score=val_score,
             )
             self._increment_step_from_last_improvement_text_optimizers()
@@ -2190,6 +2197,9 @@ class Trainer(Component):
         trainer_results: TrainerResult = None,
         starting_step: int = 0,
     ) -> TrainerResult:
+        """
+        Starting_step != 0 when it is resume_from_ckpt
+        """
         from adalflow.optim.parameter import OutputParameter
 
         logger.info("Fitting using Textual Gradient Descent with constraints")
@@ -2206,24 +2216,24 @@ class Trainer(Component):
         self._zero_grad_text_optimizers()
 
         num_epochs = self._estimate_num_epochs(train_loader, self.max_steps)
-        total_steps = starting_step
+        current_step = starting_step
         all_samples, all_losses = [], []
         all_y_preds: List[OutputParameter] = []
         for epoch in tqdm(range(num_epochs), desc="Epoch"):
             print(f"Epoch: {epoch}")
-            for steps, batch in enumerate((pbar := tqdm(train_loader, position=0))):
-                total_steps += 1
-                if total_steps > self.max_steps + starting_step:
+            for _, batch in enumerate((pbar := tqdm(train_loader, position=0))):
+                current_step += 1
+                if current_step > self.max_steps + starting_step:
                     print("Reached max steps")
                     break
                 self._zero_grad_text_optimizers()
-                pbar.set_description(f"Training Step: {total_steps}")
+                pbar.set_description(f"Training Step: {current_step}")
                 self.adaltask.train()  # this will turn everything to train mode
-                # print(f"Batch: {batch}")
-                # continue
-                y_preds = self.adaltask.train_step(batch, steps, self.num_workers)
+                y_preds = self.adaltask.train_step(
+                    batch, current_step, self.num_workers
+                )
                 losses = self.adaltask.loss_step(
-                    batch, y_preds, steps, self.num_workers
+                    batch, y_preds, current_step, self.num_workers
                 )
                 # moving batch
 
@@ -2232,18 +2242,16 @@ class Trainer(Component):
                 all_y_preds.extend(
                     [y.data for y in y_preds if isinstance(y, OutputParameter)]
                 )
-                # printc(f"y_preds: {y_preds[0]}")
 
                 all_samples, all_losses, all_y_preds = (
                     self._text_grad_constraint_propose_step(
-                        steps=steps,
+                        current_step=current_step,
                         all_samples=all_samples,
                         all_losses=all_losses,
                         all_y_preds=all_y_preds,
                         trainer_results=trainer_results,
                         val_dataset=val_dataset,
                         test_dataset=test_dataset,
-                        total_steps=total_steps,
                     )
                 )
 

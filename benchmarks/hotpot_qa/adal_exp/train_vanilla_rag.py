@@ -8,8 +8,6 @@ from benchmarks.hotpot_qa.config import load_datasets
 from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import VanillaRAG
 from use_cases.config import gpt_3_model, gpt_4o_model, gpt_3_1106_model
 
-from adalflow.utils import printc
-
 
 # TODO: look more into the loss function
 # TODO: test LLM judge too.
@@ -54,7 +52,7 @@ class VallinaRAGAdal(adal.AdalComponent):
         y_label = ""
         if y_pred and y_pred.data and y_pred.data.answer:
             y_label = y_pred.data.answer  # .lower()
-        printc(f"y_label: {y_label}, y_gt: {sample.answer}")
+        # printc(f"y_label: {y_label}, y_gt: {sample.answer}")
         return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
 
     def prepare_loss_eval(self, sample: Any, y_pred: Any, *args, **kwargs) -> float:
@@ -64,7 +62,6 @@ class VallinaRAGAdal(adal.AdalComponent):
         return self.loss_eval_fn, {"y": y_label, "y_gt": sample.answer}
 
     def prepare_loss(self, sample: HotPotQAData, pred: adal.Parameter):
-        # prepare gt parameter
         y_gt = adal.Parameter(
             name="y_gt",
             data=sample.answer,
@@ -72,7 +69,6 @@ class VallinaRAGAdal(adal.AdalComponent):
             requires_opt=False,
         )
 
-        # pred's full_response is the output of the task pipeline which is GeneratorOutput
         pred.eval_input = (
             pred.data.data.answer
             if pred.data and pred.data.data and pred.data.data.answer
@@ -201,7 +197,7 @@ if __name__ == "__main__":
     # TODO: test debug mode
     ckpt = train(
         debug=False,
-        max_steps=12,
+        max_steps=1,
         seed=2025,  # pass the numpy seed
         tg=use_tg,
         strategy=set_strategy,

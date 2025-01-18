@@ -138,7 +138,7 @@ demo_str = r"""reasoning: \"Dragon Data, the producer of Dragon 32/64, was based
 # """
 
 
-class VanillaRAG(adal.GradComponent):
+class VanillaRAG(adal.Component):
     def __init__(self, passages_per_hop=3, model_client=None, model_kwargs=None):
         super().__init__()
 
@@ -188,13 +188,6 @@ Question: {{question}}
             output_processors=self.llm_parser,
             use_cache=True,
         )
-
-    # user should just treat it as a call function
-    # and we will handle the connection between the components
-    # they should directly pass the retriever_output along with
-    # each output's successor_map_fn.
-    # what if it is passed to two different componnents?
-    # we can create a copy
 
     def call(self, question: str, id: str = None) -> adal.GeneratorOutput:
         if self.training:
@@ -253,7 +246,6 @@ Question: {{question}}
             retriever_out.add_successor_map_fn(
                 successor=self.llm, map_fn=successor_map_fn
             )
-            # retriever_out.requires_opt = False
         else:
             successor_map_fn = lambda x: (  # noqa E731
                 "\n\n".join(x.documents) if x and x.documents else ""

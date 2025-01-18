@@ -137,9 +137,7 @@ class TrainerResult(DataClass):
     test_scores: List[float] = field(
         default_factory=list, metadata={"desc": "List of test scores"}
     )
-    prompts: List[List[PromptData]] = field(
-        default_factory=list, metadata={"desc": "List of optimized prompts"}
-    )
+
     step_results: List[TrainerStepResult] = field(
         default_factory=list,
         metadata={"desc": "List of step results, in an aggregated form"},

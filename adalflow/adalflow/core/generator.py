@@ -66,7 +66,7 @@ PromptArgType = Dict[str, Union[str, Parameter]]
 @dataclass
 class BackwardPassSetup(DataClass):
     all_pred_at_once: bool = field(
-        default=True, metadata={"desc": "Backward all predecessors at once."}
+        default=False, metadata={"desc": "Backward all predecessors at once."}
     )
     threshold_score_to_compute_grad_for_errors: float = field(
         default=0.9,
