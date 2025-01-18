@@ -513,6 +513,12 @@ class AdalComponent(Component):
         use_loss_eval_fn: bool = False,
     ) -> EvaluationResult:
         r"""
+        Args:
+            batch (Any): The input batch to validate, can be a whole dataset
+            batch_idx (int): The index of the batch. or current_step
+            num_workers (int): Number of worker threads for parallel processing.
+            minimum_score (Optional[float]): The max potential score needs to be larger than this to continue evaluating.
+
         Evaluate a batch or the validate dataset by setting the batch=val_dataset.
         Uses self.eval_fn to evaluate the samples.
         If you require self.task.eval() to be called before validation, you can override this method as:
