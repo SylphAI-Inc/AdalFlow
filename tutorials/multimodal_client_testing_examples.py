@@ -25,7 +25,7 @@ from numpy.linalg import norm
 
 def test_basic_generation():
     """Test basic text generation"""
-    client = OpenAIClient()
+    client = OpenAIClient()  # Default model_type is LLM
     gen = Generator(
         model_client=client,
         model_kwargs={
@@ -40,7 +40,7 @@ def test_basic_generation():
 
 def test_invalid_image_url():
     """Test Generator output with invalid image URL"""
-    client = OpenAIClient()
+    client = OpenAIClient()  # Default model_type is LLM
     gen = Generator(
         model_client=client,
         model_kwargs={
@@ -56,7 +56,7 @@ def test_invalid_image_url():
 
 def test_invalid_image_generation():
     """Test DALL-E generation with invalid parameters"""
-    client = OpenAIClient()
+    client = OpenAIClient(model_type=ModelType.IMAGE_GENERATION)
     gen = Generator(
         model_client=client,
         model_kwargs={
@@ -64,8 +64,7 @@ def test_invalid_image_generation():
             "size": "invalid_size",  # Invalid size parameter
             "quality": "standard",
             "n": 1
-        },
-        model_type=ModelType.IMAGE_GENERATION
+        }
     )
     
     print("\n=== Testing Invalid DALL-E Parameters ===")
@@ -74,11 +73,10 @@ def test_invalid_image_generation():
 
 def test_vision_and_generation():
     """Test both vision analysis and image generation"""
-    client = OpenAIClient()
-    
-    # 1. Test Vision Analysis
+    # 1. Test Vision Analysis with LLM client
+    vision_client = OpenAIClient()  # Default model_type is LLM
     vision_gen = Generator(
-        model_client=client,
+        model_client=vision_client,
         model_kwargs={
             "model": "gpt-4o-mini",
             "images": "https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png",
@@ -90,16 +88,16 @@ def test_vision_and_generation():
     print("\n=== Vision Analysis ===")
     print(f"Description: {vision_response.raw_response}")
 
-    # 2. Test DALL-E Image Generation
+    # 2. Test DALL-E Image Generation with IMAGE_GENERATION client
+    dalle_client = OpenAIClient(model_type=ModelType.IMAGE_GENERATION)
     dalle_gen = Generator(
-        model_client=client,
+        model_client=dalle_client,
         model_kwargs={
             "model": "dall-e-3",
             "size": "1024x1024",
             "quality": "standard",
             "n": 1
-        },
-        model_type=ModelType.IMAGE_GENERATION
+        }
     )
     
     # For image generation, input_str becomes the prompt
