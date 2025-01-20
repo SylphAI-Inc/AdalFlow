@@ -484,7 +484,7 @@ Context from last search query: {{context}}\
 
     def forward(self, *, input: str, id: str = None) -> adal.Parameter:
         # assemble the foundamental building blocks
-        printc(f"question: {input}", "yellow")
+        # printc(f"question: {input}", "yellow")
         # context = []
 
         queries: List[str] = []
