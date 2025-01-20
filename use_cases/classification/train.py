@@ -166,9 +166,9 @@ if __name__ == "__main__":
 
     ckpt = train(
         **gpt_3_model,
-        debug=False,
+        debug=True,
         max_steps=12,
-        strategy="constrained",
+        strategy=set_strategy,
         optimization_order="sequential",
         seed=2025,
         tg=use_tg,
@@ -181,37 +181,3 @@ if __name__ == "__main__":
         print(f"Checkpoint saved to {set_output_path}")
     else:
         print("No file path provided for saving the checkpoint.")
-
-    # NOTE: raw: 40, bootstrap: 4, max_steps: 8, strategy: random, val: 86.1, test: 86.8 (+4.2% compared with dspy)
-    # NOTE: train task without output format: val: 0.67->0.805, test: 0.805-> 0.896 # best performing model (zero-shot)
-    # NOTE: train with without output format, use new class_name: constrained_max_steps_12_bac8d_run_1.json
-    # val: 0.77.8, test: 0.86.8 #constrained_max_steps_12_138d9_run_1.json
-
-    # REsume from the above, continue another 12 steps: val: 77.78% tets: 86.81%
-    # result from the above, use bootstrap 1 shot: test -> 88.19% #constrained_max_steps_12_2ffa7_run_4.json (with input)
-    # result from the above, use bootstrap 1 shot: no improvement, 86.81% #constrained_max_steps_12_2ffa7_run_5.json (with only rational and answers)
-    # result from above, use bootstrap 2 shots: use input:no improvement
-    # bootstrap is not helpful
-    # 40 shots, 1 bootstrap, continue from last best, 86.1 val, 90.28% tes
-    # 40 shots, resume, no improvment
-    # continue from last best, 3 bootstrap, 83.3 val, 86.1 test (only rational)
-    # continue from last best, 3 bootstrap, (both input and rational)86.1 val, 82.64 test (not really better)
-    # NOTE:
-    # continue from last best, 1 bootstrap, (both input and rational)86.1 val, 86.1 test (not really better)
-    # TrecClassifierAdal/constrained_max_steps_12_2ffa7_run_2.json
-    # 1086s
-    # 0.88 validation (the steps are not right, it shows 56 steps)
-    # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json
-    # 0.8958 validations -> 81 steps
-    # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json
-    # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_05739_run_1.json 12 steps, 85.42% test both positve and negative gradients, 1472 seconds
-    # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_63dec_run_1.json 86.81% test on only negative gradients. with past history, 987 seconds
-    # no past history, 83% only. 84 /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_ca5ac_run_1.json
-    # past history, both gradients, 88.89% in 12 steps /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_b4612_run_1.json 1477s
-    # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_f1e5a_run_1.json 811s 89.58% both positive and negative gradients
-    # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_05a8e_run_1.json 1518s 85.41% only negative gradients
-    # /Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_e0f86_run_1.json 1247s, 88.88 both gradients
-
-
-# theory: all few-shots demo or instruction, all so that the llm can reason better. Once it reches to its limits, no more shots can help or further instruction can.
-# there might be a saturation point!!!

@@ -187,7 +187,7 @@ if __name__ == "__main__":
     max_proposals_per_step = args.max_proposals_per_step
 
     ckpt = train(
-        debug=False,
+        debug=True,
         max_steps=12,
         strategy=set_strategy,
         exclude_input_fields_from_bootstrap_demos=True,
@@ -204,20 +204,3 @@ if __name__ == "__main__":
         print(f"Checkpoint saved to {set_output_path}")
     else:
         print("No file path provided for saving the checkpoint.")
-
-    # train_diagnose(**gpt_3_model)
-    # train_diagnose_teacher(**gpt_4o_model) # 4omini works well as an optimizer too
-    # /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_49c63_run_1.json
-    # 0.72 -> 0.9 val
-    # 0.79 -> 0.92 test
-    # 0.86->0.94 val, 0.79 -> 0.93 with only negative gradients /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_7a649_run_1.json
-
-    # without gradients -> 0.9 on tests
-    # without positive gradients -> /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_8ac70_run_1.json 0.84->0.94 val, 0.82 -> 0.88 test
-
-    # /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_1f358_run_1.json 1 val 0.96 val 955s
-    # 0.94 val, 0.89 test, /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_e1bb5_run_1.json 907s, with both positive and negatives
-    # 92, 91 test /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_18e8d_run_1.json 747s
-    # 96%  /Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_18e8d_run_1.json
-    # (90%, 94%, 92%, 94%) 92.5 + 1.5
-    # (96%, 100%, 96%, 96% ) 97+ 1.73

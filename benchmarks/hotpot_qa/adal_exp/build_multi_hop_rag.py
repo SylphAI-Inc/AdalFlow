@@ -192,7 +192,7 @@ class MultiHopRetrieverCycle(adal.Retriever):
                 # ),
                 "task_desc_str": Parameter(
                     name="task_desc_str",
-                    data=query_generator_task_desc,
+                    data=task_desc_str,
                     # data=task_desc_str_system_finetuned,
                     # data=task_desc_system_finedtuned_separately[0],
                     role_desc="Task description for the language model. Used together with \
@@ -224,7 +224,6 @@ Context from last search query: {{context}}\
 
     def call(self, *, input: str, id: str = None) -> List[adal.RetrieverOutput]:
         # assemble the foundamental building blocks
-        printc(f"question: {input}", "yellow")
         out = self.forward(input=input, id=id)
 
         if not isinstance(out, adal.Parameter):
@@ -233,7 +232,6 @@ Context from last search query: {{context}}\
         return out.data  # or full response its up to users
 
     def forward(self, *, input: str, id: str = None) -> adal.Parameter:
-        # assemble the foundamental building blocks
         context = []
         # 1. make question a parameter as generator does not have it yet
         # can create the parameter at the leaf, but not the intermediate nodes
@@ -248,7 +246,6 @@ Context from last search query: {{context}}\
         last_query = None
 
         for i in range(self.max_hops):
-            # printc(f"hop: {i}", "yellow")
 
             gen_out = self.query_generator.forward(
                 prompt_kwargs={

@@ -9,14 +9,20 @@ num_runs = 4
 object_count = "use_cases/question_answering/bbh/object_count/train_new.py"
 trec_6_classification = "use_cases/classification/train.py"
 hotpot_qa_multi_hop_rag = "benchmarks/hotpot_qa/adal_exp/train_multi_hop_rag.py"
-hotpot_qa_vanilla_rag = "benchmarks/hotpot_qa/adal_exp/train_vanilla.py"
+hotpot_qa_multi_hop_rag_cycle = (
+    "benchmarks/hotpot_qa/adal_exp/train_multi_hop_rag_cycle.py"
+)
+hotpot_qa_vanilla = "benchmarks/hotpot_qa/adal_exp/train_vanilla.py"
+hotpot_qa_vanilla_rag = "benchmarks/hotpot_qa/adal_exp/train_vanilla_rag.py"
+
 
 ckpt_values = []
 experiments = [
     # object_count,
-    trec_6_classification,
+    # trec_6_classification,
     # hotpot_qa_vanilla_rag,
     # hotpot_qa_multi_hop_rag,
+    hotpot_qa_multi_hop_rag_cycle,
 ]
 
 # set up the strategy for each experiment

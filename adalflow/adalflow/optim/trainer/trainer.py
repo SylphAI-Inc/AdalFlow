@@ -1075,6 +1075,10 @@ class Trainer(Component):
         for text_optimizer in self.text_optimizers:
             text_optimizer.zero_grad()
 
+    def _text_optimizers_set_target_param(self):
+        for text_optimizer in self.text_optimizers:
+            text_optimizer.set_target_param()
+
     def _propose_text_optimizers(self):
         for text_optimizer in self.text_optimizers:
             text_optimizer.propose()
@@ -1658,6 +1662,7 @@ class Trainer(Component):
         batch_score = batch_score_list.avg_score
         last_val_score = trainer_results.val_scores[-1]
         val_score_increased = False
+        val_score = None
 
         for i in tdqm_loader:
             print(f"Proposal: {i+1}")
@@ -2353,6 +2358,7 @@ class Trainer(Component):
                     print("Reached max steps")
                     break
                 self._zero_grad_text_optimizers()
+                self._text_optimizers_set_target_param()
                 pbar.set_description(f"Training Step: {current_step}")
                 self.adaltask.train()  # this will turn everything to train mode
                 y_preds = self.adaltask.train_step(

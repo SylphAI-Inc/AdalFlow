@@ -9,8 +9,6 @@ from benchmarks.hotpot_qa.adal_exp.build_multi_hop_rag import MultiHopRAGCycle
 from use_cases.config import gpt_3_model, gpt_4o_model
 
 
-# TODO: look more into the loss function
-# TODO: test LLM judge too.
 class MultiHopRAGCycleAdal(adal.AdalComponent):
     def __init__(
         self,
@@ -27,40 +25,40 @@ class MultiHopRAGCycleAdal(adal.AdalComponent):
             max_hops=2,
         )
         eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
+        loss_eval_fn = AnswerMatchAcc(type="f1_score").compute_single_item
         loss_fn = adal.EvalFnToTextLoss(
-            eval_fn=eval_fn, eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0"
+            eval_fn=loss_eval_fn,
+            eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0",
         )
-        # eval_fn = AnswerMatchAcc(type="fuzzy_match").compute_single_item
-        # loss_fn = adal.EvalFnToTextLoss(
-        #     eval_fn=eval_fn,
-        #     eval_fn_desc="fuzzy_match: 1 if  str(y_gt) in str(y) in else 0",
-        # )
+
         super().__init__(
             task=task,
             eval_fn=eval_fn,
+            loss_eval_fn=loss_eval_fn,
             loss_fn=loss_fn,
             backward_engine_model_config=backward_engine_model_config,
             teacher_model_config=teacher_model_config,
             text_optimizer_model_config=text_optimizer_model_config,
         )
 
-    # tell the trainer how to call the task
     def prepare_task(self, sample: HotPotQAData) -> Tuple[Callable[..., Any], Dict]:
         if self.task.training:
             return self.task.forward, {"question": sample.question, "id": sample.id}
         else:
             return self.task.call, {"question": sample.question, "id": sample.id}
 
-    # TODO: use two map fn to make the cde even simpler
-
-    # eval mode: get the generator output, directly engage with the eval_fn
     def prepare_eval(self, sample: HotPotQAData, y_pred: adal.GeneratorOutput) -> float:
         y_label = ""
         if y_pred and y_pred.data and y_pred.data.answer:
             y_label = y_pred.data.answer
         return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
 
-    # train mode: get the loss and get the data from the full_response
+    def prepare_loss_eval(self, sample: Any, y_pred: Any, *args, **kwargs) -> float:
+        y_label = ""
+        if y_pred and y_pred.data and y_pred.data.answer:
+            y_label = y_pred.data.answer
+        return self.loss_eval_fn, {"y": y_label, "y_gt": sample.answer}
+
     def prepare_loss(self, sample: HotPotQAData, pred: adal.Parameter):
         # prepare gt parameter
         y_gt = adal.Parameter(
@@ -83,9 +81,6 @@ class MultiHopRAGCycleAdal(adal.AdalComponent):
         }
 
 
-# Note: diagnose is quite helpful, it helps you to quickly check if the evalfunction is the right metrics
-# i checked the eval which does fuzzy match, and found some yes and Yes are not matched, then converted both strings to lower and
-# the performances have gone up from 0.15 to 0.4
 def train_diagnose(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
@@ -214,7 +209,7 @@ if __name__ == "__main__":
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     ckpt = train(
         debug=False,
-        max_steps=12,
+        max_steps=24,
         seed=2025,  # pass the numpy seed
         tg=use_tg,
         strategy=set_strategy,

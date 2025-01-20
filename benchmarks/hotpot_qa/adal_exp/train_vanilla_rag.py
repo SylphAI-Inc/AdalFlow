@@ -9,8 +9,6 @@ from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import VanillaRAG
 from use_cases.config import gpt_3_model, gpt_4o_model, gpt_3_1106_model
 
 
-# TODO: look more into the loss function
-# TODO: test LLM judge too.
 class VallinaRAGAdal(adal.AdalComponent):
     def __init__(
         self,
@@ -194,10 +192,9 @@ if __name__ == "__main__":
 
     # train_diagnose(**gpt_3_model)
 
-    # TODO: test debug mode
     ckpt = train(
-        debug=False,
-        max_steps=1,
+        debug=True,
+        max_steps=12,
         seed=2025,  # pass the numpy seed
         tg=use_tg,
         strategy=set_strategy,
@@ -213,9 +210,3 @@ if __name__ == "__main__":
         print(f"Checkpoint saved to {set_output_path}")
     else:
         print("No file path provided for saving the checkpoint.")
-    # random_max_steps_12_ecf16_run_9.json, demo only, val 0.6 to 0.68,  test: 0.58-0.61
-    # random_max_steps_12_7c091_run_1.json,  prompt + demo, 0.58 -0.62, test: 0.55 - 0.58
-    # resume from random_max_steps_12_7c091_run_1.json
-
-    # demo only, no input, 4 shots, 0.58-> 0.62, VallinaRAGAdal/constrained_max_steps_12_b0a37_run_1.json
-    # this is the same as dspy's 20shots, because dspy does not use the weighted sampling

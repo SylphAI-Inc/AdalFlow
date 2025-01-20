@@ -208,7 +208,7 @@ if __name__ == "__main__":
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     ckpt = train(
         debug=False,
-        max_steps=12,
+        max_steps=24,
         seed=2025,  # pass the numpy seed
         tg=use_tg,
         strategy=set_strategy,
@@ -223,24 +223,3 @@ if __name__ == "__main__":
         print(f"Checkpoint saved to {set_output_path}")
     else:
         print("No file path provided for saving the checkpoint.")
-
-    # notes for debug: if have nontype, delete all model cache and try again
-    #    raise ValueError(ValueError: score must be provided for each demo,
-
-    # 12/11/2024
-    # demo only: /Users/liyin/Documents/test/LightRAG/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_8cdfc_run_9.json
-
-    # why text grad did not improve in the rag case? Do we need to improve the meta prompt?
-    # /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_2686e_run_1.json
-    # 0.58 -> 0.68 on the test split
-    # 0.72 text grad  /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_c1660_run_1.json
-    # try cycle next
-    #  0.66 /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_1d189_run_1.json
-    # no gradients 1021s (/Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_68e7e_run_1.json) -> 0.64 -> 0.68, pass 10/10+28
-    # no gradient but scores (positive & negative) /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_83871_run_1.json 0.64->0.66, test 0.64 -> 0.66
-    # no gradient but only negative score
-    # no gradient but score + teacher demonstration.
-    # feedback while seeing the gt + y
-    # only negative feedback /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_f5506_run_1.json 0.62 -> 0.7
-    # /Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_b4aa5_run_1.json 0.74 pass rate 8 32
-    # random cycle rag: /Users/liyin/.adalflow/ckpt/MultiHopRAGCycleAdal/random_max_steps_12_82bd2_run_1.json 0.64
