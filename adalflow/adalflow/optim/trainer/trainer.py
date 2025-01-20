@@ -1666,7 +1666,9 @@ class Trainer(Component):
 
         for i in tdqm_loader:
             print(f"Proposal: {i+1}")
+            start_time = time.time()
             self._propose_text_optimizers()
+            printc(f"Propose time: {time.time()-start_time}")
             new_prompts = self.adaltask._get_param_values()
             print("New prompts: ", new_prompts)
 
@@ -2166,8 +2168,9 @@ class Trainer(Component):
         for i in tdqm_loader:
 
             print(f"Proposal: {i+1}")
-            # self.optimizer.propose()
+            start_time = time.time()
             self._propose_text_optimizers()  # new prompts
+            printc(f"Propose time: {time.time()-start_time}")
             if include_demo_optimizers:
                 self._demo_optimizers_propose()
             new_prompts = self.adaltask._get_param_values()

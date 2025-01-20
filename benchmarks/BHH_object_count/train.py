@@ -142,6 +142,9 @@ if __name__ == "__main__":
     save_path = "benchmarks/BHH_object_count/models/dspy"
 
     train_and_validate()
+    # Validation accuracy: 0.84 0.0447213595499958
+    # Test accuracy: 0.825 0.051720402163943004
+    # Training time: 707.2381317615509
     # if not os.path.exists(save_path):
     #     os.makedirs(save_path)
 

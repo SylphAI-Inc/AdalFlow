@@ -10,9 +10,6 @@ from use_cases.config import gpt_3_model, gpt_4o_model
 from adalflow.utils import printc
 
 
-# TODO: look more into the loss function
-# TODO: test LLM judge too.
-
 from adalflow.components.agent.react import ReActOutput
 
 
@@ -31,7 +28,6 @@ class AgenticRAGAdal(adal.AdalComponent):
         )
         eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
         loss_eval_fn = AnswerMatchAcc(type="f1_score").compute_single_item
-        # eval_fn = AnswerMatchAcc(type="f1_score").compute_single_item
         loss_fn = adal.EvalFnToTextLoss(
             eval_fn=loss_eval_fn,
             eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0",
@@ -51,7 +47,6 @@ class AgenticRAGAdal(adal.AdalComponent):
             text_optimizer_model_config=text_optimizer_model_config,
         )
 
-    # tell the trainer how to call the task
     def prepare_task(self, sample: HotPotQAData) -> Tuple[Callable[..., Any], Dict]:
         if self.task.training:
             return self.task.forward, {"input": sample.question, "id": sample.id}
@@ -59,9 +54,6 @@ class AgenticRAGAdal(adal.AdalComponent):
             # print("eval mode")
             return self.task.call, {"input": sample.question, "id": sample.id}
 
-    # TODO: use two map fn to make the cde even simpler
-
-    # eval mode: get the generator output, directly engage with the eval_fn
     def prepare_eval(self, sample: HotPotQAData, y_pred: ReActOutput) -> float:
 
         y_label = y_pred.answer if isinstance(y_pred, ReActOutput) else y_pred
@@ -89,16 +81,9 @@ class AgenticRAGAdal(adal.AdalComponent):
             requires_opt=False,
         )
 
-        # pred's full_response is the output of the task pipeline which is GeneratorOutput
-        # pred.eval_input = (
-        #     pred.data[-1].observation if pred.data and pred.data[-1] else ""
-        # )
         printc(f"pred data: {pred.data}, gt: {sample.answer}")
         pred.eval_input = pred.data if pred.data else ""
-        # pred.eval_input = (
-        #     pred.data[-1].observation if pred.data and pred.data[-1] else ""
-        # )
-        # printc(f"loss eval_input: {pred.eval_input}")
+
         return self.loss_fn, {
             "kwargs": {"y": pred, "y_gt": y_gt},
             "id": sample.id,
@@ -107,9 +92,6 @@ class AgenticRAGAdal(adal.AdalComponent):
         }
 
 
-# Note: diagnose is quite helpful, it helps you to quickly check if the evalfunction is the right metrics
-# i checked the eval which does fuzzy match, and found some yes and Yes are not matched, then converted both strings to lower and
-# the performances have gone up from 0.15 to 0.4
 def train_diagnose(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
@@ -235,7 +217,7 @@ if __name__ == "__main__":
 
     ckpt = train(
         debug=False,
-        max_steps=12,
+        max_steps=24,
         seed=2025,
         tg=use_tg,
         strategy=set_strategy,

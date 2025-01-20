@@ -137,29 +137,6 @@ class CombineStepHistory(GradComponent2):
         return answer
 
 
-# class FunctionOutputToStepOutput(GradComponent2):
-#     def __init__(self):
-#         super().__init__(desc="Convert the FunctionOutput to StepOutput")
-
-#     def call(
-#         self,
-#         action_str: FunctionExpression,
-#         step: int,
-#         result: FunctionOutput,
-#         func: Function,
-#         id: Optional[str] = None,
-#     ) -> StepOutput:
-#         """Convert the action string to StepOutput."""
-#         step_output = StepOutput(step=step)
-#         if not isinstance(action_str, FunctionExpression):
-#             raise ValueError(f"Expected FunctionExpression, but got {type(action_str)}")
-#         step_output.action = action_str
-#         step_output.function = func
-
-#         step_output.observation = result.output
-#         return step_output
-
-
 @dataclass
 class ReActOutput(DataClass):
     r"""Similar to GeneratorOutput, but with additional step history and final answer."""
@@ -836,8 +813,8 @@ class ReActAgent(Component):
         }
 
         step_history: List[Union[StepOutput, Parameter]] = []
-
-        printc(f"input_query: {input}", color="red")
+        if self.debug:
+            printc(f"input_query: {input}", color="red")
         for i in range(self.max_steps):
             step = i + 1
             try:

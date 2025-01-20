@@ -14,6 +14,7 @@ hotpot_qa_multi_hop_rag_cycle = (
 )
 hotpot_qa_vanilla = "benchmarks/hotpot_qa/adal_exp/train_vanilla.py"
 hotpot_qa_vanilla_rag = "benchmarks/hotpot_qa/adal_exp/train_vanilla_rag.py"
+hotpot_qa_agent_rag = "benchmarks/hotpot_qa/adal_exp/train_agent_rag.py"
 
 
 ckpt_values = []
@@ -22,7 +23,8 @@ experiments = [
     # trec_6_classification,
     # hotpot_qa_vanilla_rag,
     # hotpot_qa_multi_hop_rag,
-    hotpot_qa_multi_hop_rag_cycle,
+    # hotpot_qa_multi_hop_rag_cycle,
+    hotpot_qa_agent_rag,
 ]
 
 # set up the strategy for each experiment
