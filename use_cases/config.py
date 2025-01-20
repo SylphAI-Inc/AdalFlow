@@ -15,7 +15,20 @@ llama3_model = {
 gpt_3_model = {
     "model_client": OpenAIClient(input_type="text"),
     "model_kwargs": {
-        "model": "gpt-3.5-turbo",
+        "model": "gpt-3.5-turbo-0125",
+        "max_tokens": 2000,
+        "temperature": 0.0,
+        "top_p": 0.99,
+        "frequency_penalty": 0,
+        "presence_penalty": 0,
+        "stop": None,
+    },
+}
+
+gpt_3_1106_model = {
+    "model_client": OpenAIClient(input_type="text"),
+    "model_kwargs": {
+        "model": "gpt-3.5-turbo-1106",
         "max_tokens": 2000,
         "temperature": 0.0,
         "top_p": 0.99,
@@ -38,10 +51,32 @@ gpt_4o_mini_model = {
     },
 }
 
+gpt_4_model = {
+    "model_client": OpenAIClient(),
+    "model_kwargs": {
+        "model": "gpt-4-turbo",
+        "temperature": 1,
+        "top_p": 0.99,
+        "max_tokens": 1000,
+        # "frequency_penalty": 1,  # high for nto repeating prompt
+    },
+}
+
 gpt_4o_model = {
     "model_client": OpenAIClient(),
     "model_kwargs": {
-        "model": "gpt-4o-mini",
+        "model": "gpt-4o",  # gpt-4o-realtime-preview-2024-12-17
+        "temperature": 1,
+        "top_p": 0.99,
+        # "max_tokens": 1000,
+        # "frequency_penalty": 0.8,  # high for nto repeating prompt
+    },
+}
+
+gpt_4o1_model = {
+    "model_client": OpenAIClient(),
+    "model_kwargs": {
+        "model": "o1-preview",
         "temperature": 1,
         "top_p": 0.99,
         "max_tokens": 1000,

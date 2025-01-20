@@ -6,7 +6,7 @@ import dspy
 
 import adalflow as adal
 
-from adalflow.datasets.hotpot_qa import HotPotQA
+from benchmarks.hotpot_qa.config import load_datasets
 
 from adalflow.core.retriever import Retriever
 from adalflow.core.types import RetrieverOutput
@@ -18,18 +18,6 @@ colbertv2_wiki17_abstracts = dspy.ColBERTv2(
 )
 
 dspy.settings.configure(rm=colbertv2_wiki17_abstracts)
-
-
-def load_datasets():
-
-    trainset = HotPotQA(split="train", size=20)
-    valset = HotPotQA(split="val", size=50)
-    testset = HotPotQA(split="test", size=50)
-    print(f"trainset, valset: {len(trainset)}, {len(valset)}, example: {trainset[0]}")
-    return trainset, valset, testset
-
-
-# task pipeline
 
 
 # dspy format
@@ -102,6 +90,8 @@ Question: {{question}}
 # Demonstrating how to wrap other retriever to adalflow retriever and be applied in training pipeline
 # as a subclass of retriever which is a subclass of GradComponent, we dont need to do additional implementation
 # data processing has already done
+
+
 class DspyRetriever(Retriever):
     def __init__(self, top_k: int = 3):
         super().__init__()
@@ -110,7 +100,7 @@ class DspyRetriever(Retriever):
 
     def call(
         self, input: str, top_k: Optional[int] = None, id: str = None
-    ) -> List[RetrieverOutput]:
+    ) -> RetrieverOutput:
 
         k = top_k or self.top_k
 
@@ -119,27 +109,36 @@ class DspyRetriever(Retriever):
 
         output = self.dspy_retriever(query_or_queries=input, k=k)
         # print(f"dsy_retriever output: {output}")
-        final_output: List[RetrieverOutput] = []
         documents = output.passages
 
-        final_output.append(
-            RetrieverOutput(
-                query=input,
-                documents=documents,
-                doc_indices=[],
-            )
+        return RetrieverOutput(
+            query=input,
+            documents=documents,
+            doc_indices=[],
         )
-        # print(f"final_output: {final_output}")
-        return final_output
 
 
 task_desc_str = r"""Answer questions with short factoid answers.
 
-You will receive context(may contain relevant facts) and a question.
+You will receive context(contain relevant facts).
 Think step by step."""
 
+task_desc_str_system_finetuned = "Generate a concise, factually accurate answer by synthesizing information from the provided context. If multiple sources are available, prioritize resolving ambiguities and cross-referencing data for consistency. Ensure the final answer directly addresses the question while considering specific numerical or descriptive criteria mentioned in the input."
 
-class VanillaRAG(adal.GradComponent):
+# task_desc_str = r"""Answer questions with verbatim short factoid responses.
+
+# You will receive context. Extract only the most relevant fact for a precise answer.
+# """
+
+demo_str = r"""reasoning: \"Dragon Data, the producer of Dragon 32/64, was based in Port Talbot, Wales,\\\n  \\ while TK82C was a product of a Brazilian company, Microdigital Eletr\\xF4nica Ltda.\"\nanswer: 'No'\n\nreasoning: The context specifies that the live action sequel '102 Dalmatians' was\n  directed by Kevin Lima.\nanswer: Kevin Lima\n\nreasoning: The context specifically mentions that in the 1970 Michigan gubernatorial\n  election, Republican William Milliken defeated Democrat Sander Levin.\nanswer: William Milliken\n\nreasoning: The context states that 'Lost Songs from the Lost Years' is a compilation\n  by Cloud Cult, which is an experimental indie rock band from Duluth, Minnesota.\nanswer: Minnesota
+"""
+
+# task_desc_str = r"""Answer the question with given context.
+# The question requires you to answer one subquestion first, and then find the next potential subquestion and until you find the final answer.
+# """
+
+
+class VanillaRAG(adal.Component):
     def __init__(self, passages_per_hop=3, model_client=None, model_kwargs=None):
         super().__init__()
 
@@ -154,30 +153,41 @@ class VanillaRAG(adal.GradComponent):
             model_kwargs=model_kwargs,
             prompt_kwargs={
                 "task_desc_str": adal.Parameter(
+                    # data=task_desc_str_system_finetuned,
                     data=task_desc_str,
-                    role_desc="Task description for the language model",
+                    role_desc="""Task description for the language model,\
+                    used with the following template: \
+                    {{task_desc_str}} \
+                    {{output_format_str}}\
+                    <START_OF_USER>
+Context: {{context}}
+Question: {{question}}
+<END_OF_USER>""",
                     param_type=adal.ParameterType.PROMPT,
                     requires_opt=True,
+                    instruction_to_backward_engine="You need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
+                    instruction_to_optimizer="ou need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
+                    # + "Given existing context, ensure the task instructions can maximize the performance.",
                 ),
-                "few_shot_demos": adal.Parameter(
-                    data=None,
-                    requires_opt=True,
-                    role_desc="To provide few shot demos to the language model",
-                    param_type=adal.ParameterType.DEMOS,
-                ),
+                # "few_shot_demos": adal.Parameter(
+                #     # data=demo_str,
+                #     data=None,
+                #     requires_opt=True,
+                #     role_desc="To provide few shot demos to the language model",
+                #     param_type=adal.ParameterType.DEMOS,
+                # ),
                 "output_format_str": self.llm_parser.get_output_format_str(),
+                # "output_format_str": adal.Parameter(
+                #     data=self.llm_parser.get_output_format_str(),
+                #     requires_opt=True,
+                #     param_type=adal.ParameterType.PROMPT,
+                #     role_desc="The output format string to ensure no failed json parsing",
+                # ),
             },
             template=answer_template,
             output_processors=self.llm_parser,
             use_cache=True,
         )
-
-    # user should just treat it as a call function
-    # and we will handle the connection between the components
-    # they should directly pass the retriever_output along with
-    # each output's successor_map_fn.
-    # what if it is passed to two different componnents?
-    # we can create a copy
 
     def call(self, question: str, id: str = None) -> adal.GeneratorOutput:
         if self.training:
@@ -188,7 +198,7 @@ class VanillaRAG(adal.GradComponent):
         retriever_out = self.retriever.call(input=question, id=id)
 
         successor_map_fn = lambda x: (  # noqa E731
-            "\n\n".join(x[0].documents) if x and x[0] and x[0].documents else ""
+            "\n\n".join(x.documents) if x and x.documents else ""
         )
         retrieved_context = successor_map_fn(retriever_out)
 
@@ -201,29 +211,16 @@ class VanillaRAG(adal.GradComponent):
             prompt_kwargs=prompt_kwargs,
             id=id,
         )
-        # self.llm.print_prompt(**prompt_kwargs)
-        # print(f"retrieved_context: {retrieved_context}")
-        # print(f"retriever_out: {retriever_out}")
+
         return output
 
-    # def call(self, *, question: str, id: str = None) -> adal.GeneratorOutput:
-    #     self.train()
-    #     out = self.forward(question=question, id=id)
-    #     if not isinstance(out, adal.Parameter):
-    #         raise ValueError(
-    #             "This output should be a Parameter, please check the forward function"
-    #         )
-    #     self.eval()
-    #     return out.data
-
-    # TODO: add id in the retriever output
     def forward(self, question: str, id: str = None) -> adal.Parameter:
         if not self.training:
             raise ValueError("This component is not supposed to be called in eval mode")
         retriever_out = self.retriever.forward(input=question, id=id)
         successor_map_fn = lambda x: (  # noqa E731
-            "\n\n".join(x.data[0].documents)
-            if x.data and x.data[0] and x.data[0].documents
+            "\n\n".join(x.data.documents)
+            if x.data and x.data and x.data.documents
             else ""
         )
         retriever_out.add_successor_map_fn(successor=self.llm, map_fn=successor_map_fn)
@@ -242,8 +239,8 @@ class VanillaRAG(adal.GradComponent):
         retriever_out = self.retriever(input=question)
         if isinstance(retriever_out, adal.Parameter):
             successor_map_fn = lambda x: (  # noqa E731
-                "\n\n".join(x.data[0].documents)
-                if x.data and x.data[0] and x.data[0].documents
+                "\n\n".join(x.data.documents)
+                if x.data and x.data and x.data.documents
                 else ""
             )
             retriever_out.add_successor_map_fn(
@@ -251,7 +248,7 @@ class VanillaRAG(adal.GradComponent):
             )
         else:
             successor_map_fn = lambda x: (  # noqa E731
-                "\n\n".join(x[0].documents) if x and x[0] and x[0].documents else ""
+                "\n\n".join(x.documents) if x and x.documents else ""
             )
             retrieved_context = successor_map_fn(retriever_out)
         prompt_kwargs = {
@@ -262,18 +259,83 @@ class VanillaRAG(adal.GradComponent):
         return output
 
 
+class Vanilla(adal.Component):
+    def __init__(self, passages_per_hop=3, model_client=None, model_kwargs=None):
+        super().__init__()
+
+        self.passages_per_hop = passages_per_hop
+
+        # self.retriever = DspyRetriever(top_k=passages_per_hop)
+        self.llm_parser = adal.DataClassParser(
+            data_class=AnswerData, return_data_class=True, format_type="json"
+        )
+        self.llm = Generator(
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+            prompt_kwargs={
+                "task_desc_str": adal.Parameter(
+                    data=task_desc_str,
+                    role_desc="Task description for the language model",
+                    param_type=adal.ParameterType.PROMPT,
+                    requires_opt=True,
+                    instruction_to_backward_engine="You need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
+                    instruction_to_optimizer="You need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
+                    # + "Given existing context, ensure the task instructions can maximize the performance.",
+                ),
+                # "few_shot_demos": adal.Parameter(
+                #     data=None,
+                #     requires_opt=True,
+                #     role_desc="To provide few shot demos to the language model",
+                #     param_type=adal.ParameterType.DEMOS,
+                # ),
+                "output_format_str": self.llm_parser.get_output_format_str(),
+            },
+            template=answer_template,
+            output_processors=self.llm_parser,
+            use_cache=True,
+        )
+
+    def call(
+        self, question: str, context: List[str], id: str = None
+    ) -> adal.GeneratorOutput:
+        if self.training:
+            raise ValueError(
+                "This component is not supposed to be called in training mode"
+            )
+
+        prompt_kwargs = {
+            "context": context,
+            "question": question,
+        }
+
+        output = self.llm.call(
+            prompt_kwargs=prompt_kwargs,
+            id=id,
+        )
+
+        return output
+
+    # TODO: add id in the retriever output
+    def forward(
+        self, question: str, context: List[str], id: str = None
+    ) -> adal.Parameter:
+        if not self.training:
+            raise ValueError("This component is not supposed to be called in eval mode")
+
+        generator_out = self.llm.forward(
+            prompt_kwargs={"question": question, "context": context}, id=id
+        )
+        return generator_out
+
+
 def test_retriever():
-    question = "How many storeys are in the castle that David Gregory inherited?"
+    question = "Were Scott Derrickson and Ed Wood of the same nationality?"
     retriever = DspyRetriever(top_k=3)
     retriever_out = retriever(input=question)
     print(f"retriever_out: {retriever_out}")
 
 
 def test_vailla_rag():
-
-    from use_cases.config import (
-        gpt_3_model,
-    )
 
     task = VanillaRAG(
         **gpt_3_model,
@@ -301,6 +363,29 @@ def test_vailla_rag():
     # print(f"generator_out: {generator_out}")
 
 
+from use_cases.config import (
+    gpt_3_model,
+)
+
+
+def test_vanilla():
+    task = Vanilla(
+        **gpt_3_model,
+        passages_per_hop=3,
+    )
+    task.eval()
+    data_train, data_val, data_test = load_datasets()
+    data = data_train[0]
+
+    output = task.call(question=data.question, context=data.context, id="1")
+    print(f"output: {output}, answer: {data.answer}")
+
+    task.train()
+    output = task.forward(question=data.question, context=data.context, id="1")
+    print(f"output: {output.data}, answer: {data.answer}")
+
+
 if __name__ == "__main__":
     # test_retriever()
-    test_vailla_rag()
+    test_vanilla()
+    # test_vailla_rag()

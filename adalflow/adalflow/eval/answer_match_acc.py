@@ -3,6 +3,7 @@
 from typing import List, Literal
 from adalflow.eval.base import BaseEvaluator, EvaluationResult
 from adalflow.optim.parameter import Parameter
+from adalflow.eval.utils import normalize_answer, f1_score
 
 
 class AnswerMatchAcc(BaseEvaluator):
@@ -27,12 +28,20 @@ class AnswerMatchAcc(BaseEvaluator):
         1.0
         >>> acc_list
         [1.0, 1.0, 1.0]
+
+    References:
+    1. HotpotQA: https://github.com/hotpotqa/hotpot/blob/master/hotpot_evaluate_v1.py
     """
 
     def __init__(
         self,
         type: Literal[
-            "exact_match", "fuzzy_match", "rouge_score", "bleu_score", "bert_score"
+            "exact_match",
+            "fuzzy_match",
+            "rouge_score",
+            "bleu_score",
+            "bert_score",
+            "f1_score",
         ] = "exact_match",
     ):
         self.type = type
@@ -81,11 +90,13 @@ class AnswerMatchAcc(BaseEvaluator):
                 f"Error converting pred_answer and gt_answer to string: {e}"
             )
         if self.type == "exact_match":
-            return 1.0 if y == y_gt else 0.0
+            return 1.0 if normalize_answer(y) == normalize_answer(y_gt) else 0.0
         elif self.type == "fuzzy_match":
-            y = y.lower()
-            y_gt = y_gt.lower()
+            y = normalize_answer(y)
+            y_gt = normalize_answer(y_gt)
             return 1.0 if y_gt in y else 0.0
+        elif self.type == "f1_score":
+            return f1_score(y, y_gt)
         elif self.type == "bert_score":
             from torchmetrics.text.bert import BERTScore
 

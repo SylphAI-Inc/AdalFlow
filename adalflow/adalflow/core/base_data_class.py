@@ -292,7 +292,9 @@ class DataClass:
             # {'data': [{'question': 'What is the capital of France?'}]}
         """
         if not is_dataclass(self):
-            raise ValueError("to_dict() called on a class type, not an instance.")
+            raise ValueError(
+                f"to_dict() is not called on a dataclass instance: {self.__class__}. You might forget to use @dataclass decorator."
+            )
         # convert all fields to its data if its parameter
         fields = self.__dataclass_fields__
         from adalflow.optim.parameter import Parameter

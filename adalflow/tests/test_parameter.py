@@ -46,6 +46,19 @@ class TestParameter:
         param.update_value(new_data)
         assert param.data == new_data, "Parameter data should be updated correctly"
 
+    def test_data_in_prompt_callable(self):
+        param = Parameter(
+            data=10, requires_opt=False, data_in_prompt=lambda x: f"Data: {x.data}"
+        )
+
+        assert (
+            param.data_in_prompt(param) == "Data: 10"
+        ), "Data should be correctly formatted in the prompt"
+
+        assert (
+            param.get_prompt_data() == "Data: 10"
+        ), "Data should be correctly formatted in the prompt"
+
     # def test_update_value_incorrect_type(self):
     #     """Test updating the parameter with an incorrect type."""
     #     param = Parameter[int](data=10)

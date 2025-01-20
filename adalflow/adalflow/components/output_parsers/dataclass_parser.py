@@ -4,11 +4,11 @@ from dataclasses import is_dataclass
 from typing import Any, Literal, List, Optional
 import logging
 
-from adalflow.core.component import Component
 from adalflow.core.prompt_builder import Prompt
-from adalflow.core.string_parser import YamlParser, JsonParser
+from adalflow.core.string_parser import YamlParser, JsonParser, Parser
 from adalflow.core.base_data_class import DataClass, DataClassFormatType
 from adalflow.core.base_data_class import ExcludeType, IncludeType
+
 
 __all__ = ["DataClassParser"]
 
@@ -42,7 +42,7 @@ __________
 """
 
 
-class DataClassParser(Component):
+class DataClassParser(Parser):
     __doc__ = r"""Made the structured output even simpler compared with JsonOutputParser and YamlOutputParser.
 
         1. Understands __input_fields__ and __output_fields__ from the DataClass (no need to use include/exclude to decide fields).
@@ -165,6 +165,9 @@ class DataClassParser(Component):
 
         examples_str = Prompt(template=EXAMPLES_FORMAT)(examples=str_examples)
         return examples_str
+
+    def __call__(self, *args, **kwargs):
+        return self.call(*args, **kwargs)
 
     def call(self, input: str) -> Any:
         r"""Parse the output string to the desired format and return the parsed output."""

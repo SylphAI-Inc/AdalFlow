@@ -4,7 +4,7 @@ from typing import List
 import logging
 
 from adalflow.optim.function import BackwardContext
-from adalflow.optim.parameter import Parameter
+from adalflow.optim.parameter import Parameter, OutputParameter
 from adalflow.optim.types import ParameterType
 from adalflow.optim.grad_component import GradComponent
 
@@ -33,7 +33,10 @@ def sum_ops(params: List[Parameter]) -> Parameter:
 # TODO: make all loss functions to support batch losses
 # TODO: use a temlate to format the concatenated values
 class Sum(GradComponent):
-    __doc__ = """The class to define a sum operation on a list of parameters, such as losses or gradients."""
+    __doc__ = """The class to define a sum operation on a list of parameters, such as losses or gradients.
+
+    It enables gradients combination of a batch of data samples.
+    """
 
     name = "Sum"
 
@@ -54,19 +57,25 @@ class Sum(GradComponent):
                 raise ValueError(
                     f"Sum operation only accepts a list of Parameters, got {type(param)}"
                 )
-        concat_values = "\n".join([str(p.data) for p in params])  # to_dict
+        concat_values = ",".join([str(p.data) for p in params])  # default concatenation
         role_descriptions = set([p.role_desc for p in params])
         role_descriptions = ", ".join(role_descriptions)
 
-        total = Parameter(
+        total = OutputParameter(
             data=concat_values,
             role_desc=f"A combination of a list of variables: {role_descriptions}",
             requires_opt=any([p.requires_opt for p in params]),
             name="sum",
-            score=sum([p._score for p in params]),  # total has a score
+            score=sum([p.score for p in params]),  # total has a score
             param_type=ParameterType.SUM_OUTPUT,
         )
         total.set_predecessors(params)
+        total.trace_forward_pass(
+            input_args=params,
+            full_response=concat_values,
+            id=total.id,
+            name=total.name,
+        )
 
         log.info("Sum forward", extra={"total": total.data})
 
@@ -114,13 +123,21 @@ class Sum(GradComponent):
             }
             log.info(f"""Idempotent sum backward: {extra}""")
 
-            param_gradient = Parameter(
-                name=f"sum_to_{param.name}_grad",
-                data=param_gradient_value,
-                role_desc=f"Feedback to {param.role_desc}",
-                score=summation._score,
-                from_response_id=summation.id,
-                param_type=ParameterType.GRADIENT,
-            )
-            param.add_gradient(param_gradient)
-            log.debug(f"Added gradient to {param.role_desc}: {param_gradient.data}")
+            # param_gradient = Gradient(
+            #     data=param_gradient_value,
+            #     data_id=summation.data_id,
+            #     score=summation._score,
+            #     from_response=summation,
+            #     to_pred=param,
+            # )
+            # param.add_gradient(param_gradient)
+            # log.debug(f"Added gradient to {param.role_desc}: {param_gradient.data}")
+
+
+if __name__ == "__main__":
+    # test the sum ops
+
+    a = Parameter(data=1)
+    b = Parameter(data=2)
+    c = sum_ops(List[a, b])
+    c.backward()

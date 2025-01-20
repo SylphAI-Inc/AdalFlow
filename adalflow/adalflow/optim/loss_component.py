@@ -1,6 +1,7 @@
 """Base class for Autograd Components that can be called and backpropagated through."""
 
 from typing import TYPE_CHECKING
+import uuid
 
 if TYPE_CHECKING:
     from adalflow.core.generator import BackwardEngine
@@ -27,16 +28,21 @@ class LossComponent(Component):
     """
     backward_engine: "BackwardEngine"
     _component_type = "loss"
+    id = None
 
     def __init__(self, *args, **kwargs):
         super().__init__()
         super().__setattr__("backward_engine", None)
+        super().__setattr__("id", str(uuid.uuid4()))
 
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
 
     def set_backward_engine(self, backward_engine: "BackwardEngine", *args, **kwargs):
         raise NotImplementedError("set_backward_engine method is not implemented")
+
+    def disable_backward_engine(self):
+        self.backward_engine = None
 
     def forward(self, *args, **kwargs) -> "Parameter":
         r"""Default just wraps the call method."""

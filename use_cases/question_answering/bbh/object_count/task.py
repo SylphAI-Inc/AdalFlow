@@ -37,12 +37,12 @@ class ObjectCountTaskPipeline(adal.Component):
             param_type=ParameterType.PROMPT,
             instruction_to_optimizer="You can try to show examples to see if it helps.",
         )
-        few_shot_demos = adal.Parameter(
-            data=None,
-            role_desc="To provide few shot demos to the language model",
-            requires_opt=False,
-            param_type=ParameterType.DEMOS,
-        )
+        # few_shot_demos = adal.Parameter(
+        #     data=None,
+        #     role_desc="To provide few shot demos to the language model",
+        #     requires_opt=True,
+        #     param_type=ParameterType.DEMOS,
+        # )
 
         self.llm_counter = adal.Generator(
             model_client=model_client,
@@ -50,19 +50,19 @@ class ObjectCountTaskPipeline(adal.Component):
             template=few_shot_template,
             prompt_kwargs={
                 "system_prompt": system_prompt,
-                "few_shot_demos": few_shot_demos,
+                # "few_shot_demos": few_shot_demos,
             },
             output_processors=parse_integer_answer,
             use_cache=True,
         )
 
-    def call(
+    def bicall(
         self, question: str, id: str = None
     ) -> Union[adal.GeneratorOutput, adal.Parameter]:
         output = self.llm_counter(prompt_kwargs={"input_str": question}, id=id)
-        print(f"output: {output}, training: {self.training}")
+        # print(f"output: {output}, training: {self.training}")
         if self.training:
-            if output.full_response.error and "429" in output.full_response.error:
+            if output.data.error and "429" in output.data.error:
                 raise ValueError("Rate limit exceeded")
         else:
             if output.error and "429" in output.error:
@@ -85,8 +85,9 @@ def test_object_count_task():
     task_pipeline.train()
     answer: adal.Parameter = task_pipeline(question, id="1")
     print(answer)
-    print(f"full_response: {answer.full_response}")
+    print(f"data: {answer.data}")
     answer.draw_graph()
+    print(f"prompt_data: {answer.get_prompt_data()}")
 
 
 if __name__ == "__main__":
