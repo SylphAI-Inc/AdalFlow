@@ -207,6 +207,7 @@ def train(
     val_set=None,
     text_grad_save_path=None,
     eval_fn=None,
+    system_prompt=None,
 ):
 
     first_start_time = time.time()
@@ -230,7 +231,6 @@ def train(
 
     file_path = os.path.join(text_grad_save_path, file_name)
 
-    max_steps = 12
     current_step = 0
     fn_purpose = (
         "The runtime of string-based function that checks if the prediction is correct."
@@ -296,6 +296,51 @@ def train(
     return training_time, results
 
 
+def multi_run_train(num_runs=4):
+    training_times = []
+    test_scores = []
+    val_scores = []
+    for runs in range(0, num_runs):
+        print(f"Run: {runs}")
+        system_prompt = tg.Variable(
+            task_desc,
+            requires_grad=True,
+            role_description="system prompt to the language model",
+        )
+        task_llm = tg.BlackboxLLM(gpt_3_5, system_prompt)
+        training_time, results = train(
+            max_steps=12,
+            optimizer_model=gpt4o,
+            task_llm=task_llm,
+            runs=runs,
+            train_set=train_dataset,
+            test_set=test_dataset,
+            val_set=val_dataset,
+            text_grad_save_path=os.path.join(text_grad_save_path, "trec_6"),
+            eval_fn=eval_fn,
+            system_prompt=system_prompt,
+        )
+        print("Training Time: ", training_time)
+        print("Results: ", results)
+        training_times.append(training_time)
+        test_scores.append(results["test_acc"][-1])
+        val_scores.append(results["validation_acc"][-1])
+    # average pass rate, average pass prompts
+    print(f"test_scores: {test_scores}")
+    print(f"val_scores: {val_scores}")
+    avg_training_time = np.mean(training_times)
+    avg_test_score = np.mean(test_scores)
+    avg_val_score = np.mean(val_scores)
+    print("Average Training Time: ", avg_training_time)
+    print("Average Test Score: ", avg_test_score)
+    print("Average Val Score: ", avg_val_score)
+    # std
+    std_test_score = np.std(test_scores)
+    std_val_score = np.std(val_scores)
+    print("Std Test Score: ", std_test_score)
+    print("Std Val Score: ", std_val_score)
+
+
 if __name__ == "__main__":
     from benchmarks.config import text_grad_save_path
 
@@ -304,24 +349,19 @@ if __name__ == "__main__":
     eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
     # train_loader = tg.tasks.DataLoader(train_dataset, batch_size=4, shuffle=True)
 
-    system_prompt = tg.Variable(
-        task_desc,
-        requires_grad=True,
-        role_description="system prompt to the language model",
-    )
-    task_llm = tg.BlackboxLLM(gpt_3_5, system_prompt)
     # test_one_sample(task_llm, test_dataset[0])
-    output = eval_dataset(val_dataset, eval_fn, task_llm)  # 80.12%
-    print(output)
-    test_score = eval_dataset(test_dataset, eval_fn, task_llm)  # 83.5%
-    print(test_score)
-    training_time, results = train(
-        max_steps=12,
-        optimizer_model=gpt4o,
-        task_llm=task_llm,
-        train_set=train_dataset,
-        test_set=test_dataset,
-        val_set=val_dataset,
-        text_grad_save_path=os.path.join(text_grad_save_path, "trec_6"),
-        eval_fn=eval_fn,
-    )
+    # output = eval_dataset(val_dataset, eval_fn, task_llm)  # 80.12%
+    # print(output)
+    # test_score = eval_dataset(test_dataset, eval_fn, task_llm)  # 83.5%
+    # print(test_score)
+    # training_time, results = train(
+    #     max_steps=12,
+    #     optimizer_model=gpt4o,
+    #     task_llm=task_llm,
+    #     train_set=train_dataset,
+    #     test_set=test_dataset,
+    #     val_set=val_dataset,
+    #     text_grad_save_path=os.path.join(text_grad_save_path, "trec_6"),
+    #     eval_fn=eval_fn,
+    # )
+    multi_run_train(num_runs=4)
