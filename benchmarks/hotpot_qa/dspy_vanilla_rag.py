@@ -45,60 +45,19 @@ class GenerateAnswer(dspy.Signature):
     answer = dspy.OutputField(desc="answer to the question")
 
 
-task_desc_str = """
-You will receive an original question, last search query, and the retrieved context from the last search query.
-Write the next search query to help retrieve all relevant context to answer the original question.
-Think step by step."""
-
-
-class GenerateSearchQuery(dspy.Signature):
-    """Write a simple search query that will help answer a complex question."""
-
-    context = dspy.InputField(desc="may contain relevant facts")
-    question = dspy.InputField()
-    query = dspy.OutputField()
-
-
-# class GenerateSearchQuery(dspy.Signature):
-#     """You will receive an original question, last search query, and the retrieved context from the last search query.
-#     Write the next search query to help retrieve all relevant context to answer the original question.
-#     """
-
-#     context = dspy.InputField(desc="may contain relevant facts")
-#     question = dspy.InputField()
-#     last_search_query = dspy.InputField(desc="The last search query")
-#     query = dspy.OutputField()
-
-
-from dsp.utils import deduplicate
-
-
-class DsPyMultiHopRAG(dspy.Module):
-    def __init__(self, passages_per_hop=2, max_hops=2):
+class DsPyVanillaRAG(dspy.Module):
+    def __init__(self, passages_per_hop=3):
         super().__init__()
 
-        self.generate_query = [
-            dspy.ChainOfThought(GenerateSearchQuery) for _ in range(max_hops)
-        ]
         self.retrieve = dspy.Retrieve(k=passages_per_hop)
         self.generate_answer = dspy.ChainOfThought(GenerateAnswer)
-        self.max_hops = max_hops
 
     def forward(self, question):
-        context = []
-        # last_query = None
 
-        for hop in range(self.max_hops):
-            query = self.generate_query[hop](
-                context=context,
-                question=question,  # last_search_query=last_query
-            ).query
-            # last_query = query
-            passages = self.retrieve(query).passages
-            context = deduplicate(context + passages)
+        passages = self.retrieve(question).passages
 
-        pred = self.generate_answer(context=context, question=question)
-        return dspy.Prediction(context=context, answer=pred.answer)
+        pred = self.generate_answer(context=passages, question=question)
+        return dspy.Prediction(context=passages, answer=pred.answer)
 
 
 # pred: Prediction
@@ -127,11 +86,11 @@ def train_MIPROv2(trainset, valset, save_path, filename):
         log_dir=save_path,
     )
     compiled_task = tp.compile(
-        DsPyMultiHopRAG(),
+        DsPyVanillaRAG(),
         trainset=trainset,
         valset=valset,
-        max_bootstrapped_demos=0,  # 2,
-        max_labeled_demos=0,  # 2,
+        max_bootstrapped_demos=2,  # 2,
+        max_labeled_demos=2,  # 2,
         num_batches=12,  # MINIBATCH_SIZE = 25, (eval on trainset)
         seed=2025,
         requires_permission_to_run=False,
@@ -199,7 +158,7 @@ def validate(devset, compiled_baleen=None, uncompiled_baleen=None):
 def train_and_validate():
     import os
 
-    save_path = "benchmarks/hotpot_qa/dspy_multi_hop_rag_zero_shot"
+    save_path = "benchmarks/hotpot_qa/dspy_vanilla_rag_4_shot"
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
@@ -254,7 +213,7 @@ if __name__ == "__main__":
     # Ask any question you like to this simple RAG program.
     my_question = "How many storeys are in the castle that David Gregory inherited?"
 
-    task = DsPyMultiHopRAG()
+    task = DsPyVanillaRAG()
     trainset, valset, testset = load_datasets()
 
     # pred = uncompiled_baleen(my_question)
@@ -268,9 +227,8 @@ if __name__ == "__main__":
     # Load the datasets.
     trainset, valset, testset = load_datasets()
 
-    # 32.0% EM val, 36.5
-    validate(valset, None, task)
-    validate(testset, None, task)
+    validate(valset, None, task)  # 25%
+    validate(testset, None, task)  # 29.5%
 
     train_and_validate()
 
@@ -278,14 +236,17 @@ if __name__ == "__main__":
     # compiled_baleen = train(trainset, dspy_save_path, "hotpotqa.json")
     # validate(devset, compiled_baleen, uncompiled_baleen)
 
-    # with demos (2, 2)
-    # Validation accuracy: 47.25 3.031088913245535
-    # Test accuracy: 50.625 3.0898017735770686
-    # Training time: 2465.3250265717506
+    # 0 shot
 
-    # zero shot
-    # Validation accuracy: 35.5 4.330127018922194
-    # Test accuracy: 37.875 5.140221298738022
-    # Training time: 182.31551551818848
-    # Max val score:  42.0
-    # Max test score:  46.5
+    # Validation accuracy: 26.25 2.8613807855648994
+    # Test accuracy: 29.75 2.1937410968480306
+    # Training time: 720.5469482541084
+    # Max val score:  30.0
+    # Max test score:  31.5
+
+    # 4 shot
+    # Validation accuracy: 40.5 2.29128784747792
+    # Test accuracy: 42.375 3.7811208655635435
+    # Training time: 706.7893784046173
+    # Max val score:  43.0
+    # Max test score:  47.5

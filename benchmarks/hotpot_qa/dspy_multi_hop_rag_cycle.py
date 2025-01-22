@@ -73,13 +73,12 @@ class GenerateSearchQuery(dspy.Signature):
 from dsp.utils import deduplicate
 
 
-class DsPyMultiHopRAG(dspy.Module):
+class DsPyMultiHopRAGCycle(dspy.Module):
     def __init__(self, passages_per_hop=2, max_hops=2):
         super().__init__()
 
-        self.generate_query = [
-            dspy.ChainOfThought(GenerateSearchQuery) for _ in range(max_hops)
-        ]
+        self.generate_query = dspy.ChainOfThought(GenerateSearchQuery)
+
         self.retrieve = dspy.Retrieve(k=passages_per_hop)
         self.generate_answer = dspy.ChainOfThought(GenerateAnswer)
         self.max_hops = max_hops
@@ -89,7 +88,7 @@ class DsPyMultiHopRAG(dspy.Module):
         # last_query = None
 
         for hop in range(self.max_hops):
-            query = self.generate_query[hop](
+            query = self.generate_query(
                 context=context,
                 question=question,  # last_search_query=last_query
             ).query
@@ -127,7 +126,7 @@ def train_MIPROv2(trainset, valset, save_path, filename):
         log_dir=save_path,
     )
     compiled_task = tp.compile(
-        DsPyMultiHopRAG(),
+        DsPyMultiHopRAGCycle(),
         trainset=trainset,
         valset=valset,
         max_bootstrapped_demos=0,  # 2,
@@ -199,7 +198,7 @@ def validate(devset, compiled_baleen=None, uncompiled_baleen=None):
 def train_and_validate():
     import os
 
-    save_path = "benchmarks/hotpot_qa/dspy_multi_hop_rag_zero_shot"
+    save_path = "benchmarks/hotpot_qa/dspy_multi_hop_rag_cycle_0_shot"
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
@@ -254,7 +253,7 @@ if __name__ == "__main__":
     # Ask any question you like to this simple RAG program.
     my_question = "How many storeys are in the castle that David Gregory inherited?"
 
-    task = DsPyMultiHopRAG()
+    task = DsPyMultiHopRAGCycle()
     trainset, valset, testset = load_datasets()
 
     # pred = uncompiled_baleen(my_question)
@@ -268,7 +267,6 @@ if __name__ == "__main__":
     # Load the datasets.
     trainset, valset, testset = load_datasets()
 
-    # 32.0% EM val, 36.5
     validate(valset, None, task)
     validate(testset, None, task)
 
@@ -279,13 +277,16 @@ if __name__ == "__main__":
     # validate(devset, compiled_baleen, uncompiled_baleen)
 
     # with demos (2, 2)
-    # Validation accuracy: 47.25 3.031088913245535
-    # Test accuracy: 50.625 3.0898017735770686
-    # Training time: 2465.3250265717506
+    # Validation accuracy: 46.75 5.11737237261468
+    # Test accuracy: 47.75 0.75
+    # Training time: 2091.4183588027954
+    # Max val score:  53.0
+    # Max test score:  48.5
 
     # zero shot
-    # Validation accuracy: 35.5 4.330127018922194
-    # Test accuracy: 37.875 5.140221298738022
-    # Training time: 182.31551551818848
-    # Max val score:  42.0
-    # Max test score:  46.5
+
+    # Validation accuracy: 41.25 4.815340071064556
+    # Test accuracy: 37.875 3.6464880364537056
+    # Training time: 1550.8598119020462
+    # Max val score:  45.0
+    # Max test score:  42.5

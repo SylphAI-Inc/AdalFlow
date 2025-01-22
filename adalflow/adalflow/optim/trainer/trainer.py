@@ -1582,7 +1582,7 @@ class Trainer(Component):
                         trainer_results,
                         last_val_score,
                         test_score=trainer_results.test_scores[-1],
-                        prompts=trainer_results.prompts[-1],
+                        prompts=trainer_results.step_results[-1].prompt,
                         step=step,
                         attempted_val_score=val_score,
                     )

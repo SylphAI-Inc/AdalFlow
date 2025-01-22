@@ -76,21 +76,21 @@ class QueriesOutput(adal.DataClass):
     )
 
 
-class DeduplicateList(adal.GradComponent):
-    def __init__(self):
-        super().__init__()
+# class DeduplicateList(adal.GradComponent):
+#     def __init__(self):
+#         super().__init__()
 
-    def call(
-        self, exisiting_list: List[str], new_list: List[str], id: str = None
-    ) -> List[str]:
+#     def call(
+#         self, exisiting_list: List[str], new_list: List[str], id: str = None
+#     ) -> List[str]:
 
-        seen = set()
-        return [x for x in exisiting_list + new_list if not (x in seen or seen.add(x))]
+#         seen = set()
+#         return [x for x in exisiting_list + new_list if not (x in seen or seen.add(x))]
 
-    def backward(self, *args, **kwargs):
+#     def backward(self, *args, **kwargs):
 
-        printc(f"DeduplicateList backward: {args}", "yellow")
-        return super().backward(*args, **kwargs)
+#         printc(f"DeduplicateList backward: {args}", "yellow")
+#         return super().backward(*args, **kwargs)
 
 
 class CombineList(GradComponent2):
@@ -215,7 +215,6 @@ Context from last search query: {{context}}\
         )
 
         self.retriever = DspyRetriever(top_k=passages_per_hop)
-        self.deduplicater = DeduplicateList()
         self.combine_list = CombineList()
 
     @staticmethod
@@ -379,14 +378,14 @@ class MultiHopRetriever(adal.Component):
                     model_client=model_client,
                     model_kwargs=model_kwargs,
                     prompt_kwargs={
-                        # "few_shot_demos": Parameter(
-                        #     name=f"few_shot_demos_{i}",
-                        #     # data=few_shot_demos[i],
-                        #     data=None,
-                        #     role_desc="To provide few shot demos to the language model",
-                        #     requires_opt=True,
-                        #     param_type=ParameterType.DEMOS,
-                        # ),
+                        "few_shot_demos": Parameter(
+                            name=f"few_shot_demos_{i}",
+                            # data=few_shot_demos[i],
+                            data=None,
+                            role_desc="To provide few shot demos to the language model",
+                            requires_opt=True,
+                            param_type=ParameterType.DEMOS,
+                        ),
                         "task_desc_str": Parameter(
                             name="task_desc_str",
                             data=task_desc_str,
@@ -411,7 +410,6 @@ Context from last search query: {{context}}\
                 )
             )
             self.retrievers.append(DspyRetriever(top_k=passages_per_hop))
-            self.deduplicaters.append(DeduplicateList())
 
         self.combine_list = CombineList()
         self.combine_queries = CombineQueries()
@@ -456,36 +454,7 @@ Context from last search query: {{context}}\
         )
         return out
 
-    def call2(self, *, input: str, id: str = None) -> str:
-        context = []
-        queries: List[str] = []
-        last_query = None
-        for i in range(self.max_hops):
-            gen_out = self.query_generators[i](
-                prompt_kwargs={
-                    "context": context,
-                    "question": input,
-                    "last_query": last_query,
-                },
-                id=id,
-            )
-
-            query = gen_out.data.query if gen_out.data and gen_out.data.query else input
-
-            retrieve_out = self.retrievers[i](input=query, id=id)
-
-            passages = retrieve_out.documents
-            context = self.deduplicate(context + passages)
-            queries.append(query)
-            last_query = query
-        out = ", ".join(queries)
-        query_output = QueriesOutput(data=out, id=id)
-        return query_output
-
     def forward(self, *, input: str, id: str = None) -> adal.Parameter:
-        # assemble the foundamental building blocks
-        # printc(f"question: {input}", "yellow")
-        # context = []
 
         queries: List[str] = []
 
@@ -530,15 +499,6 @@ Context from last search query: {{context}}\
             def retrieve_out_map_fn(x: adal.Parameter):
                 return x.data.documents if x.data and x.data.documents else []
 
-            # print(f"retrieve_out: {retrieve_out}")
-
-            # retrieve_out.add_successor_map_fn(
-            #     successor=self.deduplicaters[i], map_fn=retrieve_out_map_fn
-            # )
-
-            # context = self.deduplicaters[i].forward(
-            #     exisiting_list=context, new_list=retrieve_out
-            # )
             retrieve_out.data_in_prompt = lambda x: {
                 "query": x.data.query,
                 "documents": x.data.documents,
@@ -550,13 +510,6 @@ Context from last search query: {{context}}\
                 )
                 last_query = success_map_fn(gen_out)
             contexts.append(retrieve_out)
-            # if i + 1 < self.max_hops:
-            #     retrieve_out.add_successor_map_fn(
-            #         successor=self.query_generators[i + 1], map_fn=retrieve_out_map_fn
-            #     )
-
-            #     last_query = success_map_fn(gen_out)
-            # printc(f"retrieve_out, last_query: {last_query}")
 
         contexts[0].add_successor_map_fn(
             successor=self.combine_list, map_fn=lambda x: x.data
@@ -645,22 +598,7 @@ Context from last search query: {{context}}\
                 )
 
                 last_query = success_map_fn(gen_out)
-            # printc(f"retrieve_out, last_query: {last_query}")
 
-        # contexts[0].add_successor_map_fn(
-        #     successor=self.combine_list, map_fn=lambda x: x.data
-        # )
-        # contexts[1].add_successor_map_fn(
-        #     successor=self.combine_list, map_fn=lambda x: x.data
-        # )
-        # contexts_sum = self.combine_list.forward(
-        #     context_1=contexts[0], context_2=contexts[1]
-        # )
-        # contexts_sum.data_in_prompt = lambda x: {
-        #     "query": x.data.query,
-        #     "documents": x.data.documents,
-        # }
-        # setattr(contexts_sum, "queries", [q.data.data.query for q in queries])
         queries[0].add_successor_map_fn(
             successor=self.combine_queries, map_fn=lambda x: x.data.data.query
         )

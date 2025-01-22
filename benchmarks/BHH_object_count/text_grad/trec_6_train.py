@@ -365,3 +365,9 @@ if __name__ == "__main__":
     #     eval_fn=eval_fn,
     # )
     multi_run_train(num_runs=4)
+
+#     Average Training Time:  1383.4382199645042
+# Average Test Score:  0.8488023952095808
+# Average Val Score:  0.8373493975903614
+# Std Test Score:  0.011691990532794386
+# Std Val Score:  0.01127005236980105

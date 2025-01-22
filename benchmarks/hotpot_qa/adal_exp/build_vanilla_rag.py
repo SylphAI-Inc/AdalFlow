@@ -169,13 +169,13 @@ Question: {{question}}
                     instruction_to_optimizer="ou need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
                     # + "Given existing context, ensure the task instructions can maximize the performance.",
                 ),
-                # "few_shot_demos": adal.Parameter(
-                #     # data=demo_str,
-                #     data=None,
-                #     requires_opt=True,
-                #     role_desc="To provide few shot demos to the language model",
-                #     param_type=adal.ParameterType.DEMOS,
-                # ),
+                "few_shot_demos": adal.Parameter(
+                    # data=demo_str,
+                    data=None,
+                    requires_opt=True,
+                    role_desc="To provide few shot demos to the language model",
+                    param_type=adal.ParameterType.DEMOS,
+                ),
                 "output_format_str": self.llm_parser.get_output_format_str(),
                 # "output_format_str": adal.Parameter(
                 #     data=self.llm_parser.get_output_format_str(),

@@ -1,3 +1,11 @@
+"""
+Text grad's object count implementation:
+
+self._task_description = "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value."
+
+We use the same task description, the only difference is dspy send over a messages: [system_prompt, user_message] and we do ["system": <> system_prompt <> <> user_message<>]
+"""
+
 import logging
 
 

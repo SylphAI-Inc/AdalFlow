@@ -206,8 +206,8 @@ if __name__ == "__main__":
     # train_diagnose(**gpt_3_model)
 
     ckpt = train(
-        debug=True,
-        max_steps=24,
+        debug=False,
+        max_steps=12,
         seed=2025,  # pass the numpy seed
         tg=use_tg,
         strategy=set_strategy,
