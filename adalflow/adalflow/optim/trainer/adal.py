@@ -18,7 +18,7 @@ from adalflow.optim.optimizer import Optimizer
 from adalflow.optim.loss_component import LossComponent
 from adalflow.optim.types import PromptData
 from adalflow.eval.base import EvaluationResult
-from adalflow.optim.grad_component import GradComponent2, GradComponent
+from adalflow.optim.grad_component import GradComponent
 from adalflow.utils import printc
 
 from adalflow.optim.optimizer import DemoOptimizer, TextOptimizer
@@ -748,13 +748,13 @@ class AdalComponent(Component):
         log.debug(f"all_generators: {all_generators}")
         return all_generators
 
-    def _find_all_grad_components(self) -> List[Tuple[str, GradComponent2]]:
+    def _find_all_grad_components(self) -> List[Tuple[str, GradComponent]]:
         r"""Find all generators automatically from the task."""
         # from adalflow.core import Generator
 
-        all_grads: List[Tuple[str, GradComponent2]] = []
+        all_grads: List[Tuple[str, GradComponent]] = []
         for name, comp in self.task.named_components():
-            if isinstance(comp, GradComponent2) or isinstance(comp, GradComponent):
+            if isinstance(comp, GradComponent) or isinstance(comp, GradComponent):
                 all_grads.append((name, comp))
         log.debug(f"all_grads: {all_grads}")
         return all_grads

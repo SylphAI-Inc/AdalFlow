@@ -29,9 +29,6 @@ def sum_ops(params: List[Parameter]) -> Parameter:
     return Sum()(params)
 
 
-# TODO: there might be a better way to do this.
-# TODO: make all loss functions to support batch losses
-# TODO: use a temlate to format the concatenated values
 class Sum(GradComponent):
     __doc__ = """The class to define a sum operation on a list of parameters, such as losses or gradients.
 
@@ -39,6 +36,9 @@ class Sum(GradComponent):
     """
 
     name = "Sum"
+
+    def __init__(self):
+        super().__init__(desc="Sum a list of parameters")
 
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
@@ -122,16 +122,6 @@ class Sum(GradComponent):
                 "summation_role": summation.role_desc,
             }
             log.info(f"""Idempotent sum backward: {extra}""")
-
-            # param_gradient = Gradient(
-            #     data=param_gradient_value,
-            #     data_id=summation.data_id,
-            #     score=summation._score,
-            #     from_response=summation,
-            #     to_pred=param,
-            # )
-            # param.add_gradient(param_gradient)
-            # log.debug(f"Added gradient to {param.role_desc}: {param_gradient.data}")
 
 
 if __name__ == "__main__":

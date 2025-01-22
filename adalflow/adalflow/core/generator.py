@@ -157,7 +157,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         CachedEngine.__init__(self, cache_path=self.cache_path)
 
         Component.__init__(self)
-        GradComponent.__init__(self)
+        GradComponent.__init__(self, desc="Generate a response using LLM model.")
         CallbackManager.__init__(self)
 
         self.name = name or self.__class__.__name__
@@ -899,6 +899,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     ):
         """Creating gradient/textual feedback for prompt type parameters."""
         if not pred.requires_opt:
+            if response.score is not None:
+                pred.set_score(response.score)
             log.debug(
                 f"Generator: Skipping {pred} as it does not require optimization."
             )
@@ -910,6 +912,14 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             )
 
             return
+
+        if backward_engine is None:
+            log.error(
+                "EvalFnToTextLoss: backward_engine is required for text prompt optimization."
+            )
+            raise ValueError(
+                "EvalFnToTextLoss: backward_engine is required for text prompt optimization."
+            )
 
         instruction_str, objective_str = None, None
 
@@ -941,6 +951,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             template=VARIABLE_AND_PEERS_INFO,
         )()
 
+        # generator is almost always intermediate node
         conv_ins_template = None  # CONVERSATION_START_INSTRUCTION_BASE
         obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
         if is_intermediate_node:  # TODO: this will always be true

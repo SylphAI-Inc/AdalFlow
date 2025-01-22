@@ -8,7 +8,7 @@ import traceback
 
 
 from adalflow.core.generator import Generator
-from adalflow.optim.grad_component import GradComponent2
+from adalflow.optim.grad_component import GradComponent
 from adalflow.optim.parameter import Parameter, ParameterType
 from adalflow.core.func_tool import FunctionTool, AsyncCallable
 from adalflow.core.tool_manager import ToolManager
@@ -121,7 +121,7 @@ Step {{ loop.index }}.
 """
 
 
-class CombineStepHistory(GradComponent2):
+class CombineStepHistory(GradComponent):
     def __init__(self):
         super().__init__(desc="Extract the final answer from the step history.")
 

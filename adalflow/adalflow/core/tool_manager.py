@@ -21,7 +21,7 @@ import nest_asyncio
 import warnings
 
 from adalflow.core.container import ComponentList
-from adalflow.optim.grad_component import GradComponent2
+from adalflow.optim.grad_component import GradComponent
 from adalflow.core.component import Component
 from adalflow.core.func_tool import FunctionTool
 from adalflow.core.types import (
@@ -108,7 +108,7 @@ class CallFunctionTool(Component):
             return output
 
 
-class FunctionExperssionToFunction(GradComponent2):
+class FunctionExperssionToFunction(GradComponent):
     def __init__(self):
         super().__init__(desc="Convert FunctionExpression to Function")
 

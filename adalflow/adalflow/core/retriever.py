@@ -46,7 +46,7 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
     top_k: int
 
     def __init__(self, *args, **kwargs):
-        super().__init__()
+        super().__init__(desc="Retrieve a list of documents using a query", **kwargs)
 
     def reset_index(self):
         r"""Initialize/reset any attributes/states for the index."""
@@ -97,7 +97,6 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
     ) -> RetrieverOutputType:
         raise NotImplementedError("Async retrieve is not implemented")
 
-    # TODO: adapt the generator to auto-track the prompt_kwargs as parameters
     def forward(
         self,
         input: Union[RetrieverQueriesType, Parameter],
@@ -143,37 +142,3 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
             ParameterType.RETRIEVER_OUTPUT
         )  # be more specific about the type
         return response
-
-    # def backward(
-    #     self,
-    #     response: Parameter,
-    #     id: Optional[str] = None,
-    #     backward_engine: Optional["Generator"] = None,
-    # ):
-    #     r"""Backward the response to pass the score to predecessors.
-    #     Function as a relay component"""
-    #     log.info(f"Retriever backward: {response.name}")
-    #     children_params = response.predecessors
-
-    #     # is_chain = True
-    #     if response.get_gradient_and_context_text().strip() == "":
-    #         log.info(f"Generator: Backward: No gradient found for {response}.")
-
-    #     for pred in children_params:
-    #         pred.set_score(response._score)
-    #         from adalflow.utils.logger import printc
-
-    #         printc(
-    #             f"Retriever: Backward: {pred.name} set_score: {response._score}, {response.name}",
-    #             "blue",
-    #         )
-    #         if pred.param_type == ParameterType.DEMOS:
-    #             pred.add_score_to_trace(
-    #                 trace_id=id, score=response._score, is_teacher=self.teacher_mode
-    #             )
-
-    #         # pass the gradients
-    #         for grad in response.gradients:
-    #             # make a copy of the gradient
-    #             grad = deepcopy(grad)
-    #             pred.add_gradient(grad)

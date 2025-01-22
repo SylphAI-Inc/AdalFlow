@@ -14,7 +14,7 @@ from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import DspyRetriever
 from adalflow.utils.logger import printc
 from adalflow.components.agent.react import ReActAgent
 
-from adalflow.optim.grad_component import GradComponent2
+from adalflow.optim.grad_component import GradComponent
 
 colbertv2_wiki17_abstracts = dspy.ColBERTv2(
     url="http://20.102.90.50:2017/wiki17_abstracts"
@@ -93,7 +93,7 @@ class QueriesOutput(adal.DataClass):
 #         return super().backward(*args, **kwargs)
 
 
-class CombineList(GradComponent2):
+class CombineList(GradComponent):
     def __init__(
         self,
         name="CombineRetrieverOut",
@@ -123,7 +123,7 @@ class CombineList(GradComponent2):
         return output
 
 
-class CombineQueries(GradComponent2):
+class CombineQueries(GradComponent):
     def __init__(
         self,
         name="CombineTwoQueries using ','",
