@@ -1,9 +1,14 @@
 import unittest
 from unittest.mock import Mock, patch
 from adalflow.core.func_tool import FunctionTool
-from adalflow.core.types import FunctionExpression, GeneratorOutput
+from adalflow.core.types import (
+    GeneratorOutput,
+    Function,
+    FunctionOutput,
+)
 from adalflow.components.agent.react import ReActAgent, StepOutput
 from adalflow.components.model_client.openai_client import OpenAIClient
+from adalflow.optim.parameter import OutputParameter
 
 
 # Mock tools for testing
@@ -51,10 +56,10 @@ class TestReActAgent(unittest.TestCase):
     def test_simple_query_execution(self, mock_planner):
         # Simulate a valid JSON-serializable response from the planner
         mock_planner.return_value = GeneratorOutput(
-            data=FunctionExpression.from_function(
+            data=Function(
                 thought="Finish the task directly.",
-                func=self.react_agent._finish,
-                answer="Simple answer",
+                name="finish",
+                kwargs={"answer": "Simple answer"},
             )
         )
 
@@ -66,20 +71,20 @@ class TestReActAgent(unittest.TestCase):
         # Simulate multiple steps for a complex query, each planner will return a FunctionExpression
         mock_planner.side_effect = [
             GeneratorOutput(
-                data=FunctionExpression.from_function(
+                data=Function.from_function(
                     thought="Divide the task into subqueries.", func=mock_add, a=2, b=2
                 )
             ),
             GeneratorOutput(
-                data=FunctionExpression.from_function(
+                data=Function.from_function(
                     thought="Multiply the results.", func=mock_multiply, a=4, b=3
                 )
             ),
             GeneratorOutput(
-                data=FunctionExpression.from_function(
+                data=Function(
                     thought="Finish the task directly.",
-                    func=self.react_agent._finish,
-                    answer=12,
+                    name="finish",
+                    kwargs={"answer": 12},
                 )
             ),
         ]
@@ -89,10 +94,10 @@ class TestReActAgent(unittest.TestCase):
             step=1, step_history=[], prompt_kwargs={}, model_kwargs={}
         )
         print(f"step_output 1: {step_output}")
-        self.assertEqual(len(step_output), 1)
-        self.assertTrue(isinstance(step_output[0], StepOutput))
-        self.assertTrue(step_output[0].action)
-        self.assertTrue(isinstance(step_output[0].action, FunctionExpression))
+        self.assertEqual(step_output.step, 1)
+        self.assertTrue(isinstance(step_output, StepOutput))
+        self.assertTrue(step_output.action)
+        self.assertTrue(isinstance(step_output.action, Function))
 
         result = self.react_agent.call("Add 2 and 3, then multiply by 4.")
         print(f"result: {result}")
@@ -100,17 +105,14 @@ class TestReActAgent(unittest.TestCase):
 
     @patch.object(ReActAgent, "planner", create=True)
     def test_error_handling(self, mock_planner):
-        # Simulate an error scenario
+        # Simulate an error scenario where it is not parsed into function
         mock_planner.return_value = GeneratorOutput(
-            data={
-                "thought": "Encountered an error.",
-                "function": {"name": "finish", "args": {"answer": "Error occurred"}},
-            }
+            data=Function(
+                thought="Encountered an error.",
+                name="finish",
+                kwargs={"answer": "Error occurred"},
+            )
         )
-        # no action
-
-        # check error raised
-        # with self.assertRaises(ValueError):
 
         result = self.react_agent.call("Simulate an error.")
         print(f"result 2: {result}")
@@ -122,24 +124,24 @@ from adalflow.optim.grad_component import GradComponent
 
 class GradAdd(GradComponent):
     def __init__(self):
-        super().__init__()
+        super().__init__(desc="A simple addition tool")
 
     def call(self, x, y):
         return x + y
 
-    def forward(self, x, y):
-        return f"{x + y} + forward"
+    # def forward(self, x, y):
+    #     return f"{x + y} + forward"
 
 
 class GradSub(GradComponent):
     def __init__(self):
-        super().__init__()
+        super().__init__(desc="A simple subtraction tool")
 
     def call(self, x, y):
         return x - y
 
-    def forward(self, x, y):
-        return f"{x - y} + forward"
+    # def forward(self, x, y):
+    #     return f"{x - y} + forward"
 
 
 class TestReactAgentWithComponentASTool(unittest.TestCase):
@@ -188,11 +190,18 @@ class TestReactAgentWithComponentASTool(unittest.TestCase):
 
         # Use agent to call addition tool in train mode
         result = self.agent.tool_manager.tools[0](3, 2)  # GradAdd in train mode
-        self.assertEqual(result.output, "5 + forward")
+        print(f"result tool: {result}")
+        self.assertEqual(isinstance(result, OutputParameter), True)
+        self.assertEqual(result.name, "GradAdd_output")
+        self.assertEqual(isinstance(result.data, FunctionOutput), True)
+        self.assertEqual(result.data.output, 5)
 
         # Use agent to call subtraction tool in train mode
         result = self.agent.tool_manager.tools[1](5, 3)  # GradSub in train mode
-        self.assertEqual(result.output, "2 + forward")
+        self.assertEqual(isinstance(result, OutputParameter), True)
+        self.assertEqual(result.name, "GradSub_output")
+        self.assertEqual(isinstance(result.data, FunctionOutput), True)
+        self.assertEqual(result.data.output, 2)
 
     def test_agent_switch_modes(self):
         """Test the agent's ability to switch between eval and train modes."""

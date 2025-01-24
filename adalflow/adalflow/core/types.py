@@ -376,6 +376,51 @@ class Function(DataClass):
         default_factory=dict,
         metadata={"desc": "The keyword arguments of the function"},
     )
+
+    @classmethod
+    def from_function(
+        cls,
+        func: Union[Callable[..., Any], AsyncCallable],
+        thought: Optional[str] = None,
+        *args,
+        **kwargs,
+    ) -> "Function":
+        r"""Create a Function object from a function.
+
+        Args:
+            fun (Union[Callable[..., Any], AsyncCallable]): The function to be converted
+
+        Returns:
+            Function: The Function object
+
+        Usage:
+        1. Create a Function object from a function call:
+        2. use :meth:`to_json` and :meth:`to_yaml` to get the schema in JSON or YAML format.
+        3. This will be used as an example in prompt showing LLM how to call the function.
+
+        Example:
+
+        .. code-block:: python
+
+            from adalflow.core.types import Function
+
+            def add(a, b):
+                return a + b
+
+            # create a function call object with positional arguments
+            fun = Function.from_function(add, thought="Add two numbers", 1, 2)
+            print(fun)
+
+            # output
+            # Function(thought='Add two numbers', name='add', args=[1, 2])
+        """
+        return cls(
+            thought=thought,
+            name=func.__name__,
+            args=args,
+            kwargs=kwargs,
+        )
+
     __output_fields__ = ["thought", "name", "kwargs"]
 
 

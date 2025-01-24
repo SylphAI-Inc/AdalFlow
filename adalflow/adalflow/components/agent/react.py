@@ -368,64 +368,18 @@ class ReActAgent(Component):
         if isinstance(response, Parameter):
 
             try:
-                # TO FunctionExpression
 
-                # func: Union[Function, Parameter] = self.tool_manager(
-                #     expr_or_fun=response, step="parse", map_fn=lambda x: x.data.data
-                # )
                 step_output.action = response.data.data
                 printc(f"Step test train:  {step}: {step_output.action}", color="blue")
-                #     # add action to the step_output
-                #     step_output.action = response.data.data
-                #     # parse failed
-                #     if not isinstance(func, Parameter):
-                #         raise ValueError(
-                #             f"Expected Parameter, but got {type(func)}: {func}"
-                #         )
-                #     if isinstance(func, str):
 
-                #         @fun_to_grad_component()
-                #         def set_step_output_with_error(
-                #             step_output: StepOutput, data: FunctionExpression, error: str
-                #         ):
-                #             """Set the step_output with error."""
-                #             step_output.observation = f"Error in parsing the FunctionExperession to Function: {error}"
-                #             return step_output
-
-                #         response.add_successor_map_fn(
-                #             successor=set_step_output_with_error,
-                #             map_fn=lambda x: x.data.data,
-                #         )
-                #         step_output = set_step_output_with_error.forward(
-                #             step_output, response, error=func
-                #         )
-                #         return step_output
-
-                # except Exception as e:
-                #     e = f"{e} at parsing error at functionexpression: {response.data}"
-                #     return handle_error(response, e)
-
-                # try:
-                #     # printc(f"func: {func}", color="yellow")
-                #     # replace the id
                 if isinstance(response.data.data, Function):
-                    # response.data.data.kwargs["id"] = id
                     response.data.data.kwargs.update({"id": id})
-                    # printc(
-                    #     f"add id to the function: {response.data.data}", color="blue"
-                    # )
-
-                #     if self.debug:
-                #         printc(f"func: {func.data}", color="yellow")
 
                 result: Parameter = self.tool_manager(
                     expr_or_fun=response, step="execute", map_fn=lambda x: x.data.data
                 )
-                # printc(f"Step test train result:  {step}: {result.data}", color="blue")
-                # return
 
                 if isinstance(result, str):
-                    # create dummy step output
 
                     @fun_to_grad_component()
                     def set_step_output_with_error(step_output: StepOutput, data: str):
@@ -449,44 +403,12 @@ class ReActAgent(Component):
                 return handle_error(response, e)
 
             try:
-                # printc(f"result: {result}", color="red")
-                # result.add_successor_map_fn(
-                #     successor=self.function_output_to_step_output,
-                #     map_fn=lambda x: x.data,
-                # )
-                # response.add_successor_map_fn(
-                #     successor=self.function_output_to_step_output,
-                #     map_fn=lambda x: x.data.data,
-                # )
-                # func.add_successor_map_fn(
-                #     successor=self.function_output_to_step_output,
-                #     map_fn=lambda x: x.data,
-                # )
-                # step_output = self.function_output_to_step_output.forward(
-                #     action_str=response,
-                #     step=step,
-                #     result=result,
-                #     func=func,
-                # )
 
-                # generate the step_output
-                # step_output = StepOutput(
-                #     step=step,
-                #     action=response.data.data,
-                #     function=None,
-                #     # function=func.data,
-                #     observation=result.data.output,
-                # )
                 step_output.step = step
                 step_output.observation = result.data.output
-                # printc(f"Step test train:  {step}: {step_output}", color="blue")
-                # replace the result.data with the step_output
                 result.data = step_output
                 result.role_desc = "The result of the action execution, observation is the final answer"
                 result.param_type = ParameterType.OUTPUT
-
-                # print(f"Step test:  {step}: {result}")
-
                 return result
             except Exception as e:
                 e = f"{e} Error converting function output to step output: {result.data}"
@@ -519,8 +441,7 @@ class ReActAgent(Component):
         else:
             try:
                 fun_expr: Function = x.data
-                # printc(f"Step test {step}: {fun_expr}", color="blue")
-                # printc(f"Step {step}: {fun_expr}", color="blue")
+
                 step_output.action = fun_expr
                 # add id to the function
                 fun_expr.kwargs.update({"id": id})
@@ -528,12 +449,6 @@ class ReActAgent(Component):
 
                 if step_output and step_output.action:
 
-                    # fun: Function = self.tool_manager(
-                    #     expr_or_fun=fun_expr, step="parse"
-                    # )
-
-                    # step_output.function = fun
-                    # printc(f"Step {step}: {fun}", color="blue")
                     result: FunctionOutput = self.tool_manager(
                         expr_or_fun=x.data,
                         step="execute",
@@ -655,27 +570,8 @@ class ReActAgent(Component):
                         f"Ensure step_output to be Parameter at training mode. Got {type(step_output)}.\n\
                             Please check the observation for error details: {step_output}"
                     )
-                # combine the current step_output with the step_history
-                # step_output.add_successor_map_fn(
-                #     successor=self.append_step_history, map_fn=lambda x: x.data
-                # )
-                # step_history.add_successor_map_fn(
-                #     successor=self.append_step_history, map_fn=lambda x: x.data
-                # )
 
-                # step_history = self.append_step_history.forward(
-                #     step_output, step_history
-                # )
-                # connect step_history to the next planner
-                # step_history.add_successor_map_fn(
-                #     successor=self.planner, map_fn=lambda x: x.data
-                # )
-                # if self.debug:
-                #     printc(
-                #         f"step_history: {step_history.get_prompt_data()}", color="red"
-                #     )
                 return step_output
-                return step_history
 
             else:
 
@@ -689,7 +585,6 @@ class ReActAgent(Component):
 
                 if self.debug:
                     printc(f"step_output: {step_output}", color="red")
-                # step_history.append(step_output)
                 return step_output
         except Exception as e:
             error_msg = f"Error during execution at step {step}: {e}.\n"
@@ -709,7 +604,12 @@ class ReActAgent(Component):
         if isinstance(last_step, Parameter):
             last_step = last_step.data
 
-        if last_step and last_step.action and last_step.action.name == "finish":
+        if (
+            last_step
+            and last_step.action
+            and hasattr(last_step.action, "name")
+            and last_step.action.name == "finish"
+        ):
             return True
         return False
 
@@ -725,10 +625,7 @@ class ReActAgent(Component):
 
         last_step: Union[StepOutput, Parameter] = step_history[-1]
         if isinstance(last_step, Parameter):
-            # output = ReActOutput(
-            #     step_history=last_step.data,
-            #     answer=str(last_step.data[-1].observation),
-            # )
+
             answer = self.combine_step_history(
                 step_history=step_history,
                 id=last_step.data_id,
@@ -738,29 +635,7 @@ class ReActAgent(Component):
             )
             return answer
         else:
-            return str(last_step.observation)
-
-        # last_step: StepOutput = None
-        # if isinstance(
-        #     step_history, Parameter
-        # ):  # change the step history at the last step
-        #     try:
-        #         output = ReActOutput(
-        #             step_history=step_history.data,
-        #             answer=str(step_history.data[-1].observation),
-        #         )
-        #         step_history.data = output
-        #         step_history.data_in_prompt = map_step_history_list_to_prompt
-        #         return step_history
-
-        #     except Exception as e:
-        #         log.error(f"Error getting data from Parameter: {e}")
-        #         return None
-        # else:
-        #     last_step = step_history[-1]
-        #     # printc(f"last_step: {last_step}", color="yellow")
-
-        #     return str(last_step.observation)
+            return last_step.observation
 
     def call(self, *args, **kwargs) -> ReActOutput:
         output = self.bicall(*args, **kwargs)
@@ -793,18 +668,6 @@ class ReActAgent(Component):
     ) -> Union["Parameter", ReActOutput]:
         r"""prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs."""
         # initialize step_history in both training and eval mode
-        # step_history = None
-
-        # if self.training:
-        #     step_history = Parameter(
-        #         data=[],
-        #         param_type=ParameterType.INPUT,
-        #         name="step_history",
-        #         requires_opt=True,
-        #         data_in_prompt=map_step_history_to_prompt,
-        #     )
-        # else:
-        #     step_history = []
 
         # set up the prompts
         prompt_kwargs = {
