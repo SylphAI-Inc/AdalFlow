@@ -378,14 +378,14 @@ class MultiHopRetriever(adal.Component):
                     model_client=model_client,
                     model_kwargs=model_kwargs,
                     prompt_kwargs={
-                        "few_shot_demos": Parameter(
-                            name=f"few_shot_demos_{i}",
-                            # data=few_shot_demos[i],
-                            data=None,
-                            role_desc="To provide few shot demos to the language model",
-                            requires_opt=True,
-                            param_type=ParameterType.DEMOS,
-                        ),
+                        # "few_shot_demos": Parameter(
+                        #     name=f"few_shot_demos_{i}",
+                        #     # data=few_shot_demos[i],
+                        #     data=None,
+                        #     role_desc="To provide few shot demos to the language model",
+                        #     requires_opt=True,
+                        #     param_type=ParameterType.DEMOS,
+                        # ),
                         "task_desc_str": Parameter(
                             name="task_desc_str",
                             data=task_desc_str,

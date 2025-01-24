@@ -106,6 +106,9 @@ class Trainer(Component):
     debug: bool = False
     random_seed: int = None
     skip_subset_val: bool = False
+    disable_backward_gradients: bool = False
+    disable_backward: bool = False  # no backward is run at all.
+    text_optimizers_config_kwargs: Optional[Dict[str, Any]] = {}
 
     def __init__(
         self,
@@ -134,6 +137,9 @@ class Trainer(Component):
         save_traces: bool = False,  # save traces in the few-shto demos
         sequential_order: List[str] = ["text", "demo"],
         skip_subset_val: bool = False,
+        disable_backward_gradients: bool = False,  # self.adaltask.disable_backward_engine controls the disable_backward engine
+        disable_backward: bool = False,  # no backward is run at all.
+        text_optimizers_config_kwargs: Optional[Dict[str, Any]] = {},
         *args,
         **kwargs,
     ) -> None:
@@ -181,6 +187,9 @@ class Trainer(Component):
         )
         self.sequential_order = sequential_order
         self.skip_subset_val = skip_subset_val
+        self.disable_backward_gradients = disable_backward_gradients
+        self.disable_backward = disable_backward
+        self.text_optimizers_config_kwargs = text_optimizers_config_kwargs
 
     def set_random_seed(self, seed: int):
         self.random_seed = seed
@@ -485,7 +494,9 @@ class Trainer(Component):
                     "train_dataset should not be tuple, please use dict or a dataclass or with DataClass"
                 )
         #  prepare optimizers
-        self.optimizers: List[Optimizer] = self.adaltask.configure_optimizers()
+        self.optimizers: List[Optimizer] = self.adaltask.configure_optimizers(
+            **self.text_optimizers_config_kwargs
+        )
         self.text_optimizers = [
             opt for opt in self.optimizers if isinstance(opt, TextOptimizer)
         ]
@@ -508,12 +519,18 @@ class Trainer(Component):
             print("No trainable demo params to optimize")
             self.demo_optimizers = []
 
+        # configure backward engine
         if len(self._get_trainable_text_params()) > 0:
 
             if self.adaltask.backward_engine is None:
                 self.adaltask.configure_backward_engine(
                     backward_pass_setup=backward_pass_setup
                 )
+                if self.disable_backward_gradients:
+                    printc(
+                        "Disabling backward engine for computing gradients, but can still run backward"
+                    )
+                    self.adaltask.disable_backward_engine()
         else:
             print("No trainable text params to optimize")
             self.text_optimizers = []
@@ -1473,6 +1490,8 @@ class Trainer(Component):
             zip(range(self.max_steps), train_loader), total=self.max_steps, desc="Step"
         )
 
+        self.adaltask.disable_backward_engine()  # disable it to avoid backward engine for gradients
+
         for step, batch in pbar:
             step = step + starting_step + 1
             print(f"Training Step: {step}")
@@ -1492,9 +1511,9 @@ class Trainer(Component):
             )
 
             for loss in losses:
-                loss.backward_engine_disabled = (
-                    True  # temporary disable the backward engine
-                )
+                # loss.backward_engine_disabled = (
+                #     True  # temporary disable the backward engine
+                # )
                 loss.backward()  # TODO: ensure no gradients in the backward, disable backward engine, trace the score to each class instead
             # Trace the teacher run
             self.adaltask.use_teacher(True)
@@ -1809,7 +1828,8 @@ class Trainer(Component):
                     raise e
                 total_loss = sum_ops(losses)
                 try:
-                    total_loss.backward()
+                    if not self.disable_backward:
+                        total_loss.backward()
                 except Exception as e:
                     print(f"Error in backward: {e}")
                     raise e
@@ -2158,7 +2178,11 @@ class Trainer(Component):
         subset_loss = sum_ops(subset_losses)
         print("Subset loss backward...")
         start_time = time.time()
-        subset_loss.backward()
+        if not self.disable_backward_gradients:
+            self.adaltask.disable_backward_engine()
+
+        if not self.disable_backward:
+            subset_loss.backward()
         print(f"Subset loss backward time: {time.time() - start_time}")  # 12seconds
         print("Optimizer propose...")
         # mark the subset loss to be backpropagated
@@ -2191,13 +2215,13 @@ class Trainer(Component):
             ) or val_score > subset_score:  # allow perfect subset to pass
 
                 printc(
-                    f"Pass subset check:{use_eval_loss_fn}, {val_score} > {subset_score}"
+                    f"Pass minibatch check:{use_eval_loss_fn}, {val_score} > {subset_score}"
                 )
                 self._track_effectiveness("subset", True)
 
             else:
                 printc(
-                    f"Fail subset check, try next proposal: {use_eval_loss_fn}, {val_score} <= {subset_score}"
+                    f"Fail minibatch check, try next proposal: {use_eval_loss_fn}, {val_score} <= {subset_score}"
                 )
                 self._add_failed_proposals_text_optimizers()
                 self._track_effectiveness("subset", False)
@@ -2237,7 +2261,6 @@ class Trainer(Component):
 
             if val_score > last_val_score:
                 print(f"Optimizer step: {val_score} > {last_val_score}")
-                # self.optimizer.step()
                 self._track_effectiveness("valset", True)
                 self._step_text_optimizers()
                 self._add_history_text_optimizers(val_score)
@@ -2269,7 +2292,6 @@ class Trainer(Component):
                 print(f"Optimizer revert: {val_score} <= {last_val_score}")
                 self._track_effectiveness("valset", False)
                 self._add_failed_proposals_text_optimizers()
-                # self.optimizer.revert()
                 self._revert_text_optimizers()
                 if include_demo_optimizers:
                     self._demo_optimizers_revert()
@@ -2297,32 +2319,6 @@ class Trainer(Component):
         print("Done with proposals")
         self.adaltask.train()
         return all_samples, all_losses, all_y_preds
-
-    # def _fit_bootstrap_few_shot_random(
-    #     self,
-    #     train_loader: Any,
-    #     val_dataset: Any,
-    #     test_dataset: Any,
-    #     optimizers: List[DemoOptimizer],
-    # ):
-    #     log.info("Fitting using Bootstrap Few Shot only")
-    #     trainer_results = self._pre_fit(val_dataset, test_dataset)
-    #     print(f"save to {self.ckpt_file}")
-
-    #     self.adaltask.train()  #
-
-    #     num_epochs = self._estimate_num_epochs(train_loader, self.max_steps)
-    #     total_steps = 0
-    #     for optimizer in optimizers:
-    #         optimizer.init()
-    #     for epoch in tqdm(range(num_epochs), desc="Epoch"):
-    #         for steps, batch in enumerate((pbar := tqdm(train_loader, position=0))):
-    #             total_steps += 1
-    #             if total_steps > self.max_steps:
-    #                 print("Reached max steps")
-    #                 break
-    #             pbar.set_description(f"Training Step: {total_steps}")
-    #             self.adaltask.train()
 
     def _fit_text_grad_constraint(
         self,

@@ -40,7 +40,7 @@ class HistoryPrompt(DataClass):
 ####################################################################################################
 # Textual Gradient Descent Optimizer
 ####################################################################################################
-
+# TODO: make the uesr message to task instruction
 
 TEXT_GRAD_DESC_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 {{optimizer_system_prompt}}
@@ -75,23 +75,25 @@ Here are the best past iterations.
 {{loop.index}}. {{history}}
 {% endfor %}
 IMPORTANT: Your goal is to generate new variable that score higher than all past iterations.
-{# Momentum #}
+<END_OF_HISTORY_PERFORMANCE>
+{% endif %}
+{# Multi-proposal history #}
 {% if failed_proposals %}
 <START_OF_CURRENT_ITERATION>
-same batch, same feedback: Here are your tried value (scored <= {{best_score}}):
+same batch, same feedback: Here are the values you have tried that have not improved the score.(scored <= {{best_score}}):
 {% for failed_proposal in failed_proposals %}
 {{loop.index}}. {{failed_proposal}}
 {% endfor %}
 You MUST approach differently from the above methods.
 <END_OF_CURRENT_ITERATION>
 {% endif %}
-
-<END_OF_HISTORY_PERFORMANCE>
-{% endif %}
-Here are the context and feedback for the variable:
+{# Feedback #}
+{% if variable_grad %}
 <START_OF_CONTEXT_FEEDBACK>
+Here are the context and feedback for the variable:
 {{variable_grad}}
 <END_OF_CONTEXT_FEEDBACK>
+{% endif %}
 {# Constraints #}
 {% if constraint_text %}
 You must follow the following constraints:
@@ -105,6 +107,36 @@ You must base on the following examples when modifying the {{variable_desc}}:
 <END_OF_USER_MESSAGE>
 """
 
+# OPTIMIZER_SYSTEM_PROMPT = r"""You are an excellent prompt engineer tasked with instruction and demonstration tuning a compound LLM system.
+# Your task is to refine a variable/prompt based on feedback from a batch of input data points.
+
+# The variable is either input or output of a functional component where the component schema will be provided.
+# If the same DataID has multiple gradients, it means this component/variable is called multiple times in the compound system(with a cycle) in the same order as it appears in the gradient list.
+
+# You Must edit the current variable with one of the following editing methods.
+# You can not rewrite everything all at once:
+
+# You have Four Editing Methods:
+# 1. ADD new elements(instruction) to address each specific feedback.
+# 2. ADD Examples (e.g., input-reasoning-answer) for tasks that require strong reasoning skills.
+# 3. Rephrase existing instruction(for more clarity), Replace existing sample with another, to address the feedback.
+# 4. DELETE unnecessary words to improve clarity.
+
+# Your final action/reasoning  = one of FOUR editing method
+
+# You must stick to these instructions:
+# 1. **MUST Resolve concerns raised in the feedback** while preserving the positive aspects of the original variable.
+# 2. **Observe past performance patterns** to retain good qualities in the variable and past failed ones to try things differently.
+# 3. **System Awareness**: When other system variables are given, ensure you understand how this variable works in the whole system.
+# 4. **Peer Awareness**: This variable works together with Peer variables, ensure you are aware of their roles and constraints.
+# 5. **Batch Awareness**: You are optimizing a batch of input data, ensure the change applys to the whole batch (except while using demonstration.)
+
+# {{output_format_str}}
+
+# {% if instruction_to_optimizer %}
+# **Additional User Instructions**: {{instruction_to_optimizer}}
+# {% endif %}
+# """
 
 OPTIMIZER_SYSTEM_PROMPT = r"""You are an excellent prompt engineer tasked with instruction and demonstration tuning a compound LLM system.
 Your task is to refine a variable/prompt based on feedback from a batch of input data points.
@@ -225,7 +257,7 @@ class TGDOptimizer(TextOptimizer):
         constraints: List[str] = None,
         optimizer_system_prompt: str = OPTIMIZER_SYSTEM_PROMPT,
         in_context_examples: List[str] = None,  # TODO: in-context examples
-        max_past_history: int = 2,
+        max_past_history: int = 3,
         max_failed_proposals: int = 5,  # quite effective
         steps_from_last_improvement: int = 0,
     ):
@@ -234,12 +266,8 @@ class TGDOptimizer(TextOptimizer):
         from adalflow.components.output_parsers.dataclass_parser import DataClassParser
 
         super().__init__()
-        self.params = params
-        for param in self.params:
-            if not param.requires_opt:
-                raise ValueError(
-                    f"Parameter {param.id} does not require optimization. Please only include trainable parameters."
-                )
+        self.params = params  # all parameters of prompts (even if non-trainable)
+
         self.constraints = constraints or []
         self.data_class = TGDData
         self.output_parser = DataClassParser(
@@ -389,9 +417,7 @@ class TGDOptimizer(TextOptimizer):
 
         user_prompt_kwargs = {
             "variable_and_peers_info": variable_and_peer_info,
-            "variable_grad": variable_grad,  # param.get_gradient_and_context_text(
-            #   skip_correct_sample=False
-            # ),
+            "variable_grad": variable_grad,
             # constraints
             "constraint_text": self.constraint_text if self.do_constrained else None,
             # in-context examples

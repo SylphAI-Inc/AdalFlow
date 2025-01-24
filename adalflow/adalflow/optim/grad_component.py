@@ -267,6 +267,7 @@ class GradComponent(Component):
     _component_type = "grad"
     id = None
     _component_desc = "GradComponent"
+    _disable_backward_engine = False
 
     def __init__(
         self,
@@ -320,7 +321,8 @@ class GradComponent(Component):
                 )
 
     def disable_backward_engine(self):
-        self.backward_engine = None
+        r"""Does not run gradients generation, but still with backward to gain module-context"""
+        self._disable_backward_engine = True
 
     def call(self, *args, **kwargs):
         raise NotImplementedError("call method is not implemented")
@@ -441,6 +443,7 @@ class GradComponent(Component):
                 response=response,
                 id=data_id,
                 input_kwargs=kwargs,
+                disable_backward_engine=self._disable_backward_engine,
             )
         )
         return response
@@ -462,11 +465,6 @@ class GradComponent(Component):
 
         if response.get_gradient_and_context_text().strip() == "":
             log.info(f"Generator: Backward: No gradient found for {response}.")
-
-        # backward the backward engine disable signal
-        if response.backward_engine_disabled:
-            for pred in children_params:
-                pred.backward_engine_disabled = True
 
         for _, pred in enumerate(children_params):
             if response.score is not None:
@@ -495,6 +493,7 @@ class GradComponent(Component):
         ground_truth: object = None,
         is_intermediate_node: bool = False,  # if the node is an intermediate node in the backpropagation chain
         metadata: Dict[str, str] = None,
+        disable_backward_engine: bool = False,
     ):
         if not pred.requires_opt:
             if response.score is not None:
@@ -589,22 +588,26 @@ class GradComponent(Component):
             "conversation_sec": instruction_str,
             "objective_instruction_sec": objective_str,
         }
-        gradient_value: GeneratorOutput = backward_engine(
-            prompt_kwargs=backward_engine_prompt_kwargs
-        )
-        gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
-        gradient_value_data = (
-            gradient_value.data
-            or backward_engine.failure_message_to_optimizer(
-                gradient_response=gradient_value
+        gradient_value_data = None
+        if not disable_backward_engine:
+            gradient_value: GeneratorOutput = backward_engine(
+                prompt_kwargs=backward_engine_prompt_kwargs
             )
-        )
+            gradient_prompt = backward_engine.get_prompt(
+                **backward_engine_prompt_kwargs
+            )
+            gradient_value_data = (
+                gradient_value.data
+                or backward_engine.failure_message_to_optimizer(
+                    gradient_response=gradient_value
+                )
+            )
 
-        gradient_value_data = (
-            f"expected answer: {ground_truth},\n Feedback: {gradient_value_data}"
-        )
+            gradient_value_data = (
+                f"expected answer: {ground_truth},\n Feedback: {gradient_value_data}"
+            )
 
-        log.debug(f"EvalFnToTextLoss: Gradient for {pred}: {gradient_value_data}")
+            log.debug(f"EvalFnToTextLoss: Gradient for {pred}: {gradient_value_data}")
 
         gradient_param = Gradient(
             data=gradient_value_data,
@@ -627,7 +630,14 @@ class GradComponent(Component):
             pred.set_score(response.score)
         pred.set_gt(ground_truth)
 
-    def backward(self, *, response: "OutputParameter", id: str = None, **kwargs):
+    def backward(
+        self,
+        *,
+        response: "OutputParameter",
+        id: str = None,
+        disable_backward_engine=False,
+        **kwargs,
+    ):
         """Backward pass of the function. In default, it will pass all the scores to the predecessors.
 
         Note: backward is mainly used internally and better to only allow kwargs as the input.
@@ -650,9 +660,9 @@ class GradComponent(Component):
             log.info(f"Generator: Backward: No gradient found for {response}.")
 
         # backward the backward engine disable signal
-        if response.backward_engine_disabled:
-            for pred in children_params:
-                pred.backward_engine_disabled = True
+        # if response.backward_engine_disabled:
+        #     for pred in children_params:
+        #         pred.backward_engine_disabled = True
 
         # use pass through gradient when there is one predecessor
         if not self.backward_engine or len(children_params) < 2:
@@ -681,6 +691,7 @@ class GradComponent(Component):
                     backward_engine=self.backward_engine,
                     desc=self.desc,
                     is_intermediate_node=is_intermediate_node,
+                    disable_backward_engine=disable_backward_engine,
                 )
 
 

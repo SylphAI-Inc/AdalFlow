@@ -79,11 +79,17 @@ class Sum(GradComponent):
 
         log.info("Sum forward", extra={"total": total.data})
 
-        total.set_grad_fn(BackwardContext(backward_fn=self.backward, summation=total))
+        total.set_grad_fn(
+            BackwardContext(
+                backward_fn=self.backward,
+                summation=total,
+                disable_backward_engine=False,
+            )
+        )
 
         return total
 
-    def backward(self, summation: Parameter):
+    def backward(self, summation: Parameter, *args, **kwargs):
         """
         Computes gradients for the predecessors of the sum operation.
         There is no gradient computation for the sum operation itself.

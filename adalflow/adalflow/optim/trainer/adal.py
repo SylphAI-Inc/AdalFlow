@@ -172,7 +172,7 @@ class AdalComponent(Component):
     #     r"""Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too."""
     #     raise NotImplementedError("configure_optimizers method is not implemented")
 
-    def configure_optimizers(self, *args, **kwargs) -> List[Optimizer]:
+    def configure_optimizers(self, *args, **text_optimizer_kwargs) -> List[Optimizer]:
         r"""Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too."""
         if self._demo_optimizers is None:
             self._demo_optimizers = self.configure_demo_optimizer_helper()
@@ -185,7 +185,7 @@ class AdalComponent(Component):
                 raise ValueError("Model kwargs is not configured.")
 
             self._text_optimizers = self.configure_text_optimizer_helper(
-                **self.text_optimizer_model_config
+                **self.text_optimizer_model_config, **text_optimizer_kwargs
             )
         return self._demo_optimizers + self._text_optimizers
 
@@ -650,7 +650,7 @@ class AdalComponent(Component):
         print("Teacher generator configured.")
 
     def disable_backward_engine_helper(self):
-        r"""Disable the backward engine for all generators in the task."""
+        r"""Disable the backward engine for all gradcomponents in the task."""
         all_grads = self._find_all_grad_components()
         for _, grad in all_grads:
             if hasattr(grad, "disable_backward_engine") and callable(
@@ -826,7 +826,7 @@ class AdalComponent(Component):
         return [do]
 
     def configure_text_optimizer_helper(
-        self, model_client: "ModelClient", model_kwargs: Dict[str, Any]
+        self, model_client: "ModelClient", model_kwargs: Dict[str, Any], **kwargs
     ) -> List[TextOptimizer]:
         r"""Text optimizer hands prompt parameter type. One text optimizer can handle multiple text parameters."""
         from adalflow.optim.text_grad.tgd_optimizer import TGDOptimizer
@@ -842,7 +842,10 @@ class AdalComponent(Component):
             return []
 
         to = TGDOptimizer(
-            params=parameters, model_client=model_client, model_kwargs=model_kwargs
+            params=parameters,
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+            **kwargs,
         )
 
         printc(

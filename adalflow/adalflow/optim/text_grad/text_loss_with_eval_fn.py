@@ -90,12 +90,6 @@ class EvalFnToTextLoss(LossComponent):
                 )
             self.backward_engine = backward_engine
 
-    # def __call__(self, *args, **kwargs) -> Parameter:
-    #     r"""Different from default GradComponent __call__.
-    #     Only Parameter as this is not needed in a normal task pipeline, but only
-    #     for training generator."""
-    #     return self.forward(*args, **kwargs)
-
     def forward(
         self,
         kwargs: Dict[str, Parameter],
@@ -160,6 +154,7 @@ class EvalFnToTextLoss(LossComponent):
                 metadata=metadata,
                 ground_truth=gt,
                 input=input,
+                disable_backward_engine=self._disable_backward_engine,
             )
         )
         return eval_param
@@ -195,6 +190,7 @@ class EvalFnToTextLoss(LossComponent):
         is_intermediate_node: bool = False,  # if the node is an intermediate node in the backpropagation chain
         metadata: Dict[str, str] = None,
         input: Dict[str, object] = None,  # system input
+        disable_backward_engine: bool = False,
     ):
         if not pred.requires_opt:
             if response.score is not None:
@@ -275,24 +271,29 @@ class EvalFnToTextLoss(LossComponent):
             "objective_instruction_sec": objective_str,
             # "evaluate_variable_instruction_sec": eval_str,
         }
-        gradient_value: GeneratorOutput = backward_engine(
-            prompt_kwargs=backward_engine_prompt_kwargs
-        )
-        gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
-        # print(f"Backward engine prompt: {gradient_prompt}")
-        gradient_value_data = (
-            gradient_value.data
-            or backward_engine.failure_message_to_optimizer(
-                gradient_response=gradient_value
+        gradient_value_data = None
+        gradient_prompt = None
+        if not disable_backward_engine:
+            gradient_value: GeneratorOutput = backward_engine(
+                prompt_kwargs=backward_engine_prompt_kwargs
             )
-        )
+            gradient_prompt = backward_engine.get_prompt(
+                **backward_engine_prompt_kwargs
+            )
+            # print(f"Backward engine prompt: {gradient_prompt}")
+            gradient_value_data = (
+                gradient_value.data
+                or backward_engine.failure_message_to_optimizer(
+                    gradient_response=gradient_value
+                )
+            )
 
-        gradient_value_data = (
-            f"expected answer: {ground_truth},\n Feedback: {gradient_value_data}"
-        )
-        # print(f"gradient_value_data: {gradient_value_data}")
+            gradient_value_data = (
+                f"expected answer: {ground_truth},\n Feedback: {gradient_value_data}"
+            )
+            # print(f"gradient_value_data: {gradient_value_data}")
 
-        log.debug(f"EvalFnToTextLoss: Gradient for {pred}: {gradient_value_data}")
+            log.debug(f"EvalFnToTextLoss: Gradient for {pred}: {gradient_value_data}")
 
         # score should be passed to grad
         gradient_param = Gradient(
@@ -336,6 +337,7 @@ class EvalFnToTextLoss(LossComponent):
         ] = None,  # only needed for text prompt optimization
         metadata: Dict[str, str] = None,
         input: Dict[str, object] = None,
+        disable_backward_engine: bool = False,
     ):
         r"""Ensure to set backward_engine for the text prompt optimization. It can be None if you
         are only doing demo optimization and it will not have gradients but simply backpropagate the score.
@@ -351,35 +353,31 @@ class EvalFnToTextLoss(LossComponent):
 
         # go through all child parameters
         if backward_engine:
-            if not response.backward_engine_disabled:
-                for pred in children_params:
-                    if not pred.requires_opt:
-                        log.debug(
-                            f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
-                        )
-                        continue
-
-                    self._backward_through_one_predecessor(
-                        pred,
-                        kwargs,
-                        response,
-                        eval_fn_desc,
-                        backward_engine,
-                        ground_truth=ground_truth,
-                        is_intermediate_node=is_intermediate_node,
-                        metadata=metadata,
-                        input=input,
+            for pred in children_params:
+                if not pred.requires_opt:
+                    log.debug(
+                        f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
                     )
-            else:  # recursively disable backward for all children
-                for pred in children_params:
-                    pred.backward_engine_disabled = True
+                    continue
+
+                self._backward_through_one_predecessor(
+                    pred,
+                    kwargs,
+                    response,
+                    eval_fn_desc,
+                    backward_engine,
+                    ground_truth=ground_truth,
+                    is_intermediate_node=is_intermediate_node,
+                    metadata=metadata,
+                    input=input,
+                    disable_backward_engine=disable_backward_engine,
+                )
+            # else:  # recursively disable backward for all children
+            #     for pred in children_params:
+            #         pred.backward_engine_disabled = True
         # backward for the score for the demo
         for pred in children_params:
-            # if not pred.requires_opt:
-            #     log.debug(
-            #         f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
-            #     )
-            #     continue
+
             if not (isinstance(response.data, float) or isinstance(response.data, int)):
                 raise TypeError(
                     f"EvalFnToTextLoss: response.data must be a float. Got {type(response.data)}."

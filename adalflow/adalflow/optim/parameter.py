@@ -132,12 +132,12 @@ Gradients are from {{ component_schema | length }} components.
 INPUT_OUTPUT: {{ gradient.context }}
 {% if gradient.score is not none %}
 <SCORE>{{ gradient.score | round(3) }}</SCORE>
+{% endif %}
+{% if gradient.gradient is not none %}
 <FEEDBACK>{{ gradient.gradient }}</FEEDBACK>
 {% endif %}
 {% endfor %}
 </DataID>
-
-
 {% endfor %}
 {% endif %}
 """
@@ -196,10 +196,6 @@ class Parameter(Generic[T]):
     eval_input: object = None  # Eval input passing to the eval_fn or evaluator you use
     successor_map_fn: Dict[str, Callable] = (
         None  # Map function to get the data from the output
-    )
-
-    backward_engine_disabled: bool = (
-        False  # Disable the backward engine for the parameter
     )
 
     tgd_optimizer_trace: "TGDOptimizerTrace" = None  # Trace of the TGD optimizer

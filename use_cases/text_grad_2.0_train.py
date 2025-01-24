@@ -20,11 +20,11 @@ hotpot_qa_agent_rag = "benchmarks/hotpot_qa/adal_exp/train_agent_rag.py"
 ckpt_values = []
 experiments = [
     # object_count,
-    # trec_6_classification,
+    trec_6_classification,
     # hotpot_qa_vanilla_rag,
     # hotpot_qa_multi_hop_rag,
     # hotpot_qa_multi_hop_rag_cycle,
-    hotpot_qa_agent_rag,
+    # hotpot_qa_agent_rag,
 ]
 
 # set up the strategy for each experiment
@@ -33,12 +33,20 @@ argparser = argparse.ArgumentParser()
 argparser.add_argument("--strategy", type=str, default="constrained")
 argparser.add_argument("--use_tg", action="store_true")
 argparser.add_argument("--max_proposals_per_step", type=int, default=5)
+argparser.add_argument(
+    "--disable_backward", action="store_true"
+)  # no training data context
+argparser.add_argument(
+    "--disable_backward_gradients", action="store_true"
+)  # no backward gradients
 
 args = argparser.parse_args()
 
 strategy = args.strategy
 use_tg = args.use_tg
 max_proposals_per_step = args.max_proposals_per_step
+disable_backward = args.disable_backward
+disable_backward_gradients = args.disable_backward_gradients
 
 # Optional: Arguments for each experiment (if needed)
 
@@ -48,6 +56,11 @@ if use_tg:
     setup_str += " --use_tg"
 
 setup_str += f" --max_proposals_per_step {max_proposals_per_step}"
+if disable_backward:
+    setup_str += " --disable_backward"
+
+if disable_backward_gradients:
+    setup_str += " --disable_backward_gradients"
 
 
 experiment_args = {

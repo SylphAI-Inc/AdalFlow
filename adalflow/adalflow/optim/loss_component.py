@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 from adalflow.core.component import Component
 
 
+# TODO: make it a subclass of GradComponent
 class LossComponent(Component):
     __doc__ = """A base class to define a loss component.
 
@@ -29,11 +30,13 @@ class LossComponent(Component):
     backward_engine: "BackwardEngine"
     _component_type = "loss"
     id = None
+    _disable_backward_engine: bool
 
     def __init__(self, *args, **kwargs):
         super().__init__()
         super().__setattr__("backward_engine", None)
         super().__setattr__("id", str(uuid.uuid4()))
+        super().__setattr__("_disable_backward_engine", False)
 
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
@@ -42,7 +45,8 @@ class LossComponent(Component):
         raise NotImplementedError("set_backward_engine method is not implemented")
 
     def disable_backward_engine(self):
-        self.backward_engine = None
+        r"""Does not run gradients generation, but still with backward to gain module-context"""
+        self._disable_backward_engine = True
 
     def forward(self, *args, **kwargs) -> "Parameter":
         r"""Default just wraps the call method."""

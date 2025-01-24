@@ -5,13 +5,10 @@ from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from adalflow.datasets.types import HotPotQAData
 from benchmarks.hotpot_qa.config import load_datasets
 
-# from benchmarks.hotpot_qa._adal_train import load_datasets
 from benchmarks.hotpot_qa.adal_exp.build_multi_hop_rag import MultiHopRAG
 from use_cases.config import gpt_3_model, gpt_4o_model
 
 
-# TODO: look more into the loss function
-# TODO: test LLM judge too.
 class MultiHopRAGAdal(adal.AdalComponent):
     def __init__(
         self,
@@ -70,7 +67,6 @@ class MultiHopRAGAdal(adal.AdalComponent):
             requires_opt=False,
         )
 
-        # pred's full_response is the output of the task pipeline which is GeneratorOutput
         pred.eval_input = (
             pred.data.data.answer
             if pred.data and pred.data.data and pred.data.data.answer
@@ -87,9 +83,6 @@ class MultiHopRAGAdal(adal.AdalComponent):
 from adalflow.core.generator import BackwardPassSetup
 
 
-# Note: diagnose is quite helpful, it helps you to quickly check if the evalfunction is the right metrics
-# i checked the eval which does fuzzy match, and found some yes and Yes are not matched, then converted both strings to lower and
-# the performances have gone up from 0.15 to 0.4
 def train_diagnose(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
@@ -124,6 +117,8 @@ def train(
     seed=None,
     tg: bool = False,
     max_proposals_per_step: int = 5,
+    disable_backward=False,
+    disable_backward_gradients=False,
 ):
     adal_component = MultiHopRAGAdal(
         **gpt_3_model,
@@ -137,7 +132,6 @@ def train(
             all_pred_at_once=False,
             compute_grad_for_errors_only=False,
         )
-    # print(adal_component)
     trainer = adal.Trainer(
         train_batch_size=train_batch_size,
         adaltask=adal_component,
@@ -153,6 +147,9 @@ def train(
         sequential_order=["text", "demo"],
         max_proposals_per_step=max_proposals_per_step,
         backward_pass_setup=backward_pass_setup,
+        disable_backward=disable_backward,
+        text_optimizers_config_kwargs={"max_past_history": 2},
+        disable_backward_gradients=disable_backward_gradients,
     )
     trainer.set_random_seed(seed)
     print(trainer)
@@ -187,11 +184,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--strategy", type=str, default="constrained")
-    parser.add_argument("--use_tg", action="store_false")
+    parser.add_argument("--use_tg", action="store_true")
     parser.add_argument("--max_proposals_per_step", type=int, default=5)
     parser.add_argument(
         "output_path", nargs="?", help="File path to save the checkpoint"
     )
+    parser.add_argument("--disable_backward", action="store_true")
+    parser.add_argument("--disable_backward_gradients", action="store_true")
 
     args = parser.parse_args()
 
@@ -199,6 +198,8 @@ if __name__ == "__main__":
     set_output_path = args.output_path
     use_tg = args.use_tg
     max_proposals_per_step = args.max_proposals_per_step
+    disable_backward = args.disable_backward
+    disable_backward_gradients = args.disable_backward_gradients
 
     # task = MultiHopRAGAdal(**gpt_3_model)
     # print(task)
@@ -212,6 +213,8 @@ if __name__ == "__main__":
         tg=use_tg,
         strategy=set_strategy,
         max_proposals_per_step=max_proposals_per_step,
+        disable_backward=disable_backward,
+        disable_backward_gradients=disable_backward_gradients,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/MultiHopRAGAdal/constrained_max_steps_12_fde51_run_1.json",
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )

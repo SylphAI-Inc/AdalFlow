@@ -112,6 +112,8 @@ def train(
     seed=None,
     tg: bool = False,
     max_proposals_per_step: int = 5,
+    disable_backward=False,
+    disable_backward_gradients=False,
 ):
     adal_component = ObjectCountAdalComponent(
         **gpt_3_model,
@@ -140,6 +142,10 @@ def train(
         optimization_order=optimization_order,
         exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
         max_proposals_per_step=max_proposals_per_step,
+        text_optimizers_config_kwargs={"max_past_history": 2},
+        backward_pass_setup=backward_pass_setup,
+        disable_backward=disable_backward,
+        disable_backward_gradients=disable_backward_gradients,
     )
     trainer.set_random_seed(seed)
     print(trainer)
@@ -178,6 +184,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "output_path", nargs="?", help="File path to save the checkpoint"
     )
+    parser.add_argument("--disable_backward", action="store_true")
+    parser.add_argument("--disable_backward_gradients", action="store_true")
 
     args = parser.parse_args()
 
@@ -185,15 +193,19 @@ if __name__ == "__main__":
     set_output_path = args.output_path
     use_tg = args.use_tg
     max_proposals_per_step = args.max_proposals_per_step
+    disable_backward = args.disable_backward
+    disable_backward_gradients = args.disable_backward_gradients
 
     ckpt = train(
-        debug=True,
+        debug=False,
         max_steps=12,
         strategy=set_strategy,
         exclude_input_fields_from_bootstrap_demos=True,
         seed=2025,  # pass the numpy seed
         tg=use_tg,
         max_proposals_per_step=max_proposals_per_step,
+        disable_backward=disable_backward,
+        disable_backward_gradients=disable_backward_gradients,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_dc778_run_1.json",
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_18e8d_run_1.json",
     )
