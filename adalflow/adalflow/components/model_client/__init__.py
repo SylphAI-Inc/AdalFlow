@@ -65,6 +65,12 @@ get_probabilities = LazyImport(
     OptionalPackages.OPENAI,
 )
 
+# Azure OpenAI Client
+AzureAIClient = LazyImport(
+    "adalflow.components.model_client.azureai_client.AzureAIClient",
+    OptionalPackages.AZURE,
+)
+
 __all__ = [
     "CohereAPIClient",
     "TransformerReranker",
@@ -76,6 +82,7 @@ __all__ = [
     "GroqAPIClient",
     "OpenAIClient",
     "GoogleGenAIClient",
+    "AzureAIClient",
 ]
 
 for name in __all__:
