@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from adalflow.core.func_tool import FunctionTool
 from adalflow.core.tool_manager import ToolManager
 from adalflow.core.types import FunctionDefinition
+from adalflow.core.component import Component
 
 
 @dataclass
@@ -59,7 +60,7 @@ from adalflow.optim.grad_component import GradComponent
 
 class GradAdd(GradComponent):
     def __init__(self):
-        super().__init__()
+        super().__init__(desc="A simple addition tool")
         print(f"training: {self.training}")
 
     def call(self, x, y):
@@ -72,7 +73,7 @@ class GradAdd(GradComponent):
 
 class GradSub(GradComponent):
     def __init__(self):
-        super().__init__()
+        super().__init__(desc="A simple subtraction tool")
 
     def call(self, x, y):
         return x - y
@@ -82,7 +83,7 @@ class GradSub(GradComponent):
         return f"{x - y} + forward"
 
 
-class TestComponent(GradComponent):
+class TestComponent(Component):
     def __init__(self):
         super().__init__()
 
@@ -106,7 +107,7 @@ add = GradAdd()
 sub = GradSub()
 
 
-class TestComponnetInstanceOutsideComponent(GradComponent):
+class TestComponnetInstanceOutsideComponent(Component):
     def __init__(self):
         super().__init__()
 
@@ -123,7 +124,7 @@ class TestComponnetInstanceOutsideComponent(GradComponent):
         ]
 
 
-class TestToolManagerComponent(GradComponent):
+class TestToolManagerComponent(Component):
 
     def __init__(self):
         super().__init__()

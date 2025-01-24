@@ -271,7 +271,7 @@ class GradComponent(Component):
 
     def __init__(
         self,
-        desc: str,
+        desc: str,  # what is this component for? Useful for training.
         name: Optional[str] = None,
         backward_engine: Optional["BackwardEngine"] = None,
         model_client: "ModelClient" = None,
