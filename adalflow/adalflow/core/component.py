@@ -27,6 +27,9 @@ from adalflow.utils.serialization import default
 from adalflow.utils.config import new_component
 
 from adalflow.utils.registry import EntityMapping
+from torch import nn
+
+nn.module = nn.Module
 
 # import networkx as nx
 # from pyvis.network import Network
@@ -126,29 +129,21 @@ class Component:
     """
 
     _version: int = 1  # Version of the component
-    # TODO: the type of module, is it OrderedDict or just Dict?
     _components: Dict[str, Optional["Component"]]
-    # _grad_components: Dict[str, Optional["GradComponent"]]
     _init_args: Dict[str, Any] = {}  # Store the init arguments
-    # _execution_graph: List[str] = []  # This will store the graph of execution.
-    # _graph = nx.DiGraph()
-    # _last_called = None  # Tracks the last component called
+
     _parameters: Dict[str, Optional["Parameter"]]
     training: bool
-    teacher_mode: bool = False
-    tracing: bool = False
+    teacher_mode: bool
+    tracing: bool
     name: str = (
         "Component"  # name will help with GradComponent output naming as "{name}_output"
     )
-    _component_type = "base"
 
-    # def _generate_unique_name(self):
-    #     # Generate a unique identifier that includes the class name
-    #     return f"{self.__class__.__name__}_{uuid.uuid4().hex[:8]}"
+    _component_type = "base"
 
     def __init__(self, *args, **kwargs) -> None:
         super().__setattr__("_components", OrderedDict())
-        # super().__setattr__("_grad_components", OrderedDict())
         super().__setattr__("_parameters", OrderedDict())
         super().__setattr__("training", False)
         super().__setattr__("teacher_mode", False)
@@ -675,6 +670,7 @@ class Component:
             memo (Optional[Set["Component"]]): a memo to store the set of components already added to the result
             prefix (str): a prefix to prepend to all component names
             remove_duplicate (bool): if True, then yields only unique components
+            grad_component_only (bool): if True, then yields only components that are instances of GradComponent
 
         Yields:
             Tuple[str, "Component"]: Tuple containing the name and component

@@ -97,6 +97,7 @@ class TestGenerator(IsolatedAsyncioTestCase):
         self._clean_up()
 
     def test_generator_prompt_update(self):
+        self._clean_up()
         generator = Generator(model_client=self.mock_api_client)
         prompt_logger = GeneratorStateLogger(
             save_dir=self.save_dir,
@@ -104,6 +105,7 @@ class TestGenerator(IsolatedAsyncioTestCase):
             filename=self.filename,
         )
         prompt_logger.log_prompt(generator=generator, name="Test Generator")
+        print(f"""prompt_logger._trace_map: {prompt_logger._trace_map}""")
         self.assertTrue("Test Generator" in prompt_logger._trace_map)
 
         # Update the prompt variable and value
@@ -113,11 +115,9 @@ class TestGenerator(IsolatedAsyncioTestCase):
         )
 
         prompt_logger.log_prompt(generator=generator, name="Test Generator")
-        print(
-            f"""preset_prompt_kwargs: {prompt_logger._trace_map["Test Generator"][-1].prompt_states}"""
-        )
+        print(f"""preset_prompt_kwargs: {prompt_logger._trace_map["Test Generator"]}""")
         self.assertEqual(
-            prompt_logger._trace_map["Test Generator"][1].prompt_states["data"][
+            prompt_logger._trace_map["Test Generator"][1].prompt_states[
                 "prompt_kwargs"
             ]["input_str"],
             "Hello, updated world!",
@@ -128,9 +128,7 @@ class TestGenerator(IsolatedAsyncioTestCase):
         generator = Generator(model_client=self.mock_api_client, template=template)
         prompt_logger.log_prompt(generator=generator, name="Test Generator")
         self.assertEqual(
-            prompt_logger._trace_map["Test Generator"][2].prompt_states["data"][
-                "template"
-            ],
+            prompt_logger._trace_map["Test Generator"][2].prompt_states["template"],
             "Hello, {{ input_str }}!",
         )
         self._clean_up()

@@ -5,6 +5,7 @@ from adalflow.core.func_tool import FunctionTool
 from adalflow.core.tool_manager import ToolManager
 from adalflow.core.types import FunctionDefinition
 from adalflow.core.component import Component
+from adalflow.core.container import ComponentList
 
 
 @dataclass
@@ -25,6 +26,7 @@ async def async_add(x, y):
 metadata = FunctionDefinition(func_desc="A simple addition tool", func_name="add")
 
 
+# use normal functions, with only eval mode
 def test_function_tool_sync():
     tool = FunctionTool(definition=metadata, fn=sync_add)
     print(
@@ -66,9 +68,9 @@ class GradAdd(GradComponent):
     def call(self, x, y):
         return x + y
 
-    def forward(self, x, y):
-        print(f"training: {self.training}")
-        return f"{x + y} + forward"
+    # def forward(self, x, y):
+    #     print(f"training: {self.training}")
+    #     return f"{x + y} + forward"
 
 
 class GradSub(GradComponent):
@@ -78,9 +80,9 @@ class GradSub(GradComponent):
     def call(self, x, y):
         return x - y
 
-    def forward(self, x, y):
-        print(f"training: {self.training}")
-        return f"{x - y} + forward"
+    # def forward(self, x, y):
+    #     print(f"training: {self.training}")
+    #     return f"{x - y} + forward"
 
 
 class TestComponent(Component):
@@ -97,10 +99,14 @@ class TestComponent(Component):
         def add_as_tool(x, y):
             return self.add(x, y)
 
-        self.tools = [
+        # two ways to call a gradcomponent function
+
+        self.tools_list = [
             FunctionTool(fn=add_as_tool, component=self.add),
             FunctionTool(fn=self.sub.__call__, component=self.sub),
         ]
+        # components can only be managed by component so that we can recursively set the training mode
+        self.tools = ComponentList(self.tools_list)
 
 
 add = GradAdd()
@@ -136,10 +142,13 @@ class TestToolManagerComponent(Component):
         def add_as_tool(x, y):
             return add(x, y)
 
+        # two ways to call a gradcomponent function
+
         self.tools = [
             FunctionTool(fn=add_as_tool, component=add),
             FunctionTool(fn=sub.__call__, component=sub),
         ]
+        self.tools = ComponentList(self.tools)
 
         # manag by tool manager, and since the component is passed to tools_manager which is also a component, it will be in training mode
         self.tools_manager = ToolManager(tools=self.tools)
@@ -160,8 +169,14 @@ def test_function_tool_with_grad_component():
     assert test_com.training
     assert test_com.add.training
     # ensure it is the forward method that is called
+    print(f"training: {test_com.add.training}")
+    print(f"training: {test_com.sub.training}")
+    print(f"function tool training: {test_com.tools[0].training}")
+    assert test_com.tools[0].training
+    assert test_com.tools_list[0].training
     output = test_com.tools[0](1, 2)
-    assert output.output == "3 + forward"
+    print(f"output: {output}")
+    assert output.data.output == 3
 
 
 def test_component_instance_outside_component():
@@ -201,4 +216,4 @@ def test_tool_manager_with_grad_component():
     )  # the subcomponent will change as it is managed by the tool manager
     # ensure it is the forward method that is called
     output = test_com.tools_manager.tools[0](1, 2)
-    assert output.output == "3 + forward"
+    assert output.data.output == 3

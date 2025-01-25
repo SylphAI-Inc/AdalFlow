@@ -116,6 +116,8 @@ def train(
     seed=None,
     tg: bool = False,
     max_proposals_per_step: int = 5,
+    disable_backward_gradients: bool = False,
+    disable_backward: bool = False,
 ):
     adal_component = VallinaRAGAdal(
         **gpt_3_1106_model,
@@ -143,7 +145,10 @@ def train(
         optimization_order=optimization_order,
         exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
         max_proposals_per_step=max_proposals_per_step,
+        text_optimizers_config_kwargs={"max_past_history": 2},
         backward_pass_setup=backward_pass_setup,
+        disable_backward_gradients=disable_backward_gradients,
+        disable_backward=disable_backward,
     )
     trainer.set_random_seed(seed)
     print(trainer)
@@ -179,6 +184,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "output_path", nargs="?", help="File path to save the checkpoint"
     )
+    parser.add_argument("--disable_backward", action="store_true")
+    parser.add_argument("--disable_backward_gradients", action="store_true")
 
     args = parser.parse_args()
 
@@ -186,6 +193,8 @@ if __name__ == "__main__":
     set_output_path = args.output_path
     use_tg = args.use_tg
     max_proposals_per_step = args.max_proposals_per_step
+    disable_backward = args.disable_backward
+    disable_backward_gradients = args.disable_backward_gradients
 
     # task = VallinaRAGAdal(**gpt_3_model)
     # print(task)
@@ -193,12 +202,14 @@ if __name__ == "__main__":
     # train_diagnose(**gpt_3_model)
 
     ckpt = train(
-        debug=True,
+        debug=False,
         max_steps=12,
         seed=2025,  # pass the numpy seed
         tg=use_tg,
         strategy=set_strategy,
         max_proposals_per_step=max_proposals_per_step,
+        disable_backward=disable_backward,
+        disable_backward_gradients=disable_backward_gradients,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/VallinaRAGAdal/constrained_max_steps_12_8cdad_run_1.json",
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/VallinaRAGAdal/constrained_max_steps_12_5a4b4_run_1.json",
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",

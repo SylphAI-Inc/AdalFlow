@@ -130,6 +130,8 @@ def train(
     seed=None,
     tg: bool = False,
     max_proposals_per_step: int = 5,
+    disable_backward_gradients: bool = False,
+    disable_backward: bool = False,
 ):
     adal_component = AgenticRAGAdal(
         **gpt_3_model,
@@ -159,6 +161,8 @@ def train(
         sequential_order=["text", "demo"],
         max_proposals_per_step=max_proposals_per_step,
         backward_pass_setup=backward_pass_setup,
+        disable_backward_gradients=disable_backward_gradients,
+        disable_backward=disable_backward,
     )
     trainer.set_random_seed(seed)
     print(trainer)
@@ -198,6 +202,8 @@ if __name__ == "__main__":
     parser.add_argument("--strategy", type=str, default="constrained")
     parser.add_argument("--use_tg", action="store_false")
     parser.add_argument("--max_proposals_per_step", type=int, default=5)
+    parser.add_argument("--disable_backward", action="store_true")
+    parser.add_argument("--disable_backward_gradients", action="store_true")
     parser.add_argument(
         "output_path", nargs="?", help="File path to save the checkpoint"
     )
@@ -208,6 +214,9 @@ if __name__ == "__main__":
     set_output_path = args.output_path
     use_tg = args.use_tg
     max_proposals_per_step = args.max_proposals_per_step
+
+    disable_backward = args.disable_backward
+    disable_backward_gradients = args.disable_backward_gradients
 
     # task = MultiHopRAGAdal(**gpt_3_model)
     # print(task)
@@ -222,6 +231,8 @@ if __name__ == "__main__":
         tg=use_tg,
         strategy=set_strategy,
         max_proposals_per_step=max_proposals_per_step,
+        disable_backward=args.disable_backward,
+        disable_backward_gradients=args.disable_backward_gradients,
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_387b2_run_1.json",
         # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_4_dca7e_run_1.json",
     )

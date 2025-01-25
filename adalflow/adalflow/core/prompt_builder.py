@@ -1,6 +1,6 @@
 """Class prompt builder for AdalFlow system prompt."""
 
-from typing import Dict, Any, Optional, List, TypeVar
+from typing import Dict, Any, Optional, List, TypeVar, Union
 import logging
 from functools import lru_cache
 
@@ -9,7 +9,7 @@ from jinja2 import Template, Environment, StrictUndefined, meta
 
 from adalflow.core.default_prompt_template import DEFAULT_ADALFLOW_SYSTEM_PROMPT
 from adalflow.optim.parameter import Parameter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from adalflow.core.base_data_class import DataClass
 
 
@@ -50,11 +50,19 @@ class Prompt(DataClass):
         >>> # pass it to the main prompt
         >>> prompt.print_prompt(examples_str=examples_str)
     """
+    # save these two fields for serialization, using to_dict and from_dict
+    template: str = field(
+        default=DEFAULT_ADALFLOW_SYSTEM_PROMPT,
+        metadata={"desc": "The Jinja2 template string."},
+    )
+    prompt_kwargs: Dict[str, Parameter] = field(
+        default_factory=dict, metadata={"desc": "The preset prompt kwargs."}
+    )
 
     def __init__(
         self,
         template: Optional[str] = None,
-        prompt_kwargs: Optional[Dict[str, Parameter]] = {},
+        prompt_kwargs: Optional[Dict[str, Union[Any, Parameter]]] = {},
     ):
         super().__init__()
 
@@ -175,6 +183,7 @@ class Prompt(DataClass):
         """
         exclude = ["jinja2_template"]  # unserializable object
         output = super().to_dict(exclude=exclude)
+        print(f"prompt to_dict: {output}")
         return output
 
 

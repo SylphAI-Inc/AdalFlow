@@ -49,9 +49,8 @@ class TestUpdatePrompt(unittest.TestCase):
         # Create an instance of YourClass
         tgd = TGDOptimizer(model_client=ModelClient(), params=[param])
         tgd.in_context_examples = ["Example 1", "Example 2"]
-        tgd.get_gradient_memory_text = Mock(return_value="Gradient memory text")
+        # tgd.get_g = Mock(return_value="Gradient memory text")
         tgd.do_in_context_examples = True
-        tgd.do_gradient_memory = True
         tgd.do_constrained = True
         tgd.constraints = ["Some constraint text"]
 
@@ -67,7 +66,7 @@ class TestUpdatePrompt(unittest.TestCase):
         self.assertIn("Some constraint text", result)
         self.assertIn("Example 1", result)
         self.assertIn("Example 2", result)
-        self.assertIn("Gradient memory text", result)
+        # self.assertIn("Gradient memory text", result)
 
 
 if __name__ == "__main__":

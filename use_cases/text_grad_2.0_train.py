@@ -20,11 +20,11 @@ hotpot_qa_agent_rag = "benchmarks/hotpot_qa/adal_exp/train_agent_rag.py"
 ckpt_values = []
 experiments = [
     # object_count,
-    trec_6_classification,
+    # trec_6_classification,
     # hotpot_qa_vanilla_rag,
     # hotpot_qa_multi_hop_rag,
     # hotpot_qa_multi_hop_rag_cycle,
-    # hotpot_qa_agent_rag,
+    hotpot_qa_agent_rag,
 ]
 
 # set up the strategy for each experiment
@@ -200,6 +200,9 @@ if __name__ == "__main__":
         # valset pass rate
         average_valset_pass_rate = np.mean(valset_pass_rate)
 
+        max_test_score = max(last_test_scores)
+        max_val_score = max(past_highest_val_scores)
+
         # add these numbers in the ckpt_values
         index = f"{experiment}_summary"
         ckpt_values[index] = {
@@ -217,6 +220,8 @@ if __name__ == "__main__":
                 "average_training_time": average_training_time,
                 "average_subset_pass_rate": average_subset_pass_rate,
                 "average_valset_pass_rate": average_valset_pass_rate,
+                "max_test_score": max_test_score,
+                "max_val_score": max_val_score,
             },
         }
 

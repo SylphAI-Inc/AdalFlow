@@ -653,8 +653,7 @@ class MultiHopRAGCycle(VanillaRAG):
         )
 
 
-# TODO: agent needs storage for the context instead of all in the step history.
-class AgenticRAG(adal.GradComponent):
+class AgenticRAG(adal.Component):
     def __init__(self, model_client, model_kwargs):
         super().__init__()
 
