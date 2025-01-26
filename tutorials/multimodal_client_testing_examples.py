@@ -19,17 +19,13 @@ from adalflow.components.model_client.openai_client import OpenAIClient
 from adalflow.core.types import ModelType
 
 
-class ImageGenerator(Generator):
-    """Generator subclass for image generation."""
-
-    model_type = ModelType.IMAGE_GENERATION
-
-
 def test_basic_generation():
     """Test basic text generation"""
-    client = OpenAIClient()
+    client = OpenAIClient()  # For text/chat completion
     gen = Generator(
-        model_client=client, model_kwargs={"model": "gpt-4o-mini", "max_tokens": 100}
+        model_client=client,
+        model_kwargs={"model": "gpt-4o-mini", "max_tokens": 100},
+        model_type=ModelType.LLM  # Explicitly specify model type
     )
 
     print("\n=== Testing Basic Generation ===")
@@ -39,7 +35,7 @@ def test_basic_generation():
 
 def test_invalid_image_url():
     """Test Generator output with invalid image URL"""
-    client = OpenAIClient()
+    client = OpenAIClient()  # For vision tasks
     gen = Generator(
         model_client=client,
         model_kwargs={
@@ -47,6 +43,7 @@ def test_invalid_image_url():
             "images": "https://invalid.url/nonexistent.jpg",
             "max_tokens": 300,
         },
+        model_type=ModelType.LLM  # Vision tasks use LLM type
     )
 
     print("\n=== Testing Invalid Image URL ===")
@@ -56,8 +53,8 @@ def test_invalid_image_url():
 
 def test_invalid_image_generation():
     """Test DALL-E generation with invalid parameters"""
-    client = OpenAIClient()
-    gen = ImageGenerator(
+    client = OpenAIClient()  # For image generation
+    gen = Generator(
         model_client=client,
         model_kwargs={
             "model": "dall-e-3",
@@ -65,6 +62,7 @@ def test_invalid_image_generation():
             "quality": "standard",
             "n": 1,
         },
+        model_type=ModelType.IMAGE_GENERATION  # Specify image generation type
     )
 
     print("\n=== Testing Invalid DALL-E Parameters ===")
@@ -74,16 +72,16 @@ def test_invalid_image_generation():
 
 def test_vision_and_generation():
     """Test both vision analysis and image generation"""
-    client = OpenAIClient()
-
-    # 1. Test Vision Analysis
+    # 1. Test Vision Analysis with LLM client
+    vision_client = OpenAIClient()  # For vision tasks
     vision_gen = Generator(
-        model_client=client,
+        model_client=vision_client,
         model_kwargs={
             "model": "gpt-4o-mini",
             "images": "https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png",
             "max_tokens": 300,
         },
+        model_type=ModelType.LLM  # Vision tasks use LLM type
     )
 
     vision_response = vision_gen(
@@ -93,14 +91,16 @@ def test_vision_and_generation():
     print(f"Description: {vision_response.raw_response}")
 
     # 2. Test DALL-E Image Generation
-    dalle_gen = ImageGenerator(
-        model_client=client,
+    dalle_client = OpenAIClient()  # For image generation
+    dalle_gen = Generator(
+        model_client=dalle_client,
         model_kwargs={
             "model": "dall-e-3",
             "size": "1024x1024",
             "quality": "standard",
             "n": 1,
         },
+        model_type=ModelType.IMAGE_GENERATION  # Specify image generation type
     )
 
     # For image generation, input_str becomes the prompt
