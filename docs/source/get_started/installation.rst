@@ -19,7 +19,7 @@ If you know you will need `openai` and `faiss-cpu`, you can do so with:
 
 .. code-block:: bash
 
-   pip install adalflow[openai, faiss-cpu]
+   pip install adalflow[openai,faiss-cpu]
 
 .. note::
    Check the `Optional Packages` section for more information on the available packages.

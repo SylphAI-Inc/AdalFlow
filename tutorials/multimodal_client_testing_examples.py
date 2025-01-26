@@ -17,11 +17,7 @@ The script will show different GeneratorOutput responses based on the API key st
 from adalflow.core import Generator
 from adalflow.components.model_client.openai_client import OpenAIClient
 from adalflow.core.types import ModelType
-import asyncio
-import numpy as np
-from dataclasses import dataclass
-from typing import List
-from numpy.linalg import norm
+
 
 def test_basic_generation():
     """Test basic text generation"""

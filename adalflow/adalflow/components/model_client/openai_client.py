@@ -323,7 +323,6 @@ class OpenAIClient(ModelClient):
             # Ensure model is specified
             if "model" not in final_model_kwargs:
                 raise ValueError("model must be specified for image generation")
-            
             # Set defaults for image generation
             if "operation" not in final_model_kwargs:
                 final_model_kwargs["operation"] = "generate"  # Default operation
