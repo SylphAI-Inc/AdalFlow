@@ -110,7 +110,6 @@ class OpenAIClient(ModelClient):
         api_key (Optional[str], optional): OpenAI API key. Defaults to None.
         chat_completion_parser (Callable[[Completion], Any], optional): A function to parse the chat completion to a str. Defaults to None.
         input_type (Literal["text", "messages"], optional): The type of input to use. Defaults to "text".
-        model_type (ModelType, optional): The type of model to use (EMBEDDER, LLM, or IMAGE_GENERATION). Defaults to ModelType.LLM.
 
     Note:
         We suggest users not to use `response_format` to enforce output data type or `tools` and `tool_choice`  in your model_kwargs when calling the API.
@@ -142,7 +141,6 @@ class OpenAIClient(ModelClient):
         api_key: Optional[str] = None,
         chat_completion_parser: Callable[[Completion], Any] = None,
         input_type: Literal["text", "messages"] = "text",
-        model_type: ModelType = ModelType.LLM,
     ):
         r"""It is recommended to set the OPENAI_API_KEY environment variable instead of passing it as an argument.
 
@@ -150,7 +148,6 @@ class OpenAIClient(ModelClient):
             api_key (Optional[str], optional): OpenAI API key. Defaults to None.
             chat_completion_parser (Callable[[Completion], Any], optional): A function to parse the chat completion to a str. Defaults to None.
             input_type (Literal["text", "messages"], optional): The type of input to use. Defaults to "text".
-            model_type (ModelType, optional): The type of model to use (EMBEDDER, LLM, or IMAGE_GENERATION). Defaults to ModelType.LLM.
         """
         super().__init__()
         self._api_key = api_key
@@ -160,7 +157,6 @@ class OpenAIClient(ModelClient):
             chat_completion_parser or get_first_message_content
         )
         self._input_type = input_type
-        self.model_type = model_type
 
     def init_sync_client(self):
         api_key = self._api_key or os.getenv("OPENAI_API_KEY")
@@ -235,6 +231,7 @@ class OpenAIClient(ModelClient):
         self,
         input: Optional[Any] = None,
         model_kwargs: Dict = {},
+        model_type: ModelType = ModelType.UNDEFINED,  # Now required in practice
     ) -> Dict:
         r"""
         Specify the API input type and output api_kwargs that will be used in _call and _acall methods.
@@ -259,20 +256,23 @@ class OpenAIClient(ModelClient):
                 - mask: Path to the mask image
                 For variations (DALL-E 2 only):
                 - image: Path to the input image
+            model_type: The type of model to use (EMBEDDER, LLM, or IMAGE_GENERATION). Required.
 
         Returns:
             Dict: API-specific kwargs for the model call
         """
+        if model_type == ModelType.UNDEFINED:
+            raise ValueError("model_type must be specified")
 
         final_model_kwargs = model_kwargs.copy()
-        if self.model_type == ModelType.EMBEDDER:
+        if model_type == ModelType.EMBEDDER:
             if isinstance(input, str):
                 input = [input]
             # convert input to input
             if not isinstance(input, Sequence):
                 raise TypeError("input must be a sequence of text")
             final_model_kwargs["input"] = input
-        elif self.model_type == ModelType.LLM:
+        elif model_type == ModelType.LLM:
             # convert input to messages
             messages: List[Dict[str, str]] = []
             images = final_model_kwargs.pop("images", None)
@@ -317,7 +317,7 @@ class OpenAIClient(ModelClient):
                 else:
                     messages.append({"role": "system", "content": input})
             final_model_kwargs["messages"] = messages
-        elif self.model_type == ModelType.IMAGE_GENERATION:
+        elif model_type == ModelType.IMAGE_GENERATION:
             # For image generation, input is the prompt
             final_model_kwargs["prompt"] = input
             # Ensure model is specified
@@ -362,7 +362,7 @@ class OpenAIClient(ModelClient):
             else:
                 raise ValueError(f"Invalid operation: {operation}")
         else:
-            raise ValueError(f"model_type {self.model_type} is not supported")
+            raise ValueError(f"model_type {model_type} is not supported")
         return final_model_kwargs
 
     def parse_image_generation_response(self, response: List[Image]) -> GeneratorOutput:
@@ -379,11 +379,7 @@ class OpenAIClient(ModelClient):
             )
         except Exception as e:
             log.error(f"Error parsing image generation response: {e}")
-            return GeneratorOutput(
-                data=None,
-                error=str(e),
-                raw_response=str(response)
-            )
+            return GeneratorOutput(data=None, error=str(e), raw_response=str(response))
 
     @backoff.on_exception(
         backoff.expo,
@@ -400,6 +396,9 @@ class OpenAIClient(ModelClient):
         """
         kwargs is the combined input and model_kwargs.  Support streaming call.
         """
+        if model_type == ModelType.UNDEFINED:
+            raise ValueError("model_type must be specified")
+
         log.info(f"api_kwargs: {api_kwargs}")
         if model_type == ModelType.EMBEDDER:
             return self.sync_client.embeddings.create(**api_kwargs)
@@ -449,6 +448,9 @@ class OpenAIClient(ModelClient):
         """
         kwargs is the combined input and model_kwargs
         """
+        if model_type == ModelType.UNDEFINED:
+            raise ValueError("model_type must be specified")
+
         if self.async_client is None:
             self.async_client = self.init_async_client()
         if model_type == ModelType.EMBEDDER:

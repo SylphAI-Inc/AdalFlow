@@ -15,6 +15,7 @@ from adalflow.core.generator import Generator
 from adalflow.core.model_client import ModelClient
 from adalflow.components.model_client.groq_client import GroqAPIClient
 from adalflow.tracing import GeneratorStateLogger
+from adalflow.core.types import ModelType
 
 
 class TestGenerator(IsolatedAsyncioTestCase):
@@ -32,7 +33,7 @@ class TestGenerator(IsolatedAsyncioTestCase):
             )
             self.mock_api_client = mock_api_client
 
-            self.generator = Generator(model_client=mock_api_client)
+            self.generator = Generator(model_client=mock_api_client, model_type=ModelType.LLM)
             self.save_dir = "./tests/log"
             self.project_name = "TestGenerator"
             self.filename = "prompt_logger_test.json"
@@ -182,7 +183,7 @@ class TestGeneratorWithGroqClient(unittest.TestCase):
         template = "Hello, {{ input_str }}!"
 
         # Initialize the Generator with the mocked client
-        generator = Generator(model_client=self.client, template=template)
+        generator = Generator(model_client=self.client, template=template, model_type=ModelType.LLM)
 
         # Call the generator and get the output
         output = generator.call(prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs)

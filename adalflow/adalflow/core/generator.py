@@ -73,6 +73,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         name (Optional[str], optional): The name of the generator. Defaults to None.
         cache_path (Optional[str], optional): The path to save the cache. Defaults to None.
         use_cache (bool, optional): Whether to use cache. Defaults to False.
+        model_type (ModelType, optional): The type of the model. Defaults to ModelType.LLM.
     """
 
     def __init__(
@@ -90,6 +91,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # args for the cache
         cache_path: Optional[str] = None,
         use_cache: bool = False,
+        model_type: ModelType = ModelType.LLM,  # Add model_type parameter with default
     ) -> None:
         r"""The default prompt is set to the DEFAULT_ADALFLOW_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
@@ -122,7 +124,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         CallbackManager.__init__(self)
 
         self.name = name or self.__class__.__name__
-        self.model_type = model_client.model_type  # Get model type from client
+        self.model_type = model_type  # Use the passed model_type instead of getting from client
 
         self._init_prompt(template, prompt_kwargs)
 
@@ -326,6 +328,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
             input=prompt_str,
             model_kwargs=composed_model_kwargs,
+            model_type=self.model_type,
         )
         return api_kwargs
 
