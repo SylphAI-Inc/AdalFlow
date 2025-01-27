@@ -16,7 +16,6 @@ from adalflow.optim.text_grad.backend_engine_prompt import VARIABLE_AND_PEERS_IN
 from adalflow.optim.parameter import Parameter
 
 from adalflow.core.base_data_class import DataClass
-from adalflow.tracing.decorators import trace_generator_states
 from adalflow.utils.logger import printc
 from adalflow.core.types import GeneratorOutput
 
@@ -62,7 +61,7 @@ Name: {{system_variable.name}}
 Type: {{system_variable.param_type}}
 Description: {{system_variable.role_desc}}
 WILL_BE_OPTIMIZED: {{system_variable.requires_opt}}
-Vaule: {{system_variable.prompt_data}}
+Value: {{system_variable.prompt_data}}
 {% endfor %}
 Strategically plan the role of each system variable to collaborate with each other for final correct answer.
 <END_OF_SYSTEM_VARIABLES>
@@ -106,7 +105,52 @@ You must base on the following examples when modifying the {{variable_desc}}:
 {% endif %}
 <END_OF_USER_MESSAGE>
 """
-
+# NO OPRO history
+# TEXT_GRAD_DESC_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
+# {{optimizer_system_prompt}}
+# <END_OF_SYSTEM_PROMPT>
+# <START_OF_USER_MESSAGE>
+# You are {{steps}} steps since your last improvement.
+# Update the value more rapidly when steps are larger than 3.
+# {# Variable and peers info #}
+# <START_OF_VARIABLE_AND_PEERS_INFO>
+# {{variable_and_peers_info}}
+# <END_OF_VARIABLE_AND_PEERS_INFO>
+# {# system trainable variables #}
+# {% if system_variables %}
+# <START_OF_SYSTEM_VARIABLES>
+# The target variable is used together with these system variables besides of its peers:
+# {% for system_variable in system_variables %}
+# {{loop.index}}.
+# Name: {{system_variable.name}}
+# Type: {{system_variable.param_type}}
+# Description: {{system_variable.role_desc}}
+# WILL_BE_OPTIMIZED: {{system_variable.requires_opt}}
+# Vaule: {{system_variable.prompt_data}}
+# {% endfor %}
+# Strategically plan the role of each system variable to collaborate with each other for final correct answer.
+# <END_OF_SYSTEM_VARIABLES>
+# {% endif %}
+# {# Feedback #}
+# {% if variable_grad %}
+# <START_OF_CONTEXT_FEEDBACK>
+# Here are the context and feedback for the variable:
+# {{variable_grad}}
+# <END_OF_CONTEXT_FEEDBACK>
+# {% endif %}
+# {# Constraints #}
+# {% if constraint_text %}
+# You must follow the following constraints:
+# <CONSTRAINTS>{{constraint_text}}</CONSTRAINTS>
+# {% endif %}
+# {# In-context examples #}
+# {% if in_context_examples %}
+# You must base on the following examples when modifying the {{variable_desc}}:
+# <EXAMPLES>{{in_context_examples}}</EXAMPLES>
+# {% endif %}
+# <END_OF_USER_MESSAGE>
+# """
+# NO promt engineering techniques
 # OPTIMIZER_SYSTEM_PROMPT = r"""You are an excellent prompt engineer tasked with instruction and demonstration tuning a compound LLM system.
 # Your task is to refine a variable/prompt based on feedback from a batch of input data points.
 
@@ -236,7 +280,6 @@ def extract_new_variable(text: str) -> str:
     return matches[0].strip()
 
 
-@trace_generator_states()
 class TGDOptimizer(TextOptimizer):
     __doc__ = """Textual Gradient Descent(LLM) optimizer for text-based variables."""
 
@@ -248,6 +291,7 @@ class TGDOptimizer(TextOptimizer):
     current_tgd_output: Dict[str, Optional[TGDData]] = (
         {}
     )  # id to output, hold all of the data
+    one_parameter_at_a_time: bool
 
     def __init__(
         self,
@@ -260,6 +304,7 @@ class TGDOptimizer(TextOptimizer):
         max_past_history: int = 3,
         max_failed_proposals: int = 5,  # quite effective
         steps_from_last_improvement: int = 0,
+        one_parameter_at_a_time: bool = True,
     ):
         from adalflow.core.generator import Generator
         from adalflow.core import Prompt
@@ -299,6 +344,7 @@ class TGDOptimizer(TextOptimizer):
         self.steps_from_last_improvement = steps_from_last_improvement
 
         self.target_param_index = None
+        self.one_parameter_at_a_time = False  # one_parameter_at_a_time
         # initate the past history for each parameter
         for param in self.params:
             self.params_history[param.id] = []
@@ -486,7 +532,7 @@ class TGDOptimizer(TextOptimizer):
                     f"Skipping {param.role_desc} as it does not require optimization."
                 )
                 continue
-            if idx != self.target_param_index:
+            if self.one_parameter_at_a_time and idx != self.target_param_index:
                 continue
 
             system_prompt = self.optimizer_system_prompt(
@@ -550,7 +596,7 @@ class TGDOptimizer(TextOptimizer):
         for idx, param in enumerate(self.params):
             if not param.requires_opt:
                 continue
-            if idx != self.target_param_index:
+            if self.one_parameter_at_a_time and idx != self.target_param_index:
                 continue
             param.revert_data()
             param.trace_optimizer(api_kwargs=None, response=None)
@@ -563,7 +609,7 @@ class TGDOptimizer(TextOptimizer):
         for idx, param in enumerate(self.params):
             if not param.requires_opt:
                 continue
-            if idx != self.target_param_index:
+            if self.one_parameter_at_a_time and idx != self.target_param_index:
                 continue
 
             param.step_data()

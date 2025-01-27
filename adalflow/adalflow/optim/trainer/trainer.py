@@ -2178,10 +2178,10 @@ class Trainer(Component):
         subset_loss = sum_ops(subset_losses)
         print("Subset loss backward...")
         start_time = time.time()
-        if not self.disable_backward_gradients:
+        if self.disable_backward_gradients:
             self.adaltask.disable_backward_engine()
 
-        if not self.disable_backward:
+        if not self.disable_backward:  # no backward at all
             subset_loss.backward()
         print(f"Subset loss backward time: {time.time() - start_time}")  # 12seconds
         print("Optimizer propose...")

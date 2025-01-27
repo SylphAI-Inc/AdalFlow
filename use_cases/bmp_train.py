@@ -5,7 +5,8 @@ import numpy as np
 import argparse
 
 num_runs = 4
-# List of experiments to run
+
+
 object_count = "use_cases/question_answering/bbh/object_count/train_new.py"
 trec_6_classification = "use_cases/classification/train.py"
 hotpot_qa_multi_hop_rag = "benchmarks/hotpot_qa/adal_exp/train_multi_hop_rag.py"
@@ -21,10 +22,10 @@ ckpt_values = []
 experiments = [
     # object_count,
     # trec_6_classification,
-    # hotpot_qa_vanilla_rag,
+    hotpot_qa_vanilla_rag,
     # hotpot_qa_multi_hop_rag,
     # hotpot_qa_multi_hop_rag_cycle,
-    hotpot_qa_agent_rag,
+    # hotpot_qa_agent_rag,
 ]
 
 # set up the strategy for each experiment
@@ -129,11 +130,7 @@ if __name__ == "__main__":
         total_prompts = []  # how many prompts tried in total
 
         past_highest_val_scores = []
-        # # average pass rate, average pass prompts
-        # average_pass_rate_list = []
-        # average_pass_prompts_list = []
-        # average_total_prompts = []
-        # highest_test_score_json_file = None
+
         total_steps = []
         training_times = []
         subset_pass_rate = []
@@ -141,8 +138,7 @@ if __name__ == "__main__":
         for experiment_index, ckpt in ckpt_values.items():
             with open(ckpt, "r") as f:
                 data = json.load(f)
-                print(f"Experiment: {experiment_index}")
-                print(f"Data: {data}")
+
                 _high_val_score = max(data["val_scores"])
                 _unique_val_scores = len(set(data["val_scores"])) - 1
                 _last_test_score = data["test_score"]

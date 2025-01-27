@@ -230,5 +230,9 @@ class TrecDataset(Dataset):
 
 
 if __name__ == "__main__":
-    dataset = TrecDataset(split="val")
-    print(f"train: {len(dataset)}, example: {dataset[0]}")
+    val_dataset = TrecDataset(split="val")
+    train_dataset = TrecDataset(split="train")
+    test_dataset = TrecDataset(split="test")
+    print(
+        f"val: {len(val_dataset)}, test: {len(test_dataset)}, train: {len(train_dataset)}"
+    )  # 120 train, 166 val, 334 test

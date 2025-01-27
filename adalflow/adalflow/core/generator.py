@@ -619,7 +619,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         # attach a funtion to compute gradient for predecessors
 
-        printc(f"disable_backward_engine: {self._disable_backward_engine}")
+        printc(f"disable_backward_engine config: {self._disable_backward_engine}")
 
         response.set_grad_fn(
             BackwardContext(

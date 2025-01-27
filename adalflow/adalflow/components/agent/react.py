@@ -128,7 +128,7 @@ class CombineStepHistory(GradComponent):
     def call(
         self,
         step_history: List[StepOutput],
-        react_agent_task_desc: str,
+        react_agent_task_desc: str,  # skip connection
         id: Optional[str] = None,
     ) -> str:
         if not step_history:
@@ -153,7 +153,12 @@ class ReActOutput(DataClass):
 
 class ReActAgent(Component):
     __doc__ = r"""ReActAgent uses generator as a planner that runs multiple and sequential functional call steps to generate the final response.
+    The planner will generate a Function data class as action for each step that includes a "thought" field.
+    The execution result is stored in the "observation" field of the StepOutput data class.
+    If the execution failed, it will store the error message in the "observation" field so that we can auto-optimize it to correct the error.
 
+    The final answer can be different in training and eval mode:
+    - Training: the final answer will be
     Users need to set up:
     - tools: a list of tools to use to complete the task. Each tool is a function or a function tool.
     - max_steps: the maximum number of steps the agent can take to complete the task.
@@ -283,10 +288,8 @@ class ReActAgent(Component):
             use_cache=True,
         )
 
-        # added this component to the computation graph
-        # self.append_step_history = AppendStepHistory()
+        # besides of form the final output, it adds a skip connection to the planner task description prompt
         self.combine_step_history = CombineStepHistory()
-        # self.function_output_to_step_output = FunctionOutputToStepOutput()
 
     def _init_tools(
         self,
@@ -323,7 +326,8 @@ class ReActAgent(Component):
             desc="Finish",
             doc_string=Parameter(
                 # data="Finish the task with verbatim short factoid answer.",
-                data="Ensure factual accuracy by precisely identifying each item in the step history, avoiding incorrect associations. Construct the final answer with brevity, directly addressing the query without unnecessary details.",
+                data="Finish the task with the final answer in the kwargs.",
+                # data="Ensure factual accuracy by precisely identifying each item in the step history, avoiding incorrect associations. Construct the final answer with brevity, directly addressing the query without unnecessary details.",
                 param_type=ParameterType.PROMPT,
                 requires_opt=True,
                 role_desc="Instruct the agent on how to create the final answer from the step history.",
@@ -370,7 +374,10 @@ class ReActAgent(Component):
             try:
 
                 step_output.action = response.data.data
-                printc(f"Step test train:  {step}: {step_output.action}", color="blue")
+                if self.debug:
+                    printc(
+                        f"Step test train:  {step}: {step_output.action}", color="blue"
+                    )
 
                 if isinstance(response.data.data, Function):
                     response.data.data.kwargs.update({"id": id})
@@ -453,7 +460,7 @@ class ReActAgent(Component):
                         expr_or_fun=x.data,
                         step="execute",
                     )
-                    printc(f"Step result {step}: {result}", color="blue")
+
                     step_output.observation = result.output
                     if self.debug:
                         printc(f"Step {step}: \n{step_output}\n_______\n", color="blue")
@@ -477,9 +484,7 @@ class ReActAgent(Component):
         prompt_kwargs: Dict,
         model_kwargs: Dict,
         id: Optional[str] = None,
-        # step_history: Union["Parameter", List[str]] = None,
         step_history: List[StepOutput] = [],
-        # ) -> Union[List[StepOutput], Parameter]:
     ) -> Union[Parameter, StepOutput]:
         """Run one step of the agent. Plan and execute the action for the step.
         Need to deal with both train and eval mode on the self.planner.

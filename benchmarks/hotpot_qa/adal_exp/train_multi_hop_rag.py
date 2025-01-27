@@ -1,83 +1,12 @@
-from typing import Any, Callable, Dict, Tuple
+from typing import Dict
 
 import adalflow as adal
-from adalflow.eval.answer_match_acc import AnswerMatchAcc
-from adalflow.datasets.types import HotPotQAData
+
 from benchmarks.hotpot_qa.config import load_datasets
 
 from benchmarks.hotpot_qa.adal_exp.build_multi_hop_rag import MultiHopRAG
+from benchmarks.hotpot_qa.adal_exp.adal_task import HotPotQAAdal
 from use_cases.config import gpt_3_model, gpt_4o_model
-
-
-class MultiHopRAGAdal(adal.AdalComponent):
-    def __init__(
-        self,
-        model_client: adal.ModelClient,
-        model_kwargs: Dict,
-        backward_engine_model_config: Dict | None = None,
-        teacher_model_config: Dict | None = None,
-        text_optimizer_model_config: Dict | None = None,
-    ):
-        task = MultiHopRAG(
-            model_client=model_client,
-            model_kwargs=model_kwargs,
-            passages_per_hop=2,  # better with only two passages, ablation study 0.49 vs 0.52
-            max_hops=2,
-        )
-        eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
-
-        loss_eval_fn = AnswerMatchAcc(type="f1_score").compute_single_item
-        loss_fn = adal.EvalFnToTextLoss(
-            eval_fn=loss_eval_fn,
-            eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0",
-        )
-        super().__init__(
-            task=task,
-            eval_fn=eval_fn,
-            loss_eval_fn=loss_eval_fn,
-            loss_fn=loss_fn,
-            backward_engine_model_config=backward_engine_model_config,
-            teacher_model_config=teacher_model_config,
-            text_optimizer_model_config=text_optimizer_model_config,
-        )
-
-    def prepare_task(self, sample: HotPotQAData) -> Tuple[Callable[..., Any], Dict]:
-        if self.task.training:
-            return self.task.forward, {"question": sample.question, "id": sample.id}
-        else:
-            return self.task.call, {"question": sample.question, "id": sample.id}
-
-    def prepare_eval(self, sample: HotPotQAData, y_pred: adal.GeneratorOutput) -> float:
-        y_label = ""
-        if y_pred and y_pred.data and y_pred.data.answer:
-            y_label = y_pred.data.answer
-        return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
-
-    def prepare_loss_eval(self, sample: Any, y_pred: Any, *args, **kwargs) -> float:
-        y_label = ""
-        if y_pred and y_pred.data and y_pred.data.answer:
-            y_label = y_pred.data.answer
-        return self.loss_eval_fn, {"y": y_label, "y_gt": sample.answer}
-
-    def prepare_loss(self, sample: HotPotQAData, pred: adal.Parameter):
-        y_gt = adal.Parameter(
-            name="y_gt",
-            data=sample.answer,
-            eval_input=sample.answer,
-            requires_opt=False,
-        )
-
-        pred.eval_input = (
-            pred.data.data.answer
-            if pred.data and pred.data.data and pred.data.data.answer
-            else ""
-        )
-        return self.loss_fn, {
-            "kwargs": {"y": pred, "y_gt": y_gt},
-            "input": {"question": sample.question},
-            "id": sample.id,
-            "gt": sample.answer,
-        }
 
 
 from adalflow.core.generator import BackwardPassSetup
@@ -90,9 +19,15 @@ def train_diagnose(
 
     trainset, valset, testset = load_datasets()
 
-    adal_component = MultiHopRAGAdal(
-        model_client,
-        model_kwargs,
+    task = MultiHopRAG(
+        model_client=model_client,
+        model_kwargs=model_kwargs,
+        passages_per_hop=2,
+        max_hops=2,
+    )
+
+    adal_component = HotPotQAAdal(
+        task=task,
         backward_engine_model_config=gpt_4o_model,
         teacher_model_config=gpt_3_model,
         text_optimizer_model_config=gpt_3_model,
@@ -120,8 +55,13 @@ def train(
     disable_backward=False,
     disable_backward_gradients=False,
 ):
-    adal_component = MultiHopRAGAdal(
+    task = MultiHopRAG(
         **gpt_3_model,
+        passages_per_hop=2,
+        max_hops=2,
+    )
+    adal_component = HotPotQAAdal(
+        task=task,
         teacher_model_config=gpt_4o_model,
         text_optimizer_model_config=gpt_4o_model,  # gpt3.5 is not enough to be used as a good optimizer, it struggles for long contenxt
         backward_engine_model_config=gpt_4o_model,
@@ -148,7 +88,7 @@ def train(
         max_proposals_per_step=max_proposals_per_step,
         backward_pass_setup=backward_pass_setup,
         disable_backward=disable_backward,
-        text_optimizers_config_kwargs={"max_past_history": 2},
+        text_optimizers_config_kwargs={"max_past_history": 5},
         disable_backward_gradients=disable_backward_gradients,
     )
     trainer.set_random_seed(seed)

@@ -62,10 +62,10 @@ Specify the difference between the expected correct response and the response.
 
 OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. The <INPUTS/SCORE> was later used as "{{response_name}}: {{response_desc}}".
 <OBJECTIVE_FUNCTION>
-Your only goal is to clearly states how it obtained the "Eval output/score": {{response_gradient}}.
+Your only goal is to clearly state how it obtained the "Eval output/score": {{response_gradient}}.
 Especially when the score is low.
 Be CONCISE.
-If you have enough context, add a more specific feedback on how it failed.
+If you have enough context, add more specific feedback on how it failed.
 e.g. "The retrieved context is not enough to answer the question so the problem relies on the retrieval part."
 </OBJECTIVE_FUNCTION>"""
 
@@ -137,7 +137,7 @@ Name: {{system_variable.name}}
 Type: {{system_variable.param_type}}
 Description: {{system_variable.role_desc}}
 WILL_BE_OPTIMIZED: {{system_variable.requires_opt}}
-Vaule: {{system_variable.prompt_data}}
+Value: {{system_variable.prompt_data}}
 {% endfor %}
 <END_OF_PREDECESSORS>
 {% endif %}

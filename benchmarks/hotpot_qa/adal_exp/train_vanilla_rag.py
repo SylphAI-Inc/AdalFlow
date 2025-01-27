@@ -1,82 +1,11 @@
-from typing import Any, Callable, Dict, Tuple
+from typing import Dict
 
 import adalflow as adal
-from adalflow.eval.answer_match_acc import AnswerMatchAcc
-from adalflow.datasets.types import HotPotQAData
 
 from benchmarks.hotpot_qa.config import load_datasets
 from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import VanillaRAG
-from use_cases.config import gpt_3_model, gpt_4o_model, gpt_3_1106_model
-
-
-class VallinaRAGAdal(adal.AdalComponent):
-    def __init__(
-        self,
-        model_client: adal.ModelClient,
-        model_kwargs: Dict,
-        backward_engine_model_config: Dict | None = None,
-        teacher_model_config: Dict | None = None,
-        text_optimizer_model_config: Dict | None = None,
-    ):
-        task = VanillaRAG(
-            model_client=model_client,
-            model_kwargs=model_kwargs,
-            passages_per_hop=3,
-        )
-        eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
-        loss_eval_fn = AnswerMatchAcc(type="f1_score").compute_single_item
-
-        loss_fn = adal.EvalFnToTextLoss(
-            eval_fn=loss_eval_fn,
-            eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0",
-        )
-        super().__init__(
-            task=task,
-            eval_fn=eval_fn,
-            loss_eval_fn=loss_eval_fn,
-            loss_fn=loss_fn,
-            backward_engine_model_config=backward_engine_model_config,
-            teacher_model_config=teacher_model_config,
-            text_optimizer_model_config=text_optimizer_model_config,
-        )
-
-    def prepare_task(self, sample: HotPotQAData) -> Tuple[Callable[..., Any], Dict]:
-        if self.task.training:
-            return self.task.forward, {"question": sample.question, "id": sample.id}
-        else:
-            return self.task.call, {"question": sample.question, "id": sample.id}
-
-    def prepare_eval(self, sample: HotPotQAData, y_pred: adal.GeneratorOutput) -> float:
-        y_label = ""
-        if y_pred and y_pred.data and y_pred.data.answer:
-            y_label = y_pred.data.answer  # .lower()
-        # printc(f"y_label: {y_label}, y_gt: {sample.answer}")
-        return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
-
-    def prepare_loss_eval(self, sample: Any, y_pred: Any, *args, **kwargs) -> float:
-        y_label = ""
-        if y_pred and y_pred.data and y_pred.data.answer:
-            y_label = y_pred.data.answer
-        return self.loss_eval_fn, {"y": y_label, "y_gt": sample.answer}
-
-    def prepare_loss(self, sample: HotPotQAData, pred: adal.Parameter):
-        y_gt = adal.Parameter(
-            name="y_gt",
-            data=sample.answer,
-            eval_input=sample.answer,
-            requires_opt=False,
-        )
-
-        pred.eval_input = (
-            pred.data.data.answer
-            if pred.data and pred.data.data and pred.data.data.answer
-            else ""
-        )
-        return self.loss_fn, {
-            "kwargs": {"y": pred, "y_gt": y_gt},
-            "id": sample.id,
-            # "gt": sample.answer,
-        }
+from use_cases.config import gpt_3_model, gpt_4o_model
+from benchmarks.hotpot_qa.adal_exp.adal_task import HotPotQAAdal
 
 
 def train_diagnose(
@@ -86,9 +15,14 @@ def train_diagnose(
 
     trainset, valset, testset = load_datasets()
 
-    adal_component = VallinaRAGAdal(
-        model_client,
-        model_kwargs,
+    task = VanillaRAG(
+        model_client=model_client,
+        model_kwargs=model_kwargs,
+        passages_per_hop=3,
+    )
+
+    adal_component = HotPotQAAdal(
+        task=task,
         backward_engine_model_config=gpt_4o_model,
         teacher_model_config=gpt_3_model,
         text_optimizer_model_config=gpt_3_model,
@@ -119,8 +53,13 @@ def train(
     disable_backward_gradients: bool = False,
     disable_backward: bool = False,
 ):
-    adal_component = VallinaRAGAdal(
-        **gpt_3_1106_model,
+    task = VanillaRAG(
+        **gpt_3_model,
+        passages_per_hop=3,
+    )
+
+    adal_component = HotPotQAAdal(
+        task=task,
         teacher_model_config=gpt_4o_model,
         text_optimizer_model_config=gpt_4o_model,
         backward_engine_model_config=gpt_4o_model,

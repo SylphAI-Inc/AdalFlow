@@ -722,7 +722,6 @@ class FunGradComponent(GradComponent):
         self.fun = fun
         # set the docstring
         self.doc_string = doc_string
-        print(f"fun doc: {self.doc_string}, desc: {desc}")
         setattr(
             self.fun,
             "__doc__",

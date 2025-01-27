@@ -183,7 +183,6 @@ class Prompt(DataClass):
         """
         exclude = ["jinja2_template"]  # unserializable object
         output = super().to_dict(exclude=exclude)
-        print(f"prompt to_dict: {output}")
         return output
 
 

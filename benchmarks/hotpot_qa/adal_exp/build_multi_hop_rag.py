@@ -15,6 +15,8 @@ from adalflow.utils.logger import printc
 from adalflow.components.agent.react import ReActAgent
 
 from adalflow.optim.grad_component import GradComponent
+from adalflow.core.func_tool import FunctionTool
+
 
 colbertv2_wiki17_abstracts = dspy.ColBERTv2(
     url="http://20.102.90.50:2017/wiki17_abstracts"
@@ -245,43 +247,27 @@ Context from last search query: {{context}}\
         last_query = None
 
         for i in range(self.max_hops):
-
             gen_out = self.query_generator.forward(
                 prompt_kwargs={
                     "context": context,
                     "question": question_param,
                     "last_query": last_query,
-                    # "task_desc_str": task_desc_system_finedtuned_separately[
-                    #     i
-                    # ],  # replace this at runtime
                 },
                 id=id,
             )
-            # prompt_kwargs = {
-            #     "context": context,
-            #     "question": question_param,
-            #     "last_query": last_query,
-            # }
-            # prompt = self.query_generator.get_prompt(**prompt_kwargs)
-            # printc(f"prompt: {prompt}", "yellow")
 
-            # printc(f"query {i}: {gen_out.data.data.query}", "yellow")
-            # extract the query from the generator output
             success_map_fn = lambda x: (  # noqa E731
                 x.data.data.query
                 if x.data and x.data.data and x.data.data.query
                 else (x.data.raw_response if x.data and x.data.raw_response else None)
             )
-            # print(f"query {i}: {success_map_fn(gen_out)}")
 
             gen_out.add_successor_map_fn(
                 successor=self.retriever, map_fn=success_map_fn
             )
-            # printc(f"before retrieve_out: {success_map_fn(gen_out)}", "yellow")
 
             # retrieve the passages
             retrieve_out: adal.Parameter = self.retriever.forward(input=gen_out, id=id)
-            # printc(f"retrieve_out: {retrieve_out}", "yellow")
 
             retrieve_out.data_in_prompt = lambda x: {
                 "query": x.data.query,
@@ -720,12 +706,10 @@ class AgenticRAG(adal.Component):
         #     )
         #     return output
 
-        from adalflow.core.func_tool import FunctionTool
-
-        tools = [
-            FunctionTool(self.dspy_retriever.__call__, component=self.dspy_retriever),
-            # FunctionTool(generator_as_tool, component=self.llm),
-        ]  # NOTE: agent is not doing well to call component methods at this moment
+        # tools = [
+        #     FunctionTool(self.dspy_retriever.__call__, component=self.dspy_retriever),
+        #     # FunctionTool(generator_as_tool, component=self.llm),
+        # ]  # NOTE: agent is not doing well to call component methods at this moment
 
         tools = [
             FunctionTool(dspy_retriever_as_tool, component=self.dspy_retriever),
@@ -738,7 +722,6 @@ class AgenticRAG(adal.Component):
             tools=tools,
             model_client=model_client,
             model_kwargs=model_kwargs,
-            context_variables=None,
         )
 
     def forward(self, *args, **kwargs) -> Parameter:

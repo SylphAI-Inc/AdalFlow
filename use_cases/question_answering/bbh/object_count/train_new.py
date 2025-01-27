@@ -43,9 +43,7 @@ class ObjectCountAdalComponent(adal.AdalComponent):
         self, sample: Example, y_pred: adal.GeneratorOutput
     ) -> Tuple[float, Dict[str, Any]]:
         y_label = -1
-        if (
-            y_pred is not None and y_pred.data is not None
-        ):  # if y_pred and y_pred.data: might introduce bug when the data is 0
+        if y_pred is not None and y_pred.data is not None:
             y_label = y_pred.data
         return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
 
@@ -62,8 +60,6 @@ class ObjectCountAdalComponent(adal.AdalComponent):
         return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}, "id": sample.id}
 
 
-# TODO: make the train diagnose on the student model and the teacher model automatcally
-# in the trainer
 def train_diagnose(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
@@ -93,8 +89,6 @@ def train_diagnose_teacher(
     trainer.diagnose(dataset=testset, split="test_teacher")
 
 
-# You will answer a reasoning question. Think step by step and double-check each calculation you make. Pay close attention to any numerical quantities in the text, converting written numbers into their numerical equivalents. Additionally, re-verify your final answer before concluding. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.
-# 0.98 val, 0.91 test
 from adalflow.core.generator import BackwardPassSetup
 
 
@@ -206,8 +200,6 @@ if __name__ == "__main__":
         max_proposals_per_step=max_proposals_per_step,
         disable_backward=disable_backward,
         disable_backward_gradients=disable_backward_gradients,
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_dc778_run_1.json",
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ObjectCountAdalComponent/constrained_max_steps_12_18e8d_run_1.json",
     )
     print(f"ckpt: {ckpt}")
     if set_output_path:

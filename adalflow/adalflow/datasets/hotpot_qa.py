@@ -225,15 +225,14 @@ class HotPotQA(Dataset):
 
 
 if __name__ == "__main__":
-    dataset = HotPotQA(split="train", size=20)
+    dataset = HotPotQA(split="train")
     print(dataset[0], type(dataset[0]))
     print(len(dataset))
-    valdataset = HotPotQA(split="val", size=50)
+    valdataset = HotPotQA(split="val")
     print(len(valdataset))
-    testdataset = HotPotQA(split="test", size=50)
+    testdataset = HotPotQA(split="test")
     print(len(testdataset))
-    print(f"valdataset[0]: {valdataset[0]}")
-    print(f"testdataset[0]: {testdataset[0]}")
+
     # example = {
     #     "id": "5a8b57f25542995d1e6f1371",
     #     "question": "Were Scott Derrickson and Ed Wood of the same nationality?",

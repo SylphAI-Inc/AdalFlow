@@ -25,7 +25,7 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
     LOSS_CONVERSATION_TEMPLATE_STRING,
     LOSS_CONVERSATION_START_INSTRUCTION_STRING_FN,
     OBJECTIVE_INSTRUCTION_BASE,
-    OBJECTIVE_INSTRUCTION_CHAIN,
+    OBJECTIVE_INSTRUCTION_CHAIN,  # often not used
 )
 from adalflow.utils import printc
 
@@ -242,7 +242,6 @@ class EvalFnToTextLoss(LossComponent):
         obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
 
         if is_intermediate_node:
-            # conv_ins_template = CONVERSATION_START_INSTRUCTION_STRING_FN_CHAIN
             obj_ins_template = OBJECTIVE_INSTRUCTION_CHAIN
 
         instruction_str = Prompt(

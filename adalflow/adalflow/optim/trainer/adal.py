@@ -207,7 +207,8 @@ class AdalComponent(Component):
         )
 
     def disable_backward_engine(self):
-        r"""Disable the backward engine for all GradComponent in the task."""
+        r"""Disable the backward engine for all GradComponent in the task.
+        No more gradients generation."""
         self.disable_backward_engine_helper()
 
     # def configure_backward_engine(self, *args, **kwargs):

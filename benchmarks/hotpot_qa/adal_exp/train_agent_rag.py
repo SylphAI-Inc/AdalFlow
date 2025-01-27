@@ -7,13 +7,12 @@ from adalflow.datasets.types import HotPotQAData
 from benchmarks.hotpot_qa.config import load_datasets
 from benchmarks.hotpot_qa.adal_exp.build_multi_hop_rag import AgenticRAG
 from use_cases.config import gpt_3_model, gpt_4o_model
-from adalflow.utils import printc
 
 
 from adalflow.components.agent.react import ReActOutput
 
 
-class AgenticRAGAdal(adal.AdalComponent):
+class ReActHotPotAdal(adal.AdalComponent):
     def __init__(
         self,
         model_client: adal.ModelClient,
@@ -32,11 +31,7 @@ class AgenticRAGAdal(adal.AdalComponent):
             eval_fn=loss_eval_fn,
             eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0",
         )
-        # eval_fn = f1_score  # 0.38 (hand crafted the finish, exat match 0.25)
 
-        # loss_fn = adal.EvalFnToTextLoss(
-        #     eval_fn=eval_fn, eval_fn_desc="Computes the overlaps between y and y_gt"
-        # )
         super().__init__(
             task=task,
             eval_fn=eval_fn,
@@ -51,27 +46,25 @@ class AgenticRAGAdal(adal.AdalComponent):
         if self.task.training:
             return self.task.forward, {"input": sample.question, "id": sample.id}
         else:
-            # print("eval mode")
             return self.task.call, {"input": sample.question, "id": sample.id}
 
     def prepare_eval(self, sample: HotPotQAData, y_pred: ReActOutput) -> float:
 
         y_label = y_pred.answer if isinstance(y_pred, ReActOutput) else y_pred
 
-        printc(
-            f"eval y_label: {y_label}, y_gt: {sample.answer}, self.eval_fn: {self.eval_fn(y_label, sample.answer)}"
-        )
+        # printc(
+        #     f"eval y_label: {y_label}, y_gt: {sample.answer}, self.eval_fn: {self.eval_fn(y_label, sample.answer)}"
+        # )
 
         return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
 
     def prepare_loss_eval(self, sample: HotPotQAData, y_pred: ReActOutput) -> float:
         y_label = y_pred.answer if isinstance(y_pred, ReActOutput) else y_pred
-        printc(
-            f"loss eval y_label: {y_label}, y_gt: {sample.answer}, self.eval_fn: {self.loss_eval_fn(y_label, sample.answer)}"
-        )
+        # printc(
+        #     f"loss eval y_label: {y_label}, y_gt: {sample.answer}, self.eval_fn: {self.loss_eval_fn(y_label, sample.answer)}"
+        # )
         return self.loss_eval_fn, {"y": y_label, "y_gt": sample.answer}
 
-    # train mode: get the loss and get the data from the full_response
     def prepare_loss(self, sample: HotPotQAData, pred: adal.Parameter):
         # prepare gt parameter
         y_gt = adal.Parameter(
@@ -81,7 +74,7 @@ class AgenticRAGAdal(adal.AdalComponent):
             requires_opt=False,
         )
 
-        printc(f"pred data: {pred.data}, gt: {sample.answer}")
+        # printc(f"pred data: {pred.data}, gt: {sample.answer}")
         pred.eval_input = pred.data if pred.data else ""
 
         return self.loss_fn, {
@@ -99,7 +92,7 @@ def train_diagnose(
 
     trainset, valset, testset = load_datasets()
 
-    adal_component = AgenticRAGAdal(
+    adal_component = AgenticRAG(
         model_client,
         model_kwargs,
         backward_engine_model_config=gpt_4o_model,
@@ -133,7 +126,7 @@ def train(
     disable_backward_gradients: bool = False,
     disable_backward: bool = False,
 ):
-    adal_component = AgenticRAGAdal(
+    adal_component = ReActHotPotAdal(
         **gpt_3_model,
         teacher_model_config=gpt_4o_model,
         text_optimizer_model_config=gpt_4o_model,  # gpt3.5 is not enough to be used as a good optimizer, it struggles for long contenxt
@@ -163,6 +156,7 @@ def train(
         backward_pass_setup=backward_pass_setup,
         disable_backward_gradients=disable_backward_gradients,
         disable_backward=disable_backward,
+        text_optimizers_config_kwargs={"max_past_history": 5},
     )
     trainer.set_random_seed(seed)
     print(trainer)
@@ -226,7 +220,7 @@ if __name__ == "__main__":
 
     ckpt = train(
         debug=False,
-        max_steps=24,
+        max_steps=12,
         seed=2025,
         tg=use_tg,
         strategy=set_strategy,
