@@ -8,6 +8,8 @@ AdalFlow integrates with many popular AI and database platforms to provide a com
 Model Providers
 -------------
 
+AdalFlow supports a wide range of model providers, each offering unique capabilities and models:
+
 .. raw:: html
 
    <div class="integration-grid">
@@ -29,7 +31,46 @@ Model Providers
             <span>Groq</span>
          </a>
       </div>
+      <div class="integration-item">
+         <a href="https://deepseek.ai/" target="_blank">
+            <img src="../_static/logos/deepseek.png" alt="Deepseek">
+            <span>Deepseek</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://azure.microsoft.com/products/ai-services/openai-service" target="_blank">
+            <img src="../_static/logos/azure.png" alt="Azure OpenAI">
+            <span>Azure OpenAI</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://aws.amazon.com/bedrock/" target="_blank">
+            <img src="../_static/logos/bedrock.png" alt="Amazon Bedrock">
+            <span>Amazon Bedrock</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://ollama.ai/" target="_blank">
+            <img src="../_static/logos/ollama.png" alt="Ollama">
+            <span>Ollama</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://huggingface.co/transformers" target="_blank">
+            <img src="../_static/logos/transformers.png" alt="Transformers">
+            <span>Transformers</span>
+         </a>
+      </div>
    </div>
+
+- **Azure OpenAI**: Deploy OpenAI models in Azure's secure cloud environment with enterprise features.
+- **Amazon Bedrock**: Access foundation models from various providers through AWS's managed service.
+- **Groq**: High-performance inference platform with ultra-low latency for LLM operations.
+- **Ollama**: Run and manage open-source LLMs locally with easy setup and deployment.
+- **Transformers**: Direct integration with Hugging Face's transformers library for local model inference.
+- **Deepseek**: Advanced language models optimized for coding and technical tasks.
+- **OpenAI**: State-of-the-art models including GPT-4 and DALL-E for various AI tasks.
+- **Anthropic**: Access to Claude models known for their strong reasoning capabilities.
 
 Vector Databases
 --------------
