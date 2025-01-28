@@ -1,4 +1,4 @@
-__version__ = "0.2.6"
+__version__ = "0.2.7"
 
 from adalflow.core.component import Component, fun_to_component
 from adalflow.core.container import Sequential, ComponentList
@@ -61,6 +61,7 @@ from adalflow.components.model_client import (
     AnthropicAPIClient,
     CohereAPIClient,
     BedrockAPIClient,
+    DeepSeekClient,
 )
 
 # data pipeline
@@ -124,6 +125,7 @@ __all__ = [
     "OpenAIClient",
     "GoogleGenAIClient",
     "GroqAPIClient",
+    "DeepSeekClient",
     "OllamaClient",
     "TransformersClient",
     "AnthropicAPIClient",
