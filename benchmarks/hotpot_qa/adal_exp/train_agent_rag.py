@@ -219,7 +219,7 @@ if __name__ == "__main__":
     # exit()
 
     ckpt = train(
-        debug=False,
+        debug=True,
         max_steps=12,
         seed=2025,
         tg=use_tg,
