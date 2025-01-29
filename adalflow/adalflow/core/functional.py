@@ -1267,8 +1267,7 @@ def parse_json_str_to_obj(json_str: str) -> Union[Dict[str, Any], List[Any]]:
                 return json_obj
             except yaml.YAMLError as e:
                 raise ValueError(
-                    f"Got invalid JSON object with yaml.safe_load. Error: {
-                        e}. Got JSON string: {json_str}"
+                    f"Got invalid JSON object with yaml.safe_load. Error: {e}. Got JSON string: {json_str}"
                 )
 
 
