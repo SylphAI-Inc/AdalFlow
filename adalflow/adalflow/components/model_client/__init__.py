@@ -46,8 +46,7 @@ OpenAIClient = LazyImport(
 )
 
 DeepSeekClient = LazyImport(
-    "adalflow.components.model_client.deepseek_client.DeepSeekClient",
-    None
+    "adalflow.components.model_client.deepseek_client.DeepSeekClient", None
 )
 
 GoogleGenAIClient = LazyImport(

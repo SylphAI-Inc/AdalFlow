@@ -64,6 +64,7 @@ def get_first_message_content(completion: ChatCompletion) -> str:
 # def _get_chat_completion_usage(completion: ChatCompletion) -> OpenAICompletionUsage:
 #     return completion.usage
 
+
 # A simple heuristic to estimate token count for estimating number of tokens in a Streaming response
 def estimate_token_count(text: str) -> int:
     """
@@ -147,7 +148,7 @@ class OpenAIClient(ModelClient):
         base_url (str): The API base URL to use when initializing the client.
             Defaults to `"https://api.openai.com"`, but can be customized for third-party API providers or self-hosted models.
         env_api_key_name (str): The environment variable name for the API key. Defaults to `"OPENAI_API_KEY"`.
-        
+
     References:
         - OpenAI API Overview: https://platform.openai.com/docs/introduction
         - Embeddings Guide: https://platform.openai.com/docs/guides/embeddings
@@ -156,14 +157,13 @@ class OpenAIClient(ModelClient):
         - Image Generation: https://platform.openai.com/docs/guides/images
     """
 
-
     def __init__(
         self,
         api_key: Optional[str] = None,
         chat_completion_parser: Callable[[Completion], Any] = None,
         input_type: Literal["text", "messages"] = "text",
-        base_url: str = "https://api.openai.com/v1/", 
-        env_api_key_name: str = "OPENAI_API_KEY"
+        base_url: str = "https://api.openai.com/v1/",
+        env_api_key_name: str = "OPENAI_API_KEY",
     ):
         r"""It is recommended to set the OPENAI_API_KEY environment variable instead of passing it as an argument.
 
@@ -182,18 +182,22 @@ class OpenAIClient(ModelClient):
             chat_completion_parser or get_first_message_content
         )
         self._input_type = input_type
-        self._api_kwargs = {} # add api kwargs when the OpenAI Client is called
+        self._api_kwargs = {}  # add api kwargs when the OpenAI Client is called
 
     def init_sync_client(self):
         api_key = self._api_key or os.getenv(self._env_api_key_name)
         if not api_key:
-            raise ValueError(f"Environment variable {self._env_api_key_name} must be set")
+            raise ValueError(
+                f"Environment variable {self._env_api_key_name} must be set"
+            )
         return OpenAI(api_key=api_key, base_url=self.base_url)
 
     def init_async_client(self):
         api_key = self._api_key or os.getenv(self._env_api_key_name)
         if not api_key:
-            raise ValueError(f"Environment variable {self._env_api_key_name} must be set")
+            raise ValueError(
+                f"Environment variable {self._env_api_key_name} must be set"
+            )
         return AsyncOpenAI(api_key=api_key, base_url=self.base_url)
 
     # def _parse_chat_completion(self, completion: ChatCompletion) -> "GeneratorOutput":
@@ -294,16 +298,16 @@ class OpenAIClient(ModelClient):
                 system_end_tag = "<END_OF_SYSTEM_PROMPT>"
                 user_start_tag = "<START_OF_USER_PROMPT>"
                 user_end_tag = "<END_OF_USER_PROMPT>"
-                
-                # new regex pattern to ignore special characters such as \n 
+
+                # new regex pattern to ignore special characters such as \n
                 pattern = (
                     rf"{system_start_tag}\s*(.*?)\s*{system_end_tag}\s*"
                     rf"{user_start_tag}\s*(.*?)\s*{user_end_tag}"
                 )
 
                 # Compile the regular expression
-                
-                # re.DOTALL is to allow . to match newline so that (.*?) does not match in a single line 
+
+                # re.DOTALL is to allow . to match newline so that (.*?) does not match in a single line
                 regex = re.compile(pattern, re.DOTALL)
                 # Match the pattern
                 match = regex.match(input)
@@ -362,7 +366,7 @@ class OpenAIClient(ModelClient):
                 final_model_kwargs["mask"] = self._encode_image(mask)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
-        
+
         print(f"final_model_kwargs: {final_model_kwargs}")
 
         return final_model_kwargs
@@ -441,7 +445,7 @@ class OpenAIClient(ModelClient):
         """
         kwargs is the combined input and model_kwargs
         """
-        # store the api kwargs in the client 
+        # store the api kwargs in the client
         self._api_kwargs = api_kwargs
         if self.async_client is None:
             self.async_client = self.init_async_client()

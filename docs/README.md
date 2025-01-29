@@ -45,7 +45,6 @@ This guide will walk you through setting up, building, and contributing to the A
 
 Before you begin, ensure you have the following installed:
 
-- **Python**: Version 3.8 or higher
 - **Poetry**: For dependency management. Install it with:
 
   ```bash
@@ -82,16 +81,6 @@ pip install --upgrade poetry
 ```
 
 **Note:** Be sure to run these commands from the root level of the project.
-
-**Alternative: Using pip**
-
-For users who prefer not to use Poetry, you can install dependencies using `pip` by ensuring a `requirements.txt` file is present:
-
-```bash
-pip install -r requirements.txt
-```
-
-*Ensure that `requirements.txt` is kept up-to-date with necessary dependencies.*
 
 ### 3. Verify Setup
 
