@@ -38,4 +38,3 @@ index.faiss
 *.adalflow
 .idea
 extend/
-logs/

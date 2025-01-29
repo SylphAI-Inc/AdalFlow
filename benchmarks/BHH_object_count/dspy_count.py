@@ -1,24 +1,9 @@
 import dspy
-import re
+from use_cases.question_answering.bhh_object_count.data import _parse_integer_answer
+
 
 turbo = dspy.OpenAI(model="gpt-3.5-turbo")
 dspy.settings.configure(lm=turbo)
-
-
-def parse_integer_answer(answer: str):
-    """A function that parses the last integer from a string using regular expressions."""
-    try:
-        # Use regular expression to find all sequences of digits
-        numbers = re.findall(r"\d+", answer)
-        if numbers:
-            # Get the last number found
-            answer = int(numbers[-1])
-        else:
-            answer = -1
-    except ValueError:
-        answer = -1
-
-    return answer
 
 
 class GenerateAnswer(dspy.Signature):
@@ -42,14 +27,14 @@ class ObjectCount(dspy.Module):
     def forward(self, question):
 
         pred = self.generate_answer(question=question)
-        answer = parse_integer_answer(pred.answer)
+        answer = _parse_integer_answer(pred.answer, only_first_line=False)
         answer = str(answer)  # dspy will assume these fields are strings not integers
         # print(f"Pred: {pred}, Answer: {answer}")
         return dspy.Prediction(answer=answer)
 
 
 if __name__ == "__main__":
-    from adalflow.utils import setup_env
+    from lightrag.utils import setup_env
 
     setup_env()
     obj = ObjectCount()

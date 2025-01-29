@@ -24,7 +24,7 @@ class BigBenchHard(Dataset):
 
     Size for each split:
     - train: 50 examples
-    - val: 100 examples
+    - val: 50 examples
     - test: 100 examples
 
     Args:
@@ -120,11 +120,11 @@ class BigBenchHard(Dataset):
         ]
         val_examples = [
             {"x": ex["input"], "y": ex["target"], "id": str(uuid.uuid4())}
-            for ex in examples[50:150]
+            for ex in examples[50:100]
         ]
         test_examples = [
             {"x": ex["input"], "y": ex["target"], "id": str(uuid.uuid4())}
-            for ex in examples[150:]
+            for ex in examples[150:250]
         ]
         # ensure the
 
@@ -150,7 +150,7 @@ class BigBenchHard(Dataset):
 if __name__ == "__main__":
     from adalflow.datasets.big_bench_hard import BigBenchHard
 
-    dataset = BigBenchHard(task_name="object_counting", split="test")
+    dataset = BigBenchHard(task_name="word_sorting", split="train")
     print(dataset[0:10])
     print(len(dataset))
     print(dataset.get_default_task_instruction())

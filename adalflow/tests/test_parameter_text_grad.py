@@ -2,20 +2,40 @@ import unittest
 from unittest.mock import Mock
 
 
-from adalflow.optim.parameter import Parameter
-from adalflow.optim.gradient import GradientContext
+from adalflow.optim.parameter import Parameter, GradientContext
 
 
 class TestGradientContext(unittest.TestCase):
     def test_gradient_context_initialization(self):
         context = GradientContext(
-            input_output="Sample context",
+            context="Sample context",
             response_desc="Sample response description",
             variable_desc="Sample variable description",
         )
-        self.assertEqual(context.input_output, "Sample context")
+        self.assertEqual(context.context, "Sample context")
         self.assertEqual(context.response_desc, "Sample response description")
         self.assertEqual(context.variable_desc, "Sample variable description")
+
+
+class TestParameter(unittest.TestCase):
+    def setUp(self):
+        self.param1 = Parameter(data="Gradient 1", name="param1")
+        self.param2 = Parameter(data="Gradient 2", name="param2")
+        self.param1.gradients.append(self.param2)
+        self.param1.gradients_context[self.param2] = GradientContext(
+            context="Conversation context",
+            response_desc="Response description",
+            variable_desc="Variable description",
+        )
+
+    def test_get_gradient_text(self):
+        expected_output = """Batch size: 1
+
+1.
+<CONTEXT>Conversation context</CONTEXT>
+
+<FEEDBACK>Gradient 2</FEEDBACK>"""
+        self.assertEqual(self.param1.get_gradient_and_context_text(), expected_output)
 
 
 #     def test_get_gradient_and_context_text(self):
@@ -50,8 +70,9 @@ class TestUpdatePrompt(unittest.TestCase):
         # Create an instance of YourClass
         tgd = TGDOptimizer(model_client=ModelClient(), params=[param])
         tgd.in_context_examples = ["Example 1", "Example 2"]
-        # tgd.get_g = Mock(return_value="Gradient memory text")
+        tgd.get_gradient_memory_text = Mock(return_value="Gradient memory text")
         tgd.do_in_context_examples = True
+        tgd.do_gradient_memory = True
         tgd.do_constrained = True
         tgd.constraints = ["Some constraint text"]
 
@@ -62,12 +83,13 @@ class TestUpdatePrompt(unittest.TestCase):
         # Check if each variable value is in the generated output
         # self.assertIn("Role description", result)
         # self.assertIn("short value", result)
+        self.assertIn("gradient and context text", result)
         # self.assertIn("<start>", result)
         # self.assertIn("<end>", result)
         self.assertIn("Some constraint text", result)
         self.assertIn("Example 1", result)
         self.assertIn("Example 2", result)
-        # self.assertIn("Gradient memory text", result)
+        self.assertIn("Gradient memory text", result)
 
 
 if __name__ == "__main__":

@@ -43,6 +43,8 @@ SEPARATORS = {
 DEFAULT_CHUNK_SIZE = 800
 DEFAULT_CHUNK_OVERLAP = 200
 
+tokenizer = Tokenizer()
+
 
 class TextSplitter(Component):
     """
@@ -153,8 +155,6 @@ class TextSplitter(Component):
         # Document(id=ca0af45b-4f88-49b5-97db-163da9868ea4, text='text. Even more text to ', meta_data=None, vector=[], parent_doc_id=doc1, order=1, score=None)
         # Document(id=e7b617b2-3927-4248-afce-ec0fc247ac8b, text='to illustrate.', meta_data=None, vector=[], parent_doc_id=doc1, order=2, score=None)
     """
-
-    tokenizer = Tokenizer()
 
     def __init__(
         self,
@@ -301,7 +301,7 @@ class TextSplitter(Component):
     def _split_text_into_units(self, text: str, separator: str) -> List[str]:
         """Split text based on the specified separator."""
         if self.split_by == "token":
-            splits = TextSplitter.tokenizer.encode(text)
+            splits = tokenizer.encode(text)
         else:
             splits = text.split(separator)
         log.info(f"Text split by '{separator}' into {len(splits)} parts.")
@@ -344,7 +344,7 @@ class TextSplitter(Component):
 
         if self.split_by == "token":
             # decode each chunk here
-            chunks = [TextSplitter.tokenizer.decode(chunk) for chunk in chunks]
+            chunks = [tokenizer.decode(chunk) for chunk in chunks]
 
         log.info(f"Merged into {len(chunks)} chunks.")
         return chunks

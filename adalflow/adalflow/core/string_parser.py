@@ -2,11 +2,10 @@
 
 From simple data types like boolean, integer, and float to more complex data types like JSON, YAML, and list strings."""
 
-from typing import Dict, List, Union, Optional, Callable
+from typing import Dict, List, Union
 import logging
-from adalflow.utils.registry import EntityMapping
 
-
+from adalflow.core.component import Component
 import adalflow.core.functional as F
 
 log = logging.getLogger(__name__)
@@ -14,14 +13,11 @@ log = logging.getLogger(__name__)
 BOOLEAN_PARSER_OUTPUT_TYPE = bool
 
 
-class Parser:
+class Parser(Component):
     __doc__ = r"""Base class for all string parsers."""
 
     def __init__(self):
         super().__init__()
-
-    def __call__(self, input: str) -> object:
-        return self.call(input)
 
     def call(self, input: str) -> object:
         raise NotImplementedError(
@@ -250,72 +246,3 @@ class YamlParser(Parser):
             return yaml_obj
         except Exception as e:
             raise ValueError(f"Error: {e}")
-
-
-class FuncParser(Parser):
-    r"""Component that wraps a function.
-
-    Args:
-        fun (Callable): The function to be wrapped.
-
-    Examples:
-
-    function = lambda x: x + 1
-    fun_component = FunComponent(function)
-    print(fun_component(1))  # 2
-    """
-
-    def __init__(self, fun: Optional[Callable] = None, afun: Optional[Callable] = None):
-        super().__init__()
-        self.fun_name = fun.__name__
-        EntityMapping.register(self.fun_name, fun)
-
-    def call(self, *args, **kwargs):
-        fun = EntityMapping.get(self.fun_name)
-        return fun(*args, **kwargs)
-
-    def __repr__(self) -> str:
-        return super().__repr__() + f"fun_name={self.fun_name}"
-
-
-def func_to_parser(fun) -> FuncParser:
-    r"""Helper function to convert a function into a Parser class.
-    its own class name.
-
-    Can be used as both a decorator and a function.
-
-    Args:
-        fun (Callable): The function to be wrapped.
-    Returns:
-        FuncParser: The component that wraps the function.
-
-    Examples:
-    1. As a decorator:
-        >>> @func_to_parser
-        >>> def my_function(x):
-        >>>     return x + 1
-        >>> # is equivalent to
-        >>> class MyFunctionParser(FuncParser):
-        >>>     def __init__(self):
-        >>>         super().__init__(my_function)
-
-    2. As a function:
-        >>> my_function_parser = func_to_parser(my_function)
-    """
-
-    # Split the function name by underscores, capitalize each part, and join them back together
-    class_name = (
-        "".join(part.capitalize() for part in fun.__name__.split("_")) + "Component"
-    )
-    # register the function
-    EntityMapping.register(fun.__name__, fun)
-    # Define a new component class dynamically
-    parser_class = type(
-        class_name,
-        (FuncParser,),
-        {"__init__": lambda self: FuncParser.__init__(self, fun)},
-    )
-    # register the component
-    EntityMapping.register(class_name, parser_class)
-
-    return parser_class()

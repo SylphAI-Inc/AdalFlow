@@ -5,11 +5,6 @@ from dspy import Example
 
 from benchmarks.BHH_object_count.dspy_count import ObjectCount
 
-turbo = dspy.OpenAI(model="gpt-3.5-turbo-0125")
-
-gpt_4 = dspy.OpenAI(model="gpt-4o")
-dspy.configure(lm=turbo)
-
 
 def validate_exact_match(example, pred, trace=None):
     if dspy.evaluate.answer_exact_match(example, pred):
@@ -19,10 +14,10 @@ def validate_exact_match(example, pred, trace=None):
     return acc
 
 
-def load_datasets():
-    from use_cases.question_answering.bbh.data import load_datasets
+def load_datasets(max_samples=10):
+    from use_cases.question_answering.bhh_object_count.data import load_datasets
 
-    trainset, valset, testset = load_datasets()
+    trainset, valset, testset = load_datasets(max_samples=max_samples)
     # dspy requires us to package the dataset to Example objects and specify the inputs
 
     dspy_trainset, dspy_valset, dspy_testset = [], [], []
@@ -30,7 +25,7 @@ def load_datasets():
         [trainset, valset, testset], [dspy_trainset, dspy_valset, dspy_testset]
     ):
         for item in dataset[0]:
-            example = Example(question=item.question, answer=item.answer)
+            example = Example(question=item.x, answer=item.y)
             example = example.with_inputs("question")
             dataset[1].append(example)
 
@@ -48,35 +43,6 @@ def train(dspy_trainset=None):
     return compiled_count
 
 
-def train_MIPROv2(trainset, valset, save_path, filename):
-
-    import os
-    from dspy.teleprompt import MIPROv2
-
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
-
-    tp = MIPROv2(
-        metric=validate_exact_match,
-        prompt_model=gpt_4,
-        task_model=turbo,
-        num_candidates=30,
-        init_temperature=1.0,
-    )
-    compiled_task = tp.compile(
-        ObjectCount(),
-        trainset=trainset,
-        valset=valset,
-        max_bootstrapped_demos=5,
-        max_labeled_demos=2,
-        num_batches=12,  # MINIBATCH_SIZE = 25,
-        seed=2025,
-        requires_permission_to_run=False,
-    )
-    compiled_task.save(os.path.join(save_path, filename))
-    return compiled_task
-
-
 def validate(dataset, compiled_count):
     from tqdm import tqdm
 
@@ -88,70 +54,33 @@ def validate(dataset, compiled_count):
     return sum(acc_list) / len(acc_list)
 
 
-def train_and_validate():
+if __name__ == "__main__":
+    from benchmarks.BHH_object_count.dspy_count import GenerateAnswer
+    import os
+
     save_path = "benchmarks/BHH_object_count/models/dspy"
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
-    import time
-    import tqdm
+    example = GenerateAnswer(
+        question="How many musical instruments do I have?", answer="5"
+    )
+    pred = GenerateAnswer(
+        question="How many musical instruments do I have?", answer="5"
+    )
+    print(validate_exact_match(example, pred))
 
-    dspy_trainset, dspy_valset, dspy_testset = load_datasets()
+    dspy_trainset, dspy_valset, dspy_testset = load_datasets(max_samples=4)
 
-    val_accs = []
-    test_accs = []
-    training_times = []
+    start_val_acc = validate(dspy_valset, ObjectCount())
+    start_test_acc = validate(dspy_testset, ObjectCount())
+    print("Starting validation accuracy:", start_val_acc)
+    print("Starting test accuracy:", start_test_acc)
+    pass
 
-    num_runs = 4
-
-    for i in tqdm.tqdm(range(num_runs)):
-        start = time.time()
-        output_file = f"compiled_count_{i}.json"
-
-        compiled_count = train_MIPROv2(
-            dspy_trainset, dspy_valset, save_path, output_file
-        )
-        val_acc = validate(dspy_valset, compiled_count)
-        test_acc = validate(dspy_testset, compiled_count)
-
-        val_accs.append(val_acc)
-        test_accs.append(test_acc)
-
-        training_times.append(time.time() - start)
-
-    # compute the mean and standard deviation
-    import numpy as np
-
-    val_accs = np.array(val_accs)
-    test_accs = np.array(test_accs)
-    training_times = np.array(training_times)
-
-    print("Validation accuracy:", val_accs.mean(), val_accs.std())
-    print("Test accuracy:", test_accs.mean(), test_accs.std())
-
-    print("Training time:", training_times.mean())
-
-
-if __name__ == "__main__":
-    from adalflow.utils import setup_env
-
-    import os
-
-    setup_env()
-
-    save_path = "benchmarks/BHH_object_count/models/dspy"
-
-    train_and_validate()
-    # Validation accuracy: 0.84 0.0447213595499958
-    # Test accuracy: 0.825 0.051720402163943004
-    # Training time: 707.2381317615509
-    # if not os.path.exists(save_path):
-    #     os.makedirs(save_path)
-
-    # example = GenerateAnswer(
-    #     question="How many musical instruments do I have?", answer="5"
-    # )
-    # pred = GenerateAnswer(
-    #     question="How many musical instruments do I have?", answer="5"
-    # )
-    # print(validate_exact_match(example, pred))
+    compiled_count = train(dspy_trainset)
+    val_acc = validate(dspy_valset, compiled_count)
+    test_acc = validate(dspy_testset, compiled_count)
+    compiled_count.save(os.path.join(save_path, "compiled_count.json"))
+    print("Validation accuracy:", val_acc)
+    print("Test accuracy:", test_acc)

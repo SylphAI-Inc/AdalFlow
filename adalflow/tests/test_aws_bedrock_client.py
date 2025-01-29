@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch
 from adalflow.core.types import ModelType, GeneratorOutput
-from adalflow.components.model_client.bedrock_client import BedrockAPIClient
+from adalflow.components.model_client import BedrockAPIClient
 
 
 class TestBedrockClient(unittest.TestCase):

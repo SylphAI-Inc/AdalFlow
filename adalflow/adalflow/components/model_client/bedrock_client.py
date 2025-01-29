@@ -11,17 +11,8 @@ from adalflow.core.types import ModelType, CompletionUsage, GeneratorOutput
 
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
-import sys
+boto3 = safe_import(OptionalPackages.BOTO3.value[0], OptionalPackages.BOTO3.value[1])
 
-boto3_modules = safe_import(
-    OptionalPackages.BOTO3.value[0],  # List of package names
-    OptionalPackages.BOTO3.value[1],  # Error message
-)
-# Manually add each module to sys.modules to make them available globally as if imported normally
-boto3_module_names = OptionalPackages.BOTO3.value[0]
-for name, module in zip(boto3_module_names, boto3_modules):
-    sys.modules[name] = module
-import boto3
 from botocore.config import Config
 
 log = logging.getLogger(__name__)

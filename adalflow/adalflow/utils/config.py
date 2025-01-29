@@ -1,4 +1,4 @@
-r"""Config helper functions to manage configuration and rebuilt your task pipeline.
+"""Config helper functions to manage configuration and rebuilt your task pipeline.
 
 Config format: json
 (1) include attribute and entity_name to reconstruct all attributes of a pipeline.

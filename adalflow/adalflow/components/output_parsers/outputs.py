@@ -11,8 +11,9 @@ from dataclasses import is_dataclass
 from typing import Dict, Any, Optional, List
 import logging
 
+from adalflow.core.component import Component
 from adalflow.core.prompt_builder import Prompt
-from adalflow.core.string_parser import YamlParser, ListParser, JsonParser, Parser
+from adalflow.core.string_parser import YamlParser, ListParser, JsonParser
 from adalflow.core.base_data_class import DataClass, DataClassFormatType
 from adalflow.core.base_data_class import ExcludeType, IncludeType
 
@@ -68,19 +69,15 @@ LIST_OUTPUT_FORMAT = r"""Your output should be formatted as a standard Python li
 YAML_OUTPUT_PARSER_OUTPUT_TYPE = Dict[str, Any]
 
 
-class OutputParser(Parser):
+class OutputParser(Component):
     __doc__ = r"""The abstract class for all output parsers.
-
-    On top of the basic string Parser, it handles structured data interaction:
-    1. format_instructions: Return the formatted instructions to use in prompt for the output format.
-    2. call: Parse the output string to the desired format and return the parsed output via yaml or json.
 
     This interface helps users customize output parsers with consistent interfaces for the Generator.
     Even though you don't always need to subclass it.
 
-    AdalFlow uses two core classes:
+    AdalFlow uses two core components:
     1. the Prompt to format output instruction
-    2. A string parser from core.string_parser for response parsing.
+    2. A string parser component from core.string_parser for response parsing.
     """
 
     def __init__(self, *args, **kwargs) -> None:
@@ -90,9 +87,6 @@ class OutputParser(Parser):
     def format_instructions(self) -> str:
         r"""Return the formatted instructions to use in prompt for the output format."""
         raise NotImplementedError("This is an abstract method.")
-
-    def __call__(self, *args: Any, **kwds: Any) -> Any:
-        return self.call(*args, **kwds)
 
     def call(self, input: str) -> Any:
         r"""Parse the output string to the desired format and return the parsed output."""

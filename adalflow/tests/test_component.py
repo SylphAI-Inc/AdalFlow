@@ -1,12 +1,10 @@
 from adalflow.core import Component, Prompt
 
+# Parameter
 
 from unittest.mock import Mock
 from unittest import TestCase
 import pytest
-from adalflow.core import Generator
-from adalflow.components.model_client import GroqAPIClient
-from adalflow.optim.parameter import Parameter
 
 
 class ComponentMissSuperInit(Component):
@@ -15,10 +13,10 @@ class ComponentMissSuperInit(Component):
         self.name = name
         self.age = age
         self.height = 180
-        self.generator = Generator(
-            model_client=GroqAPIClient(api_key="test"),
-            model_kwargs={"model": "llama3-8b-8192"},
-        )  # componnet.__setattr__ ensures that when we have a component, paramter, we must call super().__init__() to ensure that the component is properly initialized
+        # self.generator = Generator(
+        #     model_client=GroqAPIClient(),
+        #     model_kwargs={"model": "llama3-8b-8192"},
+        # )
         self.mock_prompt = Mock(spec=Prompt)
 
     def call(self, query: str) -> str:
@@ -30,11 +28,13 @@ class ComponentWithSuperInit(Component):
         super().__init__()
         self.name = name
         self.age = age
-        self.generator = Generator(
-            model_client=GroqAPIClient(api_key="test"),
-            model_kwargs={"model": "llama3-8b-8192"},
-        )
-        self.height = Parameter[int](data=180)
+        # self.generator = Generator(
+        #     model_client=GroqAPIClient(),
+        #     model_kwargs={"model": "llama3-8b-8192"},
+        # )
+        # self.height = Parameter[int](data=180)
+        # self.mock_prompt = Prompt(template="Hello {{input}}")
+        # self.mock_prompt.register_parameter("input", Parameter[str](data="John"))
 
     def call(self, query: str) -> str:
         return f"Hello {query}"
@@ -89,9 +89,5 @@ class TestComponent(TestCase):
 
         # 4. Do named_components
         named_components = dict(a.named_components())
-        print("componnets", named_components[""])
-        # assert key "" and value sub_component is in named_components
-        self.assertIn("", named_components)
-        self.assertEqual(named_components[""], a)
-        self.assertIn("mock_prompt", named_components[""].__str__())
-        self.assertEqual("generator" in named_components, True)
+        expected_named_components = {"": a}
+        self.assertEqual(named_components, expected_named_components)

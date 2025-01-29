@@ -13,6 +13,7 @@ from typing import (
     Literal,
     Callable,
     Awaitable,
+    Type,
 )
 from collections import OrderedDict
 from dataclasses import (
@@ -24,7 +25,6 @@ from uuid import UUID
 from datetime import datetime
 import uuid
 import logging
-import json
 
 from adalflow.core.base_data_class import DataClass, required_field
 from adalflow.core.tokenizer import Tokenizer
@@ -282,25 +282,19 @@ class RetrieverOutput(DataClass):
     It is up to the subclass of Retriever to specify the type of query and document.
     """
 
-    id: str = field(default=None, metadata={"desc": "The unique id of the output"})
-
-    doc_indices: List[int] = field(
-        default=required_field, metadata={"desc": "List of document indices"}
-    )
-    doc_scores: List[float] = field(
+    doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
+    doc_scores: Optional[List[float]] = field(
         default=None, metadata={"desc": "List of document scores"}
     )
-    query: RetrieverQueryType = field(
+    query: Optional[RetrieverQueryType] = field(
         default=None, metadata={"desc": "The query used to retrieve the documents"}
     )
-    documents: List[RetrieverDocumentType] = field(
+    documents: Optional[List[RetrieverDocumentType]] = field(
         default=None, metadata={"desc": "List of retrieved documents"}
     )
 
 
-RetrieverOutputType = Union[
-    List[RetrieverOutput], RetrieverOutput
-]  # so to support multiple queries at once
+RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
 
 
 #######################################################################################
@@ -312,13 +306,8 @@ AsyncCallable = Callable[..., Awaitable[Any]]
 @dataclass
 class FunctionDefinition(DataClass):
     __doc__ = r"""The data modeling of a function definition, including the name, description, and parameters."""
-    class_instance: Optional[Any] = field(
-        default=None,
-        metadata={"desc": "The instance of the class this function belongs to"},
-    )
-    func_name: str = field(
-        metadata={"desc": "The name of the tool"}, default=required_field
-    )
+
+    func_name: str = field(metadata={"desc": "The name of the tool"})
     func_desc: Optional[str] = field(
         default=None, metadata={"desc": "The description of the tool"}
     )
@@ -377,52 +366,6 @@ class Function(DataClass):
         metadata={"desc": "The keyword arguments of the function"},
     )
 
-    @classmethod
-    def from_function(
-        cls,
-        func: Union[Callable[..., Any], AsyncCallable],
-        thought: Optional[str] = None,
-        *args,
-        **kwargs,
-    ) -> "Function":
-        r"""Create a Function object from a function.
-
-        Args:
-            fun (Union[Callable[..., Any], AsyncCallable]): The function to be converted
-
-        Returns:
-            Function: The Function object
-
-        Usage:
-        1. Create a Function object from a function call:
-        2. use :meth:`to_json` and :meth:`to_yaml` to get the schema in JSON or YAML format.
-        3. This will be used as an example in prompt showing LLM how to call the function.
-
-        Example:
-
-        .. code-block:: python
-
-            from adalflow.core.types import Function
-
-            def add(a, b):
-                return a + b
-
-            # create a function call object with positional arguments
-            fun = Function.from_function(add, thought="Add two numbers", 1, 2)
-            print(fun)
-
-            # output
-            # Function(thought='Add two numbers', name='add', args=[1, 2])
-        """
-        return cls(
-            thought=thought,
-            name=func.__name__,
-            args=args,
-            kwargs=kwargs,
-        )
-
-    __output_fields__ = ["thought", "name", "kwargs"]
-
 
 _action_desc = """FuncName(<kwargs>) \
 Valid function call expression. \
@@ -464,10 +407,9 @@ class FunctionExpression(DataClass):
 
     The benefits are less failed function calls.
     """
-    # question: str = field(
-    #     default=None, metadata={"desc": "The question to ask the LLM"}
-    # )
-    thought: str = field(default=None, metadata={"desc": "Why the function is called"})
+    thought: Optional[str] = field(
+        default=None, metadata={"desc": "Why the function is called"}
+    )
     action: str = field(
         default_factory=required_field,
         metadata={"desc": _action_desc},
@@ -572,19 +514,36 @@ class StepOutput(DataClass, Generic[T]):
         default=None, metadata={"desc": "The execution result shown for this action"}
     )
 
-    def to_prompt_str(self) -> str:
-        output: Dict[str, Any] = {}
-        if self.action and isinstance(self.action, FunctionExpression):
-            if self.action.thought:
-                output["thought"] = self.action.thought
-            output["action"] = self.action.action if self.action else None
-        if self.observation:
-            output["observation"] = (
-                self.observation.to_dict()
-                if hasattr(self.observation, "to_dict")
-                else str(self.observation)
-            )
-        return json.dumps(output)
+    @classmethod
+    def with_action_type(cls, action_type: Type[T]) -> Type["StepOutput[T]"]:
+        """
+        Create a new StepOutput class with the specified action type.
+
+        Use this if you want to create schema for StepOutput with a specific action type.
+
+        Args:
+            action_type (Type[T]): The type to set for the action attribute.
+
+        Returns:
+            Type[StepOutput[T]]: A new subclass of StepOutput with the specified action type.
+
+        Example:
+
+        .. code-block:: python
+
+            from adalflow.core.types import StepOutput, FunctionExpression
+
+            StepOutputWithFunctionExpression = StepOutput.with_action_type(FunctionExpression)
+        """
+        # Create a new type variable map
+        type_var_map = {T: action_type}
+
+        # Create a new subclass with the updated type
+        new_cls = type(cls.__name__, (cls,), {"__type_var_map__": type_var_map})
+
+        # Update the __annotations__ to reflect the new type of action
+        new_cls.__annotations__["action"] = action_type
+        return new_cls
 
 
 #######################################################################################

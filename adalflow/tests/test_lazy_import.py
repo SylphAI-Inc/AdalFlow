@@ -68,7 +68,7 @@ class TestSafeImport(unittest.TestCase):
             MagicMock(name="boto3") if name == "boto3" else ImportError
         )
 
-        module_name = OptionalPackages.BOTO3.value[0][0]
+        module_name = OptionalPackages.BOTO3.value[0]
         imported_module = safe_import(module_name, OptionalPackages.BOTO3.value[1])
 
         # Assert that the mock was called with 'boto3' and the imported module is a MagicMock instance
@@ -85,7 +85,7 @@ class TestSafeImport(unittest.TestCase):
             safe_import(module_name, OptionalPackages.BOTO3.value[1])
 
         self.assertIn(
-            "Please install boto3 and botocore with: pip install boto3 botocore",
+            "Please install boto3 with: pip install boto3",
             str(context.exception),
             "Expected ImportError message for boto3 does not match.",
         )

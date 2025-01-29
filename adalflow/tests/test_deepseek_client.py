@@ -13,17 +13,6 @@ def getenv_side_effect(key):
     env_vars = {"DEEPSEEK_API_KEY": "fake_api_key"}
     return env_vars.get(key, None)
 
-# Mock the Stream object
-class MockStream(Stream):
-    def __init__(self, chunks):
-        self.chunks = iter(chunks)
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        return next(self.chunks)
-
 class TestDeepSeekClient(unittest.TestCase):
     def setUp(self):
         self.client = DeepSeekClient(api_key="fake_api_key")

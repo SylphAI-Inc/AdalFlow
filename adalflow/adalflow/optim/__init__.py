@@ -1,6 +1,6 @@
 from .optimizer import Optimizer
 from .sampler import RandomSampler, ClassSampler, Sampler
-from .parameter import Parameter, OutputParameter
+from .parameter import Parameter
 from .function import BackwardContext
 from .few_shot.bootstrap_optimizer import BootstrapFewShot
 from .text_grad.tgd_optimizer import TGDOptimizer
@@ -10,7 +10,6 @@ from .trainer.trainer import Trainer
 from .trainer.adal import AdalComponent
 from adalflow.utils.registry import EntityMapping
 from .optimizer import DemoOptimizer, TextOptimizer
-from .gradient import Gradient, GradientContext
 
 
 __all__ = [
@@ -19,7 +18,6 @@ __all__ = [
     "ClassSampler",
     "Sampler",
     "Parameter",
-    "OutputParameter",
     "BackwardContext",
     "BootstrapFewShot",
     "TGDOptimizer",
@@ -30,8 +28,6 @@ __all__ = [
     "Optimizer",
     "DemoOptimizer",
     "TextOptimizer",
-    "Gradient",
-    "GradientContext",
 ]
 
 for name in __all__:

@@ -166,8 +166,6 @@ Putting it all together
       - Description
     * - :doc:`rag_playbook`
       - Comprehensive RAG playbook according to the sota research and the best practices in the industry.
-    * - :doc:`rag_with_memory`
-      - Building RAG systems with conversation memory for enhanced context retention and follow-up handling.
 
 
 .. toctree::
@@ -184,7 +182,6 @@ Putting it all together
    text_splitter
    db
    rag_playbook
-   rag_with_memory
 
 
 
