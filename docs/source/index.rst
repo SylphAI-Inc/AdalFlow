@@ -1,4 +1,3 @@
-
 .. image:: https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/adalflow-logo.png
    :width: 100%
    :alt: Adalflow Logo
@@ -295,6 +294,7 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
    :hidden:
 
    get_started/index
+   get_started/integrations
 
 
 

@@ -1,6 +1,6 @@
 __version__ = "0.2.7"
 
-from adalflow.core.component import Component, fun_to_component
+from adalflow.core.component import Component
 from adalflow.core.container import Sequential, ComponentList
 from adalflow.core.base_data_class import DataClass, DataClassFormatType, required_field
 
@@ -24,6 +24,9 @@ from adalflow.core.string_parser import (
     FloatParser,
     ListParser,
     BooleanParser,
+    Parser,
+    func_to_parser,
+    FuncParser,
 )
 from adalflow.core.retriever import Retriever
 from adalflow.components.output_parsers import (
@@ -61,7 +64,6 @@ from adalflow.components.model_client import (
     AnthropicAPIClient,
     CohereAPIClient,
     BedrockAPIClient,
-    DeepSeekClient,
 )
 
 # data pipeline
@@ -102,6 +104,9 @@ __all__ = [
     "FloatParser",
     "ListParser",
     "BooleanParser",
+    "Parser",
+    "func_to_parser",
+    "FuncParser",
     # Output Parsers with dataclass formatting
     "YamlOutputParser",
     "JsonOutputParser",
@@ -125,7 +130,6 @@ __all__ = [
     "OpenAIClient",
     "GoogleGenAIClient",
     "GroqAPIClient",
-    "DeepSeekClient",
     "OllamaClient",
     "TransformersClient",
     "AnthropicAPIClient",

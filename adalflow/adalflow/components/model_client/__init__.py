@@ -52,12 +52,6 @@ OllamaClient = LazyImport(
     "adalflow.components.model_client.ollama_client.OllamaClient",
     OptionalPackages.OLLAMA,
 )
-
-# no imports are needed for DeepSeek
-DeepSeekClient = LazyImport(
-    "adalflow.components.model_client.deepseek_client.DeepSeekClient",
-    None
-)
 get_first_message_content = LazyImport(
     "adalflow.components.model_client.openai_client.get_first_message_content",
     OptionalPackages.OPENAI,
@@ -82,7 +76,6 @@ __all__ = [
     "GroqAPIClient",
     "OpenAIClient",
     "GoogleGenAIClient",
-    "DeepSeekClient",
 ]
 
 for name in __all__:

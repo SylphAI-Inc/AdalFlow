@@ -1,15 +1,22 @@
 """Retriever Recall @k metric."""
 
-from typing import List, Union
+from typing import List, Dict
 
 from adalflow.eval.base import BaseEvaluator, EvaluationResult
+from adalflow.eval.utils import normalize_answer
 
 
-class RetrieverRecall(BaseEvaluator):
-    __doc__ = r"""Recall@k measures the ratio of the number of relevant context strings in the top-k retrieved context to the total number of ground truth relevant context strings.
+class RetrieverEvaluator(BaseEvaluator):
+    __doc__ = r"""Return Recall@k and Precision@k.
+
+    Recall@k = Number of relevant retrieved documents/ Total number of relevant documents (len(gt_contexts))
+    Precision@k = Number of relevant retrieved documents/ Total number of retrieved documents (len(retrieved_contexts))
+
 
     In our implementation, we use exact string matching between each gt context and the joined retrieved context string.
     You can use the longest common subsequence (LCS) or other similarity metrics(or embedding based) to decide if it is a match or not.
+
+    You can also pass ids of retrieved and the reference.
 
     If you do not even have the ground truth context, but only grounth truth answers, you can consider using
     RAGAS framework for now. It computes the recall as:
@@ -43,36 +50,45 @@ class RetrieverRecall(BaseEvaluator):
     def __init__(self):
         super().__init__()
 
-    def _compute_single_item(
-        self, retrieved_context: str, gt_context: Union[str, List[str]]
-    ) -> float:
+    def compute_single_item(
+        self, retrieved_context: List[str], gt_context: List[str]
+    ) -> Dict[str, float]:
         r"""
         Compute the recall of the retrieved context for a single query.
 
         Args:
-            retrieved_context (str): Retrieved context string.
-            gt_context (Union[str, List[str]]): Context string or list of context strings to compare against.
+            retrieved_context (List[str]): List of retrieved context strings.
+            gt_context (List[str]): List of ground truth context strings.
 
         Returns:
             float: Recall value.
         """
-        if isinstance(gt_context, str):
-            gt_context = [gt_context]
-        recalled = 0
-        for gt_context_sentence in gt_context:
-            if gt_context_sentence in retrieved_context:
-                recalled += 1
-        return recalled / len(gt_context)
+        # 1 normalize the text
+        normalized_retrieved_context = [
+            normalize_answer(doc) for doc in retrieved_context
+        ]
+
+        normalized_gt_context = [normalize_answer(doc) for doc in gt_context]
+
+        set_retrieved = set(normalized_retrieved_context)
+        set_gt = set(normalized_gt_context)
+
+        # 2 calculate the recall with intersection
+
+        recall = len(set_gt.intersection(set_retrieved)) / len(set_gt)
+        precision = len(set_gt.intersection(set_retrieved)) / len(set_retrieved)
+
+        return {"recall": recall, "precision": precision}
 
     def compute(
         self,
-        retrieved_contexts: Union[List[str], List[List[str]]],
+        retrieved_contexts: List[List[str]],
         gt_contexts: List[List[str]],
     ) -> EvaluationResult:
         r"""
         Compute the recall of the retrieved context for a list of queries.
         Args:
-            retrieved_contexts (Union[List[str], List[List[str]]): List of retrieved context strings. Using List[str] we assume you have joined all the context sentences into one string.
+            retrieved_context: List of retrieved context strings.
             gt_contexts ( List[List[str]]): List of ground truth context strings.
 
         Returns:
@@ -84,15 +100,48 @@ class RetrieverRecall(BaseEvaluator):
             raise ValueError(
                 "The number of retrieved context lists and ground truth context lists should be the same."
             )
-        k = len(retrieved_contexts)
-        recall_list = []
+        k = len(retrieved_contexts[0])
+        metric_list = []
         for retrieved_context, gt_context in zip(retrieved_contexts, gt_contexts):
-            if isinstance(retrieved_context, list):
-                retrieved_context = " ".join(retrieved_context)
-            recall = self._compute_single_item(retrieved_context, gt_context)
-            recall_list.append(recall)
 
-        avg_score = sum(recall_list) / len(recall_list)
-        return EvaluationResult(
-            avg_score, recall_list, additional_info={"type": f"RetrieverRecall@{k}"}
+            metric = self.compute_single_item(retrieved_context, gt_context)
+            metric_list.append(metric)
+
+        # average through each key value
+
+        avg_recall = sum([metric["recall"] for metric in metric_list]) / len(
+            metric_list
         )
+        avg_precision = sum([metric["precision"] for metric in metric_list]) / len(
+            metric_list
+        )
+
+        return {
+            "avg_recall": avg_recall,
+            "avg_precision": avg_precision,
+            "recall_list": [metric["recall"] for metric in metric_list],
+            "precision_list": [metric["precision"] for metric in metric_list],
+            "top_k": k,
+        }
+
+
+if __name__ == "__main__":
+    from adalflow.datasets import HotPotQA, HotPotQAData
+
+    train_dataset = HotPotQA(split="train", size=10)
+    data: HotPotQAData = train_dataset[0]
+    gold_titles = data.gold_titles
+    context_titles = data.context["title"]
+    print(f"gold_titles: {gold_titles}, context_titles: {context_titles}")
+    print(f"train: {len(train_dataset)}, example: {train_dataset[0]}")
+
+    # compute the recall and precision for 10 items
+    retriever_eval = RetrieverEvaluator()
+
+    gt_contexts = [list(data.gold_titles) for data in train_dataset[:10]]
+
+    retrieved_contexts = [list(data.context["title"]) for data in train_dataset[:10]]
+
+    result = retriever_eval.compute(retrieved_contexts, gt_contexts)
+
+    print(f"result: {result}")

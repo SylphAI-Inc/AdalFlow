@@ -68,6 +68,50 @@ def test_react_agent(model_client: ModelClient, model_kwargs: dict):
         print("")
 
 
+"""
+To have an agent.
+input, prompt, template, step_history -> generator
+-> stepoutput -> step_history  -> generator -> stepoutput -> step_history
+-> generator -> stepoutput -> step_history -> generator -> stepoutput -> step_history
+"""
+
+
+def test_react_agent_train(model_client: ModelClient, model_kwargs: dict):
+    tools = [multiply, add, divide]
+    queries = [
+        "What is the capital of France? and what is 465 times 321 then add 95297 and then divide by 13.2?",
+        "Give me 5 words rhyming with cool, and make a 4-sentence poem using them",
+    ]
+    # define a generator without tools for comparison
+
+    # generator = Generator(
+    #     model_client=model_client,
+    #     model_kwargs=model_kwargs,
+    # )
+
+    react = ReActAgent(
+        max_steps=6,
+        add_llm_as_fallback=True,
+        tools=tools,
+        model_client=model_client,
+        model_kwargs=model_kwargs,
+    )
+    # print(react)
+    react.train()
+
+    for query in queries:
+        print(f"Query: {query}")
+        agent_response = react.forward(query)
+        agent_response.draw_graph()
+        agent_response.draw_output_subgraph()
+        # print(f"Agent response: {agent_response}")
+
+        break
+        # llm_response = generator.call(prompt_kwargs={"input_str": query})
+        # print(f"LLM response: {llm_response}")
+        print("")
+
+
 def test_react_agent_use_examples(model_client: ModelClient, model_kwargs: dict):
     tools = [multiply, add, divide]
     queries = [
@@ -106,12 +150,12 @@ def test_react_agent_use_examples(model_client: ModelClient, model_kwargs: dict)
 
 
 if __name__ == "__main__":
-    from adalflow.utils import get_logger
 
-    get_logger(level="DEBUG")
+    # get_logger(level="DEBUG")
 
-    test_react_agent(ModelClientType.GROQ(), llama3_model_kwargs)
-    test_react_agent(ModelClientType.OPENAI(), gpt_model_kwargs)
-    print("Done")
+    # test_react_agent(ModelClientType.GROQ(), llama3_model_kwargs)
+    test_react_agent_train(ModelClientType.OPENAI(), gpt_model_kwargs)
+    # test_react_agent(ModelClientType.OPENAI(), gpt_model_kwargs)
+    # print("Done")
 
-    test_react_agent_use_examples(ModelClientType.GROQ(), llama3_model_kwargs)
+    # test_react_agent_use_examples(ModelClientType.GROQ(), llama3_model_kwargs)
