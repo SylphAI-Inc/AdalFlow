@@ -3,7 +3,7 @@ import pytest
 
 from adalflow.eval import (
     AnswerMatchAcc,
-    RetrieverRecall,
+    RetrieverEvaluator,
     LLMasJudge,
 )
 
@@ -25,8 +25,12 @@ def test_answer_match_acc():
 
 def test_retriever_recall():
     retrieved_contexts = [
-        "Apple is founded before Google.",
-        "Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.",
+        ["Apple is founded before Google."],
+        [
+            "Feburary has 28 days in common years.",
+            "Feburary has 29 days in leap years.",
+            "Feburary is the second month of the year.",
+        ],
     ]
     gt_contexts = [
         [
@@ -36,11 +40,18 @@ def test_retriever_recall():
         ],
         ["Feburary has 28 days in common years", "Feburary has 29 days in leap years"],
     ]
-    retriever_recall = RetrieverRecall()
+    retriever_recall = RetrieverEvaluator()
     eval_rslt = retriever_recall.compute(retrieved_contexts, gt_contexts)
-    avg_recall, recall_list = eval_rslt.avg_score, eval_rslt.per_item_scores
+    print(eval_rslt)
+    avg_recall = eval_rslt.get("avg_recall")
+    recall_list = eval_rslt.get("recall_list")
+    avg_precision = eval_rslt.get("avg_precision")
+    precision_list = eval_rslt.get("precision_list")
+    # avg_recall, recall_list = eval_rslt.avg_score, eval_rslt.per_item_scores
     assert avg_recall == 2 / 3
     assert recall_list == [1 / 3, 1.0]
+    assert avg_precision == 0.8333333333333333
+    assert precision_list == [1.0, 0.6666666666666666]
 
 
 # def test_retriever_relevance():

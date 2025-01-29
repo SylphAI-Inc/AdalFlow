@@ -44,7 +44,6 @@ DEFAULT_CHUNK_SIZE = 800
 DEFAULT_CHUNK_OVERLAP = 200
 
 
-
 class TextSplitter(Component):
     """
     Text Splitter for Chunking Documents

@@ -5,16 +5,17 @@ import logging
 from typing import Mapping, Any, Optional, List, Dict
 
 
-from adalflow.utils.serialization import (
-    to_dict,
-    serialize,
-)
+from adalflow.utils.serialization import to_dict, serialize, _deserialize_object_hook
 
 log = logging.getLogger(__name__)
 
 
 def save_json(obj: Mapping[str, Any], f: str = "task.json") -> None:
-    """Save the object to a json file.
+    """Customized Save the object to a json file.
+
+    Support Set.
+    We encourage users first save the data as DataClass using to_dict,
+    and then load it back to DataClass using from_dict.
 
     Args:
         obj (Mapping[str, Any]): The object to be saved.
@@ -27,6 +28,15 @@ def save_json(obj: Mapping[str, Any], f: str = "task.json") -> None:
             file.write(serialized_obj)
     except IOError as e:
         raise IOError(f"Error saving object to JSON file {f}: {e}")
+
+
+# def standard_save_json(obj: Mapping[str, Any], f: str = "task.json") -> None:
+#     os.makedirs(os.path.dirname(f) or ".", exist_ok=True)
+#     try:
+#         with open(f, "w") as file:
+#             json.dump(obj, file, indent=4)
+#     except IOError as e:
+#         raise IOError(f"Error saving object to JSON file {f}: {e}")
 
 
 def save_csv(
@@ -47,6 +57,15 @@ def save_csv(
             writer.writeheader()
             for row in obj:
                 filtered_row = {k: v for k, v in row.items() if k in fieldnames}
+                # use json.dumps to serialize the object
+                for k, v in filtered_row.items():
+                    if (
+                        isinstance(v, dict)
+                        or isinstance(v, list)
+                        or isinstance(v, tuple)
+                        or isinstance(v, set)
+                    ):
+                        filtered_row[k] = json.dumps(v)
                 writer.writerow(filtered_row)
     except IOError as e:
         raise IOError(f"Error saving object to CSV file {f}: {e}")
@@ -82,20 +101,63 @@ def save(obj: Mapping[str, Any], f: str = "task") -> None:
         raise Exception(f"Error saving object to json and pickle files: {e}")
 
 
-def load_json(f: str = "task.json") -> Optional[Mapping[str, Any]]:
-    r"""Load the object from a json file.
+# def load_json(f: str = "task.json") -> Optional[Mapping[str, Any]]:
+#     r"""Load the object from a json file.
+
+#     Args:
+#         f (str, optional): The file name. Defaults to "task".
+#     """
+#     if not os.path.exists(f):
+#         log.warning(f"File {f} does not exist.")
+#         return None
+#     try:
+#         with open(f, "r") as file:
+#             return json.load(file)
+#     except Exception as e:
+#         raise Exception(f"Error loading object from JSON file {f}: {e}")
+
+
+def load_json(f: str) -> Any:
+    """Customized Load a JSON file and deserialize it.
 
     Args:
-        f (str, optional): The file name. Defaults to "task".
+        f (str): The file name of the JSON file to load.
+
+    Returns:
+        Any: The deserialized Python object.
     """
     if not os.path.exists(f):
-        log.warning(f"File {f} does not exist.")
-        return None
+        raise FileNotFoundError(f"JSON file not found: {f}")
+
     try:
         with open(f, "r") as file:
-            return json.load(file)
+            data = json.load(file, object_hook=_deserialize_object_hook)
+            return data
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Error decoding JSON file {f}: {e}")
     except Exception as e:
-        raise Exception(f"Error loading object from JSON file {f}: {e}")
+        raise IOError(f"Error loading JSON file {f}: {e}")
+
+
+def load_standard_json(f: str) -> Any:
+    """Standard Load a JSON file and deserialize it.
+    Args:
+        f (str): The file name of the JSON file to load.
+
+    Returns:
+        Any: The deserialized Python object.
+    """
+    if not os.path.exists(f):
+        raise FileNotFoundError(f"JSON file not found: {f}")
+
+    try:
+        with open(f, "r") as file:
+            data = json.load(file)
+            return data
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Error decoding JSON file {f}: {e}")
+    except Exception as e:
+        raise IOError(f"Error loading JSON file {f}: {e}")
 
 
 def load_pickle(f: str = "task.pickle") -> Optional[Mapping[str, Any]]:

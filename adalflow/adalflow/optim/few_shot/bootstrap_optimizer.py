@@ -14,6 +14,7 @@ from adalflow.optim.parameter import Parameter
 from adalflow.core.functional import random_sample
 from adalflow.optim.optimizer import DemoOptimizer
 from adalflow.optim.types import ParameterType
+from adalflow.utils import printc
 
 log = logging.getLogger(__name__)
 
@@ -219,7 +220,10 @@ class BootstrapFewShot(DemoOptimizer):
                     yaml_str = sample.to_yaml(exclude=exclude_fields)
 
                 else:
-                    yaml_str = sample.to_yaml(exclude=["id", "score"])
+                    yaml_str = sample.to_yaml(
+                        include=sample.get_input_fields() + sample.get_output_fields()
+                    )
+                    printc(f"yaml_str: {yaml_str}")
                 sample_strs.append(yaml_str + "\n")
             except Exception as e:
                 print(f"Error: {e} to yaml for {sample}")

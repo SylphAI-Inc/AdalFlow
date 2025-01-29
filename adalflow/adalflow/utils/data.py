@@ -74,10 +74,13 @@ class DataLoader:
 
     The biggest difference is not to handle tensors, but to handle any type of data."""
 
-    def __init__(self, dataset, batch_size: int = 4, shuffle: bool = True):
+    def __init__(
+        self, dataset, batch_size: int = 4, shuffle: bool = True, seed: int = 42
+    ):
         self.dataset = dataset
         self.batch_size = batch_size
         self.shuffle = shuffle
+        self.seed = seed
 
         self.indices = np.arange(len(dataset))
         # if self.shuffle:
@@ -91,6 +94,8 @@ class DataLoader:
 
     def __iter__(self):
         if self.shuffle:
+            if self.seed is not None:
+                np.random.seed(self.seed)  # Use the provided seed
             np.random.shuffle(self.indices)
         self.current_index = 0
         return self
@@ -104,6 +109,8 @@ class DataLoader:
 
         if self.current_index >= len(self.dataset):
             if self.shuffle:
+                if self.seed is not None:
+                    np.random.seed(self.seed)  # Use the same seed for reshuffle
                 np.random.shuffle(self.indices)  # Reshuffle for the new epoch
             self.current_index = 0
             if self.step_index < self.max_steps:
