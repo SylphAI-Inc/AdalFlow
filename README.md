@@ -92,12 +92,24 @@ Please refer to the [full installation guide](https://adalflow.sylph.ai/get_star
 * Try the [Optimization Quickstart](https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/qas/adalflow_object_count_auto_optimization.ipynb) to see how AdalFlow can optimize the task pipeline.
 
 
+
+# 📄 Research
+[Auto-Differentiating Any LLM Workflow: A Farewell to Manual Prompting](https://arxiv.org/abs/2501.16673)
+- LLM Applications as auto-differentiation graphs
+- Token-efficient and better performance than DsPy
+
+# 🤝 Collaborations
+We collaborate with the [**VITA Group** at University of Texas at Austin](https://vita-group.github.io/) led by [Dr. Atlas Wang](https://www.ece.utexas.edu/people/faculty/atlas-wang).
+
+**Interested in collaboration?** Join our [Discord](https://discord.gg/ezzszrRZvT) or contact [Li Yin](https://www.linkedin.com/in/li-yin-ai/).
+
+
 # Why AdalFlow
 
 1. Embracing a design pattern similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
 AdalFlow provides `Model-agnostic` building blocks to build LLM task pipelines, ranging from RAG, Agents to classical NLP tasks like text classification and named entity recognition. It is easy to get high performance only using manual prompting.
 2. AdalFlow provides a unified auto-differentiative framework for both zero-shot prompt optimization and few-shot optimization. It advances existing auto-optimization research, including ``Text-Grad`` and ``DsPy``.
-Through our research, ``Text-Grad 2.0`` and ``Learn-to-Reason Few-shot In Context Learning``, AdalFlow ``Trainer`` achieves the highest accuracy while being the most token-efficient.
+Through our research, ``LLM-AutoDiff`` and ``Learn-to-Reason Few-shot In Context Learning``, AdalFlow ``Trainer`` achieves the highest accuracy while being the most token-efficient.
 
 <!-- It advances existing auto-optimization research, including Text-Grad and DsPy. Through our research, Text-Grad 2.0, and Learn-to-Reason Few-shot In-Context Learning, AdalFlow Trainer achieves the highest accuracy while being the most token-efficient. -->
 
