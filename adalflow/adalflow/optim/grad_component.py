@@ -13,9 +13,8 @@ if TYPE_CHECKING:
 from adalflow.optim.parameter import (
     Parameter,
     OutputParameter,
-    Gradient,
-    GradientContext,
 )
+from adalflow.optim.gradient import Gradient, GradientContext
 from adalflow.optim.types import ParameterType
 from adalflow.core.types import GeneratorOutput
 from adalflow.utils import printc
@@ -34,218 +33,8 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
 
 
 __all__ = ["GradComponent", "FunGradComponent", "fun_to_grad_component"]
+
 log = logging.getLogger(__name__)
-
-
-# class GradComponent(Component):
-#     __doc__ = """A base class to define interfaces for an auto-grad component/operator.
-
-#     Compared with `Component`, `GradComponent` defines three important interfaces:
-#     - `forward`: the forward pass of the function, returns a `Parameter` object that can be traced and backpropagated.
-#     - `backward`: the backward pass of the function, updates the gradients/prediction score backpropagated from a "loss" parameter.
-#     - `set_backward_engine`: set the backward engine(a form of generator) to the component, which is used to backpropagate the gradients using LLM.
-
-#     The __call__ method will check if the component is in training mode,
-#     and call the `forward` method to return a `Parameter` object if it is in training mode,
-#     otherwise, it will call the `call` method to return the output such as "GeneratorOutput", "RetrieverOutput", etc.
-
-#     Note: Avoid using the attributes and methods that are defined here and in the `Component` class unless you are overriding them.
-#     """
-#     backward_engine: "BackwardEngine"
-#     _component_type = "grad"
-#     id = None
-#     _component_desc = "GradComponent"
-
-#     def __init__(self, *args, **kwargs):
-#         super().__init__()
-#         super().__setattr__("backward_engine", None)
-#         super().__setattr__("id", str(uuid.uuid4()))
-
-#     # def set_backward_engine(self, backward_engine: "BackwardEngine", *args, **kwargs):
-#     #     raise NotImplementedError("set_backward_engine method is not implemented")
-#     def set_backward_engine(
-#         self,
-#         backward_engine: "BackwardEngine" = None,
-#         model_client: "ModelClient" = None,
-#         model_kwargs: Dict[str, object] = None,
-#     ):
-#         from adalflow.core.generator import BackwardEngine
-
-#         self.backward_engine = backward_engine
-#         if not backward_engine:
-#             log.info(
-#                 "EvalFnToTextLoss: No backward engine provided. Creating one using model_client and model_kwargs."
-#             )
-#             self.backward_engine = BackwardEngine(model_client, model_kwargs)
-#         else:
-#             if type(backward_engine) is not BackwardEngine:
-#                 raise TypeError(
-#                     f"EvalFnToTextLoss: backward_engine must be an instance of BackwardEngine. Got {type(backward_engine)}."
-#                 )
-
-#     def disable_backward_engine(self):
-#         self.backward_engine = None
-
-#     def call(self, *args, **kwargs):
-#         raise NotImplementedError("call method is not implemented")
-
-#     async def acall(self, *args, **kwargs):
-#         r"""Implement this for your async call."""
-#         raise NotImplementedError("acall method is not implemented")
-
-#     def forward(self, *args, **kwargs) -> "Parameter":
-#         r"""Default forward method for training:
-#         1. for all args and kwargs, if it is a `Parameter` object, it will be tracked as `Predecessor`.
-#         2. Trace input_args and full_response in the parameter object.
-#         3. Return the parameter object.
-#         """
-
-#         from adalflow.optim.parameter import Parameter, OutputParameter
-
-#         log.debug(
-#             f"Forwarding through {self.name} with args: {args} and kwargs: {kwargs}"
-#         )
-
-#         # 1. get all predecessors from all args and kwargs
-#         input_args = OrderedDict()
-
-#         # Add positional args to the ordered dict
-#         for idx, arg in enumerate(args):
-#             input_args[f"arg_{idx}"] = arg
-
-#         # Get data id from the kwargs
-#         data_id = kwargs.get("id", None)
-
-#         # Add keyword args to the ordered dict, preserving order
-#         predecessors = []
-#         for v in input_args.values():
-#             if isinstance(v, Parameter):
-#                 predecessors.append(v)
-#                 if v.param_type == ParameterType.INPUT:
-#                     v.data_id = kwargs.get("id", None)
-#                 if data_id is None:
-#                     data_id = v.data_id
-#         # printc(f"kwargs: {kwargs}")
-#         # discard_keys = []
-#         for k, v in kwargs.items():
-#             if isinstance(v, Parameter):
-#                 predecessors.append(v)
-#                 if v.param_type == ParameterType.INPUT:
-#                     v.data_id = kwargs.get("id", None)
-#                 if data_id is None:
-#                     data_id = v.data_id
-#             # support list of Parameters by flattening them
-#             elif isinstance(v, list):
-#                 for i, p in enumerate(v):
-#                     if isinstance(p, Parameter):
-#                         predecessors.append(p)
-
-#         # 2. unwrap the parameter object to take only the data, successor_map_fn: lambda x: x.data in default
-#         # unwrap args
-#         unwrapped_args = []
-#         for k, v in input_args.items():
-#             if isinstance(v, Parameter):
-#                 unwrapped_args.append(v.map_to_successor(self))
-#             else:
-#                 unwrapped_args.append(v)
-
-#         unwrapped_kwargs = {}
-#         # unwrap kwargs
-#         for k, v in kwargs.items():
-#             if isinstance(v, Parameter):
-#                 unwrapped_kwargs[k] = v.map_to_successor(self)
-#             elif isinstance(v, list):
-#                 values = []
-#                 for p in v:
-#                     if isinstance(p, Parameter):
-#                         values.append(p.map_to_successor(self))
-#                     else:
-#                         values.append(p)
-#                 unwrapped_kwargs[k] = values
-#             else:
-#                 unwrapped_kwargs[k] = v
-
-#         # 3. call the function with unwrapped args and kwargs
-#         unwrapped_args = tuple(unwrapped_args)
-
-#         log.debug(f"Unwrapped args: {unwrapped_args}")
-#         log.debug(f"Unwrapped kwargs: {unwrapped_kwargs}")
-
-#         call_response = self.call(*unwrapped_args, **unwrapped_kwargs)
-
-#         if isinstance(call_response, Parameter):
-#             raise ValueError(
-#                 f"A GradComponent call should not return Parameter, got {call_response.name}"
-#             )
-#             predecessors.append(call_response)
-#             return call_response
-
-#         # 4. Create a Parameter object to trace the forward pass
-#         # use unwrapped args  and unwrapped kwargs to trace the forward pass
-#         tracing_args = {i: v for i, v in enumerate(unwrapped_args)}
-#         tracing_args.update(**unwrapped_kwargs)
-
-#         response = OutputParameter(
-#             data=call_response,
-#             name=self.name + "_output",
-#             role_desc=self.name + " response",
-#             param_type=ParameterType.OUTPUT,
-#             data_id=data_id,
-#         )
-#         response.set_predecessors(predecessors)
-#         response.trace_forward_pass(
-#             input_args=tracing_args,
-#             full_response=call_response,
-#             id=self.id,  # this is component id
-#             name=self.name,
-#         )
-#         response.set_grad_fn(
-#             BackwardContext(
-#                 backward_fn=self.backward,
-#                 response=response,
-#                 id=data_id,
-#                 input_kwargs=kwargs,
-#             )
-#         )
-#         return response
-
-#     def backward(self, *, response: "Parameter", id: str = None, **kwargs):
-#         """Pass-through gradient to the predecessors.
-
-#         Backward pass of the function. In default, it will pass all the scores to the predecessors.
-
-#         Note: backward is mainly used internally and better to only allow kwargs as the input.
-
-#         Subclass should implement this method if you need additional backward logic.
-#         """
-
-#         log.info(f"GradComponent backward: {response.name}")
-#         children_params = response.predecessors
-
-#         if response.get_gradient_and_context_text().strip() == "":
-#             log.info(f"Generator: Backward: No gradient found for {response}.")
-
-#         # backward the backward engine disable signal
-#         if response.backward_engine_disabled:
-#             for pred in children_params:
-#                 pred.backward_engine_disabled = True
-
-#         for _, pred in enumerate(children_params):
-#             if response.score is not None:
-#                 pred.set_score(response.score)
-
-#             if pred.param_type == ParameterType.DEMOS:
-#                 pred.add_score_to_trace(
-#                     trace_id=id, score=response.score, is_teacher=self.teacher_mode
-#                 )
-#             for grad in response.gradients:
-#                 # NOTE: make a copy of the gradient, we should not modify the original gradient
-#                 grad = deepcopy(grad)
-
-#                 grad.is_default_copy = (
-#                     True  # response and pred will keep the original gradient
-#                 )
-#                 pred.add_gradient(grad)
 
 
 class GradComponent(Component):
@@ -658,11 +447,6 @@ class GradComponent(Component):
 
         if response.get_gradient_and_context_text().strip() == "":
             log.info(f"Generator: Backward: No gradient found for {response}.")
-
-        # backward the backward engine disable signal
-        # if response.backward_engine_disabled:
-        #     for pred in children_params:
-        #         pred.backward_engine_disabled = True
 
         # use pass through gradient when there is one predecessor
         if not self.backward_engine or len(children_params) < 2:

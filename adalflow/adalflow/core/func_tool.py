@@ -61,10 +61,20 @@ FunctionType = Union[Callable[..., Any], Awaitable[Callable[..., Any]]]
 
 # TODO: improve the support for async functions, similarly a component might be used as a tool
 class FunctionTool(Component):
-    __doc__ = r"""Describing and executing a function via call with arguments.
+    __doc__ = r"""Describing and Parsing(to LLM) and executing a function.
 
+    Supports both normal callable functions and methods(__call__) of a component.
+    When component is used, we support both the training and eval mode.
 
-    container for a function that orchestrates the function formatting(to LLM), parsing, and execution.
+    Note:
+
+        When the eval mode, it outputs FunctionOutput, and when the training mode, it outputs Parameter with data as FunctionOutput.
+
+    Args:
+        fn (Callable): The function to be executed.
+        component (Component, optional): The component that owns the function. Defaults to None.
+        definition (FunctionDefinition, optional): The definition of the function. Defaults to None.
+
 
     Function be used by LLM as a tool to achieve a specific task.
 
@@ -78,7 +88,7 @@ class FunctionTool(Component):
     .. code-block:: python
 
         from adalflow.core.func_tool import FunctionTool
-        class AgenticRAG(GradComponent):
+        class AgenticRAG(Component):
             def __init__(self, ...):
                 super().__init__()
                 self.retriever = Retriever()
@@ -95,18 +105,15 @@ class FunctionTool(Component):
                 # tools = [FunctionTool(retriever_as_tool), FunctionTool(self.llm.__call__, component=self.llm)]
 
     Features:
-    - Supports both synchronous and asynchronous functions via ``call`` and ``acall``.
-    - Creates a FunctionDefinition from the function using ``get_fun_schema``.
-    - Executs the function with arguments.
-       [You can use Function and FunctionExpression as output format]
 
-        - Please Parses the function call expression[FunctionExpression] into Function (name, args, kwargs).
-        - call or acall, or use execute to execute the function.
-
-         - via call with args and kwargs.
-         - via eval without any context or sandboxing.
-                 - via sandboxed execute directionly using ``sandbox_exec``.
-
+    - Supports both synchronous and asynchronous functions via `call` and `acall`.
+    - Creates a `FunctionDefinition` from the function using `get_fun_schema`.
+    - Executes the function with arguments.
+        - Parses the function call expression (`FunctionExpression`) into `Function` (name, args, kwargs).
+        - Executes the function using one of the following methods:
+            - Via `call` with args and kwargs.
+            - Via `eval`, without any context or sandboxing.
+            - Via sandboxed execution directly using `sandbox_exec`.
 
     A FunctionTool allows other GradComponent(as a tool) to pass through correctly.
     """
@@ -125,7 +132,6 @@ class FunctionTool(Component):
 
         # self.fn = fn  # it can be a function or component
         self.component = component  # pass it here to control the training mode
-
         if isinstance(fn, Component):
             self.fn = fn.__call__
         else:

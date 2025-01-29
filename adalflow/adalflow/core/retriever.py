@@ -1,6 +1,6 @@
 r"""The base class for all retrievers who in particular retrieve documents from a given database."""
 
-from typing import List, Optional, Generic, Any, Callable, TYPE_CHECKING, Union
+from typing import List, Optional, Generic, Any, Callable, Union
 import logging
 
 from adalflow.core.types import (
@@ -12,8 +12,6 @@ from adalflow.core.types import (
 )
 from adalflow.optim.grad_component import GradComponent
 
-if TYPE_CHECKING:
-    pass
 from adalflow.optim.parameter import Parameter, OutputParameter
 from adalflow.optim.types import ParameterType
 

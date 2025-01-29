@@ -219,7 +219,7 @@ if __name__ == "__main__":
     # exit()
 
     ckpt = train(
-        debug=True,
+        debug=False,
         max_steps=12,
         seed=2025,
         tg=use_tg,
@@ -237,15 +237,3 @@ if __name__ == "__main__":
         print(f"Checkpoint saved to {set_output_path}")
     else:
         print("No file path provided for saving the checkpoint.")
-
-    # 0.68 on val without training, 0.74on the second step. 0.84 test
-    # /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_2_029cb_run_1.json
-    # 0.7, 0.72 /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_2_b7523_run_1.json
-    # 208.085706949234s, 2 steps, maximum 4 steps allow for an agent.
-    # 0.72->0.74, 4 steps, 366s, /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_4_dca7e_run_1.json [Already faster, still lots to optimize]
-
-    # 1246s, 12 steps, 0.8 val, /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_defe7_run_1.json
-    # 2149s, both gradients, 0.68 -> 0.78 /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_8a24a_run_1.json
-    # /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_cdcb5_run_1.json 1728 s, 0.8
-    # /Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_735a7_run_1.json 0.58 -> 0.68 (separate gradients)  "pass": 17,
-    #       "fail": 35

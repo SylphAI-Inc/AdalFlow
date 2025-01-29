@@ -80,16 +80,6 @@ class RetrieverEvaluator(BaseEvaluator):
 
         return {"recall": recall, "precision": precision}
 
-        # if isinstance(gt_context, str):
-        #     gt_context = [gt_context]
-        # recalled = 0
-        # for gt_context_sentence in gt_context:
-        #     normalized_gt_context = normalize_answer(gt_context_sentence)
-        #     normalized_retrieved_context = normalize_answer(retrieved_context)
-        #     if normalized_gt_context in normalized_retrieved_context:
-        #         recalled += 1
-        # return recalled / len(gt_context)
-
     def compute(
         self,
         retrieved_contexts: List[List[str]],
@@ -113,8 +103,7 @@ class RetrieverEvaluator(BaseEvaluator):
         k = len(retrieved_contexts[0])
         metric_list = []
         for retrieved_context, gt_context in zip(retrieved_contexts, gt_contexts):
-            # if isinstance(retrieved_context, list):
-            #     retrieved_context = " ".join(retrieved_context)
+
             metric = self.compute_single_item(retrieved_context, gt_context)
             metric_list.append(metric)
 
@@ -134,10 +123,6 @@ class RetrieverEvaluator(BaseEvaluator):
             "precision_list": [metric["precision"] for metric in metric_list],
             "top_k": k,
         }
-
-        # return EvaluationResult(
-        #     avg_score, recall_list, additional_info={"type": f"RetrieverRecall@{k}"}
-        # )
 
 
 if __name__ == "__main__":

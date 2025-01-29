@@ -27,29 +27,11 @@ from adalflow.utils.serialization import default
 from adalflow.utils.config import new_component
 
 from adalflow.utils.registry import EntityMapping
-from torch import nn
 
-nn.module = nn.Module
 
-# import networkx as nx
-# from pyvis.network import Network
-
-# import matplotlib.pyplot as plt
-# import itertools
 log = logging.getLogger(__name__)
 
 T = TypeVar("T")
-
-
-# class _IncompatibleKeys(
-#     namedtuple("IncompatibleKeys", ["missing_keys", "unexpected_keys"])
-# ):
-#     def __repr__(self):
-#         if not self.missing_keys and not self.unexpected_keys:
-#             return "<All keys matched successfully>"
-#         return super().__repr__()
-
-#     __str__ = __repr__
 
 
 def _addindent(s_, numSpaces):
@@ -481,37 +463,6 @@ class Component:
             remove_duplicate=remove_duplicate,
         )
         yield from gen
-
-    # @staticmethod
-    # def visualize_graph_html(filename="graph.html"):
-    #     nt = Network(directed=True)
-    #     nt.from_nx(Component._graph)
-    #     for edge in nt.edges:
-    #         edge["title"] = edge["label"]
-    #         edge["value"] = (
-    #             10  # You can adjust the 'value' to set the width of the edges
-    #         )
-    #     nt.show_buttons(
-    #         filter_=["physics"]
-    #     )  # Optional: Show interactive buttons to adjust physics and other settings
-    #     nt.show(
-    #         filename, notebook=False
-    #     )  # Make sure to set notebook=False for non-notebook environments
-
-    # @staticmethod
-    # def visualize_graph():
-    #     pos = nx.spring_layout(Component._graph)
-    #     nx.draw(
-    #         Component._graph,
-    #         pos,
-    #         with_labels=True,
-    #         node_color="lightblue",
-    #         node_size=2000,
-    #         edge_color="gray",
-    #         linewidths=1,
-    #         font_size=15,
-    #     )
-    #     plt.show()
 
     def forward(self, *args, **kwargs):
         """
@@ -953,18 +904,6 @@ class Component:
     def __repr__(self):
         # We treat the extra repr like the sub-module, one item per line
         extra_lines = []
-        # add training mode
-        status = ""
-        if self.training:
-            status = "training: True"
-        else:
-            status = "training: False"
-        # add teacher mode
-        if self.teacher_mode:
-            status += ", teacher_mode: True"
-        else:
-            status += ", teacher_mode: False"
-        extra_lines.append(status)
         extra_repr = self._extra_repr()
         # empty string will be split into list ['']
         if extra_repr:

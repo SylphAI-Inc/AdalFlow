@@ -14,7 +14,6 @@ from typing import (
     TYPE_CHECKING,
 )
 from collections import defaultdict
-from pyvis.network import Network
 import logging
 import os
 from dataclasses import dataclass, field
@@ -23,6 +22,7 @@ from adalflow.optim.types import ParameterType
 from adalflow.core.base_data_class import DataClass
 from adalflow.utils.logger import printc
 import html
+from adalflow.optim.gradient import Gradient
 
 
 if TYPE_CHECKING:
@@ -32,36 +32,7 @@ T = TypeVar("T")  # covariant set to False to allow for in-place updates
 
 log = logging.getLogger(__name__)
 
-
-@dataclass
-class GradientContext(DataClass):
-    """GradientContext is used to describe the component's function and trace its input and output.
-
-    To get the component's function desc, use GradientContext.to_yaml_signature()
-    To get the data: use instance.to_yaml()
-    """
-
-    variable_desc: str = field(
-        metadata={"desc": "The description of the target parameter"}
-    )
-    # from template LOSS_CONVERSATION_TEMPLATE_STRING
-    # LLM_CONVERSATION_TEMPLATE from backward_engine_prompt
-    input_output: str = field(
-        metadata={
-            "desc": "The context of the gradient in form of a conversation indicating \
-                the relation of the current parameter to the response parameter"
-        }
-    )
-    response_desc: str = field(
-        metadata={"desc": "The description of the response parameter"}
-    )
-    # input: Dict[str, Any] = field(
-    #     metadata={"desc": "The input to the whole system"}, default=None
-    # )
-
-    # ground_truth: Any = field(
-    #     metadata={"desc": "The ground truth of the response parameter"}, default=None
-    # )
+__all__ = ["Parameter", "ComponentNode", "ComponentTrace", "ScoreTrace"]
 
 
 @dataclass
@@ -291,7 +262,8 @@ class Parameter(Generic[T]):
         return self.successor_map_fn[successor_id](self)
 
     def add_successor_map_fn(self, successor: object, map_fn: Callable):
-        """Add or update a map function for a specific successor using its id."""
+        """Add or update a map function of the value for a specific successor using its id.
+        succssor will know the value of the current parameter."""
         self.successor_map_fn[id(successor)] = map_fn
 
     def check_if_already_computed_gradient_respect_to(self, response_id: str) -> bool:
@@ -359,10 +331,6 @@ class Parameter(Generic[T]):
         if not self.gradients:
             return ""
 
-        # sore gradients by the score from low to high
-        # self.gradients = sorted(
-        #     self.gradients, key=lambda x: x.score if x.score is not None else 1
-        # )
         # print the score for the sorted gradients
         lowest_score_gradients = []
         for i, g in enumerate(self.gradients):
@@ -373,20 +341,6 @@ class Parameter(Generic[T]):
 
         gradient_context_combined_str = ""
         if lowest_score_gradients and len(lowest_score_gradients) > 0:
-
-            # parse the gradients and context.
-            # gradients_and_context: List[Dict[str, Any]] = (
-            #     []
-            # )  # {gradient: data, context: GradientContext.input_output}
-            # for g in lowest_score_gradients:
-            #     gradients_and_context.append(
-            #         {
-            #             "data_id": g.data_id,
-            #             "gradient": g.data,
-            #             "context": g.context.input_output,
-            #             "score": g.score,
-            #         }
-            #     )
 
             # group gradients by data_id and calculate average scores
             grouped_gradients = defaultdict(
@@ -574,7 +528,7 @@ class Parameter(Generic[T]):
         return {
             "name": self.name,
             "role_desc": self.role_desc,
-            "prompt_data": self.data_in_prompt(self),  # default to use all data
+            "prompt_data": self.get_prompt_data(),  # default to use all data
             "param_type": self.param_type,
             "requires_opt": self.requires_opt,
             "eval_input": self.eval_input,  # for output passing to the eval_fn
@@ -893,6 +847,7 @@ class Parameter(Generic[T]):
             dict: A dictionary containing the graph file path.
         """
         from jinja2 import Template
+        from pyvis.network import Network
 
         output_file = "interactive_graph.html"
         filepath = filepath or "output"
@@ -1551,84 +1506,84 @@ class Parameter(Generic[T]):
 
 
 # TODO: separate the Parameter class into different classes and each class will have its own methods instead of all in one class
-class InputParameter(Parameter):
-    """One of the simplest types of parameters, representing an input to the system.
-    Input parameter will not be trainable, but serves a tracing purpose in the computation graph.
-    """
+# class InputParameter(Parameter):
+#     """One of the simplest types of parameters, representing an input to the system.
+#     Input parameter will not be trainable, but serves a tracing purpose in the computation graph.
+#     """
 
-    def __init__(
-        self,
-        name: str,
-        role_desc: str,
-        data: Any,
-        requires_opt: bool = False,
-        param_type: ParameterType = ParameterType.INPUT,
-    ):
-        super().__init__(
-            name=name,
-            role_desc=role_desc,
-            data=data,
-            requires_opt=requires_opt,
-            param_type=param_type,
-        )
-
-
-class HyperParameter(Parameter):
-    """One of the simplest types of parameters, representing a hyperparameter to the system."""
-
-    def __init__(
-        self,
-        name: str,
-        role_desc: str,
-        data: Any,
-        requires_opt: bool = False,
-        param_type: ParameterType = ParameterType.HYPERPARAM,
-    ):
-        super().__init__(
-            name=name,
-            role_desc=role_desc,
-            data=data,
-            requires_opt=requires_opt,
-            param_type=param_type,
-        )
+#     def __init__(
+#         self,
+#         name: str,
+#         role_desc: str,
+#         data: Any,
+#         requires_opt: bool = False,
+#         param_type: ParameterType = ParameterType.INPUT,
+#     ):
+#         super().__init__(
+#             name=name,
+#             role_desc=role_desc,
+#             data=data,
+#             requires_opt=requires_opt,
+#             param_type=param_type,
+#         )
 
 
-class PromptParameter(Parameter):
+# class HyperParameter(Parameter):
+#     """One of the simplest types of parameters, representing a hyperparameter to the system."""
 
-    def __init__(
-        self,
-        name: str,
-        role_desc: str,
-        data: Any,
-        requires_opt: bool = True,
-        param_type: ParameterType = ParameterType.PROMPT,
-    ):
-        super().__init__(
-            name=name,
-            role_desc=role_desc,
-            data=data,
-            requires_opt=requires_opt,
-            param_type=param_type,
-        )
+#     def __init__(
+#         self,
+#         name: str,
+#         role_desc: str,
+#         data: Any,
+#         requires_opt: bool = False,
+#         param_type: ParameterType = ParameterType.HYPERPARAM,
+#     ):
+#         super().__init__(
+#             name=name,
+#             role_desc=role_desc,
+#             data=data,
+#             requires_opt=requires_opt,
+#             param_type=param_type,
+#         )
 
 
-class DemoParameter(Parameter):
+# class PromptParameter(Parameter):
 
-    def __init__(
-        self,
-        name: str,
-        role_desc: str,
-        data: Any,
-        requires_opt: bool = True,
-        param_type: ParameterType = ParameterType.DEMOS,
-    ):
-        super().__init__(
-            name=name,
-            role_desc=role_desc,
-            data=data,
-            requires_opt=requires_opt,
-            param_type=param_type,
-        )
+#     def __init__(
+#         self,
+#         name: str,
+#         role_desc: str,
+#         data: Any,
+#         requires_opt: bool = True,
+#         param_type: ParameterType = ParameterType.PROMPT,
+#     ):
+#         super().__init__(
+#             name=name,
+#             role_desc=role_desc,
+#             data=data,
+#             requires_opt=requires_opt,
+#             param_type=param_type,
+#         )
+
+
+# class DemoParameter(Parameter):
+
+#     def __init__(
+#         self,
+#         name: str,
+#         role_desc: str,
+#         data: Any,
+#         requires_opt: bool = True,
+#         param_type: ParameterType = ParameterType.DEMOS,
+#     ):
+#         super().__init__(
+#             name=name,
+#             role_desc=role_desc,
+#             data=data,
+#             requires_opt=requires_opt,
+#             param_type=param_type,
+#         )
 
 
 class OutputParameter(Parameter):
@@ -1717,11 +1672,6 @@ class OutputParameter(Parameter):
             }
         )
 
-    # def to_json(self):
-    #     import json
-
-    #     return json.dumps(self.to_dict())
-
     @classmethod
     def from_dict(cls, data: dict):
         component_trace = ComponentTrace.from_dict(data["component_trace"])
@@ -1734,100 +1684,6 @@ class OutputParameter(Parameter):
             end = start + len("Parameter")
             super_repr = super_repr[:start] + "OutputParameter" + super_repr[end:]
         return super_repr
-
-
-# gradients= List[Gradient]
-
-
-@dataclass
-class Gradient(DataClass):
-    __doc__ = r"""It will handle gradients and feedbacks.
-
-    It tracks the d_from_response_id / d_to_pred_id and the score of the whole response.
-
-    if two gradients have the same data_id, different from_response_id, and same from_response_component_id, this is a cycle component structure.
-    """
-    data_id: Optional[str] = None  # the id of the response from data in the dataset
-    from_response_component_id: str = (
-        None  # the id of the component from which the gradient is calculated
-    )
-    order: Optional[int] = None  # the order of the gradient in the list of gradients
-
-    from_response_id: str = (
-        None  # the id of the response from which the gradient is calculated
-    )
-
-    to_pred_id: str = (
-        None  # the id of the parameter to which the gradient is calculated and attached to d(from_response_id) / d(to_pred_id)
-    )
-
-    score: Optional[float] = None
-
-    context: GradientContext = None
-    data: Any = None
-    prompt: Optional[str] = None  # the LLM prompt to generate the gradient
-
-    is_default_copy: bool = False  # whether the gradient is a default copy
-
-    def __init__(
-        self,
-        *,
-        from_response: "Parameter",
-        to_pred: "Parameter",
-        id: Optional[str] = None,  # the id of the gradient
-        score: Optional[float] = None,
-        data_id: Optional[str] = None,
-        data: Any = None,
-    ):
-        self.id = id or str(uuid.uuid4())
-        self._generate_name(from_response, to_pred)
-        self.from_response_component_id = from_response.component_trace.id
-        if not self.from_response_component_id:
-            raise ValueError(
-                "The from_response_component_id should not be None. Please ensure the component_trace is set."
-            )
-        self.from_response_id = from_response.id
-        self.to_pred_id = to_pred.id
-        self.score = score
-        self.data_id = data_id
-        if self.data_id is None:
-            raise ValueError("The data_id should not be None.")
-        self.data = data
-        self.order = None
-
-    def _generate_name(self, response: "Parameter", pred: "Parameter"):
-        self.name = f"d_{response.name}_/_{pred.name}({response.id}_/_{pred.id})"
-        self.role_desc = f"Gradient from {response.name} to {pred.name}"
-
-    def add_context(self, context: GradientContext):
-        self.context = context
-
-    def add_data(self, data: Any):
-        self.data = data
-
-    def update_from_to(self, from_response: "Parameter", to_pred: "Parameter"):
-        self.from_response_id = from_response.id
-        self.to_pred_id = to_pred.id
-        self._generate_name(from_response, to_pred)
-        self.from_response_component_id = from_response.component_trace.id
-
-    def add_prompt(self, prompt: str):
-        self.prompt = prompt
-
-    def __hash__(self):
-        # Use immutable and unique attributes to compute the hash
-        return hash((self.id, self.data_id, self.from_response_id, self.to_pred_id))
-
-    def __eq__(self, other):
-        # Ensure equality comparison is based on the same unique attributes
-        if not isinstance(other, Gradient):
-            return False
-        return (
-            self.id == other.id
-            and self.data_id == other.data_id
-            and self.from_response_id == other.from_response_id
-            and self.to_pred_id == other.to_pred_id
-        )
 
 
 if __name__ == "__main__":

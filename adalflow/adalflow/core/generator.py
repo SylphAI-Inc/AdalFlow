@@ -24,10 +24,9 @@ from adalflow.core.base_data_class import DataClass
 
 from adalflow.optim.parameter import (
     Parameter,
-    GradientContext,
-    Gradient,
     OutputParameter,
 )
+from adalflow.optim.gradient import GradientContext, Gradient
 from adalflow.optim.types import ParameterType
 
 from adalflow.core.prompt_builder import Prompt
@@ -183,8 +182,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         #  to support better testing on the parts beside of the model call
         self.mock_output: bool = False
         self.mock_output_data: str = "mock data"
-        # self.data_map_func: Callable = None
-        # self.set_data_map_func()
+
         self._use_cache = use_cache
 
         self._kwargs = {
@@ -249,13 +247,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             output_fields = ["Answer"]
             output_mapping["Example"] = output_mapping["raw_response"]
             del output_mapping["raw_response"]
-        # elif output.error:
-        #     output_fields = ["raw_response", "error"]
-        #     output_mapping = {
-        #         "error": lambda x: x.error,
-        #         "raw_response": lambda x: x.raw_response,
-        #     }
-        #     output_fields = ["Answer"]
+
         return output_mapping, output_fields
 
     def set_mock_output(
@@ -280,9 +272,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 peers = [
                     p
                     for k, p in prompt_kwargs.items()
-                    if isinstance(p, Parameter)
-                    and k != key
-                    and p.param_type == ParameterType.PROMPT
+                    if isinstance(p, Parameter) and k != key
+                    # and p.param_type == ParameterType.PROMPT
                 ]
                 p.set_peers(peers)
                 setattr(self, key, p)
@@ -926,9 +917,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         instruction_str, objective_str = None, None
 
         # 1. Generate the conversation string
-
         input_prompt_kwargs = {
-            k: v.data if isinstance(v, Parameter) else v
+            k: v.get_prompt_data() if isinstance(v, Parameter) else v
             for k, v in prompt_kwargs.items()
         }
 
@@ -1224,16 +1214,14 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         return response_value
 
 
-from adalflow.tracing.decorators import trace_generator_states
-
-
-@trace_generator_states()
 class BackwardEngine(Generator):  # it is a generator with defaule template
 
-    __doc__ = """The backward engine is a Generator with a default template for the backward pass.
+    __doc__ = """A Generator with a default template for the backward pass in auto-differentiation.
+
+    As a component, the forward pass is simply the same as the call method.
+    So it will always return GeneratorOutputType instead of Parameter.
 
     If you want to customize the template, you can create your own backward engine.
-
     Yet, we will forever keep the training mode to False for the backward engine.
     This is achieved by making forward the same as call.
     """

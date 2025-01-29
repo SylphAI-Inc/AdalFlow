@@ -264,6 +264,7 @@ Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive 
 # Citation
 
 ```bibtex
+
 @software{Yin2024AdalFlow,
   author = {Li Yin},
   title = {{AdalFlow: The Library for Large Language Model (LLM) Applications}},

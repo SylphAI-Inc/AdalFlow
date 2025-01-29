@@ -13,10 +13,9 @@ if TYPE_CHECKING:
 from adalflow.core.types import GeneratorOutput
 from adalflow.optim.parameter import (
     Parameter,
-    GradientContext,
-    Gradient,
     OutputParameter,
 )
+from adalflow.optim.gradient import GradientContext, Gradient
 from adalflow.optim.types import ParameterType
 
 from adalflow.core.prompt_builder import Prompt

@@ -19,7 +19,6 @@ from adalflow.core.types import (
     GeneratorOutput,
     Function,
     FunctionOutput,
-    FunctionExpression,
 )
 from adalflow.optim.grad_component import fun_to_grad_component
 from adalflow.core.model_client import ModelClient
@@ -111,7 +110,7 @@ Step {{ loop.index }}.
 "name": "{{history.action.name}},
 "kwargs": {{history.action.kwargs}}",
 {% endif %}
-"observation": "{{history.observation}}"
+"Observation": "{{history.observation}}"
 
 ------------------------
 {% endfor %}
@@ -166,6 +165,9 @@ class ReActAgent(Component):
     - model_client: the model client to use to generate the response.
     - model_kwargs: the model kwargs to use to generate the response.
     - template: the template to use to generate the prompt. Default is DEFAULT_REACT_AGENT_SYSTEM_PROMPT.
+    - context_variables: the context variables to use in the prompt.
+    - use_cache: a boolean to decide whether to use the cache to store the generated responses for the planner.
+    - debug: a boolean to decide whether to print debug information.
 
     For the generator, the default arguments are:
     (1) default prompt: DEFAULT_REACT_AGENT_SYSTEM_PROMPT
@@ -212,8 +214,7 @@ class ReActAgent(Component):
         max_steps: int = 10,
         add_llm_as_fallback: bool = True,
         # TODO: the examples are just for specifying the output format, not end to end input-output examples, need further optimization
-        # examples: List[FunctionExpression] = [],
-        examples: Union[List[FunctionExpression], List[str]] = [],
+        examples: Union[List[Function], List[str]] = [],
         *,
         # the following arguments are mainly for the planner
         model_client: ModelClient,
@@ -221,6 +222,7 @@ class ReActAgent(Component):
         # template for the planner
         template: Optional[str] = None,  # allow users to customize the template
         context_variables: Optional[Dict] = None,  # context variables
+        use_cache: bool = True,
         debug: bool = False,
     ):
         super().__init__()
@@ -231,6 +233,7 @@ class ReActAgent(Component):
         self.add_llm_as_fallback = add_llm_as_fallback
         self.context_variables = context_variables
         self.debug = debug
+        self.use_cache = use_cache
 
         processed_tools = self._init_tools(tools, model_client, model_kwargs)
         self.tool_manager: ToolManager = ToolManager(
@@ -256,14 +259,13 @@ class ReActAgent(Component):
                 "kwargs",
             ],
         )
-        # output_parser = DataClassParser(return_data_class=True, data_class=Function)
         prompt_kwargs = {
             "tools": self.tool_manager.yaml_definitions,
             "output_format_str": output_parser.format_instructions(),
             "react_agent_task_desc": Parameter(
                 name="react_agent_task_desc",
-                # data=react_agent_task_desc,
-                data="You are an excellent task planner. Answer the input query using the tools provided below with maximum accuracy.\n\nEach step you will read the previous thought, Action(name, kwargs), and Observation(execution result of the action) and then provide the next Thought and Action.\n\n<START_OF_TASK_SPEC>\nFollow function docstring to best call the tool.\n- For simple queries: Directly call the 'finish' action and answer with a concise 'yes' or 'no' when it fits.\n- For complex queries:\n    - Step 1: Understand the main subject(s) and context of the user query accurately.\n    - Step 2: Break down the query into multisteps, starting with the first tool/subquery.\n    - Ensure each step accurately reflects the subjects under consideration.\n    - Continuously verify your extracted information and logic for factual accuracy using concise comparisons.\n    - At step 'finish', conclude with a precise final answer.\nREMEMBER:\n- Action MUST call one of the tools. It CANNOT be empty.\n- You will ALWAYS END WITH 'finish' tool to conclude the task directly with an answer or failure message.\n- When the tool is a class method and when class_instance exists, use <class_instance_value>.<func_name> to call instead (NOT the CLASS NAME).\n<END_OF_TASK_SPEC>",
+                data=react_agent_task_desc,
+                # data="You are an excellent task planner. Answer the input query using the tools provided below with maximum accuracy.\n\nEach step you will read the previous thought, Action(name, kwargs), and Observation(execution result of the action) and then provide the next Thought and Action.\n\n<START_OF_TASK_SPEC>\nFollow function docstring to best call the tool.\n- For simple queries: Directly call the 'finish' action and answer with a concise 'yes' or 'no' when it fits.\n- For complex queries:\n    - Step 1: Understand the main subject(s) and context of the user query accurately.\n    - Step 2: Break down the query into multisteps, starting with the first tool/subquery.\n    - Ensure each step accurately reflects the subjects under consideration.\n    - Continuously verify your extracted information and logic for factual accuracy using concise comparisons.\n    - At step 'finish', conclude with a precise final answer.\nREMEMBER:\n- Action MUST call one of the tools. It CANNOT be empty.\n- You will ALWAYS END WITH 'finish' tool to conclude the task directly with an answer or failure message.\n- When the tool is a class method and when class_instance exists, use <class_instance_value>.<func_name> to call instead (NOT the CLASS NAME).\n<END_OF_TASK_SPEC>",
                 role_desc="Task instruction for the agent to plan steps to solve a question in sequential and multi-steps to get the final answer. \
                 For optimizer: you need to adapt this to the current specific task.",
                 param_type=ParameterType.PROMPT,
@@ -285,7 +287,7 @@ class ReActAgent(Component):
             output_processors=output_parser,
             model_client=model_client,
             model_kwargs=model_kwargs,
-            use_cache=True,
+            use_cache=use_cache,
         )
 
         # besides of form the final output, it adds a skip connection to the planner task description prompt
@@ -297,7 +299,7 @@ class ReActAgent(Component):
         model_client: ModelClient,
         model_kwargs: Dict,
     ):
-        r"""Initialize the tools. Using reference or else(copy or deepcopy) we can not set the training/eval mode for each tool."""
+        r"""Initialize the tools. Using reference or else with (copy or deepcopy) we can not set the training/eval mode for each tool."""
         processed_tools = []
         _additional_llm_tool = (
             Generator(model_client=model_client, model_kwargs=model_kwargs)
@@ -325,9 +327,7 @@ class ReActAgent(Component):
         @fun_to_grad_component(
             desc="Finish",
             doc_string=Parameter(
-                # data="Finish the task with verbatim short factoid answer.",
                 data="Finish the task with the final answer in the kwargs.",
-                # data="Ensure factual accuracy by precisely identifying each item in the step history, avoiding incorrect associations. Construct the final answer with brevity, directly addressing the query without unnecessary details.",
                 param_type=ParameterType.PROMPT,
                 requires_opt=True,
                 role_desc="Instruct the agent on how to create the final answer from the step history.",
@@ -382,8 +382,10 @@ class ReActAgent(Component):
                 if isinstance(response.data.data, Function):
                     response.data.data.kwargs.update({"id": id})
 
-                result: Parameter = self.tool_manager(
-                    expr_or_fun=response, step="execute", map_fn=lambda x: x.data.data
+                result: Union[Parameter, str] = self.tool_manager(
+                    expr_or_fun=response,
+                    step="execute",
+                    map_fn=lambda x: x.data.data,  # Function
                 )
 
                 if isinstance(result, str):
@@ -413,6 +415,8 @@ class ReActAgent(Component):
 
                 step_output.step = step
                 step_output.observation = result.data.output
+
+                # update the execution result to the step_output to be consistent with the eval version
                 result.data = step_output
                 result.role_desc = "The result of the action execution, observation is the final answer"
                 result.param_type = ParameterType.OUTPUT
@@ -450,14 +454,13 @@ class ReActAgent(Component):
                 fun_expr: Function = x.data
 
                 step_output.action = fun_expr
-                # add id to the function
+                # # add id to the function
                 fun_expr.kwargs.update({"id": id})
-                log.debug(f"Step {step}: {fun_expr}")
 
                 if step_output and step_output.action:
 
                     result: FunctionOutput = self.tool_manager(
-                        expr_or_fun=x.data,
+                        expr_or_fun=x.data,  # Function
                         step="execute",
                     )
 

@@ -40,8 +40,7 @@ FAISSRetrieverDocumentsType = Sequence[FAISSRetrieverDocumentEmbeddingType]
 FAISSRetrieverEmbeddingQueryType = Union[
     List[float], List[List[float]], np.ndarray
 ]  # single embedding or list of embeddings
-FAISSRetrieverQueryType = Union[RetrieverStrQueryType,
-                                FAISSRetrieverEmbeddingQueryType]
+FAISSRetrieverQueryType = Union[RetrieverStrQueryType, FAISSRetrieverEmbeddingQueryType]
 FAISSRetrieverQueriesType = Sequence[FAISSRetrieverQueryType]
 FAISSRetrieverQueriesStrType = Sequence[RetrieverStrQueryType]
 FAISSRetrieverQueriesEmbeddingType = Sequence[FAISSRetrieverEmbeddingQueryType]
@@ -163,8 +162,7 @@ class FAISSRetriever(
         If you are using Document format, pass them as [doc.vector for doc in documents]
         """
         if document_map_func:
-            assert callable(
-                document_map_func), "document_map_func should be callable"
+            assert callable(document_map_func), "document_map_func should be callable"
             documents = [document_map_func(doc) for doc in documents]
         try:
             self.documents = documents
@@ -299,8 +297,7 @@ class FAISSRetriever(
         output: RetrieverOutputType = [
             RetrieverOutput(doc_indices=[], query=query) for query in queries
         ]
-        retrieved_output: RetrieverOutputType = self._to_retriever_output(
-            Ind, D)
+        retrieved_output: RetrieverOutputType = self._to_retriever_output(Ind, D)
 
         # fill in the doc_indices and score for valid queries
         for i, per_query_output in enumerate(retrieved_output):

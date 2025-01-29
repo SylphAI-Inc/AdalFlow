@@ -89,15 +89,13 @@ class CallFunctionTool(Component):
 
             # this will automatically create the outputparam, and connect output, func to the outputParam
             @fun_to_grad_component()
-            def pass_through_output(output, func):
+            def func_to_funcoutput(output, func):
                 return output
 
-            # NOTE: special case: handle the function which is not a grad_component
-            # here we have to specifically converts it to a parameter and handles the predecessors
-            # there is no trainable parameters inside of the tool but the tool response itself can be optimized by response optimizer
+            # NOTE: for nontrainable function but the overall tool manager is in training mode,
+            # we will create a similar func to output edge to handle the feedback backpapagation
             if not isinstance(output, Parameter):
-                # printc(f"output 1: {output}, func: {func}", color="yellow")
-                return pass_through_output.forward(output, func)
+                return func_to_funcoutput.forward(output, func)
             else:
                 # reconnect the predecessor for tracing as it is not done in tool.forward
                 output.predecessors.add(func)
@@ -120,16 +118,13 @@ class FunctionExperssionToFunction(GradComponent):
 
         expr_str = expr.action
         func_name, args, kwargs = parse_function_call_expr(expr_str, context)
-        # printc(
-        #     f"func_name: {func_name}, args: {args}, kwargs: {kwargs}", color="yellow"
-        # )
+
         output = Function(
             name=func_name,
             args=args,
             kwargs=kwargs,
             thought=expr.thought,
         )
-        # printc(f"output: {output}", color="yellow")
         return output
 
 
@@ -162,10 +157,7 @@ class ToolManager(Component):
             )
             for tool in tools
         ]
-        # printc(
-        #     f"processed tools: {processed_tools}, len: {len(processed_tools)} and len tools: {len(tools)}",
-        #     color="yellow",
-        # )
+
         self.tools = ComponentList(processed_tools)
         self._context_map = self.create_context_map_from_tools(self.tools)
         self._additional_context = additional_context or {}
@@ -231,20 +223,10 @@ class ToolManager(Component):
         r"""Parse the function call expression."""
 
         if isinstance(expr, Parameter):
-            # try:
-
             func = FunctionExperssionToFunction()
             expr.add_successor_map_fn(func, map_fn=map_fn)
-            # print("FunctionExperssionToFunction")
             output = func.forward(expr, context=self.context)
-            # print(f"output data: {output.data}")
             return output
-
-            #     except Exception as e:
-            #         error_msg = (
-            #             f"Error {e} parsing function call expression: {map_fn(expr)}"
-            #         )
-            #         return error_msg
         else:
             try:
                 expr_str = expr.action
@@ -324,7 +306,6 @@ class ToolManager(Component):
                     )
         else:
             raise ValueError(f"expr_or_fun should be a Parameter. Got {expr_or_fun}")
-            # return self.call(expr_or_fun=expr_or_fun, step=step)
 
     def execute_func(
         self, func: Union[Function, Parameter], map_fn: Callable = lambda x: x.data
@@ -346,29 +327,15 @@ class ToolManager(Component):
         else:
             try:
                 tool: FunctionTool = self.context[func.name]
-                # printc(f"call tool: {tool}", color="yellow")
                 if tool.is_async:
                     return run_async_in_new_loop(tool.acall(*func.args, **func.kwargs))
 
                 else:
                     output = tool.call(*func.args, **func.kwargs)
-                    # printc(f"output: {output}", color="yellow")
                     return output
             except Exception as e:
                 log.error(f"Error {e} executing function: {func}")
                 raise ValueError(f"Error {e} executing function: {func}")
-
-        # try:
-        #     tool: FunctionTool = self.context[func.name]
-        #     if tool.is_async:
-        #         log.debug("Running async function in new loop")
-        #         return run_async_in_new_loop(tool.acall(*func.args, **func.kwargs))
-        #     else:
-        #         # TODO ensure it is set to traing mode
-        #         return tool.forward(*func.args, **func.kwargs)
-        # except Exception as e:
-        #     log.error(f"Error {e} executing function: {func}")
-        #     raise ValueError(f"Error {e} executing function: {func}")
 
     async def execute_func_async(self, func: Function) -> FunctionOutput:
         r"""Execute the function. If the function is sync, use await to execute it."""
@@ -412,7 +379,6 @@ class ToolManager(Component):
             except Exception as e:
                 # NOTE: if the function expression is not a function call, try to execute it as a function expression
                 log.error(f"Error {e} executing function expression: {expr}")
-                # raise ValueError(f"Error {e} executing function expression: {expr}")
                 return FunctionOutput(
                     name=expr.action, input=expr, output=None, error=None
                 )
