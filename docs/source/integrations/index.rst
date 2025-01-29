@@ -7,6 +7,6 @@ The integration will be listing all existing integrations and integrations we pl
 
 .. toctree::
     :maxdepth: 1
-    :caption:
+    :caption: Integrations
 
     integrations
