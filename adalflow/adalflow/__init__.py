@@ -1,4 +1,4 @@
-__version__ = "1.0.0.beta.1"
+__version__ = "1.0.0.beta.2"
 
 from adalflow.core.component import Component
 from adalflow.core.container import Sequential, ComponentList
