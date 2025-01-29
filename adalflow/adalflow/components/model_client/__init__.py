@@ -44,6 +44,10 @@ OpenAIClient = LazyImport(
     "adalflow.components.model_client.openai_client.OpenAIClient",
     OptionalPackages.OPENAI,
 )
+NebiusClient = LazyImport(
+    "adalflow.components.model_client.nebius_client.NebiusClient",
+    OptionalPackages.OPENAI,
+)
 GoogleGenAIClient = LazyImport(
     "adalflow.components.model_client.google_client.GoogleGenAIClient",
     OptionalPackages.GOOGLE_GENERATIVEAI,
@@ -75,6 +79,7 @@ __all__ = [
     "BedrockAPIClient",
     "GroqAPIClient",
     "OpenAIClient",
+    "NebiusClient",
     "GoogleGenAIClient",
 ]
 
