@@ -9,7 +9,7 @@ import logging as log
 
 if TYPE_CHECKING:
     from adalflow.core.model_client import ModelClient
-    from adalflow.core.generator import Generator, BackwardEngine
+    from adalflow.core.generator import Generator, BackwardEngine, BackwardPassSetup
     from adalflow.optim.parameter import Parameter
 
 from adalflow.core.component import Component
@@ -18,6 +18,8 @@ from adalflow.optim.optimizer import Optimizer
 from adalflow.optim.loss_component import LossComponent
 from adalflow.optim.types import PromptData
 from adalflow.eval.base import EvaluationResult
+from adalflow.optim.grad_component import GradComponent
+from adalflow.utils import printc
 
 from adalflow.optim.optimizer import DemoOptimizer, TextOptimizer
 
@@ -32,12 +34,15 @@ class AdalComponent(Component):
     1. Organize all parts for training a task pipeline in one place.
     2. Help with debugging and testing before the actual training.
     3. Adds multi-threading support for training and evaluation.
+
+    It has no need on call, forward, bicall, or __call__, so we need to overwrite the base ones.
     """
 
     task: Component
     # evaluator: Optional[BaseEvaluator]
-    eval_fn: Optional[Callable]
+    eval_fn: Optional[Callable]  # final eval score
     loss_fn: Optional[LossComponent]
+    loss_eval_fn: Optional[Callable]  # loss eval score and training subset eval fn
     backward_engine: Optional["BackwardEngine"]
     _demo_optimizers: Optional[List[DemoOptimizer]]
     _text_optimizers: Optional[List[TextOptimizer]]
@@ -47,6 +52,7 @@ class AdalComponent(Component):
         task: Component,
         # evaluator: Optional[BaseEvaluator] = None,
         eval_fn: Optional[Callable] = None,
+        loss_eval_fn: Optional[Callable] = None,
         loss_fn: Optional[LossComponent] = None,
         backward_engine: Optional["BackwardEngine"] = None,
         backward_engine_model_config: Optional[Dict] = None,
@@ -59,6 +65,7 @@ class AdalComponent(Component):
         self.task = task
         # self.evaluator = evaluator
         self.eval_fn = eval_fn
+        self.loss_eval_fn = loss_eval_fn
         self.loss_fn = loss_fn
         self.backward_engine = backward_engine
         if backward_engine and not isinstance(backward_engine, "BackwardEngine"):
@@ -85,7 +92,7 @@ class AdalComponent(Component):
         return [
             PromptData(p.id, p.name, p.data, p.requires_opt)
             for p in self.task.parameters()
-            # if p.requires_opt
+            if p.requires_opt
         ]
 
     def prepare_task(self, sample: Any, *args, **kwargs) -> Tuple[Callable, Dict]:
@@ -140,21 +147,32 @@ class AdalComponent(Component):
         """
         raise NotImplementedError("prepare_loss method is not implemented")
 
-    # TODO: support more complicated evaluation
+    # TODO: Support multiple eval_fn with different metrics. using a dict[str, (Callable, Dict)] to store them.
     def prepare_eval(self, sample: Any, y_pred: Any, *args, **kwargs) -> float:
         r"""Tell Trainer how to eval in inference mode.
         Return the eval_fn and kwargs for one evaluation sample.
 
         Ensure the eval_fn is a callable that takes the predicted output and the ground truth output.
         Ensure the kwargs are setup correctly.
+
         """
         raise NotImplementedError("prepare_eval method is not implemented")
+
+    def prepare_loss_eval(self, sample: Any, y_pred: Any, *args, **kwargs) -> float:
+        r"""Tell Trainer how to eval in inference mode.
+        Return the eval_fn and kwargs for one evaluation sample.
+
+        Ensure the eval_fn is a callable that takes the predicted output and the ground truth output.
+        Ensure the kwargs are setup correctly.
+
+        """
+        raise NotImplementedError("prepare_loss_eval method is not implemented")
 
     # def configure_optimizers(self, *args, **kwargs) -> Optimizer:
     #     r"""Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too."""
     #     raise NotImplementedError("configure_optimizers method is not implemented")
 
-    def configure_optimizers(self, *args, **kwargs) -> List[Optimizer]:
+    def configure_optimizers(self, *args, **text_optimizer_kwargs) -> List[Optimizer]:
         r"""Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too."""
         if self._demo_optimizers is None:
             self._demo_optimizers = self.configure_demo_optimizer_helper()
@@ -167,12 +185,12 @@ class AdalComponent(Component):
                 raise ValueError("Model kwargs is not configured.")
 
             self._text_optimizers = self.configure_text_optimizer_helper(
-                **self.text_optimizer_model_config
+                **self.text_optimizer_model_config, **text_optimizer_kwargs
             )
         return self._demo_optimizers + self._text_optimizers
 
     def configure_backward_engine(self, *args, **kwargs):
-        r"""Configure a backward engine for all generators in the task for bootstrapping examples."""
+        r"""Configure a backward engine for all GradComponent in the task for bootstrapping examples."""
         # check if backward engine is already configured
         if self.backward_engine:
             log.warning("Backward engine is already configured.")
@@ -185,7 +203,13 @@ class AdalComponent(Component):
         self.configure_backward_engine_helper(
             model_client=self.backward_engine_model_config["model_client"],
             model_kwargs=self.backward_engine_model_config["model_kwargs"],
+            backward_pass_setup=kwargs.get("backward_pass_setup", None),
         )
+
+    def disable_backward_engine(self):
+        r"""Disable the backward engine for all GradComponent in the task.
+        No more gradients generation."""
+        self.disable_backward_engine_helper()
 
     # def configure_backward_engine(self, *args, **kwargs):
     #     raise NotImplementedError("configure_backward_engine method is not implemented")
@@ -196,8 +220,10 @@ class AdalComponent(Component):
         y_preds: List,
         metadata: Optional[Dict[str, Any]] = None,
         num_workers: int = 2,
+        use_loss_eval_fn: bool = False,
     ) -> EvaluationResult:
-        r"""Run evaluation on samples using parallel processing. Utilizes ``prepare_eval`` defined by the user.
+        r"""Evaluate predictions against the ground truth samples.
+        Run evaluation on samples using parallel processing. Utilizes ``prepare_eval`` defined by the user.
 
         Metadata is used for storing context that you can find from generator input.
 
@@ -210,6 +236,9 @@ class AdalComponent(Component):
         Returns:
             EvaluationResult: An object containing the average score and per-item scores.
         """
+        if use_loss_eval_fn and not self.loss_eval_fn:
+            raise ValueError("Loss eval function is not configured.")
+
         from adalflow.optim.parameter import Parameter
 
         if not isinstance(y_preds, list) or len(y_preds) == 0:
@@ -229,13 +258,22 @@ class AdalComponent(Component):
             for i, (sample, y_pred) in enumerate(zip(samples, y_preds)):
 
                 if metadata is None:
-                    eval_fn, kwargs = self.prepare_eval(sample, y_pred)
+                    if not use_loss_eval_fn:
+                        eval_fn, kwargs = self.prepare_eval(sample, y_pred)
+                    else:
+                        eval_fn, kwargs = self.prepare_loss_eval(sample, y_pred)
                     future = executor.submit(eval_fn, **kwargs)
                     # future = executor.submit(self.evaluate_one_sample, sample, y_pred)
                 else:
-                    eval_fn, kwargs = self.prepare_eval(
-                        sample, y_pred, metadata=metadata
-                    )
+                    if not use_loss_eval_fn:
+                        eval_fn, kwargs = self.prepare_eval(
+                            sample, y_pred, metadata=metadata
+                        )
+                    else:
+
+                        eval_fn, kwargs = self.prepare_eval(
+                            sample, y_pred, metadata=metadata
+                        )
                     future = executor.submit(eval_fn, **kwargs)
                     # future = executor.submit(
                     #     self.evaluate_one_sample, sample, y_pred, metadata=metadata
@@ -358,16 +396,17 @@ class AdalComponent(Component):
         num_workers: int = 2,
         running_eval: bool = False,
         min_score: Optional[float] = None,
-    ):
-        r"""Applies to both train and eval mode.
+        use_loss_eval_fn: bool = False,
+    ) -> Tuple[List["Parameter"], List, Dict[int, float]]:
+        r"""Applies to only the eval mode.
 
-        If you require self.task.train() to be called before training, you can override this method as:
-
-        .. code-block:: python
-
-            def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
-                self.task.train()
-                return super().train_step(batch, batch_idx, num_workers)
+        Args:
+            batch (Any): The input batch to predict.
+            batch_idx (int): The index of the batch.
+            num_workers (int): Number of worker threads for parallel processing.
+            running_eval: bool = False,
+        Returns:
+            Tuple[List["Parameter"], List, Dict[int, float]]: The predicted outputs, the samples, and the scores.
         """
         from adalflow.optim.parameter import Parameter
 
@@ -402,8 +441,6 @@ class AdalComponent(Component):
                 if isinstance(y_pred, Parameter):
                     raise ValueError(f"y_pred_{i} is a Parameter, {y_pred}")
 
-                print(f"y_pred: {y_pred})")
-
                 assert (
                     y_pred.id == sample.id
                 ), f"ID mismatch: {y_pred.id} != {sample.id}, type: {type(y_pred)}"
@@ -412,7 +449,11 @@ class AdalComponent(Component):
 
                 if running_eval and not isinstance(y_pred, Parameter):
                     # evaluate one sample
-                    eval_fn, kwargs = self.prepare_eval(sample, y_pred)
+
+                    if not use_loss_eval_fn:
+                        eval_fn, kwargs = self.prepare_eval(sample, y_pred)
+                    else:
+                        eval_fn, kwargs = self.prepare_loss_eval(sample, y_pred)
                     score = eval_fn(**kwargs)
                     index_to_score[i] = score
                     eval_score = np.mean(list(index_to_score.values())).item()
@@ -449,6 +490,8 @@ class AdalComponent(Component):
         return completed_y_preds, completed_samples, index_to_score
 
     def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
+        r"""Run a training step and return the predicted outputs.
+        Likely a list of Parameters."""
         self.task.train()
         y_preds = self._train_step(batch, batch_idx, num_workers)
         for i, y_pred in enumerate(y_preds):
@@ -468,8 +511,18 @@ class AdalComponent(Component):
         batch_idx,
         num_workers: int = 2,
         minimum_score: Optional[float] = None,
+        use_loss_eval_fn: bool = False,
     ) -> EvaluationResult:
-        r"""If you require self.task.eval() to be called before validation, you can override this method as:
+        r"""
+        Args:
+            batch (Any): The input batch to validate, can be a whole dataset
+            batch_idx (int): The index of the batch. or current_step
+            num_workers (int): Number of worker threads for parallel processing.
+            minimum_score (Optional[float]): The max potential score needs to be larger than this to continue evaluating.
+
+        Evaluate a batch or the validate dataset by setting the batch=val_dataset.
+        Uses self.eval_fn to evaluate the samples.
+        If you require self.task.eval() to be called before validation, you can override this method as:
 
         .. code-block:: python
 
@@ -478,11 +531,26 @@ class AdalComponent(Component):
                 return super().validation_step(batch, batch_idx, num_workers)
         """
         # TODO: let use decide which mode to be
+        eval_fn = self.eval_fn
+        if use_loss_eval_fn:
+            eval_fn = self.loss_eval_fn
+            if not eval_fn:
+                raise ValueError("Loss eval function is not configured.")
+
         self.task.eval()
         self.task.use_teacher(mode=False)  # ensure the teacher is not used
-        completed_y_preds, completed_samples, index_to_score = self.pred_step(
-            batch, batch_idx, num_workers, running_eval=True, min_score=minimum_score
-        )
+        try:
+            completed_y_preds, completed_samples, index_to_score = self.pred_step(
+                batch,
+                batch_idx,
+                num_workers,
+                running_eval=True,
+                min_score=minimum_score,
+                use_loss_eval_fn=use_loss_eval_fn,
+            )
+        except Exception as e:
+            raise ValueError(f"Error in validation step: {e}")
+
         if index_to_score:
             # compute score from index_to_score
 
@@ -495,12 +563,16 @@ class AdalComponent(Component):
                 avg_score=avg_score, per_item_scores=acc_list
             )
         else:
+            try:
 
-            eval_results = self.evaluate_samples(
-                samples=completed_samples,
-                y_preds=completed_y_preds,
-                num_workers=num_workers,
-            )
+                eval_results = self.evaluate_samples(
+                    samples=completed_samples,
+                    y_preds=completed_y_preds,
+                    num_workers=num_workers,
+                    use_loss_eval_fn=use_loss_eval_fn,
+                )
+            except Exception as e:
+                raise ValueError(f"Error in evaluation: {e}")
         return eval_results
 
     def loss_step(
@@ -578,11 +650,29 @@ class AdalComponent(Component):
             generator.set_teacher_generator(teacher_generator)
         print("Teacher generator configured.")
 
+    def disable_backward_engine_helper(self):
+        r"""Disable the backward engine for all gradcomponents in the task."""
+        all_grads = self._find_all_grad_components()
+        for _, grad in all_grads:
+            if hasattr(grad, "disable_backward_engine") and callable(
+                getattr(grad, "disable_backward_engine", None)
+            ):
+                grad.disable_backward_engine()
+        print("Backward engine disabled for GradComponents")
+
+        if not self.loss_fn:
+            raise ValueError("Loss function is not configured.")
+
+        # configure it for loss_fn
+        if self.loss_fn:
+            self.loss_fn.disable_backward_engine()
+
     def configure_backward_engine_helper(
         self,
         model_client: "ModelClient",
         model_kwargs: Dict[str, Any],
         template: Optional[str] = None,
+        backward_pass_setup: Optional["BackwardPassSetup"] = None,
     ):
         r"""Configure a backward engine for all generators in the task for bootstrapping examples."""
         from adalflow.core.generator import BackwardEngine
@@ -592,13 +682,18 @@ class AdalComponent(Component):
             model_kwargs=model_kwargs,
             template=template,
         )
+        if backward_pass_setup is not None:
+            self.backward_engine.update_default_backward_pass_setup(backward_pass_setup)
 
         # set all generator's backward engine
 
-        all_generators = self._find_all_generators()
-        for _, generator in all_generators:
-            generator.set_backward_engine(self.backward_engine)
-        print("Backward engine configured for all generators.")
+        all_grads = self._find_all_grad_components()
+        for _, grad in all_grads:
+            if hasattr(grad, "set_backward_engine") and callable(
+                getattr(grad, "set_backward_engine", None)
+            ):
+                grad.set_backward_engine(self.backward_engine)
+        print("Backward engine configured for GradComponents")
 
         if not self.loss_fn:
             raise ValueError("Loss function is not configured.")
@@ -653,6 +748,17 @@ class AdalComponent(Component):
                 all_generators.append((name, comp))
         log.debug(f"all_generators: {all_generators}")
         return all_generators
+
+    def _find_all_grad_components(self) -> List[Tuple[str, GradComponent]]:
+        r"""Find all generators automatically from the task."""
+        # from adalflow.core import Generator
+
+        all_grads: List[Tuple[str, GradComponent]] = []
+        for name, comp in self.task.named_components():
+            if isinstance(comp, GradComponent) or isinstance(comp, GradComponent):
+                all_grads.append((name, comp))
+        log.debug(f"all_grads: {all_grads}")
+        return all_grads
 
     def _auto_generator_callbacks(self, save_dir: str = "traces") -> List[str]:
         r"""Automatically generate callbacks."""
@@ -721,9 +827,9 @@ class AdalComponent(Component):
         return [do]
 
     def configure_text_optimizer_helper(
-        self, model_client: "ModelClient", model_kwargs: Dict[str, Any]
+        self, model_client: "ModelClient", model_kwargs: Dict[str, Any], **kwargs
     ) -> List[TextOptimizer]:
-        r"""One text optimizer can handle multiple text parameters."""
+        r"""Text optimizer hands prompt parameter type. One text optimizer can handle multiple text parameters."""
         from adalflow.optim.text_grad.tgd_optimizer import TGDOptimizer
         from adalflow.optim.parameter import ParameterType
 
@@ -737,7 +843,14 @@ class AdalComponent(Component):
             return []
 
         to = TGDOptimizer(
-            params=parameters, model_client=model_client, model_kwargs=model_kwargs
+            params=parameters,
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+            **kwargs,
+        )
+
+        printc(
+            f"Text optimizer configured for {len(parameters)} parameters. names: { [(p.name, p.data) for p in parameters] }"
         )
         return [to]
 
@@ -745,3 +858,15 @@ class AdalComponent(Component):
         s = f"eval_fn: {self.eval_fn.__name__}, backward_engine: {self.backward_engine}, "
         s += f"backward_engine_model_config: {self.backward_engine_model_config}, teacher_model_config: {self.teacher_model_config}, text_optimizer_model_config: {self.text_optimizer_model_config}"
         return s
+
+    def __call__(self, *args, **kwargs):
+        pass
+
+    def bicall(self, *args, **kwargs):
+        pass
+
+    def call(self, *args, **kwargs):
+        pass
+
+    def forward(self, *args, **kwargs):
+        pass

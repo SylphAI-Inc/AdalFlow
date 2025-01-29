@@ -31,12 +31,14 @@ class BackwardContext:
 
     def __init__(
         self,
+        disable_backward_engine: bool,
         backward_fn: Callable,
         backward_engine: "BackwardEngine" = None,
         *args,
         **kwargs,
     ):
         self.backward_fn = backward_fn
+        self.disable_backward_engine = disable_backward_engine
         self.backward_engine = backward_engine
         self.fn_name = f"{backward_fn.__module__}.{backward_fn.__qualname__}"
         self.args = args
@@ -47,7 +49,10 @@ class BackwardContext:
             return self.backward_fn(*self.args, **self.kwargs)
 
         return self.backward_fn(
-            *self.args, **self.kwargs, backward_engine=self.backward_engine
+            *self.args,
+            **self.kwargs,
+            backward_engine=self.backward_engine,
+            disable_backward_engine=self.disable_backward_engine,
         )
 
     def __repr__(self):

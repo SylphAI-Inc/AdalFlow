@@ -3,7 +3,6 @@ It handles states recursively, such as training, components, parameters recursiv
 
 from collections import OrderedDict, namedtuple
 from typing import (
-    Callable,
     Dict,
     Any,
     Optional,
@@ -29,25 +28,10 @@ from adalflow.utils.config import new_component
 
 from adalflow.utils.registry import EntityMapping
 
-# import networkx as nx
-# from pyvis.network import Network
 
-# import matplotlib.pyplot as plt
-# import itertools
 log = logging.getLogger(__name__)
 
 T = TypeVar("T")
-
-
-# class _IncompatibleKeys(
-#     namedtuple("IncompatibleKeys", ["missing_keys", "unexpected_keys"])
-# ):
-#     def __repr__(self):
-#         if not self.missing_keys and not self.unexpected_keys:
-#             return "<All keys matched successfully>"
-#         return super().__repr__()
-
-#     __str__ = __repr__
 
 
 def _addindent(s_, numSpaces):
@@ -127,29 +111,21 @@ class Component:
     """
 
     _version: int = 1  # Version of the component
-    # TODO: the type of module, is it OrderedDict or just Dict?
     _components: Dict[str, Optional["Component"]]
-    # _grad_components: Dict[str, Optional["GradComponent"]]
     _init_args: Dict[str, Any] = {}  # Store the init arguments
-    # _execution_graph: List[str] = []  # This will store the graph of execution.
-    # _graph = nx.DiGraph()
-    # _last_called = None  # Tracks the last component called
+
     _parameters: Dict[str, Optional["Parameter"]]
     training: bool
-    teacher_mode: bool = False
-    tracing: bool = False
+    teacher_mode: bool
+    tracing: bool
     name: str = (
         "Component"  # name will help with GradComponent output naming as "{name}_output"
     )
-    _component_type = "base"
 
-    # def _generate_unique_name(self):
-    #     # Generate a unique identifier that includes the class name
-    #     return f"{self.__class__.__name__}_{uuid.uuid4().hex[:8]}"
+    _component_type = "base"
 
     def __init__(self, *args, **kwargs) -> None:
         super().__setattr__("_components", OrderedDict())
-        # super().__setattr__("_grad_components", OrderedDict())
         super().__setattr__("_parameters", OrderedDict())
         super().__setattr__("training", False)
         super().__setattr__("teacher_mode", False)
@@ -394,8 +370,8 @@ class Component:
             raise ValueError('parameter name can\'t contain "."')
         elif name == "":
             raise ValueError('parameter name can\'t be empty string ""')
-        elif hasattr(self, name) and name not in self._parameters:
-            raise KeyError("attribute '{}' already exists".format(name))
+        # elif hasattr(self, name) and name not in self._parameters:
+        #     raise KeyError("attribute '{}' already exists".format(name))
 
         if param is None:
             self._parameters[name] = None
@@ -488,47 +464,84 @@ class Component:
         )
         yield from gen
 
-    # @staticmethod
-    # def visualize_graph_html(filename="graph.html"):
-    #     nt = Network(directed=True)
-    #     nt.from_nx(Component._graph)
-    #     for edge in nt.edges:
-    #         edge["title"] = edge["label"]
-    #         edge["value"] = (
-    #             10  # You can adjust the 'value' to set the width of the edges
-    #         )
-    #     nt.show_buttons(
-    #         filter_=["physics"]
-    #     )  # Optional: Show interactive buttons to adjust physics and other settings
-    #     nt.show(
-    #         filename, notebook=False
-    #     )  # Make sure to set notebook=False for non-notebook environments
-
-    # @staticmethod
-    # def visualize_graph():
-    #     pos = nx.spring_layout(Component._graph)
-    #     nx.draw(
-    #         Component._graph,
-    #         pos,
-    #         with_labels=True,
-    #         node_color="lightblue",
-    #         node_size=2000,
-    #         edge_color="gray",
-    #         linewidths=1,
-    #         font_size=15,
-    #     )
-    #     plt.show()
-
-    # TODO: do we need to disable this format of calling instead use call and acall extensively?
-    def __call__(self, *args, **kwargs):
-        r"""In default, we use sync call."""
-        output = self.call(*args, **kwargs)
-        return output
+    def forward(self, *args, **kwargs):
+        """
+        User must override this for the training scenario
+        if bicall is not defined.
+        """
+        raise NotImplementedError("Subclasses must implement `forward` or `bicall`.")
 
     def call(self, *args, **kwargs):
+        """
+        User must override this for the inference scenario
+        if bicall is not defined.
+        """
+        if self._has_bicall():
+            output = self.bicall(*args, **kwargs)
+            return output
+        raise NotImplementedError("Subclasses must implement `call` or `bicall`.")
+
+    def bicall(self, *args, **kwargs):
+        """
+        If the user provides a `bicall` method, then `__call__` will automatically
+        dispatch here for both training and inference scenarios. This can internally
+        decide how to handle training vs. inference, or just produce a single unified
+        output type.
+        """
+        # Default fallback if not overridden
         raise NotImplementedError(
-            f"Component {type(self).__name__} is missing the required 'call' method."
+            "Optional method. Implement to handle both scenarios in one place."
         )
+
+    def __call__(self, *args, **kwargs):
+        # 1. If `bicall` is defined by the user, use it
+        #    and let the `bicall` implementation handle
+        #    the difference between training vs. inference.
+        from adalflow.optim.parameter import Parameter
+
+        if self._has_bicall():
+            output = self.bicall(*args, **kwargs)
+
+            # Validation checks based on training or inference
+            if self.training:
+                # Ensure output is a Parameter in training
+                if not isinstance(output, Parameter):
+                    raise ValueError(
+                        f"Output should be of type Parameter in training mode, but got {type(output)}"
+                    )
+            else:
+                # Ensure output is not a Parameter in inference
+                if isinstance(output, Parameter):
+                    raise ValueError(
+                        f"Output should not be of type Parameter in inference mode, but got {type(output)}"
+                    )
+            return output
+
+        # 2. Otherwise, if `bicall` is not defined, fall back to forward / call
+        if self.training:
+            output = self.forward(*args, **kwargs)
+            # Validation for training
+            if not isinstance(output, Parameter):
+                raise ValueError(
+                    f"Output should be of type Parameter in training mode, but got {type(output)}"
+                )
+            return output
+        else:
+            output = self.call(*args, **kwargs)
+            # Validation for inference
+            if isinstance(output, Parameter):
+                raise ValueError(
+                    f"Output should not be of type Parameter in inference mode, but got {type(output)}"
+                )
+            return output
+
+    def _has_bicall(self):
+        """
+        Helper method to check if this subclass has overridden bicall.
+        """
+        # The default `bicall` in this class raises NotImplementedError,
+        # so we can check if the method is still the same one as in `MyModule`.
+        return self.bicall.__func__ is not Component.bicall
 
     async def acall(self, *args, **kwargs):
         r"""API call, file io."""
@@ -608,6 +621,7 @@ class Component:
             memo (Optional[Set["Component"]]): a memo to store the set of components already added to the result
             prefix (str): a prefix to prepend to all component names
             remove_duplicate (bool): if True, then yields only unique components
+            grad_component_only (bool): if True, then yields only components that are instances of GradComponent
 
         Yields:
             Tuple[str, "Component"]: Tuple containing the name and component
@@ -926,76 +940,6 @@ class Component:
             else:
                 init_args[key] = kwargs.get(key, param.default)
         return init_args
-
-
-# TODO: support async call
-class FunComponent(Component):
-    r"""Component that wraps a function.
-
-    Args:
-        fun (Callable): The function to be wrapped.
-
-    Examples:
-
-    function = lambda x: x + 1
-    fun_component = FunComponent(function)
-    print(fun_component(1))  # 2
-    """
-
-    def __init__(self, fun: Optional[Callable] = None, afun: Optional[Callable] = None):
-        super().__init__()
-        self.fun_name = fun.__name__
-        EntityMapping.register(self.fun_name, fun)
-
-    def call(self, *args, **kwargs):
-        fun = EntityMapping.get(self.fun_name)
-        return fun(*args, **kwargs)
-
-    def _extra_repr(self) -> str:
-        return super()._extra_repr() + f"fun_name={self.fun_name}"
-
-
-def fun_to_component(fun) -> FunComponent:
-    r"""Helper function to convert a function into a Component with
-    its own class name.
-
-    Can be used as both a decorator and a function.
-
-    Args:
-        fun (Callable): The function to be wrapped.
-    Returns:
-        FunComponent: The component that wraps the function.
-
-    Examples:
-    1. As a decorator:
-        >>> @fun_to_component
-        >>> def my_function(x):
-        >>>     return x + 1
-        >>> # is equivalent to
-        >>> class MyFunctionComponent(FunComponent):
-        >>>     def __init__(self):
-        >>>         super().__init__(my_function)
-
-    2. As a function:
-        >>> my_function_component = fun_to_component(my_function)
-    """
-
-    # Split the function name by underscores, capitalize each part, and join them back together
-    class_name = (
-        "".join(part.capitalize() for part in fun.__name__.split("_")) + "Component"
-    )
-    # register the function
-    EntityMapping.register(fun.__name__, fun)
-    # Define a new component class dynamically
-    component_class = type(
-        class_name,
-        (FunComponent,),
-        {"__init__": lambda self: FunComponent.__init__(self, fun)},
-    )
-    # register the component
-    EntityMapping.register(class_name, component_class)
-
-    return component_class()
 
 
 # TODO: not used yet, will further investigate dict mode

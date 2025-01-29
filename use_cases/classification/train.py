@@ -11,6 +11,7 @@ from use_cases.config import (
     gpt_3_model,
     gpt_4o_model,
 )
+from adalflow.core.generator import BackwardPassSetup
 
 
 class TrecClassifierAdal(adal.AdalComponent):
@@ -26,7 +27,7 @@ class TrecClassifierAdal(adal.AdalComponent):
         eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
         loss_fn = adal.EvalFnToTextLoss(
             eval_fn=eval_fn,
-            eval_fn_desc="exact_match: 1 if str(y) == str(y_gt) else 0",
+            eval_fn_desc="exact_match: 1 if str(y) == str(y_gt) else 0. When the LLM prediction failed with format parsing which results with errors, we set y_pred = -1",
         )
         super().__init__(
             task=task,
@@ -51,8 +52,8 @@ class TrecClassifierAdal(adal.AdalComponent):
     def prepare_loss(
         self, sample: TRECExtendedData, y_pred: adal.Parameter, *args, **kwargs
     ) -> Tuple[Callable[..., Any], Dict]:
-        full_response = y_pred.full_response
-        y_label = -1
+        full_response = y_pred.data
+        y_label = -1  # default value for failed prediction
         if (
             full_response
             and full_response.data is not None
@@ -67,7 +68,11 @@ class TrecClassifierAdal(adal.AdalComponent):
             eval_input=sample.class_name,
             requires_opt=False,
         )
-        return self.loss_fn, {"kwargs": {"y": y_pred, "y_gt": y_gt}}
+        return self.loss_fn, {
+            "kwargs": {"y": y_pred, "y_gt": y_gt},
+            "id": sample.id,
+            "gt": y_gt.eval_input,
+        }
 
 
 def train(
@@ -81,6 +86,11 @@ def train(
     strategy="constrained",
     optimization_order="sequential",
     debug=False,
+    seed=None,
+    tg: bool = False,
+    max_proposals_per_step: int = 5,
+    disable_backward=False,
+    disable_backward_gradients=False,
 ):
     # TODO: ensure the teacher prompt gets updated with the new model
     adal_component = TrecClassifierAdal(
@@ -90,6 +100,12 @@ def train(
         backward_engine_model_config=gpt_4o_model,
         teacher_model_config=gpt_4o_model,
     )
+    backward_pass_setup = None
+    if tg:
+        backward_pass_setup = BackwardPassSetup(
+            all_pred_at_once=False,
+            compute_grad_for_errors_only=False,
+        )
     print(adal_component)
     trainer = adal.Trainer(
         train_batch_size=train_batch_size,
@@ -103,50 +119,76 @@ def train(
         weighted_sampling=True,
         optimization_order=optimization_order,
         exclude_input_fields_from_bootstrap_demos=False,
+        max_proposals_per_step=max_proposals_per_step,
+        disable_backward=disable_backward,
+        disable_backward_gradients=disable_backward_gradients,
+        text_optimizers_config_kwargs={"max_past_history": 2},
     )
+    trainer.set_random_seed(seed)
     print(trainer)
 
     train_dataset, val_dataset, test_dataset = load_datasets()
-    trainer.fit(
+    ckpt, _ = trainer.fit(
         train_dataset=train_dataset,
-        val_dataset=test_dataset,
-        # val_dataset=val_dataset,
-        # test_dataset=test_dataset,
+        val_dataset=val_dataset,
+        test_dataset=test_dataset,
         debug=debug,
-        resume_from_ckpt="/Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json",
+        backward_pass_setup=backward_pass_setup,
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/TrecClassifierAdal/constrained_max_steps_12_5d1bf_run_1.json",
     )
+    return ckpt
 
 
 if __name__ == "__main__":
     # TODO:
     #     Evaluating step(6): 0.7333 across 30 samples, Max potential: 0.7778:  83%|▊| 30/36 [00:08<00:01,
     # Optimizer revert: 0.7096774193548387 <= 0.7777777777777778
-    train(
+    import json
+
+    import random
+
+    random.seed(2025)
+    # np.random.seed(2025)  # Set NumPy random seed
+
+    # make the strategy configurable in the script
+    import argparse
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--strategy", type=str, default="constrained")
+    parser.add_argument("--use_tg", action="store_true")
+    parser.add_argument("--max_proposals_per_step", type=int, default=5)
+    parser.add_argument(
+        "output_path", nargs="?", help="File path to save the checkpoint"
+    )
+    parser.add_argument("--disable_backward", action="store_true")
+    parser.add_argument("--disable_backward_gradients", action="store_true")
+
+    args = parser.parse_args()
+
+    set_strategy = args.strategy
+    set_output_path = args.output_path
+    use_tg = args.use_tg
+    max_proposals_per_step = args.max_proposals_per_step
+    disable_backward = args.disable_backward
+    disable_backward_gradients = args.disable_backward_gradients
+
+    ckpt = train(
         **gpt_3_model,
         debug=False,
         max_steps=12,
-        strategy="constrained",
+        strategy=set_strategy,
         optimization_order="sequential",
-    )
-    # val 0.694 -> 0.833, #test 0.8472 -> 0.833, adding more shots does not help
-    # NOTE: raw: 40, bootstrap: 4, max_steps: 8, strategy: random, val: 86.1, test: 86.8 (+4.2% compared with dspy)
-    # NOTE: train task without output format: val: 0.67->0.805, test: 0.805-> 0.896 # best performing model (zero-shot)
-    # NOTE: train with without output format, use new class_name: constrained_max_steps_12_bac8d_run_1.json
-    # val: 0.77.8, test: 0.86.8 #constrained_max_steps_12_138d9_run_1.json
+        seed=2025,
+        tg=use_tg,
+        max_proposals_per_step=max_proposals_per_step,
+        disable_backward=disable_backward,
+        disable_backward_gradients=disable_backward_gradients,
+    )  # val 0.694 -> 0.833, #test 0.8472 -> 0.833, adding more shots does not help
 
-    # REsume from the above, continue another 12 steps: val: 77.78% tets: 86.81%
-    # result from the above, use bootstrap 1 shot: test -> 88.19% #constrained_max_steps_12_2ffa7_run_4.json (with input)
-    # result from the above, use bootstrap 1 shot: no improvement, 86.81% #constrained_max_steps_12_2ffa7_run_5.json (with only rational and answers)
-    # result from above, use bootstrap 2 shots: use input:no improvement
-    # bootstrap is not helpful
-    # 40 shots, 1 bootstrap, continue from last best, 86.1 val, 90.28% tes
-    # 40 shots, resume, no improvment
-    # continue from last best, 3 bootstrap, 83.3 val, 86.1 test (only rational)
-    # continue from last best, 3 bootstrap, (both input and rational)86.1 val, 82.64 test (not really better)
-    # NOTE:
-    # continue from last best, 1 bootstrap, (both input and rational)86.1 val, 86.1 test (not really better)
-    # TrecClassifierAdal/constrained_max_steps_12_2ffa7_run_2.json
-
-
-# theory: all few-shots demo or instruction, all so that the llm can reason better. Once it reches to its limits, no more shots can help or further instruction can.
-# there might be a saturation point!!!
+    if set_output_path:
+        with open(set_output_path, "w") as f:
+            json.dump({"ckpt": ckpt}, f)
+        print(f"Checkpoint saved to {set_output_path}")
+    else:
+        print("No file path provided for saving the checkpoint.")

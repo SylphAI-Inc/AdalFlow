@@ -1,5 +1,5 @@
 from .answer_match_acc import AnswerMatchAcc
-from .retriever_recall import RetrieverRecall
+from .retriever_recall import RetrieverEvaluator
 from .llm_as_judge import LLMasJudge, DEFAULT_LLM_EVALUATOR_PROMPT
 from .g_eval import (
     GEvalJudgeEvaluator,
@@ -10,7 +10,7 @@ from .g_eval import (
 
 __all__ = [
     "AnswerMatchAcc",
-    "RetrieverRecall",
+    "RetrieverEvaluator",
     "LLMasJudge",
     "DEFAULT_LLM_EVALUATOR_PROMPT",
     "GEvalJudgeEvaluator",
