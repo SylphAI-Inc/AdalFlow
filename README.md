@@ -273,7 +273,7 @@ Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive 
 - 📚 [OPRO](https://github.com/google-deepmind/opro) for adding past text instructions along with its accuracy in the text optimizer.
 - 📚 [PyTorch Lightning](https://github.com/Lightning-AI/pytorch-lightning) for the ``AdalComponent`` and ``Trainer``.
 
-# Citation
+<!-- # Citation
 
 ```bibtex
 
@@ -285,7 +285,7 @@ Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive 
   doi = {10.5281/zenodo.12639531},
   url = {https://github.com/SylphAI-Inc/AdalFlow}
 }
-```
+``` -->
 
 <!-- # Star History
 
