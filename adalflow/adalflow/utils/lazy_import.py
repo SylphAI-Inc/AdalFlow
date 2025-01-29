@@ -42,6 +42,7 @@ class OptionalPackages(Enum):
     # model sdk
     GROQ = ("groq", "Please install groq with: pip install groq")
     OPENAI = ("openai", "Please install openai with: pip install openai")
+    DEEPSEEK = ("openai", "Please install deepseek with: pip install openai")
     ANTHROPIC = ("anthropic", "Please install anthropic with: pip install anthropic")
     GOOGLE_GENERATIVEAI = (
         "google.generativeai",
