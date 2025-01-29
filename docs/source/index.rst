@@ -294,9 +294,14 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
    :hidden:
 
    get_started/index
-   get_started/integrations
 
 
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :hidden:
+
+   integrations/index
 
 
 .. toctree::
