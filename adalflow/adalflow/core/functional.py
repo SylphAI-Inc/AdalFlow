@@ -55,8 +55,7 @@ def custom_asdict(
     tuples, lists, and dicts.
     """
     if not is_dataclass_instance(obj):
-        raise TypeError(
-            "custom_asdict() should be called on dataclass instances")
+        raise TypeError("custom_asdict() should be called on dataclass instances")
     return _asdict_inner(obj, dict_factory, exclude or {})
 
 
@@ -265,8 +264,7 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
                     cls}, but got {type(data).__name__}"
             )
         cls_type = extract_dataclass_type(cls)
-        fieldtypes = {
-            f.name: f.type for f in cls_type.__dataclass_fields__.values()}
+        fieldtypes = {f.name: f.type for f in cls_type.__dataclass_fields__.values()}
 
         restored_data = cls_type(
             **{
@@ -281,13 +279,11 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
         for item in data:
             if check_data_class_field_args_zero(cls):
                 # restore the value to its dataclass type
-                restored_data.append(
-                    dataclass_obj_from_dict(cls.__args__[0], item))
+                restored_data.append(dataclass_obj_from_dict(cls.__args__[0], item))
 
             elif check_if_class_field_args_zero_exists(cls):
                 # Use the original data [Any]
-                restored_data.append(
-                    dataclass_obj_from_dict(cls.__args__[0], item))
+                restored_data.append(dataclass_obj_from_dict(cls.__args__[0], item))
 
             else:
                 restored_data.append(item)
@@ -299,12 +295,10 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
         for item in data:
             if check_data_class_field_args_zero(cls):
                 # restore the value to its dataclass type
-                restored_data.add(
-                    dataclass_obj_from_dict(cls.__args__[0], item))
+                restored_data.add(dataclass_obj_from_dict(cls.__args__[0], item))
             elif check_if_class_field_args_zero_exists(cls):
                 # Use the original data [Any]
-                restored_data.add(
-                    dataclass_obj_from_dict(cls.__args__[0], item))
+                restored_data.add(dataclass_obj_from_dict(cls.__args__[0], item))
 
             else:
                 # Use the original data [Any]
@@ -327,8 +321,10 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
         return data
     # else normal data like int, str, float, etc.
     else:
-        log.debug(f"Not datclass, or list, or dict: {
-                  cls}, use the original data.")
+        log.debug(
+            f"Not datclass, or list, or dict: {
+                  cls}, use the original data."
+        )
         return data
 
 
@@ -402,8 +398,7 @@ def get_type_schema(
             if arg is not type(None)
         ]
         return (
-            f"Optional[{types[0]}]" if len(
-                types) == 1 else f"Union[{', '.join(types)}]"
+            f"Optional[{types[0]}]" if len(types) == 1 else f"Union[{', '.join(types)}]"
         )
     elif origin in {List, list}:
         args = get_args(type_obj)
@@ -425,7 +420,9 @@ def get_type_schema(
         args = get_args(type_obj)
         return (
             f"Set[{get_type_schema(
-                args[0], exclude, type_var_map)}]" if args else "Set"
+                args[0], exclude, type_var_map)}]"
+            if args
+            else "Set"
         )
 
     elif origin is Sequence:
@@ -507,8 +504,7 @@ def get_dataclass_schema(
         # prepare field schema, it weill be done recursively for nested dataclasses
 
         field_type = type_var_map.get(f.type, f.type)
-        field_schema = {"type": get_type_schema(
-            field_type, exclude, type_var_map)}
+        field_schema = {"type": get_type_schema(field_type, exclude, type_var_map)}
 
         # check required field
         is_required = _is_required_field(f)
@@ -600,8 +596,7 @@ def get_fun_schema(name: str, func: Callable[..., object]) -> Dict[str, object]:
         param_type = type_hints.get(param_name, "Any")
         if parameter.default == Parameter.empty:
             schema["required"].append(param_name)
-            schema["properties"][param_name] = {
-                "type": get_type_schema(param_type)}
+            schema["properties"][param_name] = {"type": get_type_schema(param_type)}
         else:
             schema["properties"][param_name] = {
                 "type": get_type_schema(param_type),
@@ -672,8 +667,10 @@ def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
             return output_fun
         # TODO: raise the error back to the caller so that the llm can get the error message
         except KeyError as e:
-            log.error(f"Error: {e}, {
-                      node.id} does not exist in the context_map.")
+            log.error(
+                f"Error: {e}, {
+                      node.id} does not exist in the context_map."
+            )
             raise ValueError(
                 f"Error: {e}, {node.id} does not exist in the context_map."
             )
@@ -682,7 +679,8 @@ def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
         return getattr(value, node.attr)
 
     elif isinstance(
-        node, ast.Call
+        node,
+        ast.Call,
         # another fun or class as argument and value, e.g. add( multiply(4,5), 3)
     ):
         func = evaluate_ast_node(node.func, context_map)
@@ -727,13 +725,11 @@ def parse_function_call_expr(
         if isinstance(tree.body, ast.Call):
             # Extract the function name
             func_name = (
-                tree.body.func.id if isinstance(
-                    tree.body.func, ast.Name) else None
+                tree.body.func.id if isinstance(tree.body.func, ast.Name) else None
             )
 
             # Prepare the list of arguments and keyword arguments
-            args = [evaluate_ast_node(arg, context_map)
-                    for arg in tree.body.args]
+            args = [evaluate_ast_node(arg, context_map) for arg in tree.body.args]
             keywords = {
                 kw.arg: evaluate_ast_node(kw.value, context_map)
                 for kw in tree.body.keywords
@@ -1122,7 +1118,7 @@ def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
             "Incomplete JSON object found and add_missing_right_brace is False."
         )
 
-    return text[start: end + 1]
+    return text[start : end + 1]
 
 
 def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
@@ -1173,7 +1169,7 @@ def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
             "Incomplete list found and add_missing_right_bracket is False."
         )
 
-    return text[start: end + 1]
+    return text[start : end + 1]
 
 
 def extract_yaml_str(text: str) -> str:
@@ -1321,7 +1317,6 @@ def random_sample(
         # Normalize weights to sum to 1
         weights = weights / weights.sum()
 
-    indices = np.random.choice(
-        len(dataset), size=num_shots, replace=replace, p=weights)
+    indices = np.random.choice(len(dataset), size=num_shots, replace=replace, p=weights)
 
     return [dataset[i] for i in indices]

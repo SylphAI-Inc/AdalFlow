@@ -151,7 +151,7 @@ Every Generator call returns a ``GeneratorOutput`` object:
 .. code-block:: python
 
     response = gen({"input_str": "Hello"})
-    
+
     # Access different parts of the response
     print(response.raw_response)  # Raw model output
     print(response.data)          # Processed data (if using output processors)
@@ -260,7 +260,7 @@ Best Practices
 4. Use async methods for better performance in async contexts
 5. Use streaming for long responses
 
-Remember: The Generator is designed to provide a consistent interface regardless of the underlying model or task. 
+Remember: The Generator is designed to provide a consistent interface regardless of the underlying model or task.
 
 Generator In Action
 ---------------------------------------

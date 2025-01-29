@@ -1523,4 +1523,3 @@ This is the function call that triggers the execution of the custom model client
    - :class:`components.model_client.anthropic_client.AnthropicAPIClient`
    - :class:`components.model_client.google_client.GoogleGenAIClient`
    - :class:`components.model_client.cohere_client.CohereAPIClient`
-
