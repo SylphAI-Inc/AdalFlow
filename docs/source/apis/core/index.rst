@@ -14,7 +14,6 @@ Overview
 
    core.base_data_class
    core.component
-   core.grad_component
    core.container
    core.default_prompt_template
    core.embedder
@@ -39,7 +38,6 @@ Overview
 
    core.base_data_class
    core.component
-   core.grad_component
    core.container
    core.default_prompt_template
    core.embedder

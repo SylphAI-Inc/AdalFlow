@@ -6,9 +6,9 @@ Here is the content of our documentation project.
 
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Contents:
+    :maxdepth: 1
+    :caption: Get Started
 
-   installation
-   integrations
-   quickstart
+    installation
+    adalflow_in_15mins
+    community
