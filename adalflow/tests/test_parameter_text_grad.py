@@ -2,7 +2,8 @@ import unittest
 from unittest.mock import Mock
 
 
-from adalflow.optim.parameter import Parameter, GradientContext
+from adalflow.optim.parameter import Parameter
+from adalflow.optim.gradient import GradientContext
 
 
 class TestGradientContext(unittest.TestCase):
