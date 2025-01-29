@@ -58,6 +58,14 @@ def default(o: Any) -> Union[Dict[str, Any], str]:
             except Exception as e:
                 log.error(f"Error serializing object {o}: {e}")
                 pass
+        # handle set
+        elif isinstance(o, set):
+            return {"type": type(o).__name__, "data": list(o)}
+        else:
+            return {"type": type(o).__name__, "data": str(o)}
+            # raise NotImplementedError(
+            #     f"Object of type {o.__class__.__name__} is not JSON serializable: {o}"
+            # )
     elif obj_type == ObjectTypes.TYPE:
         log.debug(f"Object {o} is a type of {o.__name__}")
         try:
@@ -101,9 +109,19 @@ def _deserialize_object_hook(d: Dict[str, Any]) -> Any:
     """Hook to deserialize objects based on their type."""
     if "type" in d and "data" in d:
         class_name = d["type"]
+        if class_name == "set":
+            return set(d["data"])
+
+        # deseralize customized types
+        # TODO: all customized data types need to be saved
         class_type = EntityMapping.get(class_name)
-        if class_type:
-            return class_type.from_dict(d)
+        try:
+            if class_type:
+                return class_type.from_dict(d)
+        except Exception as e:
+            # default to the original object
+            log.error(f"Error deserializing object {d}: {e}")
+            pass
     return d
 
 

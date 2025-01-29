@@ -1,5 +1,6 @@
 """Semantic search/embedding-based retriever using FAISS."""
 
+import faiss
 from typing import (
     List,
     Optional,
@@ -29,11 +30,11 @@ from adalflow.core.functional import normalize_np_array, is_normalized
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
 safe_import(OptionalPackages.FAISS.value[0], OptionalPackages.FAISS.value[1])
-import faiss
 
 log = logging.getLogger(__name__)
 
-FAISSRetrieverDocumentEmbeddingType = Union[List[float], np.ndarray]  # single embedding
+# single embedding
+FAISSRetrieverDocumentEmbeddingType = Union[List[float], np.ndarray]
 FAISSRetrieverDocumentsType = Sequence[FAISSRetrieverDocumentEmbeddingType]
 
 FAISSRetrieverEmbeddingQueryType = Union[
@@ -194,6 +195,7 @@ class FAISSRetriever(
             raise e
 
     def _convert_cosine_similarity_to_probability(self, D: np.ndarray) -> np.ndarray:
+        D = np.clip(D, -1, 1)
         D = (D + 1) / 2
         D = np.round(D, 3)
         return D
