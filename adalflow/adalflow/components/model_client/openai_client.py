@@ -235,32 +235,6 @@ class OpenAIClient(ModelClient):
                 total_tokens=completion.usage.total_tokens,
             )
             return usage
-        elif isinstance(completion, Stream):
-            # Streaming response
-            completion_tokens = 0
-            prompt_tokens = 0
-
-            for message in self._api_kwargs.get("messages", []):
-                # add to prompt_tokens if the message role is 'system' which contains system prompt 
-                if message.get("role") == "system": 
-                    content = message.get("content", '') 
-                    prompt_tokens += estimate_token_count(content)
-                    break 
-
-            for chunk in completion:
-                if hasattr(chunk.choices[0].delta, "content"):
-                    # Estimate token count from streamed content
-                    completion_tokens += estimate_token_count(parse_stream_response(chunk))
-            # Since prompt tokens are known in advance, retrieve from model kwargs or a known value
-            total_tokens = prompt_tokens + completion_tokens
-
-            usage: CompletionUsage = CompletionUsage(
-                completion_tokens=completion_tokens,
-                prompt_tokens=prompt_tokens,
-                total_tokens=total_tokens,
-            )
-            return usage
-
         else:
             raise ValueError(f"Unsupported completion type: {type(completion)}")
 
