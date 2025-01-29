@@ -254,14 +254,12 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
     ):  # Optional[Address] will be false, and true for each check
 
         log.debug(
-            f"{is_dataclass(cls)} of {cls}, {
-                is_potential_dataclass(cls)} of {cls}"
+            f"{is_dataclass(cls)} of {cls}, {is_potential_dataclass(cls)} of {cls}"
         )
         # Ensure the data is a dictionary
         if not isinstance(data, dict):
             raise ValueError(
-                f"Expected data of type dict for {
-                    cls}, but got {type(data).__name__}"
+                f"Expected data of type dict for {cls}, but got {type(data).__name__}"
             )
         cls_type = extract_dataclass_type(cls)
         fieldtypes = {f.name: f.type for f in cls_type.__dataclass_fields__.values()}
@@ -321,10 +319,7 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
         return data
     # else normal data like int, str, float, etc.
     else:
-        log.debug(
-            f"Not datclass, or list, or dict: {
-                  cls}, use the original data."
-        )
+        log.debug(f"Not datclass, or list, or dict: {cls}, use the original data.")
         return data
 
 
@@ -419,10 +414,7 @@ def get_type_schema(
     elif origin in {Set, set}:
         args = get_args(type_obj)
         return (
-            f"Set[{get_type_schema(
-                args[0], exclude, type_var_map)}]"
-            if args
-            else "Set"
+            f"Set[{get_type_schema(args[0], exclude, type_var_map)}]" if args else "Set"
         )
 
     elif origin is Sequence:
@@ -667,10 +659,7 @@ def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
             return output_fun
         # TODO: raise the error back to the caller so that the llm can get the error message
         except KeyError as e:
-            log.error(
-                f"Error: {e}, {
-                      node.id} does not exist in the context_map."
-            )
+            log.error(f"Error: {e}, {node.id} does not exist in the context_map.")
             raise ValueError(
                 f"Error: {e}, {node.id} does not exist in the context_map."
             )
@@ -1254,8 +1243,7 @@ def parse_json_str_to_obj(json_str: str) -> Union[Dict[str, Any], List[Any]]:
         return json_obj
     except json.JSONDecodeError as e:
         log.info(
-            f"Got invalid JSON object with json.loads. Error: {
-                e}. Got JSON string: {json_str}"
+            f"Got invalid JSON object with json.loads. Error: {e}. Got JSON string: {json_str}"
         )
         # 2nd attemp after fixing the json string
         try:
@@ -1303,8 +1291,7 @@ def random_sample(
 
     if not replace and num_shots > dataset_size:
         log.debug(
-            f"num_shots {num_shots} is larger than the dataset size {
-                dataset_size}"
+            f"num_shots {num_shots} is larger than the dataset size {dataset_size}"
         )
         num_shots = dataset_size
 
