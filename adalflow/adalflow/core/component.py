@@ -14,6 +14,7 @@ from typing import (
     TypeVar,
     Type,
     TYPE_CHECKING,
+    Callable,
 )
 
 import logging
@@ -479,7 +480,8 @@ class Component:
         if self._has_bicall():
             output = self.bicall(*args, **kwargs)
             return output
-        raise NotImplementedError("Subclasses must implement `call` or `bicall`.")
+        else:
+            raise NotImplementedError("Subclasses must implement `call` or `bicall`.")
 
     def bicall(self, *args, **kwargs):
         """
@@ -940,6 +942,160 @@ class Component:
             else:
                 init_args[key] = kwargs.get(key, param.default)
         return init_args
+
+
+# TODO: it is possible to separate all other data component from component and have its own to_dict and from_dict, and other functionalities instead of being tied to component
+class DataComponent(Component):
+    r"""
+    Base class for all components that are handling data pre- and post-processing.
+    Example: Prompt, Parser. TextSplitter, etc.
+
+    Compared with a normal Component, it is not trainable and can process parameters as input but does not return any parameters.
+
+    Args:
+        data (Optional[Union[Dict[str, Any], Any]]): input data for the component.
+    """
+
+    _component_type = "data"
+
+    def train(self, mode: bool = False):
+        self.training = False
+
+    def __call__(self, *args, **kwargs):
+        return self.call(*args, **kwargs)
+
+
+class FuncDataComponent(DataComponent):
+    r"""Component that wraps a function.
+
+    Args:
+        fun (Callable): The function to be wrapped.
+
+    Examples:
+
+    function = lambda x: x + 1
+    fun_component = FuncDataComponent(function)
+    print(fun_component(1))  # 2
+    """
+
+    def __init__(self, fun: Optional[Callable] = None, afun: Optional[Callable] = None):
+        super().__init__()
+        self.fun_name = fun.__name__
+        EntityMapping.register(self.fun_name, fun)
+        self.fun = fun
+
+    def call(self, *args, **kwargs):
+        # fun = EntityMapping.get(self.fun_name)
+
+        return self.fun(*args, **kwargs)
+
+    def __repr__(self) -> str:
+        return super().__repr__() + f"fun_name={self.fun_name}"
+
+
+def func_to_data_component(fun) -> FuncDataComponent:
+    r"""Helper function to convert a function into a Parser class.
+    its own class name.
+
+    Can be used as both a decorator and a function.
+
+    Args:
+        fun (Callable): The function to be wrapped.
+    Returns:
+        FuncDataComponent: The component that wraps the function.
+
+    Examples:
+    1. As a decorator:
+        >>> @func_to_data_component
+        >>> def my_function(x):
+        >>>     return x + 1
+        >>> # is equivalent to
+        >>> class MyFunctionDataComponent(FuncDataComponent):
+        >>>     def __init__(self):
+        >>>         super().__init__(my_function)
+
+    2. As a function:
+        >>> my_function_data_component = func_to_data_component(my_function)
+    """
+
+    class_name = (
+        "".join(part.capitalize() for part in fun.__name__.split("_")) + "DataComponent"
+    )
+    EntityMapping.register(fun.__name__, fun)
+    parser_class = type(
+        class_name,
+        (FuncDataComponent,),
+        {"__init__": lambda self: FuncDataComponent.__init__(self, fun)},
+    )
+    EntityMapping.register(class_name, parser_class)
+
+    return parser_class()
+
+
+class FuncComponent(Component):
+    r"""Component that wraps a function.
+
+    Args:
+        fun (Callable): The function to be wrapped.
+
+    Examples:
+
+    function = lambda x: x + 1
+    fun_component = FuncComponent(function)
+    print(fun_component(1))  # 2
+    """
+
+    def __init__(self, fun: Optional[Callable] = None, afun: Optional[Callable] = None):
+        super().__init__()
+        self.fun_name = fun.__name__
+        EntityMapping.register(self.fun_name, fun)
+        self.fun = fun
+
+    def call(self, *args, **kwargs):
+
+        return self.fun(*args, **kwargs)
+
+    def __repr__(self) -> str:
+        return super().__repr__() + f"fun_name={self.fun_name}"
+
+
+def func_to_component(fun) -> FuncComponent:
+    r"""Helper function to convert a function into a Component class.
+    its own class name.
+
+    Can be used as both a decorator and a function.
+
+    Args:
+        fun (Callable): The function to be wrapped.
+    Returns:
+        FuncComponent: The component that wraps the function.
+
+    Examples:
+    1. As a decorator:
+        >>> @func_to_component
+        >>> def my_function(x):
+        >>>     return x + 1
+        >>> # is equivalent to
+        >>> class MyFunctionComponent(FuncComponent):
+        >>>     def __init__(self):
+        >>>         super().__init__(my_function)
+
+    2. As a function:
+        >>> my_function_component = func_to_component(my_function)
+    """
+
+    class_name = (
+        "".join(part.capitalize() for part in fun.__name__.split("_")) + "Component"
+    )
+    EntityMapping.register(fun.__name__, fun)
+    parser_class = type(
+        class_name,
+        (FuncComponent,),
+        {"__init__": lambda self: Component.__init__(self, fun)},
+    )
+    EntityMapping.register(class_name, parser_class)
+
+    return parser_class()
 
 
 # TODO: not used yet, will further investigate dict mode

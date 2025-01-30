@@ -396,7 +396,7 @@ if __name__ == "__main__":
     from adalflow.eval.answer_match_acc import AnswerMatchAcc
     from adalflow.components.model_client import OpenAIClient  # dir: model_client
     from adalflow.core.generator import Generator, BackwardEngine
-    from adalflow.core.component import fun_to_component
+    from adalflow.core.component import func_to_data_component
 
     logger = get_logger(level="DEBUG", filename="lib_text_grad.log")
 
@@ -415,7 +415,7 @@ if __name__ == "__main__":
         },
     }
 
-    @fun_to_component
+    @func_to_data_component
     def parse_integer_answer(answer: str, only_first_line: bool = False):
         try:
             if only_first_line:

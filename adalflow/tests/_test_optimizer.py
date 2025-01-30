@@ -1,7 +1,7 @@
 import pytest
 from typing import List
 
-from adalflow.core.component import fun_to_component
+from adalflow.core.component import func_to_data_component
 from adalflow.optim.parameter import Parameter
 from adalflow.optim.few_shot.bootstrap_optimizer import BootstrapFewShot
 from adalflow.optim.sampler import RandomSampler
@@ -29,7 +29,7 @@ class TestBootstrapFewShotRandomSampler:
         def mock_output_processor(x):
             return "final_output"
 
-        return fun_to_component(mock_output_processor)
+        return func_to_data_component(mock_output_processor)
 
     def mock_dataset(self):
         self.num_classes = 10

@@ -15,7 +15,7 @@ You will answer a reasoning question. Think step by step. The last line of your 
 """
 
 
-@adal.fun_to_component
+@adal.func_to_data_component
 def parse_integer_answer(answer: str):
     """A function that parses the last integer from a string using regular expressions."""
     try:

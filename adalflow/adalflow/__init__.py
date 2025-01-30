@@ -1,6 +1,13 @@
 __version__ = "1.0.0.beta.2"
 
-from adalflow.core.component import Component
+from adalflow.core.component import (
+    Component,
+    DataComponent,
+    FuncComponent,
+    FuncDataComponent,
+    func_to_data_component,
+    func_to_component,
+)
 from adalflow.core.container import Sequential, ComponentList
 from adalflow.core.base_data_class import DataClass, DataClassFormatType, required_field
 
@@ -24,9 +31,6 @@ from adalflow.core.string_parser import (
     FloatParser,
     ListParser,
     BooleanParser,
-    Parser,
-    func_to_parser,
-    FuncParser,
 )
 from adalflow.core.retriever import Retriever
 from adalflow.components.output_parsers import (
@@ -72,7 +76,11 @@ from adalflow.components.data_process.data_components import ToEmbeddings
 
 __all__ = [
     "Component",
-    "fun_to_component",
+    "DataComponent",
+    "FuncComponent",
+    "FuncDataComponent",
+    "func_to_data_component",
+    "func_to_component",
     # dataclass
     "DataClass",
     "DataClassFormatType",
@@ -105,7 +113,6 @@ __all__ = [
     "ListParser",
     "BooleanParser",
     "Parser",
-    "func_to_parser",
     "FuncParser",
     # Output Parsers with dataclass formatting
     "YamlOutputParser",
