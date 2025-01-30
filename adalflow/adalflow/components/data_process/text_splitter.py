@@ -1,5 +1,4 @@
-"""
-Splitting texts is commonly used as a preprocessing step before embedding and retrieving texts.
+"""Splitting texts is commonly used as a preprocessing step before embedding and retrieving texts.
 
 We encourage you to process your data here and define your own embedding and retrieval methods. These methods can highly depend on the product environment and may extend beyond the scope of this library.
 
@@ -15,7 +14,7 @@ However, the following approaches are commonly shared:
 """
 
 from copy import deepcopy
-from typing import List, Literal
+from typing import List, Literal, Optional
 from tqdm import tqdm
 import logging
 
@@ -44,6 +43,7 @@ DEFAULT_CHUNK_SIZE = 800
 DEFAULT_CHUNK_OVERLAP = 200
 
 
+# TODO: make it a non-component
 class TextSplitter(Component):
     """
     Text Splitter for Chunking Documents
@@ -162,6 +162,7 @@ class TextSplitter(Component):
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         chunk_overlap: int = DEFAULT_CHUNK_OVERLAP,
         batch_size: int = 1000,
+        separators: Optional[dict] = SEPARATORS,
     ):
         """
         Initializes the TextSplitter with the specified parameters for text splitting.
@@ -181,9 +182,10 @@ class TextSplitter(Component):
         super().__init__()
 
         self.split_by = split_by
-        if split_by not in SEPARATORS:
+        self.separators = separators
+        if split_by not in self.separators:
             raise ValueError(
-                f"Invalid options for split_by. You must select from {list(SEPARATORS.keys())}."
+                f"Invalid options for split_by. You must select from {list(self.separators.keys())}."
             )
 
         if chunk_overlap >= chunk_size:
@@ -224,7 +226,7 @@ class TextSplitter(Component):
         log.info(
             f"Splitting text with split_by: {self.split_by}, chunk_size: {self.chunk_size}, chunk_overlap: {self.chunk_overlap}"
         )
-        separator = SEPARATORS[self.split_by]
+        separator = self.separators[self.split_by]
         splits = self._split_text_into_units(text, separator)
         log.info(f"Text split into {len(splits)} parts.")
         chunks = self._merge_units_to_chunks(
