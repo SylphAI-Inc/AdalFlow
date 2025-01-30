@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -309,6 +324,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -426,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -598,7 +621,7 @@
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#utils.data.DataLoader" title="utils.data.DataLoader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataLoader</span></code></a>(dataset[, batch_size, shuffle])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.data.DataLoader" title="utils.data.DataLoader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataLoader</span></code></a>(dataset[, batch_size, shuffle, seed])</p></td>
 <td><p>A simplified version of PyTorch DataLoader.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#utils.data.Dataset" title="utils.data.Dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset</span></code></a>()</p></td>
@@ -659,7 +682,7 @@ dataset with non-integral indices/keys, a custom sampler must be provided.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.data.DataLoader">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DataLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utils/data.html#DataLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.data.DataLoader" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DataLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">42</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utils/data.html#DataLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.data.DataLoader" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A simplified version of PyTorch DataLoader.</p>
 <p>The biggest difference is not to handle tensors, but to handle any type of data.</p>

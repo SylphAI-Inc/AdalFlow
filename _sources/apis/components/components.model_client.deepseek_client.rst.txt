@@ -1,0 +1,17 @@
+.. _components-model_client-deepseek_client:
+
+deepseek_client
+================================================
+
+.. automodule:: components.model_client.deepseek_client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      DeepSeekClient
+

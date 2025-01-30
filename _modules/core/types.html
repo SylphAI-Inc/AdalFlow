@@ -1,0 +1,1499 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>core.types &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=af51538a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../_static/js/rtd_search_config.js"></script>
+    <script src="../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/core/types';</script>
+    <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contributor/index.html">
+    Contributor Guide
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contributor/index.html">
+    Contributor Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">core.types</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for core.types</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functional data classes to support functional components like Generator, Retriever, and Assistant.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">Generic</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">Literal</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Awaitable</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">dataclass</span><span class="p">,</span>
+    <span class="n">field</span><span class="p">,</span>
+    <span class="n">InitVar</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">required_field</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.tokenizer</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">is_normalized</span><span class="p">,</span>
+    <span class="n">generate_function_call_expression_from_callable</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CohereAPIClient</span><span class="p">,</span>
+    <span class="n">TransformersClient</span><span class="p">,</span>
+    <span class="n">AnthropicAPIClient</span><span class="p">,</span>
+    <span class="n">GroqAPIClient</span><span class="p">,</span>
+    <span class="n">OpenAIClient</span><span class="p">,</span>
+    <span class="n">GoogleGenAIClient</span><span class="p">,</span>
+    <span class="n">OllamaClient</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">T_co</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T_co&quot;</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>  <span class="c1"># invariant type</span>
+
+
+<span class="c1">#######################################################################################</span>
+<span class="c1"># Data modeling for ModelClient</span>
+<span class="c1">######################################################################################</span>
+<div class="viewcode-block" id="ModelType">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ModelType">[docs]</a>
+<span class="k">class</span> <span class="nc">ModelType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The type of the model, including Embedder, LLM, Reranker.</span>
+<span class="s2">     It helps ModelClient identify the model type required to correctly call the model.&quot;&quot;&quot;</span>
+    <span class="n">EMBEDDER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">LLM</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">RERANKER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># ranking model</span>
+    <span class="n">IMAGE_GENERATION</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># image generation models like DALL-E</span>
+    <span class="n">UNDEFINED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="ModelClientType">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ModelClientType">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ModelClientType</span><span class="p">:</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A quick way to access all model clients in the ModelClient module.</span>
+
+<span class="s2">    From this:</span>
+
+<span class="s2">    .. code-block:: python</span>
+
+<span class="s2">        from adalflow.components.model_client import CohereAPIClient, TransformersClient, AnthropicAPIClient, GroqAPIClient, OpenAIClient</span>
+
+<span class="s2">        model_client = OpenAIClient()</span>
+
+<span class="s2">    To this:</span>
+
+<span class="s2">    .. code-block:: python</span>
+
+<span class="s2">        from adalflow.core.types import ModelClientType</span>
+
+<span class="s2">        model_client = ModelClientType.OPENAI()</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">COHERE</span> <span class="o">=</span> <span class="n">CohereAPIClient</span>
+    <span class="n">TRANSFORMERS</span> <span class="o">=</span> <span class="n">TransformersClient</span>
+    <span class="n">ANTHROPIC</span> <span class="o">=</span> <span class="n">AnthropicAPIClient</span>
+    <span class="n">GROQ</span> <span class="o">=</span> <span class="n">GroqAPIClient</span>
+    <span class="n">OPENAI</span> <span class="o">=</span> <span class="n">OpenAIClient</span>
+    <span class="n">GOOGLE_GENAI</span> <span class="o">=</span> <span class="n">GoogleGenAIClient</span>
+    <span class="n">OLLAMA</span> <span class="o">=</span> <span class="n">OllamaClient</span></div>
+
+
+
+<span class="c1"># TODO: define standard required outputs</span>
+<div class="viewcode-block" id="get_model_args">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.get_model_args">[docs]</a>
+<span class="k">def</span> <span class="nf">get_model_args</span><span class="p">(</span><span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the required keys in model_kwargs for a specific model type.</span>
+
+<span class="sd">    note:</span>
+<span class="sd">    If your model inference sdk uses different keys, you need to convert them to the standard keys here in their specifc ModelClient.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model_type (ModelType): The model type</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List[str]: The required keys in model_kwargs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">RERANKER</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="s2">&quot;top_k&quot;</span><span class="p">,</span> <span class="s2">&quot;documents&quot;</span><span class="p">,</span> <span class="s2">&quot;query&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+
+
+<span class="c1">#######################################################################################</span>
+<span class="c1"># Data modeling for Embedder component</span>
+<span class="c1">######################################################################################</span>
+<div class="viewcode-block" id="Embedding">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Embedding">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Embedding</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Container for a single embedding.</span>
+
+<span class="sd">    In sync with api spec, same as openai/types/embedding.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">embedding</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+    <span class="n">index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>  <span class="c1"># match with the index of the input, in case some are missing</span></div>
+
+
+
+<div class="viewcode-block" id="Usage">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Usage">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Usage</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    In sync with OpenAI embedding api spec, same as openai/types/create_embedding_response.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">prompt_tokens</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">total_tokens</span><span class="p">:</span> <span class="nb">int</span></div>
+
+
+
+<div class="viewcode-block" id="EmbedderOutput">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.EmbedderOutput">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">EmbedderOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Container to hold the response from an Embedder model. Only Per-batch.</span>
+
+<span class="s2">    Data standard for Embedder model output to interact with other components.</span>
+<span class="s2">    Batch processing is often available, thus we need a list of Embedding objects.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Embedding</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;List of embeddings&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Model name&quot;</span><span class="p">})</span>
+    <span class="n">usage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Usage</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Usage tracking&quot;</span><span class="p">})</span>
+    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Error message&quot;</span><span class="p">})</span>
+    <span class="n">raw_response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Raw response&quot;</span><span class="p">}</span>
+    <span class="p">)</span>  <span class="c1"># only used if error</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Input text&quot;</span><span class="p">})</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">embedding_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The dimension of the embedding, assuming all embeddings have the same dimension.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The dimension of the embedding, -1 if no embedding is available</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_normalized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check if the embeddings are normalized to unit vectors.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the embeddings are normalized, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">is_normalized</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span>
+            <span class="k">else</span> <span class="kc">False</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="n">EmbedderInputType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+<span class="n">EmbedderOutputType</span> <span class="o">=</span> <span class="n">EmbedderOutput</span>
+
+<span class="n">BatchEmbedderInputType</span> <span class="o">=</span> <span class="n">EmbedderInputType</span>
+<span class="n">BatchEmbedderOutputType</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">EmbedderOutputType</span><span class="p">]</span>
+
+
+<span class="c1">#######################################################################################</span>
+<span class="c1"># Data modeling for Generator component</span>
+<span class="c1">######################################################################################</span>
+<div class="viewcode-block" id="TokenLogProb">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.TokenLogProb">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">TokenLogProb</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;similar to openai.ChatCompletionTokenLogprob&quot;&quot;&quot;</span>
+
+    <span class="n">token</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">logprob</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+
+<div class="viewcode-block" id="CompletionUsage">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.CompletionUsage">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">CompletionUsage</span><span class="p">:</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;In sync with OpenAI completion usage api spec at openai/types/completion_usage.py&quot;</span>
+    <span class="n">completion_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of tokens in the generated completion&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+    <span class="n">prompt_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of tokens in the prompt&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+    <span class="n">total_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Total number of tokens used in the request (prompt + completion)&quot;</span>
+        <span class="p">},</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="GeneratorOutput">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.GeneratorOutput">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">GeneratorOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T_co</span><span class="p">]):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    The output data class for the Generator component.</span>
+<span class="s2">    We can not control its output 100%, so we use this to track the error_message and</span>
+<span class="s2">    allow the raw string output to be passed through.</span>
+
+<span class="s2">    (1) When model predict and output processors are both without error,</span>
+<span class="s2">    we have data as the final output, error as None.</span>
+<span class="s2">    (2) When either model predict or output processors have error,</span>
+<span class="s2">    we have data as None, error as the error message.</span>
+
+<span class="s2">    Raw_response will depends on the model predict.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique id of the output&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="n">data</span><span class="p">:</span> <span class="n">T_co</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The final output data potentially after output parsers&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Error message if any&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">usage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CompletionUsage</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Usage tracking&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">raw_response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Raw string response from the model&quot;</span><span class="p">}</span>
+    <span class="p">)</span>  <span class="c1"># parsed from model client response</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Additional metadata&quot;</span><span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="n">GeneratorOutputType</span> <span class="o">=</span> <span class="n">GeneratorOutput</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>
+
+<span class="c1">#######################################################################################</span>
+<span class="c1"># Data modeling for Retriever component</span>
+<span class="c1">######################################################################################</span>
+
+<span class="n">RetrieverQueryType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;RetrieverQueryType&quot;</span><span class="p">,</span> <span class="n">contravariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">RetrieverStrQueryType</span> <span class="o">=</span> <span class="nb">str</span>
+<span class="n">RetrieverQueriesType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">RetrieverQueryType</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">RetrieverQueryType</span><span class="p">]]</span>
+<span class="n">RetrieverStrQueriesType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">RetrieverStrQueryType</span><span class="p">]]</span>
+
+<span class="n">RetrieverDocumentType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;RetrieverDocumentType&quot;</span><span class="p">,</span> <span class="n">contravariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">RetrieverStrDocumentType</span> <span class="o">=</span> <span class="nb">str</span>  <span class="c1"># for text retrieval</span>
+<span class="n">RetrieverDocumentsType</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">RetrieverDocumentType</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="RetrieverOutput">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RetrieverOutput">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RetrieverOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Save the output of a single query in retrievers.</span>
+
+<span class="s2">    It is up to the subclass of Retriever to specify the type of query and document.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique id of the output&quot;</span><span class="p">})</span>
+
+    <span class="n">doc_indices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">required_field</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;List of document indices&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">doc_scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;List of document scores&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">query</span><span class="p">:</span> <span class="n">RetrieverQueryType</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The query used to retrieve the documents&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">RetrieverDocumentType</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;List of retrieved documents&quot;</span><span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="n">RetrieverOutputType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+    <span class="n">List</span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">],</span> <span class="n">RetrieverOutput</span>
+<span class="p">]</span>  <span class="c1"># so to support multiple queries at once</span>
+
+
+<span class="c1">#######################################################################################</span>
+<span class="c1"># Data modeling for function calls</span>
+<span class="c1">######################################################################################</span>
+<span class="n">AsyncCallable</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
+
+
+<div class="viewcode-block" id="FunctionDefinition">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FunctionDefinition">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">FunctionDefinition</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The data modeling of a function definition, including the name, description, and parameters.&quot;&quot;&quot;</span>
+    <span class="n">class_instance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The instance of the class this function belongs to&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The name of the tool&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="n">required_field</span>
+    <span class="p">)</span>
+    <span class="n">func_desc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The description of the tool&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">func_parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The schema of the parameters&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="FunctionDefinition.fn_schema_str">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FunctionDefinition.fn_schema_str">[docs]</a>
+    <span class="k">def</span> <span class="nf">fn_schema_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;yaml&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the function definition str to be used in the prompt.</span>
+
+<span class="sd">        You should also directly use :meth:`to_json` and :meth:`to_yaml` to get the schema in JSON or YAML format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;yaml&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type: </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Function">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Function">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Function</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The data modeling of a function call, including the name and keyword arguments.</span>
+
+<span class="s2">    You can use the exclude in :meth:`to_json` and :meth:`to_yaml` to exclude the `thought` field if you do not want to use chain-of-thought pattern.</span>
+
+<span class="s2">    Example:</span>
+
+<span class="s2">    .. code-block:: python</span>
+
+<span class="s2">        # assume the function is added in a context_map</span>
+<span class="s2">        # context_map = {&quot;add&quot;: add}</span>
+
+<span class="s2">        def add(a, b):</span>
+<span class="s2">            return a + b</span>
+
+<span class="s2">        # call function add with arguments 1 and 2</span>
+<span class="s2">        fun = Function(name=&quot;add&quot;, kwargs={&quot;a&quot;: 1, &quot;b&quot;: 2})</span>
+<span class="s2">        # evaluate the function</span>
+<span class="s2">        result = context_map[fun.name](**fun.kwargs)</span>
+
+<span class="s2">        # or call with positional arguments</span>
+<span class="s2">        fun = Function(name=&quot;add&quot;, args=[1, 2])</span>
+<span class="s2">        result = context_map[fun.name](*fun.args)</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">thought</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Why the function is called&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The name of the function&quot;</span><span class="p">})</span>
+    <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The positional arguments of the function&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The keyword arguments of the function&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="Function.from_function">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Function.from_function">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_function</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">AsyncCallable</span><span class="p">],</span>
+        <span class="n">thought</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Function&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a Function object from a function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fun (Union[Callable[..., Any], AsyncCallable]): The function to be converted</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Function: The Function object</span>
+
+<span class="sd">        Usage:</span>
+<span class="sd">        1. Create a Function object from a function call:</span>
+<span class="sd">        2. use :meth:`to_json` and :meth:`to_yaml` to get the schema in JSON or YAML format.</span>
+<span class="sd">        3. This will be used as an example in prompt showing LLM how to call the function.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from adalflow.core.types import Function</span>
+
+<span class="sd">            def add(a, b):</span>
+<span class="sd">                return a + b</span>
+
+<span class="sd">            # create a function call object with positional arguments</span>
+<span class="sd">            fun = Function.from_function(add, thought=&quot;Add two numbers&quot;, 1, 2)</span>
+<span class="sd">            print(fun)</span>
+
+<span class="sd">            # output</span>
+<span class="sd">            # Function(thought=&#39;Add two numbers&#39;, name=&#39;add&#39;, args=[1, 2])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">thought</span><span class="o">=</span><span class="n">thought</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="n">__output_fields__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;kwargs&quot;</span><span class="p">]</span></div>
+
+
+
+<span class="n">_action_desc</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;FuncName(&lt;kwargs&gt;) </span><span class="se">\</span>
+<span class="s2">Valid function call expression. </span><span class="se">\</span>
+<span class="s2">Example: &quot;FuncName(a=1, b=2)&quot; </span><span class="se">\</span>
+<span class="s2">Follow the data type specified in the function parameters.</span><span class="se">\</span>
+<span class="s2">e.g. for Type object with x,y properties, use &quot;ObjectType(x=1, y=2)&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="FunctionExpression">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FunctionExpression">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">FunctionExpression</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The data modeling of a function expression for a call, including the name and arguments.</span>
+
+<span class="s2">    Example:</span>
+
+<span class="s2">    .. code-block:: python</span>
+
+<span class="s2">        def add(a, b):</span>
+<span class="s2">            return a + b</span>
+
+<span class="s2">        # call function add with positional arguments 1 and 2</span>
+<span class="s2">        fun_expr = FunctionExpression(action=&quot;add(1, 2)&quot;)</span>
+<span class="s2">        # evaluate the expression</span>
+<span class="s2">        result = eval(fun_expr.action)</span>
+<span class="s2">        print(result)</span>
+<span class="s2">        # Output: 3</span>
+
+<span class="s2">        # call function add with keyword arguments</span>
+<span class="s2">        fun_expr = FunctionExpression(action=&quot;add(a=1, b=2)&quot;)</span>
+<span class="s2">        result = eval(fun_expr.action)</span>
+<span class="s2">        print(result)</span>
+<span class="s2">        # Output: 3</span>
+
+<span class="s2">    Why asking LLM to generate function expression (code snippet) for a function call?</span>
+<span class="s2">    - It is more efficient/compact to call a function.</span>
+<span class="s2">    - It is more flexible.</span>
+<span class="s2">        (1) for the full range of Python expressions, including arithmetic operations, nested function calls, and more.</span>
+<span class="s2">        (2) allow to pass variables as arguments.</span>
+<span class="s2">    - Ease of parsing using ``ast`` module.</span>
+
+<span class="s2">    The benefits are less failed function calls.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="c1"># question: str = field(</span>
+    <span class="c1">#     default=None, metadata={&quot;desc&quot;: &quot;The question to ask the LLM&quot;}</span>
+    <span class="c1"># )</span>
+    <span class="n">thought</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Why the function is called&quot;</span><span class="p">})</span>
+    <span class="n">action</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">required_field</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">_action_desc</span><span class="p">},</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="FunctionExpression.from_function">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FunctionExpression.from_function">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_function</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">AsyncCallable</span><span class="p">],</span>
+        <span class="n">thought</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FunctionExpression&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a FunctionExpression object from a function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fun (Union[Callable[..., Any], AsyncCallable]): The function to be converted</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            FunctionExpression: The FunctionExpression object</span>
+
+<span class="sd">        Usage:</span>
+<span class="sd">        1. Create a FunctionExpression object from a function call:</span>
+<span class="sd">        2. use :meth:`to_json` and :meth:`to_yaml` to get the schema in JSON or YAML format.</span>
+<span class="sd">        3. This will be used as an example in prompt showing LLM how to call the function.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from adalflow.core.types import FunctionExpression</span>
+
+<span class="sd">            def add(a, b):</span>
+<span class="sd">                return a + b</span>
+
+<span class="sd">            # create an expression for the function call and using keyword arguments</span>
+<span class="sd">            fun_expr = FunctionExpression.from_function(</span>
+<span class="sd">                add, thought=&quot;Add two numbers&quot;, a=1, b=2</span>
+<span class="sd">            )</span>
+<span class="sd">            print(fun_expr)</span>
+
+<span class="sd">            # output</span>
+<span class="sd">            # FunctionExpression(thought=&#39;Add two numbers&#39;, action=&#39;add(a=1, b=2)&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">generate_function_call_expression_from_callable</span><span class="p">(</span>
+                <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error generating function expression: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error generating function expression: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="n">action</span><span class="p">,</span> <span class="n">thought</span><span class="o">=</span><span class="n">thought</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="FunctionOutput">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FunctionOutput">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">FunctionOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The output of a tool, which could be a function, a class, or a module.&quot;&quot;&quot;</span>
+    <span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The name of the function&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Function</span><span class="p">,</span> <span class="n">FunctionExpression</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The Function or FunctionExpression object&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">parsed_input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Function</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The parsed Function object if the input is FunctionExpression&quot;</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The output of the function execution&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The error message if any&quot;</span><span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1">#######################################################################################</span>
+<span class="c1"># Data modeling for agent component</span>
+<span class="c1">######################################################################################</span>
+<div class="viewcode-block" id="StepOutput">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.StepOutput">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">StepOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The output of a single step in the agent. Suits for serial planning agent such as React&quot;&quot;&quot;</span>
+    <span class="n">step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The order of the step in the agent&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="c1"># This action can be in Function, or Function Exptression, or just str</span>
+    <span class="c1"># it includes the thought and action already</span>
+    <span class="c1"># directly the output from planner LLMs</span>
+    <span class="n">action</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The action the agent takes at this step&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="n">function</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Function</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The parsed function from the action&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="n">observation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The execution result shown for this action&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="StepOutput.to_prompt_str">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.StepOutput.to_prompt_str">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_prompt_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">output</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="n">FunctionExpression</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">thought</span><span class="p">:</span>
+                <span class="n">output</span><span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">thought</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">action</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation</span><span class="p">:</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;observation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">observation</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observation</span><span class="p">,</span> <span class="s2">&quot;to_dict&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observation</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1">#######################################################################################</span>
+<span class="c1"># Data modeling for data processing pipleline such as Text splitting and Embedding</span>
+<span class="c1">######################################################################################</span>
+<div class="viewcode-block" id="Document">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Document">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A text container with optional metadata and vector representation.</span>
+
+<span class="s2">    It is the data structure to support functions like Retriever, DocumentSplitter, and used with LocalDB.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The main text&quot;</span><span class="p">})</span>
+
+    <span class="n">meta_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Metadata for the document&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="c1"># can save data for filtering at retrieval time too</span>
+    <span class="n">vector</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The vector representation of the document&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="c1"># the vector representation of the document</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()),</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Unique id&quot;</span><span class="p">}</span>
+    <span class="p">)</span>  <span class="c1"># unique id of the document</span>
+    <span class="n">order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Order of the chunked document in the original document&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="n">score</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Score of the document, likely used in retrieval output&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">parent_doc_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UUID</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;id of the Document where the chunk is from&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="n">estimated_num_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Estimated number of tokens in the text, useful for cost estimation&quot;</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimated_num_tokens</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">estimated_num_tokens</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">count_tokens</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Document.from_dict">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Document.from_dict">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Document object from a dictionary.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">        .. code-block :: python</span>
+
+<span class="sd">            doc = Document.from_dict({</span>
+<span class="sd">                &quot;id&quot;: &quot;123&quot;,</span>
+<span class="sd">                &quot;text&quot;: &quot;Hello world&quot;,</span>
+<span class="sd">                &quot;meta_data&quot;: {&quot;title&quot;: &quot;Greeting&quot;}</span>
+<span class="sd">            })</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s2">&quot;meta_data&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">,</span> <span class="s2">&quot;meta_data is required&quot;</span>
+        <span class="k">assert</span> <span class="s2">&quot;text&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">,</span> <span class="s2">&quot;text is required&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;estimated_num_tokens&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">()</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;estimated_num_tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">count_tokens</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">doc</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]:</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Custom repr method to truncate the text to 100 characters and vector to 10 floats.&quot;&quot;&quot;</span>
+        <span class="n">max_chars_to_show</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">truncated_text</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="n">max_chars_to_show</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_chars_to_show</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span>
+        <span class="p">)</span>
+        <span class="n">truncated_vector</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;len: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Document(id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">, text=</span><span class="si">{</span><span class="n">truncated_text</span><span class="si">!r}</span><span class="s2">, meta_data=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">meta_data</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;vector=</span><span class="si">{</span><span class="n">truncated_vector</span><span class="si">!r}</span><span class="s2">, parent_doc_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">parent_doc_id</span><span class="si">}</span><span class="s2">, order=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;score=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">score</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="c1">#######################################################################################</span>
+<span class="c1"># Data modeling for dialog system</span>
+<span class="c1">######################################################################################</span>
+<div class="viewcode-block" id="UserQuery">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.UserQuery">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">UserQuery</span><span class="p">:</span>
+    <span class="n">query_str</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="AssistantResponse">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.AssistantResponse">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">AssistantResponse</span><span class="p">:</span>
+    <span class="n">response_str</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<span class="c1"># There could  more other roles in a multi-party conversation. We might consider in the future.</span>
+<div class="viewcode-block" id="DialogTurn">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.DialogTurn">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DialogTurn</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A turn consists of a user query and the assistant response.</span>
+
+<span class="s2">    The dataformat is designed to fit into a relational database, where each turn is a row.</span>
+<span class="s2">    Use `session_id` to group the turns into a dialog session with the `order` field and</span>
+<span class="s2">    `user_query_timestamp` and `assistant_response_timestamp` to order the turns.</span>
+
+<span class="s2">    Args:</span>
+
+<span class="s2">        id (str): The unique id of the turn.</span>
+<span class="s2">        user_id (str, optional): The unique id of the user.</span>
+<span class="s2">        session_id (str, optional): The unique id of the dialog session.</span>
+<span class="s2">        order (int, optional): The order of the turn in the dialog session, starts from 0.</span>
+<span class="s2">        user_query (UserQuery, optional): The user query in the turn.</span>
+<span class="s2">        assistant_response (AssistantResponse, optional): The assistant response in the turn.</span>
+<span class="s2">        user_query_timestamp (datetime, optional): The timestamp of the user query.</span>
+<span class="s2">        assistant_response_timestamp (datetime, optional): The timestamp of the assistant response.</span>
+<span class="s2">        metadata (Dict[str, Any], optional): Additional metadata.</span>
+
+<span class="s2">    Examples:</span>
+
+<span class="s2">        - User: Hi, how are you?</span>
+<span class="s2">        - Assistant: I&#39;m fine, thank you!</span>
+<span class="s2">        DialogTurn(id=uuid4(), user_query=UserQuery(&quot;Hi, how are you?&quot;), assistant_response=AssistantResponse(&quot;I&#39;m fine, thank you!&quot;))</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()),</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique id of the turn&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique id of the user&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">conversation_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique id of the conversation it belongs to&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The order of the turn in the Dialog Session, starts from 0&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="n">user_query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UserQuery</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The user query in the turn&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">assistant_response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AssistantResponse</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The assistant response in the turn&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">user_query_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The timestamp of the user query&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">assistant_response_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The timestamp of the assistant response&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Additional metadata&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">vector</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The vector representation of the dialog turn&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="DialogTurn.set_user_query">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.DialogTurn.set_user_query">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_user_query</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">user_query</span><span class="p">:</span> <span class="n">UserQuery</span><span class="p">,</span> <span class="n">user_query_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_query</span> <span class="o">=</span> <span class="n">user_query</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user_query_timestamp</span><span class="p">:</span>
+            <span class="n">user_query_timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_query_timestamp</span> <span class="o">=</span> <span class="n">user_query_timestamp</span></div>
+
+
+<div class="viewcode-block" id="DialogTurn.set_assistant_response">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.DialogTurn.set_assistant_response">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_assistant_response</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">assistant_response</span><span class="p">:</span> <span class="n">AssistantResponse</span><span class="p">,</span>
+        <span class="n">assistant_response_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assistant_response</span> <span class="o">=</span> <span class="n">assistant_response</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">assistant_response_timestamp</span><span class="p">:</span>
+            <span class="n">assistant_response_timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assistant_response_timestamp</span> <span class="o">=</span> <span class="n">assistant_response_timestamp</span></div>
+</div>
+
+
+
+<span class="c1"># TODO: This part and the Memory class is still WIP, and will need more work in the future.</span>
+<div class="viewcode-block" id="Conversation">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Conversation</span><span class="p">:</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A conversation manages the dialog turns in a whole conversation as a session.</span>
+
+<span class="s2">    This class is mainly used in-memory for the dialog system/app to manage active conversations.</span>
+<span class="s2">    You won&#39;t need this class for past conversations which have already been persisted in a database as a form of</span>
+<span class="s2">    record or history.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()),</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The id of the conversation&quot;</span><span class="p">},</span>
+    <span class="p">)</span>  <span class="c1"># the id of the conversation</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The name of the conversation&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The id of the user&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">dialog_turns</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">DialogTurn</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The dialog turns&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="c1"># int is the order of the turn, starts from 0</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Additional metadata&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The timestamp of the conversation creation&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="c1"># InitVar type annotation is used for parameters that are used in __post_init__</span>
+    <span class="c1"># but not meant to be fields in the dataclass.</span>
+    <span class="n">dialog_turns_input</span><span class="p">:</span> <span class="n">InitVar</span><span class="p">[</span>
+        <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">OrderedDict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">DialogTurn</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">DialogTurn</span><span class="p">]]]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dialog_turns_input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="n">OrderedDict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">DialogTurn</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">DialogTurn</span><span class="p">]]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">dialog_turns_input</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dialog_turns_input</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="c1"># Assume the list is of DialogTurn objects and needs to be added to an OrderedDict</span>
+                <span class="k">for</span> <span class="n">order</span><span class="p">,</span> <span class="n">dialog_turn</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dialog_turns_input</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">append_dialog_turn</span><span class="p">(</span><span class="n">dialog_turn</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dialog_turns_input</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dialog_turns</span> <span class="o">=</span> <span class="n">dialog_turns_input</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;dialog_turns should be a list of DialogTurn or an OrderedDict&quot;</span>
+                <span class="p">)</span>
+
+<div class="viewcode-block" id="Conversation.get_next_order">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation.get_next_order">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_next_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dialog_turns</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Conversation.append_dialog_turn">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation.append_dialog_turn">[docs]</a>
+    <span class="k">def</span> <span class="nf">append_dialog_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dialog_turn</span><span class="p">:</span> <span class="n">DialogTurn</span><span class="p">):</span>
+        <span class="n">next_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_order</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">dialog_turn</span><span class="o">.</span><span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dialog_turn</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="n">next_order</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">dialog_turn</span><span class="o">.</span><span class="n">order</span> <span class="o">==</span> <span class="n">next_order</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;order should be </span><span class="si">{</span><span class="n">next_order</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog_turns</span><span class="p">[</span><span class="n">next_order</span><span class="p">]</span> <span class="o">=</span> <span class="n">dialog_turn</span></div>
+
+
+<div class="viewcode-block" id="Conversation.get_dialog_turns">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation.get_dialog_turns">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_dialog_turns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">DialogTurn</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialog_turns</span></div>
+
+
+<div class="viewcode-block" id="Conversation.get_chat_history_str">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation.get_chat_history_str">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_chat_history_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">chat_history_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">order</span><span class="p">,</span> <span class="n">dialog_turn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialog_turns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">chat_history_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;User: </span><span class="si">{</span><span class="n">dialog_turn</span><span class="o">.</span><span class="n">user_query</span><span class="o">.</span><span class="n">query_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">chat_history_str</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Assistant: </span><span class="si">{</span><span class="n">dialog_turn</span><span class="o">.</span><span class="n">assistant_response</span><span class="o">.</span><span class="n">response_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">chat_history_str</span></div>
+
+
+<div class="viewcode-block" id="Conversation.delete_dialog_turn">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation.delete_dialog_turn">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete_dialog_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog_turns</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">order</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Conversation.update_dialog_turn">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation.update_dialog_turn">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_dialog_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dialog_turn</span><span class="p">:</span> <span class="n">DialogTurn</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog_turns</span><span class="p">[</span><span class="n">order</span><span class="p">]</span> <span class="o">=</span> <span class="n">dialog_turn</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

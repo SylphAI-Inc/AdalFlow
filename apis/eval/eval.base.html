@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -272,6 +287,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -300,6 +319,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -422,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -578,8 +605,61 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="base">
-<span id="eval-base"></span><h1>base<a class="headerlink" href="#base" title="Link to this heading">#</a></h1>
+  <section id="module-eval.base">
+<span id="base"></span><span id="eval-base"></span><h1>base<a class="headerlink" href="#module-eval.base" title="Link to this heading">#</a></h1>
+<p>Abstract base class for evaluation metrics.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eval.base.BaseEvaluator" title="eval.base.BaseEvaluator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseEvaluator</span></code></a>(*args, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eval.base.EvaluationResult" title="eval.base.EvaluationResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EvaluationResult</span></code></a>(avg_score[, ...])</p></td>
+<td><p>Evaluation result.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="eval.base.EvaluationResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EvaluationResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">avg_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">per_item_scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/base.html#EvaluationResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.base.EvaluationResult" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Evaluation result.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="eval.base.EvaluationResult.avg_score">
+<span class="sig-name descname"><span class="pre">avg_score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#eval.base.EvaluationResult.avg_score" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="eval.base.EvaluationResult.per_item_scores">
+<span class="sig-name descname"><span class="pre">per_item_scores</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#eval.base.EvaluationResult.per_item_scores" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="eval.base.EvaluationResult.additional_info">
+<span class="sig-name descname"><span class="pre">additional_info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#eval.base.EvaluationResult.additional_info" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="eval.base.BaseEvaluator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseEvaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/base.html#BaseEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.base.BaseEvaluator" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="eval.base.BaseEvaluator.compute_single_item">
+<span class="sig-name descname"><span class="pre">compute_single_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/eval/base.html#BaseEvaluator.compute_single_item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.base.BaseEvaluator.compute_single_item" title="Link to this definition">#</a></dt>
+<dd><p>Compute the score for a single item.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eval.base.BaseEvaluator.compute">
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/eval/base.html#BaseEvaluator.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.base.BaseEvaluator.compute" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate a list of predictions and ground truth values. and return overall score and per-item scores.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -616,6 +696,33 @@
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#eval.base.EvaluationResult"><code class="docutils literal notranslate"><span class="pre">EvaluationResult</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eval.base.EvaluationResult.avg_score"><code class="docutils literal notranslate"><span class="pre">EvaluationResult.avg_score</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eval.base.EvaluationResult.per_item_scores"><code class="docutils literal notranslate"><span class="pre">EvaluationResult.per_item_scores</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eval.base.EvaluationResult.additional_info"><code class="docutils literal notranslate"><span class="pre">EvaluationResult.additional_info</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#eval.base.BaseEvaluator"><code class="docutils literal notranslate"><span class="pre">BaseEvaluator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eval.base.BaseEvaluator.compute_single_item"><code class="docutils literal notranslate"><span class="pre">BaseEvaluator.compute_single_item()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eval.base.BaseEvaluator.compute"><code class="docutils literal notranslate"><span class="pre">BaseEvaluator.compute()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

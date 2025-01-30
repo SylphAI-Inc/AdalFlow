@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -309,6 +324,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -426,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.ollama_client.html">ollama_client</a></li>
@@ -601,7 +624,7 @@ return conversation history.</p>
 <dd><p>Stores the current active conversation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Conversation</p>
+<dd class="field-odd"><p><a class="reference internal" href="../core/core.types.html#core.types.Conversation" title="core.types.Conversation">Conversation</a></p>
 </dd>
 </dl>
 </dd></dl>

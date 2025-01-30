@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -272,6 +287,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -300,6 +319,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -422,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -578,8 +605,119 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="prompt-builder">
-<span id="core-prompt-builder"></span><h1>prompt_builder<a class="headerlink" href="#prompt-builder" title="Link to this heading">#</a></h1>
+  <section id="module-core.prompt_builder">
+<span id="prompt-builder"></span><span id="core-prompt-builder"></span><h1>prompt_builder<a class="headerlink" href="#module-core.prompt_builder" title="Link to this heading">#</a></h1>
+<p>Class prompt builder for AdalFlow system prompt.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.prompt_builder.Prompt" title="core.prompt_builder.Prompt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Prompt</span></code></a>([template, prompt_kwargs])</p></td>
+<td><p>Renders a text string(prompt) from a Jinja2 template string.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.prompt_builder.Prompt">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataComponent</span></code></p>
+<p>Renders a text string(prompt) from a Jinja2 template string.</p>
+<p>In default, we use the <a class="reference internal" href="core.default_prompt_template.html#core-default-prompt-template"><span class="std std-ref">DEFAULT_ADALFLOW_SYSTEM_PROMPT</span></a>  as the template.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>template</strong> (<em>str</em><em>, </em><em>optional</em>) – The Jinja2 template string. Defaults to DEFAULT_ADALFLOW_SYSTEM_PROMPT.</p></li>
+<li><p><strong>preset_prompt_kwargs</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>optional</em>) – The preset prompt kwargs to fill in the variables in the prompt. Defaults to {}.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;task_desc_str&quot;</span><span class="p">:</span> <span class="s2">&quot;You are a helpful assistant.&quot;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prompt</span><span class="o">.</span><span class="n">print_prompt_template</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prompt</span><span class="o">.</span><span class="n">print_prompt</span><span class="p">(</span><span class="n">context_str</span><span class="o">=</span><span class="s2">&quot;This is a context string.&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prompt</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">context_str</span><span class="o">=</span><span class="s2">&quot;This is a context string.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When examples_str itself is another template with variables, You can use another Prompt to render it.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">EXAMPLES_TEMPLATE</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">{</span><span class="si">% i</span><span class="s1">f examples %}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">{</span><span class="si">% f</span><span class="s1">or example in examples %}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">{{loop.index}}. {{example}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">{</span><span class="si">% e</span><span class="s1">ndfor %}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">{</span><span class="si">% e</span><span class="s1">ndif %}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">examples_prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">EXAMPLES_TEMPLATE</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">examples_str</span> <span class="o">=</span> <span class="n">examples_prompt</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Example 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Example 2&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># pass it to the main prompt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prompt</span><span class="o">.</span><span class="n">print_prompt</span><span class="p">(</span><span class="n">examples_str</span><span class="o">=</span><span class="n">examples_str</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.prompt_builder.Prompt.update_prompt_kwargs">
+<span class="sig-name descname"><span class="pre">update_prompt_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt.update_prompt_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt.update_prompt_kwargs" title="Link to this definition">#</a></dt>
+<dd><p>Update the initial prompt kwargs after Prompt is initialized.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.prompt_builder.Prompt.get_prompt_variables">
+<span class="sig-name descname"><span class="pre">get_prompt_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt.get_prompt_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt.get_prompt_variables" title="Link to this definition">#</a></dt>
+<dd><p>Get the prompt kwargs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.prompt_builder.Prompt.is_key_in_template">
+<span class="sig-name descname"><span class="pre">is_key_in_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt.is_key_in_template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt.is_key_in_template" title="Link to this definition">#</a></dt>
+<dd><p>Check if the key exists in the template.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.prompt_builder.Prompt.compose_prompt_kwargs">
+<span class="sig-name descname"><span class="pre">compose_prompt_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt.compose_prompt_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt.compose_prompt_kwargs" title="Link to this definition">#</a></dt>
+<dd><p>Compose the final prompt kwargs by combining the initial and the provided kwargs at runtime.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.prompt_builder.Prompt.print_prompt_template">
+<span class="sig-name descname"><span class="pre">print_prompt_template</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt.print_prompt_template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt.print_prompt_template" title="Link to this definition">#</a></dt>
+<dd><p>Print the template string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.prompt_builder.Prompt.print_prompt">
+<span class="sig-name descname"><span class="pre">print_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt.print_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt.print_prompt" title="Link to this definition">#</a></dt>
+<dd><p>Print the rendered prompt string using the preset_prompt_kwargs and the provided kwargs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.prompt_builder.Prompt.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt.call" title="Link to this definition">#</a></dt>
+<dd><p>Renders the prompt template with keyword arguments. Allow None values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.prompt_builder.Prompt.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt.from_dict" title="Link to this definition">#</a></dt>
+<dd><p>Create an instance from previously serialized data
+using <a class="reference internal" href="#core.prompt_builder.Prompt.to_dict" title="core.prompt_builder.Prompt.to_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_dict()</span></code></a> method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.prompt_builder.Prompt.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt.to_dict" title="Link to this definition">#</a></dt>
+<dd><p>Get the dictionary representation of all the Prompt object’s attributes, with sorting applied to
+dictionary keys and list elements to ensure consistent ordering.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.prompt_builder.get_jinja2_environment">
+<span class="sig-name descname"><span class="pre">get_jinja2_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/prompt_builder.html#get_jinja2_environment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.get_jinja2_environment" title="Link to this definition">#</a></dt>
+<dd><p>Helper function for Prompt component to get the Jinja2 environment with the default settings.</p>
+</dd></dl>
+
 </section>
 
 
@@ -616,6 +754,35 @@
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt"><code class="docutils literal notranslate"><span class="pre">Prompt</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt.update_prompt_kwargs"><code class="docutils literal notranslate"><span class="pre">Prompt.update_prompt_kwargs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt.get_prompt_variables"><code class="docutils literal notranslate"><span class="pre">Prompt.get_prompt_variables()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt.is_key_in_template"><code class="docutils literal notranslate"><span class="pre">Prompt.is_key_in_template()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt.compose_prompt_kwargs"><code class="docutils literal notranslate"><span class="pre">Prompt.compose_prompt_kwargs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt.print_prompt_template"><code class="docutils literal notranslate"><span class="pre">Prompt.print_prompt_template()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt.print_prompt"><code class="docutils literal notranslate"><span class="pre">Prompt.print_prompt()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt.call"><code class="docutils literal notranslate"><span class="pre">Prompt.call()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt.from_dict"><code class="docutils literal notranslate"><span class="pre">Prompt.from_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt.to_dict"><code class="docutils literal notranslate"><span class="pre">Prompt.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.get_jinja2_environment"><code class="docutils literal notranslate"><span class="pre">get_jinja2_environment()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

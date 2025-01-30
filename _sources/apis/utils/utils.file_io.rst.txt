@@ -18,6 +18,7 @@ file_io
       load_json
       load_jsonl
       load_pickle
+      load_standard_json
       save
       save_csv
       save_json

@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -272,6 +287,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -300,6 +319,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -422,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -578,8 +605,132 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="embedder">
-<span id="core-embedder"></span><h1>embedder<a class="headerlink" href="#embedder" title="Link to this heading">#</a></h1>
+  <section id="module-core.embedder">
+<span id="embedder"></span><span id="core-embedder"></span><h1>embedder<a class="headerlink" href="#module-core.embedder" title="Link to this heading">#</a></h1>
+<p>The component that orchestrates model client (Embedding models in particular) and output processors.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.embedder.BatchEmbedder" title="core.embedder.BatchEmbedder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BatchEmbedder</span></code></a>(embedder[, batch_size])</p></td>
+<td><p>Adds batching to the embedder component.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.embedder.Embedder" title="core.embedder.Embedder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Embedder</span></code></a>(*, model_client[, model_kwargs, ...])</p></td>
+<td><p>A user-facing component that orchestrates an embedder model via the model client and output processors.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.embedder.Embedder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Embedder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_processors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/embedder.html#Embedder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.embedder.Embedder" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<p>A user-facing component that orchestrates an embedder model via the model client and output processors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_client</strong> (<a class="reference internal" href="core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><em>ModelClient</em></a>) – The model client to use for the embedder.</p></li>
+<li><p><strong>model_kwargs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – The model kwargs to pass to the model client. Defaults to {}.</p></li>
+<li><p><strong>output_processors</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="core.component.html#core.component.Component" title="core.component.Component"><em>Component</em></a><em>]</em><em>, </em><em>optional</em>) – The output processors after model call. Defaults to None.
+If you want to add further processing, it should operate on the <code class="docutils literal notranslate"><span class="pre">EmbedderOutput</span></code> data type.</p></li>
+</ul>
+</dd>
+</dl>
+<p>input: a single str or a list of str. When a list is used, the list is processed as a batch of inputs in the model client.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">output_processors</span></code> will be applied only on the data field of <code class="docutils literal notranslate"><span class="pre">EmbedderOutput</span></code>, which is a list of <code class="docutils literal notranslate"><span class="pre">Embedding</span></code>.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">BatchEmbedder</span></code> for automatically batching input of large size, larger than 100.</p></li>
+</ul>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.embedder.Embedder.model_type">
+<span class="sig-name descname"><span class="pre">model_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ModelType</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#core.embedder.Embedder.model_type" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.embedder.Embedder.model_client">
+<span class="sig-name descname"><span class="pre">model_client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ModelClient</span></em><a class="headerlink" href="#core.embedder.Embedder.model_client" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.embedder.Embedder.output_processors">
+<span class="sig-name descname"><span class="pre">output_processors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Component</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.embedder.Embedder.output_processors" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.embedder.Embedder.from_config">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.embedder.Embedder" title="core.embedder.Embedder"><span class="pre">Embedder</span></a></span></span><a class="reference internal" href="../../_modules/core/embedder.html#Embedder.from_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.embedder.Embedder.from_config" title="Link to this definition">#</a></dt>
+<dd><p>Create an Embedder from a configuration dictionary.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">embedder_config</span> <span class="o">=</span>  <span class="p">{</span>
+    <span class="s2">&quot;model_client&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;component_name&quot;</span><span class="p">:</span> <span class="s2">&quot;OpenAIClient&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;component_config&quot;</span><span class="p">:</span> <span class="p">{}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;model_kwargs&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dimensions&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+        <span class="s2">&quot;encoding_format&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">embedder</span> <span class="o">=</span> <span class="n">Embedder</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">embedder_config</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.embedder.Embedder.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EmbedderOutput</span></span></span><a class="reference internal" href="../../_modules/core/embedder.html#Embedder.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.embedder.Embedder.call" title="Link to this definition">#</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.embedder.Embedder.acall">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EmbedderOutput</span></span></span><a class="reference internal" href="../../_modules/core/embedder.html#Embedder.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.embedder.Embedder.acall" title="Link to this definition">#</a></dt>
+<dd><p>API call, file io.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.embedder.BatchEmbedder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BatchEmbedder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.embedder.Embedder" title="core.embedder.Embedder"><span class="pre">Embedder</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/embedder.html#BatchEmbedder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.embedder.BatchEmbedder" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<p>Adds batching to the embedder component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>embedder</strong> (<a class="reference internal" href="#core.embedder.Embedder" title="core.embedder.Embedder"><em>Embedder</em></a>) – The embedder to use for batching.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The batch size to use for batching. Defaults to 100.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.embedder.BatchEmbedder.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">EmbedderOutput</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/embedder.html#BatchEmbedder.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.embedder.BatchEmbedder.call" title="Link to this definition">#</a></dt>
+<dd><p>Call the embedder with batching.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> (<em>BatchEmbedderInputType</em>) – The input to the embedder. Use this when you have a large input that needs to be batched. Also ensure</p></li>
+<li><p><strong>memory.</strong> (<em>the output can fit into</em>)</p></li>
+<li><p><strong>model_kwargs</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>optional</em>) – The model kwargs to pass to the embedder. Defaults to {}.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The output from the embedder.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BatchEmbedderOutputType</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -616,6 +767,35 @@
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.embedder.Embedder"><code class="docutils literal notranslate"><span class="pre">Embedder</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.embedder.Embedder.model_type"><code class="docutils literal notranslate"><span class="pre">Embedder.model_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.embedder.Embedder.model_client"><code class="docutils literal notranslate"><span class="pre">Embedder.model_client</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.embedder.Embedder.output_processors"><code class="docutils literal notranslate"><span class="pre">Embedder.output_processors</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.embedder.Embedder.from_config"><code class="docutils literal notranslate"><span class="pre">Embedder.from_config()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.embedder.Embedder.call"><code class="docutils literal notranslate"><span class="pre">Embedder.call()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.embedder.Embedder.acall"><code class="docutils literal notranslate"><span class="pre">Embedder.acall()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.embedder.BatchEmbedder"><code class="docutils literal notranslate"><span class="pre">BatchEmbedder</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.embedder.BatchEmbedder.call"><code class="docutils literal notranslate"><span class="pre">BatchEmbedder.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

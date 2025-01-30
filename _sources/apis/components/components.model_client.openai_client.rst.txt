@@ -13,6 +13,7 @@ openai_client
 
    .. autosummary::
 
+      estimate_token_count
       get_all_messages_content
       get_first_message_content
       get_probabilities

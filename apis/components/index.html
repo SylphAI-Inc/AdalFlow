@@ -48,6 +48,8 @@
     <script src="../../_static/js/rtd_search_config.js"></script>
     <script src="../../_static/js/rtd_sphinx_search.min.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'apis/components/index';</script>
     <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -157,6 +159,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +185,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -309,6 +326,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -426,6 +450,7 @@
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.ollama_client.html">ollama_client</a></li>
@@ -617,6 +642,21 @@
 <h2>Retriever<a class="headerlink" href="#retriever" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever" title="components.retriever.bm25_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever</span></code></a></p></td>
+<td><p>BM25 retriever implementation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever" title="components.retriever.faiss_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.faiss_retriever</span></code></a></p></td>
+<td><p>Semantic search/embedding-based retriever using FAISS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
+<td><p>LLM as retriever module.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever" title="components.retriever.postgres_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.postgres_retriever</span></code></a></p></td>
+<td><p>Leverage a postgres database to store and retrieve documents.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
+<td><p>Reranking model using modelclient as a retriever.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -625,6 +665,12 @@
 <h2>Output Parsers<a class="headerlink" href="#output-parsers" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
+<td><p>The most commonly used output parsers for the Generator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components.output_parsers.dataclass_parser.html#module-components.output_parsers.dataclass_parser" title="components.output_parsers.dataclass_parser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.dataclass_parser</span></code></a></p></td>
+<td><p>DataClassParser will help users interact with LLMs even better than JsonOutputParser and YamlOutputParser with DataClass.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -633,6 +679,9 @@
 <h2>Agent<a class="headerlink" href="#agent" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.agent.react.html#module-components.agent.react" title="components.agent.react"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent.react</span></code></a></p></td>
+<td><p>Implementation and optimization of React agent.</p></td>
+</tr>
 </tbody>
 </table>
 </div>

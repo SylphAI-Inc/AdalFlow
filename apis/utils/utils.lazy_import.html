@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -309,6 +324,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -426,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -674,7 +697,7 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages.BOTO3">
-<span class="sig-name descname"><span class="pre">BOTO3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('boto3',</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">boto3</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">boto3')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.BOTO3" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">BOTO3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(['boto3',</span> <span class="pre">'botocore'],</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">boto3</span> <span class="pre">and</span> <span class="pre">botocore</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">boto3</span> <span class="pre">botocore')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.BOTO3" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">

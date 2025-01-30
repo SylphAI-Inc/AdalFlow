@@ -154,6 +154,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -173,13 +180,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -299,6 +314,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -450,10 +472,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
 
 
-<span class="kn">from</span> <span class="nn">adalflow.utils.serialization</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">to_dict</span><span class="p">,</span>
-    <span class="n">serialize</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils.serialization</span> <span class="kn">import</span> <span class="n">to_dict</span><span class="p">,</span> <span class="n">serialize</span><span class="p">,</span> <span class="n">_deserialize_object_hook</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -461,7 +480,11 @@
 <div class="viewcode-block" id="save_json">
 <a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.file_io.save_json">[docs]</a>
 <span class="k">def</span> <span class="nf">save_json</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">f</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;task.json&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the object to a json file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Customized Save the object to a json file.</span>
+
+<span class="sd">    Support Set.</span>
+<span class="sd">    We encourage users first save the data as DataClass using to_dict,</span>
+<span class="sd">    and then load it back to DataClass using from_dict.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        obj (Mapping[str, Any]): The object to be saved.</span>
@@ -475,6 +498,15 @@
     <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error saving object to JSON file </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
+
+
+<span class="c1"># def standard_save_json(obj: Mapping[str, Any], f: str = &quot;task.json&quot;) -&gt; None:</span>
+<span class="c1">#     os.makedirs(os.path.dirname(f) or &quot;.&quot;, exist_ok=True)</span>
+<span class="c1">#     try:</span>
+<span class="c1">#         with open(f, &quot;w&quot;) as file:</span>
+<span class="c1">#             json.dump(obj, file, indent=4)</span>
+<span class="c1">#     except IOError as e:</span>
+<span class="c1">#         raise IOError(f&quot;Error saving object to JSON file {f}: {e}&quot;)</span>
 
 
 <div class="viewcode-block" id="save_csv">
@@ -497,6 +529,15 @@
             <span class="n">writer</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
                 <span class="n">filtered_row</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">fieldnames</span><span class="p">}</span>
+                <span class="c1"># use json.dumps to serialize the object</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">filtered_row</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+                        <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+                        <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+                        <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">set</span><span class="p">)</span>
+                    <span class="p">):</span>
+                        <span class="n">filtered_row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
                 <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">filtered_row</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error saving object to CSV file </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
@@ -539,22 +580,68 @@
 
 
 
+<span class="c1"># def load_json(f: str = &quot;task.json&quot;) -&gt; Optional[Mapping[str, Any]]:</span>
+<span class="c1">#     r&quot;&quot;&quot;Load the object from a json file.</span>
+
+<span class="c1">#     Args:</span>
+<span class="c1">#         f (str, optional): The file name. Defaults to &quot;task&quot;.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     if not os.path.exists(f):</span>
+<span class="c1">#         log.warning(f&quot;File {f} does not exist.&quot;)</span>
+<span class="c1">#         return None</span>
+<span class="c1">#     try:</span>
+<span class="c1">#         with open(f, &quot;r&quot;) as file:</span>
+<span class="c1">#             return json.load(file)</span>
+<span class="c1">#     except Exception as e:</span>
+<span class="c1">#         raise Exception(f&quot;Error loading object from JSON file {f}: {e}&quot;)</span>
+
+
 <div class="viewcode-block" id="load_json">
 <a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.file_io.load_json">[docs]</a>
-<span class="k">def</span> <span class="nf">load_json</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;task.json&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load the object from a json file.</span>
+<span class="k">def</span> <span class="nf">load_json</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Customized Load a JSON file and deserialize it.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        f (str, optional): The file name. Defaults to &quot;task&quot;.</span>
+<span class="sd">        f (str): The file name of the JSON file to load.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Any: The deserialized Python object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;JSON file not found: </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="n">_deserialize_object_hook</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">data</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error decoding JSON file </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading object from JSON file </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading JSON file </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="load_standard_json">
+<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.file_io.load_standard_json">[docs]</a>
+<span class="k">def</span> <span class="nf">load_standard_json</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard Load a JSON file and deserialize it.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        f (str): The file name of the JSON file to load.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Any: The deserialized Python object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;JSON file not found: </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">data</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error decoding JSON file </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading JSON file </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 

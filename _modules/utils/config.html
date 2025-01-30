@@ -154,6 +154,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -173,13 +180,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -299,6 +314,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -443,7 +465,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for utils.config</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Config helper functions to manage configuration and rebuilt your task pipeline.</span>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Config helper functions to manage configuration and rebuilt your task pipeline.</span>
 
 <span class="sd">Config format: json</span>
 <span class="sd">(1) include attribute and entity_name to reconstruct all attributes of a pipeline.</span>

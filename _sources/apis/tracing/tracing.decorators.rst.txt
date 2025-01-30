@@ -7,3 +7,12 @@ decorators
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      trace_generator_call
+      trace_generator_states
+

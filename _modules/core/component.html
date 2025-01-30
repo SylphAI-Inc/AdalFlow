@@ -154,6 +154,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -173,13 +180,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -299,6 +314,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -448,7 +470,6 @@
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
@@ -460,6 +481,7 @@
     <span class="n">TypeVar</span><span class="p">,</span>
     <span class="n">Type</span><span class="p">,</span>
     <span class="n">TYPE_CHECKING</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -474,25 +496,10 @@
 
 <span class="kn">from</span> <span class="nn">adalflow.utils.registry</span> <span class="kn">import</span> <span class="n">EntityMapping</span>
 
-<span class="c1"># import networkx as nx</span>
-<span class="c1"># from pyvis.network import Network</span>
 
-<span class="c1"># import matplotlib.pyplot as plt</span>
-<span class="c1"># import itertools</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
-
-
-<span class="c1"># class _IncompatibleKeys(</span>
-<span class="c1">#     namedtuple(&quot;IncompatibleKeys&quot;, [&quot;missing_keys&quot;, &quot;unexpected_keys&quot;])</span>
-<span class="c1"># ):</span>
-<span class="c1">#     def __repr__(self):</span>
-<span class="c1">#         if not self.missing_keys and not self.unexpected_keys:</span>
-<span class="c1">#             return &quot;&lt;All keys matched successfully&gt;&quot;</span>
-<span class="c1">#         return super().__repr__()</span>
-
-<span class="c1">#     __str__ = __repr__</span>
 
 
 <span class="k">def</span> <span class="nf">_addindent</span><span class="p">(</span><span class="n">s_</span><span class="p">,</span> <span class="n">numSpaces</span><span class="p">):</span>
@@ -574,29 +581,21 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Version of the component</span>
-    <span class="c1"># TODO: the type of module, is it OrderedDict or just Dict?</span>
     <span class="n">_components</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">]]</span>
-    <span class="c1"># _grad_components: Dict[str, Optional[&quot;GradComponent&quot;]]</span>
     <span class="n">_init_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Store the init arguments</span>
-    <span class="c1"># _execution_graph: List[str] = []  # This will store the graph of execution.</span>
-    <span class="c1"># _graph = nx.DiGraph()</span>
-    <span class="c1"># _last_called = None  # Tracks the last component called</span>
+
     <span class="n">_parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]]</span>
     <span class="n">training</span><span class="p">:</span> <span class="nb">bool</span>
-    <span class="n">teacher_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">tracing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">teacher_mode</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">tracing</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;Component&quot;</span>  <span class="c1"># name will help with GradComponent output naming as &quot;{name}_output&quot;</span>
     <span class="p">)</span>
-    <span class="n">_component_type</span> <span class="o">=</span> <span class="s2">&quot;base&quot;</span>
 
-    <span class="c1"># def _generate_unique_name(self):</span>
-    <span class="c1">#     # Generate a unique identifier that includes the class name</span>
-    <span class="c1">#     return f&quot;{self.__class__.__name__}_{uuid.uuid4().hex[:8]}&quot;</span>
+    <span class="n">_component_type</span> <span class="o">=</span> <span class="s2">&quot;base&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s2">&quot;_components&quot;</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">())</span>
-        <span class="c1"># super().__setattr__(&quot;_grad_components&quot;, OrderedDict())</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s2">&quot;_parameters&quot;</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">())</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s2">&quot;training&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s2">&quot;teacher_mode&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -876,8 +875,8 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;parameter name can</span><span class="se">\&#39;</span><span class="s1">t contain &quot;.&quot;&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;parameter name can</span><span class="se">\&#39;</span><span class="s1">t be empty string &quot;&quot;&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;attribute &#39;</span><span class="si">{}</span><span class="s2">&#39; already exists&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="c1"># elif hasattr(self, name) and name not in self._parameters:</span>
+        <span class="c1">#     raise KeyError(&quot;attribute &#39;{}&#39; already exists&quot;.format(name))</span>
 
         <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -977,50 +976,94 @@
         <span class="k">yield from</span> <span class="n">gen</span></div>
 
 
-    <span class="c1"># @staticmethod</span>
-    <span class="c1"># def visualize_graph_html(filename=&quot;graph.html&quot;):</span>
-    <span class="c1">#     nt = Network(directed=True)</span>
-    <span class="c1">#     nt.from_nx(Component._graph)</span>
-    <span class="c1">#     for edge in nt.edges:</span>
-    <span class="c1">#         edge[&quot;title&quot;] = edge[&quot;label&quot;]</span>
-    <span class="c1">#         edge[&quot;value&quot;] = (</span>
-    <span class="c1">#             10  # You can adjust the &#39;value&#39; to set the width of the edges</span>
-    <span class="c1">#         )</span>
-    <span class="c1">#     nt.show_buttons(</span>
-    <span class="c1">#         filter_=[&quot;physics&quot;]</span>
-    <span class="c1">#     )  # Optional: Show interactive buttons to adjust physics and other settings</span>
-    <span class="c1">#     nt.show(</span>
-    <span class="c1">#         filename, notebook=False</span>
-    <span class="c1">#     )  # Make sure to set notebook=False for non-notebook environments</span>
+<div class="viewcode-block" id="Component.forward">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.forward">[docs]</a>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        User must override this for the training scenario</span>
+<span class="sd">        if bicall is not defined.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Subclasses must implement `forward` or `bicall`.&quot;</span><span class="p">)</span></div>
 
-    <span class="c1"># @staticmethod</span>
-    <span class="c1"># def visualize_graph():</span>
-    <span class="c1">#     pos = nx.spring_layout(Component._graph)</span>
-    <span class="c1">#     nx.draw(</span>
-    <span class="c1">#         Component._graph,</span>
-    <span class="c1">#         pos,</span>
-    <span class="c1">#         with_labels=True,</span>
-    <span class="c1">#         node_color=&quot;lightblue&quot;,</span>
-    <span class="c1">#         node_size=2000,</span>
-    <span class="c1">#         edge_color=&quot;gray&quot;,</span>
-    <span class="c1">#         linewidths=1,</span>
-    <span class="c1">#         font_size=15,</span>
-    <span class="c1">#     )</span>
-    <span class="c1">#     plt.show()</span>
-
-    <span class="c1"># TODO: do we need to disable this format of calling instead use call and acall extensively?</span>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;In default, we use sync call.&quot;&quot;&quot;</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">output</span>
 
 <div class="viewcode-block" id="Component.call">
 <a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        User must override this for the inference scenario</span>
+<span class="sd">        if bicall is not defined.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_bicall</span><span class="p">():</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bicall</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">output</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Subclasses must implement `call` or `bicall`.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Component.bicall">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.bicall">[docs]</a>
+    <span class="k">def</span> <span class="nf">bicall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the user provides a `bicall` method, then `__call__` will automatically</span>
+<span class="sd">        dispatch here for both training and inference scenarios. This can internally</span>
+<span class="sd">        decide how to handle training vs. inference, or just produce a single unified</span>
+<span class="sd">        output type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Default fallback if not overridden</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Component </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is missing the required &#39;call&#39; method.&quot;</span>
+            <span class="s2">&quot;Optional method. Implement to handle both scenarios in one place.&quot;</span>
         <span class="p">)</span></div>
 
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># 1. If `bicall` is defined by the user, use it</span>
+        <span class="c1">#    and let the `bicall` implementation handle</span>
+        <span class="c1">#    the difference between training vs. inference.</span>
+        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_bicall</span><span class="p">():</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bicall</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="c1"># Validation checks based on training or inference</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+                <span class="c1"># Ensure output is a Parameter in training</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Output should be of type Parameter in training mode, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Ensure output is not a Parameter in inference</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Output should not be of type Parameter in inference mode, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+            <span class="k">return</span> <span class="n">output</span>
+
+        <span class="c1"># 2. Otherwise, if `bicall` is not defined, fall back to forward / call</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="c1"># Validation for training</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Output should be of type Parameter in training mode, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">output</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="c1"># Validation for inference</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Output should not be of type Parameter in inference mode, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">output</span>
+
+    <span class="k">def</span> <span class="nf">_has_bicall</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method to check if this subclass has overridden bicall.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The default `bicall` in this class raises NotImplementedError,</span>
+        <span class="c1"># so we can check if the method is still the same one as in `MyModule`.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bicall</span><span class="o">.</span><span class="vm">__func__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Component</span><span class="o">.</span><span class="n">bicall</span>
 
 <div class="viewcode-block" id="Component.acall">
 <a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.acall">[docs]</a>
@@ -1123,6 +1166,7 @@
 <span class="sd">            memo (Optional[Set[&quot;Component&quot;]]): a memo to store the set of components already added to the result</span>
 <span class="sd">            prefix (str): a prefix to prepend to all component names</span>
 <span class="sd">            remove_duplicate (bool): if True, then yields only unique components</span>
+<span class="sd">            grad_component_only (bool): if True, then yields only components that are instances of GradComponent</span>
 
 <span class="sd">        Yields:</span>
 <span class="sd">            Tuple[str, &quot;Component&quot;]: Tuple containing the name and component</span>
@@ -1451,10 +1495,36 @@
 
 
 
-<span class="c1"># TODO: support async call</span>
-<div class="viewcode-block" id="FunComponent">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.FunComponent">[docs]</a>
-<span class="k">class</span> <span class="nc">FunComponent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="c1"># TODO: it is possible to separate all other data component from component and have its own to_dict and from_dict, and other functionalities instead of being tied to component</span>
+<div class="viewcode-block" id="DataComponent">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.DataComponent">[docs]</a>
+<span class="k">class</span> <span class="nc">DataComponent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all components that are handling data pre- and post-processing.</span>
+<span class="sd">    Example: Prompt, Parser. TextSplitter, etc.</span>
+
+<span class="sd">    Compared with a normal Component, it is not trainable and can process parameters as input but does not return any parameters.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (Optional[Union[Dict[str, Any], Any]]): input data for the component.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_component_type</span> <span class="o">=</span> <span class="s2">&quot;data&quot;</span>
+
+<div class="viewcode-block" id="DataComponent.train">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.DataComponent.train">[docs]</a>
+    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="FuncDataComponent">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.FuncDataComponent">[docs]</a>
+<span class="k">class</span> <span class="nc">FuncDataComponent</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Component that wraps a function.</span>
 
 <span class="sd">    Args:</span>
@@ -1463,7 +1533,7 @@
 <span class="sd">    Examples:</span>
 
 <span class="sd">    function = lambda x: x + 1</span>
-<span class="sd">    fun_component = FunComponent(function)</span>
+<span class="sd">    fun_component = FuncDataComponent(function)</span>
 <span class="sd">    print(fun_component(1))  # 2</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1471,23 +1541,25 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span> <span class="o">=</span> <span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="p">,</span> <span class="n">fun</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fun</span> <span class="o">=</span> <span class="n">fun</span>
 
-<div class="viewcode-block" id="FunComponent.call">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.FunComponent.call">[docs]</a>
+<div class="viewcode-block" id="FuncDataComponent.call">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.FuncDataComponent.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">fun</span> <span class="o">=</span> <span class="n">EntityMapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">fun</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="c1"># fun = EntityMapping.get(self.fun_name)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fun</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_extra_repr</span><span class="p">()</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;fun_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="si">}</span><span class="s2">&quot;</span></div>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;fun_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
 
-<div class="viewcode-block" id="fun_to_component">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.fun_to_component">[docs]</a>
-<span class="k">def</span> <span class="nf">fun_to_component</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunComponent</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Helper function to convert a function into a Component with</span>
+<div class="viewcode-block" id="func_to_data_component">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.func_to_data_component">[docs]</a>
+<span class="k">def</span> <span class="nf">func_to_data_component</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FuncDataComponent</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Helper function to convert a function into a Parser class.</span>
 <span class="sd">    its own class name.</span>
 
 <span class="sd">    Can be used as both a decorator and a function.</span>
@@ -1495,38 +1567,109 @@
 <span class="sd">    Args:</span>
 <span class="sd">        fun (Callable): The function to be wrapped.</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        FunComponent: The component that wraps the function.</span>
+<span class="sd">        FuncDataComponent: The component that wraps the function.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">    1. As a decorator:</span>
-<span class="sd">        &gt;&gt;&gt; @fun_to_component</span>
+<span class="sd">        &gt;&gt;&gt; @func_to_data_component</span>
 <span class="sd">        &gt;&gt;&gt; def my_function(x):</span>
 <span class="sd">        &gt;&gt;&gt;     return x + 1</span>
 <span class="sd">        &gt;&gt;&gt; # is equivalent to</span>
-<span class="sd">        &gt;&gt;&gt; class MyFunctionComponent(FunComponent):</span>
+<span class="sd">        &gt;&gt;&gt; class MyFunctionDataComponent(FuncDataComponent):</span>
 <span class="sd">        &gt;&gt;&gt;     def __init__(self):</span>
 <span class="sd">        &gt;&gt;&gt;         super().__init__(my_function)</span>
 
 <span class="sd">    2. As a function:</span>
-<span class="sd">        &gt;&gt;&gt; my_function_component = fun_to_component(my_function)</span>
+<span class="sd">        &gt;&gt;&gt; my_function_data_component = func_to_data_component(my_function)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Split the function name by underscores, capitalize each part, and join them back together</span>
+    <span class="n">class_name</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;DataComponent&quot;</span>
+    <span class="p">)</span>
+    <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">fun</span><span class="p">)</span>
+    <span class="n">parser_class</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span>
+        <span class="n">class_name</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">FuncDataComponent</span><span class="p">,),</span>
+        <span class="p">{</span><span class="s2">&quot;__init__&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">FuncDataComponent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">)},</span>
+    <span class="p">)</span>
+    <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">parser_class</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parser_class</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="FuncComponent">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.FuncComponent">[docs]</a>
+<span class="k">class</span> <span class="nc">FuncComponent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Component that wraps a function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fun (Callable): The function to be wrapped.</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    function = lambda x: x + 1</span>
+<span class="sd">    fun_component = FuncComponent(function)</span>
+<span class="sd">    print(fun_component(1))  # 2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">afun</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span> <span class="o">=</span> <span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="p">,</span> <span class="n">fun</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fun</span> <span class="o">=</span> <span class="n">fun</span>
+
+<div class="viewcode-block" id="FuncComponent.call">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.FuncComponent.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fun</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;fun_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="func_to_component">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.func_to_component">[docs]</a>
+<span class="k">def</span> <span class="nf">func_to_component</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FuncComponent</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Helper function to convert a function into a Component class.</span>
+<span class="sd">    its own class name.</span>
+
+<span class="sd">    Can be used as both a decorator and a function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fun (Callable): The function to be wrapped.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        FuncComponent: The component that wraps the function.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    1. As a decorator:</span>
+<span class="sd">        &gt;&gt;&gt; @func_to_component</span>
+<span class="sd">        &gt;&gt;&gt; def my_function(x):</span>
+<span class="sd">        &gt;&gt;&gt;     return x + 1</span>
+<span class="sd">        &gt;&gt;&gt; # is equivalent to</span>
+<span class="sd">        &gt;&gt;&gt; class MyFunctionComponent(FuncComponent):</span>
+<span class="sd">        &gt;&gt;&gt;     def __init__(self):</span>
+<span class="sd">        &gt;&gt;&gt;         super().__init__(my_function)</span>
+
+<span class="sd">    2. As a function:</span>
+<span class="sd">        &gt;&gt;&gt; my_function_component = func_to_component(my_function)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">class_name</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;Component&quot;</span>
     <span class="p">)</span>
-    <span class="c1"># register the function</span>
     <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">fun</span><span class="p">)</span>
-    <span class="c1"># Define a new component class dynamically</span>
-    <span class="n">component_class</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span>
+    <span class="n">parser_class</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span>
         <span class="n">class_name</span><span class="p">,</span>
-        <span class="p">(</span><span class="n">FunComponent</span><span class="p">,),</span>
-        <span class="p">{</span><span class="s2">&quot;__init__&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">FunComponent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">)},</span>
+        <span class="p">(</span><span class="n">FuncComponent</span><span class="p">,),</span>
+        <span class="p">{</span><span class="s2">&quot;__init__&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">FuncComponent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">)},</span>
     <span class="p">)</span>
-    <span class="c1"># register the component</span>
-    <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">component_class</span><span class="p">)</span>
+    <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">parser_class</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">component_class</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">parser_class</span><span class="p">()</span></div>
 
 
 
@@ -1668,6 +1811,20 @@
 <span class="c1">#                 self[m[0]] = m[1]  # type: ignore[assignment]</span>
 
 <span class="c1">#     # remove forward alltogether to fallback on Module&#39;s _forward_unimplemented</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">FuncComponent</span>
+
+    <span class="k">def</span> <span class="nf">add_one</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">fun_component</span> <span class="o">=</span> <span class="n">FuncComponent</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">fun_component</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fun_component</span><span class="p">))</span>
+
+    <span class="n">fun_component</span> <span class="o">=</span> <span class="n">func_to_component</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">fun_component</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 </pre></div>
 
                 </article>

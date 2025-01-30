@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -272,6 +287,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -300,6 +319,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -422,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -578,8 +605,66 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="loss-component">
-<span id="optim-loss-component"></span><h1>loss_component<a class="headerlink" href="#loss-component" title="Link to this heading">#</a></h1>
+  <section id="module-optim.loss_component">
+<span id="loss-component"></span><span id="optim-loss-component"></span><h1>loss_component<a class="headerlink" href="#module-optim.loss_component" title="Link to this heading">#</a></h1>
+<p>Base class for Autograd Components that can be called and backpropagated through.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#optim.loss_component.LossComponent" title="optim.loss_component.LossComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LossComponent</span></code></a>(*args, **kwargs)</p></td>
+<td><p>A base class to define a loss component.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.loss_component.LossComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LossComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/loss_component.html#LossComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.loss_component.LossComponent" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<p>A base class to define a loss component.</p>
+<p>Loss component is to compute the textual gradients/feedback for each of its predecessors using another LLM as the backward engine.</p>
+<p>Each precessor should have basic information that is passed to its next component to inform its type such as retriever or generator and its role description.</p>
+<p>Compared with <cite>Component</cite>, <cite>GradComponent</cite> defines three important interfaces:
+- <cite>forward</cite>: the forward pass of the function, returns a <cite>Parameter</cite> object that can be traced and backpropagated.
+- <cite>backward</cite>: the backward pass of the function, updates the gradients/prediction score backpropagated from a “loss” parameter.
+- <cite>set_backward_engine</cite>: set the backward engine(a form of generator) to the component, which is used to backpropagate the gradients.</p>
+<p>The __call__ method will check if the component is in training mode,
+and call the <cite>forward</cite> method to return a <cite>Parameter</cite> object if it is in training mode,
+otherwise, it will call the <cite>call</cite> method to return the output such as “GeneratorOutput”, “RetrieverOutput”, etc.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.loss_component.LossComponent.backward_engine">
+<span class="sig-name descname"><span class="pre">backward_engine</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../core/core.generator.html#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a></em><a class="headerlink" href="#optim.loss_component.LossComponent.backward_engine" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.loss_component.LossComponent.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.loss_component.LossComponent.id" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.loss_component.LossComponent.set_backward_engine">
+<span class="sig-name descname"><span class="pre">set_backward_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backward_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.generator.html#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/loss_component.html#LossComponent.set_backward_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.loss_component.LossComponent.set_backward_engine" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.loss_component.LossComponent.disable_backward_engine">
+<span class="sig-name descname"><span class="pre">disable_backward_engine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/loss_component.html#LossComponent.disable_backward_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.loss_component.LossComponent.disable_backward_engine" title="Link to this definition">#</a></dt>
+<dd><p>Does not run gradients generation, but still with backward to gain module-context</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.loss_component.LossComponent.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a></span></span><a class="reference internal" href="../../_modules/optim/loss_component.html#LossComponent.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.loss_component.LossComponent.forward" title="Link to this definition">#</a></dt>
+<dd><p>Default just wraps the call method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.loss_component.LossComponent.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/loss_component.html#LossComponent.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.loss_component.LossComponent.backward" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -616,6 +701,31 @@
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.loss_component.LossComponent"><code class="docutils literal notranslate"><span class="pre">LossComponent</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.loss_component.LossComponent.backward_engine"><code class="docutils literal notranslate"><span class="pre">LossComponent.backward_engine</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.loss_component.LossComponent.id"><code class="docutils literal notranslate"><span class="pre">LossComponent.id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.loss_component.LossComponent.set_backward_engine"><code class="docutils literal notranslate"><span class="pre">LossComponent.set_backward_engine()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.loss_component.LossComponent.disable_backward_engine"><code class="docutils literal notranslate"><span class="pre">LossComponent.disable_backward_engine()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.loss_component.LossComponent.forward"><code class="docutils literal notranslate"><span class="pre">LossComponent.forward()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.loss_component.LossComponent.backward"><code class="docutils literal notranslate"><span class="pre">LossComponent.backward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

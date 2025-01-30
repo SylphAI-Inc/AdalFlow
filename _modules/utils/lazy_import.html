@@ -154,6 +154,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -173,13 +180,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -299,6 +314,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -501,7 +523,10 @@
     <span class="n">COHERE</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;cohere&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install cohere with: pip install cohere&quot;</span><span class="p">)</span>
     <span class="n">OLLAMA</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ollama&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install ollama with: pip install ollama&quot;</span><span class="p">)</span>
     <span class="c1"># AWS</span>
-    <span class="n">BOTO3</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;boto3&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install boto3 with: pip install boto3&quot;</span><span class="p">)</span>
+    <span class="n">BOTO3</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">[</span><span class="s2">&quot;boto3&quot;</span><span class="p">,</span> <span class="s2">&quot;botocore&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;Please install boto3 and botocore with: pip install boto3 botocore&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="c1"># modeling library</span>
     <span class="n">TORCH</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;torch&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install torch with: pip install torch&quot;</span><span class="p">)</span>
 

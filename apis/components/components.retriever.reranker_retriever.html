@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -272,6 +287,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -300,6 +319,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -422,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.ollama_client.html">ollama_client</a></li>
@@ -583,8 +610,57 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="reranker-retriever">
-<span id="components-retriever-reranker-retriever"></span><h1>reranker_retriever<a class="headerlink" href="#reranker-retriever" title="Link to this heading">#</a></h1>
+  <section id="module-components.retriever.reranker_retriever">
+<span id="reranker-retriever"></span><span id="components-retriever-reranker-retriever"></span><h1>reranker_retriever<a class="headerlink" href="#module-components.retriever.reranker_retriever" title="Link to this heading">#</a></h1>
+<p>Reranking model using modelclient as a retriever.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.retriever.reranker_retriever.RerankerRetriever" title="components.retriever.reranker_retriever.RerankerRetriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RerankerRetriever</span></code></a>(model_client[, ...])</p></td>
+<td><p>A retriever that uses a reranker model to rank the documents and retrieve the top-k documents.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="components.retriever.reranker_retriever.RerankerRetriever">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RerankerRetriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverDocumentType</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_map_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/reranker_retriever.html#RerankerRetriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.reranker_retriever.RerankerRetriever" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</p>
+<p>A retriever that uses a reranker model to rank the documents and retrieve the top-k documents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_k</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of top documents to retrieve. Defaults to 5.</p></li>
+<li><p><strong>model_client</strong> (<a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><em>ModelClient</em></a>) – The model client that has a reranker model,
+such as <code class="docutils literal notranslate"><span class="pre">CohereAPIClient</span></code> or <code class="docutils literal notranslate"><span class="pre">TransformersClient</span></code>.</p></li>
+<li><p><strong>model_kwargs</strong> (<em>Dict</em>) – The model kwargs to pass to the model client.</p></li>
+<li><p><strong>documents</strong> (<em>Optional</em><em>[</em><em>RetrieverDocumentsType</em><em>]</em><em>, </em><em>optional</em>) – The documents to build the index from. Defaults to None.</p></li>
+<li><p><strong>document_map_func</strong> (<em>Optional</em><em>[</em><em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – The function to map the document of Any type to the specific type <code class="docutils literal notranslate"><span class="pre">RetrieverDocumentType</span></code> that the retriever expects. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Examples:</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.reranker_retriever.RerankerRetriever.reset_index">
+<span class="sig-name descname"><span class="pre">reset_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/reranker_retriever.html#RerankerRetriever.reset_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.reranker_retriever.RerankerRetriever.reset_index" title="Link to this definition">#</a></dt>
+<dd><p>Initialize/reset any attributes/states for the index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.reranker_retriever.RerankerRetriever.build_index_from_documents">
+<span class="sig-name descname"><span class="pre">build_index_from_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverDocumentType</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_map_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/reranker_retriever.html#RerankerRetriever.build_index_from_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.reranker_retriever.RerankerRetriever.build_index_from_documents" title="Link to this definition">#</a></dt>
+<dd><p>Built index from the [document_map_func(doc) for doc in documents].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.reranker_retriever.RerankerRetriever.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverOutput</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RetrieverOutput</span></span></span><a class="reference internal" href="../../_modules/components/retriever/reranker_retriever.html#RerankerRetriever.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.reranker_retriever.RerankerRetriever.call" title="Link to this definition">#</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -621,6 +697,28 @@
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.reranker_retriever.RerankerRetriever"><code class="docutils literal notranslate"><span class="pre">RerankerRetriever</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.reranker_retriever.RerankerRetriever.reset_index"><code class="docutils literal notranslate"><span class="pre">RerankerRetriever.reset_index()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.reranker_retriever.RerankerRetriever.build_index_from_documents"><code class="docutils literal notranslate"><span class="pre">RerankerRetriever.build_index_from_documents()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.reranker_retriever.RerankerRetriever.call"><code class="docutils literal notranslate"><span class="pre">RerankerRetriever.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

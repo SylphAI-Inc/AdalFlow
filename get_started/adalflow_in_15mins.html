@@ -52,6 +52,8 @@
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Community" href="community.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -147,9 +149,16 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -174,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -284,9 +301,7 @@
       
       
       
-        
-      
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -301,9 +316,16 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -395,6 +417,21 @@
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Learn AdalFlow in 15 minutes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="community.html">Community</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -427,6 +464,9 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Get Started</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">Learn...</li>
   </ul>
 </nav>
@@ -613,7 +653,7 @@ We’ll instruct the LLM to respond with a chain of thought and end the response
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">adalflow</span> <span class="k">as</span> <span class="nn">adal</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
-<span class="nd">@adal</span><span class="o">.</span><span class="n">fun_to_component</span>
+<span class="nd">@adal</span><span class="o">.</span><span class="n">func_to_data_component</span>
 <span class="k">def</span> <span class="nf">parse_integer_answer</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A function that parses the last integer from a string using regular expressions.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
@@ -630,7 +670,7 @@ We’ll instruct the LLM to respond with a chain of thought and end the response
     <span class="k">return</span> <span class="n">answer</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">adal.fun_to_component</span></code> is a decorator that converts a function to a component so that we can pass it to the generator as a output processor.</p>
+<p><code class="docutils literal notranslate"><span class="pre">adal.func_to_data_component</span></code> is a decorator that converts a function to a data component so that we can pass it to the generator as a output processor.</p>
 <p>For the task, we will use a simple template taking three arguments: <code class="docutils literal notranslate"><span class="pre">system_prompt</span></code>, <code class="docutils literal notranslate"><span class="pre">few_shot_demos</span></code>, and <code class="docutils literal notranslate"><span class="pre">input_str</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">few_shot_template</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;START_OF_SYSTEM_PROMPT&gt;</span>
 <span class="s2">{{system_prompt}}</span>
@@ -800,8 +840,8 @@ To note that the answer is in <cite>str</cite> format.</p>
 </section>
 <section id="diagnose-the-task-pipeline">
 <h3>Diagnose the task pipeline<a class="headerlink" href="#diagnose-the-task-pipeline" title="Link to this heading">#</a></h3>
-<p>To evaluate the task pipeline using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">diagnose</span></code> method provided by our trainer,
-we can take advantage of the <code class="xref py py-class docutils literal notranslate"><span class="pre">AdalComponent</span></code> interface.
+<p>To evaluate the task pipeline using the <a class="reference internal" href="../apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer" title="optim.trainer.trainer.Trainer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">diagnose</span></code></a> method provided by our trainer,
+we can take advantage of the <a class="reference internal" href="../apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent" title="optim.trainer.adal.AdalComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdalComponent</span></code></a> interface.
 This interface class should be subclassed, allowing us to leverage its parallel processing capabilities, callback configuration, optimizer configuration, and built-in support for the teacher/backward engine. The AdalComponent works similarly to how PyTorch Lightning’s LightningModule interacts with its Trainer.</p>
 <p>Here’s the minimum code required to get started on evaluating the task pipeline:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.datasets.types</span> <span class="kn">import</span> <span class="n">Example</span>
@@ -1061,7 +1101,7 @@ following the instruction to make correct proposal.</p>
 <p>For the text optimizer, we have two training strategy: <code class="docutils literal notranslate"><span class="pre">random</span></code> and <code class="docutils literal notranslate"><span class="pre">constrained</span></code>.
 The <code class="docutils literal notranslate"><span class="pre">random</span></code> strategy runs a batch of loss and backward propagation and then validate it on the <code class="docutils literal notranslate"><span class="pre">validation</span></code> and <code class="docutils literal notranslate"><span class="pre">test</span></code> dataset at each step.
 This is a standard training strategy, and it is used by libraries like <code class="docutils literal notranslate"><span class="pre">Dspy</span></code> and <code class="docutils literal notranslate"><span class="pre">Text-grad</span></code>.
-You can refer <code class="xref py py-meth docutils literal notranslate"><span class="pre">optim.trainer.Trainer.fit()</span></code> for more details.</p>
+You can refer <a class="reference internal" href="../apis/optim/optim.trainer.html#optim.trainer.Trainer.fit" title="optim.trainer.Trainer.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">optim.trainer.Trainer.fit()</span></code></a> for more details.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">constrained</span></code> strategy is unique to AdalFlow library where it runs a moving batch capped at maximum 20 samples, and it subsample the correct and failed samples (each maximum at 4).
 Before it runs the validations on the full <code class="docutils literal notranslate"><span class="pre">validation</span></code> and <code class="docutils literal notranslate"><span class="pre">test</span></code> dataset, it will run a validation on the moving sampled subset and the moving batch. It will try 5 proposals on the moving batch and only let a proposal that can beat the current subset and moving batch performance before it can be validated on the full dataset.
 We find it often more effective than the <code class="docutils literal notranslate"><span class="pre">random</span></code> strategy.</p>
@@ -1076,7 +1116,7 @@ With file names like:</p>
 </pre></div>
 </div>
 <p>Here is an example of how our ckpt file looks like: <a class="reference internal" href="../tutorials/ckpt_file.html"><span class="doc">ckpt_file</span></a>.
-This file is a direct <cite>to_dict</cite>  (json) representation of <code class="xref py py-class docutils literal notranslate"><span class="pre">TrainerResult</span></code>.</p>
+This file is a direct <cite>to_dict</cite>  (json) representation of <a class="reference internal" href="../apis/optim/optim.types.html#optim.types.TrainerResult" title="optim.types.TrainerResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrainerResult</span></code></a>.</p>
 </section>
 <section id="train-with-few-shot-bootstrap">
 <h2>Train with Few-shot Bootstrap<a class="headerlink" href="#train-with-few-shot-bootstrap" title="Link to this heading">#</a></h2>
@@ -1215,6 +1255,24 @@ We also leverage single message prompt, sending the whole template to the model�
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="installation.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Installation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="community.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Community</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               

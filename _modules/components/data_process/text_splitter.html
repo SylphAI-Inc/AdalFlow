@@ -154,6 +154,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
     Tutorials
   </a>
@@ -173,13 +180,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -299,6 +314,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -443,8 +465,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for components.data_process.text_splitter</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Splitting texts is commonly used as a preprocessing step before embedding and retrieving texts.</span>
+<span></span><span class="sd">&quot;&quot;&quot;Splitting texts is commonly used as a preprocessing step before embedding and retrieving texts.</span>
 
 <span class="sd">We encourage you to process your data here and define your own embedding and retrieval methods. These methods can highly depend on the product environment and may extend beyond the scope of this library.</span>
 
@@ -460,11 +481,11 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">DataComponent</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.tokenizer</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
 
@@ -488,12 +509,11 @@
 <span class="n">DEFAULT_CHUNK_SIZE</span> <span class="o">=</span> <span class="mi">800</span>
 <span class="n">DEFAULT_CHUNK_OVERLAP</span> <span class="o">=</span> <span class="mi">200</span>
 
-<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">()</span>
 
-
+<span class="c1"># TODO: make it a non-component</span>
 <div class="viewcode-block" id="TextSplitter">
 <a class="viewcode-back" href="../../../apis/components/components.data_process.text_splitter.html#components.data_process.TextSplitter">[docs]</a>
-<span class="k">class</span> <span class="nc">TextSplitter</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">TextSplitter</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Text Splitter for Chunking Documents</span>
 
@@ -603,12 +623,15 @@
 <span class="sd">        # Document(id=e7b617b2-3927-4248-afce-ec0fc247ac8b, text=&#39;to illustrate.&#39;, meta_data=None, vector=[], parent_doc_id=doc1, order=2, score=None)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">()</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">split_by</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;word&quot;</span><span class="p">,</span> <span class="s2">&quot;sentence&quot;</span><span class="p">,</span> <span class="s2">&quot;page&quot;</span><span class="p">,</span> <span class="s2">&quot;passage&quot;</span><span class="p">,</span> <span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;word&quot;</span><span class="p">,</span>
         <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_CHUNK_SIZE</span><span class="p">,</span>
         <span class="n">chunk_overlap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_CHUNK_OVERLAP</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">separators</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">SEPARATORS</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the TextSplitter with the specified parameters for text splitting.</span>
@@ -628,9 +651,10 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">split_by</span> <span class="o">=</span> <span class="n">split_by</span>
-        <span class="k">if</span> <span class="n">split_by</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SEPARATORS</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">separators</span> <span class="o">=</span> <span class="n">separators</span>
+        <span class="k">if</span> <span class="n">split_by</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">separators</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Invalid options for split_by. You must select from </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">SEPARATORS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid options for split_by. You must select from </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">separators</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">chunk_overlap</span> <span class="o">&gt;=</span> <span class="n">chunk_size</span><span class="p">:</span>
@@ -673,7 +697,7 @@
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Splitting text with split_by: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">split_by</span><span class="si">}</span><span class="s2">, chunk_size: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2">, chunk_overlap: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_overlap</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-        <span class="n">separator</span> <span class="o">=</span> <span class="n">SEPARATORS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">split_by</span><span class="p">]</span>
+        <span class="n">separator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">separators</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">split_by</span><span class="p">]</span>
         <span class="n">splits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_text_into_units</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">separator</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Text split into </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span><span class="si">}</span><span class="s2"> parts.&quot;</span><span class="p">)</span>
         <span class="n">chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge_units_to_chunks</span><span class="p">(</span>
@@ -754,7 +778,7 @@
     <span class="k">def</span> <span class="nf">_split_text_into_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">separator</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Split text based on the specified separator.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_by</span> <span class="o">==</span> <span class="s2">&quot;token&quot;</span><span class="p">:</span>
-            <span class="n">splits</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">splits</span> <span class="o">=</span> <span class="n">TextSplitter</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">splits</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">separator</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Text split by &#39;</span><span class="si">{</span><span class="n">separator</span><span class="si">}</span><span class="s2">&#39; into </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span><span class="si">}</span><span class="s2"> parts.&quot;</span><span class="p">)</span>
@@ -797,7 +821,7 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_by</span> <span class="o">==</span> <span class="s2">&quot;token&quot;</span><span class="p">:</span>
             <span class="c1"># decode each chunk here</span>
-            <span class="n">chunks</span> <span class="o">=</span> <span class="p">[</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">]</span>
+            <span class="n">chunks</span> <span class="o">=</span> <span class="p">[</span><span class="n">TextSplitter</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">]</span>
 
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Merged into </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s2"> chunks.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">chunks</span>

@@ -13,6 +13,7 @@ Submodules
    components.model_client.azureai_client
    components.model_client.bedrock_client
    components.model_client.cohere_client
+   components.model_client.deepseek_client
    components.model_client.google_client
    components.model_client.groq_client
    components.model_client.ollama_client

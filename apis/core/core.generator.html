@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -272,6 +287,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -300,6 +319,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -422,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -578,8 +605,264 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="generator">
-<span id="core-generator"></span><h1>generator<a class="headerlink" href="#generator" title="Link to this heading">#</a></h1>
+  <section id="module-core.generator">
+<span id="generator"></span><span id="core-generator"></span><h1>generator<a class="headerlink" href="#module-core.generator" title="Link to this heading">#</a></h1>
+<p>Generator is a user-facing orchestration component with a simple and unified interface for LLM prediction.</p>
+<p>It is a pipeline that consists of three subcomponents.</p>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.generator.create_teacher_generator" title="core.generator.create_teacher_generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_teacher_generator</span></code></a>(student, ...[, ...])</p></td>
+<td><p>Create a teacher generator from the student generator.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BackwardEngine</span></code></a>(**kwargs)</p></td>
+<td><p>A Generator with a default template for the backward pass in auto-differentiation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">BackwardPassSetup</span></code>([all_pred_at_once, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.generator.Generator" title="core.generator.Generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Generator</span></code></a>(*, model_client[, model_kwargs, ...])</p></td>
+<td><p>An user-facing orchestration component for LLM prediction.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.generator.Generator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_processors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataComponent</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/generator.html#Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GradComponent</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CachedEngine</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CallbackManager</span></code></p>
+<p>An user-facing orchestration component for LLM prediction.</p>
+<p>It is also a GradComponent that can be used for backpropagation through the LLM model.</p>
+<p>By orchestrating the following three components along with their required arguments,
+it enables any LLM prediction with required task output format.
+- Prompt
+- Model client
+- Output processors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_client</strong> (<a class="reference internal" href="core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><em>ModelClient</em></a>) – The model client to use for the generator.</p></li>
+<li><p><strong>model_kwargs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – The model kwargs to pass to the model client. Defaults to {}. Please refer to <a class="reference internal" href="../components/components.model_client.html#components-model-client"><span class="std std-ref">ModelClient</span></a> for the details on how to set the model_kwargs for your specific model if it is from our library.</p></li>
+<li><p><strong>template</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The template for the prompt.  Defaults to <a class="reference internal" href="core.default_prompt_template.html#core-default-prompt-template"><span class="std std-ref">DEFAULT_ADALFLOW_SYSTEM_PROMPT</span></a>.</p></li>
+<li><p><strong>prompt_kwargs</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>optional</em>) – The preset prompt kwargs to fill in the variables in the prompt. Defaults to None.</p></li>
+<li><p><strong>output_processors</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="core.component.html#core.component.Component" title="core.component.Component"><em>Component</em></a><em>]</em><em>, </em><em>optional</em>) – The output processors after model call. It can be a single component or a chained component via <code class="docutils literal notranslate"><span class="pre">Sequential</span></code>. Defaults to None.</p></li>
+<li><p><strong>trainable_params</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – The list of trainable parameters. Defaults to [].</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output.
+And we encourage you to only use it to parse the response to data format you will use later.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.generator.Generator.model_type">
+<span class="sig-name descname"><span class="pre">model_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ModelType</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#core.generator.Generator.model_type" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.generator.Generator.backward_pass_setup">
+<span class="sig-name descname"><span class="pre">backward_pass_setup</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BackwardPassSetup</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">BackwardPassSetup(all_pred_at_once=False,</span> <span class="pre">threshold_score_to_compute_grad_for_errors=0.9,</span> <span class="pre">compute_grad_for_errors_only=True)</span></em><a class="headerlink" href="#core.generator.Generator.backward_pass_setup" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.generator.Generator.model_client">
+<span class="sig-name descname"><span class="pre">model_client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ModelClient</span></em><a class="headerlink" href="#core.generator.Generator.model_client" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.update_default_backward_pass_setup">
+<span class="sig-name descname"><span class="pre">update_default_backward_pass_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">setup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BackwardPassSetup</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/generator.html#Generator.update_default_backward_pass_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.update_default_backward_pass_setup" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.set_cache_path">
+<span class="sig-name descname"><span class="pre">set_cache_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/generator.html#Generator.set_cache_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.set_cache_path" title="Link to this definition">#</a></dt>
+<dd><p>Set the cache path for the generator.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.get_cache_path">
+<span class="sig-name descname"><span class="pre">get_cache_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/generator.html#Generator.get_cache_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.get_cache_path" title="Link to this definition">#</a></dt>
+<dd><p>Get the cache path for the generator.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.set_mock_output">
+<span class="sig-name descname"><span class="pre">set_mock_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mock_output_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mock</span> <span class="pre">data'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/generator.html#Generator.set_mock_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.set_mock_output" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.reset_mock_output">
+<span class="sig-name descname"><span class="pre">reset_mock_output</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/generator.html#Generator.reset_mock_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.reset_mock_output" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.set_parameters">
+<span class="sig-name descname"><span class="pre">set_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/generator.html#Generator.set_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.set_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Set name for each paramter and set all context for each other.
+Make all parameters attributes to the generator for finding them easily
+for optimizers and other components.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.from_config">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.generator.Generator" title="core.generator.Generator"><span class="pre">Generator</span></a></span></span><a class="reference internal" href="../../_modules/core/generator.html#Generator.from_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.from_config" title="Link to this definition">#</a></dt>
+<dd><p>Create a Generator instance from the config dictionary.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;model_client&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;component_name&quot;</span><span class="p">:</span> <span class="s2">&quot;OpenAIClient&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;component_config&quot;</span><span class="p">:</span> <span class="p">{}</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;model_kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="p">}</span>
+<span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.print_prompt">
+<span class="sig-name descname"><span class="pre">print_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/generator.html#Generator.print_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.print_prompt" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.get_prompt">
+<span class="sig-name descname"><span class="pre">get_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/generator.html#Generator.get_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.get_prompt" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.create_demo_data_instance">
+<span class="sig-name descname"><span class="pre">create_demo_data_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeneratorOutput</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/generator.html#Generator.create_demo_data_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.create_demo_data_instance" title="Link to this definition">#</a></dt>
+<dd><p>Automatically create a demo data instance from the input and output of the generator.
+Used to trace the demos for the demo paramter in the prompt_kwargs.
+Part of the few-shot learning.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.set_backward_engine">
+<span class="sig-name descname"><span class="pre">set_backward_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backward_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/generator.html#Generator.set_backward_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.set_backward_engine" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.set_teacher_generator">
+<span class="sig-name descname"><span class="pre">set_teacher_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">teacher</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.generator.Generator" title="core.generator.Generator"><span class="pre">Generator</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/generator.html#Generator.set_teacher_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.set_teacher_generator" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.find_demo_parameter">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_demo_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Parameter</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/core/generator.html#Generator.find_demo_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.find_demo_parameter" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Parameter</span></span></span><a class="reference internal" href="../../_modules/core/generator.html#Generator.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.forward" title="Link to this definition">#</a></dt>
+<dd><p>Customized forward pass on top of the GradComponent forward method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.generator.Generator" title="core.generator.Generator"><span class="pre">Generator</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_backward_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Parameter</span></span></span><a class="reference internal" href="../../_modules/core/generator.html#Generator.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.backward" title="Link to this definition">#</a></dt>
+<dd><p>Backward pass of the function. In default, it will pass all the scores to the predecessors.</p>
+<p>Note: backward is mainly used internally and better to only allow kwargs as the input.</p>
+<p>Subclass should implement this method if you need additional backward logic.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/generator.html#Generator.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.call" title="Link to this definition">#</a></dt>
+<dd><p>Call the model_client by formatting prompt from the prompt_kwargs,
+and passing the combined model_kwargs to the model client.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.acall">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/generator.html#Generator.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.acall" title="Link to this definition">#</a></dt>
+<dd><p>Async call the model with the input and model_kwargs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Warning:<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Training is not supported in async call yet.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/generator.html#Generator.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.to_dict" title="Link to this definition">#</a></dt>
+<dd><p>Convert the generator to a dictionary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.Generator.failure_message_to_backward_engine">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">failure_message_to_backward_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gradient_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeneratorOutput</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/core/generator.html#Generator.failure_message_to_backward_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.failure_message_to_backward_engine" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.generator.BackwardEngine">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BackwardEngine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/generator.html#BackwardEngine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.BackwardEngine" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#core.generator.Generator" title="core.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a></p>
+<p>A Generator with a default template for the backward pass in auto-differentiation.</p>
+<p>As a component, the forward pass is simply the same as the call method.
+So it will always return GeneratorOutputType instead of Parameter.</p>
+<p>If you want to customize the template, you can create your own backward engine.
+Yet, we will forever keep the training mode to False for the backward engine.
+This is achieved by making forward the same as call.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.BackwardEngine.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/generator.html#BackwardEngine.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.BackwardEngine.call" title="Link to this definition">#</a></dt>
+<dd><p>Catch the rate limit error and raise it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.BackwardEngine.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/generator.html#BackwardEngine.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.BackwardEngine.forward" title="Link to this definition">#</a></dt>
+<dd><p>Forward pass for the backward engine.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.generator.BackwardEngine.failure_message_to_optimizer">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">failure_message_to_optimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gradient_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeneratorOutput</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/core/generator.html#BackwardEngine.failure_message_to_optimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.BackwardEngine.failure_message_to_optimizer" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.generator.create_teacher_generator">
+<span class="sig-name descname"><span class="pre">create_teacher_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">student</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.generator.Generator" title="core.generator.Generator"><span class="pre">Generator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.generator.Generator" title="core.generator.Generator"><span class="pre">Generator</span></a></span></span><a class="reference internal" href="../../_modules/core/generator.html#create_teacher_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.create_teacher_generator" title="Link to this definition">#</a></dt>
+<dd><p>Create a teacher generator from the student generator.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Teacher generator will have no parameters.
+If you want to keep it to be the same as the student, just create one each time your student has been updated.
+Or else, task.parameters will list teacher parameters.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>student</strong> (<a class="reference internal" href="#core.generator.Generator" title="core.generator.Generator"><em>Generator</em></a>) – The student generator.</p></li>
+<li><p><strong>model_client</strong> (<a class="reference internal" href="core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><em>ModelClient</em></a>) – The model client to use for the teacher generator.</p></li>
+<li><p><strong>model_kwargs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The model kwargs to pass to the model client.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the teacher generator. Defaults to “teacher”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The teacher generator.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#core.generator.Generator" title="core.generator.Generator">Generator</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -616,6 +899,54 @@
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator"><code class="docutils literal notranslate"><span class="pre">Generator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.model_type"><code class="docutils literal notranslate"><span class="pre">Generator.model_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.backward_pass_setup"><code class="docutils literal notranslate"><span class="pre">Generator.backward_pass_setup</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.model_client"><code class="docutils literal notranslate"><span class="pre">Generator.model_client</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.update_default_backward_pass_setup"><code class="docutils literal notranslate"><span class="pre">Generator.update_default_backward_pass_setup()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.set_cache_path"><code class="docutils literal notranslate"><span class="pre">Generator.set_cache_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.get_cache_path"><code class="docutils literal notranslate"><span class="pre">Generator.get_cache_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.set_mock_output"><code class="docutils literal notranslate"><span class="pre">Generator.set_mock_output()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.reset_mock_output"><code class="docutils literal notranslate"><span class="pre">Generator.reset_mock_output()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.set_parameters"><code class="docutils literal notranslate"><span class="pre">Generator.set_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.from_config"><code class="docutils literal notranslate"><span class="pre">Generator.from_config()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.print_prompt"><code class="docutils literal notranslate"><span class="pre">Generator.print_prompt()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.get_prompt"><code class="docutils literal notranslate"><span class="pre">Generator.get_prompt()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.create_demo_data_instance"><code class="docutils literal notranslate"><span class="pre">Generator.create_demo_data_instance()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.set_backward_engine"><code class="docutils literal notranslate"><span class="pre">Generator.set_backward_engine()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.set_teacher_generator"><code class="docutils literal notranslate"><span class="pre">Generator.set_teacher_generator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.find_demo_parameter"><code class="docutils literal notranslate"><span class="pre">Generator.find_demo_parameter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.forward"><code class="docutils literal notranslate"><span class="pre">Generator.forward()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.backward"><code class="docutils literal notranslate"><span class="pre">Generator.backward()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.call"><code class="docutils literal notranslate"><span class="pre">Generator.call()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.acall"><code class="docutils literal notranslate"><span class="pre">Generator.acall()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.to_dict"><code class="docutils literal notranslate"><span class="pre">Generator.to_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.Generator.failure_message_to_backward_engine"><code class="docutils literal notranslate"><span class="pre">Generator.failure_message_to_backward_engine()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.BackwardEngine"><code class="docutils literal notranslate"><span class="pre">BackwardEngine</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.BackwardEngine.call"><code class="docutils literal notranslate"><span class="pre">BackwardEngine.call()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.BackwardEngine.forward"><code class="docutils literal notranslate"><span class="pre">BackwardEngine.forward()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.BackwardEngine.failure_message_to_optimizer"><code class="docutils literal notranslate"><span class="pre">BackwardEngine.failure_message_to_optimizer()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.generator.create_teacher_generator"><code class="docutils literal notranslate"><span class="pre">create_teacher_generator()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

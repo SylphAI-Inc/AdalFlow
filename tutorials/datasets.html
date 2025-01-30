@@ -156,6 +156,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -304,6 +319,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -419,6 +441,7 @@
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rag_with_memory.html">RAG with Memory</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -500,7 +523,7 @@ The <cite>Dataset</cite> often will be used together with <a class="reference in
 DataLoader can also handle parallel data loading with multiple workers and apply data shuffling.</p>
 <p>To be able to use your data, you need to:</p>
 <ol class="arabic simple">
-<li><p>Create a subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code> that defines the data structure, including a unique identifier, input and output fields for LLM calls.</p></li>
+<li><p>Create a subclass of <a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></a> that defines the data structure, including a unique identifier, input and output fields for LLM calls.</p></li>
 <li><p>Create a subclass of <a class="reference internal" href="../apis/utils/utils.data.html#utils.data.Dataset" title="utils.data.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.data.Dataset</span></code></a> that defines how to load the data (local/cloud), split the data, and convert it to your defined DataClass, and how to load and preprocess the data. Optionally you can use PyTorch’s dataset, the only thing is it often works with Tensor, you will need to convert it back to normal data at some point.</p></li>
 </ol>
 <p>In default, AdalFlow saved any downloaded datasets in the <cite>~/.adalflow/cached_datasets</cite> directory.</p>

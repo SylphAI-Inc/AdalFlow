@@ -154,6 +154,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
     Tutorials
   </a>
@@ -173,13 +180,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -299,6 +314,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -513,6 +535,27 @@
 <span class="c1">#     return completion.usage</span>
 
 
+<span class="c1"># A simple heuristic to estimate token count for estimating number of tokens in a Streaming response</span>
+<div class="viewcode-block" id="estimate_token_count">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.estimate_token_count">[docs]</a>
+<span class="k">def</span> <span class="nf">estimate_token_count</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimate the token count of a given text.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): The text to estimate token count for.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: Estimated token count.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Split the text into tokens using spaces as a simple heuristic</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="c1"># Return the number of tokens</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="parse_stream_response">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.parse_stream_response">[docs]</a>
 <span class="k">def</span> <span class="nf">parse_stream_response</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletionChunk</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -563,39 +606,42 @@
 <span class="k">class</span> <span class="nc">OpenAIClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A component wrapper for the OpenAI API client.</span>
 
-<span class="s2">    Support both embedding and chat completion API, including multimodal capabilities.</span>
+<span class="s2">    Supports both embedding and chat completion APIs, including multimodal capabilities.</span>
 
-<span class="s2">    Users (1) simplify use ``Embedder`` and ``Generator`` components by passing OpenAIClient() as the model_client.</span>
-<span class="s2">    (2) can use this as an example to create their own API client or extend this class(copying and modifing the code) in their own project.</span>
+<span class="s2">    Users can:</span>
+<span class="s2">    1. Simplify use of ``Embedder`` and ``Generator`` components by passing `OpenAIClient()` as the `model_client`.</span>
+<span class="s2">    2. Use this as a reference to create their own API client or extend this class by copying and modifying the code.</span>
 
 <span class="s2">    Note:</span>
-<span class="s2">        We suggest users not to use `response_format` to enforce output data type or `tools` and `tool_choice`  in your model_kwargs when calling the API.</span>
-<span class="s2">        We do not know how OpenAI is doing the formating or what prompt they have added.</span>
-<span class="s2">        Instead</span>
-<span class="s2">        - use :ref:`OutputParser&lt;components-output_parsers&gt;` for response parsing and formating.</span>
+<span class="s2">        We recommend avoiding `response_format` to enforce output data type or `tools` and `tool_choice` in `model_kwargs` when calling the API.</span>
+<span class="s2">        OpenAI&#39;s internal formatting and added prompts are unknown. Instead:</span>
+<span class="s2">        - Use :ref:`OutputParser&lt;components-output_parsers&gt;` for response parsing and formatting.</span>
 
-<span class="s2">        For multimodal inputs, provide images in model_kwargs[&quot;images&quot;] as a path, URL, or list of them.</span>
-<span class="s2">        The model must support vision capabilities (e.g., gpt-4o, gpt-4o-mini, o1, o1-mini).</span>
+<span class="s2">        For multimodal inputs, provide images in `model_kwargs[&quot;images&quot;]` as a path, URL, or list of them.</span>
+<span class="s2">        The model must support vision capabilities (e.g., `gpt-4o`, `gpt-4o-mini`, `o1`, `o1-mini`).</span>
 
-<span class="s2">        For image generation, use model_type=ModelType.IMAGE_GENERATION and provide:</span>
-<span class="s2">        - model: &quot;dall-e-3&quot; or &quot;dall-e-2&quot;</span>
+<span class="s2">        For image generation, use `model_type=ModelType.IMAGE_GENERATION` and provide:</span>
+<span class="s2">        - model: `&quot;dall-e-3&quot;` or `&quot;dall-e-2&quot;`</span>
 <span class="s2">        - prompt: Text description of the image to generate</span>
-<span class="s2">        - size: &quot;1024x1024&quot;, &quot;1024x1792&quot;, or &quot;1792x1024&quot; for DALL-E 3; &quot;256x256&quot;, &quot;512x512&quot;, or &quot;1024x1024&quot; for DALL-E 2</span>
-<span class="s2">        - quality: &quot;standard&quot; or &quot;hd&quot; (DALL-E 3 only)</span>
+<span class="s2">        - size: `&quot;1024x1024&quot;`, `&quot;1024x1792&quot;`, or `&quot;1792x1024&quot;` for DALL-E 3; `&quot;256x256&quot;`, `&quot;512x512&quot;`, or `&quot;1024x1024&quot;` for DALL-E 2</span>
+<span class="s2">        - quality: `&quot;standard&quot;` or `&quot;hd&quot;` (DALL-E 3 only)</span>
 <span class="s2">        - n: Number of images to generate (1 for DALL-E 3, 1-10 for DALL-E 2)</span>
-<span class="s2">        - response_format: &quot;url&quot; or &quot;b64_json&quot;</span>
+<span class="s2">        - response_format: `&quot;url&quot;` or `&quot;b64_json&quot;`</span>
 
 <span class="s2">    Args:</span>
-<span class="s2">        api_key (Optional[str], optional): OpenAI API key. Defaults to None.</span>
-<span class="s2">        chat_completion_parser (Callable[[Completion], Any], optional): A function to parse the chat completion to a str. Defaults to None.</span>
-<span class="s2">            Default is `get_first_message_content`.</span>
+<span class="s2">        api_key (Optional[str], optional): OpenAI API key. Defaults to `None`.</span>
+<span class="s2">        chat_completion_parser (Callable[[Completion], Any], optional): A function to parse the chat completion into a `str`. Defaults to `None`.</span>
+<span class="s2">            The default parser is `get_first_message_content`.</span>
+<span class="s2">        base_url (str): The API base URL to use when initializing the client.</span>
+<span class="s2">            Defaults to `&quot;https://api.openai.com&quot;`, but can be customized for third-party API providers or self-hosted models.</span>
+<span class="s2">        env_api_key_name (str): The environment variable name for the API key. Defaults to `&quot;OPENAI_API_KEY&quot;`.</span>
 
 <span class="s2">    References:</span>
-<span class="s2">        - Embeddings models: https://platform.openai.com/docs/guides/embeddings</span>
-<span class="s2">        - Chat models: https://platform.openai.com/docs/guides/text-generation</span>
-<span class="s2">        - Vision models: https://platform.openai.com/docs/guides/vision</span>
-<span class="s2">        - Image models: https://platform.openai.com/docs/guides/images</span>
-<span class="s2">        - OpenAI docs: https://platform.openai.com/docs/introduction</span>
+<span class="s2">        - OpenAI API Overview: https://platform.openai.com/docs/introduction</span>
+<span class="s2">        - Embeddings Guide: https://platform.openai.com/docs/guides/embeddings</span>
+<span class="s2">        - Chat Completion Models: https://platform.openai.com/docs/guides/text-generation</span>
+<span class="s2">        - Vision Models: https://platform.openai.com/docs/guides/vision</span>
+<span class="s2">        - Image Generation: https://platform.openai.com/docs/guides/images</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -603,37 +649,48 @@
         <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">chat_completion_parser</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Completion</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">input_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>
+        <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;https://api.openai.com/v1/&quot;</span><span class="p">,</span>
+        <span class="n">env_api_key_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;It is recommended to set the OPENAI_API_KEY environment variable instead of passing it as an argument.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            api_key (Optional[str], optional): OpenAI API key. Defaults to None.</span>
+<span class="sd">            base_url (str): The API base URL to use when initializing the client.</span>
+<span class="sd">            env_api_key_name (str): The environment variable name for the API key. Defaults to `&quot;OPENAI_API_KEY&quot;`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="o">=</span> <span class="n">api_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_env_api_key_name</span> <span class="o">=</span> <span class="n">env_api_key_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">base_url</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_sync_client</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># only initialize if the async call is called</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">chat_completion_parser</span> <span class="ow">or</span> <span class="n">get_first_message_content</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_type</span> <span class="o">=</span> <span class="n">input_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_api_kwargs</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># add api kwargs when the OpenAI Client is called</span>
 
 <div class="viewcode-block" id="OpenAIClient.init_sync_client">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_sync_client">[docs]</a>
     <span class="k">def</span> <span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">)</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_env_api_key_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Environment variable OPENAI_API_KEY must be set&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Environment variable </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_env_api_key_name</span><span class="si">}</span><span class="s2"> must be set&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="OpenAIClient.init_async_client">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_async_client">[docs]</a>
     <span class="k">def</span> <span class="nf">init_async_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">)</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_env_api_key_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Environment variable OPENAI_API_KEY must be set&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">AsyncOpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Environment variable </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_env_api_key_name</span><span class="si">}</span><span class="s2"> must be set&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">AsyncOpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span></div>
 
 
     <span class="c1"># def _parse_chat_completion(self, completion: ChatCompletion) -&gt; &quot;GeneratorOutput&quot;:</span>
@@ -681,9 +738,7 @@
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">usage</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">&quot;streaming completion usage tracking is not implemented&quot;</span>
-            <span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported completion type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="OpenAIClient.parse_embedding_response">
@@ -747,11 +802,19 @@
                 <span class="n">system_end_tag</span> <span class="o">=</span> <span class="s2">&quot;&lt;END_OF_SYSTEM_PROMPT&gt;&quot;</span>
                 <span class="n">user_start_tag</span> <span class="o">=</span> <span class="s2">&quot;&lt;START_OF_USER_PROMPT&gt;&quot;</span>
                 <span class="n">user_end_tag</span> <span class="o">=</span> <span class="s2">&quot;&lt;END_OF_USER_PROMPT&gt;&quot;</span>
-                <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">system_start_tag</span><span class="si">}</span><span class="s2">(.*?)</span><span class="si">{</span><span class="n">system_end_tag</span><span class="si">}{</span><span class="n">user_start_tag</span><span class="si">}</span><span class="s2">(.*?)</span><span class="si">{</span><span class="n">user_end_tag</span><span class="si">}</span><span class="s2">&quot;</span>
+
+                <span class="c1"># new regex pattern to ignore special characters such as \n</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">rf</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">system_start_tag</span><span class="si">}</span><span class="s2">\s*(.*?)\s*</span><span class="si">{</span><span class="n">system_end_tag</span><span class="si">}</span><span class="s2">\s*&quot;</span>
+                    <span class="sa">rf</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user_start_tag</span><span class="si">}</span><span class="s2">\s*(.*?)\s*</span><span class="si">{</span><span class="n">user_end_tag</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
                 <span class="c1"># Compile the regular expression</span>
-                <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+                <span class="c1"># re.DOTALL is to allow . to match newline so that (.*?) does not match in a single line</span>
+                <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
                 <span class="c1"># Match the pattern</span>
-                <span class="n">match</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
                 <span class="n">system_prompt</span><span class="p">,</span> <span class="n">input_str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
                 <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
@@ -807,6 +870,9 @@
                 <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encode_image</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;final_model_kwargs: </span><span class="si">{</span><span class="n">final_model_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">final_model_kwargs</span></div>
 
 
@@ -847,6 +913,7 @@
 <span class="sd">        kwargs is the combined input and model_kwargs.  Support streaming call.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;api_kwargs: </span><span class="si">{</span><span class="n">api_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_api_kwargs</span> <span class="o">=</span> <span class="n">api_kwargs</span>
         <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">:</span>
@@ -891,6 +958,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        kwargs is the combined input and model_kwargs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># store the api kwargs in the client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_api_kwargs</span> <span class="o">=</span> <span class="n">api_kwargs</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_async_client</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>
@@ -994,24 +1063,24 @@
 
 
 <span class="c1"># Example usage:</span>
-<span class="c1"># if __name__ == &quot;__main__&quot;:</span>
-<span class="c1">#     from adalflow.core import Generator</span>
-<span class="c1">#     from adalflow.utils import setup_env, get_logger</span>
-<span class="c1">#</span>
-<span class="c1">#     log = get_logger(level=&quot;DEBUG&quot;)</span>
-<span class="c1">#</span>
-<span class="c1">#     setup_env()</span>
-<span class="c1">#     prompt_kwargs = {&quot;input_str&quot;: &quot;What is the meaning of life?&quot;}</span>
-<span class="c1">#</span>
-<span class="c1">#     gen = Generator(</span>
-<span class="c1">#         model_client=OpenAIClient(),</span>
-<span class="c1">#         model_kwargs={&quot;model&quot;: &quot;gpt-3.5-turbo&quot;, &quot;stream&quot;: True},</span>
-<span class="c1">#     )</span>
-<span class="c1">#     gen_response = gen(prompt_kwargs)</span>
-<span class="c1">#     print(f&quot;gen_response: {gen_response}&quot;)</span>
-<span class="c1">#</span>
-<span class="c1">#     for genout in gen_response.data:</span>
-<span class="c1">#         print(f&quot;genout: {genout}&quot;)</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+    <span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span><span class="p">,</span> <span class="n">get_logger</span>
+
+    <span class="n">log</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
+
+    <span class="n">setup_env</span><span class="p">()</span>
+    <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What is the meaning of life?&quot;</span><span class="p">}</span>
+
+    <span class="n">gen</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+        <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+        <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span> <span class="s2">&quot;stream&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">gen_response</span> <span class="o">=</span> <span class="n">gen</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;gen_response: </span><span class="si">{</span><span class="n">gen_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">genout</span> <span class="ow">in</span> <span class="n">gen_response</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;genout: </span><span class="si">{</span><span class="n">genout</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 
                 </article>

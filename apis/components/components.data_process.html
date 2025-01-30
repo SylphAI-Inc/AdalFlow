@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -309,6 +324,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -426,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.ollama_client.html">ollama_client</a></li>
@@ -596,8 +619,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="components.data_process.text_splitter.html">text_splitter</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter"><code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter.tokenizer"><code class="docutils literal notranslate"><span class="pre">TextSplitter.tokenizer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter.split_text"><code class="docutils literal notranslate"><span class="pre">TextSplitter.split_text()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter.call"><code class="docutils literal notranslate"><span class="pre">TextSplitter.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter.training"><code class="docutils literal notranslate"><span class="pre">TextSplitter.training</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter.teacher_mode"><code class="docutils literal notranslate"><span class="pre">TextSplitter.teacher_mode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter.tracing"><code class="docutils literal notranslate"><span class="pre">TextSplitter.tracing</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -608,8 +635,8 @@
 <p id="module-components.data_process">Components here are used for data processing/transformation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="components.data_process.TextSplitter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TextSplitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split_by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'word'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sentence'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'page'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'passage'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'token'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'word'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">800</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_overlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/data_process/text_splitter.html#TextSplitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.data_process.TextSplitter" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TextSplitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split_by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'word'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sentence'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'page'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'passage'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'token'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'word'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">800</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_overlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{'page':</span> <span class="pre">'\x0c',</span> <span class="pre">'passage':</span> <span class="pre">'\n\n',</span> <span class="pre">'sentence':</span> <span class="pre">'.',</span> <span class="pre">'token':</span> <span class="pre">'',</span> <span class="pre">'word':</span> <span class="pre">'</span> <span class="pre">'}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/data_process/text_splitter.html#TextSplitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.data_process.TextSplitter" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataComponent</span></code></p>
 <p>Text Splitter for Chunking Documents</p>
 <p><code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> first utilizes <code class="docutils literal notranslate"><span class="pre">split_by</span></code> to specify the text-splitting criterion and breaks the long text into smaller texts.
 Then we create a sliding window with length= <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code>. It moves at step= <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code> - <code class="docutils literal notranslate"><span class="pre">chunk_overlap</span></code>.
@@ -712,6 +739,11 @@ For <strong>PDFs</strong>, developers will need to extract the text before using
 <span class="c1"># Document(id=e7b617b2-3927-4248-afce-ec0fc247ac8b, text=&#39;to illustrate.&#39;, meta_data=None, vector=[], parent_doc_id=doc1, order=2, score=None)</span>
 </pre></div>
 </div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.data_process.TextSplitter.tokenizer">
+<span class="sig-name descname"><span class="pre">tokenizer</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.core.tokenizer.Tokenizer</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#components.data_process.TextSplitter.tokenizer" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="components.data_process.TextSplitter.split_text">
 <span class="sig-name descname"><span class="pre">split_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/components/data_process/text_splitter.html#TextSplitter.split_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.data_process.TextSplitter.split_text" title="Link to this definition">#</a></dt>
@@ -738,13 +770,13 @@ For <strong>PDFs</strong>, developers will need to extract the text before using
 split_by, chunk size, and chunk overlap.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>documents</strong> (<em>List</em><em>[</em><em>Document</em><em>]</em>) – A list of Document objects to process.</p>
+<dd class="field-odd"><p><strong>documents</strong> (<em>List</em><em>[</em><a class="reference internal" href="../core/core.types.html#core.types.Document" title="core.types.Document"><em>Document</em></a><em>]</em>) – A list of Document objects to process.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A list of new Document objects, each containing a chunk of text from the original documents.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List[Document]</p>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../core/core.types.html#core.types.Document" title="core.types.Document">Document</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -823,6 +855,7 @@ split_by, chunk size, and chunk overlap.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.data_process.TextSplitter"><code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#components.data_process.TextSplitter.tokenizer"><code class="docutils literal notranslate"><span class="pre">TextSplitter.tokenizer</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#components.data_process.TextSplitter.split_text"><code class="docutils literal notranslate"><span class="pre">TextSplitter.split_text()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#components.data_process.TextSplitter.call"><code class="docutils literal notranslate"><span class="pre">TextSplitter.call()</span></code></a></li>
 </ul>

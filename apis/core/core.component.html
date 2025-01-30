@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -309,6 +324,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -426,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -589,8 +612,11 @@ It handles states recursively, such as training, components, parameters recursiv
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fun_to_component</span></code></a>(fun)</p></td>
-<td><p>Helper function to convert a function into a Component with its own class name.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.component.func_to_component" title="core.component.func_to_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">func_to_component</span></code></a>(fun)</p></td>
+<td><p>Helper function to convert a function into a Component class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.component.func_to_data_component" title="core.component.func_to_data_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">func_to_data_component</span></code></a>(fun)</p></td>
+<td><p>Helper function to convert a function into a Parser class.</p></td>
 </tr>
 </tbody>
 </table>
@@ -601,7 +627,13 @@ It handles states recursively, such as training, components, parameters recursiv
 <tr class="row-odd"><td><p><a class="reference internal" href="#core.component.Component" title="core.component.Component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Component</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Base class for all LLM task pipeline components.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunComponent</span></code></a>([fun, afun])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.component.DataComponent" title="core.component.DataComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataComponent</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Base class for all components that are handling data pre- and post-processing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.component.FuncComponent" title="core.component.FuncComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FuncComponent</span></code></a>([fun, afun])</p></td>
+<td><p>Component that wraps a function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.component.FuncDataComponent" title="core.component.FuncDataComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FuncDataComponent</span></code></a>([fun, afun])</p></td>
 <td><p>Component that wraps a function.</p></td>
 </tr>
 </tbody>
@@ -673,12 +705,12 @@ for the Generator, you might need the ‘Module’ within the ‘Component’.</
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.component.Component.teacher_mode">
-<span class="sig-name descname"><span class="pre">teacher_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#core.component.Component.teacher_mode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">teacher_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#core.component.Component.teacher_mode" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.component.Component.tracing">
-<span class="sig-name descname"><span class="pre">tracing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#core.component.Component.tracing" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">tracing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#core.component.Component.tracing" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -767,12 +799,12 @@ using <a class="reference internal" href="#core.component.Component.to_dict" tit
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.component.Component.register_parameter">
-<span class="sig-name descname"><span class="pre">register_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Parameter</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.register_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.register_parameter" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">register_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../optim/index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.register_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.register_parameter" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.component.Component.parameters">
-<span class="sig-name descname"><span class="pre">parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.parameters" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../optim/index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.parameters" title="Link to this definition">#</a></dt>
 <dd><p>Returns an iterator over module parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -792,7 +824,7 @@ Otherwise, yields only parameters that are direct members of this component.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.component.Component.named_parameters">
-<span class="sig-name descname"><span class="pre">named_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_duplicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.named_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.named_parameters" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">named_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_duplicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../optim/index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.named_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.named_parameters" title="Link to this definition">#</a></dt>
 <dd><p>Returns an iterator over componenet parameters, yielding both the name of the parameter as well as the parameter itself.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -816,9 +848,27 @@ are direct members of this component.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="core.component.Component.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#Component.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.forward" title="Link to this definition">#</a></dt>
+<dd><p>User must override this for the training scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="core.component.Component.call">
 <span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#Component.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.call" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.component.Component.bicall">
+<span class="sig-name descname"><span class="pre">bicall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#Component.bicall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.bicall" title="Link to this definition">#</a></dt>
+<dd><p>If the user provides a <cite>bicall</cite> method, then <cite>__call__</cite> will automatically
+dispatch here for both training and inference scenarios. This can internally
+decide how to handle training vs. inference, or just produce a single unified
+output type.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.component.Component.acall">
@@ -871,7 +921,9 @@ are direct members of this component.</p></li>
 :param prefix: a prefix to prepend to all component names
 :type prefix: str
 :param remove_duplicate: if True, then yields only unique components
-:type remove_duplicate: bool</p>
+:type remove_duplicate: bool
+:param grad_component_only: if True, then yields only components that are instances of GradComponent
+:type grad_component_only: bool</p>
 <dl class="field-list simple">
 <dt class="field-odd">Yields<span class="colon">:</span></dt>
 <dd class="field-odd"><p><em>Tuple[str, “Component”]</em> – Tuple containing the name and component</p>
@@ -933,9 +985,29 @@ returned by this component’s <a class="reference internal" href="#core.compone
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="core.component.FunComponent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FunComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">afun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#FunComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.FunComponent" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="core.component.DataComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DataComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#DataComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.DataComponent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
+<p>Base class for all components that are handling data pre- and post-processing.
+Example: Prompt, Parser. TextSplitter, etc.</p>
+<p>Compared with a normal Component, it is not trainable and can process parameters as input but does not return any parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – input data for the component.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.component.DataComponent.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#DataComponent.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.DataComponent.train" title="Link to this definition">#</a></dt>
+<dd><p>Sets the component in training mode.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.component.FuncDataComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FuncDataComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">afun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#FuncDataComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.FuncDataComponent" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#core.component.DataComponent" title="core.component.DataComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataComponent</span></code></a></p>
 <p>Component that wraps a function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -944,19 +1016,21 @@ returned by this component’s <a class="reference internal" href="#core.compone
 </dl>
 <p>Examples:</p>
 <p>function = lambda x: x + 1
-fun_component = FunComponent(function)
+fun_component = FuncDataComponent(function)
 print(fun_component(1))  # 2</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="core.component.FunComponent.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#FunComponent.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.FunComponent.call" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="core.component.FuncDataComponent.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#FuncDataComponent.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.FuncDataComponent.call" title="Link to this definition">#</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="core.component.fun_to_component">
-<span class="sig-name descname"><span class="pre">fun_to_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.component.FunComponent" title="core.component.FunComponent"><span class="pre">FunComponent</span></a></span></span><a class="reference internal" href="../../_modules/core/component.html#fun_to_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.fun_to_component" title="Link to this definition">#</a></dt>
-<dd><p>Helper function to convert a function into a Component with
+<dt class="sig sig-object py" id="core.component.func_to_data_component">
+<span class="sig-name descname"><span class="pre">func_to_data_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.component.FuncDataComponent" title="core.component.FuncDataComponent"><span class="pre">FuncDataComponent</span></a></span></span><a class="reference internal" href="../../_modules/core/component.html#func_to_data_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.func_to_data_component" title="Link to this definition">#</a></dt>
+<dd><p>Helper function to convert a function into a Parser class.
 its own class name.</p>
 <p>Can be used as both a decorator and a function.</p>
 <dl class="field-list simple">
@@ -967,29 +1041,91 @@ its own class name.</p>
 <dd class="field-even"><p>The component that wraps the function.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#core.component.FunComponent" title="core.component.FunComponent">FunComponent</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#core.component.FuncDataComponent" title="core.component.FuncDataComponent">FuncDataComponent</a></p>
 </dd>
 </dl>
 <p>Examples:
 1. As a decorator:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@fun_to_component</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@func_to_data_component</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># is equivalent to</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyFunctionComponent</span><span class="p">(</span><span class="n">FunComponent</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyFunctionDataComponent</span><span class="p">(</span><span class="n">FuncDataComponent</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">my_function</span><span class="p">)</span>
 </pre></div>
 </div>
 <ol class="arabic" start="2">
 <li><dl>
-<dt>As a function:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_function_component</span> <span class="o">=</span> <span class="n">fun_to_component</span><span class="p">(</span><span class="n">my_function</span><span class="p">)</span>
+<dt>As a function:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_function_data_component</span> <span class="o">=</span> <span class="n">func_to_data_component</span><span class="p">(</span><span class="n">my_function</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd>
 </dl>
 </li>
 </ol>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.component.func_to_component">
+<span class="sig-name descname"><span class="pre">func_to_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.component.FuncComponent" title="core.component.FuncComponent"><span class="pre">FuncComponent</span></a></span></span><a class="reference internal" href="../../_modules/core/component.html#func_to_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.func_to_component" title="Link to this definition">#</a></dt>
+<dd><p>Helper function to convert a function into a Component class.
+its own class name.</p>
+<p>Can be used as both a decorator and a function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fun</strong> (<em>Callable</em>) – The function to be wrapped.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The component that wraps the function.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#core.component.FuncComponent" title="core.component.FuncComponent">FuncComponent</a></p>
+</dd>
+</dl>
+<p>Examples:
+1. As a decorator:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@func_to_component</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># is equivalent to</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyFunctionComponent</span><span class="p">(</span><span class="n">FuncComponent</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">my_function</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic" start="2">
+<li><dl>
+<dt>As a function:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_function_component</span> <span class="o">=</span> <span class="n">func_to_component</span><span class="p">(</span><span class="n">my_function</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.component.FuncComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FuncComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">afun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#FuncComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.FuncComponent" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
+<p>Component that wraps a function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fun</strong> (<em>Callable</em>) – The function to be wrapped.</p>
+</dd>
+</dl>
+<p>Examples:</p>
+<p>function = lambda x: x + 1
+fun_component = FuncComponent(function)
+print(fun_component(1))  # 2</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.component.FuncComponent.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#FuncComponent.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.FuncComponent.call" title="Link to this definition">#</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -1059,7 +1195,9 @@ its own class name.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.register_parameter"><code class="docutils literal notranslate"><span class="pre">Component.register_parameter()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.parameters"><code class="docutils literal notranslate"><span class="pre">Component.parameters()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.named_parameters"><code class="docutils literal notranslate"><span class="pre">Component.named_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.forward"><code class="docutils literal notranslate"><span class="pre">Component.forward()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.call"><code class="docutils literal notranslate"><span class="pre">Component.call()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.bicall"><code class="docutils literal notranslate"><span class="pre">Component.bicall()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.acall"><code class="docutils literal notranslate"><span class="pre">Component.acall()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.add_component"><code class="docutils literal notranslate"><span class="pre">Component.add_component()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.register_component"><code class="docutils literal notranslate"><span class="pre">Component.register_component()</span></code></a></li>
@@ -1072,11 +1210,20 @@ its own class name.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.load_state_dict"><code class="docutils literal notranslate"><span class="pre">Component.load_state_dict()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.FunComponent"><code class="docutils literal notranslate"><span class="pre">FunComponent</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.FunComponent.call"><code class="docutils literal notranslate"><span class="pre">FunComponent.call()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.DataComponent"><code class="docutils literal notranslate"><span class="pre">DataComponent</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.DataComponent.train"><code class="docutils literal notranslate"><span class="pre">DataComponent.train()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.fun_to_component"><code class="docutils literal notranslate"><span class="pre">fun_to_component()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.FuncDataComponent"><code class="docutils literal notranslate"><span class="pre">FuncDataComponent</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.FuncDataComponent.call"><code class="docutils literal notranslate"><span class="pre">FuncDataComponent.call()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.func_to_data_component"><code class="docutils literal notranslate"><span class="pre">func_to_data_component()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.func_to_component"><code class="docutils literal notranslate"><span class="pre">func_to_component()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.FuncComponent"><code class="docutils literal notranslate"><span class="pre">FuncComponent</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.FuncComponent.call"><code class="docutils literal notranslate"><span class="pre">FuncComponent.call()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

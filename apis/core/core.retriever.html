@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -272,6 +287,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -300,6 +319,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -422,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -578,8 +605,106 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="retriever">
-<span id="core-retriever"></span><h1>retriever<a class="headerlink" href="#retriever" title="Link to this heading">#</a></h1>
+  <section id="module-core.retriever">
+<span id="retriever"></span><span id="core-retriever"></span><h1>retriever<a class="headerlink" href="#module-core.retriever" title="Link to this heading">#</a></h1>
+<p>The base class for all retrievers who in particular retrieve documents from a given database.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.retriever.Retriever" title="core.retriever.Retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Retriever</span></code></a>(*args, **kwargs)</p></td>
+<td><p>The base class for all retrievers.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.retriever.Retriever">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Retriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/retriever.html#Retriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.retriever.Retriever" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GradComponent</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">RetrieverDocumentType</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">RetrieverQueryType</span></code>]</p>
+<p>The base class for all retrievers.</p>
+<p>Retriever will manage its own index and retrieve in format of RetrieverOutput</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indexed</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether the retriever has an index. Defaults to False.</p></li>
+<li><p><strong>index_keys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – attributes that define the index that can be used to restore the retriever. Defaults to [].</p></li>
+</ul>
+</dd>
+</dl>
+<p>The key method <a class="reference internal" href="#core.retriever.Retriever.build_index_from_documents" title="core.retriever.Retriever.build_index_from_documents"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build_index_from_documents()</span></code></a> is the method to build the index from the documents.
+<code class="docutils literal notranslate"><span class="pre">documents</span></code> is a sequence of any type of document. With <code class="docutils literal notranslate"><span class="pre">document_map_func</span></code>, you can map the document
+of Any type to the specific type <code class="docutils literal notranslate"><span class="pre">RetrieverDocumentType</span></code> that the retriever expects.</p>
+<p>note:
+To get the state of the retriever, leverage the :methd: “from_dict” and “to_dict” methods of the base class Component.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.retriever.Retriever.indexed">
+<span class="sig-name descname"><span class="pre">indexed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#core.retriever.Retriever.indexed" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.retriever.Retriever.index_keys">
+<span class="sig-name descname"><span class="pre">index_keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#core.retriever.Retriever.index_keys" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.retriever.Retriever.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Retriever'</span></em><a class="headerlink" href="#core.retriever.Retriever.name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.retriever.Retriever.top_k">
+<span class="sig-name descname"><span class="pre">top_k</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#core.retriever.Retriever.top_k" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.retriever.Retriever.reset_index">
+<span class="sig-name descname"><span class="pre">reset_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/retriever.html#Retriever.reset_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.retriever.Retriever.reset_index" title="Link to this definition">#</a></dt>
+<dd><p>Initialize/reset any attributes/states for the index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.retriever.Retriever.build_index_from_documents">
+<span class="sig-name descname"><span class="pre">build_index_from_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverDocumentType</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_map_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">RetrieverDocumentType</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/retriever.html#Retriever.build_index_from_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.retriever.Retriever.build_index_from_documents" title="Link to this definition">#</a></dt>
+<dd><p>Built index from the [document_map_func(doc) for doc in documents].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.retriever.Retriever.save_to_file">
+<span class="sig-name descname"><span class="pre">save_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/retriever.html#Retriever.save_to_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.retriever.Retriever.save_to_file" title="Link to this definition">#</a></dt>
+<dd><p>Save the state, including the index to a file.</p>
+<p>Optional for subclass to implement a default persistence method.
+Subclass can leverge component’s <cite>to_dict</cite> method to get the states and choose to save them in any file format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.retriever.Retriever.load_from_file">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/retriever.html#Retriever.load_from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.retriever.Retriever.load_from_file" title="Link to this definition">#</a></dt>
+<dd><p>Load the state, including index from a file to restore the retriever.</p>
+<p>Subclass can leverge component’s <cite>from_dict</cite> method to restore the states from the file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.retriever.Retriever.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RetrieverQueryType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverQueryType</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverOutput</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RetrieverOutput</span></span></span><a class="reference internal" href="../../_modules/core/retriever.html#Retriever.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.retriever.Retriever.call" title="Link to this definition">#</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.retriever.Retriever.acall">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RetrieverQueryType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverQueryType</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverOutput</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RetrieverOutput</span></span></span><a class="reference internal" href="../../_modules/core/retriever.html#Retriever.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.retriever.Retriever.acall" title="Link to this definition">#</a></dt>
+<dd><p>Implement this for your async call.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.retriever.Retriever.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RetrieverQueryType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverQueryType</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Parameter</span></span></span><a class="reference internal" href="../../_modules/core/retriever.html#Retriever.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.retriever.Retriever.forward" title="Link to this definition">#</a></dt>
+<dd><p>Customized forward on top of the GradComponent forward method.</p>
+<p>To track the input as Parameters and set the parameter type as RETRIEVER_OUTPUT in the response.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -616,6 +741,36 @@
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.retriever.Retriever"><code class="docutils literal notranslate"><span class="pre">Retriever</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.retriever.Retriever.indexed"><code class="docutils literal notranslate"><span class="pre">Retriever.indexed</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.retriever.Retriever.index_keys"><code class="docutils literal notranslate"><span class="pre">Retriever.index_keys</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.retriever.Retriever.name"><code class="docutils literal notranslate"><span class="pre">Retriever.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.retriever.Retriever.top_k"><code class="docutils literal notranslate"><span class="pre">Retriever.top_k</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.retriever.Retriever.reset_index"><code class="docutils literal notranslate"><span class="pre">Retriever.reset_index()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.retriever.Retriever.build_index_from_documents"><code class="docutils literal notranslate"><span class="pre">Retriever.build_index_from_documents()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.retriever.Retriever.save_to_file"><code class="docutils literal notranslate"><span class="pre">Retriever.save_to_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.retriever.Retriever.load_from_file"><code class="docutils literal notranslate"><span class="pre">Retriever.load_from_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.retriever.Retriever.call"><code class="docutils literal notranslate"><span class="pre">Retriever.call()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.retriever.Retriever.acall"><code class="docutils literal notranslate"><span class="pre">Retriever.acall()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.retriever.Retriever.forward"><code class="docutils literal notranslate"><span class="pre">Retriever.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

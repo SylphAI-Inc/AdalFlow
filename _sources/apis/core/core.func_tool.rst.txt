@@ -7,3 +7,18 @@ func_tool
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      find_instance_name_from_self
+      is_running_in_event_loop
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      FunctionTool
+

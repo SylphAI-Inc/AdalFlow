@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -309,6 +324,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -426,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -589,13 +612,369 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="optim.text_grad.backend_engine_prompt.html">backend_engine_prompt</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optim.text_grad.ops.html">ops</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html">tgd_optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optim.text_grad.llm_text_loss.html">llm_text_loss</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optim.text_grad.llm_text_loss.html#optim.text_grad.llm_text_loss.LLMAsTextLoss"><code class="docutils literal notranslate"><span class="pre">LLMAsTextLoss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.llm_text_loss.html#optim.text_grad.llm_text_loss.LLMAsTextLoss.forward"><code class="docutils literal notranslate"><span class="pre">LLMAsTextLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optim.text_grad.ops.html">ops</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optim.text_grad.ops.html#optim.text_grad.ops.sum_ops"><code class="docutils literal notranslate"><span class="pre">sum_ops()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.text_grad.ops.html#optim.text_grad.ops.Sum"><code class="docutils literal notranslate"><span class="pre">Sum</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.ops.html#optim.text_grad.ops.Sum.name"><code class="docutils literal notranslate"><span class="pre">Sum.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.ops.html#optim.text_grad.ops.Sum.forward"><code class="docutils literal notranslate"><span class="pre">Sum.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.ops.html#optim.text_grad.ops.Sum.backward"><code class="docutils literal notranslate"><span class="pre">Sum.backward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.ops.html#optim.text_grad.ops.Sum.backward_engine"><code class="docutils literal notranslate"><span class="pre">Sum.backward_engine</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.ops.html#optim.text_grad.ops.Sum.training"><code class="docutils literal notranslate"><span class="pre">Sum.training</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.ops.html#optim.text_grad.ops.Sum.teacher_mode"><code class="docutils literal notranslate"><span class="pre">Sum.teacher_mode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.ops.html#optim.text_grad.ops.Sum.tracing"><code class="docutils literal notranslate"><span class="pre">Sum.tracing</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optim.text_grad.text_loss_with_eval_fn.html#optim.text_grad.text_loss_with_eval_fn.EvalFnToTextLoss"><code class="docutils literal notranslate"><span class="pre">EvalFnToTextLoss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.text_loss_with_eval_fn.html#optim.text_grad.text_loss_with_eval_fn.EvalFnToTextLoss.forward"><code class="docutils literal notranslate"><span class="pre">EvalFnToTextLoss.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.text_loss_with_eval_fn.html#optim.text_grad.text_loss_with_eval_fn.EvalFnToTextLoss.set_backward_engine"><code class="docutils literal notranslate"><span class="pre">EvalFnToTextLoss.set_backward_engine()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.text_loss_with_eval_fn.html#optim.text_grad.text_loss_with_eval_fn.EvalFnToTextLoss.backward"><code class="docutils literal notranslate"><span class="pre">EvalFnToTextLoss.backward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html">tgd_optimizer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt"><code class="docutils literal notranslate"><span class="pre">HistoryPrompt</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt.id"><code class="docutils literal notranslate"><span class="pre">HistoryPrompt.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt.value"><code class="docutils literal notranslate"><span class="pre">HistoryPrompt.value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt.eval_score"><code class="docutils literal notranslate"><span class="pre">HistoryPrompt.eval_score</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt.method"><code class="docutils literal notranslate"><span class="pre">HistoryPrompt.method</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt.reasoning"><code class="docutils literal notranslate"><span class="pre">HistoryPrompt.reasoning</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.Instruction"><code class="docutils literal notranslate"><span class="pre">Instruction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.Instruction.text"><code class="docutils literal notranslate"><span class="pre">Instruction.text</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.Instruction.score"><code class="docutils literal notranslate"><span class="pre">Instruction.score</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.Instruction.responses"><code class="docutils literal notranslate"><span class="pre">Instruction.responses</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.Instruction.gts"><code class="docutils literal notranslate"><span class="pre">Instruction.gts</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDData"><code class="docutils literal notranslate"><span class="pre">TGDData</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDData.reasoning"><code class="docutils literal notranslate"><span class="pre">TGDData.reasoning</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDData.method"><code class="docutils literal notranslate"><span class="pre">TGDData.method</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDData.proposed_variable"><code class="docutils literal notranslate"><span class="pre">TGDData.proposed_variable</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizerTrace"><code class="docutils literal notranslate"><span class="pre">TGDOptimizerTrace</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizerTrace.api_kwargs"><code class="docutils literal notranslate"><span class="pre">TGDOptimizerTrace.api_kwargs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizerTrace.output"><code class="docutils literal notranslate"><span class="pre">TGDOptimizerTrace.output</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.extract_new_variable"><code class="docutils literal notranslate"><span class="pre">extract_new_variable()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.proposing"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.proposing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.params_history"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.params_history</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.failed_proposals"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.failed_proposals</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.current_tgd_output"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.current_tgd_output</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.params"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.params</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.constraints"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.constraints</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.one_parameter_at_a_time"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.one_parameter_at_a_time</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.constraint_text"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.constraint_text</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.increment_steps_from_last_improvement"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.increment_steps_from_last_improvement()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.reset_steps_from_last_improvement"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.reset_steps_from_last_improvement()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.add_score_to_params"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.add_score_to_params()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.add_score_to_current_param"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.add_score_to_current_param()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.add_history"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.add_history()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.render_history"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.render_history()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.add_failed_proposal"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.add_failed_proposal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.render_failed_proposals"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.render_failed_proposals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.update_gradient_memory"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.update_gradient_memory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.zero_grad"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.zero_grad()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.set_target_param"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.set_target_param()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.propose"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.propose()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.revert"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.revert()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.step"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.to_dict"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 <hr class="docutils" />
+<dl class="py class" id="module-optim.text_grad">
+<dt class="sig sig-object py" id="optim.text_grad.LLMAsTextLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LLMAsTextLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><span class="pre">ModelClient</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/llm_text_loss.html#LLMAsTextLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.LLMAsTextLoss" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LossComponent</span></code></p>
+<p>Evaluate the final RAG response using an LLM judge.</p>
+<p>The LLM judge will have:
+- eval_system_prompt: The system prompt to evaluate the response.
+- y_hat: The response to evaluate.
+- Optional: y: The correct response to compare against.</p>
+<p>The loss will be a Parameter with the evaluation result and can be used to compute gradients.
+This loss use LLM/Generator as the computation/transformation operator, so it’s gradient will be
+found from the Generator’s backward method.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.LLMAsTextLoss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a></span></span><a class="reference internal" href="../../_modules/optim/text_grad/llm_text_loss.html#LLMAsTextLoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.LLMAsTextLoss.forward" title="Link to this definition">#</a></dt>
+<dd><p>Default just wraps the call method.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.text_grad.EvalFnToTextLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EvalFnToTextLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BaseEvaluator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_fn_desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.generator.html#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><span class="pre">ModelClient</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/text_loss_with_eval_fn.html#EvalFnToTextLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.EvalFnToTextLoss" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LossComponent</span></code></p>
+<p>Convert an evaluation function to a text loss.</p>
+<p>LossComponent will take an eval function and output a score
+(usually a float in range [0, 1], and the higher the better, unlike the loss function in model training).</p>
+<p>In math:</p>
+<p>score/loss = eval_fn(y_pred, y_gt)</p>
+<p>The gradident/feedback = d(score)/d(y_pred) will be computed using a backward engine.
+Gradient_context = GradientContext(</p>
+<blockquote>
+<div><p>context=conversation_str,
+response_desc=response.role_desc,
+variable_desc=role_desc,</p>
+</div></blockquote>
+<p>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eval_fn</strong> – The evaluation function that takes a pair of y and y_gt and returns a score.</p></li>
+<li><p><strong>eval_fn_desc</strong> – Description of the evaluation function.</p></li>
+<li><p><strong>backward_engine</strong> – The backward engine to use for the text prompt optimization.</p></li>
+<li><p><strong>model_client</strong> – The model client to use for the backward engine if backward_engine is not provided.</p></li>
+<li><p><strong>model_kwargs</strong> – The model kwargs to use for the backward engine if backward_engine is not provided.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.EvalFnToTextLoss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Parameter</span></span></span><a class="reference internal" href="../../_modules/optim/text_grad/text_loss_with_eval_fn.html#EvalFnToTextLoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.EvalFnToTextLoss.forward" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kwargs</strong> – The inputs to the eval_fn.</p></li>
+<li><p><strong>response_desc</strong> – Description of the output.</p></li>
+<li><p><strong>metadata</strong> – Additional notes on the input kwargs.</p></li>
+<li><p><strong>id</strong> – The unique identifier for the data point.</p></li>
+<li><p><strong>gt</strong> – The ground truth for the evaluation function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.EvalFnToTextLoss.set_backward_engine">
+<span class="sig-name descname"><span class="pre">set_backward_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backward_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.generator.html#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><span class="pre">ModelClient</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/text_loss_with_eval_fn.html#EvalFnToTextLoss.set_backward_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.EvalFnToTextLoss.set_backward_engine" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.EvalFnToTextLoss.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_fn_desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.generator.html#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_backward_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/text_loss_with_eval_fn.html#EvalFnToTextLoss.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.EvalFnToTextLoss.backward" title="Link to this definition">#</a></dt>
+<dd><p>Ensure to set backward_engine for the text prompt optimization. It can be None if you
+are only doing demo optimization and it will not have gradients but simply backpropagate the score.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TGDOptimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><span class="pre">ModelClient</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_system_prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'You</span> <span class="pre">are</span> <span class="pre">an</span> <span class="pre">excellent</span> <span class="pre">prompt</span> <span class="pre">engineer</span> <span class="pre">tasked</span> <span class="pre">with</span> <span class="pre">instruction</span> <span class="pre">and</span> <span class="pre">demonstration</span> <span class="pre">tuning</span> <span class="pre">a</span> <span class="pre">compound</span> <span class="pre">LLM</span> <span class="pre">system.\nYour</span> <span class="pre">task</span> <span class="pre">is</span> <span class="pre">to</span> <span class="pre">refine</span> <span class="pre">a</span> <span class="pre">variable/prompt</span> <span class="pre">based</span> <span class="pre">on</span> <span class="pre">feedback</span> <span class="pre">from</span> <span class="pre">a</span> <span class="pre">batch</span> <span class="pre">of</span> <span class="pre">input</span> <span class="pre">data</span> <span class="pre">points.\n\nThe</span> <span class="pre">variable</span> <span class="pre">is</span> <span class="pre">either</span> <span class="pre">input</span> <span class="pre">or</span> <span class="pre">output</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">functional</span> <span class="pre">component</span> <span class="pre">where</span> <span class="pre">the</span> <span class="pre">component</span> <span class="pre">schema</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">provided.\nIf</span> <span class="pre">the</span> <span class="pre">same</span> <span class="pre">DataID</span> <span class="pre">has</span> <span class="pre">multiple</span> <span class="pre">gradients,</span> <span class="pre">it</span> <span class="pre">means</span> <span class="pre">this</span> <span class="pre">component/variable</span> <span class="pre">is</span> <span class="pre">called</span> <span class="pre">multiple</span> <span class="pre">times</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">compound</span> <span class="pre">system(with</span> <span class="pre">a</span> <span class="pre">cycle)</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">same</span> <span class="pre">order</span> <span class="pre">as</span> <span class="pre">it</span> <span class="pre">appears</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">gradient</span> <span class="pre">list.\n\nYou</span> <span class="pre">Must</span> <span class="pre">edit</span> <span class="pre">the</span> <span class="pre">current</span> <span class="pre">variable</span> <span class="pre">with</span> <span class="pre">one</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">following</span> <span class="pre">editing</span> <span class="pre">methods.\nYou</span> <span class="pre">can</span> <span class="pre">not</span> <span class="pre">rewrite</span> <span class="pre">everything</span> <span class="pre">all</span> <span class="pre">at</span> <span class="pre">once:\n\nYou</span> <span class="pre">have</span> <span class="pre">Four</span> <span class="pre">Editing</span> <span class="pre">Methods:\n1.</span> <span class="pre">ADD</span> <span class="pre">new</span> <span class="pre">elements(instruction)</span> <span class="pre">to</span> <span class="pre">address</span> <span class="pre">each</span> <span class="pre">specific</span> <span class="pre">feedback.\n2.</span> <span class="pre">ADD</span> <span class="pre">Examples</span> <span class="pre">(e.g.,</span> <span class="pre">input-reasoning-answer)</span> <span class="pre">for</span> <span class="pre">tasks</span> <span class="pre">that</span> <span class="pre">require</span> <span class="pre">strong</span> <span class="pre">reasoning</span> <span class="pre">skills.\n3.</span> <span class="pre">Rephrase</span> <span class="pre">existing</span> <span class="pre">instruction(for</span> <span class="pre">more</span> <span class="pre">clarity),</span> <span class="pre">Replace</span> <span class="pre">existing</span> <span class="pre">sample</span> <span class="pre">with</span> <span class="pre">another,</span> <span class="pre">to</span> <span class="pre">address</span> <span class="pre">the</span> <span class="pre">feedback.\n4.</span> <span class="pre">DELETE</span> <span class="pre">unnecessary</span> <span class="pre">words</span> <span class="pre">to</span> <span class="pre">improve</span> <span class="pre">clarity.\n\nThese</span> <span class="pre">SIX</span> <span class="pre">prompting</span> <span class="pre">techniques</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">a</span> <span class="pre">helpful</span> <span class="pre">direction.\n1.</span> <span class="pre">Set</span> <span class="pre">Context</span> <span class="pre">and</span> <span class="pre">Role:</span> <span class="pre">Establish</span> <span class="pre">a</span> <span class="pre">specific</span> <span class="pre">identity</span> <span class="pre">or</span> <span class="pre">domain</span> <span class="pre">expertise</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">AI</span> <span class="pre">to</span> <span class="pre">guide</span> <span class="pre">style,</span> <span class="pre">knowledge,</span> <span class="pre">and</span> <span class="pre">constraints.\n2.</span> <span class="pre">Be</span> <span class="pre">Specific,</span> <span class="pre">Clear,</span> <span class="pre">and</span> <span class="pre">Grammarly</span> <span class="pre">correct:</span> <span class="pre">Clearly</span> <span class="pre">define</span> <span class="pre">instructions,</span> <span class="pre">desired</span> <span class="pre">format,</span> <span class="pre">and</span> <span class="pre">constraints</span> <span class="pre">to</span> <span class="pre">ensure</span> <span class="pre">accurate</span> <span class="pre">and</span> <span class="pre">relevant</span> <span class="pre">outputs</span> <span class="pre">with</span> <span class="pre">regards</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">feedback.\n3.</span> <span class="pre">Illicit</span> <span class="pre">reasoning:</span> <span class="pre">&quot;chain-of-thought&quot;</span> <span class="pre">(e.g.</span> <span class="pre">&quot;think</span> <span class="pre">step</span> <span class="pre">by</span> <span class="pre">step&quot;)</span> <span class="pre">helps</span> <span class="pre">the</span> <span class="pre">model</span> <span class="pre">reason</span> <span class="pre">better.\n4.</span> <span class="pre">Examples:</span> <span class="pre">Construct</span> <span class="pre">examples(e.g.,</span> <span class="pre">input(optional)-reasoning(required)-answer)</span> <span class="pre">especially</span> <span class="pre">for</span> <span class="pre">tasks</span> <span class="pre">that</span> <span class="pre">require</span> <span class="pre">strong</span> <span class="pre">reasoning</span> <span class="pre">skills.\n5.</span> <span class="pre">Leverage</span> <span class="pre">Constraints</span> <span class="pre">and</span> <span class="pre">Formatting:</span> <span class="pre">Explicitly</span> <span class="pre">direct</span> <span class="pre">how</span> <span class="pre">the</span> <span class="pre">answer</span> <span class="pre">should</span> <span class="pre">be</span> <span class="pre">structured</span> <span class="pre">(e.g.,</span> <span class="pre">bullet</span> <span class="pre">points,</span> <span class="pre">tables,</span> <span class="pre">or</span> <span class="pre">tone).\n6.</span> <span class="pre">Self-Consistency</span> <span class="pre">/</span> <span class="pre">Verification</span> <span class="pre">Prompts:</span> <span class="pre">Prompt</span> <span class="pre">the</span> <span class="pre">model</span> <span class="pre">to</span> <span class="pre">check</span> <span class="pre">its</span> <span class="pre">own</span> <span class="pre">logic</span> <span class="pre">for</span> <span class="pre">errors,</span> <span class="pre">inconsistencies,</span> <span class="pre">or</span> <span class="pre">missing</span> <span class="pre">details.\n\nYour</span> <span class="pre">final</span> <span class="pre">action/reasoning</span>&#160; <span class="pre">=</span> <span class="pre">one</span> <span class="pre">of</span> <span class="pre">FOUR</span> <span class="pre">editing</span> <span class="pre">method</span> <span class="pre">+</span> <span class="pre">one</span> <span class="pre">of</span> <span class="pre">SIX</span> <span class="pre">prompting</span> <span class="pre">technique.\n\nYou</span> <span class="pre">must</span> <span class="pre">stick</span> <span class="pre">to</span> <span class="pre">these</span> <span class="pre">instructions:\n1.</span> <span class="pre">**MUST</span> <span class="pre">Resolve</span> <span class="pre">concerns</span> <span class="pre">raised</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">feedback**</span> <span class="pre">while</span> <span class="pre">preserving</span> <span class="pre">the</span> <span class="pre">positive</span> <span class="pre">aspects</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">original</span> <span class="pre">variable.\n2.</span> <span class="pre">**Observe</span> <span class="pre">past</span> <span class="pre">performance</span> <span class="pre">patterns**</span> <span class="pre">to</span> <span class="pre">retain</span> <span class="pre">good</span> <span class="pre">qualities</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">variable</span> <span class="pre">and</span> <span class="pre">past</span> <span class="pre">failed</span> <span class="pre">ones</span> <span class="pre">to</span> <span class="pre">try</span> <span class="pre">things</span> <span class="pre">differently.\n3.</span> <span class="pre">**System</span> <span class="pre">Awareness**:</span> <span class="pre">When</span> <span class="pre">other</span> <span class="pre">system</span> <span class="pre">variables</span> <span class="pre">are</span> <span class="pre">given,</span> <span class="pre">ensure</span> <span class="pre">you</span> <span class="pre">understand</span> <span class="pre">how</span> <span class="pre">this</span> <span class="pre">variable</span> <span class="pre">works</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">whole</span> <span class="pre">system.\n4.</span> <span class="pre">**Peer</span> <span class="pre">Awareness**:</span> <span class="pre">This</span> <span class="pre">variable</span> <span class="pre">works</span> <span class="pre">together</span> <span class="pre">with</span> <span class="pre">Peer</span> <span class="pre">variables,</span> <span class="pre">ensure</span> <span class="pre">you</span> <span class="pre">are</span> <span class="pre">aware</span> <span class="pre">of</span> <span class="pre">their</span> <span class="pre">roles</span> <span class="pre">and</span> <span class="pre">constraints.\n5.</span> <span class="pre">**Batch</span> <span class="pre">Awareness**:</span> <span class="pre">You</span> <span class="pre">are</span> <span class="pre">optimizing</span> <span class="pre">a</span> <span class="pre">batch</span> <span class="pre">of</span> <span class="pre">input</span> <span class="pre">data,</span> <span class="pre">ensure</span> <span class="pre">the</span> <span class="pre">change</span> <span class="pre">applys</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">whole</span> <span class="pre">batch</span> <span class="pre">(except</span> <span class="pre">while</span> <span class="pre">using</span> <span class="pre">demonstration.)\n\n{{output_format_str}}\n\n{%</span> <span class="pre">if</span> <span class="pre">instruction_to_optimizer</span> <span class="pre">%}\n**Additional</span> <span class="pre">User</span> <span class="pre">Instructions**:</span> <span class="pre">{{instruction_to_optimizer}}\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_context_examples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_past_history</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_failed_proposals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps_from_last_improvement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">one_parameter_at_a_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TextOptimizer</span></code></p>
+<p>Textual Gradient Descent(LLM) optimizer for text-based variables.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.proposing">
+<span class="sig-name descname"><span class="pre">proposing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#optim.text_grad.TGDOptimizer.proposing" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.params_history">
+<span class="sig-name descname"><span class="pre">params_history</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt" title="optim.text_grad.tgd_optimizer.HistoryPrompt"><span class="pre">HistoryPrompt</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#optim.text_grad.TGDOptimizer.params_history" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.failed_proposals">
+<span class="sig-name descname"><span class="pre">failed_proposals</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt" title="optim.text_grad.tgd_optimizer.HistoryPrompt"><span class="pre">HistoryPrompt</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#optim.text_grad.TGDOptimizer.failed_proposals" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.current_tgd_output">
+<span class="sig-name descname"><span class="pre">current_tgd_output</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDData" title="optim.text_grad.tgd_optimizer.TGDData"><span class="pre">TGDData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#optim.text_grad.TGDOptimizer.current_tgd_output" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.params">
+<span class="sig-name descname"><span class="pre">params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.text_grad.TGDOptimizer.params" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.constraints">
+<span class="sig-name descname"><span class="pre">constraints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.text_grad.TGDOptimizer.constraints" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.one_parameter_at_a_time">
+<span class="sig-name descname"><span class="pre">one_parameter_at_a_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#optim.text_grad.TGDOptimizer.one_parameter_at_a_time" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.constraint_text">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">constraint_text</span></span><a class="headerlink" href="#optim.text_grad.TGDOptimizer.constraint_text" title="Link to this definition">#</a></dt>
+<dd><p>Returns a formatted string representation of the constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string containing the constraints in the format “Constraint {index}: {constraint}”.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.increment_steps_from_last_improvement">
+<span class="sig-name descname"><span class="pre">increment_steps_from_last_improvement</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.increment_steps_from_last_improvement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.increment_steps_from_last_improvement" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.reset_steps_from_last_improvement">
+<span class="sig-name descname"><span class="pre">reset_steps_from_last_improvement</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.reset_steps_from_last_improvement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.reset_steps_from_last_improvement" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.add_score_to_params">
+<span class="sig-name descname"><span class="pre">add_score_to_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.add_score_to_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.add_score_to_params" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.add_score_to_current_param">
+<span class="sig-name descname"><span class="pre">add_score_to_current_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.add_score_to_current_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.add_score_to_current_param" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.add_history">
+<span class="sig-name descname"><span class="pre">add_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt" title="optim.text_grad.tgd_optimizer.HistoryPrompt"><span class="pre">HistoryPrompt</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.add_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.add_history" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.render_history">
+<span class="sig-name descname"><span class="pre">render_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.render_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.render_history" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.add_failed_proposal">
+<span class="sig-name descname"><span class="pre">add_failed_proposal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.add_failed_proposal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.add_failed_proposal" title="Link to this definition">#</a></dt>
+<dd><p>Save a copy of the current value of the parameter in the failed proposals.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.render_failed_proposals">
+<span class="sig-name descname"><span class="pre">render_failed_proposals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.render_failed_proposals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.render_failed_proposals" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.update_gradient_memory">
+<span class="sig-name descname"><span class="pre">update_gradient_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Parameter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.update_gradient_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.update_gradient_memory" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.zero_grad">
+<span class="sig-name descname"><span class="pre">zero_grad</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.zero_grad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.zero_grad" title="Link to this definition">#</a></dt>
+<dd><p>Clear all the gradients of the parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.set_target_param">
+<span class="sig-name descname"><span class="pre">set_target_param</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.set_target_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.set_target_param" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.propose">
+<span class="sig-name descname"><span class="pre">propose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.propose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.propose" title="Link to this definition">#</a></dt>
+<dd><p>Proposing a value while keeping previous value saved on parameter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.revert">
+<span class="sig-name descname"><span class="pre">revert</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.revert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.revert" title="Link to this definition">#</a></dt>
+<dd><p>Revert to the previous value when the evaluation is worse.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.step" title="Link to this definition">#</a></dt>
+<dd><p>Discard the previous value and keep the proposed value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.TGDOptimizer.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/tgd_optimizer.html#TGDOptimizer.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.TGDOptimizer.to_dict" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optim.text_grad.sum_ops">
+<span class="sig-name descname"><span class="pre">sum_ops</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Parameter</span></span></span><a class="reference internal" href="../../_modules/optim/text_grad/ops.html#sum_ops"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.sum_ops" title="Link to this definition">#</a></dt>
+<dd><p>Represents a sum operation on a list of variables.
+In TextGrad, sum is simply concatenation of the values of the variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>variables</strong> (<em>List</em><em>[</em><em>Variable</em><em>]</em>) – The list of variables to be summed (concatenated).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new variable representing the sum of the input variables.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Variable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.text_grad.Sum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sum</span></span><a class="reference internal" href="../../_modules/optim/text_grad/ops.html#Sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.Sum" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GradComponent</span></code></p>
+<p>The class to define a sum operation on a list of parameters, such as losses or gradients.</p>
+<p>It enables gradients combination of a batch of data samples.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.text_grad.Sum.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sum'</span></em><a class="headerlink" href="#optim.text_grad.Sum.name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.Sum.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Parameter</span></span></span><a class="reference internal" href="../../_modules/optim/text_grad/ops.html#Sum.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.Sum.forward" title="Link to this definition">#</a></dt>
+<dd><p>Performs the forward pass of the sum operation.
+This is a simple operation that concatenates the values of the parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>List</em><em>[</em><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><em>Parameter</em></a><em>]</em>) – The list of parameters to be summed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter">Parameter</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.text_grad.Sum.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">summation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Parameter</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/text_grad/ops.html#Sum.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.text_grad.Sum.backward" title="Link to this definition">#</a></dt>
+<dd><p>Computes gradients for the predecessors of the sum operation.
+There is no gradient computation for the sum operation itself.
+It is a simple way to combine multiple losses for convenience.</p>
+<p>sum.backward() =&gt; [loss1.backward(), loss2.backward(), …]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>summation</strong> (<a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><em>Parameter</em></a>) – The parameter representing the sum.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
@@ -645,7 +1024,52 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.LLMAsTextLoss"><code class="docutils literal notranslate"><span class="pre">LLMAsTextLoss</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.LLMAsTextLoss.forward"><code class="docutils literal notranslate"><span class="pre">LLMAsTextLoss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.EvalFnToTextLoss"><code class="docutils literal notranslate"><span class="pre">EvalFnToTextLoss</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.EvalFnToTextLoss.forward"><code class="docutils literal notranslate"><span class="pre">EvalFnToTextLoss.forward()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.EvalFnToTextLoss.set_backward_engine"><code class="docutils literal notranslate"><span class="pre">EvalFnToTextLoss.set_backward_engine()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.EvalFnToTextLoss.backward"><code class="docutils literal notranslate"><span class="pre">EvalFnToTextLoss.backward()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.proposing"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.proposing</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.params_history"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.params_history</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.failed_proposals"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.failed_proposals</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.current_tgd_output"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.current_tgd_output</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.params"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.params</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.constraints"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.constraints</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.one_parameter_at_a_time"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.one_parameter_at_a_time</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.constraint_text"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.constraint_text</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.increment_steps_from_last_improvement"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.increment_steps_from_last_improvement()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.reset_steps_from_last_improvement"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.reset_steps_from_last_improvement()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.add_score_to_params"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.add_score_to_params()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.add_score_to_current_param"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.add_score_to_current_param()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.add_history"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.add_history()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.render_history"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.render_history()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.add_failed_proposal"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.add_failed_proposal()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.render_failed_proposals"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.render_failed_proposals()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.update_gradient_memory"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.update_gradient_memory()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.zero_grad"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.zero_grad()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.set_target_param"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.set_target_param()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.propose"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.propose()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.revert"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.revert()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.step"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.step()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.TGDOptimizer.to_dict"><code class="docutils literal notranslate"><span class="pre">TGDOptimizer.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.sum_ops"><code class="docutils literal notranslate"><span class="pre">sum_ops()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.Sum"><code class="docutils literal notranslate"><span class="pre">Sum</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.Sum.name"><code class="docutils literal notranslate"><span class="pre">Sum.name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.Sum.forward"><code class="docutils literal notranslate"><span class="pre">Sum.forward()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.text_grad.Sum.backward"><code class="docutils literal notranslate"><span class="pre">Sum.backward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

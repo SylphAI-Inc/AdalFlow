@@ -1,0 +1,1308 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>components.agent.react &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=af51538a" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/rtd_search_config.js"></script>
+    <script src="../../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/components/agent/react';</script>
+    <link rel="icon" href="../../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/adalflow-logo.png" class="logo__image only-light" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>
+    <script>document.write(`<img src="../../../_static/adalflow-logo.png" class="logo__image only-dark" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributor/index.html">
+    Contributor Guide
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributor/index.html">
+    Contributor Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">components.a...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for components.agent.react</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Implementation and optimization of React agent.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+
+<span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.grad_component</span> <span class="kn">import</span> <span class="n">GradComponent</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">ParameterType</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span><span class="p">,</span> <span class="n">AsyncCallable</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.tool_manager</span> <span class="kn">import</span> <span class="n">ToolManager</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.output_parsers</span> <span class="kn">import</span> <span class="n">JsonOutputParser</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">StepOutput</span><span class="p">,</span>
+    <span class="n">GeneratorOutput</span><span class="p">,</span>
+    <span class="n">Function</span><span class="p">,</span>
+    <span class="n">FunctionOutput</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.grad_component</span> <span class="kn">import</span> <span class="n">fun_to_grad_component</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils.logger</span> <span class="kn">import</span> <span class="n">printc</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DEFAULT_REACT_AGENT_SYSTEM_PROMPT&quot;</span><span class="p">,</span> <span class="s2">&quot;ReActAgent&quot;</span><span class="p">]</span>
+
+
+<span class="n">react_agent_task_desc</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;START_OF_TASK_SPEC&gt;</span>
+<span class="s2">You are an excellent task planner.</span>
+<span class="s2">Answer the input query using the tools provided below with maximum accuracy.</span>
+
+<span class="s2">Each step you will read the previous thought, Action(name, kwargs), and Observation(execution result of the action) and then provide the next Thought and Action.</span>
+
+<span class="s2">Follow function docstring to best call the tool.</span>
+<span class="s2">- For simple queries: Directly call the ``finish`` action and provide the answer.</span>
+<span class="s2">- For complex queries:</span>
+<span class="s2">    - Step 1: Read the user query and divide it into multisteps. Start with the first tool/subquery.</span>
+<span class="s2">    - Call one tool at a time to solve each subquery/subquestion. \</span>
+<span class="s2">    - At step &#39;finish&#39;, give the final answer based on all previous steps.</span>
+<span class="s2">REMEMBER:</span>
+<span class="s2">- Action MUST call one of the tools. It CANNOT be empty.</span>
+<span class="s2">- You will ALWAYS END WITH &#39;finish&#39; tool to finish the task directly with answer or failure message.</span>
+<span class="s2">- When the tool is a class method and when class_instance exists, use &lt;class_instance_value&gt;.&lt;func_name&gt; to call instead (NOT the CLASS NAME)</span>
+<span class="s2">&lt;END_OF_TASK_SPEC&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># - In this case, you are working as a multi-hop retriever and your answer in finish MUST be verbatim short factoid responses from retrieved context.</span>
+<span class="c1"># - Answer with only the exact answer phrase, not a full sentence or paragraph.</span>
+
+<span class="n">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;START_OF_SYSTEM_PROMPT&gt;</span>
+<span class="s2">{{react_agent_task_desc}}</span>
+<span class="s2">- You cant use more than {{max_steps}} steps. At the {{max_steps}}th current step, must finish with answer.</span>
+
+<span class="s2">{# Tools #}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f tools %}</span>
+<span class="s2">&lt;START_OF_TOOLS&gt;</span>
+<span class="s2">Tools and instructions:</span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or tool in tools %}</span>
+<span class="s2">{{ loop.index }}.</span>
+<span class="s2">{{tool}}</span>
+<span class="s2">------------------------</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">&lt;END_OF_TOOLS&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">{# Context Variables #}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f context_variables is not none %}</span>
+<span class="s2">&lt;START_OF_CONTEXT&gt;</span>
+<span class="s2">You have access to context_variables with the following keys:</span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or key, value in context_variables.items() %}</span>
+<span class="s2">{{ key }}</span>
+<span class="s2">------------------------</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">You can either pass context_variables or context_variables[&#39;key&#39;] to the tools depending on the tool&#39;s requirements.</span>
+<span class="s2">&lt;END_OF_CONTEXT&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">{# output format and examples for output format #}</span>
+<span class="s2">&lt;START_OF_OUTPUT_FORMAT&gt;</span>
+<span class="s2">{{output_format_str}}</span>
+<span class="s2">&lt;END_OF_OUTPUT_FORMAT&gt;</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f examples %}</span>
+<span class="s2">&lt;START_OF_EXAMPLES&gt;</span>
+<span class="s2">Examples:</span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or example in examples %}</span>
+<span class="s2">{{example}}</span>
+<span class="s2">------------------------</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">&lt;END_OF_EXAMPLES&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">&lt;END_OF_SYSTEM_PROMPT&gt;</span>
+<span class="s2">-----------------</span>
+<span class="s2">&lt;START_OF_USER_QUERY&gt;</span>
+<span class="s2">Input query:</span>
+<span class="s2">{{ input_str }}</span>
+<span class="s2">_____________________</span>
+<span class="s2">Current Step/Max Step: {{step_history|length + 1}} / {{max_steps}}</span>
+<span class="s2">{# Step History #}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f step_history %}</span>
+<span class="s2">&lt;STEPS&gt;</span>
+<span class="s2">Your previous steps:</span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or history in step_history %}</span>
+<span class="s2">Step {{ loop.index }}.</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f history.action %}</span>
+<span class="s2">&quot;thought&quot;: &quot;{{history.action.thought}}&quot;,</span>
+<span class="s2">&quot;name&quot;: &quot;{{history.action.name}},</span>
+<span class="s2">&quot;kwargs&quot;: {{history.action.kwargs}}&quot;,</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">&quot;Observation&quot;: &quot;{{history.observation}}&quot;</span>
+
+<span class="s2">------------------------</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">&lt;/STEPS&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">&lt;END_OF_USER_QUERY&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">CombineStepHistory</span><span class="p">(</span><span class="n">GradComponent</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Extract the final answer from the step history.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">],</span>
+        <span class="n">react_agent_task_desc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1"># skip connection</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">step_history</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="n">step_history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">observation</span>
+        <span class="k">return</span> <span class="n">answer</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ReActOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Similar to GeneratorOutput, but with additional step history and final answer.&quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique id of the output&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The history of steps.&quot;</span><span class="p">},</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span>
+    <span class="p">)</span>
+
+    <span class="n">answer</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The final answer.&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ReActAgent">
+<a class="viewcode-back" href="../../../apis/components/components.agent.react.html#components.agent.ReActAgent">[docs]</a>
+<span class="k">class</span> <span class="nc">ReActAgent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;ReActAgent uses generator as a planner that runs multiple and sequential functional call steps to generate the final response.</span>
+<span class="s2">    The planner will generate a Function data class as action for each step that includes a &quot;thought&quot; field.</span>
+<span class="s2">    The execution result is stored in the &quot;observation&quot; field of the StepOutput data class.</span>
+<span class="s2">    If the execution failed, it will store the error message in the &quot;observation&quot; field so that we can auto-optimize it to correct the error.</span>
+
+<span class="s2">    The final answer can be different in training and eval mode:</span>
+<span class="s2">    - Training: the final answer will be</span>
+<span class="s2">    Users need to set up:</span>
+<span class="s2">    - tools: a list of tools to use to complete the task. Each tool is a function or a function tool.</span>
+<span class="s2">    - max_steps: the maximum number of steps the agent can take to complete the task.</span>
+<span class="s2">    - use_llm_as_fallback: a boolean to decide whether to use an additional LLM model as a fallback tool to answer the query.</span>
+<span class="s2">    - model_client: the model client to use to generate the response.</span>
+<span class="s2">    - model_kwargs: the model kwargs to use to generate the response.</span>
+<span class="s2">    - template: the template to use to generate the prompt. Default is DEFAULT_REACT_AGENT_SYSTEM_PROMPT.</span>
+<span class="s2">    - context_variables: the context variables to use in the prompt.</span>
+<span class="s2">    - use_cache: a boolean to decide whether to use the cache to store the generated responses for the planner.</span>
+<span class="s2">    - debug: a boolean to decide whether to print debug information.</span>
+
+<span class="s2">    For the generator, the default arguments are:</span>
+<span class="s2">    (1) default prompt: DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span>
+<span class="s2">    (2) default output_processors: JsonParser</span>
+
+<span class="s2">    There are `examples` which is optional, a list of string examples in the prompt.</span>
+
+<span class="s2">    Example:</span>
+
+<span class="s2">    .. code-block:: python</span>
+
+<span class="s2">        from core.openai_client import OpenAIClient</span>
+<span class="s2">        from components.agent.react import ReActAgent</span>
+<span class="s2">        from core.func_tool import FunctionTool</span>
+<span class="s2">        # define the tools</span>
+<span class="s2">        def multiply(a: int, b: int) -&gt; int:</span>
+<span class="s2">            &#39;&#39;&#39;Multiply two numbers.&#39;&#39;&#39;</span>
+<span class="s2">            return a * b</span>
+<span class="s2">        def add(a: int, b: int) -&gt; int:</span>
+<span class="s2">            &#39;&#39;&#39;Add two numbers.&#39;&#39;&#39;</span>
+<span class="s2">            return a + b</span>
+<span class="s2">        agent = ReActAgent(</span>
+<span class="s2">            tools=[multiply, add],</span>
+<span class="s2">            model_client=OpenAIClient(),</span>
+<span class="s2">            model_kwargs={&quot;model&quot;: &quot;gpt-3.5-turbo&quot;},</span>
+<span class="s2">        )</span>
+
+<span class="s2">        # Using examples:</span>
+
+<span class="s2">        call_multiply = FunctionExpression.from_function(</span>
+<span class="s2">            thought=&quot;I want to multiply 3 and 4.&quot;,</span>
+
+
+
+<span class="s2">    Reference:</span>
+<span class="s2">    [1] https://arxiv.org/abs/2210.03629, published in Mar, 2023.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO: allow users to pass in a few examples. Need to be a list of FunctionExpression instances.</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="c1"># added arguments specifc to React</span>
+        <span class="n">tools</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">AsyncCallable</span><span class="p">,</span> <span class="n">FunctionTool</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">add_llm_as_fallback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="c1"># TODO: the examples are just for specifying the output format, not end to end input-output examples, need further optimization</span>
+        <span class="n">examples</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Function</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="c1"># the following arguments are mainly for the planner</span>
+        <span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="c1"># template for the planner</span>
+        <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># allow users to customize the template</span>
+        <span class="n">context_variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># context variables</span>
+        <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">template</span> <span class="ow">or</span> <span class="n">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="n">max_steps</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_llm_as_fallback</span> <span class="o">=</span> <span class="n">add_llm_as_fallback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context_variables</span> <span class="o">=</span> <span class="n">context_variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span> <span class="o">=</span> <span class="n">use_cache</span>
+
+        <span class="n">processed_tools</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_tools</span><span class="p">(</span><span class="n">tools</span><span class="p">,</span> <span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="p">:</span> <span class="n">ToolManager</span> <span class="o">=</span> <span class="n">ToolManager</span><span class="p">(</span>
+            <span class="n">tools</span><span class="o">=</span><span class="n">processed_tools</span><span class="p">,</span>
+            <span class="n">additional_context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;context_variables&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">context_variables</span><span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="n">ouput_data_class</span> <span class="o">=</span> <span class="n">Function</span>
+        <span class="n">example</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span>
+            <span class="n">thought</span><span class="o">=</span><span class="s2">&quot;Based on all the subtasks, I am able to answer the question. Following the finish doc string, and ....&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;finish&quot;</span><span class="p">,</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;final answer&quot;</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_examples</span> <span class="o">=</span> <span class="n">examples</span> <span class="o">+</span> <span class="p">[</span><span class="n">example</span><span class="p">]</span>
+
+        <span class="n">output_parser</span> <span class="o">=</span> <span class="n">JsonOutputParser</span><span class="p">(</span>
+            <span class="n">data_class</span><span class="o">=</span><span class="n">ouput_data_class</span><span class="p">,</span>
+            <span class="n">examples</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_examples</span><span class="p">,</span>
+            <span class="n">return_data_class</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">include_fields</span><span class="o">=</span><span class="p">[</span>
+                <span class="s2">&quot;thought&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;kwargs&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;tools&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="o">.</span><span class="n">yaml_definitions</span><span class="p">,</span>
+            <span class="s2">&quot;output_format_str&quot;</span><span class="p">:</span> <span class="n">output_parser</span><span class="o">.</span><span class="n">format_instructions</span><span class="p">(),</span>
+            <span class="s2">&quot;react_agent_task_desc&quot;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;react_agent_task_desc&quot;</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">react_agent_task_desc</span><span class="p">,</span>
+                <span class="c1"># data=&quot;You are an excellent task planner. Answer the input query using the tools provided below with maximum accuracy.\n\nEach step you will read the previous thought, Action(name, kwargs), and Observation(execution result of the action) and then provide the next Thought and Action.\n\n&lt;START_OF_TASK_SPEC&gt;\nFollow function docstring to best call the tool.\n- For simple queries: Directly call the &#39;finish&#39; action and answer with a concise &#39;yes&#39; or &#39;no&#39; when it fits.\n- For complex queries:\n    - Step 1: Understand the main subject(s) and context of the user query accurately.\n    - Step 2: Break down the query into multisteps, starting with the first tool/subquery.\n    - Ensure each step accurately reflects the subjects under consideration.\n    - Continuously verify your extracted information and logic for factual accuracy using concise comparisons.\n    - At step &#39;finish&#39;, conclude with a precise final answer.\nREMEMBER:\n- Action MUST call one of the tools. It CANNOT be empty.\n- You will ALWAYS END WITH &#39;finish&#39; tool to conclude the task directly with an answer or failure message.\n- When the tool is a class method and when class_instance exists, use &lt;class_instance_value&gt;.&lt;func_name&gt; to call instead (NOT the CLASS NAME).\n&lt;END_OF_TASK_SPEC&gt;&quot;,</span>
+                <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;Task instruction for the agent to plan steps to solve a question in sequential and multi-steps to get the final answer. </span><span class="se">\</span>
+<span class="s2">                For optimizer: you need to adapt this to the current specific task.&quot;</span><span class="p">,</span>
+                <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">PROMPT</span><span class="p">,</span>
+                <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="c1"># &quot;examples&quot;: Parameter(</span>
+            <span class="c1">#     name=&quot;examples&quot;,</span>
+            <span class="c1">#     data=None,</span>
+            <span class="c1">#     role_desc=&quot;Examples for the ReAct agent.&quot;,</span>
+            <span class="c1">#     param_type=ParameterType.DEMOS,</span>
+            <span class="c1">#     requires_opt=True,</span>
+            <span class="c1"># ),</span>
+            <span class="s2">&quot;context_variables&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">context_variables</span><span class="p">,</span>
+            <span class="s2">&quot;max_steps&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">planner</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
+            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+            <span class="n">output_processors</span><span class="o">=</span><span class="n">output_parser</span><span class="p">,</span>
+            <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+            <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># besides of form the final output, it adds a skip connection to the planner task description prompt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combine_step_history</span> <span class="o">=</span> <span class="n">CombineStepHistory</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_init_tools</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tools</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">AsyncCallable</span><span class="p">,</span> <span class="n">FunctionTool</span><span class="p">]],</span>
+        <span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize the tools. Using reference or else with (copy or deepcopy) we can not set the training/eval mode for each tool.&quot;&quot;&quot;</span>
+        <span class="n">processed_tools</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">_additional_llm_tool</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">Generator</span><span class="p">(</span><span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_llm_as_fallback</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">llm_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;I answer any input query with llm&#39;s world knowledge. Use me as a fallback tool or when the query is simple.&quot;&quot;&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="n">_additional_llm_tool</span><span class="p">(</span>
+                    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">}</span>
+                <span class="p">)</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="n">output</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="k">return</span> <span class="n">response</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error using the llm_tool: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error using the llm_tool: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># always add **kwargs for us to track the id, __doc__ as the predecessors.</span>
+        <span class="kn">from</span> <span class="nn">adalflow.optim.grad_component</span> <span class="kn">import</span> <span class="n">fun_to_grad_component</span>
+
+        <span class="nd">@fun_to_grad_component</span><span class="p">(</span>
+            <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Finish&quot;</span><span class="p">,</span>
+            <span class="n">doc_string</span><span class="o">=</span><span class="n">Parameter</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="s2">&quot;Finish the task with the final answer in the kwargs.&quot;</span><span class="p">,</span>
+                <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">PROMPT</span><span class="p">,</span>
+                <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;Instruct the agent on how to create the final answer from the step history.&quot;</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;doc_string&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">answer</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finish</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">finish</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">finish</span><span class="p">)</span>
+        <span class="n">processed_tools</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_llm_as_fallback</span><span class="p">:</span>
+            <span class="n">processed_tools</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">llm_tool</span><span class="p">)</span>
+        <span class="n">processed_tools</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finish</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">processed_tools</span>
+
+    <span class="k">def</span> <span class="nf">_execute_action</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">,</span>
+        <span class="n">response</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">GeneratorOutput</span><span class="p">],</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the action string to a function call and execute it. Update the step_output with the result.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">handle_error</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+            <span class="nd">@fun_to_grad_component</span><span class="p">()</span>
+            <span class="k">def</span> <span class="nf">set_step_output_with_error</span><span class="p">(</span>
+                <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span>
+            <span class="p">):</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;Set the step_output with error.&quot;&quot;&quot;</span>
+                <span class="n">step_output</span><span class="o">.</span><span class="n">observation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">return</span> <span class="n">step_output</span>
+
+            <span class="n">response</span><span class="o">.</span><span class="n">add_successor_map_fn</span><span class="p">(</span>
+                <span class="n">successor</span><span class="o">=</span><span class="n">set_step_output_with_error</span><span class="p">,</span> <span class="n">map_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">set_step_output_with_error</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">step_output</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="n">step</span> <span class="o">=</span> <span class="n">step_output</span><span class="o">.</span><span class="n">step</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+
+            <span class="k">try</span><span class="p">:</span>
+
+                <span class="n">step_output</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">data</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                    <span class="n">printc</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Step test train:  </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">step_output</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
+                    <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">})</span>
+
+                <span class="n">result</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="p">(</span>
+                    <span class="n">expr_or_fun</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+                    <span class="n">step</span><span class="o">=</span><span class="s2">&quot;execute&quot;</span><span class="p">,</span>
+                    <span class="n">map_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>  <span class="c1"># Function</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+
+                    <span class="nd">@fun_to_grad_component</span><span class="p">()</span>
+                    <span class="k">def</span> <span class="nf">set_step_output_with_error</span><span class="p">(</span><span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">                        </span><span class="sd">&quot;&quot;&quot;Set the step_output with error.&quot;&quot;&quot;</span>
+                        <span class="n">step_output</span><span class="o">.</span><span class="n">observation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2"> in executing action.&quot;</span>
+
+                        <span class="k">return</span> <span class="n">step_output</span>
+
+                    <span class="n">response</span><span class="o">.</span><span class="n">add_successor_map_fn</span><span class="p">(</span>
+                        <span class="n">successor</span><span class="o">=</span><span class="n">set_step_output_with_error</span><span class="p">,</span>
+                        <span class="n">map_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">step_output</span> <span class="o">=</span> <span class="n">set_step_output_with_error</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span>
+                        <span class="n">step_output</span><span class="p">,</span> <span class="n">response</span>
+                    <span class="p">)</span>
+
+                    <span class="k">return</span> <span class="n">step_output</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> Error executing action: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">return</span> <span class="n">handle_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+
+                <span class="n">step_output</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">step</span>
+                <span class="n">step_output</span><span class="o">.</span><span class="n">observation</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">output</span>
+
+                <span class="c1"># update the execution result to the step_output to be consistent with the eval version</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">step_output</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">role_desc</span> <span class="o">=</span> <span class="s2">&quot;The result of the action execution, observation is the final answer&quot;</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">param_type</span> <span class="o">=</span> <span class="n">ParameterType</span><span class="o">.</span><span class="n">OUTPUT</span>
+                <span class="k">return</span> <span class="n">result</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> Error converting function output to step output: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span>
+
+                <span class="k">return</span> <span class="n">handle_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_action_eval_mode</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+                <span class="n">step_output</span><span class="o">=</span><span class="n">step_output</span><span class="p">,</span>
+                <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
+                <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_execute_action_eval_mode</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">,</span>
+        <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">,</span>
+        <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StepOutput</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute the action and update the step_output.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">error</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error planning step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">step_output</span><span class="o">.</span><span class="n">observation</span> <span class="o">=</span> <span class="n">error_msg</span>
+            <span class="n">step_output</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">step_output</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fun_expr</span><span class="p">:</span> <span class="n">Function</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span>
+
+                <span class="n">step_output</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">fun_expr</span>
+                <span class="c1"># # add id to the function</span>
+                <span class="n">fun_expr</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">})</span>
+
+                <span class="k">if</span> <span class="n">step_output</span> <span class="ow">and</span> <span class="n">step_output</span><span class="o">.</span><span class="n">action</span><span class="p">:</span>
+
+                    <span class="n">result</span><span class="p">:</span> <span class="n">FunctionOutput</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="p">(</span>
+                        <span class="n">expr_or_fun</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>  <span class="c1"># Function</span>
+                        <span class="n">step</span><span class="o">=</span><span class="s2">&quot;execute&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="n">step_output</span><span class="o">.</span><span class="n">observation</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">output</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="se">\n</span><span class="si">{</span><span class="n">step_output</span><span class="si">}</span><span class="se">\n</span><span class="s2">_______</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">step_output</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse response for step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse response for step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">step_output</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error parsing response for step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">step_output</span><span class="o">.</span><span class="n">observation</span> <span class="o">=</span> <span class="n">error_msg</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                    <span class="n">printc</span><span class="p">(</span><span class="n">error_msg</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">step_output</span>
+
+    <span class="k">def</span> <span class="nf">_run_one_step</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">StepOutput</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run one step of the agent. Plan and execute the action for the step.</span>
+<span class="sd">        Need to deal with both train and eval mode on the self.planner.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;step: </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+
+        <span class="n">step_history_value</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">step_output</span> <span class="ow">in</span> <span class="n">step_history</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step_output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                <span class="n">step_history_value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_output</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">step_history_value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_output</span><span class="p">)</span>
+
+        <span class="n">prompt_kwargs</span><span class="p">[</span><span class="s2">&quot;step_history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">step_history_value</span>
+
+        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">step_history_value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Expected StepOutput, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">, all steps: </span><span class="si">{</span><span class="n">step_history_value</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">StepOutput</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Expected StepOutput, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">, all steps: </span><span class="si">{</span><span class="n">step_history_value</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Running step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2"> with prompt: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="n">response</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">GeneratorOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="p">(</span>
+                <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span>
+            <span class="p">)</span>
+            <span class="c1"># prompt_str = self.planner.get_prompt(**prompt_kwargs)</span>
+            <span class="c1"># printc(f&quot;Prompt: {prompt_str}&quot;, color=&quot;yellow&quot;)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error happened in planner response at step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">error_msg</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Prompt kwargs: </span><span class="si">{</span><span class="n">prompt_kwargs</span><span class="si">}</span><span class="se">\n</span><span class="s2">Model kwargs: </span><span class="si">{</span><span class="n">model_kwargs</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="n">error_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Traceback:</span><span class="se">\n</span><span class="si">{</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+        <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span> <span class="o">=</span> <span class="n">StepOutput</span><span class="p">(</span><span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">GeneratorOutput</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Expected GeneratorOutput, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">, value: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="c1"># Detect planner parsing errors to FunctionExpression so that the prompt can be trained to self-correct</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
+
+                    <span class="nd">@fun_to_grad_component</span><span class="p">()</span>
+                    <span class="k">def</span> <span class="nf">set_step_output_with_error</span><span class="p">(</span>
+                        <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">GeneratorOutput</span>
+                    <span class="p">):</span>
+<span class="w">                        </span><span class="sd">&quot;&quot;&quot;Set the step_output with error.&quot;&quot;&quot;</span>
+                        <span class="n">step_output</span><span class="o">.</span><span class="n">observation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2"> in parsing response: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">raw_response</span><span class="si">}</span><span class="s2">, data type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="k">return</span> <span class="n">step_output</span>
+
+                    <span class="n">response</span><span class="o">.</span><span class="n">add_successor_map_fn</span><span class="p">(</span>
+                        <span class="n">successor</span><span class="o">=</span><span class="n">set_step_output_with_error</span><span class="p">,</span>
+                        <span class="n">map_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">step_output</span> <span class="o">=</span> <span class="n">set_step_output_with_error</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span>
+                        <span class="n">step_output</span><span class="p">,</span> <span class="n">response</span>
+                    <span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+
+                    <span class="n">step_output</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_action</span><span class="p">(</span>
+                        <span class="n">step_output</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="nb">id</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step_output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Expected Parameter, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">step_output</span><span class="p">)</span><span class="si">}</span><span class="s2">, value: </span><span class="si">{</span><span class="n">step_output</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                    <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;step_output: </span><span class="si">{</span><span class="n">step_output</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step_output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Ensure step_output to be Parameter at training mode. Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">step_output</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span><span class="se">\n\</span>
+<span class="s2">                            Please check the observation for error details: </span><span class="si">{</span><span class="n">step_output</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">step_output</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_action</span><span class="p">(</span>
+                    <span class="n">step_output</span><span class="o">=</span><span class="n">step_output</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">step_output</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Error executing action at step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">step_output</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                    <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;step_output: </span><span class="si">{</span><span class="n">step_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">step_output</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error during execution at step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">error_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Step output: </span><span class="si">{</span><span class="n">step_output</span><span class="si">}</span><span class="se">\n</span><span class="s2">Response: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">error_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Traceback:</span><span class="se">\n</span><span class="si">{</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_check_last_step</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the last step is the finish step.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">step_history</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">last_step</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="n">step_history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">last_step</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="n">last_step</span> <span class="o">=</span> <span class="n">last_step</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">last_step</span>
+            <span class="ow">and</span> <span class="n">last_step</span><span class="o">.</span><span class="n">action</span>
+            <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">last_step</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">last_step</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;finish&quot;</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_get_answer</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the final answer from the step history.</span>
+
+<span class="sd">        When in training mode, we pass the whole step_history to the backward engine to find the feedback</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">step_history</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">last_step</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="n">step_history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">last_step</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+
+            <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combine_step_history</span><span class="p">(</span>
+                <span class="n">step_history</span><span class="o">=</span><span class="n">step_history</span><span class="p">,</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">last_step</span><span class="o">.</span><span class="n">data_id</span><span class="p">,</span>
+                <span class="n">react_agent_task_desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">prompt_kwargs</span><span class="p">[</span>
+                    <span class="s2">&quot;react_agent_task_desc&quot;</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">answer</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">last_step</span><span class="o">.</span><span class="n">observation</span>
+
+<div class="viewcode-block" id="ReActAgent.call">
+<a class="viewcode-back" href="../../../apis/components/components.agent.react.html#components.agent.ReActAgent.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReActOutput</span><span class="p">:</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bicall</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">ReActOutput</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">output</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected ReActOutput, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="ReActAgent.forward">
+<a class="viewcode-back" href="../../../apis/components/components.agent.react.html#components.agent.ReActAgent.forward">[docs]</a>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bicall</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_is_step_output_last_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the step output is the last step.&quot;&quot;&quot;</span>
+        <span class="n">step_output_data</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">step_output</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step_output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span> <span class="k">else</span> <span class="n">step_output</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">step_output_data</span>
+            <span class="ow">and</span> <span class="n">step_output_data</span><span class="o">.</span><span class="n">function</span>
+            <span class="ow">and</span> <span class="n">step_output_data</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;finish&quot;</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="ReActAgent.bicall">
+<a class="viewcode-back" href="../../../apis/components/components.agent.react.html#components.agent.ReActAgent.bicall">[docs]</a>
+    <span class="k">def</span> <span class="nf">bicall</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">promt_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">,</span> <span class="n">ReActOutput</span><span class="p">]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs.&quot;&quot;&quot;</span>
+        <span class="c1"># initialize step_history in both training and eval mode</span>
+
+        <span class="c1"># set up the prompts</span>
+        <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="o">**</span><span class="n">promt_kwargs</span><span class="p">,</span>
+            <span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;input_query: </span><span class="si">{</span><span class="nb">input</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">):</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">step_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_step</span><span class="p">(</span>
+                    <span class="n">step</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">step_history</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step_output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                    <span class="n">step_output</span><span class="o">.</span><span class="n">data_id</span> <span class="o">=</span> <span class="nb">id</span>
+                <span class="n">step_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_output</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_last_step</span><span class="p">(</span><span class="n">step_history</span><span class="p">):</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error running step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error running step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>  <span class="c1"># the only place to raise the error for debugging. In normal cases, the agent should not raise an error.</span>
+
+        <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_answer</span><span class="p">(</span><span class="n">step_history</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">answer</span>
+        <span class="c1"># wrap the output</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">ReActOutput</span><span class="p">(</span><span class="n">step_history</span><span class="o">=</span><span class="n">step_history</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="n">answer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;answer: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;max_steps=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="si">}</span><span class="s2">, add_llm_as_fallback=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">add_llm_as_fallback</span><span class="si">}</span><span class="s2">, &quot;</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+    <span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
+    <span class="kn">from</span> <span class="nn">adalflow.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span>
+
+    <span class="n">setup_env</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">App</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">llm_tool</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+                <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+                <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">llm_as_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;Used as a calculator tool.&quot;&quot;&quot;</span>
+                <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;llm_as_tool: </span><span class="si">{</span><span class="nb">input</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_tool</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">},</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">react_agent</span> <span class="o">=</span> <span class="n">ReActAgent</span><span class="p">(</span>
+                <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">FunctionTool</span><span class="p">(</span><span class="n">llm_as_tool</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">llm_tool</span><span class="p">)],</span>
+                <span class="n">max_steps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">add_llm_as_fallback</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+                <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">react_agent</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">react_agent</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+
+    <span class="c1"># print(OutputParameter.__mro__)</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">app</span><span class="p">(</span><span class="s2">&quot;I want to multiply 3 and 4.&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">)</span>
+    <span class="c1"># print(output)</span>
+    <span class="n">printc</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">()</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

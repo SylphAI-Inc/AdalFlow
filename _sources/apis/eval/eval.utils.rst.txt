@@ -1,0 +1,18 @@
+.. _eval-utils:
+
+utils
+=================
+
+.. automodule:: eval.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      f1_score
+      normalize_answer
+

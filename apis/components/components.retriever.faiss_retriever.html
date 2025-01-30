@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -272,6 +287,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -300,6 +319,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -422,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.ollama_client.html">ollama_client</a></li>
@@ -583,8 +610,104 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="faiss-retriever">
-<span id="components-retriever-faiss-retriever"></span><h1>faiss_retriever<a class="headerlink" href="#faiss-retriever" title="Link to this heading">#</a></h1>
+  <section id="module-components.retriever.faiss_retriever">
+<span id="faiss-retriever"></span><span id="components-retriever-faiss-retriever"></span><h1>faiss_retriever<a class="headerlink" href="#module-components.retriever.faiss_retriever" title="Link to this heading">#</a></h1>
+<p>Semantic search/embedding-based retriever using FAISS.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.retriever.faiss_retriever.FAISSRetriever" title="components.retriever.faiss_retriever.FAISSRetriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FAISSRetriever</span></code></a>([embedder, top_k, ...])</p></td>
+<td><p>Semantic search/embedding-based retriever using FAISS.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="components.retriever.faiss_retriever.FAISSRetriever">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FAISSRetriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Embedder</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimensions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_map_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'cosine'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'euclidean'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'prob'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'prob'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/faiss_retriever.html#FAISSRetriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.faiss_retriever.FAISSRetriever" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]] | <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</p>
+<p>Semantic search/embedding-based retriever using FAISS.</p>
+<p>To use the retriever, you can either pass the index embeddings from the <code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__()</span></code> or use the <a class="reference internal" href="#components.retriever.faiss_retriever.FAISSRetriever.build_index_from_documents" title="components.retriever.faiss_retriever.FAISSRetriever.build_index_from_documents"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build_index_from_documents()</span></code></a> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>embedder</strong> (<a class="reference internal" href="../core/core.embedder.html#core.embedder.Embedder" title="core.embedder.Embedder"><em>Embedder</em></a><em>, </em><em>optimal</em>) – The embedder component to use for converting the queries in string format to embeddings.
+Ensure the vectorizer is exactly the same as the one used to the embeddings in the index.</p></li>
+<li><p><strong>top_k</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of chunks to retrieve. Defaults to 5.</p></li>
+<li><p><strong>dimensions</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – Dimension of the embeddings. Defaults to None. It can automatically infer the dimensions from the first chunk.</p></li>
+<li><p><strong>documents</strong> (<em>Optional</em><em>[</em><em>FAISSRetrieverDocumentType</em><em>]</em><em>, </em><em>optional</em>) – List of embeddings. Format can be List[List[float]] or List[np.ndarray]. Defaults to None.</p></li>
+<li><p><strong>metric</strong> (<em>Literal</em><em>[</em><em>&quot;cosine&quot;</em><em>, </em><em>&quot;euclidean&quot;</em><em>, </em><em>&quot;prob&quot;</em><em>]</em><em>, </em><em>optional</em>) – The metric to use for the retrieval. Defaults to “prob” which converts cosine similarity to probability.</p></li>
+</ul>
+</dd>
+</dl>
+<p>How FAISS works:</p>
+<p>The retriever uses in-memory Faiss index to retrieve the top k chunks
+d: dimension of the vectors
+xb: number of vectors to put in the index
+xq: number of queries
+The data type dtype must be float32.</p>
+<p>Note: When the num of chunks are less than top_k, the last columns will be -1</p>
+<p>Other index options:
+- faiss.IndexFlatL2: L2 or Euclidean distance, [-inf, inf]
+- faiss.IndexFlatIP: Inner product of embeddings (inner product of normalized vectors will be cosine similarity, [-1, 1])</p>
+<p>We choose cosine similarity and convert it to range [0, 1] by adding 1 and dividing by 2 to simulate probability in [0, 1]</p>
+<p>Install FAISS:</p>
+<p>As FAISS is optional package, you can install it with pip for cpu version:
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">pip</span> <span class="pre">install</span> <span class="pre">faiss-cpu</span>
+<span class="pre">`</span></code>
+For GPU version:
+You might have to use conda to install faiss-gpu:https://github.com/facebookresearch/faiss/wiki/Installing-Faiss</p>
+<p>References:
+- FAISS: <a class="github reference external" href="https://github.com/facebookresearch/faiss">facebookresearch/faiss</a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.faiss_retriever.FAISSRetriever.reset_index">
+<span class="sig-name descname"><span class="pre">reset_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/faiss_retriever.html#FAISSRetriever.reset_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.faiss_retriever.FAISSRetriever.reset_index" title="Link to this definition">#</a></dt>
+<dd><p>Initialize/reset any attributes/states for the index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.faiss_retriever.FAISSRetriever.build_index_from_documents">
+<span class="sig-name descname"><span class="pre">build_index_from_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_map_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/faiss_retriever.html#FAISSRetriever.build_index_from_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.faiss_retriever.FAISSRetriever.build_index_from_documents" title="Link to this definition">#</a></dt>
+<dd><p>Build index from embeddings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>documents</strong> – List of embeddings. Format can be List[List[float]] or List[np.ndarray]</p>
+</dd>
+</dl>
+<p>If you are using Document format, pass them as [doc.vector for doc in documents]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.faiss_retriever.FAISSRetriever.retrieve_embedding_queries">
+<span class="sig-name descname"><span class="pre">retrieve_embedding_queries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverOutput</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RetrieverOutput</span></span></span><a class="reference internal" href="../../_modules/components/retriever/faiss_retriever.html#FAISSRetriever.retrieve_embedding_queries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.faiss_retriever.FAISSRetriever.retrieve_embedding_queries" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.faiss_retriever.FAISSRetriever.retrieve_string_queries">
+<span class="sig-name descname"><span class="pre">retrieve_string_queries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverOutput</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RetrieverOutput</span></span></span><a class="reference internal" href="../../_modules/components/retriever/faiss_retriever.html#FAISSRetriever.retrieve_string_queries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.faiss_retriever.FAISSRetriever.retrieve_string_queries" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the top k chunks given the query or queries in string format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> – The query or list of queries in string format. Note: ensure the maximum number of queries fits into the embedder.</p></li>
+<li><p><strong>top_k</strong> – The number of chunks to retrieve. When top_k is not provided, it will use the default top_k set during initialization.</p></li>
+</ul>
+</dd>
+</dl>
+<p>When top_k is not provided, it will use the default top_k set during initialization.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.faiss_retriever.FAISSRetriever.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverOutput</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RetrieverOutput</span></span></span><a class="reference internal" href="../../_modules/components/retriever/faiss_retriever.html#FAISSRetriever.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.faiss_retriever.FAISSRetriever.call" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverOutput</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RetrieverOutput</span></span></span></dt>
+<dd><p>Retrieve the top k chunks given the query or queries in embedding or string format.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -621,6 +744,30 @@
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.faiss_retriever.FAISSRetriever"><code class="docutils literal notranslate"><span class="pre">FAISSRetriever</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.faiss_retriever.FAISSRetriever.reset_index"><code class="docutils literal notranslate"><span class="pre">FAISSRetriever.reset_index()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.faiss_retriever.FAISSRetriever.build_index_from_documents"><code class="docutils literal notranslate"><span class="pre">FAISSRetriever.build_index_from_documents()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.faiss_retriever.FAISSRetriever.retrieve_embedding_queries"><code class="docutils literal notranslate"><span class="pre">FAISSRetriever.retrieve_embedding_queries()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.faiss_retriever.FAISSRetriever.retrieve_string_queries"><code class="docutils literal notranslate"><span class="pre">FAISSRetriever.retrieve_string_queries()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.retriever.faiss_retriever.FAISSRetriever.call"><code class="docutils literal notranslate"><span class="pre">FAISSRetriever.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

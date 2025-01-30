@@ -13,12 +13,15 @@ component
 
    .. autosummary::
 
-      fun_to_component
+      func_to_component
+      func_to_data_component
 
    .. rubric:: Classes
 
    .. autosummary::
 
       Component
-      FunComponent
+      DataComponent
+      FuncComponent
+      FuncDataComponent
 

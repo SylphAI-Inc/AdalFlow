@@ -156,6 +156,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -308,6 +323,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -423,6 +445,7 @@
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rag_with_memory.html">RAG with Memory</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -540,7 +563,7 @@ It really is just normal model inference code.</p>
 </section>
 <section id="modelclient-protocol">
 <h2>ModelClient Protocol<a class="headerlink" href="#modelclient-protocol" title="Link to this heading">#</a></h2>
-<p>A model client can be used to manage different types of models, we defined a <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelType</span></code> to categorize the model type.</p>
+<p>A model client can be used to manage different types of models, we defined a <a class="reference internal" href="../apis/core/core.types.html#core.types.ModelType" title="core.types.ModelType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelType</span></code></a> to categorize the model type.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ModelType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">EMBEDDER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">LLM</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -1830,7 +1853,7 @@ custom model client</p>
 <div class="highlight admonition">
 <p class="admonition-title">API reference</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.model_client.ModelClient</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.model_client.ModelClient</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformersClient</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient" title="components.model_client.groq_client.GroqAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.groq_client.GroqAPIClient</span></code></a></p></li>

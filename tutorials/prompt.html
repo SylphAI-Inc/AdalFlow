@@ -156,6 +156,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -308,6 +323,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -423,6 +445,7 @@
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rag_with_memory.html">RAG with Memory</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -616,7 +639,7 @@ User: What is the capital of France?
 </section>
 <section id="prompt-class">
 <h2>Prompt class<a class="headerlink" href="#prompt-class" title="Link to this heading">#</a></h2>
-<p>We created our <code class="xref py py-class docutils literal notranslate"><span class="pre">Prompt</span> <span class="pre">Component</span></code> to render the prompt with the string <code class="docutils literal notranslate"><span class="pre">template</span></code> and <code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code>.
+<p>We created our <a class="reference internal" href="../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt" title="core.prompt_builder.Prompt"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prompt</span> <span class="pre">Component</span></code></a> to render the prompt with the string <code class="docutils literal notranslate"><span class="pre">template</span></code> and <code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code>.
 It is a simple component, but it is quite handy.
 Let’s use the same template as above:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
@@ -702,7 +725,7 @@ You:
 <div class="highlight admonition">
 <p class="admonition-title">API References</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.prompt_builder.Prompt</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt" title="core.prompt_builder.Prompt"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.prompt_builder.Prompt</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.default_prompt_template.html#id0" title="core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT</span></code></a></p></li>
 </ul>
 </div>

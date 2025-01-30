@@ -1,0 +1,18 @@
+.. _optim-gradient:
+
+gradient
+=====================
+
+.. automodule:: optim.gradient
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      Gradient
+      GradientContext
+

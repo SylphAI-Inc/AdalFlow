@@ -156,6 +156,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -308,6 +323,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -423,6 +445,7 @@
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rag_with_memory.html">RAG with Memory</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -575,9 +598,9 @@ Human evaluation, on the other hand, involves human in the loop to evaluate the 
 <p>Here, we categorize the automated evaluation methods as follows:</p>
 <ol class="arabic simple">
 <li><p>For classicial NLU tasks, such as text classification and sentiment analysis, you can use metrics such as accuracy, F1-score, and ROC-AUC to evaluate the performance of LLM response just like you would do using non-genAI models. You can check out <a class="reference external" href="https://lightning.ai/docs/torchmetrics">TorchMetrics</a>.</p></li>
-<li><p>For NLG tasks, such as text summarization, translation, and question answering: (1) you can use metrics such as ROUGE, BLEU, METEOR, and BERTScore, perplexity, <code class="xref py py-class docutils literal notranslate"><span class="pre">LLMasJudge</span></code> etc to evaluate the quality of the generated text with respect to the reference text.
-Or using <code class="xref py py-class docutils literal notranslate"><span class="pre">GEvalLLMJudge</span></code> to evaluate the generated text even without reference text.</p></li>
-<li><p>For RAG (Retrieval-Augmented Generation) pipelines, you can use metrics such as <code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverRecall</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">AnswerMatchAcc</span></code>, and <code class="xref py py-class docutils literal notranslate"><span class="pre">LLMasJudge</span></code> to evaluate the quality of the retrieved context and the generated answer.</p></li>
+<li><p>For NLG tasks, such as text summarization, translation, and question answering: (1) you can use metrics such as ROUGE, BLEU, METEOR, and BERTScore, perplexity, <a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge" title="eval.llm_as_judge"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMasJudge</span></code></a> etc to evaluate the quality of the generated text with respect to the reference text.
+Or using <a class="reference internal" href="../apis/eval/eval.g_eval.html#module-eval.g_eval" title="eval.g_eval"><code class="xref py py-class docutils literal notranslate"><span class="pre">GEvalLLMJudge</span></code></a> to evaluate the generated text even without reference text.</p></li>
+<li><p>For RAG (Retrieval-Augmented Generation) pipelines, you can use metrics such as <a class="reference internal" href="../apis/eval/eval.retriever_recall.html#module-eval.retriever_recall" title="eval.retriever_recall"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverRecall</span></code></a>, <a class="reference internal" href="../apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc" title="eval.answer_match_acc"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnswerMatchAcc</span></code></a>, and <a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge" title="eval.llm_as_judge"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMasJudge</span></code></a> to evaluate the quality of the retrieved context and the generated answer.</p></li>
 </ol>
 <p>You can also check out the metrics provided by <a class="reference external" href="https://huggingface.co/metrics">Hugging Face Metrics</a>, <a class="reference external" href="https://docs.ragas.io/en/stable/getstarted/index.html">RAGAS</a>,  <a class="reference external" href="https://lightning.ai/docs/torchmetrics/stable/">TorchMetrics</a>, <a class="reference external" href="https://arxiv.org/abs/2311.09476">ARES</a>, <a class="reference external" href="https://arxiv.org/abs/2401.17072">SemScore</a>, <a class="reference external" href="https://ojs.aaai.org/index.php/AAAI/article/view/29728">RGB</a>, etc.</p>
 </section>
@@ -585,7 +608,7 @@ Or using <code class="xref py py-class docutils literal notranslate"><span class
 <h2>NLG Evaluation<a class="headerlink" href="#nlg-evaluation" title="Link to this heading">#</a></h2>
 <section id="classicial-string-metrics">
 <h3>Classicial String Metrics<a class="headerlink" href="#classicial-string-metrics" title="Link to this heading">#</a></h3>
-<p>The simplest metric would be EM <code class="xref py py-class docutils literal notranslate"><span class="pre">AnswerMatchAcc</span></code>: This calculates the exact match accuracy or fuzzy match accuracy of the generated answers by comparing them to the ground truth answers.</p>
+<p>The simplest metric would be EM <a class="reference internal" href="../apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc" title="eval.answer_match_acc"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnswerMatchAcc</span></code></a>: This calculates the exact match accuracy or fuzzy match accuracy of the generated answers by comparing them to the ground truth answers.</p>
 <p>More advanced traditional metrics, such as F1, BLEU <a class="footnote-reference brackets" href="#id46" id="id18" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>, ROUGE <a class="footnote-reference brackets" href="#id47" id="id19" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id58" id="id20" role="doc-noteref"><span class="fn-bracket">[</span>20<span class="fn-bracket">]</span></a>, and METEOR <a class="footnote-reference brackets" href="#id50" id="id21" role="doc-noteref"><span class="fn-bracket">[</span>12<span class="fn-bracket">]</span></a>, may fail to capture the semantic similarity between the reference text and the generated text, resulting in low correlation with human judgment.</p>
 <p>You can use <cite>TorchMetrics</cite> <a class="footnote-reference brackets" href="#id48" id="id22" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a> or <a class="reference external" href="https://huggingface.co/metrics">Hugging Face Metrics</a> to compute these metrics. For instance,</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gt</span> <span class="o">=</span> <span class="s2">&quot;Brazil has won 5 FIFA World Cup titles&quot;</span>
@@ -1077,11 +1100,11 @@ This means that:</p>
 <div class="highlight admonition">
 <p class="admonition-title">AdalFlow Eval API Reference</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverRecall</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultLLMJudge</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AnswerMatchAcc</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">GEvalLLMJudge</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">GEvalJudgeEvaluator</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/eval/eval.retriever_recall.html#module-eval.retriever_recall" title="eval.retriever_recall"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverRecall</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge" title="eval.llm_as_judge"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultLLMJudge</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc" title="eval.answer_match_acc"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnswerMatchAcc</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/eval/eval.g_eval.html#module-eval.g_eval" title="eval.g_eval"><code class="xref py py-class docutils literal notranslate"><span class="pre">GEvalLLMJudge</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/eval/eval.g_eval.html#module-eval.g_eval" title="eval.g_eval"><code class="xref py py-class docutils literal notranslate"><span class="pre">GEvalJudgeEvaluator</span></code></a></p></li>
 </ul>
 </div>
 <div class="highlight admonition">

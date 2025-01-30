@@ -1,0 +1,790 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>components.retriever.postgres_retriever &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=af51538a" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/rtd_search_config.js"></script>
+    <script src="../../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/components/retriever/postgres_retriever';</script>
+    <link rel="icon" href="../../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/adalflow-logo.png" class="logo__image only-light" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>
+    <script>document.write(`<img src="../../../_static/adalflow-logo.png" class="logo__image only-dark" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributor/index.html">
+    Contributor Guide
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributor/index.html">
+    Contributor Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">components.r...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for components.retriever.postgres_retriever</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Leverage a postgres database to store and retrieve documents.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">adalflow.core.retriever</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Retriever</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
+
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RetrieverOutput</span><span class="p">,</span>
+    <span class="n">RetrieverStrQueryType</span><span class="p">,</span>
+    <span class="n">RetrieverStrQueriesType</span><span class="p">,</span>
+    <span class="n">Document</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">adalflow.database.sqlalchemy.sqlachemy_manager</span> <span class="kn">import</span> <span class="n">DatabaseManager</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DistanceToOperator">
+<a class="viewcode-back" href="../../../apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator">[docs]</a>
+<span class="k">class</span> <span class="nc">DistanceToOperator</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Enum for the distance to operator.</span>
+
+<span class="s2">    About pgvector:</span>
+
+<span class="s2">    1. L2 distance: &lt;-&gt;, inner product (&lt;#&gt;), cosine distance (&lt;=&gt;), and L1 distance (&lt;+&gt;, added in 0.7.0)</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">L2</span> <span class="o">=</span> <span class="s2">&quot;&lt;-&gt;&quot;</span>
+    <span class="n">INNER_PRODUCT</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;&lt;#&gt;&quot;</span>  <span class="c1"># cosine similarity when the vector is normalized, in range [-1, 1]</span>
+    <span class="p">)</span>
+    <span class="n">COSINE</span> <span class="o">=</span> <span class="s2">&quot;&lt;=&gt;&quot;</span>  <span class="c1"># cosine distance, in range [0, 1] = 1 - cosine_similarity</span>
+    <span class="n">L1</span> <span class="o">=</span> <span class="s2">&quot;&lt;+&gt;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="PostgresRetriever">
+<a class="viewcode-back" href="../../../apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever">[docs]</a>
+<span class="k">class</span> <span class="nc">PostgresRetriever</span><span class="p">(</span><span class="n">Retriever</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">RetrieverStrQueryType</span><span class="p">]):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Use a postgres database to store and retrieve documents.</span>
+
+<span class="s2">    Users can follow this example and to customize the prompt or additionally ask it to output score along with the indices.</span>
+
+<span class="s2">    Args:</span>
+<span class="s2">        top_k (Optional[int], optional): top k documents to fetch. Defaults to 1.</span>
+<span class="s2">        database_url (str): the database url to connect to. Defaults to postgresql://postgres:password@localhost:5432/vector_db.</span>
+
+<span class="s2">    References:</span>
+<span class="s2">    [1] pgvector extension: https://github.com/pgvector/pgvector</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">embedder</span><span class="p">:</span> <span class="n">Embedder</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">database_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;document&quot;</span><span class="p">,</span>
+        <span class="n">distance_operator</span><span class="p">:</span> <span class="n">DistanceToOperator</span> <span class="o">=</span> <span class="n">DistanceToOperator</span><span class="o">.</span><span class="n">INNER_PRODUCT</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">top_k</span> <span class="o">=</span> <span class="n">top_k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table_name</span> <span class="o">=</span> <span class="n">table_name</span>
+        <span class="n">db_name</span> <span class="o">=</span> <span class="s2">&quot;vector_db&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">database_url</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">database_url</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;postgresql://postgres:password@localhost:5432/</span><span class="si">{</span><span class="n">db_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_manager</span> <span class="o">=</span> <span class="n">DatabaseManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">database_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span> <span class="o">=</span> <span class="n">embedder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distance_operator</span> <span class="o">=</span> <span class="n">distance_operator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_score_prob_fun_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">DistanceToOperator</span><span class="o">.</span><span class="n">COSINE</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_cosine_distance_to_probability</span><span class="p">,</span>
+            <span class="n">DistanceToOperator</span><span class="o">.</span><span class="n">L2</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_l2_distance_to_probability</span><span class="p">,</span>
+            <span class="n">DistanceToOperator</span><span class="o">.</span><span class="n">INNER_PRODUCT</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_cosine_similarity_to_probability</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">score_prob_fun</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db_score_prob_fun_map</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">distance_operator</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_operator</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_score_prob_fun_map</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="PostgresRetriever.format_vector_search_query">
+<a class="viewcode-back" href="../../../apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.format_vector_search_query">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">format_vector_search_query</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">vector_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">query_embedding</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">distance_operator</span><span class="p">:</span> <span class="n">DistanceToOperator</span><span class="p">,</span>
+        <span class="n">sort_desc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Formats a SQL query string to select all columns from a table, order the results</span>
+<span class="sd">        by the distance or similarity score to a provided embedding, and also return</span>
+<span class="sd">        that score.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            table_name (str): The name of the table to query.</span>
+<span class="sd">            column (str): The name of the column containing the vector data.</span>
+<span class="sd">            query_embedding (list or str): The embedding vector to compare against.</span>
+<span class="sd">            top_k (int): The number of top results to return.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: A formatted SQL query string that includes the score.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Convert the list embedding to a string format suitable for SQL</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query_embedding</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">embedding_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">query_embedding</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+            <span class="p">)</span>  <span class="c1"># Remove spaces for cleaner SQL</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">embedding_str</span> <span class="o">=</span> <span class="n">query_embedding</span>
+
+        <span class="c1"># Determine sorting order</span>
+        <span class="n">order_by</span> <span class="o">=</span> <span class="s2">&quot;DESC&quot;</span> <span class="k">if</span> <span class="n">sort_desc</span> <span class="k">else</span> <span class="s2">&quot;ASC&quot;</span>
+
+        <span class="c1"># SQL query that includes the score in the selected columns</span>
+        <span class="n">sql_query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT *, (</span><span class="si">{</span><span class="n">vector_column</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">distance_operator</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="n">embedding_str</span><span class="si">}</span><span class="s2">&#39;) AS score</span>
+<span class="s2">        FROM </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span>
+<span class="s2">        ORDER BY score </span><span class="si">{</span><span class="n">order_by</span><span class="si">}</span>
+<span class="s2">        LIMIT </span><span class="si">{</span><span class="n">top_k</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">sql_query</span></div>
+
+
+<div class="viewcode-block" id="PostgresRetriever.retrieve_by_sql">
+<a class="viewcode-back" href="../../../apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.retrieve_by_sql">[docs]</a>
+    <span class="k">def</span> <span class="nf">retrieve_by_sql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve documents from the postgres database.&quot;&quot;&quot;</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_manager</span><span class="o">.</span><span class="n">execute_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_convert_cosine_similarity_to_probability</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">cosine_similarity</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert cosine similarity to probability.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">cosine_similarity</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">cosine_similarity</span> <span class="ow">in</span> <span class="n">cosine_similarity</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_convert_l2_distance_to_probability</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">l2_distance</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert L2 distance to probability.</span>
+
+<span class="sd">        note:</span>
+
+<span class="sd">        Ensure the vector is normalized so that the l2_distance will be in range [0, 2]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">l2_distance</span><span class="p">)</span>
+        <span class="c1"># clip to ensure the distance is in range [0, 2]</span>
+        <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="c1"># convert to probability</span>
+        <span class="n">prob_score</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">distance</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="n">prob_score</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_convert_cosine_distance_to_probability</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">cosine_distance</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert cosine distance to probability.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">cosine_distance</span><span class="p">)</span> <span class="k">for</span> <span class="n">cosine_distance</span> <span class="ow">in</span> <span class="n">cosine_distance</span><span class="p">]</span>
+
+<div class="viewcode-block" id="PostgresRetriever.call">
+<a class="viewcode-back" href="../../../apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="n">RetrieverStrQueriesType</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">]:</span>
+        <span class="n">top_k</span> <span class="o">=</span> <span class="n">top_k</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_k</span>
+        <span class="n">queries</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">input</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="nb">input</span><span class="p">]</span>
+        <span class="n">retrieved_outputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">queries_embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="p">(</span><span class="n">queries</span><span class="p">)</span>
+
+        <span class="n">sort_desc</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distance_operator</span> <span class="o">==</span> <span class="n">DistanceToOperator</span><span class="o">.</span><span class="n">INNER_PRODUCT</span>
+        <span class="p">):</span>  <span class="c1"># cosine similarity</span>
+            <span class="n">sort_desc</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">query</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">queries</span><span class="p">):</span>
+            <span class="n">query_embedding</span> <span class="o">=</span> <span class="n">queries_embeddings</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span>
+            <span class="n">query_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_vector_search_query</span><span class="p">(</span>
+                <span class="n">table_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">table_name</span><span class="p">,</span>
+                <span class="n">vector_column</span><span class="o">=</span><span class="s2">&quot;vector&quot;</span><span class="p">,</span>
+                <span class="n">query_embedding</span><span class="o">=</span><span class="n">query_embedding</span><span class="p">,</span>
+                <span class="n">top_k</span><span class="o">=</span><span class="n">top_k</span><span class="p">,</span>
+                <span class="n">distance_operator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">distance_operator</span><span class="p">,</span>
+                <span class="n">sort_desc</span><span class="o">=</span><span class="n">sort_desc</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">retrieved_documents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_by_sql</span><span class="p">(</span><span class="n">query_str</span><span class="p">)</span>
+            <span class="n">doc_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">retrieved_documents</span><span class="p">]</span>
+            <span class="n">doc_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">retrieved_documents</span><span class="p">]</span>
+            <span class="n">doc_scores_prob</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">score_prob_fun</span><span class="p">(</span><span class="n">doc_scores</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">score_prob_fun</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="n">documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Document</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">retrieved_documents</span><span class="p">:</span>
+                <span class="n">documents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span>
+            <span class="n">retrieved_outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">RetrieverOutput</span><span class="p">(</span>
+                    <span class="n">doc_indices</span><span class="o">=</span><span class="n">doc_indices</span><span class="p">,</span>
+                    <span class="n">doc_scores</span><span class="o">=</span><span class="n">doc_scores_prob</span> <span class="k">if</span> <span class="n">doc_scores_prob</span> <span class="k">else</span> <span class="n">doc_scores</span><span class="p">,</span>
+                    <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
+                    <span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">retrieved_outputs</span></div>
+</div>
+
+
+
+<span class="c1"># if __name__ == &quot;__main__&quot;:</span>
+<span class="c1">#     from adalflow.core.embedder import Embedder</span>
+<span class="c1">#     from adalflow.core.types import Document</span>
+<span class="c1">#     from adalflow.database.sqlalchemy.pipeline.default_config import default_config</span>
+<span class="c1">#     from adalflow.utils import setup_env  # noqa</span>
+
+<span class="c1">#     documents = [</span>
+<span class="c1">#         {</span>
+<span class="c1">#             &quot;meta_data&quot;: {&quot;title&quot;: &quot;Li Yin&#39;s profile&quot;},</span>
+<span class="c1">#             &quot;text&quot;: &quot;My name is Li Yin, I love rock climbing&quot;</span>
+<span class="c1">#             + &quot;lots of nonsense text&quot; * 500,</span>
+<span class="c1">#             &quot;id&quot;: &quot;doc1&quot;,</span>
+<span class="c1">#         },</span>
+<span class="c1">#         {</span>
+<span class="c1">#             &quot;meta_data&quot;: {&quot;title&quot;: &quot;Interviewing Li Yin&quot;},</span>
+<span class="c1">#             &quot;text&quot;: &quot;lots of more nonsense text&quot; * 250</span>
+<span class="c1">#             + &quot;Li Yin is a software developer and AI researcher&quot;</span>
+<span class="c1">#             + &quot;lots of more nonsense text&quot; * 250,</span>
+<span class="c1">#             &quot;id&quot;: &quot;doc2&quot;,</span>
+<span class="c1">#         },</span>
+<span class="c1">#     ]</span>
+<span class="c1">#     db_name = &quot;vector_db&quot;</span>
+<span class="c1">#     postgres_url = f&quot;postgresql://postgres:password@localhost:5432/{db_name}&quot;</span>
+
+<span class="c1">#     vector_config = default_config[&quot;to_embeddings&quot;][&quot;component_config&quot;][&quot;embedder&quot;][</span>
+<span class="c1">#         &quot;component_config&quot;</span>
+<span class="c1">#     ]</span>
+<span class="c1">#     eb = Embedder.from_config(vector_config)</span>
+<span class="c1">#     pr = PostgresRetriever(</span>
+<span class="c1">#         embedder=eb,</span>
+<span class="c1">#         database_url=postgres_url,</span>
+<span class="c1">#         top_k=2,</span>
+<span class="c1">#         distance_operator=DistanceToOperator.INNER_PRODUCT,</span>
+<span class="c1">#     )</span>
+<span class="c1">#     output = pr(&quot;What did the author do?&quot;)</span>
+<span class="c1">#     print(output)</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

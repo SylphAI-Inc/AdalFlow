@@ -1,0 +1,1050 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>optim.text_grad.text_loss_with_eval_fn &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=af51538a" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/rtd_search_config.js"></script>
+    <script src="../../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/optim/text_grad/text_loss_with_eval_fn';</script>
+    <link rel="icon" href="../../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/adalflow-logo.png" class="logo__image only-light" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>
+    <script>document.write(`<img src="../../../_static/adalflow-logo.png" class="logo__image only-dark" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributor/index.html">
+    Contributor Guide
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributor/index.html">
+    Contributor Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">optim.text_g...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for optim.text_grad.text_loss_with_eval_fn</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Adapted from text_grad&#39;s String Based Function&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.loss_component</span> <span class="kn">import</span> <span class="n">LossComponent</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.function</span> <span class="kn">import</span> <span class="n">BackwardContext</span>
+
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">ModelClient</span>
+    <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">BackwardEngine</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">GeneratorOutput</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Parameter</span><span class="p">,</span>
+    <span class="n">OutputParameter</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.gradient</span> <span class="kn">import</span> <span class="n">GradientContext</span><span class="p">,</span> <span class="n">Gradient</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.types</span> <span class="kn">import</span> <span class="n">ParameterType</span>
+
+<span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+<span class="kn">from</span> <span class="nn">adalflow.eval.base</span> <span class="kn">import</span> <span class="n">BaseEvaluator</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.text_grad.backend_engine_prompt</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">LOSS_CONVERSATION_TEMPLATE_STRING</span><span class="p">,</span>
+    <span class="n">LOSS_CONVERSATION_START_INSTRUCTION_STRING_FN</span><span class="p">,</span>
+    <span class="n">OBJECTIVE_INSTRUCTION_BASE</span><span class="p">,</span>
+    <span class="n">OBJECTIVE_INSTRUCTION_CHAIN</span><span class="p">,</span>  <span class="c1"># often not used</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">printc</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="EvalFnToTextLoss">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.text_loss_with_eval_fn.html#optim.EvalFnToTextLoss">[docs]</a>
+<span class="k">class</span> <span class="nc">EvalFnToTextLoss</span><span class="p">(</span><span class="n">LossComponent</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Convert an evaluation function to a text loss.</span>
+
+<span class="s2">    LossComponent will take an eval function and output a score</span>
+<span class="s2">    (usually a float in range [0, 1], and the higher the better, unlike the loss function in model training).</span>
+
+<span class="s2">    In math:</span>
+
+<span class="s2">    score/loss = eval_fn(y_pred, y_gt)</span>
+
+<span class="s2">    The gradident/feedback = d(score)/d(y_pred) will be computed using a backward engine.</span>
+<span class="s2">    Gradient_context = GradientContext(</span>
+<span class="s2">        context=conversation_str,</span>
+<span class="s2">        response_desc=response.role_desc,</span>
+<span class="s2">        variable_desc=role_desc,</span>
+<span class="s2">    )</span>
+
+<span class="s2">    Args:</span>
+<span class="s2">        eval_fn: The evaluation function that takes a pair of y and y_gt and returns a score.</span>
+<span class="s2">        eval_fn_desc: Description of the evaluation function.</span>
+<span class="s2">        backward_engine: The backward engine to use for the text prompt optimization.</span>
+<span class="s2">        model_client: The model client to use for the backward engine if backward_engine is not provided.</span>
+<span class="s2">        model_kwargs: The model kwargs to use for the backward engine if backward_engine is not provided.</span>
+
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">eval_fn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">BaseEvaluator</span><span class="p">],</span>
+        <span class="n">eval_fn_desc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">backward_engine</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;BackwardEngine&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">model_client</span><span class="p">:</span> <span class="s2">&quot;ModelClient&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">BackwardEngine</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_fn</span> <span class="o">=</span> <span class="n">eval_fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_fn_desc</span> <span class="o">=</span> <span class="n">eval_fn_desc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">backward_engine</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">backward_engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;EvalFnToTextLoss: No backward engine provided. Creating one using model_client and model_kwargs.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">model_client</span> <span class="ow">and</span> <span class="n">model_kwargs</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_backward_engine</span><span class="p">(</span><span class="n">backward_engine</span><span class="p">,</span> <span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backward_engine</span><span class="p">,</span> <span class="n">BackwardEngine</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;EvalFnToTextLoss: backward_engine must be an instance of BackwardEngine.&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">backward_engine</span> <span class="o">=</span> <span class="n">backward_engine</span>
+
+<div class="viewcode-block" id="EvalFnToTextLoss.forward">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.text_loss_with_eval_fn.html#optim.EvalFnToTextLoss.forward">[docs]</a>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">],</span>
+        <span class="n">response_desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># additional notes on the input kwargs</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">gt</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            kwargs: The inputs to the eval_fn.</span>
+<span class="sd">            response_desc: Description of the output.</span>
+<span class="sd">            metadata: Additional notes on the input kwargs.</span>
+<span class="sd">            id: The unique identifier for the data point.</span>
+<span class="sd">            gt: The ground truth for the evaluation function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">response_desc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">response_desc</span> <span class="o">=</span> <span class="s2">&quot;Output of EvalFnToTextLoss.&quot;</span>
+
+        <span class="c1"># validate the type of kwargs</span>
+        <span class="n">predesessors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: All inputs must be Parameters. Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                <span class="n">predesessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">eval_inputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">eval_inputs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">eval_input</span>
+        <span class="n">score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_fn</span><span class="p">(</span><span class="o">**</span><span class="n">eval_inputs</span><span class="p">)</span>
+
+        <span class="n">eval_param</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">OutputParameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_output&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">score</span><span class="p">,</span>
+            <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">role_desc</span><span class="o">=</span><span class="n">response_desc</span><span class="p">,</span>
+            <span class="n">score</span><span class="o">=</span><span class="n">score</span><span class="p">,</span>
+            <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">LOSS_OUTPUT</span><span class="p">,</span>
+            <span class="n">data_id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">eval_param</span><span class="o">.</span><span class="n">set_gt</span><span class="p">(</span><span class="n">gt</span><span class="p">)</span>
+        <span class="n">eval_param</span><span class="o">.</span><span class="n">set_predecessors</span><span class="p">(</span><span class="n">predesessors</span><span class="p">)</span>
+        <span class="n">eval_param</span><span class="o">.</span><span class="n">trace_forward_pass</span><span class="p">(</span>
+            <span class="n">input_args</span><span class="o">=</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="n">full_response</span><span class="o">=</span><span class="n">score</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: Input: </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2">, Output: </span><span class="si">{</span><span class="n">eval_param</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># extract ground truth from eval_inputs, anything</span>
+        <span class="n">eval_param</span><span class="o">.</span><span class="n">set_grad_fn</span><span class="p">(</span>
+            <span class="n">BackwardContext</span><span class="p">(</span>
+                <span class="n">backward_fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="p">,</span>
+                <span class="n">backward_engine</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backward_engine</span><span class="p">,</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">eval_param</span><span class="p">,</span>
+                <span class="n">eval_fn_desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_fn_desc</span><span class="p">,</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">,</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                <span class="n">ground_truth</span><span class="o">=</span><span class="n">gt</span><span class="p">,</span>
+                <span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>
+                <span class="n">disable_backward_engine</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_disable_backward_engine</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">eval_param</span></div>
+
+
+<div class="viewcode-block" id="EvalFnToTextLoss.set_backward_engine">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.text_loss_with_eval_fn.html#optim.EvalFnToTextLoss.set_backward_engine">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_backward_engine</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">backward_engine</span><span class="p">:</span> <span class="s2">&quot;BackwardEngine&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">model_client</span><span class="p">:</span> <span class="s2">&quot;ModelClient&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">BackwardEngine</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">backward_engine</span> <span class="o">=</span> <span class="n">backward_engine</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">backward_engine</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;EvalFnToTextLoss: No backward engine provided. Creating one using model_client and model_kwargs.&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">backward_engine</span> <span class="o">=</span> <span class="n">BackwardEngine</span><span class="p">(</span><span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">backward_engine</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">BackwardEngine</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: backward_engine must be an instance of BackwardEngine. Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">backward_engine</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_backward_through_one_predecessor</span><span class="p">(</span>
+        <span class="n">pred</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">],</span>
+        <span class="n">response</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span>
+        <span class="n">eval_fn_desc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">backward_engine</span><span class="p">:</span> <span class="s2">&quot;BackwardEngine&quot;</span><span class="p">,</span>
+        <span class="n">ground_truth</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_intermediate_node</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># if the node is an intermediate node in the backpropagation chain</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># system input</span>
+        <span class="n">disable_backward_engine</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pred</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">pred</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: Skipping </span><span class="si">{</span><span class="n">pred</span><span class="si">}</span><span class="s2"> as it does not require optimization.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: Backward through </span><span class="si">{</span><span class="n">pred</span><span class="si">}</span><span class="s2">, is_intermediate_node: </span><span class="si">{</span><span class="n">is_intermediate_node</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pred</span><span class="o">.</span><span class="n">check_if_already_computed_gradient_respect_to</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">id</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: Gradient already computed for </span><span class="si">{</span><span class="n">pred</span><span class="o">.</span><span class="n">role_desc</span><span class="si">}</span><span class="s2"> with respect to </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">role_desc</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">backward_engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;EvalFnToTextLoss: backward_engine is required for text prompt optimization.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;EvalFnToTextLoss: backward_engine is required for text prompt optimization.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">instruction_str</span><span class="p">,</span> <span class="n">objective_str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="c1"># convert kwargs to key, (value, type(eval_input))</span>
+
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">inputs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">get_param_info</span><span class="p">(),</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">eval_input</span><span class="p">)))</span>
+
+        <span class="c1"># response information</span>
+        <span class="n">conversation_str</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span>
+            <span class="n">LOSS_CONVERSATION_TEMPLATE_STRING</span><span class="p">,</span>
+            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;system_question&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">,</span>
+                <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="n">inputs</span><span class="p">,</span>
+                <span class="s2">&quot;eval_fn_desc&quot;</span><span class="p">:</span> <span class="n">eval_fn_desc</span><span class="p">,</span>
+                <span class="s2">&quot;response_value&quot;</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">get_prompt_data</span><span class="p">(),</span>
+                <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span> <span class="k">if</span> <span class="n">metadata</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)()</span>
+
+        <span class="n">conv_ins_template</span> <span class="o">=</span> <span class="n">LOSS_CONVERSATION_START_INSTRUCTION_STRING_FN</span>
+        <span class="n">obj_ins_template</span> <span class="o">=</span> <span class="n">OBJECTIVE_INSTRUCTION_BASE</span>
+
+        <span class="k">if</span> <span class="n">is_intermediate_node</span><span class="p">:</span>
+            <span class="n">obj_ins_template</span> <span class="o">=</span> <span class="n">OBJECTIVE_INSTRUCTION_CHAIN</span>
+
+        <span class="n">instruction_str</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span>
+            <span class="n">conv_ins_template</span><span class="p">,</span>
+            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;variable&quot;</span><span class="p">:</span> <span class="n">pred</span><span class="o">.</span><span class="n">get_param_info</span><span class="p">(),</span>
+                <span class="s2">&quot;conversation_str&quot;</span><span class="p">:</span> <span class="n">conversation_str</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)()</span>
+        <span class="n">objective_str</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span>
+            <span class="n">obj_ins_template</span><span class="p">,</span>
+            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;response_name&quot;</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;response_desc&quot;</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">role_desc</span><span class="p">,</span>
+                <span class="s2">&quot;response_gradient&quot;</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)()</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: Instruction: </span><span class="si">{</span><span class="n">instruction_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: Objective: </span><span class="si">{</span><span class="n">objective_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: Conversation: </span><span class="si">{</span><span class="n">conversation_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Compute the gradient</span>
+        <span class="n">backward_engine_prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;conversation_sec&quot;</span><span class="p">:</span> <span class="n">instruction_str</span><span class="p">,</span>
+            <span class="s2">&quot;objective_instruction_sec&quot;</span><span class="p">:</span> <span class="n">objective_str</span><span class="p">,</span>
+            <span class="c1"># &quot;evaluate_variable_instruction_sec&quot;: eval_str,</span>
+        <span class="p">}</span>
+        <span class="n">gradient_value_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">gradient_prompt</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">disable_backward_engine</span><span class="p">:</span>
+            <span class="n">gradient_value</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="n">backward_engine</span><span class="p">(</span>
+                <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">backward_engine_prompt_kwargs</span>
+            <span class="p">)</span>
+            <span class="n">gradient_prompt</span> <span class="o">=</span> <span class="n">backward_engine</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span>
+                <span class="o">**</span><span class="n">backward_engine_prompt_kwargs</span>
+            <span class="p">)</span>
+            <span class="c1"># print(f&quot;Backward engine prompt: {gradient_prompt}&quot;)</span>
+            <span class="n">gradient_value_data</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">gradient_value</span><span class="o">.</span><span class="n">data</span>
+                <span class="ow">or</span> <span class="n">backward_engine</span><span class="o">.</span><span class="n">failure_message_to_optimizer</span><span class="p">(</span>
+                    <span class="n">gradient_response</span><span class="o">=</span><span class="n">gradient_value</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">gradient_value_data</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;expected answer: </span><span class="si">{</span><span class="n">ground_truth</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2"> Feedback: </span><span class="si">{</span><span class="n">gradient_value_data</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="c1"># print(f&quot;gradient_value_data: {gradient_value_data}&quot;)</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: Gradient for </span><span class="si">{</span><span class="n">pred</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">gradient_value_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># score should be passed to grad</span>
+        <span class="n">gradient_param</span> <span class="o">=</span> <span class="n">Gradient</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">gradient_value_data</span><span class="p">,</span>
+            <span class="n">data_id</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">data_id</span><span class="p">,</span>
+            <span class="n">score</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">from_response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+            <span class="n">to_pred</span><span class="o">=</span><span class="n">pred</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">gradient_param</span><span class="o">.</span><span class="n">add_prompt</span><span class="p">(</span><span class="n">gradient_prompt</span><span class="p">)</span>
+        <span class="n">gradient_param</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
+            <span class="n">GradientContext</span><span class="p">(</span>
+                <span class="n">input_output</span><span class="o">=</span><span class="n">conversation_str</span><span class="p">,</span>
+                <span class="n">response_desc</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">role_desc</span><span class="p">,</span>
+                <span class="n">variable_desc</span><span class="o">=</span><span class="n">pred</span><span class="o">.</span><span class="n">role_desc</span><span class="p">,</span>
+                <span class="c1"># input=input,</span>
+                <span class="c1"># ground_truth=ground_truth,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">pred</span><span class="o">.</span><span class="n">add_gradient</span><span class="p">(</span><span class="n">gradient_param</span><span class="p">)</span>
+
+        <span class="c1"># backward the end to end score</span>
+        <span class="c1"># TODO: not really useful</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pred</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
+        <span class="n">pred</span><span class="o">.</span><span class="n">set_gt</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">)</span>
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pred: </span><span class="si">{</span><span class="n">pred</span><span class="o">.</span><span class="n">eval_input</span><span class="si">}</span><span class="s2">, gt: </span><span class="si">{</span><span class="n">ground_truth</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># print(f&quot;setting pred name {pred.name} score to {response.data}&quot;)</span>
+        <span class="c1"># print(f&quot;gradient_param: {pred.gradients}&quot;)</span>
+
+        <span class="c1"># TODO: reduce meta</span>
+
+<div class="viewcode-block" id="EvalFnToTextLoss.backward">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.text_loss_with_eval_fn.html#optim.EvalFnToTextLoss.backward">[docs]</a>
+    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">response</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span>
+        <span class="n">eval_fn_desc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">],</span>
+        <span class="n">ground_truth</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backward_engine</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="s2">&quot;BackwardEngine&quot;</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># only needed for text prompt optimization</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">disable_backward_engine</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Ensure to set backward_engine for the text prompt optimization. It can be None if you</span>
+<span class="sd">        are only doing demo optimization and it will not have gradients but simply backpropagate the score.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: Backward: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">children_params</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">predecessors</span>
+        <span class="n">is_intermediate_node</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">response_gradient_context</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get_gradient_and_context_text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">response_gradient_context</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;EvalFnToTextLoss is an intermediate node.&quot;</span><span class="p">)</span>
+            <span class="n">is_intermediate_node</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;response_gradient_context: </span><span class="si">{</span><span class="n">response_gradient_context</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># go through all child parameters</span>
+        <span class="k">if</span> <span class="n">backward_engine</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">children_params</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">pred</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: Skipping </span><span class="si">{</span><span class="n">pred</span><span class="si">}</span><span class="s2"> as it does not require optimization.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_backward_through_one_predecessor</span><span class="p">(</span>
+                    <span class="n">pred</span><span class="p">,</span>
+                    <span class="n">kwargs</span><span class="p">,</span>
+                    <span class="n">response</span><span class="p">,</span>
+                    <span class="n">eval_fn_desc</span><span class="p">,</span>
+                    <span class="n">backward_engine</span><span class="p">,</span>
+                    <span class="n">ground_truth</span><span class="o">=</span><span class="n">ground_truth</span><span class="p">,</span>
+                    <span class="n">is_intermediate_node</span><span class="o">=</span><span class="n">is_intermediate_node</span><span class="p">,</span>
+                    <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                    <span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>
+                    <span class="n">disable_backward_engine</span><span class="o">=</span><span class="n">disable_backward_engine</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="c1"># else:  # recursively disable backward for all children</span>
+            <span class="c1">#     for pred in children_params:</span>
+            <span class="c1">#         pred.backward_engine_disabled = True</span>
+        <span class="c1"># backward for the score for the demo</span>
+        <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">children_params</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: response.data must be a float. Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">pred</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+            <span class="kn">from</span> <span class="nn">adalflow.utils.logger</span> <span class="kn">import</span> <span class="n">printc</span>
+
+            <span class="n">printc</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: </span><span class="si">{</span><span class="n">pred</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> set_score: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;setting pred name </span><span class="si">{</span><span class="n">pred</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> score to </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Example of using EvalFnToTextLoss</span>
+    <span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span><span class="p">,</span> <span class="n">get_logger</span>
+    <span class="kn">from</span> <span class="nn">adalflow.eval.answer_match_acc</span> <span class="kn">import</span> <span class="n">AnswerMatchAcc</span>
+    <span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>  <span class="c1"># dir: model_client</span>
+    <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">BackwardEngine</span>
+    <span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">func_to_data_component</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;lib_text_grad.log&quot;</span><span class="p">)</span>
+
+    <span class="n">setup_env</span><span class="p">()</span>
+
+    <span class="n">gpt_3_model</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;model_client&quot;</span><span class="p">:</span> <span class="n">OpenAIClient</span><span class="p">(),</span>
+        <span class="s2">&quot;model_kwargs&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+    <span class="n">gpt_4o_model</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;model_client&quot;</span><span class="p">:</span> <span class="n">OpenAIClient</span><span class="p">(),</span>
+        <span class="s2">&quot;model_kwargs&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="nd">@func_to_data_component</span>
+    <span class="k">def</span> <span class="nf">parse_integer_answer</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">only_first_line</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">only_first_line</span><span class="p">:</span>
+                <span class="n">answer</span> <span class="o">=</span> <span class="n">answer</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="n">answer</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="c1"># find the last token that has a number in it</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">token</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">answer</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">token</span><span class="p">)</span>
+            <span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="n">answer</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">answer</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()])</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="n">answer</span>
+
+    <span class="n">evaluator</span> <span class="o">=</span> <span class="n">AnswerMatchAcc</span><span class="p">()</span>
+    <span class="n">eval_fn_desc</span> <span class="o">=</span> <span class="s2">&quot;Answer Match Accuracy&quot;</span>
+    <span class="n">single_compute_eval</span> <span class="o">=</span> <span class="n">AnswerMatchAcc</span><span class="p">()</span><span class="o">.</span><span class="n">compute_single_item</span>
+
+    <span class="n">backward_engine</span> <span class="o">=</span> <span class="n">BackwardEngine</span><span class="p">(</span><span class="o">**</span><span class="n">gpt_4o_model</span><span class="p">)</span>
+    <span class="c1"># backward_engine.set_mock_output(mock_output_data=&quot;1&quot;)</span>
+
+    <span class="n">eval_fn_to_text_loss</span> <span class="o">=</span> <span class="n">EvalFnToTextLoss</span><span class="p">(</span>
+        <span class="n">eval_fn</span><span class="o">=</span><span class="n">single_compute_eval</span><span class="p">,</span>
+        <span class="n">eval_fn_desc</span><span class="o">=</span><span class="n">eval_fn_desc</span><span class="p">,</span>
+        <span class="n">backward_engine</span><span class="o">=</span><span class="n">backward_engine</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="s2">&quot;I have a cauliflower, a stalk of celery, a cabbage, and a garlic. How many vegetables do I have?&quot;</span><span class="p">,</span>
+        <span class="n">requires_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;The question to the language model&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">system_prompt</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;system_prompt&quot;</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="s2">&quot;You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: &#39;Answer: $VALUE&#39; where VALUE is a numerical value.&quot;</span><span class="p">,</span>
+        <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;structured system prompt to a somewhat capable language model that specifies the behavior and strategies for the QA task&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+        <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;task_desc_str&quot;</span><span class="p">:</span> <span class="n">system_prompt</span><span class="p">},</span>
+        <span class="o">**</span><span class="n">gpt_3_model</span><span class="p">,</span>
+        <span class="n">output_processors</span><span class="o">=</span><span class="n">parse_integer_answer</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># model.set_mock_output(mock_output_data=&quot;4&quot;)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+    <span class="n">y</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>
+
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">eval_fn_to_text_loss</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span>
+            <span class="s2">&quot;y_gt&quot;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;y_gt&quot;</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="s2">&quot;4&quot;</span><span class="p">,</span>
+                <span class="n">requires_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;Correct answer&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">predecessors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">predecessors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="n">dot</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">add_grads</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;real_data&quot;</span><span class="p">)</span>
+    <span class="c1"># print(&quot;dot: &quot;, dot)</span>
+
+<span class="c1">#     Variable(data=1, requires_opt=True, role_desc=Output of the string-based function with purpose:</span>
+<span class="c1">#              The runtime of string-based function that checks if the prediction is correct.,</span>
+<span class="c1">#              predecessors={Variable(data=4, requires_opt=False, role_desc=correct answer for the query,</span>
+<span class="c1">#                                     predecessors=set(), gradients=set()),</span>
+<span class="c1">#                                     Variable(data=To determine the number of vegetables,</span>
+<span class="c1">#                                              we need to count each individual item.</span>
+<span class="c1">#                                                The cauliflower, celery, cabbage,</span>
+<span class="c1">#                                                and garlic are all separate vegetables.</span>
+<span class="c1">#                                                Therefore, you have 4 vegetables in total.</span>
+
+<span class="c1"># Answer: 4, requires_opt=True, role_desc=response from the language model,</span>
+<span class="c1"># predecessors={Variable(data=I have a cauliflower, a stalk of celery, a cabbage, and a garlic. How many vegetables do I have?, requires_opt=False, role_desc=query to the language model, predecessors=set(), gradients=set()), Variable(data=You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: &#39;Answer: $VALUE&#39; where VALUE is a numerical value., requires_opt=True, role_desc=structured system prompt to a somewhat capable language model that specifies the behavior and strategies for the QA task, predecessors=set(), gradients=set())}, gradients=set())}, gradients=set())</span>
+
+<span class="c1"># loss: Parameter(alias=None, data=1.0, requires_opt=True, role_desc=Output of EvalFnToTextLoss with eval_fn_desc: Answer Match Accuracy,</span>
+<span class="c1"># predecessors={Parameter(alias=None, data=1, requires_opt=False, role_desc=Predicted answer, predecessors=set(), gradients=set()),</span>
+<span class="c1"># Parameter(alias=None, data=1, requires_opt=False, role_desc=Correct answer, predecessors=set(), gradients=set())}, gradients=set())</span>
+<span class="c1"># {&#39;alias&#39;: None, &#39;data&#39;: 1.0, &#39;requires_opt&#39;: True, &#39;role_desc&#39;: &#39;Output of EvalFnToTextLoss with eval_fn_desc: Answer Match Accuracy&#39;, &#39;predecessors&#39;: [{&#39;alias&#39;: None, &#39;data&#39;: &#39;1&#39;, &#39;requires_opt&#39;: False, &#39;role_desc&#39;: &#39;Predicted answer&#39;, &#39;predecessors&#39;: [], &#39;gradients&#39;: [], &#39;proposed_data&#39;: None, &#39;gradients_context&#39;: [], &#39;grad_fn&#39;: &#39;None&#39;}, {&#39;alias&#39;: None, &#39;data&#39;: &#39;1&#39;, &#39;requires_opt&#39;: False, &#39;role_desc&#39;: &#39;Correct answer&#39;, &#39;predecessors&#39;: [], &#39;gradients&#39;: [], &#39;proposed_data&#39;: None, &#39;gradients_context&#39;: [], &#39;grad_fn&#39;: &#39;None&#39;}], &#39;gradients&#39;: [], &#39;proposed_data&#39;: None, &#39;gradients_context&#39;: [], &#39;grad_fn&#39;: &#39;__main__.EvalFnToTextLoss.backward&#39;}</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

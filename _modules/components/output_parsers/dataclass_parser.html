@@ -1,0 +1,738 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>components.output_parsers.dataclass_parser &#8212; AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=af51538a" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/rtd_search_config.js"></script>
+    <script src="../../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/components/output_parsers/dataclass_parser';</script>
+    <link rel="icon" href="../../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/adalflow-logo.png" class="logo__image only-light" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>
+    <script>document.write(`<img src="../../../_static/adalflow-logo.png" class="logo__image only-dark" alt="AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributor/index.html">
+    Contributor Guide
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributor/index.html">
+    Contributor Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">components.o...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for components.output_parsers.dataclass_parser</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;DataClassParser will help users interact with LLMs even better than JsonOutputParser and YamlOutputParser with DataClass.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">is_dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">DataComponent</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">YamlParser</span><span class="p">,</span> <span class="n">JsonParser</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">DataClassFormatType</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">ExcludeType</span><span class="p">,</span> <span class="n">IncludeType</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DataClassParser&quot;</span><span class="p">]</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">JSON_OUTPUT_FORMAT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Your output should be formatted as a standard JSON instance with the following schema:</span>
+<span class="s2">```</span>
+<span class="s2">{{schema}}</span>
+<span class="s2">```</span>
+<span class="s2">-Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!</span>
+<span class="s2">-Use double quotes for the keys and string values.</span>
+<span class="s2">-DO NOT mistaken the &quot;properties&quot; and &quot;type&quot; in the schema as the actual fields in the JSON output.</span>
+<span class="s2">-Follow the JSON formatting conventions.&quot;&quot;&quot;</span>
+
+<span class="n">YAML_OUTPUT_FORMAT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Your output should be formatted as a standard YAML instance with the following schema:</span>
+<span class="s2">```</span>
+<span class="s2">{{schema}}</span>
+<span class="s2">```</span>
+<span class="s2">-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!</span>
+<span class="s2">-Follow the YAML formatting conventions with an indent of 2 spaces.</span>
+<span class="s2">-DO NOT mistaken the &quot;properties&quot; and &quot;type&quot; in the schema as the actual fields in the YAML output.</span>
+<span class="s2">-Quote the string values properly.&quot;&quot;&quot;</span>
+
+<span class="n">EXAMPLES_FORMAT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f examples %}</span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or example in examples %}</span>
+<span class="s2">{{example}}</span>
+<span class="s2">__________</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="DataClassParser">
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.DataClassParser">[docs]</a>
+<span class="k">class</span> <span class="nc">DataClassParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Made the structured output even simpler compared with JsonOutputParser and YamlOutputParser.</span>
+
+<span class="s2">        1. Understands __input_fields__ and __output_fields__ from the DataClass (no need to use include/exclude to decide fields).</span>
+<span class="s2">        2. User can choose to save the `task_desc` in the DataClass and use it in the prompt.</span>
+
+<span class="s2">        Example:</span>
+
+<span class="s2">        .. code-block:: python</span>
+
+<span class="s2">            @dataclass</span>
+<span class="s2">            class BasicQAOutput(adal.DataClass):</span>
+<span class="s2">                explanation: str = field(</span>
+<span class="s2">                    metadata={&quot;desc&quot;: &quot;A brief explanation of the concept in one sentence.&quot;}</span>
+<span class="s2">                )</span>
+<span class="s2">                example: str = field(</span>
+<span class="s2">                    metadata={&quot;desc&quot;: &quot;An example of the concept in a sentence.&quot;}</span>
+<span class="s2">                )</span>
+<span class="s2">                # Control output fields order</span>
+<span class="s2">                __output_fields__ = [&quot;explanation&quot;, &quot;example&quot;]</span>
+
+<span class="s2">            # Define the template using jinja2 syntax</span>
+<span class="s2">            qa_template = &quot;&lt;SYS&gt;</span>
+<span class="s2">            You are a helpful assistant.</span>
+<span class="s2">            &lt;OUTPUT_FORMAT&gt;</span>
+<span class="s2">            {{output_format_str}}</span>
+<span class="s2">            &lt;/OUTPUT_FORMAT&gt;</span>
+<span class="s2">            &lt;/SYS&gt;</span>
+<span class="s2">            &lt;USER&gt; {{input_str}} &lt;/USER&gt;&quot;</span>
+
+<span class="s2">            parser = adal.DataClassParser(data_class=BasicQAOutput, return_data_class=True)</span>
+
+<span class="s2">            # Set up the generator with model, template, and parser</span>
+<span class="s2">            self.generator = adal.Generator(</span>
+<span class="s2">                model_client=model_client,</span>
+<span class="s2">                model_kwargs=model_kwargs,</span>
+<span class="s2">                template=qa_template,</span>
+<span class="s2">                prompt_kwargs={&quot;output_format_str&quot;: parser.get_output_format_str()},</span>
+<span class="s2">                output_processors=parser,</span>
+<span class="s2">            )</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data_class</span><span class="p">:</span> <span class="n">DataClass</span><span class="p">,</span>
+        <span class="n">return_data_class</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">format_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;data_class must be a dataclass.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">,</span> <span class="n">DataClass</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;data_class must be a subclass of DataClass.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span> <span class="o">=</span> <span class="n">return_data_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_input_fields</span> <span class="o">=</span> <span class="n">data_class</span><span class="o">.</span><span class="n">get_input_fields</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_output_fields</span> <span class="o">=</span> <span class="n">data_class</span><span class="o">.</span><span class="n">get_output_fields</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">format_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid format type.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_format_type</span> <span class="o">=</span> <span class="n">format_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_class</span><span class="p">:</span> <span class="n">DataClass</span> <span class="o">=</span> <span class="n">data_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_output_processor</span> <span class="o">=</span> <span class="n">YamlParser</span><span class="p">()</span> <span class="k">if</span> <span class="n">format_type</span> <span class="o">==</span> <span class="s2">&quot;yaml&quot;</span> <span class="k">else</span> <span class="n">JsonParser</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_format_prompt</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">YAML_OUTPUT_FORMAT</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">format_type</span> <span class="o">==</span> <span class="s2">&quot;yaml&quot;</span>
+            <span class="k">else</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">JSON_OUTPUT_FORMAT</span><span class="p">)</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="DataClassParser.get_input_format_str">
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.DataClassParser.get_input_format_str">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_input_format_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the formatted instructions to use in prompt for the input format.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_type</span> <span class="o">==</span> <span class="s2">&quot;yaml&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_class</span><span class="o">.</span><span class="n">to_yaml_signature</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_fields</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_class</span><span class="o">.</span><span class="n">to_json_signature</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_fields</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataClassParser.get_output_format_str">
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.DataClassParser.get_output_format_str">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_output_format_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the formatted instructions to use in prompt for the output format.&quot;&quot;&quot;</span>
+        <span class="n">output_format_str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_type</span> <span class="o">==</span> <span class="s2">&quot;yaml&quot;</span><span class="p">:</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_class</span><span class="o">.</span><span class="n">to_yaml_signature</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_fields</span><span class="p">)</span>
+            <span class="n">output_format_str</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">YAML_OUTPUT_FORMAT</span><span class="p">)(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_class</span><span class="o">.</span><span class="n">to_json_signature</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_fields</span><span class="p">)</span>
+            <span class="n">output_format_str</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">JSON_OUTPUT_FORMAT</span><span class="p">)(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output_format_str</span></div>
+
+
+<div class="viewcode-block" id="DataClassParser.get_input_str">
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.DataClassParser.get_input_str">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_input_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">DataClass</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the formatted input string.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_class</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;input must be an instance of the data_class.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_type</span> <span class="o">==</span> <span class="s2">&quot;yaml&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">input</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_fields</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">input</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_fields</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataClassParser.get_task_desc_str">
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.DataClassParser.get_task_desc_str">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_task_desc_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the task description string.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_class</span><span class="o">.</span><span class="n">get_task_desc</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DataClassParser.get_examples_str">
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.DataClassParser.get_examples_str">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_examples_str</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">examples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">],</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IncludeType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ExcludeType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the examples string.&quot;&quot;&quot;</span>
+        <span class="n">str_examples</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">examples</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">examples</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">example</span> <span class="ow">in</span> <span class="n">examples</span><span class="p">:</span>
+                <span class="n">per_example_str</span> <span class="o">=</span> <span class="n">example</span><span class="o">.</span><span class="n">format_example_str</span><span class="p">(</span>
+                    <span class="n">format_type</span><span class="o">=</span><span class="p">(</span>
+                        <span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">EXAMPLE_YAML</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_type</span> <span class="o">==</span> <span class="s2">&quot;yaml&quot;</span>
+                        <span class="k">else</span> <span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">EXAMPLE_JSON</span>
+                    <span class="p">),</span>
+                    <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span>
+                    <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">str_examples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">per_example_str</span><span class="p">)</span>
+
+        <span class="n">examples_str</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">EXAMPLES_FORMAT</span><span class="p">)(</span><span class="n">examples</span><span class="o">=</span><span class="n">str_examples</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">examples_str</span></div>
+
+
+<div class="viewcode-block" id="DataClassParser.call">
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.DataClassParser.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the output string to the desired format and return the parsed output.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">output_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_processor</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_class</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">output_dict</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">output_dict</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error at parsing output: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, format_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_type</span><span class="si">}</span><span class="s2">,</span><span class="se">\</span>
+<span class="s2">            return_data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span><span class="si">}</span><span class="s2">, input_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_fields</span><span class="si">}</span><span class="s2">,</span><span class="se">\</span>
+<span class="s2">            output_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_fields</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

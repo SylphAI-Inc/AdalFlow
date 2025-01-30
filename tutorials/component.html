@@ -156,6 +156,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -308,6 +323,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -423,6 +445,7 @@
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rag_with_memory.html">RAG with Memory</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -512,7 +535,7 @@ It is the base class for components such as <code class="docutils literal notran
 Your task pipeline should also subclass from <code class="docutils literal notranslate"><span class="pre">Component</span></code>.</p>
 <section id="design">
 <h2>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h2>
-<p>Different from PyTorch’s nn.Module, which works exclusively with Tensor and Parameter to train models with weights and biases, our component can work with different types of data, from a string or a list of strings to a list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code>.</p>
+<p>Different from PyTorch’s nn.Module, which works exclusively with Tensor and Parameter to train models with weights and biases, our component can work with different types of data, from a string or a list of strings to a list of <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>.</p>
 <p>Here is the comparison of writing a PyTorch model and a LightRAG task pipeline.</p>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-1 sd-row-cols-lg-1 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-1 docutils">
@@ -635,7 +658,7 @@ We can also use methods to add more subcomponnents or parameters.</p>
 <span class="n">save_json</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="s2">&quot;doc.json&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To add even more flexibility, we provide <a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunComponent</span></code></a> and <a class="reference internal" href="../apis/core/core.container.html#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequential</span></code></a> for more advanced use cases.</p>
+<p>To add even more flexibility, we provide <a class="reference internal" href="../apis/core/core.component.html#core.component.FuncComponent" title="core.component.FuncComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">FuncComponent</span></code></a> and <a class="reference internal" href="../apis/core/core.container.html#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequential</span></code></a> for more advanced use cases.</p>
 </section>
 <section id="serialization-and-deserialization">
 <h3>Serialization and deserialization<a class="headerlink" href="#serialization-and-deserialization" title="Link to this heading">#</a></h3>
@@ -643,34 +666,34 @@ We can also use methods to add more subcomponnents or parameters.</p>
 It is good practice to ensure that any of your components are pickable.</p>
 </section>
 </section>
-<section id="funcomponent">
-<h2>FunComponent<a class="headerlink" href="#funcomponent" title="Link to this heading">#</a></h2>
+<section id="funccomponent">
+<h2>FuncComponent<a class="headerlink" href="#funccomponent" title="Link to this heading">#</a></h2>
 <blockquote>
-<div><p>Use <a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">fun_to_component</span></code></a> as a decorator to convert any function to a Component with its unique class name.</p>
+<div><p>Use <a class="reference internal" href="../apis/core/core.component.html#core.component.func_to_component" title="core.component.func_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">func_to_component</span></code></a> as a decorator to convert any function to a Component with its unique class name.</p>
 </div></blockquote>
-<p><a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunComponent</span></code></a> is a subclass of <a class="reference internal" href="../apis/core/core.component.html#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> that allows you to define a component with a function.
+<p><a class="reference internal" href="../apis/core/core.component.html#core.component.FuncComponent" title="core.component.FuncComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">FuncComponent</span></code></a> is a subclass of <a class="reference internal" href="../apis/core/core.component.html#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> that allows you to define a component with a function.
 You can directly use this class as:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">FunComponent</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">FuncComponent</span>
 
 <span class="k">def</span> <span class="nf">add_one</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
 
-<span class="n">fun_component</span> <span class="o">=</span> <span class="n">FunComponent</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
+<span class="n">fun_component</span> <span class="o">=</span> <span class="n">FuncComponent</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">fun_component</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fun_component</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>The printout:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>2
-&lt;class &#39;core.component.FunComponent&#39;&gt;
+&lt;class &#39;core.component.FuncComponent&#39;&gt;
 </pre></div>
 </div>
-<p>We also have <a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">fun_to_component</span></code></a> to convert a function to a <cite>FunComponent</cite> via a decorator or by directly calling the function.
+<p>We also have <a class="reference internal" href="../apis/core/core.component.html#core.component.func_to_component" title="core.component.func_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">func_to_component</span></code></a> to convert a function to a <cite>FuncComponent</cite> via a decorator or by directly calling the function.
 This approach gives you a unique component converted from the function name.</p>
 <p>Via direct call:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">fun_to_component</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">func_to_component</span>
 
-<span class="n">fun_component</span> <span class="o">=</span> <span class="n">fun_to_component</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
+<span class="n">fun_component</span> <span class="o">=</span> <span class="n">func_to_component</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">fun_component</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fun_component</span><span class="p">))</span>
 </pre></div>
@@ -681,7 +704,7 @@ This approach gives you a unique component converted from the function name.</p>
 </pre></div>
 </div>
 <p>Using a decorator is an even more convenient way to create a component from a function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@fun_to_component</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@func_to_component</span>
 <span class="k">def</span> <span class="nf">add_one</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
 
@@ -698,10 +721,10 @@ This approach gives you a unique component converted from the function name.</p>
 <h2>Sequential<a class="headerlink" href="#sequential" title="Link to this heading">#</a></h2>
 <p>We have the <a class="reference internal" href="../apis/core/core.container.html#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequential</span></code></a> class, which is similar to PyTorch’s <code class="docutils literal notranslate"><span class="pre">nn.Sequential</span></code> class.
 This is especially useful for chaining together components in a sequence, much like the concept of <code class="docutils literal notranslate"><span class="pre">chain</span></code> or <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> in other LLM libraries.
-Let’s put the <cite>FunComponent`</cite> and <cite>DocQA`</cite> together in a sequence:</p>
+Let’s put the <cite>FuncComponent`</cite> and <cite>DocQA`</cite> together in a sequence:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.container</span> <span class="kn">import</span> <span class="n">Sequential</span>
 
-<span class="nd">@fun_to_component</span>
+<span class="nd">@func_to_component</span>
 <span class="k">def</span> <span class="nf">enhance_query</span><span class="p">(</span><span class="n">query</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">query</span> <span class="o">+</span> <span class="s2">&quot;Please be concise and only list the top treatments.&quot;</span>
 
@@ -735,9 +758,9 @@ The output is:</p>
 <p class="admonition-title">API reference</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Component</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.FunComponent</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.FuncComponent" title="core.component.FuncComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.FuncComponent</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.container.html#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.container.Sequential</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.component.fun_to_component()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.func_to_component" title="core.component.func_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.component.func_to_component()</span></code></a></p></li>
 </ul>
 </div>
 <p>We will cover more advanced use cases in the upcoming tutorials.</p>
@@ -797,7 +820,7 @@ The output is:</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#serialization-and-deserialization">Serialization and deserialization</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#funcomponent">FunComponent</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#funccomponent">FuncComponent</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sequential">Sequential</a></li>
 </ul>
   </nav></div>

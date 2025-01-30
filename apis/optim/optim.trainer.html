@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -309,6 +324,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -426,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -588,11 +611,655 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="optim.trainer.adal.html">adal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optim.trainer.trainer.html">trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optim.trainer.adal.html">adal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent"><code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.task"><code class="docutils literal notranslate"><span class="pre">AdalComponent.task</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.eval_fn"><code class="docutils literal notranslate"><span class="pre">AdalComponent.eval_fn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.loss_eval_fn"><code class="docutils literal notranslate"><span class="pre">AdalComponent.loss_eval_fn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.loss_fn"><code class="docutils literal notranslate"><span class="pre">AdalComponent.loss_fn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.backward_engine"><code class="docutils literal notranslate"><span class="pre">AdalComponent.backward_engine</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.prepare_task"><code class="docutils literal notranslate"><span class="pre">AdalComponent.prepare_task()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.prepare_loss"><code class="docutils literal notranslate"><span class="pre">AdalComponent.prepare_loss()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.prepare_eval"><code class="docutils literal notranslate"><span class="pre">AdalComponent.prepare_eval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.prepare_loss_eval"><code class="docutils literal notranslate"><span class="pre">AdalComponent.prepare_loss_eval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_optimizers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_backward_engine"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_backward_engine()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.disable_backward_engine"><code class="docutils literal notranslate"><span class="pre">AdalComponent.disable_backward_engine()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.evaluate_samples"><code class="docutils literal notranslate"><span class="pre">AdalComponent.evaluate_samples()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.pred_step"><code class="docutils literal notranslate"><span class="pre">AdalComponent.pred_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.train_step"><code class="docutils literal notranslate"><span class="pre">AdalComponent.train_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.validate_condition"><code class="docutils literal notranslate"><span class="pre">AdalComponent.validate_condition()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.validation_step"><code class="docutils literal notranslate"><span class="pre">AdalComponent.validation_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.loss_step"><code class="docutils literal notranslate"><span class="pre">AdalComponent.loss_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_teacher_generator"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_teacher_generator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_teacher_generator_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_teacher_generator_helper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.disable_backward_engine_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.disable_backward_engine_helper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_backward_engine_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_backward_engine_helper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_callbacks"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_callbacks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.run_one_task_sample"><code class="docutils literal notranslate"><span class="pre">AdalComponent.run_one_task_sample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.run_one_loss_sample"><code class="docutils literal notranslate"><span class="pre">AdalComponent.run_one_loss_sample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.training"><code class="docutils literal notranslate"><span class="pre">AdalComponent.training</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.teacher_mode"><code class="docutils literal notranslate"><span class="pre">AdalComponent.teacher_mode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.tracing"><code class="docutils literal notranslate"><span class="pre">AdalComponent.tracing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_demo_optimizer_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_demo_optimizer_helper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_text_optimizer_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_text_optimizer_helper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.bicall"><code class="docutils literal notranslate"><span class="pre">AdalComponent.bicall()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.call"><code class="docutils literal notranslate"><span class="pre">AdalComponent.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html#optim.trainer.adal.AdalComponent.forward"><code class="docutils literal notranslate"><span class="pre">AdalComponent.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optim.trainer.trainer.html">trainer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer"><code class="docutils literal notranslate"><span class="pre">Trainer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.optimizer"><code class="docutils literal notranslate"><span class="pre">Trainer.optimizer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.ckpt_file"><code class="docutils literal notranslate"><span class="pre">Trainer.ckpt_file</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.random_seed"><code class="docutils literal notranslate"><span class="pre">Trainer.random_seed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.optimization_order"><code class="docutils literal notranslate"><span class="pre">Trainer.optimization_order</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.strategy"><code class="docutils literal notranslate"><span class="pre">Trainer.strategy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.max_steps"><code class="docutils literal notranslate"><span class="pre">Trainer.max_steps</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.ckpt_path"><code class="docutils literal notranslate"><span class="pre">Trainer.ckpt_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.adaltask"><code class="docutils literal notranslate"><span class="pre">Trainer.adaltask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.num_workers"><code class="docutils literal notranslate"><span class="pre">Trainer.num_workers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.train_loader"><code class="docutils literal notranslate"><span class="pre">Trainer.train_loader</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.val_dataset"><code class="docutils literal notranslate"><span class="pre">Trainer.val_dataset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.test_dataset"><code class="docutils literal notranslate"><span class="pre">Trainer.test_dataset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.batch_val_score_threshold"><code class="docutils literal notranslate"><span class="pre">Trainer.batch_val_score_threshold</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.correct_val_score_threshold"><code class="docutils literal notranslate"><span class="pre">Trainer.correct_val_score_threshold</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.max_error_samples"><code class="docutils literal notranslate"><span class="pre">Trainer.max_error_samples</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.max_correct_samples"><code class="docutils literal notranslate"><span class="pre">Trainer.max_correct_samples</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.max_proposals_per_step"><code class="docutils literal notranslate"><span class="pre">Trainer.max_proposals_per_step</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.demo_optimizers"><code class="docutils literal notranslate"><span class="pre">Trainer.demo_optimizers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.text_optimizers"><code class="docutils literal notranslate"><span class="pre">Trainer.text_optimizers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.train_batch_size"><code class="docutils literal notranslate"><span class="pre">Trainer.train_batch_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.debug"><code class="docutils literal notranslate"><span class="pre">Trainer.debug</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.sequential_order"><code class="docutils literal notranslate"><span class="pre">Trainer.sequential_order</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.skip_subset_val"><code class="docutils literal notranslate"><span class="pre">Trainer.skip_subset_val</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.disable_backward_gradients"><code class="docutils literal notranslate"><span class="pre">Trainer.disable_backward_gradients</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.disable_backward"><code class="docutils literal notranslate"><span class="pre">Trainer.disable_backward</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.text_optimizers_config_kwargs"><code class="docutils literal notranslate"><span class="pre">Trainer.text_optimizers_config_kwargs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.set_random_seed"><code class="docutils literal notranslate"><span class="pre">Trainer.set_random_seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.diagnose"><code class="docutils literal notranslate"><span class="pre">Trainer.diagnose()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.diagnose_report"><code class="docutils literal notranslate"><span class="pre">Trainer.diagnose_report()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.debug_report"><code class="docutils literal notranslate"><span class="pre">Trainer.debug_report()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.resume_params_from_ckpt"><code class="docutils literal notranslate"><span class="pre">Trainer.resume_params_from_ckpt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.fit"><code class="docutils literal notranslate"><span class="pre">Trainer.fit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.initial_validation"><code class="docutils literal notranslate"><span class="pre">Trainer.initial_validation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.gather_trainer_states"><code class="docutils literal notranslate"><span class="pre">Trainer.gather_trainer_states()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.prep_ckpt_file_path"><code class="docutils literal notranslate"><span class="pre">Trainer.prep_ckpt_file_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.training"><code class="docutils literal notranslate"><span class="pre">Trainer.training</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.teacher_mode"><code class="docutils literal notranslate"><span class="pre">Trainer.teacher_mode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html#optim.trainer.trainer.Trainer.tracing"><code class="docutils literal notranslate"><span class="pre">Trainer.tracing</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 <hr class="docutils" />
+<dl class="py class" id="module-optim.trainer">
+<dt class="sig sig-object py" id="optim.trainer.Trainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Trainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adaltask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AdalComponent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimization_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'sequential'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mix'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sequential'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'random'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'constrained'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'constrained'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ckpt_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_val_score_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correct_val_score_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_error_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_correct_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_proposals_per_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weighted_sampling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_input_fields_from_bootstrap_demos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_traces</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequential_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['text',</span> <span class="pre">'demo']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_subset_val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_backward_gradients</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_backward</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_optimizers_config_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/trainer.html#Trainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.Trainer" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<p>Ready to use trainer for LLM task pipeline to optimize all types of parameters.</p>
+<p>Training set: can be used for passing initial proposed prompt or for few-shot sampling.
+Validation set: Will be used to select the final prompt or samples.
+Test set: Will be used to evaluate the final prompt or samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adaltask</strong> – AdalComponent: AdalComponent instance</p></li>
+<li><p><strong>strategy</strong> – Literal[“random”, “constrained”]: Strategy to use for the optimizer</p></li>
+<li><p><strong>max_steps</strong> – int: Maximum number of steps to run the optimizer</p></li>
+<li><p><strong>num_workers</strong> – int: Number of workers to use for parallel processing</p></li>
+<li><p><strong>ckpt_path</strong> – str: Path to save the checkpoint files, default to ~/.adalflow/ckpt.</p></li>
+<li><p><strong>batch_val_score_threshold</strong> – Optional[float]: Threshold for skipping a batch</p></li>
+<li><p><strong>max_error_samples</strong> – Optional[int]: Maximum number of error samples to keep</p></li>
+<li><p><strong>max_correct_samples</strong> – Optional[int]: Maximum number of correct samples to keep</p></li>
+<li><p><strong>max_proposals_per_step</strong> – int: Maximum number of proposals to generate per step</p></li>
+<li><p><strong>train_loader</strong> – Any: DataLoader instance for training</p></li>
+<li><p><strong>train_dataset</strong> – Any: Training dataset</p></li>
+<li><p><strong>val_dataset</strong> – Any: Validation dataset</p></li>
+<li><p><strong>test_dataset</strong> – Any: Test dataset</p></li>
+<li><p><strong>few_shots_config</strong> – Optional[FewShotConfig]: Few shot configuration</p></li>
+<li><p><strong>save_traces</strong> – bool: Save traces for for synthetic data generation or debugging</p></li>
+<li><p><strong>debug</strong> (<em>and for demo</em>) – bool: Debug mode to run the trainer in debug mode. If debug is True, for text debug, the graph will be under /ckpt/YourAdalComponentName/debug_text_grads for prompt parameter,</p></li>
+<li><p><strong>debug</strong></p></li>
+<li><p><strong>parameters.</strong> (<em>the graph will be under /ckpt/YourAdalComponentName/debug_demos for demo</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When you are in the debug mode, you can use get_logger api to show more detailed log on your own.</p>
+<p>Example:</p>
+<blockquote>
+<div><p>from adalflow.utils import get_logger</p>
+<p>get_logger(level=”DEBUG”)</p>
+</div></blockquote>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.optimizer">
+<span class="sig-name descname"><span class="pre">optimizer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optimizer</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.trainer.Trainer.optimizer" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.ckpt_file">
+<span class="sig-name descname"><span class="pre">ckpt_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.trainer.Trainer.ckpt_file" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.random_seed">
+<span class="sig-name descname"><span class="pre">random_seed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.trainer.Trainer.random_seed" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.optimization_order">
+<span class="sig-name descname"><span class="pre">optimization_order</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'sequential'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mix'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sequential'</span></em><a class="headerlink" href="#optim.trainer.Trainer.optimization_order" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.strategy">
+<span class="sig-name descname"><span class="pre">strategy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'random'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'constrained'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.trainer.Trainer.strategy" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.max_steps">
+<span class="sig-name descname"><span class="pre">max_steps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#optim.trainer.Trainer.max_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.ckpt_path">
+<span class="sig-name descname"><span class="pre">ckpt_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.trainer.Trainer.ckpt_path" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.adaltask">
+<span class="sig-name descname"><span class="pre">adaltask</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AdalComponent</span></em><a class="headerlink" href="#optim.trainer.Trainer.adaltask" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.num_workers">
+<span class="sig-name descname"><span class="pre">num_workers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#optim.trainer.Trainer.num_workers" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.train_loader">
+<span class="sig-name descname"><span class="pre">train_loader</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#optim.trainer.Trainer.train_loader" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.val_dataset">
+<span class="sig-name descname"><span class="pre">val_dataset</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.trainer.Trainer.val_dataset" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.test_dataset">
+<span class="sig-name descname"><span class="pre">test_dataset</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.trainer.Trainer.test_dataset" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.batch_val_score_threshold">
+<span class="sig-name descname"><span class="pre">batch_val_score_threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#optim.trainer.Trainer.batch_val_score_threshold" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.correct_val_score_threshold">
+<span class="sig-name descname"><span class="pre">correct_val_score_threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#optim.trainer.Trainer.correct_val_score_threshold" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.max_error_samples">
+<span class="sig-name descname"><span class="pre">max_error_samples</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#optim.trainer.Trainer.max_error_samples" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.max_correct_samples">
+<span class="sig-name descname"><span class="pre">max_correct_samples</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#optim.trainer.Trainer.max_correct_samples" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.max_proposals_per_step">
+<span class="sig-name descname"><span class="pre">max_proposals_per_step</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#optim.trainer.Trainer.max_proposals_per_step" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.demo_optimizers">
+<span class="sig-name descname"><span class="pre">demo_optimizers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="index.html#optim.DemoOptimizer" title="optim.DemoOptimizer"><span class="pre">DemoOptimizer</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.trainer.Trainer.demo_optimizers" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.text_optimizers">
+<span class="sig-name descname"><span class="pre">text_optimizers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="index.html#optim.TextOptimizer" title="optim.TextOptimizer"><span class="pre">TextOptimizer</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.trainer.Trainer.text_optimizers" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.train_batch_size">
+<span class="sig-name descname"><span class="pre">train_batch_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#optim.trainer.Trainer.train_batch_size" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#optim.trainer.Trainer.debug" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.sequential_order">
+<span class="sig-name descname"><span class="pre">sequential_order</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['text',</span> <span class="pre">'demo']</span></em><a class="headerlink" href="#optim.trainer.Trainer.sequential_order" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.skip_subset_val">
+<span class="sig-name descname"><span class="pre">skip_subset_val</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#optim.trainer.Trainer.skip_subset_val" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.disable_backward_gradients">
+<span class="sig-name descname"><span class="pre">disable_backward_gradients</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#optim.trainer.Trainer.disable_backward_gradients" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.disable_backward">
+<span class="sig-name descname"><span class="pre">disable_backward</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#optim.trainer.Trainer.disable_backward" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.text_optimizers_config_kwargs">
+<span class="sig-name descname"><span class="pre">text_optimizers_config_kwargs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#optim.trainer.Trainer.text_optimizers_config_kwargs" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.set_random_seed">
+<span class="sig-name descname"><span class="pre">set_random_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/trainer.html#Trainer.set_random_seed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.Trainer.set_random_seed" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.diagnose">
+<span class="sig-name descname"><span class="pre">diagnose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resume_from_ckpt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/trainer.html#Trainer.diagnose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.Trainer.diagnose" title="Link to this definition">#</a></dt>
+<dd><p>Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent’s default configure_callbacks
+:param dataset: Any: Dataset to evaluate
+:param split: str: Split name, default to train and it is also used as set the directory name for saving the logs</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trainset</span><span class="p">,</span> <span class="n">valset</span><span class="p">,</span> <span class="n">testset</span> <span class="o">=</span> <span class="n">load_datasets</span><span class="p">(</span><span class="n">max_samples</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">adaltask</span> <span class="o">=</span> <span class="n">TGDWithEvalFnLoss</span><span class="p">(</span>
+    <span class="n">task_model_config</span><span class="o">=</span><span class="n">llama3_model</span><span class="p">,</span>
+    <span class="n">backward_engine_model_config</span><span class="o">=</span><span class="n">llama3_model</span><span class="p">,</span>
+    <span class="n">optimizer_model_config</span><span class="o">=</span><span class="n">llama3_model</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">Trainer</span><span class="p">(</span><span class="n">adaltask</span><span class="o">=</span><span class="n">adaltask</span><span class="p">)</span>
+<span class="n">diagnose</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">diagnose</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">trainset</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">diagnose</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.diagnose_report">
+<span class="sig-name descname"><span class="pre">diagnose_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acc_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stats_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_paths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/trainer.html#Trainer.diagnose_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.Trainer.diagnose_report" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.debug_report">
+<span class="sig-name descname"><span class="pre">debug_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text_grad_debug_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">few_shot_demo_debug_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/trainer.html#Trainer.debug_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.Trainer.debug_report" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.resume_params_from_ckpt">
+<span class="sig-name descname"><span class="pre">resume_params_from_ckpt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ckpt_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/trainer.html#Trainer.resume_params_from_ckpt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.Trainer.resume_params_from_ckpt" title="Link to this definition">#</a></dt>
+<dd><p>Resume the parameters from the checkpoint file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaltask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AdalComponent</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_traces</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resume_from_ckpt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_pass_setup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BackwardPassSetup</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TrainerResult</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/trainer.html#Trainer.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.Trainer.fit" title="Link to this definition">#</a></dt>
+<dd><p>train_loader: An iterable or collection of iterables specifying training samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Checkpoint file and the TrainerResult object</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple[str, <a class="reference internal" href="optim.types.html#optim.types.TrainerResult" title="optim.types.TrainerResult">TrainerResult</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.initial_validation">
+<span class="sig-name descname"><span class="pre">initial_validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/trainer.html#Trainer.initial_validation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.Trainer.initial_validation" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.gather_trainer_states">
+<span class="sig-name descname"><span class="pre">gather_trainer_states</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/trainer.html#Trainer.gather_trainer_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.Trainer.gather_trainer_states" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.prep_ckpt_file_path">
+<span class="sig-name descname"><span class="pre">prep_ckpt_file_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/trainer.html#Trainer.prep_ckpt_file_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.Trainer.prep_ckpt_file_path" title="Link to this definition">#</a></dt>
+<dd><p>Prepare the checkpoint root path: ~/.adalflow/ckpt/task_name/.</p>
+<p>It also generates a unique checkpoint file name based on the strategy, max_steps, and a unique hash key.
+For multiple runs but with the same adalcomponent + trainer setup, the run number will be incremented.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#optim.trainer.Trainer.training" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.teacher_mode">
+<span class="sig-name descname"><span class="pre">teacher_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#optim.trainer.Trainer.teacher_mode" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.Trainer.tracing">
+<span class="sig-name descname"><span class="pre">tracing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#optim.trainer.Trainer.tracing" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AdalComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_eval_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LossComponent</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.generator.html#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_engine_model_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher_model_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_optimizer_model_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<p>Define a train, eval, and test step for a task pipeline.</p>
+<p>This serves the following purposes:
+1. Organize all parts for training a task pipeline in one place.
+2. Help with debugging and testing before the actual training.
+3. Adds multi-threading support for training and evaluation.</p>
+<p>It has no need on call, forward, bicall, or __call__, so we need to overwrite the base ones.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.task">
+<span class="sig-name descname"><span class="pre">task</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Component</span></em><a class="headerlink" href="#optim.trainer.AdalComponent.task" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.eval_fn">
+<span class="sig-name descname"><span class="pre">eval_fn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.trainer.AdalComponent.eval_fn" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.loss_eval_fn">
+<span class="sig-name descname"><span class="pre">loss_eval_fn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.trainer.AdalComponent.loss_eval_fn" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.loss_fn">
+<span class="sig-name descname"><span class="pre">loss_fn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">LossComponent</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.trainer.AdalComponent.loss_fn" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.backward_engine">
+<span class="sig-name descname"><span class="pre">backward_engine</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../core/core.generator.html#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.trainer.AdalComponent.backward_engine" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.prepare_task">
+<span class="sig-name descname"><span class="pre">prepare_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.prepare_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.prepare_task" title="Link to this definition">#</a></dt>
+<dd><p>Tell Trainer how to call the task in both training and inference mode.</p>
+<p>Return a task call and kwargs for one training sample.</p>
+<p>If you just need to eval, ensure the Callable has the inference mode.
+If you need to also train, ensure the Callable has the training mode which returns a Parameter and mainly
+call forward for all subcomponents within the task.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">prepare_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">x</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.prepare_loss">
+<span class="sig-name descname"><span class="pre">prepare_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.prepare_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.prepare_loss" title="Link to this definition">#</a></dt>
+<dd><p>Tell Trainer how to calculate the loss in the training mode.</p>
+<p>Return a loss call and kwargs for one loss sample.</p>
+<p>Need to ensure y_pred is a Parameter, and the real input to use
+for y_gt and y_pred is <cite>eval_input</cite>.
+Make sure it is setup.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># &quot;y&quot; and &quot;y_gt&quot; are arguments needed</span>
+<span class="c1">#by the eval_fn inside of the loss_fn if it is a EvalFnToTextLoss</span>
+
+<span class="k">def</span> <span class="nf">prepare_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Example</span><span class="p">,</span> <span class="n">pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="c1"># prepare gt parameter</span>
+    <span class="n">y_gt</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;y_gt&quot;</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>
+        <span class="n">eval_input</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>
+        <span class="n">requires_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># pred&#39;s full_response is the output of the task pipeline which is GeneratorOutput</span>
+    <span class="n">pred</span><span class="o">.</span><span class="n">eval_input</span> <span class="o">=</span> <span class="n">pred</span><span class="o">.</span><span class="n">full_response</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y_gt</span><span class="p">,</span> <span class="s2">&quot;y_pred&quot;</span><span class="p">:</span> <span class="n">pred</span><span class="p">}}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.prepare_eval">
+<span class="sig-name descname"><span class="pre">prepare_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.prepare_eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.prepare_eval" title="Link to this definition">#</a></dt>
+<dd><p>Tell Trainer how to eval in inference mode.
+Return the eval_fn and kwargs for one evaluation sample.</p>
+<p>Ensure the eval_fn is a callable that takes the predicted output and the ground truth output.
+Ensure the kwargs are setup correctly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.prepare_loss_eval">
+<span class="sig-name descname"><span class="pre">prepare_loss_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.prepare_loss_eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.prepare_loss_eval" title="Link to this definition">#</a></dt>
+<dd><p>Tell Trainer how to eval in inference mode.
+Return the eval_fn and kwargs for one evaluation sample.</p>
+<p>Ensure the eval_fn is a callable that takes the predicted output and the ground truth output.
+Ensure the kwargs are setup correctly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.configure_optimizers">
+<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">text_optimizer_kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Optimizer</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_optimizers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.configure_optimizers" title="Link to this definition">#</a></dt>
+<dd><p>Note: When you use text optimizor, ensure you call <cite>configure_backward_engine_engine</cite> too.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.configure_backward_engine">
+<span class="sig-name descname"><span class="pre">configure_backward_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_backward_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.configure_backward_engine" title="Link to this definition">#</a></dt>
+<dd><p>Configure a backward engine for all GradComponent in the task for bootstrapping examples.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.disable_backward_engine">
+<span class="sig-name descname"><span class="pre">disable_backward_engine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.disable_backward_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.disable_backward_engine" title="Link to this definition">#</a></dt>
+<dd><p>Disable the backward engine for all GradComponent in the task.
+No more gradients generation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.evaluate_samples">
+<span class="sig-name descname"><span class="pre">evaluate_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_preds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_loss_eval_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EvaluationResult</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.evaluate_samples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.evaluate_samples" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate predictions against the ground truth samples.
+Run evaluation on samples using parallel processing. Utilizes <code class="docutils literal notranslate"><span class="pre">prepare_eval</span></code> defined by the user.</p>
+<p>Metadata is used for storing context that you can find from generator input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples</strong> (<em>Any</em>) – The input samples to evaluate.</p></li>
+<li><p><strong>y_preds</strong> (<em>List</em>) – The predicted outputs corresponding to each sample.</p></li>
+<li><p><strong>metadata</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – Optional metadata dictionary.</p></li>
+<li><p><strong>num_workers</strong> (<em>int</em>) – Number of worker threads for parallel processing.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An object containing the average score and per-item scores.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../eval/eval.base.html#eval.base.EvaluationResult" title="eval.base.EvaluationResult">EvaluationResult</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.pred_step">
+<span class="sig-name descname"><span class="pre">pred_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">running_eval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_loss_eval_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.pred_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.pred_step" title="Link to this definition">#</a></dt>
+<dd><p>Applies to only the eval mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> (<em>Any</em>) – The input batch to predict.</p></li>
+<li><p><strong>batch_idx</strong> (<em>int</em>) – The index of the batch.</p></li>
+<li><p><strong>num_workers</strong> (<em>int</em>) – Number of worker threads for parallel processing.</p></li>
+<li><p><strong>running_eval</strong> – bool = False,</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The predicted outputs, the samples, and the scores.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[List[“Parameter”], List, Dict[int, float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.train_step">
+<span class="sig-name descname"><span class="pre">train_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.train_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.train_step" title="Link to this definition">#</a></dt>
+<dd><p>Run a training step and return the predicted outputs.
+Likely a list of Parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.validate_condition">
+<span class="sig-name descname"><span class="pre">validate_condition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.validate_condition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.validate_condition" title="Link to this definition">#</a></dt>
+<dd><p>In default, trainer will validate at every step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.validation_step">
+<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_loss_eval_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EvaluationResult</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.validation_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.validation_step" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> (<em>Any</em>) – The input batch to validate, can be a whole dataset</p></li>
+<li><p><strong>batch_idx</strong> (<em>int</em>) – The index of the batch. or current_step</p></li>
+<li><p><strong>num_workers</strong> (<em>int</em>) – Number of worker threads for parallel processing.</p></li>
+<li><p><strong>minimum_score</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The max potential score needs to be larger than this to continue evaluating.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Evaluate a batch or the validate dataset by setting the batch=val_dataset.
+Uses self.eval_fn to evaluate the samples.
+If you require self.task.eval() to be called before validation, you can override this method as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">validation_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.loss_step">
+<span class="sig-name descname"><span class="pre">loss_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_preds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.loss_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.loss_step" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the loss for the batch.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.configure_teacher_generator">
+<span class="sig-name descname"><span class="pre">configure_teacher_generator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_teacher_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.configure_teacher_generator" title="Link to this definition">#</a></dt>
+<dd><p>Configure a teach generator for all generators in the task for bootstrapping examples.</p>
+<p>You can call <cite>configure_teacher_generator_helper</cite> to easily configure it by passing the model_client and model_kwargs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.configure_teacher_generator_helper">
+<span class="sig-name descname"><span class="pre">configure_teacher_generator_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><span class="pre">ModelClient</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_teacher_generator_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.configure_teacher_generator_helper" title="Link to this definition">#</a></dt>
+<dd><p>Configure a teach generator for all generators in the task for bootstrapping examples.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.disable_backward_engine_helper">
+<span class="sig-name descname"><span class="pre">disable_backward_engine_helper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.disable_backward_engine_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.disable_backward_engine_helper" title="Link to this definition">#</a></dt>
+<dd><p>Disable the backward engine for all gradcomponents in the task.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.configure_backward_engine_helper">
+<span class="sig-name descname"><span class="pre">configure_backward_engine_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><span class="pre">ModelClient</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_pass_setup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BackwardPassSetup</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_backward_engine_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.configure_backward_engine_helper" title="Link to this definition">#</a></dt>
+<dd><p>Configure a backward engine for all generators in the task for bootstrapping examples.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.configure_callbacks">
+<span class="sig-name descname"><span class="pre">configure_callbacks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'traces'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_callbacks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.configure_callbacks" title="Link to this definition">#</a></dt>
+<dd><p>In default we config the failure generator callback. User can overwrite this method to add more callbacks.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.run_one_task_sample">
+<span class="sig-name descname"><span class="pre">run_one_task_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.run_one_task_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.run_one_task_sample" title="Link to this definition">#</a></dt>
+<dd><p>Run one training sample. Used for debugging and testing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.run_one_loss_sample">
+<span class="sig-name descname"><span class="pre">run_one_loss_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.run_one_loss_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.run_one_loss_sample" title="Link to this definition">#</a></dt>
+<dd><p>Run one loss sample. Used for debugging and testing.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#optim.trainer.AdalComponent.training" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.teacher_mode">
+<span class="sig-name descname"><span class="pre">teacher_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#optim.trainer.AdalComponent.teacher_mode" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.tracing">
+<span class="sig-name descname"><span class="pre">tracing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#optim.trainer.AdalComponent.tracing" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.configure_demo_optimizer_helper">
+<span class="sig-name descname"><span class="pre">configure_demo_optimizer_helper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">DemoOptimizer</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_demo_optimizer_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.configure_demo_optimizer_helper" title="Link to this definition">#</a></dt>
+<dd><p>One demo optimizer can handle multiple demo parameters.
+But the demo optimizer will only have one dataset (trainset) configured by the Trainer.</p>
+<p>If users want to use different trainset for different demo optimizer,
+they can configure it by themselves.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.configure_text_optimizer_helper">
+<span class="sig-name descname"><span class="pre">configure_text_optimizer_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><span class="pre">ModelClient</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">TextOptimizer</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_text_optimizer_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.configure_text_optimizer_helper" title="Link to this definition">#</a></dt>
+<dd><p>Text optimizer hands prompt parameter type. One text optimizer can handle multiple text parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.bicall">
+<span class="sig-name descname"><span class="pre">bicall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.bicall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.bicall" title="Link to this definition">#</a></dt>
+<dd><p>If the user provides a <cite>bicall</cite> method, then <cite>__call__</cite> will automatically
+dispatch here for both training and inference scenarios. This can internally
+decide how to handle training vs. inference, or just produce a single unified
+output type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.call" title="Link to this definition">#</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.AdalComponent.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.AdalComponent.forward" title="Link to this definition">#</a></dt>
+<dd><p>User must override this for the training scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
@@ -642,7 +1309,86 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer"><code class="docutils literal notranslate"><span class="pre">Trainer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.optimizer"><code class="docutils literal notranslate"><span class="pre">Trainer.optimizer</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.ckpt_file"><code class="docutils literal notranslate"><span class="pre">Trainer.ckpt_file</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.random_seed"><code class="docutils literal notranslate"><span class="pre">Trainer.random_seed</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.optimization_order"><code class="docutils literal notranslate"><span class="pre">Trainer.optimization_order</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.strategy"><code class="docutils literal notranslate"><span class="pre">Trainer.strategy</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.max_steps"><code class="docutils literal notranslate"><span class="pre">Trainer.max_steps</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.ckpt_path"><code class="docutils literal notranslate"><span class="pre">Trainer.ckpt_path</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.adaltask"><code class="docutils literal notranslate"><span class="pre">Trainer.adaltask</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.num_workers"><code class="docutils literal notranslate"><span class="pre">Trainer.num_workers</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.train_loader"><code class="docutils literal notranslate"><span class="pre">Trainer.train_loader</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.val_dataset"><code class="docutils literal notranslate"><span class="pre">Trainer.val_dataset</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.test_dataset"><code class="docutils literal notranslate"><span class="pre">Trainer.test_dataset</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.batch_val_score_threshold"><code class="docutils literal notranslate"><span class="pre">Trainer.batch_val_score_threshold</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.correct_val_score_threshold"><code class="docutils literal notranslate"><span class="pre">Trainer.correct_val_score_threshold</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.max_error_samples"><code class="docutils literal notranslate"><span class="pre">Trainer.max_error_samples</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.max_correct_samples"><code class="docutils literal notranslate"><span class="pre">Trainer.max_correct_samples</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.max_proposals_per_step"><code class="docutils literal notranslate"><span class="pre">Trainer.max_proposals_per_step</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.demo_optimizers"><code class="docutils literal notranslate"><span class="pre">Trainer.demo_optimizers</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.text_optimizers"><code class="docutils literal notranslate"><span class="pre">Trainer.text_optimizers</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.train_batch_size"><code class="docutils literal notranslate"><span class="pre">Trainer.train_batch_size</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.debug"><code class="docutils literal notranslate"><span class="pre">Trainer.debug</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.sequential_order"><code class="docutils literal notranslate"><span class="pre">Trainer.sequential_order</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.skip_subset_val"><code class="docutils literal notranslate"><span class="pre">Trainer.skip_subset_val</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.disable_backward_gradients"><code class="docutils literal notranslate"><span class="pre">Trainer.disable_backward_gradients</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.disable_backward"><code class="docutils literal notranslate"><span class="pre">Trainer.disable_backward</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.text_optimizers_config_kwargs"><code class="docutils literal notranslate"><span class="pre">Trainer.text_optimizers_config_kwargs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.set_random_seed"><code class="docutils literal notranslate"><span class="pre">Trainer.set_random_seed()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.diagnose"><code class="docutils literal notranslate"><span class="pre">Trainer.diagnose()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.diagnose_report"><code class="docutils literal notranslate"><span class="pre">Trainer.diagnose_report()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.debug_report"><code class="docutils literal notranslate"><span class="pre">Trainer.debug_report()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.resume_params_from_ckpt"><code class="docutils literal notranslate"><span class="pre">Trainer.resume_params_from_ckpt()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.fit"><code class="docutils literal notranslate"><span class="pre">Trainer.fit()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.initial_validation"><code class="docutils literal notranslate"><span class="pre">Trainer.initial_validation()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.gather_trainer_states"><code class="docutils literal notranslate"><span class="pre">Trainer.gather_trainer_states()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.prep_ckpt_file_path"><code class="docutils literal notranslate"><span class="pre">Trainer.prep_ckpt_file_path()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.training"><code class="docutils literal notranslate"><span class="pre">Trainer.training</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.teacher_mode"><code class="docutils literal notranslate"><span class="pre">Trainer.teacher_mode</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.Trainer.tracing"><code class="docutils literal notranslate"><span class="pre">Trainer.tracing</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent"><code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.task"><code class="docutils literal notranslate"><span class="pre">AdalComponent.task</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.eval_fn"><code class="docutils literal notranslate"><span class="pre">AdalComponent.eval_fn</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.loss_eval_fn"><code class="docutils literal notranslate"><span class="pre">AdalComponent.loss_eval_fn</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.loss_fn"><code class="docutils literal notranslate"><span class="pre">AdalComponent.loss_fn</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.backward_engine"><code class="docutils literal notranslate"><span class="pre">AdalComponent.backward_engine</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.prepare_task"><code class="docutils literal notranslate"><span class="pre">AdalComponent.prepare_task()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.prepare_loss"><code class="docutils literal notranslate"><span class="pre">AdalComponent.prepare_loss()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.prepare_eval"><code class="docutils literal notranslate"><span class="pre">AdalComponent.prepare_eval()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.prepare_loss_eval"><code class="docutils literal notranslate"><span class="pre">AdalComponent.prepare_loss_eval()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_optimizers()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.configure_backward_engine"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_backward_engine()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.disable_backward_engine"><code class="docutils literal notranslate"><span class="pre">AdalComponent.disable_backward_engine()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.evaluate_samples"><code class="docutils literal notranslate"><span class="pre">AdalComponent.evaluate_samples()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.pred_step"><code class="docutils literal notranslate"><span class="pre">AdalComponent.pred_step()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.train_step"><code class="docutils literal notranslate"><span class="pre">AdalComponent.train_step()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.validate_condition"><code class="docutils literal notranslate"><span class="pre">AdalComponent.validate_condition()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.validation_step"><code class="docutils literal notranslate"><span class="pre">AdalComponent.validation_step()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.loss_step"><code class="docutils literal notranslate"><span class="pre">AdalComponent.loss_step()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.configure_teacher_generator"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_teacher_generator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.configure_teacher_generator_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_teacher_generator_helper()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.disable_backward_engine_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.disable_backward_engine_helper()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.configure_backward_engine_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_backward_engine_helper()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.configure_callbacks"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_callbacks()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.run_one_task_sample"><code class="docutils literal notranslate"><span class="pre">AdalComponent.run_one_task_sample()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.run_one_loss_sample"><code class="docutils literal notranslate"><span class="pre">AdalComponent.run_one_loss_sample()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.training"><code class="docutils literal notranslate"><span class="pre">AdalComponent.training</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.teacher_mode"><code class="docutils literal notranslate"><span class="pre">AdalComponent.teacher_mode</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.tracing"><code class="docutils literal notranslate"><span class="pre">AdalComponent.tracing</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.configure_demo_optimizer_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_demo_optimizer_helper()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.configure_text_optimizer_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_text_optimizer_helper()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.bicall"><code class="docutils literal notranslate"><span class="pre">AdalComponent.bicall()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.call"><code class="docutils literal notranslate"><span class="pre">AdalComponent.call()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.AdalComponent.forward"><code class="docutils literal notranslate"><span class="pre">AdalComponent.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

@@ -154,6 +154,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -173,13 +180,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -299,6 +314,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -511,6 +533,14 @@
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error serializing object </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">pass</span>
+        <span class="c1"># handle set</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">o</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">o</span><span class="p">)}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">o</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)}</span>
+            <span class="c1"># raise NotImplementedError(</span>
+            <span class="c1">#     f&quot;Object of type {o.__class__.__name__} is not JSON serializable: {o}&quot;</span>
+            <span class="c1"># )</span>
     <span class="k">elif</span> <span class="n">obj_type</span> <span class="o">==</span> <span class="n">ObjectTypes</span><span class="o">.</span><span class="n">TYPE</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Object </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> is a type of </span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -561,9 +591,19 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Hook to deserialize objects based on their type.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">in</span> <span class="n">d</span> <span class="ow">and</span> <span class="s2">&quot;data&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
         <span class="n">class_name</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s2">&quot;set&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>
+
+        <span class="c1"># deseralize customized types</span>
+        <span class="c1"># TODO: all customized data types need to be saved</span>
         <span class="n">class_type</span> <span class="o">=</span> <span class="n">EntityMapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">class_type</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">class_type</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">class_type</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">class_type</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># default to the original object</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error deserializing object </span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">pass</span>
     <span class="k">return</span> <span class="n">d</span>
 
 

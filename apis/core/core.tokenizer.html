@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -272,6 +287,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -300,6 +319,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -422,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -578,8 +605,64 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="tokenizer">
-<span id="core-tokenizer"></span><h1>tokenizer<a class="headerlink" href="#tokenizer" title="Link to this heading">#</a></h1>
+  <section id="module-core.tokenizer">
+<span id="tokenizer"></span><span id="core-tokenizer"></span><h1>tokenizer<a class="headerlink" href="#module-core.tokenizer" title="Link to this heading">#</a></h1>
+<p>Tokenizer from tiktoken.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.tokenizer.Tokenizer" title="core.tokenizer.Tokenizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Tokenizer</span></code></a>([name, remove_stop_words])</p></td>
+<td><p>Tokenizer component that wraps around the tokenizer from tiktoken.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.tokenizer.Tokenizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Tokenizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cl100k_base'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_stop_words</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/tokenizer.html#Tokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tokenizer.Tokenizer" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Tokenizer component that wraps around the tokenizer from tiktoken.
+__call__ is the same as forward/encode, so that we can use it in Sequential
+Additonally, you can can also use encode and decode methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the tokenizer. Defaults to “cl100k_base”. You can find more information</p></li>
+<li><p><strong>documentation.</strong> (<em>at the tiktoken</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.tokenizer.Tokenizer.preprocess">
+<span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/tokenizer.html#Tokenizer.preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tokenizer.Tokenizer.preprocess" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.tokenizer.Tokenizer.encode">
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/tokenizer.html#Tokenizer.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tokenizer.Tokenizer.encode" title="Link to this definition">#</a></dt>
+<dd><p>Encodes the input text/word into token IDs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.tokenizer.Tokenizer.decode">
+<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/tokenizer.html#Tokenizer.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tokenizer.Tokenizer.decode" title="Link to this definition">#</a></dt>
+<dd><p>Decodes the input tokens into text.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.tokenizer.Tokenizer.count_tokens">
+<span class="sig-name descname"><span class="pre">count_tokens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../_modules/core/tokenizer.html#Tokenizer.count_tokens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tokenizer.Tokenizer.count_tokens" title="Link to this definition">#</a></dt>
+<dd><p>Counts the number of tokens in the input text.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.tokenizer.Tokenizer.get_string_tokens">
+<span class="sig-name descname"><span class="pre">get_string_tokens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/tokenizer.html#Tokenizer.get_string_tokens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tokenizer.Tokenizer.get_string_tokens" title="Link to this definition">#</a></dt>
+<dd><p>Returns the string tokens from the input text.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -616,6 +699,30 @@
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tokenizer.Tokenizer"><code class="docutils literal notranslate"><span class="pre">Tokenizer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tokenizer.Tokenizer.preprocess"><code class="docutils literal notranslate"><span class="pre">Tokenizer.preprocess()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tokenizer.Tokenizer.encode"><code class="docutils literal notranslate"><span class="pre">Tokenizer.encode()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tokenizer.Tokenizer.decode"><code class="docutils literal notranslate"><span class="pre">Tokenizer.decode()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tokenizer.Tokenizer.count_tokens"><code class="docutils literal notranslate"><span class="pre">Tokenizer.count_tokens()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tokenizer.Tokenizer.get_string_tokens"><code class="docutils literal notranslate"><span class="pre">Tokenizer.get_string_tokens()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

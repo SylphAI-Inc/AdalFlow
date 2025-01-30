@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -272,6 +287,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -300,6 +319,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -422,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -578,8 +605,650 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="functional">
-<span id="core-functional"></span><h1>functional<a class="headerlink" href="#functional" title="Link to this heading">#</a></h1>
+  <section id="module-core.functional">
+<span id="functional"></span><span id="core-functional"></span><h1>functional<a class="headerlink" href="#module-core.functional" title="Link to this heading">#</a></h1>
+<p>Functional interface.
+Core functions we use to build across the components.
+Users can leverage these functions to customize their own components.</p>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.check_data_class_field_args_one" title="core.functional.check_data_class_field_args_one"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_data_class_field_args_one</span></code></a>(cls)</p></td>
+<td><p>Check if the field is a dataclass.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.check_data_class_field_args_zero" title="core.functional.check_data_class_field_args_zero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_data_class_field_args_zero</span></code></a>(cls)</p></td>
+<td><p>Check if the field is a dataclass.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.check_if_class_field_args_one_exists" title="core.functional.check_if_class_field_args_one_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_if_class_field_args_one_exists</span></code></a>(cls)</p></td>
+<td><p>Check if the field is a dataclass.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.check_if_class_field_args_zero_exists" title="core.functional.check_if_class_field_args_zero_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_if_class_field_args_zero_exists</span></code></a>(cls)</p></td>
+<td><p>Check if the field is a dataclass.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.compose_model_kwargs" title="core.functional.compose_model_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compose_model_kwargs</span></code></a>(default_model_kwargs, ...)</p></td>
+<td><p>Add new arguments or overwrite the default arguments with the new arguments.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.convert_schema_to_signature" title="core.functional.convert_schema_to_signature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_schema_to_signature</span></code></a>(schema)</p></td>
+<td><p>Convert the value from get_data_class_schema to a string description.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.custom_asdict" title="core.functional.custom_asdict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">custom_asdict</span></code></a>(obj, *[, dict_factory, exclude])</p></td>
+<td><p>Equivalent to asdict() from dataclasses module but with exclude fields.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.dataclass_obj_from_dict" title="core.functional.dataclass_obj_from_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dataclass_obj_from_dict</span></code></a>(cls, data)</p></td>
+<td><p>Convert a dictionary to a dataclass object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.evaluate_ast_node" title="core.functional.evaluate_ast_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_ast_node</span></code></a>(node[, context_map])</p></td>
+<td><p>Recursively evaluates an AST node and returns the corresponding Python object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_dataclass_type" title="core.functional.extract_dataclass_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_dataclass_type</span></code></a>(type_hint)</p></td>
+<td><p>Extract the actual dataclass type from a type hint that could be Optional or other generic.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_first_boolean" title="core.functional.extract_first_boolean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_first_boolean</span></code></a>(text)</p></td>
+<td><p>Extract the first boolean from the provided text.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_first_float" title="core.functional.extract_first_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_first_float</span></code></a>(text)</p></td>
+<td><p>Extract the first float from the provided text.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_first_int" title="core.functional.extract_first_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_first_int</span></code></a>(text)</p></td>
+<td><p>Extract the first integer from the provided text.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_function_expression" title="core.functional.extract_function_expression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_function_expression</span></code></a>(text[, ...])</p></td>
+<td><p>Extract function expression from text.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_json_str" title="core.functional.extract_json_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_json_str</span></code></a>(text[, add_missing_right_brace])</p></td>
+<td><p>Extract JSON string from text.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_list_str" title="core.functional.extract_list_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_list_str</span></code></a>(text[, ...])</p></td>
+<td><p>Extract the first complete list string from the provided text.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_yaml_str" title="core.functional.extract_yaml_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_yaml_str</span></code></a>(text)</p></td>
+<td><p>Extract YAML string from text.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.fix_json_escaped_single_quotes" title="core.functional.fix_json_escaped_single_quotes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix_json_escaped_single_quotes</span></code></a>(json_str)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.fix_json_missing_commas" title="core.functional.fix_json_missing_commas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix_json_missing_commas</span></code></a>(json_str)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.from_dict_to_json" title="core.functional.from_dict_to_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict_to_json</span></code></a>(data[, sort_keys])</p></td>
+<td><p>Convert a dictionary to a JSON string.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.from_dict_to_yaml" title="core.functional.from_dict_to_yaml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict_to_yaml</span></code></a>(data[, sort_keys])</p></td>
+<td><p>Convert a dictionary to a YAML string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.from_json_to_dict" title="core.functional.from_json_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json_to_dict</span></code></a>(json_str)</p></td>
+<td><p>Convert a JSON string to a dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.from_yaml_to_dict" title="core.functional.from_yaml_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_yaml_to_dict</span></code></a>(yaml_str)</p></td>
+<td><p>Convert a YAML string to a dictionary.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.generate_function_call_expression_from_callable" title="core.functional.generate_function_call_expression_from_callable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_function_call_expression_from_callable</span></code></a>(...)</p></td>
+<td><p>Generate a function call expression string from a callable function and its arguments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.generate_readable_key_for_function" title="core.functional.generate_readable_key_for_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_readable_key_for_function</span></code></a>(fn)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.get_dataclass_schema" title="core.functional.get_dataclass_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dataclass_schema</span></code></a>(cls[, exclude, ...])</p></td>
+<td><p>Generate a schema dictionary for a dataclass including nested structures.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.get_enum_schema" title="core.functional.get_enum_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_enum_schema</span></code></a>(enum_cls)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.get_fun_schema" title="core.functional.get_fun_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fun_schema</span></code></a>(name, func)</p></td>
+<td><p>Get the schema of a function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.get_top_k_indices_scores" title="core.functional.get_top_k_indices_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_top_k_indices_scores</span></code></a>(scores, top_k)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.get_type_schema" title="core.functional.get_type_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_type_schema</span></code></a>(type_obj[, exclude, ...])</p></td>
+<td><p>Retrieve the type name, handling complex and nested types.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.is_dataclass_instance" title="core.functional.is_dataclass_instance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_dataclass_instance</span></code></a>(obj)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.is_normalized" title="core.functional.is_normalized"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_normalized</span></code></a>(v[, tol])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.is_potential_dataclass" title="core.functional.is_potential_dataclass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_potential_dataclass</span></code></a>(t)</p></td>
+<td><p>Check if the type is directly a dataclass or potentially a wrapped dataclass like Optional.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.normalize_np_array" title="core.functional.normalize_np_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_np_array</span></code></a>(v)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.normalize_vector" title="core.functional.normalize_vector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_vector</span></code></a>(v)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.parse_function_call_expr" title="core.functional.parse_function_call_expr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_function_call_expr</span></code></a>(function_expr[, ...])</p></td>
+<td><p>Parse a string representing a function call into its components and ensure safe execution by only allowing function calls from a predefined context map. :param function_expr: The string representing the function :type function_expr: str :param context_map: A dictionary that maps variable names to their respective values and functions. This context is used to resolve names and execute functions. :type context_map: Dict[str, Any].</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.parse_json_str_to_obj" title="core.functional.parse_json_str_to_obj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_json_str_to_obj</span></code></a>(json_str)</p></td>
+<td><p>Parse a varietry of json format string to Python object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.parse_yaml_str_to_obj" title="core.functional.parse_yaml_str_to_obj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_yaml_str_to_obj</span></code></a>(yaml_str)</p></td>
+<td><p>Parse a YAML string to a Python object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.random_sample" title="core.functional.random_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_sample</span></code></a>(dataset, num_shots[, replace, ...])</p></td>
+<td><p>Randomly sample num_shots from the dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.represent_ordereddict" title="core.functional.represent_ordereddict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">represent_ordereddict</span></code></a>(dumper, data)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.sandbox_exec" title="core.functional.sandbox_exec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sandbox_exec</span></code></a>(code[, context, timeout])</p></td>
+<td><p>Execute code in a sandboxed environment with a timeout.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.validate_data" title="core.functional.validate_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_data</span></code></a>(data, fieldtypes)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.custom_asdict">
+<span class="sig-name descname"><span class="pre">custom_asdict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_factory=&lt;class</span> <span class="pre">'dict'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.List[str]]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#custom_asdict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.custom_asdict" title="Link to this definition">#</a></dt>
+<dd><p>Equivalent to asdict() from dataclasses module but with exclude fields.</p>
+<p>Return the fields of a dataclass instance as a new dictionary mapping
+field names to field values, while allowing certain fields to be excluded.</p>
+<p>If given, ‘dict_factory’ will be used instead of built-in dict.
+The function applies recursively to field values that are
+dataclass instances. This will also look into built-in containers:
+tuples, lists, and dicts.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.validate_data">
+<span class="sig-name descname"><span class="pre">validate_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fieldtypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#validate_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.validate_data" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.is_potential_dataclass">
+<span class="sig-name descname"><span class="pre">is_potential_dataclass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/functional.html#is_potential_dataclass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.is_potential_dataclass" title="Link to this definition">#</a></dt>
+<dd><p>Check if the type is directly a dataclass or potentially a wrapped dataclass like Optional.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.extract_dataclass_type">
+<span class="sig-name descname"><span class="pre">extract_dataclass_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_hint</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/functional.html#extract_dataclass_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.extract_dataclass_type" title="Link to this definition">#</a></dt>
+<dd><p>Extract the actual dataclass type from a type hint that could be Optional or other generic.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.check_data_class_field_args_zero">
+<span class="sig-name descname"><span class="pre">check_data_class_field_args_zero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/functional.html#check_data_class_field_args_zero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.check_data_class_field_args_zero" title="Link to this definition">#</a></dt>
+<dd><p>Check if the field is a dataclass.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.check_if_class_field_args_zero_exists">
+<span class="sig-name descname"><span class="pre">check_if_class_field_args_zero_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/functional.html#check_if_class_field_args_zero_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.check_if_class_field_args_zero_exists" title="Link to this definition">#</a></dt>
+<dd><p>Check if the field is a dataclass.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.check_data_class_field_args_one">
+<span class="sig-name descname"><span class="pre">check_data_class_field_args_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/functional.html#check_data_class_field_args_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.check_data_class_field_args_one" title="Link to this definition">#</a></dt>
+<dd><p>Check if the field is a dataclass.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.check_if_class_field_args_one_exists">
+<span class="sig-name descname"><span class="pre">check_if_class_field_args_one_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/functional.html#check_if_class_field_args_one_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.check_if_class_field_args_one_exists" title="Link to this definition">#</a></dt>
+<dd><p>Check if the field is a dataclass.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.dataclass_obj_from_dict">
+<span class="sig-name descname"><span class="pre">dataclass_obj_from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#dataclass_obj_from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.dataclass_obj_from_dict" title="Link to this definition">#</a></dt>
+<dd><p>Convert a dictionary to a dataclass object.</p>
+<p>Supports nested dataclasses, lists, and dictionaries.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If any required field is missing, it will raise an error.
+Do not use the dict that has excluded required fields.</p>
+</div>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">TrecData</span><span class="p">:</span>
+    <span class="n">question</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">TrecDataList</span><span class="p">:</span>
+
+    <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TrecData</span><span class="p">]</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="n">trec_data_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="s2">&quot;What is the capital of France?&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}],</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;trec_data_list&quot;</span><span class="p">}</span>
+
+<span class="n">dataclass_obj_from_dict</span><span class="p">(</span><span class="n">TrecDataList</span><span class="p">,</span> <span class="n">trec_data_dict</span><span class="p">)</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># TrecDataList(data=[TrecData(question=&#39;What is the capital of France?&#39;, label=0)], name=&#39;trec_data_list&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.represent_ordereddict">
+<span class="sig-name descname"><span class="pre">represent_ordereddict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dumper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/functional.html#represent_ordereddict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.represent_ordereddict" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.from_dict_to_json">
+<span class="sig-name descname"><span class="pre">from_dict_to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#from_dict_to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.from_dict_to_json" title="Link to this definition">#</a></dt>
+<dd><p>Convert a dictionary to a JSON string.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.from_dict_to_yaml">
+<span class="sig-name descname"><span class="pre">from_dict_to_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#from_dict_to_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.from_dict_to_yaml" title="Link to this definition">#</a></dt>
+<dd><p>Convert a dictionary to a YAML string.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.from_json_to_dict">
+<span class="sig-name descname"><span class="pre">from_json_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#from_json_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.from_json_to_dict" title="Link to this definition">#</a></dt>
+<dd><p>Convert a JSON string to a dictionary.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.from_yaml_to_dict">
+<span class="sig-name descname"><span class="pre">from_yaml_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yaml_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#from_yaml_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.from_yaml_to_dict" title="Link to this definition">#</a></dt>
+<dd><p>Convert a YAML string to a dictionary.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.is_dataclass_instance">
+<span class="sig-name descname"><span class="pre">is_dataclass_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/functional.html#is_dataclass_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.is_dataclass_instance" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.get_type_schema">
+<span class="sig-name descname"><span class="pre">get_type_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_var_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#get_type_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.get_type_schema" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the type name, handling complex and nested types.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.get_enum_schema">
+<span class="sig-name descname"><span class="pre">get_enum_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum_cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Enum</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#get_enum_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.get_enum_schema" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.get_dataclass_schema">
+<span class="sig-name descname"><span class="pre">get_dataclass_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_var_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#get_dataclass_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.get_dataclass_schema" title="Link to this definition">#</a></dt>
+<dd><p>Generate a schema dictionary for a dataclass including nested structures.</p>
+<ol class="arabic simple">
+<li><p>Support customized dataclass with required_field function.</p></li>
+<li><p>Support nested dataclasses, even with generics like List, Dict, etc.</p></li>
+<li><p>Support metadata in the dataclass fields.</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.convert_schema_to_signature">
+<span class="sig-name descname"><span class="pre">convert_schema_to_signature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#convert_schema_to_signature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.convert_schema_to_signature" title="Link to this definition">#</a></dt>
+<dd><p>Convert the value from get_data_class_schema to a string description.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.get_fun_schema">
+<span class="sig-name descname"><span class="pre">get_fun_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#get_fun_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.get_fun_schema" title="Link to this definition">#</a></dt>
+<dd><p>Get the schema of a function.
+Support dataclass, Union and normal data types such as int, str, float, etc, list, dict, set.</p>
+<p>Examples:
+def example_function(x: int, y: str = “default”) -&gt; int:</p>
+<blockquote>
+<div><p>return x</p>
+</div></blockquote>
+<p>schema = get_fun_schema(“example_function”, example_function)
+print(json.dumps(schema, indent=4))
+# Output:
+{</p>
+<blockquote>
+<div><p>“type”: “object”,
+“properties”: {</p>
+<blockquote>
+<div><dl class="simple">
+<dt>“x”: {</dt><dd><p>“type”: “int”</p>
+</dd>
+</dl>
+<p>},
+“y”: {</p>
+<blockquote>
+<div><p>“type”: “str”,
+“default”: “default”</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>},
+“required”: [</p>
+<blockquote>
+<div><p>“x”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>}</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.evaluate_ast_node">
+<span class="sig-name descname"><span class="pre">evaluate_ast_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AST</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/functional.html#evaluate_ast_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.evaluate_ast_node" title="Link to this definition">#</a></dt>
+<dd><p>Recursively evaluates an AST node and returns the corresponding Python object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>ast.AST</em>) – The AST node to evaluate. This node can represent various parts of Python expressions,
+such as literals, identifiers, lists, dictionaries, and function calls.</p></li>
+<li><p><strong>context_map</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – A dictionary that maps variable names to their respective values and functions.
+This context is used to resolve names and execute functions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The result of evaluating the node. The type of the returned object depends on the nature of the node:</dt><dd><ul class="simple">
+<li><p>Constants return their literal value.</p></li>
+<li><p>Names are looked up in the context_map.</p></li>
+<li><p>Lists and tuples return their contained values as a list or tuple.</p></li>
+<li><p>Dictionaries return a dictionary with keys and values evaluated.</p></li>
+<li><p>Function calls invoke the function with evaluated arguments and return its result.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the node type is unsupported, a ValueError is raised indicating the inability to evaluate the node.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.parse_function_call_expr">
+<span class="sig-name descname"><span class="pre">parse_function_call_expr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function_expr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#parse_function_call_expr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.parse_function_call_expr" title="Link to this definition">#</a></dt>
+<dd><p>Parse a string representing a function call into its components and ensure safe execution by only allowing function calls from a predefined context map.
+:param function_expr: The string representing the function
+:type function_expr: str
+:param context_map: A dictionary that maps variable names to their respective values and functions.</p>
+<blockquote>
+<div><p>This context is used to resolve names and execute functions.</p>
+</div></blockquote>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.generate_function_call_expression_from_callable">
+<span class="sig-name descname"><span class="pre">generate_function_call_expression_from_callable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#generate_function_call_expression_from_callable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.generate_function_call_expression_from_callable" title="Link to this definition">#</a></dt>
+<dd><p>Generate a function call expression string from a callable function and its arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>Callable</em><em>[</em><em>...</em><em>, </em><em>Any</em><em>]</em>) – The callable function.</p></li>
+<li><p><strong>*args</strong> (<em>Any</em>) – Positional arguments to be passed to the function.</p></li>
+<li><p><strong>**kwargs</strong> (<em>Any</em>) – Keyword arguments to be passed to the function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The function call expression string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.sandbox_exec">
+<span class="sig-name descname"><span class="pre">sandbox_exec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#sandbox_exec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.sandbox_exec" title="Link to this definition">#</a></dt>
+<dd><p>Execute code in a sandboxed environment with a timeout.</p>
+<ol class="arabic simple">
+<li><p>Works similar to eval(), but with timeout and context similar to parse_function_call_expr.</p></li>
+<li><p>With more flexibility as you can write additional function in the code compared with simply the function call.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>code</strong> (<em>str</em>) – The code to execute. Has to be output=… or similar so that the result can be captured.</p></li>
+<li><p><strong>context</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The context to use for the execution.</p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – The execution timeout in seconds.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.compose_model_kwargs">
+<span class="sig-name descname"><span class="pre">compose_model_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#compose_model_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.compose_model_kwargs" title="Link to this definition">#</a></dt>
+<dd><p>Add new arguments or overwrite the default arguments with the new arguments.</p>
+<p>Example:
+model_kwargs = {“temperature”: 0.5, “model”: “gpt-3.5-turbo”}
+self.model_kwargs = {“model”: “gpt-3.5”}
+combine_kwargs(model_kwargs) =&gt; {“temperature”: 0.5, “model”: “gpt-3.5-turbo”}</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.is_normalized">
+<span class="sig-name descname"><span class="pre">is_normalized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#is_normalized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.is_normalized" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.normalize_np_array">
+<span class="sig-name descname"><span class="pre">normalize_np_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#normalize_np_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.normalize_np_array" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.normalize_vector">
+<span class="sig-name descname"><span class="pre">normalize_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#normalize_vector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.normalize_vector" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.get_top_k_indices_scores">
+<span class="sig-name descname"><span class="pre">get_top_k_indices_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#get_top_k_indices_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.get_top_k_indices_scores" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.generate_readable_key_for_function">
+<span class="sig-name descname"><span class="pre">generate_readable_key_for_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#generate_readable_key_for_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.generate_readable_key_for_function" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.extract_first_int">
+<span class="sig-name descname"><span class="pre">extract_first_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#extract_first_int"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.extract_first_int" title="Link to this definition">#</a></dt>
+<dd><p>Extract the first integer from the provided text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The text containing potential integer data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The extracted integer.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If no integer is found in the text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.extract_first_float">
+<span class="sig-name descname"><span class="pre">extract_first_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#extract_first_float"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.extract_first_float" title="Link to this definition">#</a></dt>
+<dd><p>Extract the first float from the provided text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The text containing potential float data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The extracted float.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If no float is found in the text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.extract_first_boolean">
+<span class="sig-name descname"><span class="pre">extract_first_boolean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#extract_first_boolean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.extract_first_boolean" title="Link to this definition">#</a></dt>
+<dd><p>Extract the first boolean from the provided text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The text containing potential boolean data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The extracted boolean.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If no boolean is found in the text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.extract_function_expression">
+<span class="sig-name descname"><span class="pre">extract_function_expression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_missing_right_parenthesis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#extract_function_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.extract_function_expression" title="Link to this definition">#</a></dt>
+<dd><p>Extract function expression from text.</p>
+<p>It will extract the first function expression found in the text by searching for ‘(‘.
+If the right parenthesis is not found, we add one to the end of the string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – The text containing the potential function expression.</p></li>
+<li><p><strong>add_missing_right_parenthesis</strong> (<em>bool</em>) – Whether to add a missing right parenthesis if it is missing.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The extracted function expression.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If no function expression is found or if the function extraction is incomplete
+    without the option to add a missing parenthesis.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.extract_json_str">
+<span class="sig-name descname"><span class="pre">extract_json_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_missing_right_brace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#extract_json_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.extract_json_str" title="Link to this definition">#</a></dt>
+<dd><p>Extract JSON string from text.</p>
+<p>It will extract the first JSON object or array found in the text by searching for { or [.
+If right brace is not found, we add one to the end of the string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – The text containing potential JSON data.</p></li>
+<li><p><strong>add_missing_right_brace</strong> (<em>bool</em>) – Whether to add a missing right brace if it is missing.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The extracted JSON string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If no JSON object or array is found or if the JSON extraction is incomplete
+    without the option to add a missing brace</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.extract_list_str">
+<span class="sig-name descname"><span class="pre">extract_list_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_missing_right_bracket</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#extract_list_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.extract_list_str" title="Link to this definition">#</a></dt>
+<dd><p>Extract the first complete list string from the provided text.</p>
+<p>If the list string is incomplete
+(missing the closing bracket), an option allows adding a closing bracket at the end.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – The text containing potential list data.</p></li>
+<li><p><strong>add_missing_right_bracket</strong> (<em>bool</em>) – Whether to add a closing bracket if it is missing.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The extracted list string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If no list is found or if the list extraction is incomplete
+    without the option to add a missing bracket.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.extract_yaml_str">
+<span class="sig-name descname"><span class="pre">extract_yaml_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#extract_yaml_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.extract_yaml_str" title="Link to this definition">#</a></dt>
+<dd><p>Extract YAML string from text.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As yaml string does not have a format like JSON which we can extract from {} or [],
+it is crucial to have a format such as <code class="docutils literal notranslate"><span class="pre">`yaml`</span></code> or <code class="docutils literal notranslate"><span class="pre">`yml`</span></code> to indicate the start of the yaml string.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The text containing potential YAML data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The extracted YAML string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If no YAML string is found in the text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.fix_json_missing_commas">
+<span class="sig-name descname"><span class="pre">fix_json_missing_commas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#fix_json_missing_commas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.fix_json_missing_commas" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.fix_json_escaped_single_quotes">
+<span class="sig-name descname"><span class="pre">fix_json_escaped_single_quotes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#fix_json_escaped_single_quotes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.fix_json_escaped_single_quotes" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.parse_yaml_str_to_obj">
+<span class="sig-name descname"><span class="pre">parse_yaml_str_to_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yaml_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#parse_yaml_str_to_obj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.parse_yaml_str_to_obj" title="Link to this definition">#</a></dt>
+<dd><p>Parse a YAML string to a Python object.</p>
+<p>yaml_str: has to be a valid YAML string.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.parse_json_str_to_obj">
+<span class="sig-name descname"><span class="pre">parse_json_str_to_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#parse_json_str_to_obj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.parse_json_str_to_obj" title="Link to this definition">#</a></dt>
+<dd><p>Parse a varietry of json format string to Python object.</p>
+<p>json_str: has to be a valid JSON string. Either {} or [].</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.random_sample">
+<span class="sig-name descname"><span class="pre">random_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#random_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.random_sample" title="Link to this definition">#</a></dt>
+<dd><p>Randomly sample num_shots from the dataset. If replace is True, sample with replacement.</p>
+</dd></dl>
+
 </section>
 
 
@@ -616,6 +1285,64 @@
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.custom_asdict"><code class="docutils literal notranslate"><span class="pre">custom_asdict()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.validate_data"><code class="docutils literal notranslate"><span class="pre">validate_data()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.is_potential_dataclass"><code class="docutils literal notranslate"><span class="pre">is_potential_dataclass()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.extract_dataclass_type"><code class="docutils literal notranslate"><span class="pre">extract_dataclass_type()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.check_data_class_field_args_zero"><code class="docutils literal notranslate"><span class="pre">check_data_class_field_args_zero()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.check_if_class_field_args_zero_exists"><code class="docutils literal notranslate"><span class="pre">check_if_class_field_args_zero_exists()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.check_data_class_field_args_one"><code class="docutils literal notranslate"><span class="pre">check_data_class_field_args_one()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.check_if_class_field_args_one_exists"><code class="docutils literal notranslate"><span class="pre">check_if_class_field_args_one_exists()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.dataclass_obj_from_dict"><code class="docutils literal notranslate"><span class="pre">dataclass_obj_from_dict()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.represent_ordereddict"><code class="docutils literal notranslate"><span class="pre">represent_ordereddict()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.from_dict_to_json"><code class="docutils literal notranslate"><span class="pre">from_dict_to_json()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.from_dict_to_yaml"><code class="docutils literal notranslate"><span class="pre">from_dict_to_yaml()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.from_json_to_dict"><code class="docutils literal notranslate"><span class="pre">from_json_to_dict()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.from_yaml_to_dict"><code class="docutils literal notranslate"><span class="pre">from_yaml_to_dict()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.is_dataclass_instance"><code class="docutils literal notranslate"><span class="pre">is_dataclass_instance()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.get_type_schema"><code class="docutils literal notranslate"><span class="pre">get_type_schema()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.get_enum_schema"><code class="docutils literal notranslate"><span class="pre">get_enum_schema()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.get_dataclass_schema"><code class="docutils literal notranslate"><span class="pre">get_dataclass_schema()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.convert_schema_to_signature"><code class="docutils literal notranslate"><span class="pre">convert_schema_to_signature()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.get_fun_schema"><code class="docutils literal notranslate"><span class="pre">get_fun_schema()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.evaluate_ast_node"><code class="docutils literal notranslate"><span class="pre">evaluate_ast_node()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.parse_function_call_expr"><code class="docutils literal notranslate"><span class="pre">parse_function_call_expr()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.generate_function_call_expression_from_callable"><code class="docutils literal notranslate"><span class="pre">generate_function_call_expression_from_callable()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.sandbox_exec"><code class="docutils literal notranslate"><span class="pre">sandbox_exec()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.compose_model_kwargs"><code class="docutils literal notranslate"><span class="pre">compose_model_kwargs()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.is_normalized"><code class="docutils literal notranslate"><span class="pre">is_normalized()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.normalize_np_array"><code class="docutils literal notranslate"><span class="pre">normalize_np_array()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.normalize_vector"><code class="docutils literal notranslate"><span class="pre">normalize_vector()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.get_top_k_indices_scores"><code class="docutils literal notranslate"><span class="pre">get_top_k_indices_scores()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.generate_readable_key_for_function"><code class="docutils literal notranslate"><span class="pre">generate_readable_key_for_function()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.extract_first_int"><code class="docutils literal notranslate"><span class="pre">extract_first_int()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.extract_first_float"><code class="docutils literal notranslate"><span class="pre">extract_first_float()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.extract_first_boolean"><code class="docutils literal notranslate"><span class="pre">extract_first_boolean()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.extract_function_expression"><code class="docutils literal notranslate"><span class="pre">extract_function_expression()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.extract_json_str"><code class="docutils literal notranslate"><span class="pre">extract_json_str()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.extract_list_str"><code class="docutils literal notranslate"><span class="pre">extract_list_str()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.extract_yaml_str"><code class="docutils literal notranslate"><span class="pre">extract_yaml_str()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.fix_json_missing_commas"><code class="docutils literal notranslate"><span class="pre">fix_json_missing_commas()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.fix_json_escaped_single_quotes"><code class="docutils literal notranslate"><span class="pre">fix_json_escaped_single_quotes()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.parse_yaml_str_to_obj"><code class="docutils literal notranslate"><span class="pre">parse_yaml_str_to_obj()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.parse_json_str_to_obj"><code class="docutils literal notranslate"><span class="pre">parse_json_str_to_obj()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.random_sample"><code class="docutils literal notranslate"><span class="pre">random_sample()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

@@ -156,6 +156,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -304,6 +319,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -419,6 +441,7 @@
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rag_with_memory.html">RAG with Memory</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -622,7 +645,7 @@ The structure of log directory is as follows:</p>
 <ol class="arabic simple" start="2">
 <li><p>Trace all failed LLM predictions for further improvement.</p></li>
 </ol>
-<p>Similarly, <code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_call_logger.GeneratorCallLogger</span></code> is created to log generator call input arguments and output results.
+<p>Similarly, <a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger" title="tracing.generator_call_logger.GeneratorCallLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_call_logger.GeneratorCallLogger</span></code></a> is created to log generator call input arguments and output results.
 <cite>trace_generator_call</cite> decorator is provided to provide one-line setup to trace calls, which in default will log only failed predictions.</p>
 <p>Adding the second decorator to the above example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tracing</span> <span class="kn">import</span> <span class="n">trace_generator_errors</span>

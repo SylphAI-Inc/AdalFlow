@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -272,6 +287,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -300,6 +319,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -422,6 +448,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
@@ -578,8 +605,133 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="generator-call-logger">
-<span id="tracing-generator-call-logger"></span><h1>generator_call_logger<a class="headerlink" href="#generator-call-logger" title="Link to this heading">#</a></h1>
+  <section id="module-tracing.generator_call_logger">
+<span id="generator-call-logger"></span><span id="tracing-generator-call-logger"></span><h1>generator_call_logger<a class="headerlink" href="#module-tracing.generator_call_logger" title="Link to this heading">#</a></h1>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tracing.generator_call_logger.GeneratorCallLogger" title="tracing.generator_call_logger.GeneratorCallLogger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneratorCallLogger</span></code></a>([save_dir, project_name])</p></td>
+<td><p>Log the generator calls.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#tracing.generator_call_logger.GeneratorCallRecord" title="tracing.generator_call_logger.GeneratorCallRecord"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneratorCallRecord</span></code></a>(prompt_kwargs, Any] =, ...)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallRecord">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeneratorCallRecord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_kwargs:</span> <span class="pre">Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Any]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs:</span> <span class="pre">Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Any]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input:</span> <span class="pre">Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Any]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">adalflow.core.types.GeneratorOutput</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Any]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_stamp:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/generator_call_logger.html#GeneratorCallRecord"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallRecord" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallRecord.prompt_kwargs">
+<span class="sig-name descname"><span class="pre">prompt_kwargs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallRecord.prompt_kwargs" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallRecord.model_kwargs">
+<span class="sig-name descname"><span class="pre">model_kwargs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallRecord.model_kwargs" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallRecord.input">
+<span class="sig-name descname"><span class="pre">input</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallRecord.input" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallRecord.output">
+<span class="sig-name descname"><span class="pre">output</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">GeneratorOutput</span></em><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallRecord.output" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallRecord.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallRecord.metadata" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallRecord.time_stamp">
+<span class="sig-name descname"><span class="pre">time_stamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallRecord.time_stamp" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallLogger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeneratorCallLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/generator_call_logger.html#GeneratorCallLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallLogger" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Log the generator calls.</p>
+<p>Allow multiple generators to be logged, and each with its own jsonl file.</p>
+<p>The log files are stored in the ./traces/ directory. If a project_name is provided,
+it will be stored in ./traces/{project_name}.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – The directory to save the log files. Defaults to “./traces/”.</p></li>
+<li><p><strong>project_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The project name. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallLogger.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/generator_call_logger.html#GeneratorCallLogger.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallLogger.reset" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallLogger.generator_names_to_files">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generator_names_to_files</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallLogger.generator_names_to_files" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallLogger.get_log_location">
+<span class="sig-name descname"><span class="pre">get_log_location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/tracing/generator_call_logger.html#GeneratorCallLogger.get_log_location"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallLogger.get_log_location" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallLogger.get_calls">
+<span class="sig-name descname"><span class="pre">get_calls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#tracing.generator_call_logger.GeneratorCallRecord" title="tracing.generator_call_logger.GeneratorCallRecord"><span class="pre">GeneratorCallRecord</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/generator_call_logger.html#GeneratorCallLogger.get_calls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallLogger.get_calls" title="Link to this definition">#</a></dt>
+<dd><p>Get the generator call records for generator with name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallLogger.register_generator">
+<span class="sig-name descname"><span class="pre">register_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/generator_call_logger.html#GeneratorCallLogger.register_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallLogger.register_generator" title="Link to this definition">#</a></dt>
+<dd><p>Register a generator with a name and a jsonl file to log its calls.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the generator.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – The jsonl filename to log the calls. Defaults to {name}_call.jsonl.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallLogger.save_meta_data">
+<span class="sig-name descname"><span class="pre">save_meta_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/generator_call_logger.html#GeneratorCallLogger.save_meta_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallLogger.save_meta_data" title="Link to this definition">#</a></dt>
+<dd><p>Save the _generator_names_to_files to a json file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallLogger.load_meta_data">
+<span class="sig-name descname"><span class="pre">load_meta_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/generator_call_logger.html#GeneratorCallLogger.load_meta_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallLogger.load_meta_data" title="Link to this definition">#</a></dt>
+<dd><p>Load the _generator_names_to_files from a json file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallLogger.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#tracing.generator_call_logger.GeneratorCallRecord" title="tracing.generator_call_logger.GeneratorCallRecord"><span class="pre">GeneratorCallRecord</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/generator_call_logger.html#GeneratorCallLogger.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallLogger.load" title="Link to this definition">#</a></dt>
+<dd><p>Load the generator call records.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.generator_call_logger.GeneratorCallLogger.log_call">
+<span class="sig-name descname"><span class="pre">log_call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeneratorOutput</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/generator_call_logger.html#GeneratorCallLogger.log_call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_call_logger.GeneratorCallLogger.log_call" title="Link to this definition">#</a></dt>
+<dd><p>Log the generator call.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -616,6 +768,43 @@
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallRecord"><code class="docutils literal notranslate"><span class="pre">GeneratorCallRecord</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallRecord.prompt_kwargs"><code class="docutils literal notranslate"><span class="pre">GeneratorCallRecord.prompt_kwargs</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallRecord.model_kwargs"><code class="docutils literal notranslate"><span class="pre">GeneratorCallRecord.model_kwargs</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallRecord.input"><code class="docutils literal notranslate"><span class="pre">GeneratorCallRecord.input</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallRecord.output"><code class="docutils literal notranslate"><span class="pre">GeneratorCallRecord.output</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallRecord.metadata"><code class="docutils literal notranslate"><span class="pre">GeneratorCallRecord.metadata</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallRecord.time_stamp"><code class="docutils literal notranslate"><span class="pre">GeneratorCallRecord.time_stamp</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallLogger"><code class="docutils literal notranslate"><span class="pre">GeneratorCallLogger</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallLogger.reset"><code class="docutils literal notranslate"><span class="pre">GeneratorCallLogger.reset()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallLogger.generator_names_to_files"><code class="docutils literal notranslate"><span class="pre">GeneratorCallLogger.generator_names_to_files</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallLogger.get_log_location"><code class="docutils literal notranslate"><span class="pre">GeneratorCallLogger.get_log_location()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallLogger.get_calls"><code class="docutils literal notranslate"><span class="pre">GeneratorCallLogger.get_calls()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallLogger.register_generator"><code class="docutils literal notranslate"><span class="pre">GeneratorCallLogger.register_generator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallLogger.save_meta_data"><code class="docutils literal notranslate"><span class="pre">GeneratorCallLogger.save_meta_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallLogger.load_meta_data"><code class="docutils literal notranslate"><span class="pre">GeneratorCallLogger.load_meta_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallLogger.load"><code class="docutils literal notranslate"><span class="pre">GeneratorCallLogger.load()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing.generator_call_logger.GeneratorCallLogger.log_call"><code class="docutils literal notranslate"><span class="pre">GeneratorCallLogger.log_call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
