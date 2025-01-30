@@ -1,14 +1,14 @@
 [tool.poetry]
 name = "adalflow"
 
-version = "1.0.0.beta.2"
+version = "1.0.0.beta.3"
 description = "The Library to Build and Auto-optimize LLM Applications"
 authors = ["Li Yin <li@sylphai.com>"]
 readme = "README.md"
 repository = "https://github.com/SylphAI-Inc/AdalFlow"
 license = "MIT"
 
-maintainers = ["Li Yin <li@sylphai.com>", "Filip Makraduli <filip@sylphai.com>"]
+maintainers = ["Li Yin <li@sylphai.com>"]
 classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Libraries :: Python Modules",

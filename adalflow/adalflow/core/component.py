@@ -1091,7 +1091,7 @@ def func_to_component(fun) -> FuncComponent:
     parser_class = type(
         class_name,
         (FuncComponent,),
-        {"__init__": lambda self: Component.__init__(self, fun)},
+        {"__init__": lambda self: FuncComponent.__init__(self, fun)},
     )
     EntityMapping.register(class_name, parser_class)
 
@@ -1236,3 +1236,17 @@ def func_to_component(fun) -> FuncComponent:
 #                 self[m[0]] = m[1]  # type: ignore[assignment]
 
 #     # remove forward alltogether to fallback on Module's _forward_unimplemented
+
+
+if __name__ == "__main__":
+    from adalflow.core.component import FuncComponent
+
+    def add_one(x):
+        return x + 1
+
+    fun_component = FuncComponent(add_one)
+    print(fun_component(1))
+    print(type(fun_component))
+
+    fun_component = func_to_component(add_one)
+    print(fun_component(1))
