@@ -2,12 +2,16 @@
 name = "adalflow-docs"
 version = "0.0.0.beta.1"
 description = "Documentation for the adalflow project"
-authors = ["Li Yin <li@sylph.ai>", "Nicholas Fleischhauer <nicholas@sylphai.com>"]
+authors = [
+    "Li Yin <li@sylph.ai>",
+    "Nicholas Fleischhauer <nicholas@sylphai.com>",
+]
 license = "MIT"
+packages = [{ from = "_dummy", include = "dummy" }] # empty packages
 
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
-adalflow = { path = "../adalflow", develop = true }  # Follow latest adalflow version
+adalflow = { path = "../adalflow", develop = true } # Follow latest adalflow version
 pyvis = "^0.3.2"
 
 [tool.poetry.group.doc.dependencies]
