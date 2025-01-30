@@ -83,6 +83,7 @@ AdalFlow supports a wide range of model providers, each offering unique capabili
      - :ref:`Agent <tutorials-agent>`
    * - :class:`ModelClient <core.model_client.ModelClient>`
      - The low-level component managing the actual calls to a chosen LLM (OpenAI, Anthropic, VLLM, etc.).
+     - :ref:`ModelClient <tutorials-model_client>`
 
 Vector Databases
 --------------
