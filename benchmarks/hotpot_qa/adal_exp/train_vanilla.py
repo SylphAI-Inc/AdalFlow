@@ -4,14 +4,16 @@ import adalflow as adal
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from adalflow.datasets.types import HotPotQAData
 
-from benchmarks.hotpot_qa._adal_train import load_datasets
-from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import VanillaRAG
-from use_cases.config import gpt_3_model, gpt_4o_model
+from benchmarks.hotpot_qa.config import load_datasets
+from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import Vanilla
+from use_cases.config import gpt_3_model, gpt_4o_model, gpt_3_1106_model
+
+from adalflow.utils import printc
 
 
 # TODO: look more into the loss function
 # TODO: test LLM judge too.
-class VallinaRAGAdal(adal.AdalComponent):
+class VallinaAdal(adal.AdalComponent):
     def __init__(
         self,
         model_client: adal.ModelClient,
@@ -20,18 +22,22 @@ class VallinaRAGAdal(adal.AdalComponent):
         teacher_model_config: Dict | None = None,
         text_optimizer_model_config: Dict | None = None,
     ):
-        task = VanillaRAG(
+        task = Vanilla(
             model_client=model_client,
             model_kwargs=model_kwargs,
-            passages_per_hop=3,
+            passages_per_hop=2,
         )
-        eval_fn = AnswerMatchAcc(type="fuzzy_match").compute_single_item
+        eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
+        loss_eval_fn = AnswerMatchAcc(type="f1_score").compute_single_item
+
         loss_fn = adal.EvalFnToTextLoss(
-            eval_fn=eval_fn, eval_fn_desc="fuzzy_match: 1 if str(y) in str(y_gt) else 0"
+            eval_fn=loss_eval_fn,
+            eval_fn_desc="exact_match: 1 if str(y_gt) == str(y) else 0",
         )
         super().__init__(
             task=task,
             eval_fn=eval_fn,
+            loss_eval_fn=loss_eval_fn,
             loss_fn=loss_fn,
             backward_engine_model_config=backward_engine_model_config,
             teacher_model_config=teacher_model_config,
@@ -41,22 +47,32 @@ class VallinaRAGAdal(adal.AdalComponent):
     # tell the trainer how to call the task
     def prepare_task(self, sample: HotPotQAData) -> Tuple[Callable[..., Any], Dict]:
         if self.task.training:
-            return self.task.forward, {"question": sample.question, "id": sample.id}
+            return self.task.forward, {
+                "question": sample.question,
+                "context": sample.context,
+                "id": sample.id,
+            }
         else:
-            return self.task.call, {"question": sample.question, "id": sample.id}
+            return self.task.call, {
+                "question": sample.question,
+                "context": sample.context,
+                "id": sample.id,
+            }
 
-    # TODO: use two map fn to make the cde even simpler
-
-    # eval mode: get the generator output, directly engage with the eval_fn
     def prepare_eval(self, sample: HotPotQAData, y_pred: adal.GeneratorOutput) -> float:
         y_label = ""
         if y_pred and y_pred.data and y_pred.data.answer:
-            y_label = y_pred.data.answer
+            y_label = y_pred.data.answer  # .lower()
+        printc(f"y_label: {y_label}, y_gt: {sample.answer}")
         return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
 
-    # train mode: get the loss and get the data from the full_response
+    def prepare_loss_eval(self, sample: Any, y_pred: Any, *args, **kwargs) -> float:
+        y_label = ""
+        if y_pred and y_pred.data and y_pred.data.answer:
+            y_label = y_pred.data.answer
+        return self.loss_eval_fn, {"y": y_label, "y_gt": sample.answer}
+
     def prepare_loss(self, sample: HotPotQAData, pred: adal.Parameter):
-        # prepare gt parameter
         y_gt = adal.Parameter(
             name="y_gt",
             data=sample.answer,
@@ -64,15 +80,12 @@ class VallinaRAGAdal(adal.AdalComponent):
             requires_opt=False,
         )
 
-        # pred's full_response is the output of the task pipeline which is GeneratorOutput
         pred.eval_input = (
-            pred.full_response.data.answer
-            if pred.full_response
-            and pred.full_response.data
-            and pred.full_response.data.answer
+            pred.data.data.answer
+            if pred.data and pred.data.data and pred.data.data.answer
             else ""
         )
-        return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}}
+        return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}, "id": sample.id}
 
 
 # Note: diagnose is quite helpful, it helps you to quickly check if the evalfunction is the right metrics
@@ -85,7 +98,7 @@ def train_diagnose(
 
     trainset, valset, testset = load_datasets()
 
-    adal_component = VallinaRAGAdal(
+    adal_component = VallinaAdal(
         model_client,
         model_kwargs,
         backward_engine_model_config=gpt_4o_model,
@@ -96,6 +109,9 @@ def train_diagnose(
     trainer.diagnose(dataset=trainset, split="train")
     # trainer.diagnose(dataset=valset, split="val")
     # trainer.diagnose(dataset=testset, split="test")
+
+
+from adalflow.core.generator import BackwardPassSetup
 
 
 def train(
@@ -109,14 +125,25 @@ def train(
     debug=False,
     resume_from_ckpt=None,
     exclude_input_fields_from_bootstrap_demos=True,
+    seed=None,
+    tg: bool = False,
+    max_proposals_per_step: int = 5,
+    disable_backward=False,
+    disable_backward_gradients=False,
 ):
-    adal_component = VallinaRAGAdal(
-        **gpt_3_model,
+    adal_component = VallinaAdal(
+        **gpt_3_1106_model,
         teacher_model_config=gpt_4o_model,
         text_optimizer_model_config=gpt_4o_model,
         backward_engine_model_config=gpt_4o_model,
     )
     print(adal_component)
+    backward_pass_setup = None
+    if tg:
+        backward_pass_setup = BackwardPassSetup(
+            all_pred_at_once=False,
+            compute_grad_for_errors_only=False,
+        )
     trainer = adal.Trainer(
         train_batch_size=train_batch_size,
         adaltask=adal_component,
@@ -129,22 +156,60 @@ def train(
         weighted_sampling=True,
         optimization_order=optimization_order,
         exclude_input_fields_from_bootstrap_demos=exclude_input_fields_from_bootstrap_demos,
+        max_proposals_per_step=max_proposals_per_step,
+        text_optimizers_config_kwargs={"max_past_history": 5},
+        backward_pass_setup=backward_pass_setup,
+        disable_backward=disable_backward,
+        disable_backward_gradients=disable_backward_gradients,
     )
+    trainer.set_random_seed(seed)
     print(trainer)
 
     train_dataset, val_dataset, test_dataset = load_datasets()
-    trainer.fit(
+    ckpt, _ = trainer.fit(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
+        # test_dataset=val_dataset[0:4],
         test_dataset=test_dataset,
         resume_from_ckpt=resume_from_ckpt,
     )
+    # diagnose the test set
+    # trainer.diagnose(dataset=test_dataset, split="test", resume_from_ckpt=ckpt)
+    return ckpt
 
 
 if __name__ == "__main__":
     from use_cases.config import gpt_3_model
 
+    import json
+
+    import random
+
+    random.seed(2025)
+
     adal.setup_env()
+
+    import argparse
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--strategy", type=str, default="constrained")
+    parser.add_argument("--use_tg", action="store_false")
+    parser.add_argument("--max_proposals_per_step", type=int, default=5)
+    parser.add_argument(
+        "output_path", nargs="?", help="File path to save the checkpoint"
+    )
+    parser.add_argument("--disable_backward", action="store_true")
+    parser.add_argument("--disable_backward_gradients", action="store_true")
+
+    args = parser.parse_args()
+
+    set_strategy = args.strategy
+    set_output_path = args.output_path
+    use_tg = args.use_tg
+    max_proposals_per_step = args.max_proposals_per_step
+    disable_backward = args.disable_backward
+    disable_backward_gradients = args.disable_backward_gradients
 
     # task = VallinaRAGAdal(**gpt_3_model)
     # print(task)
@@ -153,11 +218,24 @@ if __name__ == "__main__":
 
     # train: 0.15 before the evaluator converted to lower and 0.4 after the conversion
     # TODO: test debug mode
-    train(
+    ckpt = train(
         debug=False,
-        max_steps=12,
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
+        max_steps=1,
+        seed=2025,  # pass the numpy seed
+        tg=use_tg,
+        strategy=set_strategy,
+        max_proposals_per_step=max_proposals_per_step,
+        disable_backward=disable_backward,
+        disable_backward_gradients=disable_backward_gradients,
+        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/VallinaAdal/random_max_steps_24_1511c_run_1.json",
     )
+    print(f"ckpt: {ckpt}")
+    if set_output_path:
+        with open(set_output_path, "w") as f:
+            json.dump({"ckpt": ckpt}, f)
+        print(f"Checkpoint saved to {set_output_path}")
+    else:
+        print("No file path provided for saving the checkpoint.")
     # random_max_steps_12_ecf16_run_9.json, demo only, val 0.6 to 0.68,  test: 0.58-0.61
     # random_max_steps_12_7c091_run_1.json,  prompt + demo, 0.58 -0.62, test: 0.55 - 0.58
     # resume from random_max_steps_12_7c091_run_1.json

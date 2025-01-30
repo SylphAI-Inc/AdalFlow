@@ -4,8 +4,9 @@ From simple data types like boolean, integer, and float to more complex data typ
 
 from typing import Dict, List, Union
 import logging
+from adalflow.core.component import DataComponent
 
-from adalflow.core.component import Component
+
 import adalflow.core.functional as F
 
 log = logging.getLogger(__name__)
@@ -13,19 +14,22 @@ log = logging.getLogger(__name__)
 BOOLEAN_PARSER_OUTPUT_TYPE = bool
 
 
-class Parser(Component):
-    __doc__ = r"""Base class for all string parsers."""
+# class Parser:
+#     __doc__ = r"""Base class for all string parsers."""
 
-    def __init__(self):
-        super().__init__()
+#     def __init__(self):
+#         super().__init__()
 
-    def call(self, input: str) -> object:
-        raise NotImplementedError(
-            "Parser subclasses must implement the __call__ method"
-        )
+#     def __call__(self, input: str) -> object:
+#         return self.call(input)
+
+#     def call(self, input: str) -> object:
+#         raise NotImplementedError(
+#             "Parser subclasses must implement the __call__ method"
+#         )
 
 
-class BooleanParser(Parser):
+class BooleanParser(DataComponent):
     __doc__ = r"""Extracts boolean values from text.
 
     Examples:
@@ -51,7 +55,7 @@ class BooleanParser(Parser):
 INT_PARSER_OUTPUT_TYPE = int
 
 
-class IntParser(Parser):
+class IntParser(DataComponent):
     __doc__ = r"""Extracts integer values from text.
 
     Returns:
@@ -83,7 +87,7 @@ class IntParser(Parser):
 FLOAT_PARSER_OUTPUT_TYPE = float
 
 
-class FloatParser(Parser):
+class FloatParser(DataComponent):
     __doc__ = r"""Extracts float values from text.
 
     Returns:
@@ -115,7 +119,7 @@ class FloatParser(Parser):
 LIST_PARSER_OUTPUT_TYPE = List[object]
 
 
-class ListParser(Parser):
+class ListParser(DataComponent):
     __doc__ = r"""Extracts list `[...]` strings from text and parses them into a list object.
 
     Args:
@@ -162,7 +166,7 @@ class ListParser(Parser):
 JSON_PARSER_OUTPUT_TYPE = Union[Dict[str, object], List[object]]
 
 
-class JsonParser(Parser):
+class JsonParser(DataComponent):
     __doc__ = r"""Extracts JSON strings `{...}` or `[...]` from text and parses them into a JSON object.
 
     It can output either a dictionary or a list as they are both valid JSON objects.
@@ -215,7 +219,7 @@ YAML_PARSER_OUTPUT_TYPE = JSON_PARSER_OUTPUT_TYPE
 
 
 # TODO: yaml parser needs to be more robust, currently json works way better than yaml
-class YamlParser(Parser):
+class YamlParser(DataComponent):
     __doc__ = r"""To extract YAML strings from text and parse them into a YAML object.
 
     Returns:

@@ -1,5 +1,3 @@
-import os
-from getpass import getpass
 from adalflow.core.embedder import Embedder, BatchEmbedder
 from adalflow.components.model_client import OpenAIClient, TransformersClient
 from adalflow.core.types import Embedding, EmbedderOutput
@@ -30,17 +28,6 @@ class DecreaseEmbeddingDim(Component):
     def _extra_repr(self) -> str:
         repr_str = f"old_dim={self.old_dim}, new_dim={self.new_dim}, normalize={self.normalize}"
         return repr_str
-
-
-def setup_api_keys():
-    # Prompt user to enter their API keys securely
-    openai_api_key = getpass("Please enter your OpenAI API key: ")
-    groq_api_key = getpass("Please enter your GROQ API key: ")
-
-    # Set environment variables
-    os.environ["OPENAI_API_KEY"] = openai_api_key
-    os.environ["GROQ_API_KEY"] = groq_api_key
-    print("API keys have been set.")
 
 
 def test_openai_embedder():
@@ -124,8 +111,6 @@ def test_batch_embedder():
 
 
 def main():
-    # Setup API keys
-    setup_api_keys()
 
     # Run all tests
     test_openai_embedder()
@@ -135,4 +120,7 @@ def main():
 
 
 if __name__ == "__main__":
+    from adalflow.utils import setup_env
+
+    setup_env()
     main()

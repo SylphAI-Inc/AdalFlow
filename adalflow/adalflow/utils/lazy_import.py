@@ -54,7 +54,10 @@ class OptionalPackages(Enum):
     COHERE = ("cohere", "Please install cohere with: pip install cohere")
     OLLAMA = ("ollama", "Please install ollama with: pip install ollama")
     # AWS
-    BOTO3 = ("boto3", "Please install boto3 with: pip install boto3")
+    BOTO3 = (
+        ["boto3", "botocore"],
+        "Please install boto3 and botocore with: pip install boto3 botocore",
+    )
     # modeling library
     TORCH = ("torch", "Please install torch with: pip install torch")
 

@@ -86,10 +86,23 @@ pip install adalflow
 ```
 
 Please refer to the [full installation guide](https://adalflow.sylph.ai/get_started/installation.html) for more details.
+[Package changelog](https://github.com/SylphAI-Inc/AdalFlow/blob/main/adalflow/CHANGELOG.md).
 
 
 * Try the [Building Quickstart](https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing) in Colab to see how AdalFlow can build the task pipeline, including Chatbot, RAG, agent, and structured output.
 * Try the [Optimization Quickstart](https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/qas/adalflow_object_count_auto_optimization.ipynb) to see how AdalFlow can optimize the task pipeline.
+
+
+
+# Research
+[Jan 2025] [Auto-Differentiating Any LLM Workflow: A Farewell to Manual Prompting](https://arxiv.org/abs/2501.16673)
+- LLM Applications as auto-differentiation graphs
+- Token-efficient and better performance than DsPy
+
+# Collaborations
+We collaborate with the [**VITA Group** at University of Texas at Austin](https://vita-group.github.io/) led by [Dr. Atlas Wang](https://www.ece.utexas.edu/people/faculty/atlas-wang).
+
+**Interested in collaboration?** Join our [Discord](https://discord.gg/ezzszrRZvT) or contact [Li Yin](https://www.linkedin.com/in/li-yin-ai/).
 
 
 # Why AdalFlow
@@ -97,7 +110,7 @@ Please refer to the [full installation guide](https://adalflow.sylph.ai/get_star
 1. Embracing a design pattern similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
 AdalFlow provides `Model-agnostic` building blocks to build LLM task pipelines, ranging from RAG, Agents to classical NLP tasks like text classification and named entity recognition. It is easy to get high performance only using manual prompting.
 2. AdalFlow provides a unified auto-differentiative framework for both zero-shot prompt optimization and few-shot optimization. It advances existing auto-optimization research, including ``Text-Grad`` and ``DsPy``.
-Through our research, ``Text-Grad 2.0`` and ``Learn-to-Reason Few-shot In Context Learning``, AdalFlow ``Trainer`` achieves the highest accuracy while being the most token-efficient.
+Through our research, ``LLM-AutoDiff`` and ``Learn-to-Reason Few-shot In Context Learning``, AdalFlow ``Trainer`` achieves the highest accuracy while being the most token-efficient.
 
 <!-- It advances existing auto-optimization research, including Text-Grad and DsPy. Through our research, Text-Grad 2.0, and Learn-to-Reason Few-shot In-Context Learning, AdalFlow Trainer achieves the highest accuracy while being the most token-efficient. -->
 
@@ -261,9 +274,10 @@ Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive 
 - 📚 [OPRO](https://github.com/google-deepmind/opro) for adding past text instructions along with its accuracy in the text optimizer.
 - 📚 [PyTorch Lightning](https://github.com/Lightning-AI/pytorch-lightning) for the ``AdalComponent`` and ``Trainer``.
 
-# Citation
+<!-- # Citation
 
 ```bibtex
+
 @software{Yin2024AdalFlow,
   author = {Li Yin},
   title = {{AdalFlow: The Library for Large Language Model (LLM) Applications}},
@@ -272,7 +286,7 @@ Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive 
   doi = {10.5281/zenodo.12639531},
   url = {https://github.com/SylphAI-Inc/AdalFlow}
 }
-```
+``` -->
 
 <!-- # Star History
 

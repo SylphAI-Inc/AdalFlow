@@ -9,41 +9,54 @@ from datetime import datetime
 from adalflow.core import DataClass
 
 
+# TODO: set default optimization
 class ParameterType(Enum):
-    __doc__ = """Enum for the type of parameter to compute the loss with, and to inform the optimizer."""
+    __doc__ = """Enum for the type of parameter to compute the loss with, and to inform the optimizer.
+
+    The meaning of reach tuple is:
+    1. First element: the name of the parameter.
+    2. Second element: the description of the parameter.
+    3. Third element: whether the parameter is trainable.
+
+    To access each element, use the following:
+    1. name: `ParameterType.PROMPT.value`
+    2. description: `ParameterType.PROMPT.description`
+    3. trainable: `ParameterType.PROMPT.default_trainable`
+    """
 
     # trainable parameters with optimizers
     PROMPT = (
         "prompt",
         "Instruction to the language model on task, data, and format.",
+        True,
     )  # optimized by tgd_optimizer
     DEMOS = (
         "demos",
         "A few examples to guide the language model.",
+        True,
     )  # optimized by demo_optimizer
 
     # input and output parameters (similar to tensor, can have grad_opt true, but not trainable)
-    INPUT = ("input", "The input to the component.")
-    OUTPUT = ("output", "The output of the component.")
-    HYPERPARAM = ("hyperparam", "Hyperparameters/args for the component.")
-
-    # gradient paramters for each predecessor of dag.
-    GRADIENT = ("gradient", "A gradient parameter.")
+    INPUT = ("input", "The input to the component.", False)
+    OUTPUT = ("output", "The output of the component.", True)
+    HYPERPARAM = ("hyperparam", "Hyperparameters/args for the component.", False)
 
     # the following is a subtype of the output type
     # INSTANCE = ("instance", "Focus on fixing issues of this specific example.")
     GENERATOR_OUTPUT = (
         "generator_output",
         "The output of the generator.",
+        True,
     )  # use raw response or error message as data, full response in full_response
-    RETRIEVER_OUTPUT = ("retriever_output", "The output of the retriever.")
-    LOSS_OUTPUT = ("loss", "The loss value.")
-    SUM_OUTPUT = ("sum", "The sum of the losses.")
-    NONE = ("none", "")
+    RETRIEVER_OUTPUT = ("retriever_output", "The output of the retriever.", True)
+    LOSS_OUTPUT = ("loss", "The loss value.", True)
+    SUM_OUTPUT = ("sum", "The sum of the losses.", True)
+    NONE = ("none", "", False)
 
-    def __init__(self, value, description):
+    def __init__(self, value: str, description: str, default_trainable: bool):
         self._value_ = value
         self.description = description
+        self.default_trainable = default_trainable
 
     def __str__(self):
         """Return a string representation that includes the enum's value and description."""
@@ -124,9 +137,7 @@ class TrainerResult(DataClass):
     test_scores: List[float] = field(
         default_factory=list, metadata={"desc": "List of test scores"}
     )
-    prompts: List[List[PromptData]] = field(
-        default_factory=list, metadata={"desc": "List of optimized prompts"}
-    )
+
     step_results: List[TrainerStepResult] = field(
         default_factory=list,
         metadata={"desc": "List of step results, in an aggregated form"},
@@ -142,6 +153,10 @@ class TrainerResult(DataClass):
     time_stamp: str = field(
         default_factory=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
+    total_time: float = field(
+        default=0.0, metadata={"desc": "Total time taken for training"}
+    )
+    test_score: float = field(default=None, metadata={"desc": "Test score"})
     trainer_state: Dict[str, Any] = field(
         default=None, metadata={"desc": "Save the most detailed state of the trainer"}
     )

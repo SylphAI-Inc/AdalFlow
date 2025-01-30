@@ -1,3 +1,72 @@
+## [1.0.0.beta.1] - 2025-01-28
+Updates mainly follow our first arxiv paper: [Auto-Differentiating Any LLM Workflow: A Farewell to Manual Prompting](https://arxiv.org/abs/2501.16673)
+
+### Core Updates
+
+#### ReAct Agent
+- Added trainable task descriptions and docstrings
+- Implemented `FunctionExpression` to `Function` conversion in planner responses
+- Introduced `context_variables` for storage
+- Added debug controls for output granularity
+- Updated `__call__` to use `bicall` when available (dual train/eval modes)
+
+#### Parser
+- Migrated all parsers from `Component` to `DataComponent`.
+
+#### Component
+- Added `forward` and `bicall` methods
+- Added `DataComponent` base class for non-trainable components.
+- Added `func_to_data_component` decorator
+- Modified the `fun_to_component` decorator to `func_to_component`, `FunComponent` to `FuncComponent`.
+- Introduced `GradComponent` base class for unit grad components that hands computation graph predecessors. Considering it a unit.
+- Added `fun_to_grad_component` decorator
+
+#### Generator
+- Integrated `BackwardPassSetup` into generator
+- New engine features:
+  - `disable_backward_engine` flag
+  - `update_default_backward_pass_setup`
+  - `_backward_through_all_predecessors`
+- Added dedicated `BackwardEngine` class
+
+#### Parameter
+- Split into `Parameter` + `OutputParameter`
+- Added tracking for:
+  - `data_id` in training sets
+  - `data_in_prompt` callable
+  - `get_prompt_data()` method
+- New visualization tools:
+  - `draw_output_graph`
+  - `draw_component_subgraph`
+  - `draw_interactive_html_graph`
+
+#### Training
+- Added `LossComponent` for dedicated training mode
+- Enhanced `tgd_optimizer` with:
+  - `add_failed_proposal` (CH paper implementation)
+  - One-parameter-at-a-time optimization
+  - Improved prompt engineering for system awareness
+- Updated `adal` with:
+  - `loss_eval_fn` support
+  - Auto-discovery of `GradComponent`.
+  - Added `BackwardPassSetup` configuation
+
+#### Evaluation
+- Updated `RetrieverEvaluator` (formerly `RetrieverRecall`) with precision/recall
+- Enhanced `AnswerMatchAcc` with:
+  - `ExactMatch` from HotpotQA
+  - `F1_score` implementation
+
+#### Tooling & Utilities
+- Parser: inherited `DataComponent` for all parsers instead of `Component`
+- Revamped `tool_manager` with:
+  - `CallFunctionTool` component
+  - `FunctionExpressionToFunction` converter
+- Updated `DataLoader` with seed support
+- Improved `Prompt` system:
+  - Converted to dataclass
+  - Added list-to-string conversion in `prompt_kwargs`
+
 ## [0.2.7] - 2025-01-16
 
 ### Added

@@ -1,14 +1,21 @@
 from .base_data_class import DataClass, required_field, DataClassFormatType
 
-from .component import Component, FunComponent, fun_to_component
+from .component import Component, DataComponent, func_to_data_component
 from .container import Sequential, ComponentList
 from .db import LocalDB
 from .default_prompt_template import DEFAULT_ADALFLOW_SYSTEM_PROMPT
 from .embedder import Embedder, BatchEmbedder
 from .generator import Generator, BackwardEngine
 from .model_client import ModelClient
+from .string_parser import (
+    YamlParser,
+    JsonParser,
+    IntParser,
+    FloatParser,
+    ListParser,
+    BooleanParser,
+)
 
-# from .parameter import Parameter
 from .prompt_builder import Prompt
 
 from .retriever import Retriever
@@ -49,10 +56,10 @@ from adalflow.utils.registry import EntityMapping
 __all__ = [
     "LocalDB",
     "Component",
+    "DataComponent",
+    "func_to_data_component",
     "Sequential",
     "ComponentList",
-    "FunComponent",
-    "fun_to_component",
     "DataClass",
     "DataClassFormatType",
     "required_field",
@@ -94,6 +101,13 @@ __all__ = [
     "DialogTurn",
     "Conversation",
     "Tokenizer",
+    # Parsers
+    "YamlParser",
+    "JsonParser",
+    "IntParser",
+    "FloatParser",
+    "ListParser",
+    "BooleanParser",
 ]
 
 for name in __all__:

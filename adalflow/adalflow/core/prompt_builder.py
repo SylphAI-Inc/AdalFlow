@@ -1,15 +1,15 @@
 """Class prompt builder for AdalFlow system prompt."""
 
-from typing import Dict, Any, Optional, List, TypeVar
+from typing import Dict, Any, Optional, List, TypeVar, Union
 import logging
 from functools import lru_cache
 
 from jinja2 import Template, Environment, StrictUndefined, meta
 
 
-from adalflow.core.component import Component
 from adalflow.core.default_prompt_template import DEFAULT_ADALFLOW_SYSTEM_PROMPT
 from adalflow.optim.parameter import Parameter
+from adalflow.core.component import DataComponent
 
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
-class Prompt(Component):
+class Prompt(DataComponent):
     __doc__ = r"""Renders a text string(prompt) from a Jinja2 template string.
 
     In default, we use the :ref:`DEFAULT_ADALFLOW_SYSTEM_PROMPT<core-default_prompt_template>`  as the template.
@@ -48,11 +48,20 @@ class Prompt(Component):
         >>> # pass it to the main prompt
         >>> prompt.print_prompt(examples_str=examples_str)
     """
+    # # save these two fields for serialization, using to_dict and from_dict
+    # template: str = field(
+    #     default=DEFAULT_ADALFLOW_SYSTEM_PROMPT,
+    #     metadata={"desc": "The Jinja2 template string."},
+    # )
+    # prompt_kwargs: Dict[str, Parameter] = field(
+    #     default_factory=dict, metadata={"desc": "The preset prompt kwargs."}
+    # )
+    # prompt_va
 
     def __init__(
         self,
         template: Optional[str] = None,
-        prompt_kwargs: Optional[Dict[str, Parameter]] = {},
+        prompt_kwargs: Optional[Dict[str, Union[Any, Parameter]]] = {},
     ):
         super().__init__()
 
@@ -125,6 +134,9 @@ class Prompt(Component):
         except Exception as e:
             raise ValueError(f"Error rendering Jinja2 template: {e}")
 
+    # def __call__(self, *args: Any, **kwds: Any) -> Any:
+    #     return self.call(*args, **kwds)
+
     def call(self, **kwargs) -> str:
         """
         Renders the prompt template with keyword arguments. Allow None values.
@@ -139,6 +151,15 @@ class Prompt(Component):
             raise ValueError(f"Error rendering Jinja2 template: {e}")
 
     def _extra_repr(self) -> str:
+        s = f"template: {self.template}"
+        prompt_kwargs_str = _convert_prompt_kwargs_to_str(self.prompt_kwargs)
+        if prompt_kwargs_str:
+            s += f", prompt_kwargs: {prompt_kwargs_str}"
+        if self.prompt_variables:
+            s += f", prompt_variables: {self.prompt_variables}"
+        return s
+
+    def __repr__(self) -> str:
         s = f"template: {self.template}"
         prompt_kwargs_str = _convert_prompt_kwargs_to_str(self.prompt_kwargs)
         if prompt_kwargs_str:
@@ -173,6 +194,16 @@ def _convert_prompt_kwargs_to_str(prompt_kwargs: Dict) -> Dict[str, str]:
         if isinstance(p, Parameter):
 
             prompt_kwargs_str[key] = p.data
+        elif isinstance(p, list):
+            prompt_kwargs_str[key] = [
+                (
+                    p_elem.data_in_prompt(p_elem)
+                    if isinstance(p_elem, Parameter)
+                    else p_elem
+                )
+                for p_elem in p
+            ]
+
         else:
             prompt_kwargs_str[key] = p
     return prompt_kwargs_str
