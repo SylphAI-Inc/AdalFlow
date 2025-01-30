@@ -7,116 +7,176 @@ AdalFlow integrates with many popular AI and database platforms to provide a com
 
 Model Providers
 -------------
-
 AdalFlow supports a wide range of model providers, each offering unique capabilities and models:
 
 .. raw:: html
 
    <div class="integration-grid">
       <div class="integration-item">
-         <a href="https://platform.openai.com/" target="_blank">
-            <img src="../_static/logos/openai.png" alt="OpenAI">
-            <span>OpenAI</span>
-         </a>
-      </div>
-      <div class="integration-item">
-         <a href="https://console.anthropic.com/" target="_blank">
-            <img src="../_static/logos/anthropic.png" alt="Anthropic">
-            <span>Anthropic</span>
-         </a>
-      </div>
-      <div class="integration-item">
-         <a href="https://groq.com/" target="_blank">
-            <img src="../_static/logos/groq.png" alt="Groq">
-            <span>Groq</span>
-         </a>
-      </div>
-      <div class="integration-item">
          <a href="https://deepseek.ai/" target="_blank">
-            <img src="../_static/logos/deepseek.png" alt="Deepseek">
+            <img src="../_static/images/deepseek.png" alt="Deepseek">
             <span>Deepseek</span>
          </a>
       </div>
       <div class="integration-item">
+         <a href="https://console.anthropic.com/" target="_blank">
+            <img src="../_static/images/anthropic.png" alt="Anthropic">
+            <span>Anthropic</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://mistral.ai/" target="_blank">
+            <img src="../_static/images/mistral.png" alt="Mistral">
+            <span>Mistral</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://ollama.ai/" target="_blank">
+            <img src="../_static/images/ollama.png" alt="Ollama">
+            <span>Ollama</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://platform.openai.com/" target="_blank">
+            <img src="../_static/images/openai.png" alt="OpenAI">
+            <span>OpenAI</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://huggingface.co/transformers" target="_blank">
+            <img src="../_static/images/huggingface.png" alt="Transformers">
+            <span>Transformers</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://groq.com/" target="_blank">
+            <img src="../_static/images/groq.png" alt="Groq">
+            <span>Groq</span>
+         </a>
+      </div>
+      <div class="integration-item">
          <a href="https://azure.microsoft.com/products/ai-services/openai-service" target="_blank">
-            <img src="../_static/logos/azure.png" alt="Azure OpenAI">
+            <img src="../_static/images/azure.png" alt="Azure OpenAI">
             <span>Azure OpenAI</span>
          </a>
       </div>
       <div class="integration-item">
          <a href="https://aws.amazon.com/bedrock/" target="_blank">
-            <img src="../_static/logos/bedrock.png" alt="Amazon Bedrock">
+            <img src="../_static/images/bedrock.png" alt="Amazon Bedrock">
             <span>Amazon Bedrock</span>
-         </a>
-      </div>
-      <div class="integration-item">
-         <a href="https://ollama.ai/" target="_blank">
-            <img src="../_static/logos/ollama.png" alt="Ollama">
-            <span>Ollama</span>
-         </a>
-      </div>
-      <div class="integration-item">
-         <a href="https://huggingface.co/transformers" target="_blank">
-            <img src="../_static/logos/transformers.png" alt="Transformers">
-            <span>Transformers</span>
          </a>
       </div>
    </div>
 
-- **Azure OpenAI**: Deploy OpenAI models in Azure's secure cloud environment with enterprise features.
-- **Amazon Bedrock**: Access foundation models from various providers through AWS's managed service.
-- **Groq**: High-performance inference platform with ultra-low latency for LLM operations.
-- **Ollama**: Run and manage open-source LLMs locally with easy setup and deployment.
-- **Transformers**: Direct integration with Hugging Face's transformers library for local model inference.
-- **Deepseek**: Advanced language models optimized for coding and technical tasks.
-- **OpenAI**: State-of-the-art models including GPT-4 and DALL-E for various AI tasks.
-- **Anthropic**: Access to Claude models known for their strong reasoning capabilities.
+.. list-table:: LLM + VLLM
+   :widths: 25 55 20
+   :header-rows: 1
+
+   * - **Major Class**
+     - **Description**
+     - **Reference**
+   * - **Generator**
+     - A user-facing orchestration component that handles LLM predictions. It includes a prompt template, model client, and output parser.
+       By switching these subcomponents, users can fully control the generation process.
+     - See “Generator” section
+   * - **ReAct (Agent)**
+     - An agent that uses large language model reasoning (Re) and actions (Act) to solve queries. It decides which resources or tools to call in sequence.
+     - “ReAct Agent Deep Dive”
+   * - **Function Calls**
+     - A process of showing an LLM a list of function definitions (tools) and prompting it to choose and execute them, enabling external actions beyond the LLM’s internal knowledge.
+     - “Function call walkthrough”
+   * - **Prompt Template**
+     - The structure/format that guides how you prompt the LLM. Switching templates can change style, role, or instructions.
+     - Internal docs (Prompt usage)
+   * - **Output Parser**
+     - Parses the raw LLM response into a structured format (e.g., JSON, or custom text) for downstream tasks.
+     - Your library docs or code references
+   * - **Model Client**
+     - The low-level component managing the actual calls to a chosen LLM (OpenAI, Anthropic, VLLM, etc.). Swapping this changes the underlying model used.
+     - “ModelClient” doc section
+   * - **Memory** (optional)
+     - Mechanism for storing/retrieving conversation state or context in multi-turn interactions. Often used by agents.
+     - “Memory” doc
 
 Vector Databases
 --------------
-
 .. raw:: html
 
    <div class="integration-grid">
       <div class="integration-item">
          <a href="https://qdrant.tech/" target="_blank">
-            <img src="../_static/logos/qdrant.png" alt="Qdrant">
+            <img src="../_static/images/qdrant.png" alt="Qdrant">
             <span>Qdrant</span>
          </a>
       </div>
       <div class="integration-item">
          <a href="https://lancedb.com/" target="_blank">
-            <img src="../_static/logos/lancedb.png" alt="LanceDB">
+            <img src="../_static/images/lancedb.png" alt="LanceDB">
             <span>LanceDB</span>
          </a>
       </div>
    </div>
 
+.. list-table:: Vector Databases
+   :widths: 25 55 20
+   :header-rows: 1
+
+   * - **Major Class**
+     - **Description**
+     - **Reference**
+   * - **Embedding**
+     - Storing documents or data in vector format for semantic retrieval. Typically generated by embedding models (e.g., `core.embedder.Embedder`).
+     - “Embedding” doc section
+   * - **Retrieval**
+     - Querying the vector DB to find the most relevant documents for a query, used in Retrieval-Augmented Generation (RAG) workflows.
+     - “Retrieval in Production”
+   * - **Text Splitting**
+     - Chunking large text into smaller segments for more efficient and accurate embedding, retrieval, and LLM context processing.
+     - “TextSplitter” doc reference
+
 Embedding and Reranking Models
 ---------------------------
-
 .. raw:: html
 
    <div class="integration-grid">
       <div class="integration-item">
          <a href="https://huggingface.co/" target="_blank">
-            <img src="../_static/logos/huggingface.png" alt="Hugging Face">
+            <img src="../_static/images/huggingface.png" alt="Hugging Face">
             <span>Hugging Face</span>
          </a>
       </div>
       <div class="integration-item">
          <a href="https://platform.openai.com/docs/guides/embeddings" target="_blank">
-            <img src="../_static/logos/openai.png" alt="OpenAI Embeddings">
+            <img src="../_static/images/openai.png" alt="OpenAI Embeddings">
             <span>OpenAI Embeddings</span>
          </a>
       </div>
       <div class="integration-item">
          <a href="https://cohere.com/rerank" target="_blank">
-            <img src="../_static/logos/cohere.png" alt="Cohere Rerank">
+            <img src="../_static/images/cohere.png" alt="Cohere Rerank">
             <span>Cohere Rerank</span>
          </a>
       </div>
    </div>
+
+.. list-table:: Embeddings and Reranking
+   :widths: 25 55 20
+   :header-rows: 1
+
+   * - **Major Class**
+     - **Description**
+     - **Reference**
+   * - **Embedding Models**
+     - Models that convert text (or other data) into high-dimensional vectors. A core step for vector similarity or semantic understanding.
+       Examples include OpenAI Embeddings, Hugging Face transformers, etc.
+     - “core.embedder.Embedder” docs
+   * - **Re-ranking Models**
+     - Models that reorder or refine retrieved candidates based on more advanced semantic understanding or specialized metrics.
+       Improves final retrieval accuracy.
+     - “Rerank” doc references (BERT, Cohere, etc.)
+   * - **LLM-based Retrieval** (optional)
+     - Using an LLM directly for retrieval or re-ranking. Often more expensive but can be more accurate for certain tasks.
+     - Could be integrated in your LLM pipeline
 
 .. raw:: html
 
@@ -157,7 +217,6 @@ Embedding and Reranking Models
 
 Usage Examples
 ------------
-
 Have a look at our comprehensive :ref:`tutorials <tutorials-index>` featuring all of these integrations, including:
 
 - Model Clients and LLM Integration
