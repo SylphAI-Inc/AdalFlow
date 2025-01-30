@@ -480,17 +480,6 @@ class GradComponent(Component):
 
 
 class FunGradComponent(GradComponent):
-    # r"""Wraps a function as a GradComponent.
-
-    # Args:
-    #     fun (Callable): The function to be wrapped.
-
-    # Examples:
-
-    # function = lambda x: x + 1
-    # fun_component = FunComponent(function)
-    # print(fun_component(1))  # 2
-    # """
 
     def __init__(
         self,

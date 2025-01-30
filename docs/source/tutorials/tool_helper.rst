@@ -366,7 +366,7 @@ We use the following prompt to do a single function call.
 
 .. code-block:: python
 
-    template = r"""<SYS>You have these tools available:
+    template = r"""<START_OF_SYS_PROMPT>You have these tools available:
     {% if tools %}
     <TOOLS>
     {% for tool in tools %}
@@ -379,9 +379,8 @@ We use the following prompt to do a single function call.
     <OUTPUT_FORMAT>
     {{output_format_str}}
     </OUTPUT_FORMAT>
-    </SYS>
-    User: {{input_str}}
-    You:
+    <END_OF_SYS_PROMPT>
+    <START_OF_USER>: {{input_str}}<END_OF_USER>
     """
 
 **Pass tools in the prompt**
@@ -402,13 +401,17 @@ The output is:
 
 .. code-block::
 
-    <SYS>You have these tools available:
+    <START_OF_SYS_PROMPT>You have these tools available:
     <TOOLS>
     1.
     func_name: multiply
     func_desc: 'multiply(a: int, b: int) -> int
 
-    Multiply two numbers.'
+    Belongs to class: multiply
+
+    Docstring: Multiply two numbers.
+
+    '
     func_parameters:
     type: object
     properties:
@@ -419,13 +422,16 @@ The output is:
     required:
     - a
     - b
-
     ------------------------
     2.
     func_name: add
     func_desc: 'add(a: int, b: int) -> int
 
-    Add two numbers.'
+    Belongs to class: add
+
+    Docstring: Add two numbers.
+
+    '
     func_parameters:
     type: object
     properties:
@@ -436,15 +442,13 @@ The output is:
     required:
     - a
     - b
-
     ------------------------
     </TOOLS>
     <OUTPUT_FORMAT>
     None
     </OUTPUT_FORMAT>
-    </SYS>
-    User: None
-    You:
+    <END_OF_SYS_PROMPT>
+    <START_OF_USER>: None<END_OF_USER>
 
 **Pass the output format**
 
@@ -467,16 +471,15 @@ The output is:
 
 .. code-block::
 
-    <SYS>You have these tools available:
+    <START_OF_SYS_PROMPT>You have these tools available:
     <OUTPUT_FORMAT>
     {
         "name": "The name of the function (str) (optional)",
-        "kwargs": "The keyword arguments of the function (Optional) (optional)"
+        "kwargs": "The keyword arguments of the function (Optional[Dict[str, object]]) (optional)"
     }
     </OUTPUT_FORMAT>
-    </SYS>
-    User: None
-    You:
+    <END_OF_SYS_PROMPT>
+    <START_OF_USER>: None<END_OF_USER>
 
 
 
@@ -494,15 +497,14 @@ The output is:
 
 .. code-block::
 
-    <SYS>You have these tools available:
+    <START_OF_SYS_PROMPT>You have these tools available:
     <OUTPUT_FORMAT>
     {
-        "action": "FuncName(<kwargs>)                 Valid function call expression.                 Example: \"FuncName(a=1, b=2)\"                 Follow the data type specified in the function parameters.                e.g. for Type object with x,y properties, use \"ObjectType(x=1, y=2) (str) (required)"
+        "action": "FuncName(<kwargs>) Valid function call expression. Example: \"FuncName(a=1, b=2)\" Follow the data type specified in the function parameters.e.g. for Type object with x,y properties, use \"ObjectType(x=1, y=2) (str) (required)"
     }
     </OUTPUT_FORMAT>
-    </SYS>
-    User: None
-    You:
+    <END_OF_SYS_PROMPT>
+    <START_OF_USER>: None<END_OF_USER>
 
 We will use :class:`components.output_parsers.outputs.JsonOutputParser` to streamline the formatting of our output data type.
 
@@ -645,7 +647,7 @@ We will use FunctionExpression this time in the parser. And we added the necessa
     )
     func_parser = JsonOutputParser(data_class=FunctionExpression)
 
-Additionally, we can also pass the ``additional_context`` to LLM using the follow prompt after the <TOOLS>
+Additionally, we can also pass the ``additional_context`` to LLM using the following prompt after the <TOOLS>
 
 .. code-block:: python
 

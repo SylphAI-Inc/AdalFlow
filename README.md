@@ -86,6 +86,7 @@ pip install adalflow
 ```
 
 Please refer to the [full installation guide](https://adalflow.sylph.ai/get_started/installation.html) for more details.
+[Package changelog](https://github.com/SylphAI-Inc/AdalFlow/blob/main/adalflow/CHANGELOG.md).
 
 
 * Try the [Building Quickstart](https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing) in Colab to see how AdalFlow can build the task pipeline, including Chatbot, RAG, agent, and structured output.
@@ -93,12 +94,12 @@ Please refer to the [full installation guide](https://adalflow.sylph.ai/get_star
 
 
 
-# 📄 Research
-[Auto-Differentiating Any LLM Workflow: A Farewell to Manual Prompting](https://arxiv.org/abs/2501.16673)
+# Research
+[Jan 2025] [Auto-Differentiating Any LLM Workflow: A Farewell to Manual Prompting](https://arxiv.org/abs/2501.16673)
 - LLM Applications as auto-differentiation graphs
 - Token-efficient and better performance than DsPy
 
-# 🤝 Collaborations
+# Collaborations
 We collaborate with the [**VITA Group** at University of Texas at Austin](https://vita-group.github.io/) led by [Dr. Atlas Wang](https://www.ece.utexas.edu/people/faculty/atlas-wang).
 
 **Interested in collaboration?** Join our [Discord](https://discord.gg/ezzszrRZvT) or contact [Li Yin](https://www.linkedin.com/in/li-yin-ai/).
@@ -273,7 +274,7 @@ Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive 
 - 📚 [OPRO](https://github.com/google-deepmind/opro) for adding past text instructions along with its accuracy in the text optimizer.
 - 📚 [PyTorch Lightning](https://github.com/Lightning-AI/pytorch-lightning) for the ``AdalComponent`` and ``Trainer``.
 
-# Citation
+<!-- # Citation
 
 ```bibtex
 
@@ -285,7 +286,7 @@ Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive 
   doi = {10.5281/zenodo.12639531},
   url = {https://github.com/SylphAI-Inc/AdalFlow}
 }
-```
+``` -->
 
 <!-- # Star History
 

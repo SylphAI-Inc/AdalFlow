@@ -60,5 +60,8 @@ def run_basic_example():
 
 
 if __name__ == "__main__":
+    from adalflow.utils import setup_env
+
+    setup_env()
     print("Running basic QA example...")
     run_basic_example()
