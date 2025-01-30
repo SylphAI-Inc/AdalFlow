@@ -27,7 +27,7 @@ local_cache/
 *.log
 storage/
 *.pkl
-/*.png
+# /*.png
 /*.dot
 /*.svg
 /*.csv
