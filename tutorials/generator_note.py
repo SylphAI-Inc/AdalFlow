@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 
 from adalflow.core import Component, Generator, DataClass
 
-# fun_to_component, Sequential
 from adalflow.components.model_client import GroqAPIClient
 from adalflow.components.output_parsers import JsonOutputParser
 from adalflow.utils import setup_env
@@ -38,11 +37,6 @@ class QAOutput(DataClass):
         metadata={"desc": "A brief explanation of the concept in one sentence."}
     )
     example: str = field(metadata={"desc": "An example of the concept in a sentence."})
-
-
-# @fun_to_component
-# def to_qa_output(data: dict) -> QAOutput:
-#     return QAOutput.from_dict(data)
 
 
 qa_template = r"""<SYS>
