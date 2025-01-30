@@ -18,7 +18,7 @@ from typing import List, Literal, Optional
 from tqdm import tqdm
 import logging
 
-from adalflow.core.component import Component
+from adalflow.core.component import DataComponent
 from adalflow.core.types import Document
 from adalflow.core.tokenizer import Tokenizer
 
@@ -44,7 +44,7 @@ DEFAULT_CHUNK_OVERLAP = 200
 
 
 # TODO: make it a non-component
-class TextSplitter(Component):
+class TextSplitter(DataComponent):
     """
     Text Splitter for Chunking Documents
 
