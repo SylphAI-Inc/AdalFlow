@@ -129,67 +129,12 @@ class AzureAIClient(ModelClient):
     authentication. It is recommended to set environment variables for sensitive data like API keys.
 
     Args:
-        api_key (Optional[str]): Azure OpenAI API key. Default is None.
-        api_version (Optional[str]): API version to use. Default is None.
-        azure_endpoint (Optional[str]): Azure OpenAI endpoint URL. Default is None.
-        credential (Optional[DefaultAzureCredential]): Azure AD credential for token-based authentication. Default is None.
-        chat_completion_parser (Callable[[Completion], Any]): Function to parse chat completions. Default is `get_first_message_content`.
-        input_type (Literal["text", "messages"]): Format for input, either "text" or "messages". Default is "text".
-
-    **Setup Instructions:**
-
-    - **Using API Key:**
-      Set up the following environment variables:
-      ```bash
-      export AZURE_OPENAI_API_KEY="your_api_key"
-      export AZURE_OPENAI_ENDPOINT="your_endpoint"
-      export AZURE_OPENAI_VERSION="your_version"
-      ```
-
-    - **Using Azure AD Token:**
-      Ensure you have configured Azure AD credentials. The `DefaultAzureCredential` will automatically use your configured credentials.
-
-    **Example Usage:**
-
-    .. code-block:: python
-
-        from azure.identity import DefaultAzureCredential
-        from your_module import AzureAIClient  # Adjust import based on your module name
-
-        # Initialize with API key
-        client = AzureAIClient(
-            api_key="your_api_key",
-            api_version="2023-05-15",
-            azure_endpoint="https://your-endpoint.openai.azure.com/"
-        )
-
-        # Or initialize with Azure AD token
-        client = AzureAIClient(
-            api_version="2023-05-15",
-            azure_endpoint="https://your-endpoint.openai.azure.com/",
-            credential=DefaultAzureCredential()
-        )
-
-        # Example call to the chat completion API
-        api_kwargs = {
-            "model": "gpt-3.5-turbo",
-            "messages": [{"role": "user", "content": "What is the meaning of life?"}],
-            "stream": True
-        }
-        response = client.call(api_kwargs=api_kwargs, model_type=ModelType.LLM)
-
-        for chunk in response:
-            print(chunk)
-
-
-    **Notes:**
-    - Ensure that the API key or credentials are correctly set up and accessible to avoid authentication errors.
-    - Use `chat_completion_parser` to define how to extract and handle the chat completion responses.
-    - The `input_type` parameter determines how input is formatted for the API call.
-
-    **References:**
-    - [Azure OpenAI API Documentation](https://learn.microsoft.com/en-us/azure/ai-services/openai/overview)
-    - [OpenAI API Documentation](https://platform.openai.com/docs/guides/text-generation)
+        api_key: Azure OpenAI API key.
+        api_version: Azure OpenAI API version.
+        azure_endpoint: Azure OpenAI endpoint.
+        credential: Azure AD credential for token-based authentication.
+        chat_completion_parser: Function to parse chat completions.
+        input_type: Input format, either "text" or "messages".
     """
 
     def __init__(
@@ -201,21 +146,10 @@ class AzureAIClient(ModelClient):
         chat_completion_parser: Callable[[Completion], Any] = None,
         input_type: Literal["text", "messages"] = "text",
     ):
-        r"""It is recommended to set the API_KEY into the  environment variable instead of passing it as an argument.
-
-
-        Initializes the Azure OpenAI client with either API key or AAD token authentication.
-
-        Args:
-            api_key: Azure OpenAI API key.
-            api_version: Azure OpenAI API version.
-            azure_endpoint: Azure OpenAI endpoint.
-            credential: Azure AD credential for token-based authentication.
-            chat_completion_parser: Function to parse chat completions.
-            input_type: Input format, either "text" or "messages".
-
-        """
         super().__init__()
+
+        # Model type will be set dynamically based on the operation
+        self._model_type = None
 
         # added api_type azure for azure Ai
         self.api_type = "azure"
@@ -229,6 +163,16 @@ class AzureAIClient(ModelClient):
             chat_completion_parser or get_first_message_content
         )
         self._input_type = input_type
+
+    @property
+    def model_type(self) -> ModelType:
+        """Get the current model type. Defaults to LLM if not set."""
+        return self._model_type or ModelType.LLM
+
+    @model_type.setter
+    def model_type(self, value: ModelType):
+        """Set the model type."""
+        self._model_type = value
 
     def init_sync_client(self):
         api_key = self._api_key or os.getenv("AZURE_OPENAI_API_KEY")
@@ -357,6 +301,10 @@ class AzureAIClient(ModelClient):
         """
 
         final_model_kwargs = model_kwargs.copy()
+        # If model_type is UNDEFINED, use the current model_type property
+        if model_type == ModelType.UNDEFINED:
+            model_type = self.model_type
+
         if model_type == ModelType.EMBEDDER:
             if isinstance(input, str):
                 input = [input]
@@ -383,14 +331,13 @@ class AzureAIClient(ModelClient):
                 if match:
                     system_prompt = match.group(1)
                     input_str = match.group(2)
-
                 else:
                     print("No match found.")
                 if system_prompt and input_str:
                     messages.append({"role": "system", "content": system_prompt})
                     messages.append({"role": "user", "content": input_str})
             if len(messages) == 0:
-                messages.append({"role": "system", "content": input})
+                messages.append({"role": "user", "content": input})
             final_model_kwargs["messages"] = messages
         else:
             raise ValueError(f"model_type {model_type} is not supported")
@@ -409,8 +356,13 @@ class AzureAIClient(ModelClient):
     )
     def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
         """
-        kwargs is the combined input and model_kwargs.  Support streaming call.
+        kwargs is the combined input and model_kwargs. Support streaming call.
+        Also updates the internal model_type based on the operation.
         """
+        # Update internal model type based on the operation
+        if model_type != ModelType.UNDEFINED:
+            self.model_type = model_type
+
         log.info(f"api_kwargs: {api_kwargs}")
         if model_type == ModelType.EMBEDDER:
             return self.sync_client.embeddings.create(**api_kwargs)
