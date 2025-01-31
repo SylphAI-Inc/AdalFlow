@@ -49,6 +49,11 @@ DeepSeekClient = LazyImport(
     "adalflow.components.model_client.deepseek_client.DeepSeekClient", None
 )
 
+MistralClient = LazyImport(
+    "adalflow.components.model_client.deepseek_client.DeepSeekClient",
+    OptionalPackages.MISTRAL,
+)
+
 GoogleGenAIClient = LazyImport(
     "adalflow.components.model_client.google_client.GoogleGenAIClient",
     OptionalPackages.GOOGLE_GENERATIVEAI,
