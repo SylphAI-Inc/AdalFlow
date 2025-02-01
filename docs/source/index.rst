@@ -301,7 +301,6 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
    :maxdepth: 1
    :hidden:
 
-   integrations/index
 
 
 .. toctree::
