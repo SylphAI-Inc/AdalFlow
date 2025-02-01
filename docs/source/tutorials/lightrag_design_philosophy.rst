@@ -83,29 +83,4 @@ All while giving full control of the prompt and the task pipeline to the develop
 
 .. raw::
 
-    [Optional] Side story: How `LightRAG` is born
-.. ----------------------------------------------
-
-.. The whole `PyTorch` library is built on a few core and base classes: ``Module``, ``Tensor``, ``Parameter``, and ``Optimizer``,
-.. and various ``nn`` modules for users to build a model, along with ``functionals``.
-.. This maps to ``Component``, ``DataClass``,  ``Parameter``, and ``Optimizer`` in LightRAG, and various subcomponents
-.. like ``Generator``, ``Retriever``, ``Prompt``, ``Embedder``, ``ModelClient``, along with ``functionals`` to process string,
-.. interprect tool from the string.
-
-.. We recognize developers who are building real-world Large Language Model (LLM) applications are the real heroes, doing the hard
-.. work. They need well-designed core building blocks:  **easy** to understand, **transparent** to debug, **flexible** enough to customize their own
-.. ``ModelClient``, their own ``Prompt``, their own ``Generator`` and even their own ``Optimizer``, ``Trainer``. The need to build their own component is even more so than using `PyTorch.`
-.. LightRAG aggressively focus on the quality and clarity of the core building blocks over the quantity of integrations.
-
-.. the current state of the art in auto-prompt optimization is still in its infancy.
-.. Though Auto-prompt optimization is the future, now we are still in the process of understanding more on prompt engineering itself and but it is a good starting point for auto-prompt optimization.
-
-.. The future is at the optimizing.
-.. Using LLMs via apis or local LLMs is easy, so where is the value of having a library like `LightRAG`?
-
-.. In `PyTorch`, most likely users do not need to build their own ``conv`` or ``linear`` module, or their own ``Adam`` optimizer.
-.. The existing building blocks can meet > 90% users' needs, leaving less than 10% of users, mostly contributors and researchers to build their own `Module`, `Tensor`,
-.. `Optimizer`, etc. Excellent libraries like `PyTorch`, `numpy`, `scipy`, `sklearn`, `pandas` are all doing the heavy lifting on the computation optimization.
-
-
-.. Using LLMs via apis or local LLMs is easy, so where is the heavy lifting in the LLM applications?
+    [Optional] Side story: How `AdalFlow` is born

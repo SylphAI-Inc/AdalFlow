@@ -1,6 +1,6 @@
 """LocalDB to perform in-memory storage and data persistence(pickle or any filesystem) for data models like documents and dialogturn."""
 
-from typing import List, Optional, Callable, Dict, Any, TypeVar, Generic, overload
+from typing import List, Optional, Callable, Dict, Any, TypeVar, overload
 import logging
 import os
 from dataclasses import field, dataclass
@@ -22,7 +22,7 @@ U = TypeVar("U")  # U will be the type after transformation
 # TODO: localDB does not need to be a component
 # TODO: DB clarity can be further improved
 @dataclass
-class LocalDB(Generic[T], Component):
+class LocalDB(Component):
     __doc__ = """LocalDB with in-memory CRUD operations, data transformation/processing pipelines, and persistence.
 
     LocalDB is highly flexible.
@@ -96,9 +96,9 @@ class LocalDB(Generic[T], Component):
     """
 
     name: Optional[str] = field(
-        default=None, metadata={"description": "Name of the DB"}
+        default="LocalDB", metadata={"description": "Name of the DB"}
     )
-    items: List[T] = field(
+    items: List[object] = field(
         default_factory=list, metadata={"description": "The original data items"}
     )
 
@@ -117,7 +117,7 @@ class LocalDB(Generic[T], Component):
     )
 
     def __post_init__(self):
-        super().__init__()
+        super().__init__(name=self.name)
 
     @property
     def length(self):
@@ -128,7 +128,7 @@ class LocalDB(Generic[T], Component):
 
     # TODO: combine this to fetch_transformed_items
     def get_transformed_data(
-        self, key: str, filter_fn: Callable[[Any], bool] = lambda x: True
+        self, *, key: str, filter_fn: Callable[[Any], bool] = lambda x: True
     ) -> List[U]:
         """
         Get the transformed items by key after applying a filter on metadata.
@@ -145,14 +145,16 @@ class LocalDB(Generic[T], Component):
         # Apply filter function on the transformed items
         return list(filter(filter_fn, self.transformed_items[key]))
 
-    def _get_transformer_name(self, transformer: Component) -> str:
+    def _get_transformer_name(self, *, transformer: Component) -> str:
         name = f"{transformer.__class__.__name__}_"
+        print(f"transformer: {transformer}")
         for n, _ in transformer.named_components():
             name += n + "_"
         return name
 
     def register_transformer(
         self,
+        *,
         transformer: Component,
         key: Optional[str] = None,
         map_fn: Optional[Callable[[T], Any]] = None,
@@ -175,6 +177,7 @@ class LocalDB(Generic[T], Component):
     @overload
     def transform(
         self,
+        *,
         transformer: Component,
         key: Optional[str] = None,
         map_fn: Optional[Callable[[T], Any]] = None,
@@ -184,6 +187,7 @@ class LocalDB(Generic[T], Component):
 
     def transform(
         self,
+        *,
         transformer: Optional[Component] = None,
         key: Optional[str] = None,
         map_fn: Optional[Callable[[T], Any]] = None,
@@ -229,7 +233,10 @@ class LocalDB(Generic[T], Component):
             db = LocalDB()
             db.load([{"text": "hello world"}, {"text": "hello world2"}])
         """
-        self.items = items
+        try:
+            self.items = items.copy()
+        except Exception as e:
+            log.error(f"Error loading the items: {e}")
 
     def extend(
         self,
@@ -238,7 +245,7 @@ class LocalDB(Generic[T], Component):
     ):
         """Extend the db with new items."""
 
-        self.items.extend(items)
+        self.items = self.items + items
 
         if apply_transformer:
             for key, transformer in self.transformer_setups.items():
@@ -249,7 +256,9 @@ class LocalDB(Generic[T], Component):
                     transformed_items = transformer([map_fn(doc) for doc in items])
                 else:
                     transformed_items = transformer(items)
-                self.transformed_items[key].extend(transformed_items)
+                self.transformed_items[key] = (
+                    self.transformed_items[key] + transformed_items
+                )
 
     def delete(self, index: Optional[int] = None, remove_transformed: bool = True):
         """Remove items by index or pop the last item. Optionally remove the transformed data as well.

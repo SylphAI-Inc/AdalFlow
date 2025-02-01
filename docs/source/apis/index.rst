@@ -6,7 +6,6 @@ API Reference
 Welcome to `AdalFlow`.
 The API reference is organized by subdirectories.
 
-..  This section provides detailed documentation of the internal APIs that make up the LightRAG framework. Explore the APIs to understand how to effectively utilize and integrate LightRAG components into your projects.
 
 
 Core
@@ -14,8 +13,6 @@ Core
 All base/abstract classes, core components like generator, embedder, and basic functions are here.
 
 
-.. The core section of the LightRAG API documentation provides detailed information about the foundational components of the LightRAG system.
-.. These components are essential for the basic operations and serve as the building blocks for higher-level functionalities.
 
 .. autosummary::
    core.component
@@ -42,8 +39,6 @@ Components
 -----------
 Functional components like model client, retriever, agent, local data processing, and output parsers are here.
 
-.. The components section of the LightRAG API documentation outlines the detailed specifications and functionalities of various API components.
-.. Each component plays a crucial role in the LightRAG framework, providing specialized capabilities and interactions.
 
 .. autosummary::
 

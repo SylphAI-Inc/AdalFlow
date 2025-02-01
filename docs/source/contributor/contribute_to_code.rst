@@ -6,7 +6,6 @@ Set Up
 ^^^^^^^^^^^^^^^^^^^
 We mainly use `poetry <https://python-poetry.org/>`_ for dependency management and virtual environment setup.
 
-.. If you are only interested in using ``LightRAG`` as a package, please check our `installation guide <https://lightrag.sylph.ai/get_started/installation.html#install-lightrag>`_.
 
 To set up ``poetry`` and contribute, please check the following steps:
 

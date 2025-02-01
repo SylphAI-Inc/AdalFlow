@@ -178,7 +178,7 @@ Rename the `lightrag` package to `adalflow`.
 ## [0.1.0-beta.5] - 2024-07-23
 
 ### Fixed
-- [issue 134](https://github.com/SylphAI-Inc/AdalFlow/issues/134) Suppport Enum in `DataClass` schema. https://github.com/SylphAI-Inc/LightRAG/pull/135
+- [issue 134](https://github.com/SylphAI-Inc/AdalFlow/issues/134) Suppport Enum in `DataClass` schema. https://github.com/SylphAI-Inc/AdalFlow/pull/135
 - [issue 154](https://github.com/SylphAI-Inc/AdalFlow/issues/154) Fixed the `DataClass.from_dict` failure on `list[int]` type due to conditional check failure in the functional.
 
 ### Added
