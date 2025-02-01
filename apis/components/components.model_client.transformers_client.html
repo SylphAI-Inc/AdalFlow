@@ -157,13 +157,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -183,21 +176,13 @@
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" current active">
-  <a class="nav-link dropdown-item nav-internal" href="../index.html">
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -232,7 +217,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -324,13 +309,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -378,7 +356,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -641,7 +619,7 @@
 <td><p>Local model SDK for a reranker model using transformers.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformersClient</span></code></a>([model_name])</p></td>
-<td><p>LightRAG API client for transformers.</p></td>
+<td><p>AdalFlow API client for transformers.</p></td>
 </tr>
 </tbody>
 </table>
@@ -661,7 +639,7 @@
 (2) Pipeline and then run pipeline inference</p>
 <p>This file demonstrates how to
 (1) create a torch model inference component:  TransformerEmbedder which equalize to OpenAI(), the SyncAPIClient
-(2) Convert this model inference component to LightRAG API client: TransformersClient</p>
+(2) Convert this model inference component to AdalFlow API client: TransformersClient</p>
 <p>The is now just an exmplary component that initialize a certain model from transformers and run inference on it.
 It is not tested on all transformer models yet. It might be necessary to write one for each model.</p>
 <p>References:
@@ -777,7 +755,7 @@ If you are using Macbook M1 series chips, you need to ensure <code class="docuti
 <dt class="sig sig-object py" id="components.model_client.transformers_client.TransformersClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TransformersClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#TransformersClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.TransformersClient" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClient</span></code></p>
-<p>LightRAG API client for transformers.</p>
+<p>AdalFlow API client for transformers.</p>
 <p>Use: <a href="#id1"><span class="problematic" id="id2">``</span></a>ls ~/.cache/huggingface/hub `` to see the cached models.</p>
 <p>Some modeles are gated, you will need to their page to get the access token.
 Find how to apply tokens here: <a class="reference external" href="https://huggingface.co/docs/hub/security-tokens">https://huggingface.co/docs/hub/security-tokens</a>

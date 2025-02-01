@@ -154,13 +154,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
     Tutorials
   </a>
@@ -180,21 +173,13 @@
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../../../apis/index.html">
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
 </li>
 
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -229,7 +214,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -319,13 +304,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
     Tutorials
   </a>
@@ -373,7 +351,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -871,7 +849,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;final_model_kwargs: </span><span class="si">{</span><span class="n">final_model_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># print(f&quot;final_model_kwargs: {final_model_kwargs}&quot;)</span>
 
         <span class="k">return</span> <span class="n">final_model_kwargs</span></div>
 
@@ -1070,17 +1048,23 @@
     <span class="n">log</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
 
     <span class="n">setup_env</span><span class="p">()</span>
-    <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What is the meaning of life?&quot;</span><span class="p">}</span>
+    <span class="c1"># prompt_kwargs = {&quot;input_str&quot;: &quot;What is the meaning of life?&quot;}</span>
 
-    <span class="n">gen</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
-        <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
-        <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span> <span class="s2">&quot;stream&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
-    <span class="p">)</span>
-    <span class="n">gen_response</span> <span class="o">=</span> <span class="n">gen</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;gen_response: </span><span class="si">{</span><span class="n">gen_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># gen = Generator(</span>
+    <span class="c1">#     model_client=OpenAIClient(),</span>
+    <span class="c1">#     model_kwargs={&quot;model&quot;: &quot;gpt-3.5-turbo&quot;, &quot;stream&quot;: True},</span>
+    <span class="c1"># )</span>
+    <span class="c1"># gen_response = gen(prompt_kwargs)</span>
+    <span class="c1"># print(f&quot;gen_response: {gen_response}&quot;)</span>
 
-    <span class="k">for</span> <span class="n">genout</span> <span class="ow">in</span> <span class="n">gen_response</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;genout: </span><span class="si">{</span><span class="n">genout</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># for genout in gen_response.data:</span>
+    <span class="c1">#     print(f&quot;genout: {genout}&quot;)</span>
+
+    <span class="c1"># test that to_dict and from_dict works</span>
+    <span class="n">model_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
+    <span class="n">model_client_dict</span> <span class="o">=</span> <span class="n">model_client</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+    <span class="n">from_dict_model_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">model_client_dict</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">model_client_dict</span> <span class="o">==</span> <span class="n">from_dict_model_client</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 </pre></div>
 
                 </article>

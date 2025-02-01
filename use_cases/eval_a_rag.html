@@ -155,13 +155,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials/index.html">
     Tutorials
   </a>
@@ -181,21 +174,13 @@
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../apis/index.html">
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
 </li>
 
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -230,7 +215,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -320,13 +305,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials/index.html">
     Tutorials
   </a>
@@ -374,7 +352,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -466,7 +444,7 @@
 <h1>Evaluating RAG<a class="headerlink" href="#evaluating-rag" title="Link to this heading">#</a></h1>
 <p>As RAG admits so many design choices, it is difficult to build a traditional benchmark dataset from scratch.
 When it comes to evaluating RAG, we have to define the metrics, the evaluation datasets, and to annotate such datasets and ensure the metrics can reflect</p>
-<p>In LightRAG, we provide a set of metrics in <span class="xref std std-ref">our evaluators</span>. In this tutorial, we will show how to use them to evaluate the performance of the retriever and generator components of a RAG pipeline</p>
+<p>In AdalFlow, we provide a set of metrics in <span class="xref std std-ref">our evaluators</span>. In this tutorial, we will show how to use them to evaluate the performance of the retriever and generator components of a RAG pipeline</p>
 <p>As RAG consists of two stages:</p>
 <ol class="arabic simple">
 <li><p>Retrieval: The retriever fetches relevant context from a knowledge base.
@@ -477,7 +455,7 @@ All of these metrics, you can find at <a class="reference external" href="https:
 <li><p>Generation: The metrics used for evaluating the response is more diverse and highly dependent on the tasks.
 You can refer to our <a class="reference internal" href="../tutorials/evaluation.html#tutorials-llm-evaluation"><span class="std std-ref">Evaluation guidelines</span></a> for more details.</p></li>
 </ol>
-<p>The full code for this tutorial can be found in <a class="reference external" href="https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/rag_hotpotqa.py">use_cases/rag_hotpotqa.py</a>.</p>
+<p>The full code for this tutorial can be found in <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/use_cases/rag_hotpotqa.py">use_cases/rag_hotpotqa.py</a>.</p>
 <p>RAG (Retrieval-Augmented Generation) pipelines leverage a retriever to fetch relevant context from a knowledge base (e.g., a document database) which is then fed to an LLM generator with the query to produce the answer. This allows the model to generate more contextually relevant answers.</p>
 <p>Thus, to evaluate a RAG pipeline, we can assess both the quality of the retrieved context and the quality of the final generated answer. Speciafically, in this tutorial, we will use the following evaluators and their corresponding metrics.</p>
 <ul class="simple">
@@ -528,7 +506,7 @@ We import the necessary dependencies for our evaluation script. These include mo
 </pre></div>
 </div>
 <p><strong>Step 2: define the configuration.</strong>
-We load the configuration settings from <a class="reference external" href="https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/configs/rag_hotpotqa.yaml">a YAML file</a>. This file contains various parameters for the RAG pipeline. You can customize these settings based on your requirements.</p>
+We load the configuration settings from <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/use_cases/configs/rag_hotpotqa.yaml">a YAML file</a>. This file contains various parameters for the RAG pipeline. You can customize these settings based on your requirements.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;./configs/rag_hotpotqa.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
 <span class="linenos">2</span>    <span class="n">settings</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 </pre></div>
@@ -562,7 +540,7 @@ We initialize the RAG pipeline by creating an instance of the <code class="xref 
 </div>
 <p><strong>Step 6: retrieve the context and generate the answer.</strong>
 For each sample in the dataset, we retrieve the context and generate the answer using the RAG pipeline. We can print the query, response, ground truth response, context string, and ground truth context string for each sample.</p>
-<p>To get the ground truth context string from the <em>supporting_facts</em> filed in HotpotQA. We have implemented a <code class="xref py py-obj docutils literal notranslate"><span class="pre">get_supporting_sentences</span></code> function, which extract the supporting sentences from the context based on the <em>supporting_facts</em>. This function is specific to the HotpotQA dataset, which is available in <a class="reference external" href="https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/rag_hotpotqa.py">use_cases/rag_hotpotqa.py</a>.</p>
+<p>To get the ground truth context string from the <em>supporting_facts</em> filed in HotpotQA. We have implemented a <code class="xref py py-obj docutils literal notranslate"><span class="pre">get_supporting_sentences</span></code> function, which extract the supporting sentences from the context based on the <em>supporting_facts</em>. This function is specific to the HotpotQA dataset, which is available in <a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/use_cases/rag_hotpotqa.py">use_cases/rag_hotpotqa.py</a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="n">all_questions</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="linenos"> 2</span><span class="n">all_retrieved_context</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="linenos"> 3</span><span class="n">all_gt_context</span> <span class="o">=</span> <span class="p">[]</span>

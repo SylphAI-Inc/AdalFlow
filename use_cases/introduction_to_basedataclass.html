@@ -155,13 +155,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials/index.html">
     Tutorials
   </a>
@@ -181,21 +174,13 @@
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../apis/index.html">
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
 </li>
 
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -230,7 +215,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -320,13 +305,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials/index.html">
     Tutorials
   </a>
@@ -374,7 +352,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -464,20 +442,20 @@
                   
   <section id="introduction-to-basedataclass">
 <h1>Introduction to BaseDataClass<a class="headerlink" href="#introduction-to-basedataclass" title="Link to this heading">#</a></h1>
-<p>In this tutorial, we will discuss how to use <code class="docutils literal notranslate"><span class="pre">BaseDataClass</span></code> to streamline the data handling, serialization and description in LightRAG.</p>
+<p>In this tutorial, we will discuss how to use <code class="docutils literal notranslate"><span class="pre">BaseDataClass</span></code> to streamline the data handling, serialization and description in AdalFlow.</p>
 <p><a class="reference external" href="https://cookbook.openai.com/articles/techniques_to_improve_reliability">OpenAI’s cookbook</a> emphasizes that LLM works better when operating <strong>structured</strong> and <strong>consistent</strong> data.
-To solve this, <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> provides <code class="docutils literal notranslate"><span class="pre">BaseDataClass</span></code> for developers to manage data with control and flexibility, including:</p>
+To solve this, <code class="docutils literal notranslate"><span class="pre">AdalFlow</span></code> provides <code class="docutils literal notranslate"><span class="pre">BaseDataClass</span></code> for developers to manage data with control and flexibility, including:</p>
 <ul class="simple">
 <li><p>getting structured dataclass/instance metadata(<cite>signature</cite> or <cite>schema</cite>)</p></li>
 <li><p>formatting class instance to <code class="docutils literal notranslate"><span class="pre">yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">dict</span></code> or <code class="docutils literal notranslate"><span class="pre">json</span></code></p></li>
 <li><p>loading data from dictionary</p></li>
 </ul>
-<p>Like the role of <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> in <code class="docutils literal notranslate"><span class="pre">PyTorch</span></code>, <code class="docutils literal notranslate"><span class="pre">BaseDataClass</span></code> in <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> is the base class across all <strong>dataclasses</strong>.
+<p>Like the role of <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> in <code class="docutils literal notranslate"><span class="pre">PyTorch</span></code>, <code class="docutils literal notranslate"><span class="pre">BaseDataClass</span></code> in <code class="docutils literal notranslate"><span class="pre">AdalFlow</span></code> is the base class across all <strong>dataclasses</strong>.
 <code class="docutils literal notranslate"><span class="pre">BaseDataClass</span></code> offers to create <cite>signature</cite> or <cite>schema</cite> from both classeses and instances. It will also generate structured instances data. Developers can use <code class="docutils literal notranslate"><span class="pre">BaseDataClass</span></code> to easily define and describe dataclasses that handle the data input or output in LLM applications, keeping data consistent and structured.
 In the following tutorial, we will investigate the functionality of <code class="docutils literal notranslate"><span class="pre">BaseDataClass</span></code> with examples.</p>
 <p><strong>1. Create Signature and Schema</strong></p>
 <ul class="simple">
-<li><p><strong>Signature:</strong> Signature has simpler content and structure and hence more token efficient than schema. <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> supports <code class="docutils literal notranslate"><span class="pre">json</span></code> and <code class="docutils literal notranslate"><span class="pre">yaml</span></code> formating.</p></li>
+<li><p><strong>Signature:</strong> Signature has simpler content and structure and hence more token efficient than schema. <code class="docutils literal notranslate"><span class="pre">AdalFlow</span></code> supports <code class="docutils literal notranslate"><span class="pre">json</span></code> and <code class="docutils literal notranslate"><span class="pre">yaml</span></code> formating.</p></li>
 <li><p><strong>Schema:</strong> Schema is enssentially a dictionary containing more keys to show detailed information. Because of the detailed content, schema can mislead the model if not used properly.</p></li>
 </ul>
 <p>Example to get signature and schema from a dataclass:</p>
@@ -646,7 +624,7 @@ Developers should select schema or signature depends on the use case.</p>
 <p>(For details, please refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">core.base_data_class.BaseDataClass</span></code>.)</p>
 <p><strong>4. Implement with Other Components</strong></p>
 <p>What’s more, developers can use the dataclasses to interact with the <code class="docutils literal notranslate"><span class="pre">Prompt</span></code> and <code class="docutils literal notranslate"><span class="pre">Generator</span></code> classes, enhancing the consistency and structure of the application data flow.
-(<code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> uses <code class="docutils literal notranslate"><span class="pre">jinja2</span></code> for prompt template, make sure you’ve checked <code class="docutils literal notranslate"><span class="pre">jinja2</span></code> template tutorial before reading the example.)</p>
+(<code class="docutils literal notranslate"><span class="pre">AdalFlow</span></code> uses <code class="docutils literal notranslate"><span class="pre">jinja2</span></code> for prompt template, make sure you’ve checked <code class="docutils literal notranslate"><span class="pre">jinja2</span></code> template tutorial before reading the example.)</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">core.base_data_class</span> <span class="kn">import</span> <span class="n">BaseDataClass</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>

@@ -1,7 +1,7 @@
 .. raw:: html
 
    <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
-      <a href="https://colab.research.google.com/github/SylphAI-Inc/LightRAG/blob/main/notebooks/tutorials/adalflow_rag_playbook.ipynb" target="_blank" style="margin-right: 10px;">
+      <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_rag_playbook.ipynb" target="_blank" style="margin-right: 10px;">
          <img alt="Try RAG playbook in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
       </a>
       <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/use_cases/rag/build" target="_blank" style="display: flex; align-items: center;">

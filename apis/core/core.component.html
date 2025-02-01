@@ -157,13 +157,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -183,21 +176,13 @@
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" current active">
-  <a class="nav-link dropdown-item nav-internal" href="../index.html">
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -232,7 +217,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -324,13 +309,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -378,7 +356,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -624,10 +602,10 @@ It handles states recursively, such as training, components, parameters recursiv
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.component.Component" title="core.component.Component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Component</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.component.Component" title="core.component.Component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Component</span></code></a>([name])</p></td>
 <td><p>Base class for all LLM task pipeline components.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.component.DataComponent" title="core.component.DataComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataComponent</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.component.DataComponent" title="core.component.DataComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataComponent</span></code></a>([name])</p></td>
 <td><p>Base class for all components that are handling data pre- and post-processing.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#core.component.FuncComponent" title="core.component.FuncComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FuncComponent</span></code></a>([fun, afun])</p></td>
@@ -641,7 +619,7 @@ It handles states recursively, such as training, components, parameters recursiv
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="core.component.Component">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#Component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#Component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class for all LLM task pipeline components.</p>
 <p>Such as <code class="docutils literal notranslate"><span class="pre">Prompt</span></code>, <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>, <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>, <code class="docutils literal notranslate"><span class="pre">Retriever</span></code>, <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, etc.
@@ -986,7 +964,7 @@ returned by this component’s <a class="reference internal" href="#core.compone
 
 <dl class="py class">
 <dt class="sig sig-object py" id="core.component.DataComponent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DataComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#DataComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.DataComponent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DataComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#DataComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.DataComponent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
 <p>Base class for all components that are handling data pre- and post-processing.
 Example: Prompt, Parser. TextSplitter, etc.</p>

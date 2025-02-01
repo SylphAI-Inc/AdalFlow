@@ -139,29 +139,7 @@ We have :class:`DataclassFormatType<core.base_data_class.DataClassFormatType>` t
 
     To use ``DataClass``, you have to decorate your class with the ``dataclass`` decorator from the ``dataclasses`` module.
 
-.. in Python is a decorator that can be used to automatically generate special methods such as `__init__`, `__repr__`, `__str__` etc. for a class.
 
-.. .. code-block:: python
-
-..     from dataclasses import dataclass
-
-..     @dataclass
-..     class TrecData:
-..         question: str
-..         label: int
-
-.. It is exactly a single input data item in a typical PyTorch ``Dataset`` or a `HuggingFace` ``Dataset``.
-.. The unique thing is all data or tools interact with LLMs via prompt and text prediction, which is a single ``str``.
-
-.. Most existing libraries use `Pydantic` to handle the serialization(convert to string) and deserialization(convert back from string) of the data.
-.. But, in LightRAG, we in particular designed :class:`core.base_data_class.DataClass` using native `dataclasses` module.
-.. The reasons are:
-
-.. 1. ``dataclasses`` module's `dataclass` decorator, along with `field` (`metadata`, `default`) can be especially helpful to describe the data format to LLMs. `dataclass` also saves users time on writing the boilerplate code such as `__init__`, `__repr__`, `__str__` etc.
-
-.. 2. `dataclasses` native module is more lightweight, flexible, and user-friendly than `Pydantic`.
-
-.. 3. Though we need more customization on ``BaseClass`` compared with directly using `Pydantic`, we will enjoy more transparency and control over the data format.
 DataClass in Action
 ------------------------
 Say you have a few of ``TrecData`` structued as follows that you want to engage with LLMs:

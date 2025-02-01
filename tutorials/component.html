@@ -156,13 +156,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -183,21 +176,13 @@
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../apis/index.html">
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
 </li>
 
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -232,7 +217,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -323,13 +308,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -378,7 +356,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -524,19 +502,19 @@
    <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_component.ipynb" target="_blank" style="margin-right: 10px;">
       <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
    </a>
-   <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/adalflow/adalflow/core/component.py" target="_blank" style="display: flex; align-items: center;">
+   <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/adalflow/adalflow/core/component.py" target="_blank" style="display: flex; align-items: center;">
       <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
       <span style="vertical-align: middle;"> Open Source Code</span>
    </a>
 </div><section id="component">
 <h1>Component<a class="headerlink" href="#component" title="Link to this heading">#</a></h1>
 <p><a class="reference internal" href="../apis/core/core.component.html#core-component"><span class="std std-ref">Component</span></a> is to LLM task pipelines what <cite>nn.Module</cite> is to PyTorch models.
-It is the base class for components such as <code class="docutils literal notranslate"><span class="pre">Prompt</span></code>, <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>, <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> in LightRAG.
+It is the base class for components such as <code class="docutils literal notranslate"><span class="pre">Prompt</span></code>, <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>, <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> in AdalFlow.
 Your task pipeline should also subclass from <code class="docutils literal notranslate"><span class="pre">Component</span></code>.</p>
 <section id="design">
 <h2>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h2>
 <p>Different from PyTorch’s nn.Module, which works exclusively with Tensor and Parameter to train models with weights and biases, our component can work with different types of data, from a string or a list of strings to a list of <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>.</p>
-<p>Here is the comparison of writing a PyTorch model and a LightRAG task pipeline.</p>
+<p>Here is the comparison of writing a PyTorch model and a AdalFlow task pipeline.</p>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-1 sd-row-cols-lg-1 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-1 docutils">
 <div class="sd-col sd-d-flex-row docutils">
@@ -603,7 +581,7 @@ with <cite>state_dict</cite> and <cite>load_state_dict</cite> methods specifical
 <li><p><strong>Make all components configurable using `json` or `yaml` files</strong>.
 This is especially useful for experimenting or building data processing pipelines.</p></li>
 </ol>
-<p>These features are key to keeping the LightRAG pipeline transparent, flexible, and easy to use.
+<p>These features are key to keeping the AdalFlow pipeline transparent, flexible, and easy to use.
 By subclassing from the <cite>Component</cite> class, you will get most of these features out of the box.</p>
 </section>
 <section id="component-in-action">

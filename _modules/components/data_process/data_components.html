@@ -154,13 +154,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
     Tutorials
   </a>
@@ -180,21 +173,13 @@
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../../../apis/index.html">
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
 </li>
 
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -229,7 +214,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -319,13 +304,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../integrations/index.html">
-    Integrations
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
     Tutorials
   </a>
@@ -373,7 +351,7 @@
           
           
           
-          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/AdalFlow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -472,7 +450,7 @@
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
 
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">DataComponent</span>
 
 <span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Document</span><span class="p">,</span>
@@ -543,7 +521,7 @@
 
 <div class="viewcode-block" id="ToEmbeddings">
 <a class="viewcode-back" href="../../../apis/components/components.data_process.data_components.html#components.data_process.ToEmbeddings">[docs]</a>
-<span class="k">class</span> <span class="nc">ToEmbeddings</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ToEmbeddings</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;It transforms a Sequence of Chunks or Documents to a List of Embeddings.</span>
 
 <span class="sd">    It operates on a copy of the input data, and does not modify the input data.</span>
@@ -576,7 +554,7 @@
 
 <div class="viewcode-block" id="RetrieverOutputToContextStr">
 <a class="viewcode-back" href="../../../apis/components/components.data_process.data_components.html#components.data_process.RetrieverOutputToContextStr">[docs]</a>
-<span class="k">class</span> <span class="nc">RetrieverOutputToContextStr</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">RetrieverOutputToContextStr</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrap on functional F.retriever_output_to_context_str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
