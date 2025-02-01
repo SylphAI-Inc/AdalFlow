@@ -63,6 +63,10 @@ SambaNovaClient = LazyImport(
     "adalflow.components.model_client.sambanova_client.SambaNovaClient", None
 )
 
+FireworksClient = LazyImport(
+    "adalflow.components.model_client.fireworks_client.FireworksClient", None
+)
+
 GoogleGenAIClient = LazyImport(
     "adalflow.components.model_client.google_client.GoogleGenAIClient",
     OptionalPackages.GOOGLE_GENERATIVEAI,
@@ -98,6 +102,8 @@ __all__ = [
     "MistralClient",
     "TogetherClient",
     "SambaNovaClient",
+    "DeepSeekClient",
+    "FireworksClient",
 ]
 
 for name in __all__:
