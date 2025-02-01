@@ -59,6 +59,10 @@ TogetherClient = LazyImport(
     OptionalPackages.TOGETHER,
 )
 
+SambaNovaClient = LazyImport(
+    "adalflow.components.model_client.sambanova_client.SambaNovaClient", None
+)
+
 GoogleGenAIClient = LazyImport(
     "adalflow.components.model_client.google_client.GoogleGenAIClient",
     OptionalPackages.GOOGLE_GENERATIVEAI,
