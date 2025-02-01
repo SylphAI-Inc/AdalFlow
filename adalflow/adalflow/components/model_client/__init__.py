@@ -97,6 +97,7 @@ __all__ = [
     "GoogleGenAIClient",
     "MistralClient",
     "TogetherClient",
+    "SambaNova",
 ]
 
 for name in __all__:
