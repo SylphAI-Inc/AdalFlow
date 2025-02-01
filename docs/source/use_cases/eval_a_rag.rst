@@ -4,7 +4,7 @@ Evaluating RAG
 As RAG admits so many design choices, it is difficult to build a traditional benchmark dataset from scratch.
 When it comes to evaluating RAG, we have to define the metrics, the evaluation datasets, and to annotate such datasets and ensure the metrics can reflect
 
-In LightRAG, we provide a set of metrics in :ref:`our evaluators <evaluators>`. In this tutorial, we will show how to use them to evaluate the performance of the retriever and generator components of a RAG pipeline
+In AdalFlow, we provide a set of metrics in :ref:`our evaluators <evaluators>`. In this tutorial, we will show how to use them to evaluate the performance of the retriever and generator components of a RAG pipeline
 
 As RAG consists of two stages:
 
@@ -17,7 +17,7 @@ As RAG consists of two stages:
 2. Generation: The metrics used for evaluating the response is more diverse and highly dependent on the tasks.
    You can refer to our :ref:`Evaluation guidelines <tutorials-llm-evaluation>` for more details.
 
-The full code for this tutorial can be found in `use_cases/rag_hotpotqa.py <https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/rag_hotpotqa.py>`_.
+The full code for this tutorial can be found in `use_cases/rag_hotpotqa.py <https://github.com/SylphAI-Inc/AdalFlow/blob/main/use_cases/rag_hotpotqa.py>`_.
 
 RAG (Retrieval-Augmented Generation) pipelines leverage a retriever to fetch relevant context from a knowledge base (e.g., a document database) which is then fed to an LLM generator with the query to produce the answer. This allows the model to generate more contextually relevant answers.
 
@@ -60,7 +60,7 @@ We import the necessary dependencies for our evaluation script. These include mo
     from use_cases.rag import RAG
 
 **Step 2: define the configuration.**
-We load the configuration settings from `a YAML file <https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/configs/rag_hotpotqa.yaml>`_. This file contains various parameters for the RAG pipeline. You can customize these settings based on your requirements.
+We load the configuration settings from `a YAML file <https://github.com/SylphAI-Inc/AdalFlow/blob/main/use_cases/configs/rag_hotpotqa.yaml>`_. This file contains various parameters for the RAG pipeline. You can customize these settings based on your requirements.
 
 .. code-block::
     :linenos:
@@ -107,7 +107,7 @@ We initialize the RAG pipeline by creating an instance of the :obj:`RAG` class w
 **Step 6: retrieve the context and generate the answer.**
 For each sample in the dataset, we retrieve the context and generate the answer using the RAG pipeline. We can print the query, response, ground truth response, context string, and ground truth context string for each sample.
 
-To get the ground truth context string from the *supporting_facts* filed in HotpotQA. We have implemented a :obj:`get_supporting_sentences` function, which extract the supporting sentences from the context based on the *supporting_facts*. This function is specific to the HotpotQA dataset, which is available in `use_cases/rag_hotpotqa.py <https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/rag_hotpotqa.py>`_.
+To get the ground truth context string from the *supporting_facts* filed in HotpotQA. We have implemented a :obj:`get_supporting_sentences` function, which extract the supporting sentences from the context based on the *supporting_facts*. This function is specific to the HotpotQA dataset, which is available in `use_cases/rag_hotpotqa.py <https://github.com/SylphAI-Inc/AdalFlow/blob/main/use_cases/rag_hotpotqa.py>`_.
 
 .. code-block::
     :linenos:

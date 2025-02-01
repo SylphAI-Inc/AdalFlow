@@ -125,15 +125,21 @@ class Component:
 
     _component_type = "base"
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, name: Optional[str] = None, *args, **kwargs) -> None:
         super().__setattr__("_components", OrderedDict())
         super().__setattr__("_parameters", OrderedDict())
         super().__setattr__("training", False)
         super().__setattr__("teacher_mode", False)
         super().__setattr__("tracing", False)
-        super().__setattr__("name", self.__class__.__name__)
+        if name is not None:
+            super().__setattr__("name", name)
+        else:
+            super().__setattr__("name", self.__class__.__name__)
         # only for tracking the init args
         super().__setattr__("_init_args", self._get_init_args(*args, **kwargs))
+
+        # save this class to the registry
+        EntityMapping.register(self.__class__.__name__, self.__class__)
 
     def use_teacher(self, mode: bool = True):
         r"""Sets the component in teacher mode."""

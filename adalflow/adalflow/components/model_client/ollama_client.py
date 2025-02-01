@@ -196,7 +196,7 @@ class OllamaClient(ModelClient):
     def parse_embedding_response(
         self, response: Dict[str, List[float]]
     ) -> EmbedderOutput:
-        r"""Parse the embedding response to a structure LightRAG components can understand.
+        r"""Parse the embedding response to a structure AdalFlow components can understand.
         Pull the embedding from response['embedding'] and store it Embedding dataclass
         """
         try:

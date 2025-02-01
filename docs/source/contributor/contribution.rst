@@ -454,20 +454,3 @@ Work on your PR
 Part 5: Review Process
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 For now, we will use the `PyTorch lightning's review guideline <https://github.com/Lightning-AI/pytorch-lightning/wiki/Review-guidelines>`_.
-
-.. Environment
-.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. When contributing, please note:
-.. LightRAG separates the source code environment and documentation environment.
-
-.. * To activate the code environment, you should run ``poetry install`` and ``poetry shell`` under ``./lightrag``. The ``./lightrag/pyproject.toml`` contains the dependencies for the ``LightRAG`` package.
-
-.. * To activate the documentation environment, you can run ``poetry install`` and ``poetry shell`` under ``.``. The ``./pyproject.toml`` controls documentation dependencies.
-
-
-
-
-
-
-.. .. admonition:: Resources
-..    :class: highlight

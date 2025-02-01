@@ -1,4 +1,4 @@
-.. image:: https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/adalflow-logo.png
+.. image:: https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/adalflow-logo.png
    :width: 100%
    :alt: Adalflow Logo
 
@@ -20,11 +20,11 @@
       <a href="https://github.com/SylphAI-Inc/AdalFlow" style="display: inline-block; margin-left: 10px;">
          <img src="https://img.shields.io/badge/GitHub-AdalFlow-blue?logo=github&style=flat-square" alt="GitHub Repo">
       </a>
-      <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
+      <a href="https://star-history.com/#SylphAI-Inc/AdalFlow"><img src="https://img.shields.io/github/stars/SylphAI-Inc/AdalFlow?style=flat-square" alt="GitHub Stars"></a>
       <a href="https://discord.gg/ezzszrRZvT">
         <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
       </a>
-      <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
+      <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/AdalFlow" alt="License"></a>
    </div>
 
 
@@ -301,7 +301,6 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
    :maxdepth: 1
    :hidden:
 
-   integrations/index
 
 
 .. toctree::

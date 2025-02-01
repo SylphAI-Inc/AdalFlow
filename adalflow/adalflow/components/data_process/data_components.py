@@ -5,7 +5,7 @@ from typing import List, TypeVar, Sequence, Union, Dict, Any
 from tqdm import tqdm
 
 
-from adalflow.core.component import Component
+from adalflow.core.component import DataComponent
 
 from adalflow.core.types import (
     Document,
@@ -71,7 +71,7 @@ ToEmbeddingsInputType = Sequence[Document]
 ToEmbeddingsOutputType = Sequence[Document]
 
 
-class ToEmbeddings(Component):
+class ToEmbeddings(DataComponent):
     r"""It transforms a Sequence of Chunks or Documents to a List of Embeddings.
 
     It operates on a copy of the input data, and does not modify the input data.
@@ -101,7 +101,7 @@ class ToEmbeddings(Component):
         return s
 
 
-class RetrieverOutputToContextStr(Component):
+class RetrieverOutputToContextStr(DataComponent):
     r"""
     Wrap on functional F.retriever_output_to_context_str
     """

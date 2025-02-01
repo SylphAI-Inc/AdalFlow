@@ -51,7 +51,7 @@ class TransformerEmbedder:
 
     This file demonstrates how to
     (1) create a torch model inference component:  TransformerEmbedder which equalize to OpenAI(), the SyncAPIClient
-    (2) Convert this model inference component to LightRAG API client: TransformersClient
+    (2) Convert this model inference component to AdalFlow API client: TransformersClient
 
     The is now just an exmplary component that initialize a certain model from transformers and run inference on it.
     It is not tested on all transformer models yet. It might be necessary to write one for each model.
@@ -504,7 +504,7 @@ class TransformerLLM:
 
 
 class TransformersClient(ModelClient):
-    __doc__ = r"""LightRAG API client for transformers.
+    __doc__ = r"""AdalFlow API client for transformers.
 
     Use: ``ls ~/.cache/huggingface/hub `` to see the cached models.
 
