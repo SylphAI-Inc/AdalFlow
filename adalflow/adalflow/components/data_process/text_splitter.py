@@ -120,7 +120,7 @@ class TextSplitter(DataComponent):
     * **Integration with Other Document Types**
     This functionality is ideal for segmenting texts into sentences, words, pages, or passages, which can then be processed further for NLP applications.
     For **PDFs**, developers will need to extract the text before using the splitter. Libraries like ``PyPDF2`` or ``PDFMiner`` can be utilized for this purpose.
-    ``LightRAG``'s future implementations will introduce splitters for ``JSON``, ``HTML``, ``markdown``, and ``code``.
+    ``AdalFlow``'s future implementations will introduce splitters for ``JSON``, ``HTML``, ``markdown``, and ``code``.
 
     Example:
 

@@ -44,7 +44,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/SylphAI-Inc/LightRAG",
+            "url": "https://github.com/SylphAI-Inc/AdalFlow",
             "icon": "fa-brands fa-github",
         },
         {
@@ -65,7 +65,7 @@ html_theme_options = {
     #             banner.className = 'announcement-banner';
     #             // Create the content for the announcement
     #             banner.innerHTML = `
-    #                 <p>⭐️ If you find AdalFlow helpful, please star us on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
+    #                 <p>⭐️ If you find AdalFlow helpful, please star us on <a href='https://github.com/SylphAI-Inc/AdalFlow'>GitHub!</a> ⭐️</p>
     #                 <button onclick="closeBanner()">×</button>
     #             `;
     #             // Append the banner to the banner header
@@ -109,10 +109,10 @@ html_static_path = ["_static"]
 html_title = "AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines"
 html_favicon = "./_static/images/LightRAG-logo-circle.png"
 # html_context = {
-#     "docstitle": "LightRAG: The Lightning Library for LLM Applications"
+#     "docstitle": "AdalFlow: The Lightning Library for LLM Applications"
 # }
 # html_theme_options = {
-#    "announcement": "⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'> GitHub! </a> ⭐️",
+#    "announcement": "⭐️ If you find AdalFlow helpful, give it a star on <a href='https://github.com/SylphAI-Inc/AdalFlow'> GitHub! </a> ⭐️",
 # }
 
 # html_meta = {
