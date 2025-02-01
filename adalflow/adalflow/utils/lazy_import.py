@@ -40,7 +40,8 @@ class OptionalPackages(Enum):
         from azure.identity import DefaultAzureCredential, get_bearer_token_provider
     """
     # model sdk
-    MISTRAL = ("mistralai", "Please install mistralai with: pip install mistralai")
+    MISTRAL = (("mistralai", "Please install mistralai with: pip install mistralai"),)
+    TOGETHER = ("together", "Please install together with: pip install together")
     GROQ = ("groq", "Please install groq with: pip install groq")
     OPENAI = ("openai", "Please install openai with: pip install openai")
     ANTHROPIC = ("anthropic", "Please install anthropic with: pip install anthropic")

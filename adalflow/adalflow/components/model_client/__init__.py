@@ -50,8 +50,13 @@ DeepSeekClient = LazyImport(
 )
 
 MistralClient = LazyImport(
-    "adalflow.components.model_client.deepseek_client.DeepSeekClient",
+    "adalflow.components.model_client.mistral_client.MistralClient",
     OptionalPackages.MISTRAL,
+)
+
+TogetherClient = LazyImport(
+    "adalflow.components.model_client.together_client.TogetherClient",
+    OptionalPackages.TOGETHER,
 )
 
 GoogleGenAIClient = LazyImport(
@@ -86,6 +91,8 @@ __all__ = [
     "GroqAPIClient",
     "OpenAIClient",
     "GoogleGenAIClient",
+    "MistralClient",
+    "TogetherClient",
 ]
 
 for name in __all__:
