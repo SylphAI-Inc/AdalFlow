@@ -71,6 +71,7 @@ from adalflow.components.model_client import (
     DeepSeekClient,
     MistralClient,
     TogetherClient,
+    SambaNovaClient,
 )
 
 # data pipeline
@@ -144,6 +145,7 @@ __all__ = [
     "OllamaClient",
     "MistralClient",
     "TogetherClient",
+    "SambaNovaClient",
     "TransformersClient",
     "AnthropicAPIClient",
     "CohereAPIClient",
