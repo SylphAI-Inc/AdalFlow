@@ -100,9 +100,11 @@ Please refer to the [full installation guide](https://adalflow.sylph.ai/get_star
 - Token-efficient and better performance than DsPy
 
 # Collaborations
-We collaborate with the [**VITA Group** at University of Texas at Austin](https://vita-group.github.io/) led by [Dr. Atlas Wang](https://www.ece.utexas.edu/people/faculty/atlas-wang).
 
-**Interested in collaboration?** Join our [Discord](https://discord.gg/ezzszrRZvT) or contact [Li Yin](https://www.linkedin.com/in/li-yin-ai/).
+We work closely with the [**VITA Group** at University of Texas at Austin](https://vita-group.github.io/), under the leadership of [Dr. Atlas Wang](https://www.ece.utexas.edu/people/faculty/atlas-wang), alongside [Dr. Junyuan Hong](https://jyhong.gitlab.io/), who provides valuable support in driving project initiatives.
+
+
+For collaboration, contact [Li Yin](https://www.linkedin.com/in/li-yin-ai/).
 
 
 # Why AdalFlow
