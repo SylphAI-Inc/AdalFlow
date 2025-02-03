@@ -58,6 +58,7 @@ T = TypeVar("T")
 def get_first_message_content(completion: ChatCompletion) -> str:
     r"""When we only need the content of the first message.
     It is the default parser for chat completion."""
+    log.debug(f"raw completion: {completion}")
     return completion.choices[0].message.content
 
 
