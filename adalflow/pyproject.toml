@@ -78,6 +78,7 @@ google-generativeai = "^0.7.2"
 anthropic = "^0.31.1"
 lancedb = "^0.5.2"
 boto3 = "^1.35.19"
+pydantic = ">=2.10.0,<2.11.0"
 
 
 # TODO: cant make qdrant work here
