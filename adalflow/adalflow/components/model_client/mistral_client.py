@@ -1,9 +1,3 @@
-import os
-import logging
-from typing import Any, Callable, Dict, Optional
-
-from mistralai import Mistral
-from adalflow.core.model_client import ModelClient
 from adalflow.core.types import (
     ModelType,
     CompletionUsage,
@@ -11,11 +5,24 @@ from adalflow.core.types import (
     EmbedderOutput,
 )
 
+from adalflow.core.model_client import ModelClient
+import os
+import logging
+from typing import Any, Callable, Dict, Optional
+
+from adalflow.utils.lazy_import import safe_import, OptionalPackages
+
+mistralai = safe_import(
+    OptionalPackages.MISTRAL.value[0], OptionalPackages.MISTRAL.value[1]
+)
+
+from mistralai import Mistral
+
 log = logging.getLogger(__name__)
 
 
 class MistralClient(ModelClient):
-    """
+    __doc_ = r"""
     A simple synchronous Mistral client without streaming.
 
     This class implements the minimal required methods for an AdalFlow ModelClient:
