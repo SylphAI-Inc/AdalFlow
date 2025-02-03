@@ -57,6 +57,10 @@ OllamaClient = LazyImport(
     "adalflow.components.model_client.ollama_client.OllamaClient",
     OptionalPackages.OLLAMA,
 )
+TogetherClient = LazyImport(
+    "adalflow.components.model_client.together_client.TogetherClient",
+    OptionalPackages.TOGETHER,
+)
 get_first_message_content = LazyImport(
     "adalflow.components.model_client.openai_client.get_first_message_content",
     OptionalPackages.OPENAI,
@@ -81,6 +85,8 @@ __all__ = [
     "GroqAPIClient",
     "OpenAIClient",
     "GoogleGenAIClient",
+    "OllamaClient",
+    "TogetherClient",
 ]
 
 for name in __all__:
