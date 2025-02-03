@@ -3,7 +3,7 @@ r"""ModelClient is the protocol and base class for all models(either via APIs or
 from typing import Any, Dict, Optional
 
 
-from adalflow.core.component import Component
+from adalflow.core.component import DataComponent
 from adalflow.core.types import (
     ModelType,
     EmbedderOutput,
@@ -13,7 +13,7 @@ from adalflow.core.types import (
 
 
 # TODO: global model registry for all available models in users' project.
-class ModelClient(Component):
+class ModelClient(DataComponent):
     __doc__ = r"""The protocol and abstract class for all models(either via APIs or local models) to communicate with components.
 
 ModelClient is to separate the model API calls from the rest of the system,

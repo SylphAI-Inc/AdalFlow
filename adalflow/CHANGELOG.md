@@ -1,3 +1,10 @@
+## [1.0.2] - 2025-02-02
+### Added
+- Added `TogetherClient` to support the Together API.
+
+### Modified
+- `OpenAIClient` to is adapted to support other model clients that are highly similar.
+
 ## [1.0.0.beta.1] - 2025-01-28
 Updates mainly follow our first arxiv paper: [Auto-Differentiating Any LLM Workflow: A Farewell to Manual Prompting](https://arxiv.org/abs/2501.16673)
 

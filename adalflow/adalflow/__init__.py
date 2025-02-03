@@ -1,4 +1,4 @@
-__version__ = "1.0.1.beta.1"
+__version__ = "1.0.2"
 
 from adalflow.core.component import (
     Component,
@@ -69,6 +69,7 @@ from adalflow.components.model_client import (
     CohereAPIClient,
     BedrockAPIClient,
     DeepSeekClient,
+    TogetherClient,
 )
 
 # data pipeline
@@ -144,4 +145,5 @@ __all__ = [
     "AnthropicAPIClient",
     "CohereAPIClient",
     "BedrockAPIClient",
+    "TogetherClient",
 ]
