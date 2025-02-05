@@ -199,14 +199,15 @@ class Net(nn.Module):
 ``` -->
 ## Unified Framework for Auto-Optimization
 
-AdalFlow provides token-efficient and high-performing prompt optimization within a unified framework.
+<!-- AdalFlow provides token-efficient and high-performing prompt optimization within a unified framework. -->
 To optimize your pipeline, simply define a ``Parameter`` and pass it to AdalFlow's ``Generator``.
-Whether you need to optimize task instructions or run some few-shot demonstrations,
-AdalFlow's unified framework offers an easy way to **diagnose**, **visualize**, **debug**, and **train** your pipeline.
+You use `PROMPT` for prompt tuning via textual gradient descent and `DEMO` for few-shot demonstrations.
+<!-- Whether you need to optimize task instructions or run some few-shot demonstrations, -->
+We let you **diagnose**, **visualize**, **debug**, and **train** your pipeline.
 
-This [Dynamic Computation Graph](https://adalflow.sylph.ai/tutorials/trace_graph.html) demonstrates how our auto-differentiation and the dynamic computation graph work.
+<!-- This [Dynamic Computation Graph](https://adalflow.sylph.ai/tutorials/trace_graph.html) demonstrates how our auto-differentiation and the dynamic computation graph work.
 
-No need to manually defined nodes and edges, AdalFlow will automatically trace the computation graph for you.
+No need to manually defined nodes and edges, AdalFlow will automatically trace the computation graph for you. -->
 
 ### **Trainable Task Pipeline**
 
@@ -227,7 +228,7 @@ Just define it as a ``Parameter`` and pass it to AdalFlow's ``Generator``.
 
 
 
-
+#
 
 # Documentation
 
