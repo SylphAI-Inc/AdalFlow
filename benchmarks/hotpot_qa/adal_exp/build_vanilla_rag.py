@@ -107,7 +107,7 @@ class DspyRetriever(Retriever):
         if not input:
             raise ValueError(f"Input cannot be empty, top_k: {k}")
 
-        output = self.dspy_retriever(query_or_queries=input, k=k)
+        output = self.dspy_retriever(query=input, k=k)
         # print(f"dsy_retriever output: {output}")
         documents = output.passages
 
@@ -121,7 +121,7 @@ class DspyRetriever(Retriever):
 task_desc_str = r"""Answer questions with short factoid answers.
 
 You will receive context(contain relevant facts).
-Think step by step."""
+Think step by step but not thinking too long."""
 
 task_desc_str_system_finetuned = "Generate a concise, factually accurate answer by synthesizing information from the provided context. If multiple sources are available, prioritize resolving ambiguities and cross-referencing data for consistency. Ensure the final answer directly addresses the question while considering specific numerical or descriptive criteria mentioned in the input."
 
@@ -167,7 +167,6 @@ Question: {{question}}
                     requires_opt=True,
                     instruction_to_backward_engine="You need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
                     instruction_to_optimizer="You need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
-                    # + "Given existing context, ensure the task instructions can maximize the performance.",
                 ),
                 # "few_shot_demos": adal.Parameter(
                 #     # data=demo_str,

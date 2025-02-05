@@ -93,5 +93,23 @@ gpt_4o_model = {
     },
 }
 
+deepseek_r1_distilled_model = {
+    "model_client": TogetherClient(),
+    "model_kwargs": {
+        "model": "deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
+        "temperature": 1,
+        "top_p": 0.99,
+    },
+}
+
+gpt_o3_mini_model = {
+    "model_client": OpenAIClient(),
+    "model_kwargs": {
+        "model": "o3-mini",
+        "temperature": 1,
+        # "top_p": 0.99,
+    },
+}
+
 
 dataset_path = "cache_datasets"
