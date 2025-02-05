@@ -10,7 +10,6 @@ from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from use_cases.config import (
     gpt_3_model,
     gpt_4o_model,
-    deepseek_r1_model,
 )
 from adalflow.core.generator import BackwardPassSetup
 
@@ -97,7 +96,7 @@ def train(
     adal_component = TrecClassifierAdal(
         model_client=model_client,
         model_kwargs=model_kwargs,
-        text_optimizer_model_config=deepseek_r1_model,
+        text_optimizer_model_config=gpt_4o_model,
         backward_engine_model_config=gpt_4o_model,
         teacher_model_config=gpt_4o_model,
     )
