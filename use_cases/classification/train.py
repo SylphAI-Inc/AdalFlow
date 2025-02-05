@@ -145,6 +145,8 @@ if __name__ == "__main__":
     # Optimizer revert: 0.7096774193548387 <= 0.7777777777777778
     import json
 
+    # get_logger(enable_file=False)
+
     import random
 
     random.seed(2025)

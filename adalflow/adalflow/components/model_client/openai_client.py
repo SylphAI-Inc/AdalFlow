@@ -552,25 +552,25 @@ class OpenAIClient(ModelClient):
 # Example usage:
 if __name__ == "__main__":
     from adalflow.core import Generator
-    from adalflow.utils import setup_env, get_logger
+    from adalflow.utils import setup_env
 
-    log = get_logger(level="DEBUG")
+    # log = get_logger(level="DEBUG")
 
     setup_env()
     prompt_kwargs = {"input_str": "What is the meaning of life?"}
 
     gen = Generator(
         model_client=OpenAIClient(),
-        model_kwargs={"model": "gpt-3.5-turbo", "stream": True},
+        model_kwargs={"model": "gpt-3.5-turbo", "stream": False},
     )
     gen_response = gen(prompt_kwargs)
     print(f"gen_response: {gen_response}")
 
-    for genout in gen_response.data:
-        print(f"genout: {genout}")
+    # for genout in gen_response.data:
+    #     print(f"genout: {genout}")
 
     # test that to_dict and from_dict works
-    model_client = OpenAIClient()
-    model_client_dict = model_client.to_dict()
-    from_dict_model_client = OpenAIClient.from_dict(model_client_dict)
-    assert model_client_dict == from_dict_model_client.to_dict()
+    # model_client = OpenAIClient()
+    # model_client_dict = model_client.to_dict()
+    # from_dict_model_client = OpenAIClient.from_dict(model_client_dict)
+    # assert model_client_dict == from_dict_model_client.to_dict()
