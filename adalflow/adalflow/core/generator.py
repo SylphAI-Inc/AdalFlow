@@ -4,7 +4,6 @@ It is a pipeline that consists of three subcomponents."""
 
 import json
 import re
-import os
 from pathlib import Path
 
 from typing import Any, Dict, Optional, Union, Callable, Tuple, List
@@ -50,14 +49,12 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
     OBJECTIVE_INSTRUCTION_BASE,
     OBJECTIVE_INSTRUCTION_CHAIN,
 )
-from adalflow.utils.logger import printc
 
 __all__ = ["Generator", "BackwardEngine", "create_teacher_generator"]
 
 
 log = logging.getLogger(__name__)
 
-DEBUG_MODE = os.environ.get("DEBUG_MODE", False)
 
 PromptArgType = Dict[str, Union[str, Parameter]]
 
@@ -76,6 +73,7 @@ class BackwardPassSetup(DataClass):
     )
 
 
+# TODO: better debug mode
 class Generator(GradComponent, CachedEngine, CallbackManager):
     __doc__ = """An user-facing orchestration component for LLM prediction.
 
@@ -367,7 +365,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             model_kwargs=composed_model_kwargs,
             model_type=self.model_type,
         )
-        # printc(f"api_kwargs: {api_kwargs}", color="red")
         return api_kwargs
 
     def _model_client_call(self, api_kwargs: Dict, use_cache: bool = False) -> Any:
@@ -498,11 +495,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 unwrapped_prompt_kwargs[k] = v.map_to_successor(self)
             else:
                 unwrapped_prompt_kwargs[k] = v
-        if DEBUG_MODE:
-            print(
+            log.debug(
                 f"unwrapped_prompt_kwargs: {unwrapped_prompt_kwargs}, model_kwargs: {model_kwargs}"
             )
-            print(f"prompt template: {self.template}")
+            log.debug(f"prompt template: {self.template}")
 
         output: GeneratorOutputType = None
         input_args = {}
@@ -511,11 +507,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         else:
             if self.teacher_mode and not isinstance(self, BackwardEngine):
                 if not self._teacher:
-                    if DEBUG_MODE:
-                        print(
-                            f"unwrapped_prompt_kwargs: {unwrapped_prompt_kwargs}, model_kwargs: {model_kwargs}"
-                        )
-                        print(f"names: {self.name}")
+                    log.debug(
+                        f"unwrapped_prompt_kwargs: {unwrapped_prompt_kwargs}, model_kwargs: {model_kwargs}"
+                    )
+                    log.debug(f"names: {self.name}")
                     raise ValueError("Teacher generator is not set.")
                 log.info(f"Using teacher: {self._teacher}")
                 input_args = {
@@ -536,7 +531,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                         self.model_kwargs, model_kwargs
                     ),
                 }
-                # printc(f"input_args: {input_args}", color="red")
 
                 output = self.call(**input_args, id=id)
                 if not isinstance(output, GeneratorOutput):
@@ -609,8 +603,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         #     log.debug(f"Backward engine: {self.backward_engine}")
 
         # attach a funtion to compute gradient for predecessors
-
-        printc(f"disable_backward_engine config: {self._disable_backward_engine}")
+        log.debug(f"disable_backward_engine: {self._disable_backward_engine}")
 
         response.set_grad_fn(
             BackwardContext(
@@ -642,7 +635,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         backward_pass_setup = (
             backward_engine.backward_pass_setup if backward_engine else None
         )
-        printc(
+        log.debug(
             f"backward pass setup: {backward_pass_setup}, name: {self.name}",
             color="red",
         )
@@ -761,8 +754,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             template=ALL_PRED_INFO,
         )()
 
-        printc(f"all_pred_info: {all_pred_info}")
-
         conv_ins_template = None  # CONVERSATION_START_INSTRUCTION_BASE
         obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
         if is_intermediate_node:  # TODO: this will always be true
@@ -842,9 +833,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 )
                 if failure_message:
                     response_gradient_list = [failure_message] * len(children_params)
-                printc(f"failure_message: {failure_message}", color="red")
 
-        print(f"gradient list: {response_gradient_list}")
+                log.debug(f"failure_message: {failure_message}")
 
         # computes gradient for each prompt predecessor
         for i, pred in enumerate(children_params):
@@ -987,7 +977,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # print(f"Backward engine prompt: {backward_engine_prompt_str}")
         gradient_value = None
         if not disable_backward_engine:
-            printc("doing backward engine")
             gradient_output: GeneratorOutput = None
             if (
                 backward_pass_setup.compute_grad_for_errors_only
@@ -1008,13 +997,15 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 gradient_output: GeneratorOutput = backward_engine(
                     prompt_kwargs=backward_engine_prompt_kwargs
                 )
-                prompt_str = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
-                printc(f"Backward engine prompt: {prompt_str}")
+                prompt_str = backward_engine.get_prompt(  # noqa F841
+                    **backward_engine_prompt_kwargs
+                )
+                # printc(f"Backward engine prompt: {prompt_str}")
                 if not isinstance(gradient_output, GeneratorOutput):
                     raise ValueError(
                         f"Generator: Backward Engine should return a GeneratorOutput. Got {gradient_output} instead."
                     )
-            printc(f"Backward engine gradient: {gradient_output}")
+            # printc(f"Backward engine gradient: {gradient_output}")
 
             # USE this to trace each node's input and output, all nodes can be visualized
             log.info(

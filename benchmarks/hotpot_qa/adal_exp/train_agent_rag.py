@@ -225,10 +225,8 @@ if __name__ == "__main__":
         tg=use_tg,
         strategy=set_strategy,
         max_proposals_per_step=max_proposals_per_step,
-        disable_backward=args.disable_backward,
-        disable_backward_gradients=args.disable_backward_gradients,
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_12_387b2_run_1.json",
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/AgenticRAGAdal/constrained_max_steps_4_dca7e_run_1.json",
+        disable_backward=disable_backward,
+        disable_backward_gradients=disable_backward_gradients,
     )
     print(f"ckpt: {ckpt}")
     if set_output_path:

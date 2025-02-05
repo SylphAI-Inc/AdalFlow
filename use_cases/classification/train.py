@@ -10,6 +10,7 @@ from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from use_cases.config import (
     gpt_3_model,
     gpt_4o_model,
+    deepseek_r1_model,
 )
 from adalflow.core.generator import BackwardPassSetup
 
@@ -96,7 +97,7 @@ def train(
     adal_component = TrecClassifierAdal(
         model_client=model_client,
         model_kwargs=model_kwargs,
-        text_optimizer_model_config=gpt_4o_model,
+        text_optimizer_model_config=deepseek_r1_model,
         backward_engine_model_config=gpt_4o_model,
         teacher_model_config=gpt_4o_model,
     )
@@ -144,6 +145,8 @@ if __name__ == "__main__":
     #     Evaluating step(6): 0.7333 across 30 samples, Max potential: 0.7778:  83%|▊| 30/36 [00:08<00:01,
     # Optimizer revert: 0.7096774193548387 <= 0.7777777777777778
     import json
+
+    # get_logger(enable_file=False)
 
     import random
 

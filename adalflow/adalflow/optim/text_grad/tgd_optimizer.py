@@ -16,7 +16,6 @@ from adalflow.optim.text_grad.backend_engine_prompt import VARIABLE_AND_PEERS_IN
 from adalflow.optim.parameter import Parameter
 
 from adalflow.core.base_data_class import DataClass
-from adalflow.utils.logger import printc
 from adalflow.core.types import GeneratorOutput
 
 
@@ -453,7 +452,7 @@ class TGDOptimizer(TextOptimizer):
             for p in self.params
             if p.id != param.id and p not in param.peers
         ]
-        printc(f"system_params: {system_params}", color="blue")
+        log.debug(f"system_params: {system_params}")
         peers_params = [p.get_param_info() for p in param.peers]
         variable_and_peer_info = self.variable_and_peers_info.call(
             variable=param.get_param_info(), peers=peers_params
@@ -520,7 +519,7 @@ class TGDOptimizer(TextOptimizer):
         if self.proposing:
             raise ValueError("Already proposing a value.")
 
-        printc("Proposing a new value.", color="magenta")
+        log.debug("Proposing a new value.")
 
         # no cache so that new proposal can be made
         no_cache = True
@@ -550,14 +549,13 @@ class TGDOptimizer(TextOptimizer):
                     prompt_kwargs=prompt_kwargs, use_cache=not no_cache
                 )
             except Exception as e:
-                printc(f"Error in the optimizer: {e}", color="red")
+                log.debug(f"Error in the optimizer: {e}")
                 raise e
             if not isinstance(response, GeneratorOutput):
                 raise TypeError(f"Wrong response type: {type(response)}")
 
             prompt_str = self.llm_optimizer.get_prompt(**prompt_kwargs)
             log.debug(f"TGD LLM optimizer prompt: {prompt_str}")
-            printc(f"TGD LLM optimizer prompt: {prompt_str}", color="blue")
             proposed_data: TGDData = (
                 response.data
                 if response.data is not None
@@ -569,9 +567,8 @@ class TGDOptimizer(TextOptimizer):
             )
             # save current tgd output data
             self.current_tgd_output[param.id] = proposed_data
-            printc(f"Response from the optimizer: {response}", color="blue")
 
-            log.info(f"Response from the optimizer: {response}")
+            log.debug(f"Response from the optimizer: {response}")
             # if not proposed_data.update:
             #     printc(f"No update is required for {param.name}", color="yellow")
             #     param.propose_data(param.data)

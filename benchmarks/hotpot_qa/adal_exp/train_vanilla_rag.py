@@ -28,7 +28,7 @@ def train_diagnose(
         text_optimizer_model_config=gpt_3_model,
     )
     trainer = adal.Trainer(adaltask=adal_component)
-    trainer.diagnose(dataset=trainset, split="train")
+    trainer.diagnose(dataset=testset, split="test")
     # trainer.diagnose(dataset=valset, split="val")
     # trainer.diagnose(dataset=testset, split="test")
 
