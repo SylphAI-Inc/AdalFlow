@@ -109,17 +109,16 @@ For collaboration, contact [Li Yin](https://www.linkedin.com/in/li-yin-ai/).
 
 # Why AdalFlow
 
-1. Embracing a design pattern similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
-AdalFlow provides `Model-agnostic` building blocks to build LLM task pipelines, ranging from RAG, Agents to classical NLP tasks like text classification and named entity recognition. It is easy to get high performance only using manual prompting.
-2. AdalFlow provides a unified auto-differentiative framework for both zero-shot prompt optimization and few-shot optimization. It advances existing auto-optimization research, including ``Text-Grad`` and ``DsPy``.
-Through our research, ``LLM-AutoDiff`` and ``Learn-to-Reason Few-shot In Context Learning``, AdalFlow ``Trainer`` achieves the highest accuracy while being the most token-efficient.
+1. **Say goodbye to manual prompting**: AdalFlow provides a unified auto-differentiative framework for both zero-shot optimization and few-shot prompt optimization. Our research, ``LLM-AutoDiff`` and ``Learn-to-Reason Few-shot In Context Learning``, achieve the highest accuracy among all auto-prompt optimization libraries.
+2. **Switch your LLM app to any model via a config**:  AdalFlow provides `Model-agnostic` building blocks for LLM task pipelines, ranging from RAG, Agents to classical NLP tasks.
+
 
 <!-- It advances existing auto-optimization research, including Text-Grad and DsPy. Through our research, Text-Grad 2.0, and Learn-to-Reason Few-shot In-Context Learning, AdalFlow Trainer achieves the highest accuracy while being the most token-efficient. -->
 
 <!-- AdalFlow not only helps developers build model-agnostic LLM task pipelines with full control over prompts and output processing, but it also auto-optimizes these pipelines to achieve SOTA accuracy. -->
 <!-- Embracing a design pattern similar to PyTorch, AdalFlow is powerful, light, modular, and robust. -->
 
-Here is an optimization demonstration on a text classification task:
+<!-- Here is an optimization demonstration on a text classification task: -->
 <!-- <p align="center">
   <img src="docs/source/_static/images/classification_training_map.png" alt="AdalFlow Auto-optimization" style="width: 80%;">
 </p>
@@ -129,19 +128,15 @@ Here is an optimization demonstration on a text classification task:
 </p> -->
 
 <p align="center" style="background-color: #f0f0f0;">
-  <img src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/classification_training_map.png" style="width: 80%;" alt="AdalFlow Auto-optimization">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/adalflow_rag_benchmarks.png" style="width: 80%;" alt="AdalFlow Auto-optimization">
 </p>
 
-<p align="center" style="background-color: #f0f0f0;">
+A trained DeepSeek R1 LLaMA70B(r1 distilled) is even better than GPT-o1 without training.
+<!-- <p align="center" style="background-color: #f0f0f0;">
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/classification_opt_prompt.png" alt="AdalFlow Optimized Prompt" style="width: 80%;">
-</p>
+</p> -->
 
-
-Among all libraries, AdalFlow achieved the highest accuracy with manual prompting (starting at 82%) and the highest accuracy after optimization.
-
-
-
-Further reading: [Optimize Classification](https://adalflow.sylph.ai/use_cases/classification.html)
+Further reading: [Use Cases](https://adalflow.sylph.ai/use_cases/)
 
 ## Light, Modular, and Model-Agnostic Task Pipeline
 
