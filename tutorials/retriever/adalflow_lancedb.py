@@ -48,22 +48,3 @@ if __name__ == "__main__":
     retriever = init_retriever()
     output = retriever.retrieve(query="What are the benefits of renewable energy?")
     print(output)
-
-    # # Define the retriever
-    # retriever = LanceDBRetriever(
-    #     collection_name="my_collection",
-    #     client=None,
-    #     embedder=None,
-    #     top_k=10,
-    #     vector_name=None,
-    #     text_key="text",
-    #     metadata_key="meta_data",
-    #     filter=None,
-    # )
-
-    # # Reset the index
-    # retriever.reset_index()
-
-    # # Call the retriever
-    # output = retriever.call("query")
-    # print(output)
