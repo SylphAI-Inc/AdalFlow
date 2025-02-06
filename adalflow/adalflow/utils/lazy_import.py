@@ -72,12 +72,11 @@ class OptionalPackages(Enum):
         "Please install Azure packages with: pip install azure-identity azure-core azure-ai-formrecognizer azure-ai-textanalytics",
     )
     TOGETHER = ("together", "Please install together with: pip install together")
-    MISTRAL = ("mistralai", "Please install mistralai with: pip install mistralai")
+    MISTRAL = ("mistralai", "Please install mistralai with: pip install mistrali")
     FIREWORKS = (
         "fireworks-ai",
         "Please install fireworks-ai with: pip install fireworks-ai",
     )
-
     # search library
     FAISS = (
         "faiss",
