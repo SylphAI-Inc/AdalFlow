@@ -127,11 +127,20 @@ For collaboration, contact [Li Yin](https://www.linkedin.com/in/li-yin-ai/).
   <img src="docs/source/_static/images/classification_opt_prompt.png" alt="AdalFlow Auto-optimization" style="width: 80%;">
 </p> -->
 
-<p align="center" style="background-color: #f0f0f0;">
+<!-- <p align="center" style="background-color: #f0f0f0;">
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/adalflow_rag_benchmarks.png" style="width: 80%;" alt="AdalFlow Auto-optimization">
+</p> -->
+
+<!-- A trained DeepSeek R1 LLaMA70B(r1 distilled) is even better than GPT-o1 without training. -->
+
+<p align="center" style="background-color: #f0f0f0;">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/classification_training_map.png" style="width: 80%;" alt="AdalFlow Auto-optimization">
 </p>
 
-A trained DeepSeek R1 LLaMA70B(r1 distilled) is even better than GPT-o1 without training.
+<p align="center" style="background-color: #f0f0f0;">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/classification_opt_prompt.png" alt="AdalFlow Optimized Prompt" style="width: 80%;">
+</p>
+<!-- Among all libraries, AdalFlow achieved the highest accuracy with manual prompting (starting at 82%) and the highest accuracy after optimization. -->
 <!-- <p align="center" style="background-color: #f0f0f0;">
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/classification_opt_prompt.png" alt="AdalFlow Optimized Prompt" style="width: 80%;">
 </p> -->
