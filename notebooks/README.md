@@ -1,15 +1,15 @@
-This is where all our colab notebookes are gonna be tracked as `ipynb` files.
+This is where all of our colab notebooks will be tracked as `ipynb` files.
 
-There are still other notebooks in both `tutorials/` and `use_cases` directories that we will migrate to here.
+There are still other notebooks in both `tutorials/` and `use_cases` directories that will be migrated here.
 
 ## Objective
 
-Jupyter notebooks/colabs will be in complementary to documents on our [documentation website](https://adalflow.sylph.ai) and its source code at either `tutorials/` or `use_cases/`. It is designed to have less text compared with documents and more showcasing the code and results.
+Jupyter notebooks/colabs will complement our documents at [documentation website](https://adalflow.sylph.ai) and their source code at either `tutorials/` or `use_cases/`. These are designed to be less verbose than our documents and showcase the code and results.
 
 
 ## Structure
 
-We provided a colab template at `notebooks/adalflow_colab_template` that you can make a copy use:
+We provided a colab template at `notebooks/adalflow_colab_template`. You can make a copy using:
 
 `cp notebooks/adalflow_colab_template.ipynb notebooks/your_new_colab.ipynb`.
 
@@ -19,15 +19,19 @@ The template consists of three parts:
 2. Content section of your notebook. Link to Next that users can look at.
 3. Issues and Feedback.
 
-## If you want to use a ikernel in .ipynb to test notebooks
+#  Tests
+
+## Use kernel first if you are developing something new
+
+If you want to use an ikernel in .ipynb to test notebooks
 
 You can use the following command to install the kernel at the root of the project:
 
 ```poetry run python -m ipykernel install --user --name my-project-kernel```
 
-## If you need to use dev api
+## If a new package needs to be released and tested on the changes
 
-You can go to adalflow dir and do
+You can go to adalflow dir and run
 
 ```bash
 poetry build

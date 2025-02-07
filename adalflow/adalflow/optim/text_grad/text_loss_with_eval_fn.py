@@ -26,7 +26,8 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
     OBJECTIVE_INSTRUCTION_BASE,
     OBJECTIVE_INSTRUCTION_CHAIN,  # often not used
 )
-from adalflow.utils import printc
+
+# from adalflow.utils import printc
 
 
 log = logging.getLogger(__name__)
@@ -318,11 +319,7 @@ class EvalFnToTextLoss(LossComponent):
         if response.score is not None:
             pred.set_score(response.score)
         pred.set_gt(ground_truth)
-        printc(f"pred: {pred.eval_input}, gt: {ground_truth}")
-        # print(f"setting pred name {pred.name} score to {response.data}")
-        # print(f"gradient_param: {pred.gradients}")
-
-        # TODO: reduce meta
+        log.debug(f"pred: {pred.eval_input}, gt: {ground_truth}")
 
     def backward(
         self,
@@ -381,11 +378,9 @@ class EvalFnToTextLoss(LossComponent):
                     f"EvalFnToTextLoss: response.data must be a float. Got {type(response.data)}."
                 )
             pred.score = response.data
-            from adalflow.utils.logger import printc
 
-            printc(
+            log.debug(
                 f"EvalFnToTextLoss: {pred.name} set_score: {response.data}, {response.name}",
-                "blue",
             )
             log.info(f"setting pred name {pred.name} score to {response.data}")
 

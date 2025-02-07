@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 import uuid
 from adalflow.optim.types import ParameterType
 from adalflow.core.base_data_class import DataClass
-from adalflow.utils.logger import printc
+
 import html
 from adalflow.optim.gradient import Gradient
 
@@ -602,10 +602,7 @@ class Parameter(Generic[T]):
             )
 
         setattr(target[trace_id], "score", score)
-
-        from adalflow.utils.logger import printc
-
-        printc(f"Adding score {score} to trace {trace_id}", "magenta")
+        log.debug(f"Adding score {score} to trace {trace_id}")
 
     ############################################################################################################
     #   Used for optimizer to propose new data
@@ -743,7 +740,7 @@ class Parameter(Generic[T]):
             component_name = None
             if hasattr(node, "component_trace"):
                 component_name = node.component_trace.name
-            printc(
+            log.debug(
                 f"node: {node.name}, component: {component_name}, grad_fn: {node.grad_fn}."
             )
             if node.get_grad_fn() is not None:  # gradient function takes in the engine
@@ -771,7 +768,6 @@ class Parameter(Generic[T]):
 
         data_json = None
         node_data_type = str(type(node.data)).replace("<", "&lt;").replace(">", "&gt;")
-        printc(f"Node data type: {node_data_type}")
         if isinstance(node.data, dict):
             data_json = data_json
         elif isinstance(node.data, DataClass):

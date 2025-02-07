@@ -1,5 +1,6 @@
 """Base building block for building LLM task pipelines.
-It handles states recursively, such as training, components, parameters recursively along with serialization and deserialization."""
+It handles states recursively, such as training, components, parameters recursively along with serialization and deserialization.
+"""
 
 from collections import OrderedDict, namedtuple
 from typing import (
@@ -476,7 +477,13 @@ class Component:
         User must override this for the training scenario
         if bicall is not defined.
         """
-        raise NotImplementedError("Subclasses must implement `forward` or `bicall`.")
+        if self._has_bicall():
+            output = self.bicall(*args, **kwargs)
+            return output
+        else:
+            raise NotImplementedError(
+                "Subclasses must implement `forward` or `bicall`."
+            )
 
     def call(self, *args, **kwargs):
         """

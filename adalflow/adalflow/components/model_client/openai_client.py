@@ -58,6 +58,7 @@ T = TypeVar("T")
 def get_first_message_content(completion: ChatCompletion) -> str:
     r"""When we only need the content of the first message.
     It is the default parser for chat completion."""
+    log.debug(f"raw completion: {completion}")
     return completion.choices[0].message.content
 
 
@@ -220,27 +221,36 @@ class OpenAIClient(ModelClient):
         log.debug(f"completion: {completion}, parser: {self.chat_completion_parser}")
         try:
             data = self.chat_completion_parser(completion)
+        except Exception as e:
+            log.error(f"Error parsing the completion: {e}")
+            return GeneratorOutput(data=None, error=str(e), raw_response=completion)
+
+        try:
             usage = self.track_completion_usage(completion)
             return GeneratorOutput(
                 data=None, error=None, raw_response=data, usage=usage
             )
         except Exception as e:
-            log.error(f"Error parsing the completion: {e}")
-            return GeneratorOutput(data=None, error=str(e), raw_response=completion)
+            log.error(f"Error tracking the completion usage: {e}")
+            return GeneratorOutput(data=None, error=str(e), raw_response=data)
 
     def track_completion_usage(
         self,
         completion: Union[ChatCompletion, Generator[ChatCompletionChunk, None, None]],
     ) -> CompletionUsage:
-        if isinstance(completion, ChatCompletion):
+
+        try:
             usage: CompletionUsage = CompletionUsage(
                 completion_tokens=completion.usage.completion_tokens,
                 prompt_tokens=completion.usage.prompt_tokens,
                 total_tokens=completion.usage.total_tokens,
             )
             return usage
-        else:
-            raise ValueError(f"Unsupported completion type: {type(completion)}")
+        except Exception as e:
+            log.error(f"Error tracking the completion usage: {e}")
+            return CompletionUsage(
+                completion_tokens=None, prompt_tokens=None, total_tokens=None
+            )
 
     def parse_embedding_response(
         self, response: CreateEmbeddingResponse
@@ -366,8 +376,6 @@ class OpenAIClient(ModelClient):
                 final_model_kwargs["mask"] = self._encode_image(mask)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
-
-        # print(f"final_model_kwargs: {final_model_kwargs}")
 
         return final_model_kwargs
 
@@ -544,25 +552,25 @@ class OpenAIClient(ModelClient):
 # Example usage:
 if __name__ == "__main__":
     from adalflow.core import Generator
-    from adalflow.utils import setup_env, get_logger
+    from adalflow.utils import setup_env
 
-    log = get_logger(level="DEBUG")
+    # log = get_logger(level="DEBUG")
 
     setup_env()
-    # prompt_kwargs = {"input_str": "What is the meaning of life?"}
+    prompt_kwargs = {"input_str": "What is the meaning of life?"}
 
-    # gen = Generator(
-    #     model_client=OpenAIClient(),
-    #     model_kwargs={"model": "gpt-3.5-turbo", "stream": True},
-    # )
-    # gen_response = gen(prompt_kwargs)
-    # print(f"gen_response: {gen_response}")
+    gen = Generator(
+        model_client=OpenAIClient(),
+        model_kwargs={"model": "gpt-3.5-turbo", "stream": False},
+    )
+    gen_response = gen(prompt_kwargs)
+    print(f"gen_response: {gen_response}")
 
     # for genout in gen_response.data:
     #     print(f"genout: {genout}")
 
     # test that to_dict and from_dict works
-    model_client = OpenAIClient()
-    model_client_dict = model_client.to_dict()
-    from_dict_model_client = OpenAIClient.from_dict(model_client_dict)
-    assert model_client_dict == from_dict_model_client.to_dict()
+    # model_client = OpenAIClient()
+    # model_client_dict = model_client.to_dict()
+    # from_dict_model_client = OpenAIClient.from_dict(model_client_dict)
+    # assert model_client_dict == from_dict_model_client.to_dict()
