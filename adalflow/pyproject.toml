@@ -75,10 +75,6 @@ lancedb = "^0.5.2"
 boto3 = "^1.35.19"
 pydantic = ">=2.10.0,<2.11.0"
 
-# Note: I removed openai, groq, faiss-cpu, torch, etc. from here
-# because they already exist as optional deps above. If you need them
-# in test automatically, you'll install them with `poetry install --with test,<dep>`.
-
 [tool.poetry.group.qdrant.dependencies]
 # Group dependencies are inherently optional, so `optional = true` isn't strictly needed
 qdrant-client = { version = ">=1.12.2,<2.0.0", markers = "python_version >= '3.10'" }
