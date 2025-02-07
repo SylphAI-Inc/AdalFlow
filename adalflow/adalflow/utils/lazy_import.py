@@ -97,7 +97,7 @@ class OptionalPackages(Enum):
         "Please install datasets with: pip install datasets",
     )
     QDRANT = (
-        "qdrant-client",
+        "qdrant_client",
         "Please install qdrant-client with: pip install qdrant-client",
     )
 
