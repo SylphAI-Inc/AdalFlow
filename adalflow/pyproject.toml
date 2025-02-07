@@ -64,8 +64,16 @@ boto3 = { version = "^1.35.19", optional = true }
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.4"
 pytest-mock = "^3.14.0"
+torch = "^2.3.1"
+ollama = "^0.2.1"
+faiss-cpu = "^1.8.0"
+openai = "^1.12.0"
+groq = "^0.9.0"
+google-generativeai = "^0.7.2"
+anthropic = "^0.31.1"
+lancedb = "^0.5.2"
+boto3 = "^1.35.19"
 pydantic = ">=2.10.0,<2.11.0"
-botocore = "^1.36.8"
 
 # Note: I removed openai, groq, faiss-cpu, torch, etc. from here
 # because they already exist as optional deps above. If you need them
