@@ -46,7 +46,27 @@ OpenAIClient = LazyImport(
 )
 
 DeepSeekClient = LazyImport(
-    "adalflow.components.model_client.deepseek_client.DeepSeekClient", None
+    "adalflow.components.model_client.deepseek_client.DeepSeekClient",
+    OptionalPackages.OPENAI,
+)
+
+MistralClient = LazyImport(
+    "adalflow.components.model_client.mistral_client.MistralClient",
+    OptionalPackages.MISTRAL,
+)
+
+XAIClient = LazyImport(
+    "adalflow.components.model_client.xai_client.XAIClient", OptionalPackages.OPENAI
+)
+
+FireworksClient = LazyImport(
+    "adalflow.components.model_client.fireworks_client.FireworksClient",
+    OptionalPackages.FIREWORKS,
+)
+
+SambaNovaClient = LazyImport(
+    "adalflow.components.model_client.sambanova_client.SambaNovaClient",
+    OptionalPackages.OPENAI,
 )
 
 GoogleGenAIClient = LazyImport(
@@ -87,6 +107,11 @@ __all__ = [
     "GoogleGenAIClient",
     "OllamaClient",
     "TogetherClient",
+    "DeepSeekClient",
+    "MistralClient",
+    "XAIClient",
+    "FireworksClient",
+    "SambaNovaClient",
 ]
 
 for name in __all__:
