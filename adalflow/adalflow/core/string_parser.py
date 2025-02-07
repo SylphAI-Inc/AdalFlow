@@ -1,6 +1,7 @@
 """Extract and convert common string to Python objects.
 
-From simple data types like boolean, integer, and float to more complex data types like JSON, YAML, and list strings."""
+From simple data types like boolean, integer, and float to more complex data types like JSON, YAML, and list strings.
+"""
 
 from typing import Dict, List, Union
 import logging
