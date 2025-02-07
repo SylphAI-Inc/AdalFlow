@@ -1,4 +1,4 @@
-"""BM25 retriever implementation. """
+"""BM25 retriever implementation."""
 
 from typing import List, Dict, Optional, Callable, Any, Sequence
 import numpy as np

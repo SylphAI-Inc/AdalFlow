@@ -1,5 +1,6 @@
 """Base building block for building LLM task pipelines.
-It handles states recursively, such as training, components, parameters recursively along with serialization and deserialization."""
+It handles states recursively, such as training, components, parameters recursively along with serialization and deserialization.
+"""
 
 from collections import OrderedDict, namedtuple
 from typing import (

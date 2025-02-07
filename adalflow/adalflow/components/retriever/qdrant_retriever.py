@@ -1,13 +1,28 @@
 """Leverage a Qdrant collection to retrieve documents."""
 
 from typing import List, Optional, Any
-from qdrant_client import QdrantClient, models
+from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
-from adalflow.core.retriever import (
-    Retriever,
+qdrant_module = safe_import(
+    OptionalPackages.QDRANT.value[0], OptionalPackages.QDRANT.value[1]
 )
-from adalflow.core.embedder import Embedder
+print(f"QDRANT MODULE: {qdrant_module}")
 
+QdrantClient = qdrant_module.QdrantClient
+
+# Newer versions of qdrant have models lives under http.models
+try:
+    models = qdrant_module.models
+except AttributeError:
+    try:
+        models = qdrant_module.http.models  # Newer versions use this
+    except AttributeError:
+        raise ImportError(
+            "Cannot find `models` in `qdrant_client`. Update your import path."
+        )
+
+from adalflow.core.retriever import Retriever
+from adalflow.core.embedder import Embedder
 from adalflow.core.types import (
     RetrieverOutput,
     RetrieverStrQueryType,
