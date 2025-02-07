@@ -1,0 +1,17 @@
+.. _components-model_client-sambanova_client:
+
+sambanova_client
+=================================================
+
+.. automodule:: components.model_client.sambanova_client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      SambaNovaClient
+

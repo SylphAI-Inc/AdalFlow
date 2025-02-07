@@ -14,12 +14,17 @@ Submodules
    components.model_client.bedrock_client
    components.model_client.cohere_client
    components.model_client.deepseek_client
+   components.model_client.fireworks_client
    components.model_client.google_client
    components.model_client.groq_client
+   components.model_client.mistral_client
    components.model_client.ollama_client
    components.model_client.openai_client
+   components.model_client.sambanova_client
+   components.model_client.together_client
    components.model_client.transformers_client
    components.model_client.utils
+   components.model_client.xai_client
 
 
 ---------------

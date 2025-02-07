@@ -154,6 +154,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
     Tutorials
   </a>
@@ -173,13 +180,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -299,6 +314,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -461,7 +483,6 @@
 <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
 
 <span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils.logger</span> <span class="kn">import</span> <span class="n">printc</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">GeneratorOutput</span>
 
 
@@ -939,7 +960,7 @@
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span>
             <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">param</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">peers</span>
         <span class="p">]</span>
-        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;system_params: </span><span class="si">{</span><span class="n">system_params</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;system_params: </span><span class="si">{</span><span class="n">system_params</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">peers_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">get_param_info</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">peers</span><span class="p">]</span>
         <span class="n">variable_and_peer_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_and_peers_info</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">variable</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">get_param_info</span><span class="p">(),</span> <span class="n">peers</span><span class="o">=</span><span class="n">peers_params</span>
@@ -1017,7 +1038,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Already proposing a value.&quot;</span><span class="p">)</span>
 
-        <span class="n">printc</span><span class="p">(</span><span class="s2">&quot;Proposing a new value.&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;magenta&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Proposing a new value.&quot;</span><span class="p">)</span>
 
         <span class="c1"># no cache so that new proposal can be made</span>
         <span class="n">no_cache</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1047,14 +1068,13 @@
                     <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="ow">not</span> <span class="n">no_cache</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in the optimizer: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in the optimizer: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">e</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">GeneratorOutput</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrong response type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
             <span class="n">prompt_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_optimizer</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TGD LLM optimizer prompt: </span><span class="si">{</span><span class="n">prompt_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TGD LLM optimizer prompt: </span><span class="si">{</span><span class="n">prompt_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
             <span class="n">proposed_data</span><span class="p">:</span> <span class="n">TGDData</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">response</span><span class="o">.</span><span class="n">data</span>
                 <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -1066,9 +1086,8 @@
             <span class="p">)</span>
             <span class="c1"># save current tgd output data</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">current_tgd_output</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">proposed_data</span>
-            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Response from the optimizer: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
 
-            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Response from the optimizer: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Response from the optimizer: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="c1"># if not proposed_data.update:</span>
             <span class="c1">#     printc(f&quot;No update is required for {param.name}&quot;, color=&quot;yellow&quot;)</span>
             <span class="c1">#     param.propose_data(param.data)</span>

@@ -66,6 +66,30 @@ AdalFlow supports a wide range of model providers, each offering unique capabili
             <span>Amazon Bedrock</span>
          </a>
       </div>
+      <div class="integration-item">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.together_client.html" target="_blank">
+            <img src="../_static/images/together.png" alt="Together AI">
+            <span>Together AI</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.xai_client.html" target="_blank">
+            <img src="../_static/images/xai.png" alt="xAI">
+            <span>xAI</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.fireworks_client.html" target="_blank">
+            <img src="../_static/images/fireworks.png" alt="Fireworks">
+            <span>Fireworks</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.sambanova_client.html" target="_blank">
+            <img src="../_static/images/sambanova.png" alt="Sambanova">
+            <span>Sambanova</span>
+         </a>
+      </div>
    </div>
 
 .. list-table:: LLM + VLLM

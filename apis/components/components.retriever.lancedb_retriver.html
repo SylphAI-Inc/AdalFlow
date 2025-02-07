@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -309,6 +324,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -427,12 +449,17 @@
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.deepseek_client.html">deepseek_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.fireworks_client.html">fireworks_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html">groq_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.mistral_client.html">mistral_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.ollama_client.html">ollama_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html">openai_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.sambanova_client.html">sambanova_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.together_client.html">together_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html">transformers_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.utils.html">utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.xai_client.html">xai_client</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="components.retriever.html">retriever</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -594,7 +621,7 @@
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#components.retriever.lancedb_retriver.LanceDBRetriever" title="components.retriever.lancedb_retriver.LanceDBRetriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LanceDBRetriever</span></code></a>(embedder, dimensions[, ...])</p></td>
-<td><p></p></td>
+<td><p>LanceDBRetriever is a retriever that leverages LanceDB to efficiently store and query document embeddings.</p></td>
 </tr>
 </tbody>
 </table>
@@ -602,11 +629,26 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="components.retriever.lancedb_retriver.LanceDBRetriever">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LanceDBRetriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Embedder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimensions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/tmp/lancedb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/lancedb_retriver.html#LanceDBRetriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.lancedb_retriver.LanceDBRetriever" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+<p>LanceDBRetriever is a retriever that leverages LanceDB to efficiently store and query document embeddings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>embedder</strong> (<a class="reference internal" href="../core/core.embedder.html#core.embedder.Embedder" title="core.embedder.Embedder"><em>Embedder</em></a>) – An instance of the Embedder class used for computing embeddings.</p></li>
+<li><p><strong>dimensions</strong> (<em>int</em>) – The dimensionality of the embeddings used.</p></li>
+<li><p><strong>db_uri</strong> (<em>str</em>) – The URI of the LanceDB storage (default is “/tmp/lancedb”).</p></li>
+<li><p><strong>top_k</strong> (<em>int</em>) – The number of top results to retrieve for a given query (default is 5).</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em>) – If True, the existing table is overwritten; otherwise, new documents are appended.</p></li>
+</ul>
+</dd>
+</dl>
+<p>This retriever supports adding documents with their embeddings to a LanceDB storage and retrieving relevant documents based on a given query.</p>
+<p>More information on LanceDB can be found here:(https://github.com/lancedb/lancedb)
+Documentations: https://lancedb.github.io/lancedb/</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="components.retriever.lancedb_retriver.LanceDBRetriever.add_documents">
 <span class="sig-name descname"><span class="pre">add_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/lancedb_retriver.html#LanceDBRetriever.add_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.lancedb_retriver.LanceDBRetriever.add_documents" title="Link to this definition">#</a></dt>
-<dd><p>Adds documents with pre-computed embeddings to LanceDB.
+<dd><p>Adds documents with and computes their embeddings using the provided Embedder.
 :param documents: A sequence of documents, each with a ‘content’ field containing text.
 :type documents: Sequence[Dict[str, Any]]</p>
 </dd></dl>

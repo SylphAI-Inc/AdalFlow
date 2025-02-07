@@ -1,0 +1,17 @@
+.. _components-model_client-fireworks_client:
+
+fireworks_client
+=================================================
+
+.. automodule:: components.model_client.fireworks_client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      FireworksClient
+

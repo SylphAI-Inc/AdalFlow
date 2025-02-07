@@ -154,6 +154,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -173,13 +180,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -299,6 +314,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -449,7 +471,6 @@
 
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span>
@@ -495,14 +516,12 @@
     <span class="n">OBJECTIVE_INSTRUCTION_BASE</span><span class="p">,</span>
     <span class="n">OBJECTIVE_INSTRUCTION_CHAIN</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils.logger</span> <span class="kn">import</span> <span class="n">printc</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Generator&quot;</span><span class="p">,</span> <span class="s2">&quot;BackwardEngine&quot;</span><span class="p">,</span> <span class="s2">&quot;create_teacher_generator&quot;</span><span class="p">]</span>
 
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">DEBUG_MODE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DEBUG_MODE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
 <span class="n">PromptArgType</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]]</span>
 
@@ -521,6 +540,7 @@
     <span class="p">)</span>
 
 
+<span class="c1"># TODO: better debug mode</span>
 <div class="viewcode-block" id="Generator">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator">[docs]</a>
 <span class="k">class</span> <span class="nc">Generator</span><span class="p">(</span><span class="n">GradComponent</span><span class="p">,</span> <span class="n">CachedEngine</span><span class="p">,</span> <span class="n">CallbackManager</span><span class="p">):</span>
@@ -841,7 +861,6 @@
             <span class="n">model_kwargs</span><span class="o">=</span><span class="n">composed_model_kwargs</span><span class="p">,</span>
             <span class="n">model_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_type</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="c1"># printc(f&quot;api_kwargs: {api_kwargs}&quot;, color=&quot;red&quot;)</span>
         <span class="k">return</span> <span class="n">api_kwargs</span>
 
     <span class="k">def</span> <span class="nf">_model_client_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
@@ -986,11 +1005,10 @@
                 <span class="n">unwrapped_prompt_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">map_to_successor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">unwrapped_prompt_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-        <span class="k">if</span> <span class="n">DEBUG_MODE</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;unwrapped_prompt_kwargs: </span><span class="si">{</span><span class="n">unwrapped_prompt_kwargs</span><span class="si">}</span><span class="s2">, model_kwargs: </span><span class="si">{</span><span class="n">model_kwargs</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;prompt template: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;prompt template: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutputType</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">input_args</span> <span class="o">=</span> <span class="p">{}</span>
@@ -999,11 +1017,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">teacher_mode</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">BackwardEngine</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_teacher</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">DEBUG_MODE</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;unwrapped_prompt_kwargs: </span><span class="si">{</span><span class="n">unwrapped_prompt_kwargs</span><span class="si">}</span><span class="s2">, model_kwargs: </span><span class="si">{</span><span class="n">model_kwargs</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="p">)</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;names: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;unwrapped_prompt_kwargs: </span><span class="si">{</span><span class="n">unwrapped_prompt_kwargs</span><span class="si">}</span><span class="s2">, model_kwargs: </span><span class="si">{</span><span class="n">model_kwargs</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;names: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Teacher generator is not set.&quot;</span><span class="p">)</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using teacher: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_teacher</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">input_args</span> <span class="o">=</span> <span class="p">{</span>
@@ -1024,7 +1041,6 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="n">model_kwargs</span>
                     <span class="p">),</span>
                 <span class="p">}</span>
-                <span class="c1"># printc(f&quot;input_args: {input_args}&quot;, color=&quot;red&quot;)</span>
 
                 <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">**</span><span class="n">input_args</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">GeneratorOutput</span><span class="p">):</span>
@@ -1097,8 +1113,7 @@
         <span class="c1">#     log.debug(f&quot;Backward engine: {self.backward_engine}&quot;)</span>
 
         <span class="c1"># attach a funtion to compute gradient for predecessors</span>
-
-        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;disable_backward_engine config: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_disable_backward_engine</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;disable_backward_engine: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_disable_backward_engine</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">response</span><span class="o">.</span><span class="n">set_grad_fn</span><span class="p">(</span>
             <span class="n">BackwardContext</span><span class="p">(</span>
@@ -1133,7 +1148,7 @@
         <span class="n">backward_pass_setup</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">backward_engine</span><span class="o">.</span><span class="n">backward_pass_setup</span> <span class="k">if</span> <span class="n">backward_engine</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span>
-        <span class="n">printc</span><span class="p">(</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;backward pass setup: </span><span class="si">{</span><span class="n">backward_pass_setup</span><span class="si">}</span><span class="s2">, name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
         <span class="p">)</span>
@@ -1253,8 +1268,6 @@
             <span class="n">template</span><span class="o">=</span><span class="n">ALL_PRED_INFO</span><span class="p">,</span>
         <span class="p">)()</span>
 
-        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;all_pred_info: </span><span class="si">{</span><span class="n">all_pred_info</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
         <span class="n">conv_ins_template</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># CONVERSATION_START_INSTRUCTION_BASE</span>
         <span class="n">obj_ins_template</span> <span class="o">=</span> <span class="n">OBJECTIVE_INSTRUCTION_BASE</span>
         <span class="k">if</span> <span class="n">is_intermediate_node</span><span class="p">:</span>  <span class="c1"># TODO: this will always be true</span>
@@ -1334,9 +1347,8 @@
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">failure_message</span><span class="p">:</span>
                     <span class="n">response_gradient_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">failure_message</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">children_params</span><span class="p">)</span>
-                <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;failure_message: </span><span class="si">{</span><span class="n">failure_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;gradient list: </span><span class="si">{</span><span class="n">response_gradient_list</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;failure_message: </span><span class="si">{</span><span class="n">failure_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># computes gradient for each prompt predecessor</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pred</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">children_params</span><span class="p">):</span>
@@ -1479,7 +1491,6 @@
         <span class="c1"># print(f&quot;Backward engine prompt: {backward_engine_prompt_str}&quot;)</span>
         <span class="n">gradient_value</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">disable_backward_engine</span><span class="p">:</span>
-            <span class="n">printc</span><span class="p">(</span><span class="s2">&quot;doing backward engine&quot;</span><span class="p">)</span>
             <span class="n">gradient_output</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="n">backward_pass_setup</span><span class="o">.</span><span class="n">compute_grad_for_errors_only</span>
@@ -1500,13 +1511,15 @@
                 <span class="n">gradient_output</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="n">backward_engine</span><span class="p">(</span>
                     <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">backward_engine_prompt_kwargs</span>
                 <span class="p">)</span>
-                <span class="n">prompt_str</span> <span class="o">=</span> <span class="n">backward_engine</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">backward_engine_prompt_kwargs</span><span class="p">)</span>
-                <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Backward engine prompt: </span><span class="si">{</span><span class="n">prompt_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">prompt_str</span> <span class="o">=</span> <span class="n">backward_engine</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span>  <span class="c1"># noqa F841</span>
+                    <span class="o">**</span><span class="n">backward_engine_prompt_kwargs</span>
+                <span class="p">)</span>
+                <span class="c1"># printc(f&quot;Backward engine prompt: {prompt_str}&quot;)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gradient_output</span><span class="p">,</span> <span class="n">GeneratorOutput</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;Generator: Backward Engine should return a GeneratorOutput. Got </span><span class="si">{</span><span class="n">gradient_output</span><span class="si">}</span><span class="s2"> instead.&quot;</span>
                     <span class="p">)</span>
-            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Backward engine gradient: </span><span class="si">{</span><span class="n">gradient_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># printc(f&quot;Backward engine gradient: {gradient_output}&quot;)</span>
 
             <span class="c1"># USE this to trace each node&#39;s input and output, all nodes can be visualized</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>

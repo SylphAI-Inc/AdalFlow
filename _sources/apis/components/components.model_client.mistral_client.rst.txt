@@ -1,0 +1,17 @@
+.. _components-model_client-mistral_client:
+
+mistral_client
+===============================================
+
+.. automodule:: components.model_client.mistral_client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      MistralClient
+

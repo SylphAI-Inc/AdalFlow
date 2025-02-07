@@ -156,6 +156,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -304,6 +319,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -769,79 +791,6 @@ This is helpful when your retriever would need to work with different pool of do
 <p>In default, the score is a simulated probabity in range <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code> using consine similarity. The higher the score, the more relevant the document is to the query.
 You can check the retriever for more type of scores.</p>
 </section>
-<section id="lancedbretriever">
-<h3>LanceDBRetriever<a class="headerlink" href="#lancedbretriever" title="Link to this heading">#</a></h3>
-<p>To perform semantic search using LanceDB, we will use <code class="xref py py-class docutils literal notranslate"><span class="pre">LanceDBRetriever</span></code>.
-The <cite>LanceDBRetriever</cite> is designed for efficient vector-based retrieval with LanceDB, leveraging embeddings that can be either <code class="docutils literal notranslate"><span class="pre">List[float]</span></code> or <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>.
-LanceDB supports in-memory and disk-based configurations and can handle large-scale data with high retrieval speed.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">lancedb</span></code> package is optional. Ensure you have it installed in your environment to use LanceDBRetriever.</p>
-</div>
-<p>We will prepare the document embeddings using the <cite>content</cite> field.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
-
-<span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dimensions&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
-    <span class="s2">&quot;encoding_format&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="n">embedder</span> <span class="o">=</span> <span class="n">Embedder</span><span class="p">(</span><span class="n">model_client</span><span class="o">=</span><span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">(),</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">)</span>
-<span class="n">output</span> <span class="o">=</span> <span class="n">embedder</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">])</span>
-<span class="n">documents_embeddings</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">embedding</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>After initializing the LanceDB retriever, we can add documents and perform retrievals. The retriever can be set with its top-k hyperparameter during initialization.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever</span> <span class="kn">import</span> <span class="n">LanceDBRetriever</span>
-<span class="n">retriever</span> <span class="o">=</span> <span class="n">LanceDBRetriever</span><span class="p">(</span><span class="n">embedder</span><span class="o">=</span><span class="n">embedder</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">db_uri</span><span class="o">=</span><span class="s2">&quot;/tmp/lancedb&quot;</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">retriever</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The printout:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LanceDBRetriever</span><span class="p">(</span>
- <span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">total_documents</span><span class="o">=</span><span class="mi">0</span>
- <span class="p">(</span><span class="n">embedder</span><span class="p">):</span> <span class="n">Embedder</span><span class="p">(</span>
-    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;text-embedding-3-small&#39;</span><span class="p">,</span> <span class="s1">&#39;dimensions&#39;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span> <span class="s1">&#39;encoding_format&#39;</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span><span class="p">},</span>
-    <span class="p">(</span><span class="n">model_client</span><span class="p">):</span> <span class="n">OpenAIClient</span><span class="p">()</span>
- <span class="p">)</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>We can add documents to LanceDB and use the retriever for query-based searches.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">documents</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span>
-        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;The Impact of Renewable Energy on the Economy&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs.&quot;</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Understanding Solar Panels&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms.&quot;</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Pros and Cons of Solar Energy&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;While solar energy offers substantial environmental benefits, such as reducing carbon footprints and pollution, it also has downsides.&quot;</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Renewable Energy and Its Effects&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Renewable energy sources like wind, solar, and hydro power play a crucial role in combating climate change.&quot;</span>
-    <span class="p">}</span>
-<span class="p">]</span>
-
-<span class="c1"># Add documents to LanceDB</span>
-<span class="n">retriever</span><span class="o">.</span><span class="n">add_documents</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>
-
-<span class="c1"># Perform retrieval queries</span>
-<span class="n">output_1</span> <span class="o">=</span> <span class="n">retriever</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="s2">&quot;What are the benefits of renewable energy?&quot;</span><span class="p">)</span>
-<span class="n">output_2</span> <span class="o">=</span> <span class="n">retriever</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="s2">&quot;How do solar panels impact the environment?&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Query 1 Results:&quot;</span><span class="p">,</span> <span class="n">output_1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Query 2 Results:&quot;</span><span class="p">,</span> <span class="n">output_2</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This setup allows the <cite>LanceDBRetriever</cite> to function as an efficient tool for large-scale, embedding-based document retrieval within LanceDB.</p>
-</section>
 <section id="bm25retriever">
 <h3>BM25Retriever<a class="headerlink" href="#bm25retriever" title="Link to this heading">#</a></h3>
 <p>So the semantic search works pretty well. We will see how <a class="reference internal" href="../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever" title="components.retriever.bm25_retriever.BM25Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">BM25Retriever</span></code></a> works in comparison.
@@ -1117,6 +1066,58 @@ Here is our code:</p>
 </pre></div>
 </div>
 </section>
+<section id="lancedbretriever">
+<h3>LanceDBRetriever<a class="headerlink" href="#lancedbretriever" title="Link to this heading">#</a></h3>
+<p>To perform semantic search using LanceDB, we will use <code class="xref py py-class docutils literal notranslate"><span class="pre">LanceDBRetriever</span></code>.
+The <cite>LanceDBRetriever</cite> is designed for efficient vector-based retrieval with LanceDB, leveraging embeddings that can be either <code class="docutils literal notranslate"><span class="pre">List[float]</span></code> or <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>.
+LanceDB supports in-memory and disk-based configurations and can handle large-scale data with high retrieval speed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">lancedb</span></code> package is optional. Ensure you have it installed in your environment to use LanceDBRetriever.</p>
+</div>
+<p>We will prepare the document embeddings using the <cite>content</cite> field.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+
+<span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dimensions&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+    <span class="s2">&quot;encoding_format&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">embedder</span> <span class="o">=</span> <span class="n">Embedder</span><span class="p">(</span><span class="n">model_client</span><span class="o">=</span><span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">(),</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">embedder</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>After initializing the LanceDB retriever, we can add documents and perform retrievals. The retriever can be set with its top-k hyperparameter during initialization.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever</span> <span class="kn">import</span> <span class="n">LanceDBRetriever</span>
+<span class="n">retriever</span> <span class="o">=</span> <span class="n">LanceDBRetriever</span><span class="p">(</span><span class="n">embedder</span><span class="o">=</span><span class="n">embedder</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">db_uri</span><span class="o">=</span><span class="s2">&quot;/tmp/lancedb&quot;</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">retriever</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LanceDBRetriever</span><span class="p">(</span>
+ <span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">total_documents</span><span class="o">=</span><span class="mi">0</span>
+ <span class="p">(</span><span class="n">embedder</span><span class="p">):</span> <span class="n">Embedder</span><span class="p">(</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;text-embedding-3-small&#39;</span><span class="p">,</span> <span class="s1">&#39;dimensions&#39;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span> <span class="s1">&#39;encoding_format&#39;</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span><span class="p">},</span>
+    <span class="p">(</span><span class="n">model_client</span><span class="p">):</span> <span class="n">OpenAIClient</span><span class="p">()</span>
+ <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>We can add documents to LanceDB and use the retriever for query-based searches.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">retriever</span><span class="o">.</span><span class="n">add_documents</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>
+
+<span class="c1"># Perform retrieval queries</span>
+<span class="n">output_1</span> <span class="o">=</span> <span class="n">retriever</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="s2">&quot;What are the benefits of renewable energy?&quot;</span><span class="p">)</span>
+<span class="n">output_2</span> <span class="o">=</span> <span class="n">retriever</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="s2">&quot;How do solar panels impact the environment?&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Query 1 Results:&quot;</span><span class="p">,</span> <span class="n">output_1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Query 2 Results:&quot;</span><span class="p">,</span> <span class="n">output_2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This setup allows the <cite>LanceDBRetriever</cite> to function as an efficient tool for large-scale, embedding-based document retrieval within LanceDB.</p>
+</section>
 <section id="postgresretriever">
 <h3>PostgresRetriever<a class="headerlink" href="#postgresretriever" title="Link to this heading">#</a></h3>
 <p>Coming soon.</p>
@@ -1257,11 +1258,11 @@ Additionally, <code class="docutils literal notranslate"><span class="pre">Local
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documents-filtering">Documents filtering</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-in-action">Retriever in Action</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#faissretriever">FAISSRetriever</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lancedbretriever">LanceDBRetriever</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bm25retriever">BM25Retriever</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reranker-as-retriever">Reranker as Retriever</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-as-retriever">LLM as Retriever</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#qdrant-retriever">Qdrant Retriever</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lancedbretriever">LanceDBRetriever</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#postgresretriever">PostgresRetriever</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-score-threshold-instead-of-top-k">Use Score Threshold instead of top_k</a></li>
 </ul>

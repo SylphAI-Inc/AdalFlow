@@ -154,6 +154,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
     Tutorials
   </a>
@@ -173,13 +180,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -299,6 +314,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -444,30 +466,41 @@
                   
   <h1>Source code for components.retriever.lancedb_retriver</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
 <span class="kn">import</span> <span class="nn">lancedb</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+
 <span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.retriever</span> <span class="kn">import</span> <span class="n">Retriever</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">RetrieverOutput</span>
 
-<span class="c1"># Initialize logging</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RetrieverStrQueryType</span><span class="p">,</span>
+<span class="p">)</span>
+
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="c1"># Defined data types</span>
-<span class="n">LanceDBRetrieverDocumentEmbeddingType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
-    <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
-<span class="p">]</span>  <span class="c1"># single embedding</span>
-<span class="n">LanceDBRetrieverDocumentsType</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">LanceDBRetrieverDocumentEmbeddingType</span><span class="p">]</span>
 
-
-<span class="c1"># Step 2: Define the LanceDBRetriever class</span>
 <div class="viewcode-block" id="LanceDBRetriever">
 <a class="viewcode-back" href="../../../apis/components/components.retriever.lancedb_retriver.html#components.retriever.lancedb_retriver.LanceDBRetriever">[docs]</a>
-<span class="k">class</span> <span class="nc">LanceDBRetriever</span><span class="p">(</span>
-    <span class="n">Retriever</span><span class="p">[</span><span class="n">LanceDBRetrieverDocumentEmbeddingType</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span>
-<span class="p">):</span>
+<span class="k">class</span> <span class="nc">LanceDBRetriever</span><span class="p">(</span><span class="n">Retriever</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">RetrieverStrQueryType</span><span class="p">]):</span>
+
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        LanceDBRetriever is a retriever that leverages LanceDB to efficiently store and query document embeddings.</span>
+
+<span class="s2">        Args:</span>
+<span class="s2">            embedder (Embedder): An instance of the Embedder class used for computing embeddings.</span>
+<span class="s2">            dimensions (int): The dimensionality of the embeddings used.</span>
+<span class="s2">            db_uri (str): The URI of the LanceDB storage (default is &quot;/tmp/lancedb&quot;).</span>
+<span class="s2">            top_k (int): The number of top results to retrieve for a given query (default is 5).</span>
+<span class="s2">            overwrite (bool): If True, the existing table is overwritten; otherwise, new documents are appended.</span>
+
+<span class="s2">        This retriever supports adding documents with their embeddings to a LanceDB storage and retrieving relevant documents based on a given query.</span>
+
+<span class="s2">        More information on LanceDB can be found here:(https://github.com/lancedb/lancedb)</span>
+<span class="s2">        Documentations: https://lancedb.github.io/lancedb/</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">embedder</span><span class="p">:</span> <span class="n">Embedder</span><span class="p">,</span>
@@ -476,28 +509,13 @@
         <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        LanceDBRetriever is a retriever that leverages LanceDB to efficiently store and query document embeddings.</span>
 
-<span class="sd">        Attributes:</span>
-<span class="sd">            embedder (Embedder): An instance of the Embedder class used for computing embeddings.</span>
-<span class="sd">            dimensions (int): The dimensionality of the embeddings used.</span>
-<span class="sd">            db_uri (str): The URI of the LanceDB storage (default is &quot;/tmp/lancedb&quot;).</span>
-<span class="sd">            top_k (int): The number of top results to retrieve for a given query (default is 5).</span>
-<span class="sd">            overwrite (bool): If True, the existing table is overwritten; otherwise, new documents are appended.</span>
-
-<span class="sd">        This retriever supports adding documents with their embeddings to a LanceDB storage and retrieving relevant documents based on a given query.</span>
-
-<span class="sd">        More information on LanceDB can be found here:(https://github.com/lancedb/lancedb)</span>
-<span class="sd">        Documentations: https://lancedb.github.io/lancedb/</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">lancedb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_uri</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span> <span class="o">=</span> <span class="n">embedder</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">top_k</span> <span class="o">=</span> <span class="n">top_k</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">=</span> <span class="n">dimensions</span>
 
-        <span class="c1"># Define table schema with vector field for embeddings</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">schema</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">pa</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s2">&quot;vector&quot;</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">list_</span><span class="p">(</span><span class="n">pa</span><span class="o">.</span><span class="n">float32</span><span class="p">(),</span> <span class="n">list_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)),</span>
@@ -505,7 +523,6 @@
             <span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="c1"># Create or overwrite the table for storing documents and embeddings</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span>
             <span class="s2">&quot;documents&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;overwrite&quot;</span> <span class="k">if</span> <span class="n">overwrite</span> <span class="k">else</span> <span class="s2">&quot;append&quot;</span>
         <span class="p">)</span>
@@ -514,7 +531,7 @@
 <a class="viewcode-back" href="../../../apis/components/components.retriever.lancedb_retriver.html#components.retriever.lancedb_retriver.LanceDBRetriever.add_documents">[docs]</a>
     <span class="k">def</span> <span class="nf">add_documents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">documents</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds documents with pre-computed embeddings to LanceDB.</span>
+<span class="sd">        Adds documents with and computes their embeddings using the provided Embedder.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            documents (Sequence[Dict[str, Any]]): A sequence of documents, each with a &#39;content&#39; field containing text.</span>
 
@@ -533,7 +550,6 @@
             <span class="k">for</span> <span class="n">embedding</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">embeddings</span><span class="p">,</span> <span class="n">doc_texts</span><span class="p">)</span>
         <span class="p">]</span>
 
-        <span class="c1"># Add data to LanceDB table</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span><span class="si">}</span><span class="s2"> documents to the index&quot;</span><span class="p">)</span></div>
 
@@ -558,7 +574,6 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">query</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Query cannot be empty.&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Check if table (index) exists before performing search</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;The index has not been initialized or the table is missing.&quot;</span>

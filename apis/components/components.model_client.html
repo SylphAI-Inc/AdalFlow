@@ -157,6 +157,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -176,13 +183,21 @@
   </a>
 </li>
 
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -309,6 +324,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
@@ -427,12 +449,17 @@
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.deepseek_client.html">deepseek_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.fireworks_client.html">fireworks_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html">groq_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.mistral_client.html">mistral_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.ollama_client.html">ollama_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html">openai_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.sambanova_client.html">sambanova_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.together_client.html">together_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html">transformers_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.utils.html">utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.xai_client.html">xai_client</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -635,6 +662,10 @@
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.deepseek_client.html#components.model_client.deepseek_client.DeepSeekClient"><code class="docutils literal notranslate"><span class="pre">DeepSeekClient</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.fireworks_client.html">fireworks_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.fireworks_client.html#components.model_client.fireworks_client.FireworksClient"><code class="docutils literal notranslate"><span class="pre">FireworksClient</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.google_client.html">google_client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient.init_sync_client()</span></code></a></li>
@@ -659,6 +690,10 @@
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.to_dict"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.to_dict()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.mistral_client.html">mistral_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.mistral_client.html#components.model_client.mistral_client.MistralClient"><code class="docutils literal notranslate"><span class="pre">MistralClient</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.ollama_client.html">ollama_client</a><ul>
@@ -701,6 +736,11 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.sambanova_client.html">sambanova_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.sambanova_client.html#components.model_client.sambanova_client.SambaNovaClient"><code class="docutils literal notranslate"><span class="pre">SambaNovaClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.together_client.html">together_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.transformers_client.html">transformers_client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.average_pool"><code class="docutils literal notranslate"><span class="pre">average_pool()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder"><code class="docutils literal notranslate"><span class="pre">TransformerEmbedder</span></code></a><ul>
@@ -742,6 +782,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.utils.html">utils</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.utils.html#components.model_client.utils.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">parse_embedding_response()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.xai_client.html">xai_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.xai_client.html#components.model_client.xai_client.XAIClient"><code class="docutils literal notranslate"><span class="pre">XAIClient</span></code></a></li>
 </ul>
 </li>
 </ul>

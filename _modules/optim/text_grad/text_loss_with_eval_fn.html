@@ -154,6 +154,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
     Tutorials
   </a>
@@ -173,13 +180,21 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../apis/index.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -299,6 +314,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../get_started/index.html">
     Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../integrations/index.html">
+    Integrations
   </a>
 </li>
 
@@ -471,7 +493,8 @@
     <span class="n">OBJECTIVE_INSTRUCTION_BASE</span><span class="p">,</span>
     <span class="n">OBJECTIVE_INSTRUCTION_CHAIN</span><span class="p">,</span>  <span class="c1"># often not used</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">printc</span>
+
+<span class="c1"># from adalflow.utils import printc</span>
 
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -771,11 +794,7 @@
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">pred</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
         <span class="n">pred</span><span class="o">.</span><span class="n">set_gt</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">)</span>
-        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pred: </span><span class="si">{</span><span class="n">pred</span><span class="o">.</span><span class="n">eval_input</span><span class="si">}</span><span class="s2">, gt: </span><span class="si">{</span><span class="n">ground_truth</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="c1"># print(f&quot;setting pred name {pred.name} score to {response.data}&quot;)</span>
-        <span class="c1"># print(f&quot;gradient_param: {pred.gradients}&quot;)</span>
-
-        <span class="c1"># TODO: reduce meta</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pred: </span><span class="si">{</span><span class="n">pred</span><span class="o">.</span><span class="n">eval_input</span><span class="si">}</span><span class="s2">, gt: </span><span class="si">{</span><span class="n">ground_truth</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="EvalFnToTextLoss.backward">
 <a class="viewcode-back" href="../../../apis/optim/optim.text_grad.text_loss_with_eval_fn.html#optim.EvalFnToTextLoss.backward">[docs]</a>
@@ -836,11 +855,9 @@
                     <span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: response.data must be a float. Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
             <span class="n">pred</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
-            <span class="kn">from</span> <span class="nn">adalflow.utils.logger</span> <span class="kn">import</span> <span class="n">printc</span>
 
-            <span class="n">printc</span><span class="p">(</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;EvalFnToTextLoss: </span><span class="si">{</span><span class="n">pred</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> set_score: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;blue&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;setting pred name </span><span class="si">{</span><span class="n">pred</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> score to </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 </div>

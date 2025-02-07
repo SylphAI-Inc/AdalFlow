@@ -1,0 +1,17 @@
+.. _components-model_client-xai_client:
+
+xai_client
+===========================================
+
+.. automodule:: components.model_client.xai_client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      XAIClient
+
