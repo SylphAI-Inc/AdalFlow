@@ -4,70 +4,41 @@ from adalflow.components.model_client.openai_client import OpenAIClient
 
 BASE_URL = "https://api.mistral.ai/v1"
 
-__doc__ = r"""
-A minimal Mistral client that inherits from :class:`OpenAIClient`.
-
-This client is designed to work with Mistral’s API by setting:
-  - The API base URL to ``https://api.mistral.ai/v1``.
-  - The API key is fetched from the environment variable ``MISTRAL_API_KEY`` if not provided.
-  - The input format is supported as either ``"text"`` or ``"messages"``.
-  - The AdalFlow Generator is expected to supply additional model parameters (such as model name, temperature, and max_tokens)
-    in a single configuration point.
-
-**Example usage with the AdalFlow Generator:**
-
-.. code-block:: python
-
-    import os
-    from adalflow.core import Generator
-    from adalflow.components.model_client.mistral_client import MistralClient
-    from adalflow.utils import setup_env, get_logger
-
-    # Set up logging and load environment variables.
-    get_logger(enable_file=False)
-    setup_env()
-
-    # Create a MistralClient instance. The API key will be read from the environment if not provided.
-    client = MistralClient(api_key=os.getenv("MISTRAL_API_KEY"), input_type="messages")
-
-    # Initialize the Generator with the MistralClient and desired model parameters.
-    generator = Generator(
-        model_client=client,
-        model_kwargs={
-            "model": "mistral-large-latest",
-            "temperature": 0.7,
-            "max_tokens": 2000,
-        }
-    )
-
-    # Define the prompt to send to the model.
-    prompt_kwargs = {"input_str": "Explain the concept of machine learning."}
-
-    # Generate a response using the configured generator.
-    response = generator(prompt_kwargs)
-
-    # Check for errors and print the output.
-    if response.error:
-        print(f"[Mistral] Generator Error: {response.error}")
-    else:
-        print(f"[Mistral] Response: {response.data}")
-"""
-
 
 class MistralClient(OpenAIClient):
-    r"""
-    A minimal Mistral client that inherits from :class:`OpenAIClient`.
+    __doc__ = r"""A minimal Mistral client that inherits from :class:`OpenAIClient`.
 
-    This client customizes the following defaults:
-      - ``base_url``: Set to ``https://api.mistral.ai/v1``.
-      - ``env_api_key_name``: Uses ``MISTRAL_API_KEY`` to retrieve the API key from the environment.
-      - ``input_type``: Defaults to ``"messages"``, supporting both text and message-based inputs.
+    This client is designed to work with Mistral’s API by setting:
+    - The API base URL to ``https://api.mistral.ai/v1``.
+    - The API key is fetched from the environment variable ``MISTRAL_API_KEY`` if not provided.
+    - The input format is supported as either ``"text"`` or ``"messages"``.
+    - The AdalFlow Generator is expected to supply additional model parameters (such as model name, temperature, and max_tokens)
+        in a single configuration point.
 
-    The AdalFlow Generator is expected to provide specific model parameters (such as model name,
-    temperature, and max_tokens) in a centralized configuration.
+    **Example usage with the AdalFlow Generator:**
 
-    See the module-level documentation for an example of how to use :class:`MistralClient`
-    with the AdalFlow Generator.
+    .. code-block:: python
+
+        import os
+        from adalflow.core import Generator
+        from adalflow.components.model_client.mistral_client import MistralClient
+        from adalflow.utils import setup_env
+
+        setup_env()
+
+        generator = Generator(
+            model_client=MistralClient(),
+            model_kwargs={
+                "model": "mistral-large-latest",
+                "temperature": 0.7,
+                "max_tokens": 2000,
+            }
+        )
+
+        prompt_kwargs = {"input_str": "Explain the concept of machine learning."}
+
+        response = generator(prompt_kwargs)
+
     """
 
     def __init__(

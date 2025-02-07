@@ -1,53 +1,3 @@
-"""
-A minimal Together client that inherits from :class:`OpenAIClient`.
-
-This client is designed to work with the Together API by overriding the
-`init_sync_client` method from :class:`OpenAIClient`. It leverages the official
-Together SDK to initialize both synchronous and asynchronous client instances.
-
-References:
-  - To get an API key, sign up at https://www.together.ai/
-  - To list available models, use the command: `together models list`. For setup instructions, see:
-    https://docs.together.ai/reference/installation
-
-**Example usage with the AdalFlow Generator:**
-
-.. code-block:: python
-
-    from adalflow.core import Generator
-    from adalflow.components.model_client.together_client import TogetherClient
-    from adalflow.utils import setup_env, get_logger
-
-    # Set up logging and load environment variables.
-    get_logger(enable_file=False)
-    setup_env()
-
-    # Create a TogetherClient instance. The API key will be read from the environment if not provided.
-    client = TogetherClient(api_key="your_api_key_here")
-
-    # Initialize the Generator with the TogetherClient and desired model parameters.
-    generator = Generator(
-        model_client=client,
-        model_kwargs={
-            "model": "deepseek-ai/DeepSeek-R1",
-            "temperature": 0.7,
-            "max_tokens": 2000,
-        },
-        output_processors=your_output_processor_function,
-    )
-
-    # Define the prompt to be sent to the model.
-    prompt_kwargs = {"input_str": "Hi from AdalFlow! Summarize generative AI briefly."}
-
-    # Generate a response using the configured generator.
-    response = generator(prompt_kwargs)
-
-    if response.error:
-        print(f"[TogetherSDK] Error: {response.error}")
-    else:
-        print(f"[TogetherSDK] Response: {response.data}")
-"""
-
 import logging
 import os
 import re
@@ -65,20 +15,45 @@ from adalflow.components.model_client.openai_client import OpenAIClient
 
 logger = logging.getLogger(__name__)
 
+__all__ = ["TogetherClient"]
+
 
 class TogetherClient(OpenAIClient):
-    r"""
+    __doc__ = r"""
     A minimal Together client that inherits from :class:`OpenAIClient`.
 
-    This client customizes the following:
-      - Overrides the `init_sync_client` method to initialize a synchronous Together client.
-      - Provides an asynchronous client via the `init_async_client` method.
+    This client is designed to work with the Together API by overriding the
+    `init_sync_client` method from :class:`OpenAIClient`. It leverages the official
+    Together SDK to initialize both synchronous and asynchronous client instances.
 
-    The AdalFlow Generator is expected to supply additional model parameters (such as model name,
-    temperature, and max_tokens) via its configuration.
+    References:
+    - To get an API key, sign up at https://www.together.ai/
+    - To list available models, use the command: `together models list`. For setup instructions, see:
+        https://docs.together.ai/reference/installation
 
-    See the module-level documentation for an example of how to use :class:`TogetherClient`
-    with the AdalFlow Generator.
+    **Example usage with the AdalFlow Generator:**
+
+    .. code-block:: python
+
+        from adalflow.core import Generator
+        from adalflow.components.model_client.together_client import TogetherClient
+        from adalflow.utils import setup_env
+
+        setup_env()
+
+        generator = Generator(
+            model_client=TogetherClient(),
+            model_kwargs={
+                "model": "deepseek-ai/DeepSeek-R1",
+                "temperature": 0.7,
+                "max_tokens": 2000,
+            },
+            output_processors=your_output_processor_function,
+        )
+
+        prompt_kwargs = {"input_str": "Hi from AdalFlow! Summarize generative AI briefly."}
+
+        response = generator(prompt_kwargs)
     """
 
     def __init__(
