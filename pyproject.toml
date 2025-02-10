@@ -56,6 +56,10 @@ mistralai = "1.5.0"
 fireworks-ai = "0.15.12"
 
 
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.4"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
