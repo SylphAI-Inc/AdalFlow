@@ -121,7 +121,7 @@ class DspyRetriever(Retriever):
 task_desc_str = r"""Answer questions with short factoid answers.
 
 You will receive context(contain relevant facts).
-Think step by step but not thinking too long."""
+Think step by step."""
 
 task_desc_str_system_finetuned = "Generate a concise, factually accurate answer by synthesizing information from the provided context. If multiple sources are available, prioritize resolving ambiguities and cross-referencing data for consistency. Ensure the final answer directly addresses the question while considering specific numerical or descriptive criteria mentioned in the input."
 

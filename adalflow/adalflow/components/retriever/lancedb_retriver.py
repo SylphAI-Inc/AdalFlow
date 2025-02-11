@@ -1,38 +1,25 @@
 import logging
-import numpy as np
 import pyarrow as pa
 import lancedb
 from typing import List, Optional, Sequence, Union, Dict, Any
+
 from adalflow.core.embedder import Embedder
 from adalflow.core.retriever import Retriever
 from adalflow.core.types import RetrieverOutput
 
-# Initialize logging
+from adalflow.core.types import (
+    RetrieverStrQueryType,
+)
+
 log = logging.getLogger(__name__)
 
-# Defined data types
-LanceDBRetrieverDocumentEmbeddingType = Union[
-    List[float], np.ndarray
-]  # single embedding
-LanceDBRetrieverDocumentsType = Sequence[LanceDBRetrieverDocumentEmbeddingType]
 
+class LanceDBRetriever(Retriever[Any, RetrieverStrQueryType]):
 
-# Step 2: Define the LanceDBRetriever class
-class LanceDBRetriever(
-    Retriever[LanceDBRetrieverDocumentEmbeddingType, Union[str, List[str]]]
-):
-    def __init__(
-        self,
-        embedder: Embedder,
-        dimensions: int,
-        db_uri: str = "/tmp/lancedb",
-        top_k: int = 5,
-        overwrite: bool = True,
-    ):
-        """
+    __doc__ = r"""
         LanceDBRetriever is a retriever that leverages LanceDB to efficiently store and query document embeddings.
 
-        Attributes:
+        Args:
             embedder (Embedder): An instance of the Embedder class used for computing embeddings.
             dimensions (int): The dimensionality of the embeddings used.
             db_uri (str): The URI of the LanceDB storage (default is "/tmp/lancedb").
@@ -44,13 +31,22 @@ class LanceDBRetriever(
         More information on LanceDB can be found here:(https://github.com/lancedb/lancedb)
         Documentations: https://lancedb.github.io/lancedb/
         """
+
+    def __init__(
+        self,
+        embedder: Embedder,
+        dimensions: int,
+        db_uri: str = "/tmp/lancedb",
+        top_k: int = 5,
+        overwrite: bool = True,
+    ):
+
         super().__init__()
         self.db = lancedb.connect(db_uri)
         self.embedder = embedder
         self.top_k = top_k
         self.dimensions = dimensions
 
-        # Define table schema with vector field for embeddings
         schema = pa.schema(
             [
                 pa.field("vector", pa.list_(pa.float32(), list_size=self.dimensions)),
@@ -58,14 +54,13 @@ class LanceDBRetriever(
             ]
         )
 
-        # Create or overwrite the table for storing documents and embeddings
         self.table = self.db.create_table(
             "documents", schema=schema, mode="overwrite" if overwrite else "append"
         )
 
     def add_documents(self, documents: Sequence[Dict[str, Any]]):
         """
-        Adds documents with pre-computed embeddings to LanceDB.
+        Adds documents with and computes their embeddings using the provided Embedder.
         Args:
             documents (Sequence[Dict[str, Any]]): A sequence of documents, each with a 'content' field containing text.
 
@@ -84,7 +79,6 @@ class LanceDBRetriever(
             for embedding, text in zip(embeddings, doc_texts)
         ]
 
-        # Add data to LanceDB table
         self.table.add(data)
         log.info(f"Added {len(documents)} documents to the index")
 
@@ -106,7 +100,6 @@ class LanceDBRetriever(
         if not query or (isinstance(query, str) and query.strip() == ""):
             raise ValueError("Query cannot be empty.")
 
-        # Check if table (index) exists before performing search
         if not self.table:
             raise ValueError(
                 "The index has not been initialized or the table is missing."

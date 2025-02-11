@@ -598,7 +598,7 @@ Community
    :maxdepth: 1
    :hidden:
 
-
+   integrations/index
 
 .. toctree::
    :glob:

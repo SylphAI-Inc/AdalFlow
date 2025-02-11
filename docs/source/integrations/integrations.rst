@@ -13,13 +13,13 @@ AdalFlow supports a wide range of model providers, each offering unique capabili
 
    <div class="integration-grid">
       <div class="integration-item">
-         <a href="https://deepseek.ai/" target="_blank">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.deepseek_client.html#module-components.model_client.deepseek_client" target="_blank">
             <img src="../_static/images/deepseek.png" alt="Deepseek">
             <span>Deepseek</span>
          </a>
       </div>
       <div class="integration-item">
-         <a href="https://console.anthropic.com/" target="_blank">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client" target="_blank">
             <img src="../_static/images/anthropic.png" alt="Anthropic">
             <span>Anthropic</span>
          </a>
@@ -31,39 +31,63 @@ AdalFlow supports a wide range of model providers, each offering unique capabili
          </a>
       </div>
       <div class="integration-item">
-         <a href="https://ollama.ai/" target="_blank">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.ollama_client.html#module-components.model_client.ollama_client" target="_blank">
             <img src="../_static/images/ollama.png" alt="Ollama">
             <span>Ollama</span>
          </a>
       </div>
       <div class="integration-item">
-         <a href="https://platform.openai.com/" target="_blank">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.openai_client.html#module-components.model_client.openai_client" target="_blank">
             <img src="../_static/images/openai.png" alt="OpenAI">
             <span>OpenAI</span>
          </a>
       </div>
       <div class="integration-item">
-         <a href="https://huggingface.co/transformers" target="_blank">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.transformers_client.html#module-components.model_client.transformers_client" target="_blank">
             <img src="../_static/images/huggingface.png" alt="Transformers">
             <span>Transformers</span>
          </a>
       </div>
       <div class="integration-item">
-         <a href="https://groq.com/" target="_blank">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.groq_client.html#module-components.model_client.groq_client" target="_blank">
             <img src="../_static/images/groq.png" alt="Groq">
             <span>Groq</span>
          </a>
       </div>
       <div class="integration-item">
-         <a href="https://azure.microsoft.com/products/ai-services/openai-service" target="_blank">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.azureai_client.html#module-components.model_client.azureai_client" target="_blank">
             <img src="../_static/images/azure.png" alt="Azure OpenAI">
             <span>Azure OpenAI</span>
          </a>
       </div>
       <div class="integration-item">
-         <a href="https://aws.amazon.com/bedrock/" target="_blank">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.bedrock_client.html" target="_blank">
             <img src="../_static/images/bedrock.png" alt="Amazon Bedrock">
             <span>Amazon Bedrock</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.together_client.html" target="_blank">
+            <img src="../_static/images/together.png" alt="Together AI">
+            <span>Together AI</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.xai_client.html" target="_blank">
+            <img src="../_static/images/xai.png" alt="xAI">
+            <span>xAI</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.fireworks_client.html" target="_blank">
+            <img src="../_static/images/fireworks.png" alt="Fireworks">
+            <span>Fireworks</span>
+         </a>
+      </div>
+      <div class="integration-item">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.sambanova_client.html" target="_blank">
+            <img src="../_static/images/sambanova.png" alt="Sambanova">
+            <span>Sambanova</span>
          </a>
       </div>
    </div>
@@ -91,13 +115,13 @@ Vector Databases
 
    <div class="integration-grid">
       <div class="integration-item">
-         <a href="https://qdrant.tech/" target="_blank">
+         <a href="https://adalflow.sylph.ai/apis/components/components.retriever.qdrant_retriever.html#module-components.retriever.qdrant_retriever" target="_blank">
             <img src="../_static/images/qdrant.png" alt="Qdrant">
             <span>Qdrant</span>
          </a>
       </div>
       <div class="integration-item">
-         <a href="https://lancedb.com/" target="_blank">
+         <a href="https://adalflow.sylph.ai/apis/components/components.retriever.lancedb_retriver.html#module-components.retriever.lancedb_retriver" target="_blank">
             <img src="../_static/images/lancedb.png" alt="LanceDB">
             <span>LanceDB</span>
          </a>
@@ -112,19 +136,19 @@ Embedding and Reranking Models
 
    <div class="integration-grid">
       <div class="integration-item">
-         <a href="https://huggingface.co/" target="_blank">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.transformers_client.html#module-components.model_client.transformers_client" target="_blank">
             <img src="../_static/images/huggingface.png" alt="Hugging Face">
             <span>Hugging Face</span>
          </a>
       </div>
       <div class="integration-item">
-         <a href="https://platform.openai.com/docs/guides/embeddings" target="_blank">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.openai_client.html#module-components.model_client.openai_client" target="_blank">
             <img src="../_static/images/openai.png" alt="OpenAI">
             <span>OpenAI</span>
          </a>
       </div>
       <div class="integration-item">
-         <a href="https://cohere.com/rerank" target="_blank">
+         <a href="https://adalflow.sylph.ai/apis/components/components.model_client.cohere_client.html#module-components.model_client.cohere_client" target="_blank">
             <img src="../_static/images/cohere.png" alt="Cohere">
             <span>Cohere</span>
          </a>
