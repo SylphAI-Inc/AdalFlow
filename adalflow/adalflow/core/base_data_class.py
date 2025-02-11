@@ -135,8 +135,6 @@ class DataClass:
     - DataClassFormatType.EXAMPLE_JSON: the json representation of the instance, :meth:`to_json` as string.
     - DataClassFormatType.EXAMPLE_YAML: the yaml representation of the instance, :meth:`to_yaml` as string.
 
-    Overall, we have a unified class method :meth:`format_str` to generate formatted output based on the type of operation and class/instance context.
-
     note::
         1. Avoid using Optional[Type] for the type of fields, as dataclass already distingushes between optional and required fields using default value.
         2. If you need to customize, you can subclass and overwrite any method to fit your needs.
