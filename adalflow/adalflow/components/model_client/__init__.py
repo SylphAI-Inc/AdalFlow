@@ -61,6 +61,10 @@ TogetherClient = LazyImport(
     "adalflow.components.model_client.together_client.TogetherClient",
     OptionalPackages.TOGETHER,
 )
+AzureAIClient = LazyImport(
+    "adalflow.components.model_client.azureai_client.AzureAIClient",
+    OptionalPackages.AZURE,
+)
 get_first_message_content = LazyImport(
     "adalflow.components.model_client.openai_client.get_first_message_content",
     OptionalPackages.OPENAI,
@@ -87,6 +91,8 @@ __all__ = [
     "GoogleGenAIClient",
     "OllamaClient",
     "TogetherClient",
+    "DeepSeekClient",
+    "AzureAIClient",
 ]
 
 for name in __all__:

@@ -66,12 +66,9 @@ class QuestionAnswer(DataClass):
 
 @func_to_data_component
 def parse_integer_answer(answer: str):
-    """A function that parses the last integer from a string using regular expressions."""
     try:
-        # Use regular expression to find all sequences of digits
         numbers = re.findall(r"\d+", answer)
         if numbers:
-            # Get the last number found
             answer = int(numbers[-1])
         else:
             answer = -1

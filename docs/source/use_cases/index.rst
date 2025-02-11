@@ -3,7 +3,6 @@
 Use Cases
 =============================
 
-  How different parts are used to build and to auto-optimize various LLM applications.
 
 
 We will build use cases end-to-end, ranging from classification (classical NLP tasks) to question answering, retrieval-augmented generation (RAG), and multi-generator pipelines.

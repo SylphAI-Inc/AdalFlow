@@ -11,14 +11,14 @@
 
 <h2>
     <p align="center">
-     ⚡ The Library to Build and Auto-optimize LLM Applications ⚡
+     ⚡ Say Goodbye to Manual Prompting and Vendor Lock-In ⚡
     </p>
 </h2>
 
 
 
 <p align="center">
-    <a href="https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing">
+    <a href="https://colab.research.google.com/drive/1_YnD4HshzPRARvishoU4IA-qQuX9jHrT?usp=sharing">
         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
     </a>
 </p>
@@ -85,8 +85,8 @@ Install AdalFlow with pip:
 pip install adalflow
 ```
 
-Please refer to the [full installation guide](https://adalflow.sylph.ai/get_started/installation.html) for more details.
-[Package changelog](https://github.com/SylphAI-Inc/AdalFlow/blob/main/adalflow/CHANGELOG.md).
+<!-- Please refer to the [full installation guide](https://adalflow.sylph.ai/get_started/installation.html) for more details.
+[Package changelog](https://github.com/SylphAI-Inc/AdalFlow/blob/main/adalflow/CHANGELOG.md). -->
 
 
 * Try the [Building Quickstart](https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing) in Colab to see how AdalFlow can build the task pipeline, including Chatbot, RAG, agent, and structured output.
