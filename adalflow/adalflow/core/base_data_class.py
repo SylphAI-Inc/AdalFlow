@@ -120,13 +120,13 @@ class DataClass:
 
     (1) For describing the class (data structure):
 
-    `Signature` is more token effcient than schema, and schema as it is always a json string, when you want LLMs to output yaml, it can be misleading if you describe the data structure in json.
+    `Signature` is more token-effcient than schema. Since schema is always represented as a JSON string, describing the data structure in JSON may be misleading when you want LLMS to output YAML.
 
     - DataClassFormatType.SCHEMA: a more standard way to describe the data structure in Json string, :meth:`to_schema` as string and :meth:`to_schema` as dict.
     - DataClassFormatType.SIGNATURE_JSON: imitating a json object with field name as key and description as value, :meth:`to_json_signature` as string.
     - DataClassFormatType.SIGNATURE_YAML: imitating a yaml object with field name as key and description as value, :meth:`to_yaml_signature` as string.
 
-    (2) For describing the class instance: this is helpful to do few-shot examples in LLM prompt.
+    (2) For describing the class instance: this is helpful to do few-shot examples in LLM prompts.
     - DataClassFormatType.EXAMPLE_JSON: the json representation of the instance, :meth:`to_json` as string.
     - DataClassFormatType.EXAMPLE_YAML: the yaml representation of the instance, :meth:`to_yaml` as string.
 
