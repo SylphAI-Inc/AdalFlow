@@ -99,23 +99,23 @@ class DataClass:
 
     Please only exclude optional fields in the exclude dictionary.
 
-    Designed to streamline the handling, serialization, and description of data within our applications, especially to LLM prompt.
+    Designed to streamline the handling, serialization, and description of data within our applications, especially for LLM prompts.
     We explicitly handle this instead of relying on 3rd party libraries such as pydantic or marshmallow to have better
-    transparency and to keep the order of the fields when get serialized.
+    transparency and to keep the order of the fields when they're serialized.
 
     How to create your own dataclass?
 
     1. Subclass DataClass and define the fields with the `field` decorator.
     2. Use the `medata` argument and a `desc` key to describe the field.
     3. Keep the order of the fields as how you want them to be serialized and described to LLMs.
-    4. field with default value is considered optional. Field without default value and field with default_factory=required_field is considered required.
+    4. A field with a default value is considered optional. Fields without a default value and fields with default_factory=required_field is considered required.
 
     How to use it?
 
     Describing:
 
     We defined :class:`DataClassFormatType<core.types.DataClassFormatType>` to categorize DataClass description formats
-    as input or output in LLM prompt.
+    as inputs or outputs in an LLM prompt.
 
 
     (1) For describing the class (data structure):
