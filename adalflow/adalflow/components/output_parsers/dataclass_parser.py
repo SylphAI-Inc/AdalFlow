@@ -30,7 +30,7 @@ YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML inst
 ```
 -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
 -Follow the YAML formatting conventions with an indent of 2 spaces.
--DO NOT mistaken the "properties" and "type" in the schema as the actual fields in the YAML output.
+-DO NOT mistak the "properties" and "type" in the schema for the actual fields in the YAML output.
 -Quote the string values properly."""
 
 EXAMPLES_FORMAT = r"""
