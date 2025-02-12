@@ -21,7 +21,7 @@ JSON_OUTPUT_FORMAT = r"""Your output should be formatted as a standard JSON inst
 ```
 -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
 -Use double quotes for the keys and string values.
--DO NOT mistaken the "properties" and "type" in the schema as the actual fields in the JSON output.
+-DO NOT mistake the "properties" and "type" in the schema for the actual fields in the JSON output.
 -Follow the JSON formatting conventions."""
 
 YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML instance with the following schema:
