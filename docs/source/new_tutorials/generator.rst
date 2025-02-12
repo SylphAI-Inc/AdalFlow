@@ -16,12 +16,6 @@
 Generator
 =========
 
-.. .. admonition:: Author
-..    :class: highlight
-
-..    `Li Yin <https://github.com/liyin2015>`_
-
-.. *The Center of it All*
 
 
 `Generator` is a user-facing orchestration component with a simple and unified interface for LLM prediction.

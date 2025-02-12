@@ -489,7 +489,7 @@ Auto-optimize your LLM workflow with both Prompt Tuning and Few-shot Learning
             test_dataset=test_dataset,
          )
 
-      Check out the :ref:`Full Tutorial <question_answering>` for more details.
+      :ref:`Full Tutorial here <question_answering>`.
 
 
 

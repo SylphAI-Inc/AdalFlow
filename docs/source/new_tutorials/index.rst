@@ -10,5 +10,7 @@ Tutorials
    :caption: Basics
    :hidden:
 
+   introduction
    prompt
+   parser
    generator

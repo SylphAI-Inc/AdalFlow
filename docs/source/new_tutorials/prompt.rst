@@ -17,7 +17,7 @@ Prompt
 
 AdalFlow leverages `Jinja2` [1]_  to programmatically format the prompt for the language model.
 By aggregating different parts of the prompt, it is 10X easier to understand the LLM applications.
-We created a :class:`Prompt Component<core.prompt_builder.Prompt>` class to allow developers to render the prompt with the string ``template`` and ``prompt_kwargs`` conveniently and securely.
+We created a :class:`Prompt <core.prompt_builder.Prompt>` class to allow developers to render the prompt with the string ``template`` and ``prompt_kwargs`` conveniently and securely.
 
 Introduction
 ----------------
@@ -59,7 +59,7 @@ This includes conditionals, loops, filters, and even comments, which are lacking
 
 In default, the ``Prompt`` class uses the :const:`DEFAULT_ADALFLOW_SYSTEM_PROMPT<core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT>` as its string template if no template is provided.
 But it is super easy to create your own template with Jinja2 syntax.
-Here is one example of using `Jinja2` to format the prompt with comments `{# #}` and loops `{% %}`:
+Here is one example of using `Jinja2` to format the prompt with comments `{# #}` and code blocks `{% %}`:
 
 
 .. code-block:: python
@@ -107,9 +107,10 @@ As with all components, you can use ``to_dict`` and ``from_dict`` to serialize a
 
 .. note::
 
-   In reality, we barely need to use the raw ``Prompt`` class directly as it is orchestrated by the ``Generator`` component together with the ``ModelClient`` that we will introduce next.
+   In reality, we barely need to use the raw ``Prompt`` class directly as it is orchestrated by the ``Generator``.
 
-
+You do not need to worry about handling all functionalities of a prompt, (1) we have `Parser` such as `JsonParser`, `DataClassParser` to help you handle the outpt formatting,
+(2) we `FuncTool` to help you describe a functional tool in the prompt.
 
 
 .. Prompt Engineering experience
