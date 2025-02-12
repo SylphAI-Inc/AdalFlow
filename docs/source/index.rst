@@ -613,7 +613,6 @@ Community
 .. .. Hide the use cases for now
 .. toctree::
    :maxdepth: 1
-   :caption: Use Cases
    :hidden:
 
    use_cases/index
@@ -635,7 +634,6 @@ Community
 .. toctree::
    :glob:
    :maxdepth: 1
-   :caption: For Contributors
    :hidden:
 
    contributor/index
