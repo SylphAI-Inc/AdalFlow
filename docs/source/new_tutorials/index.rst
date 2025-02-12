@@ -5,4 +5,10 @@
 Tutorials
 =============================
 
-Getting Started
+.. toctree::
+   :maxdepth: 1
+   :caption: Basics
+   :hidden:
+
+   prompt
+   generator

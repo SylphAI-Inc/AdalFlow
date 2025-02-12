@@ -613,7 +613,7 @@ Community
 .. .. Hide the use cases for now
 .. toctree::
    :maxdepth: 1
-   :caption: Use Cases - How different parts are used to build various LLM applications
+   :caption: Use Cases
    :hidden:
 
    use_cases/index
