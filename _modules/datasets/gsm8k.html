@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>datasets.types - Build and Optimize LM Workflows</title>
+        <title>datasets.gsm8k - Build and Optimize LM Workflows</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -444,154 +444,180 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for datasets.types</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+          <h1>Source code for datasets.gsm8k</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+<span class="kn">import</span> <span class="nn">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">adalflow.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
+
+
+<span class="kn">from</span> <span class="nn">adalflow.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils.file_io</span> <span class="kn">import</span> <span class="n">save_json</span><span class="p">,</span> <span class="n">load_json</span>
+<span class="kn">from</span> <span class="nn">adalflow.datasets.utils</span> <span class="kn">import</span> <span class="n">prepare_dataset_path</span>
 <span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span>
+<span class="kn">from</span> <span class="nn">adalflow.datasets.types</span> <span class="kn">import</span> <span class="n">GSM8KData</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">printc</span>
 
 
-<div class="viewcode-block" id="BaseData">
-<a class="viewcode-back" href="../../apis/datasets/datasets.types.html#datasets.types.BaseData">[docs]</a>
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">BaseData</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;A common dataclass for representing examples in a dataset.&quot;&quot;&quot;</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique identifier of the example&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">},</span>
-        <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()),</span>
-    <span class="p">)</span></div>
+<div class="viewcode-block" id="GSM8K">
+<a class="viewcode-back" href="../../apis/datasets/index.html#datasets.gsm8k.GSM8K">[docs]</a>
+<span class="k">class</span> <span class="nc">GSM8K</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot; Use huggingface datasets to load GSM8K dataset.</span>
 
+<span class="s2">            official_train: 7473</span>
+<span class="s2">            official_test: 1319</span>
 
+<span class="s2">            Our train split: 3736/2</span>
+<span class="s2">            Our val split: 3736/2</span>
+<span class="s2">            Our test split: 1319</span>
 
-<div class="viewcode-block" id="Example">
-<a class="viewcode-back" href="../../apis/datasets/index.html#datasets.types.Example">[docs]</a>
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Example</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;A common dataclass for representing examples in a dataset.&quot;&quot;&quot;</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique identifier of the example&quot;</span><span class="p">},</span>
-        <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()),</span>
-    <span class="p">)</span>
-    <span class="n">question</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The question to be answered&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">)</span>
-    <span class="n">answer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The answer to the question&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+<span class="s2">        You can use size to limit the number of examples to load.</span>
 
+<span class="s2">        Example:</span>
 
+<span class="s2">        .. code-block:: python</span>
 
-<div class="viewcode-block" id="GSM8KData">
-<a class="viewcode-back" href="../../apis/datasets/index.html#datasets.types.GSM8KData">[docs]</a>
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">GSM8KData</span><span class="p">(</span><span class="n">Example</span><span class="p">):</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;A dataclass for representing examples in the GSM8K dataset.</span>
+<span class="s2">            dataset = GSM8K(split=&quot;train&quot;, size=10)</span>
 
-<span class="s2">    You can reset the output fields:</span>
+<span class="s2">            print(f&quot;example: </span><span class="si">{dataset[0]}</span><span class="s2">&quot;)</span>
 
-<span class="s2">    .. code-block:: python</span>
+<span class="s2">        The output will be:</span>
 
-<span class="s2">        GSM8KData.set_output_fields([&quot;answer&quot;])</span>
-<span class="s2">    &quot;&quot;&quot;</span>
-    <span class="n">gold_reasoning</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The ground truth reasoning for the answer&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">)</span>
-    <span class="n">reasoning</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The reasoning for the answer&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">)</span>  <span class="c1"># your model&#39;s reasoning</span>
+<span class="s2">        .. code-block::</span>
 
-    <span class="n">__input_fields__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;question&quot;</span><span class="p">]</span>
-    <span class="n">__output_fields__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;reasoning&quot;</span><span class="p">,</span> <span class="s2">&quot;answer&quot;</span><span class="p">]</span>  <span class="c1"># default output fields</span></div>
+<span class="s2">            GSM8KData(id=&#39;8fc791e6-ea1d-472c-a882-d00d0600d423&#39;,</span>
+<span class="s2">            question=&quot;The result from the 40-item Statistics exam Marion and Ella took already came out.</span>
+<span class="s2">            Ella got 4 incorrect answers while Marion got 6 more than half the score of Ella.</span>
+<span class="s2">              What is Marion&#39;s score?&quot;,</span>
+<span class="s2">              answer=&#39;24&#39;,</span>
+<span class="s2">              gold_reasoning=&quot;Ella&#39;s score is 40 items - 4 items = &lt;&lt;40-4=36&gt;&gt;36 items.</span>
+<span class="s2">              Half of Ella&#39;s score is 36 items / 2 = &lt;&lt;36/2=18&gt;&gt;18 items.</span>
+<span class="s2">              So, Marion&#39;s score is 18 items + 6 items = &lt;&lt;18+6=24&gt;&gt;24 items.&quot;,</span>
+<span class="s2">              reasoning=None)</span>
+<span class="s2">        &quot;&quot;&quot;</span>
 
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">split</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">,</span>
+        <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
+        <span class="k">if</span> <span class="n">split</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Split must be one of &#39;train&#39;, &#39;val&#39;, &#39;test&#39;&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="HotPotQAData">
-<a class="viewcode-back" href="../../apis/datasets/index.html#datasets.types.HotPotQAData">[docs]</a>
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">HotPotQAData</span><span class="p">(</span><span class="n">Example</span><span class="p">):</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;A dataclass for representing examples in the HotPotQA dataset.&quot;&quot;&quot;</span>
-    <span class="n">gold_titles</span><span class="p">:</span> <span class="nb">set</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The set of titles that support the answer&quot;</span><span class="p">},</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The context of the question&quot;</span><span class="p">},</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_name</span> <span class="o">=</span> <span class="s2">&quot;gsm8k&quot;</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="n">prepare_dataset_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_name</span><span class="p">)</span>
+        <span class="c1"># download and save</span>
+        <span class="n">split_csv_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;split_csv_path: </span><span class="si">{</span><span class="n">split_csv_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_or_download_dataset</span><span class="p">(</span><span class="n">split_csv_path</span><span class="p">,</span> <span class="n">split</span><span class="p">)</span>
 
-    <span class="n">__input_fields__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;question&quot;</span><span class="p">]</span>
-    <span class="n">__output_fields__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;answer&quot;</span><span class="p">]</span></div>
+        <span class="c1"># load from csv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">load_json</span><span class="p">(</span><span class="n">split_csv_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span><span class="n">size</span><span class="p">]</span>
+        <span class="c1"># convert to dataclass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">GSM8KData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">]</span>
 
-    <span class="c1"># @staticmethod</span>
-    <span class="c1"># def from_dict(d: Dict[str, Any]) -&gt; &quot;HotPotQAData&quot;:</span>
-    <span class="c1">#     # Preprocess gold_titles</span>
-    <span class="c1">#     if &quot;gold_titles&quot; in d and isinstance(d[&quot;gold_titles&quot;], str):</span>
-    <span class="c1">#         try:</span>
-    <span class="c1">#             d[&quot;gold_titles&quot;] = json.loads(d[&quot;gold_titles&quot;])</span>
-    <span class="c1">#         except json.JSONDecodeError:</span>
-    <span class="c1">#             # Replace single quotes with double quotes</span>
-    <span class="c1">#             fixed_str = d[&quot;gold_titles&quot;].replace(&quot;&#39;&quot;, &#39;&quot;&#39;)</span>
-    <span class="c1">#             d[&quot;gold_titles&quot;] = set(json.loads(fixed_str))</span>
+    <span class="k">def</span> <span class="nf">_check_or_download_dataset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">split</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;It will download data from huggingface datasets and split it and save it into three csv files.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            data_path (str): The path to save the data. In particular with split name appended.</span>
+<span class="sd">            split (str): The dataset split, supports ``&quot;train&quot;`` (default), ``&quot;val&quot;`` and ``&quot;test&quot;``. Decides which split to return.</span>
+<span class="sd">            only_hard_examples (bool): If True, only hard examples will be downloaded.</span>
+<span class="sd">            keep_details (str): If &quot;all&quot;, all details will be kept. If &quot;dev_titles&quot;, only dev titles will be kept.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-    <span class="c1">#     # Preprocess context</span>
-    <span class="c1">#     if &quot;context&quot; in d and isinstance(d[&quot;context&quot;], str):</span>
-    <span class="c1">#         try:</span>
-    <span class="c1">#             d[&quot;context&quot;] = json.loads(d[&quot;context&quot;])</span>
-    <span class="c1">#         except json.JSONDecodeError:</span>
-    <span class="c1">#             fixed_str = d[&quot;context&quot;].replace(&quot;&#39;&quot;, &#39;&quot;&#39;)</span>
-    <span class="c1">#             d[&quot;context&quot;] = json.loads(fixed_str)</span>
+        <span class="k">if</span> <span class="n">data_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;data_path must be specified&quot;</span><span class="p">)</span>
 
-    <span class="c1">#     return HotPotQAData(**d)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_path</span><span class="p">):</span>
+            <span class="k">return</span>
 
+        <span class="n">safe_import</span><span class="p">(</span>
+            <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">DATASETS</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">DATASETS</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_dataset</span>
 
-<div class="viewcode-block" id="TrecData">
-<a class="viewcode-back" href="../../apis/datasets/index.html#datasets.types.TrecData">[docs]</a>
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">TrecData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;A dataclass for representing examples in the TREC dataset.&quot;&quot;&quot;</span>
-    <span class="n">question</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The question to be classified&quot;</span><span class="p">},</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;One of {ABBR, ENTY, DESC, HUM, LOC, NUM}&quot;</span><span class="p">},</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">class_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The class label, in range [0, 5]&quot;</span><span class="p">},</span>
-        <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-    <span class="p">)</span>
+        <span class="c1"># use huggingface cache</span>
+        <span class="n">gsm8k_dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;gsm8k&quot;</span><span class="p">,</span> <span class="s2">&quot;main&quot;</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
 
-    <span class="n">__input_fields__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;question&quot;</span><span class="p">]</span>  <span class="c1"># follow this order too.</span>
-    <span class="n">__output_fields__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;class_name&quot;</span><span class="p">,</span> <span class="s2">&quot;class_index&quot;</span><span class="p">]</span></div>
+        <span class="n">hf_official_train</span> <span class="o">=</span> <span class="n">gsm8k_dataset</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span>
+        <span class="n">hf_official_test</span> <span class="o">=</span> <span class="n">gsm8k_dataset</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span>
+
+        <span class="n">official_train</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">official_test</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">example</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="n">hf_official_train</span><span class="p">):</span>
+            <span class="n">question</span> <span class="o">=</span> <span class="n">example</span><span class="p">[</span><span class="s2">&quot;question&quot;</span><span class="p">]</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="n">example</span><span class="p">[</span><span class="s2">&quot;answer&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">answer</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;####&quot;</span>
+
+            <span class="n">gold_reasoning</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">answer</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">answer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)))</span>
+            <span class="n">official_train</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="nb">dict</span><span class="p">(</span><span class="n">question</span><span class="o">=</span><span class="n">question</span><span class="p">,</span> <span class="n">gold_reasoning</span><span class="o">=</span><span class="n">gold_reasoning</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="n">answer</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">example</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="n">hf_official_test</span><span class="p">):</span>
+            <span class="n">question</span> <span class="o">=</span> <span class="n">example</span><span class="p">[</span><span class="s2">&quot;question&quot;</span><span class="p">]</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="n">example</span><span class="p">[</span><span class="s2">&quot;answer&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">answer</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;####&quot;</span>
+
+            <span class="n">gold_reasoning</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">answer</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">answer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)))</span>
+            <span class="n">official_test</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="nb">dict</span><span class="p">(</span><span class="n">question</span><span class="o">=</span><span class="n">question</span><span class="p">,</span> <span class="n">gold_reasoning</span><span class="o">=</span><span class="n">gold_reasoning</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="n">answer</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">official_train</span><span class="p">)</span>  <span class="c1"># 7473 train</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">official_test</span><span class="p">)</span>  <span class="c1"># 1319 test</span>
+
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;official_train: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">official_train</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;official_test: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">official_test</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">train_set</span> <span class="o">=</span> <span class="n">official_train</span><span class="p">[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">official_train</span><span class="p">)</span> <span class="o">*</span> <span class="mi">50</span> <span class="o">//</span> <span class="mi">100</span><span class="p">]</span>
+        <span class="n">val_set</span> <span class="o">=</span> <span class="n">official_train</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">official_train</span><span class="p">)</span> <span class="o">*</span> <span class="mi">50</span> <span class="o">//</span> <span class="mi">100</span> <span class="p">:]</span>
+        <span class="n">data_path_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">split</span><span class="p">,</span> <span class="n">examples</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">train_set</span><span class="p">,</span> <span class="n">val_set</span><span class="p">,</span> <span class="n">official_test</span><span class="p">],</span>
+        <span class="p">):</span>
+            <span class="n">target_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span>
+            <span class="n">save_json</span><span class="p">(</span><span class="n">examples</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="n">target_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">train_set</span>
+        <span class="k">elif</span> <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;val&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">val_set</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">official_test</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataClass</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="c1"># test the hotpotqa data</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">HotPotQAData</span><span class="p">(</span>
-        <span class="n">question</span><span class="o">=</span><span class="s2">&quot;What is the capital of France?&quot;</span><span class="p">,</span>
-        <span class="n">answer</span><span class="o">=</span><span class="s2">&quot;Paris&quot;</span><span class="p">,</span>
-        <span class="n">gold_titles</span><span class="o">=</span><span class="nb">set</span><span class="p">([</span><span class="s2">&quot;Paris&quot;</span><span class="p">,</span> <span class="s2">&quot;France&quot;</span><span class="p">]),</span>
-        <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Paris&quot;</span><span class="p">:</span> <span class="s2">&quot;The capital of France&quot;</span><span class="p">},</span>
-    <span class="p">)</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">GSM8K</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
-    <span class="n">data_dict</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;data_dict&quot;</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">HotPotQAData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-
-    <span class="kn">from</span> <span class="nn">adalflow.utils.file_io</span> <span class="kn">import</span> <span class="n">save_json</span><span class="p">,</span> <span class="n">load_json</span>
-
-    <span class="c1"># save json</span>
-    <span class="n">save_json</span><span class="p">(</span><span class="n">data_dict</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="s2">&quot;task.json&quot;</span><span class="p">)</span>
-    <span class="c1"># load json</span>
-    <span class="n">data_dict_loaded</span> <span class="o">=</span> <span class="n">load_json</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="s2">&quot;task.json&quot;</span><span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;data_dict_loaded&quot;</span><span class="p">,</span> <span class="n">data_dict_loaded</span><span class="p">)</span>
-
-    <span class="c1"># restore the data</span>
-    <span class="n">data_restored</span> <span class="o">=</span> <span class="n">HotPotQAData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data_dict_loaded</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;data_restored&quot;</span><span class="p">,</span> <span class="n">data_restored</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;len: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset[0]: </span><span class="si">{</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
         </article>
       </div>

@@ -15,6 +15,7 @@ types
 
       BaseData
       Example
+      GSM8KData
       HotPotQAData
       TrecData
 

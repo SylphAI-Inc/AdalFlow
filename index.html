@@ -839,7 +839,7 @@ AdalFlow handles all of them as optional packages, so that developers only need 
 </div><div aria-labelledby="tab-2-2-1" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-1" name="2-1" role="tabpanel" tabindex="0"><p>Trainer takes <cite>AdalComponent</cite> and datasets as input. It trains the prompts and returns the best checkpoint.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_datasets</span><span class="p">():</span>
    <span class="n">train_data</span> <span class="o">=</span> <span class="n">TrecDataset</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
-   <span class="n">val_data</span> <span class="o">=</span> <span class="n">TrecDataset</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">)</span><span class="n">ßß</span>
+   <span class="n">val_data</span> <span class="o">=</span> <span class="n">TrecDataset</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">)</span>
    <span class="n">test_data</span> <span class="o">=</span> <span class="n">TrecDataset</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
    <span class="k">return</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">val_data</span><span class="p">,</span> <span class="n">test_data</span>
 

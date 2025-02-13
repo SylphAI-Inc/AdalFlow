@@ -1040,9 +1040,10 @@
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predecessors: </span><span class="si">{</span><span class="n">predecessors</span><span class="si">}</span><span class="s2"> for generator </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">data_to_prompt_map_fn</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;GeneratorOutput will show the raw response instead of just the final data.</span>
+<span class="sd">            The backward engine and optimizer should look at all reasoning to decide the gradient.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">data</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span>
-            <span class="c1"># if data.data is not None:</span>
-            <span class="c1">#     return data.data</span>
             <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Response: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">raw_response</span><span class="si">}</span><span class="s2"> parsed with error: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">raw_response</span><span class="si">}</span><span class="s2">&quot;</span>
