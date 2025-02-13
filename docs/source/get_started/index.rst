@@ -1,8 +1,6 @@
 Get Started
 =============================
 
-Here is the content of our documentation project.
-
 
 
 .. toctree::
@@ -10,5 +8,5 @@ Here is the content of our documentation project.
     :caption: Get Started
 
     installation
-    adalflow_in_15mins
+    adalflow_in_15mins <https://colab.research.google.com/drive/1_YnD4HshzPRARvishoU4IA-qQuX9jHrT?usp=sharing>
     community

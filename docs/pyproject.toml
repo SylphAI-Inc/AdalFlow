@@ -13,6 +13,8 @@ packages = [{ from = "_dummy", include = "dummy" }] # empty packages
 python = ">=3.9, <4.0"
 adalflow = { path = "../adalflow", develop = true } # Follow latest adalflow version
 pyvis = "^0.3.2"
+sphinx-tabs = "^3.4.7"
+furo = "^2024.8.6"
 
 [tool.poetry.group.doc.dependencies]
 # Sphinx documentation dependencies

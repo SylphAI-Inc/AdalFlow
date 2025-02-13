@@ -64,6 +64,13 @@ class OllamaClient(ModelClient):
 
     - [Download Ollama app] Go to https://github.com/ollama/ollama?tab=readme-ov-file to download the Ollama app (command line tool).
       Choose the appropriate version for your operating system.
+      One way to do is to run the following command:
+
+    .. code-block:: shell
+
+        curl -fsSL https://ollama.com/install.sh | sh
+        ollama serve
+
 
     - [Pull a model] Run the following command to pull a model:
 

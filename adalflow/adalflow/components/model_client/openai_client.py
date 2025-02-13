@@ -574,3 +574,18 @@ if __name__ == "__main__":
     # model_client_dict = model_client.to_dict()
     # from_dict_model_client = OpenAIClient.from_dict(model_client_dict)
     # assert model_client_dict == from_dict_model_client.to_dict()
+
+
+if __name__ == "__main__":
+    import adalflow as adal
+
+    # setup env or pass the api_key
+    from adalflow.utils import setup_env
+
+    setup_env()
+
+    openai_llm = adal.Generator(
+        model_client=adal.OpenAIClient(), model_kwargs={"model": "gpt-3.5-turbo"}
+    )
+    resopnse = openai_llm(prompt_kwargs={"input_str": "What is LLM?"})
+    print(resopnse)

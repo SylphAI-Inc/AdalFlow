@@ -94,8 +94,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         trainable_params (Optional[List[str]], optional): The list of trainable parameters. Defaults to [].
 
     Note:
-        The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output.
+        1. The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output.
         And we encourage you to only use it to parse the response to data format you will use later.
+        2. For structured output, you should avoid using `stream` as the output_processors can only be run after all the data is available.
     """
 
     model_type: ModelType = ModelType.LLM
@@ -335,7 +336,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         r"""Get string completion and process it with the output_processors."""
         # parse chat completion will only fill the raw_response
         output: GeneratorOutput = self.model_client.parse_chat_completion(completion)
-        # Now adding the data filed to the output
+        # Now adding the data field to the output
         data = output.raw_response
         if self.output_processors:
             if data:
@@ -1187,7 +1188,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         ]
 
         s += f"trainable_prompt_kwargs={prompt_kwargs_repr}"
-        s += f", prompt={self.prompt}"
         return s
 
     def to_dict(self) -> Dict[str, Any]:

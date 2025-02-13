@@ -1,9 +1,9 @@
 .. _get_started-integrations:
 
-Integrations
-===========
+All Providers
+==================
 
-AdalFlow integrates with many popular AI and database platforms to provide a comprehensive solution for your LLM applications.
+AdalFlow integrates with many popular AI and database platforms to provide a comprehensive solution for your LM applications.
 
 Model Providers
 -------------
@@ -173,24 +173,6 @@ Embedding and Reranking Models
      - Chunking large text into smaller segments for more efficient and accurate embedding, retrieval, and LLM context processing.
      - :ref:`TextSplitter <tutorials-text_splitter>`
 
-.. .. list-table:: Embeddings and Reranking
-..    :widths: 25 55 20
-..    :header-rows: 1
-
-..    * - **Major Class**
-..      - **Description**
-..      - **Reference**
-..    * - **Embedding Models**
-..      - Models that convert text (or other data) into high-dimensional vectors. A core step for vector similarity or semantic understanding.
-..        Examples include OpenAI Embeddings, Hugging Face transformers, etc.
-..      - “core.embedder.Embedder” docs
-..    * - **Re-ranking Models**
-..      - Models that reorder or refine retrieved candidates based on more advanced semantic understanding or specialized metrics.
-..        Improves final retrieval accuracy.
-..      - “Rerank” doc references (BERT, Cohere, etc.)
-..    * - **LLM-based Retrieval** (optional)
-..      - Using an LLM directly for retrieval or re-ranking. Often more expensive but can be more accurate for certain tasks.
-..      - Could be integrated in your LLM pipeline
 
 .. raw:: html
 
