@@ -1,5 +1,8 @@
 
-## [1.0.4] - 2025-02-9
+## [1.0.4] - 2025-02-13
+
+### Modified
+- `Embedder` and `BatchEmbedder` changed to `DataComponent`.
 
 ### model_client (added)
 - `list_models` method.
