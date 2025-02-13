@@ -985,7 +985,7 @@ class Trainer(Component):
         correct_loss = None
         failed_loss = None
         all_losses = []
-        printc("Finding one successful and one failed loss", "blue")
+        printc("Finding one successful and one failed example", "blue")
         for batch in train_loader:
             y_preds = self.adaltask.train_step(batch, 0, self.num_workers)
             losses = self.adaltask.loss_step(batch, y_preds, 0, self.num_workers)
@@ -997,7 +997,7 @@ class Trainer(Component):
                 else:
                     failed_loss = loss
             if correct_loss is not None and failed_loss is not None:
-                printc("Found correct and failed loss", "blue")
+                printc("Found correct and failed example", "blue")
                 break
         if not all_losses:
             raise ValueError("No losses found in the dataset.")

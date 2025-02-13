@@ -180,7 +180,7 @@ class Parameter(Generic[T]):
         self,
         *,
         id: Optional[str] = None,  # unique id of the parameter
-        data: T = None,  # for generator output, the data will be set up as raw_response
+        data: T = None,
         data_id: str = None,  # for tracing the data item in the training/val/test set
         requires_opt: bool = True,
         role_desc: str = "",
@@ -1613,7 +1613,9 @@ class OutputParameter(Parameter):
         score: Optional[float] = None,
         eval_input: object = None,
         successor_map_fn: Optional[Dict[str, Callable]] = None,
-        data_in_prompt: Optional[Callable] = None,
+        data_in_prompt: Optional[
+            Callable
+        ] = None,  # how will the data be displayed in the prompt
         full_response: Optional[Any] = None,
     ):
         super().__init__(
