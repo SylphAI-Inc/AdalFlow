@@ -14,3 +14,5 @@ Tutorials
    prompt
    parser
    generator
+   embedder
+   integrations

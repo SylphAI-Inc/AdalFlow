@@ -52,7 +52,7 @@ For basic data formats where you do not need to create a data class for, you can
      - Extracts '[]' and '{}' and parses JSON strings from the text. It resorts to `yaml.safe_load` for robust parsing.
    * - :class:`YamlParser<core.string_parser.YamlParser>`
      - ``dict``
-     - Extracts '```yaml```', '```yml```' or the whole string and parses YAML strings from the text.
+     - Extracts ```yaml```, ```yml``` or the whole string and parses YAML strings from the text.
 
 
 Here are some quick demonstrations:

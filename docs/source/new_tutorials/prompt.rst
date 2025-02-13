@@ -109,8 +109,12 @@ As with all components, you can use ``to_dict`` and ``from_dict`` to serialize a
 
    In reality, we barely need to use the raw ``Prompt`` class directly as it is orchestrated by the ``Generator``.
 
-You do not need to worry about handling all functionalities of a prompt, (1) we have `Parser` such as `JsonParser`, `DataClassParser` to help you handle the outpt formatting,
-(2) we `FuncTool` to help you describe a functional tool in the prompt.
+Here is the :class:`prompt template<components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT>` for REACT agent, it consists of (1)
+ system task description, (2) tools, (3) context variables, (4) output format, (5) user input, and (6) past history.
+ By reading the prompt structure, developers can easily understand the agent's behavior and functionalities.
+
+You do not need to worry about handling all functionalities of a prompt, we have (1)  `Parser` such as `JsonParser`, `DataClassParser` to help you handle the outpt formatting,
+(2) `FuncTool` to help you describe a functional tool in the prompt.
 
 
 .. Prompt Engineering experience

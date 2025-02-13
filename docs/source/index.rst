@@ -593,12 +593,7 @@ Community
 
 
 
-.. toctree::
-   :glob:
-   :maxdepth: 1
-   :hidden:
 
-   integrations/index
 
 .. toctree::
    :glob:

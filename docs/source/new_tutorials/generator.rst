@@ -2,7 +2,7 @@
 
 .. raw:: html
 
-   <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+   <div style="display: flex; justify-content: flex-start; align-items: center; margin-top: 20px;">
       <a href="https://colab.research.google.com/drive/1gmxeX1UuUxZDouWhkLGQYrD4hAdt9IVX?usp=sharing" target="_blank" style="margin-right: 10px;">
          <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
       </a>
@@ -16,14 +16,8 @@
 Generator
 =========
 
-
-
-`Generator` is a user-facing orchestration component with a simple and unified interface for LLM prediction.
-It is a pipeline consisting of three subcomponents. By switching the prompt template, model client, and output parser, users have full control and flexibility.
-
-Design
+Introduction
 ---------------------------------------
-
 .. figure:: /_static/images/generator.png
     :align: center
     :alt: AdalFlow generator design
@@ -31,573 +25,310 @@ Design
 
     Generator - The Orchestrator for LLM Prediction
 
+:class:`Generator<core.generator.Generator>` is the most important computation unit in AdalFlow:
+
+1. It orchestrates and unifies `Prompt`, `ModelClient` (model provider apis), and `output_processors` (parser and structured output) to achieve functionalities such as reasoning, structured output, tool usage, code generation.
+   With these functionalities, developers can program it to be any LLM applications, from chatbots(with or w.o memory), RAG, to agents.
+2. It is a `GradComponnent` that has both `forward` and `backward` methods. Developers can optimize the prompt when it is defined as a `Parameter` and being used together with `Trainer`.
 
 
-The :class:`Generator<core.generator.Generator>` is designed to achieve the following goals:
+Generator has two desirable properties:
 
-1. Model Agnostic: The Generator should be able to call any LLM model with the same prompt.
-2. Unified interface: It manages the pipeline from prompt (input) -> model call -> output parsing, while still giving users full control over each part.
-3. Unified Output: This will make it easy to log and save records of all LLM predictions.
-4. Work with Optimizer: It should be able to work with Optimizer to optimize the prompt.
-
-The first three goals apply to other orchestrator components like :ref:`Retriever<tutorials-retriever>`, :ref:`Embedder<tutorials-embedder>`, and :ref:`Agent<tutorials-agent>` (mostly) as well.
-
-
-An Orchestrator
-^^^^^^^^^^^^^^^^^
-
-It orchestrates three components:
-
-- `Prompt`: by taking in ``template`` (string) and ``prompt_kwargs`` (dict) to format the prompt at initialization.
-  When the ``template`` is not provided, it defaults to :const:`DEFAULT_ADALFLOW_SYSTEM_PROMPT<core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT>`.
-
-- `ModelClient`: by taking in an already instantiated ``model_client`` and ``model_kwargs`` to call the model.
-  Switching out the model client allows you to call any LLM model using the same prompt and output parsing.
-
-- `output_processors`: A single component or chained components via :class:`Sequential<core.container.Sequential>` to process the raw response to desired format.
-  If no output processor provided, it is decided by the model client and often returns raw string response (from the first response message).
-
-**Call and arguments**
-
-The `Generator` supports both the ``call`` (``__call__``) and ``acall`` methods.
-They take two optional arguments:
-
-- ``prompt_kwargs`` (dict): This is combined with the ``prompt_kwargs`` from the initial ``Prompt`` component and used to format the prompt.
-- ``model_kwargs`` (dict): This is  combined with the ``model_kwargs`` from the initial model client, and along with :const:`ModelType.LLM<core.types.ModelType.LLM>`, it is passed to the ``ModelClient``.
-  The ModelClient will interpret all the inputs as ``api_kwargs`` specific to each model API provider.
-
-
-
-.. note ::
-
-    This also means any ``ModelClient`` that wants to be compatible with `Generator` should take accept ``model_kwargs`` and ``model_type`` as arguments.
-
-
-
-
-
-
-GeneratorOutput
-^^^^^^^^^^^^^^^^^
-Unlike other components, we cannot always enforce the LLM to follow the output format. The `ModelClient` and the `output_processors` may fail.
-
+1. Model Agnostic: The Generator levarages a standard interface--`ModelClient`--to interact with different LLM models. This makes it easy to switch between different models simply via configuration.
+2. Unified Output: With :class:`GeneratorOutput<core.types.GeneratorOutput>`, we ensure it can capture the final parsed output in ``data``, any error message in ``error``, and the raw response in ``raw_response``. ``id`` and ``usage`` are also included for tracking purposes.
 
 .. note::
-    Whenever an error occurs, we do not raise the error and force the program to stop.
-    Instead, `Generator` will always return an output record.
-    We made this design choice because it can be really helpful to log various failed cases in your train/eval sets all together for further investigation and improvement.
 
-
-
-In particular, we created :class:`GeneratorOutput<core.types.GeneratorOutput>` to capture important information.
-
-- `data` (object) : Stores the final processed response after all three components in the pipeline, indicating `success`.
-- `error` (str): Contains the error message if any of the three components in the pipeline fail. When this is not `None`, it indicates `failure`.
-- `raw_response` (str): Raw string response for reference of any LLM predictions. Currently, it is a string that comes from the first response message. [This might change and be different in the future]
-- `metadata` (dict): Stores any additional information
-- `usage`:  Reserved for tracking the usage of the LLM prediction.
-
-Whether to do further processing or terminate the pipeline whenever an error occurs is up to the user from here on.
-
-
-Basic Generator Tutorial
-=====================
-
-The Generator class is the core component in AdalFlow for interacting with AI models. This tutorial covers the essential concepts and patterns.
-
-What is a Generator?
-------------------
-
-A Generator is a unified interface for model interactions that:
-
-1. Takes input and formats it using a prompt template
-2. Sends the formatted input to an AI model
-3. Returns a standardized ``GeneratorOutput`` object
+    Users should decide what to do when the error occurs.
 
 Basic Usage
-----------
+---------------------------------------
 
-Here's the simplest way to use a Generator:
+Using the Generator is simple:
 
 .. code-block:: python
 
     from adalflow.core import Generator
     from adalflow.components.model_client.openai_client import OpenAIClient
 
-    # Create a generator
-    gen = Generator(
+    llm = Generator(
         model_client=OpenAIClient(),
         model_kwargs={
-            "model": "gpt-4o-mini",
-            "temperature": 0.7
+            "model": "o3-mini",
         }
     )
 
-    # Use the generator
-    response = gen({"input_str": "What is the capital of France?"})
-    print(response.raw_response)
+    prompt_kwargs = {"input_str": "What is LLM?"}
 
-Understanding the Output
-----------------------
+    response = llm(prompt_kwargs=prompt_kwargs) # or llm.call in eval and llm.forward in training
+    print(response)
 
-Every Generator call returns a ``GeneratorOutput`` object:
+The generator comes with a default prompt template :class:`DEFAULT_ADALFLOW_SYSTEM_PROMPT<core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT>`, which can be replaced by user's own template with `Jinja2` syntax.
+Here is the printout of the `GeneratorOutput`:
+
+.. code-block::
+
+    GeneratorOutput(id=None, data='LLM most commonly stands for "Large Language Model." This is a type of artificial intelligence system that has been trained on vast amounts of text data to understand, generate, and interact using human language. Here are some key points about LLMs:\n\n• They use advanced deep learning techniques (often based on the Transformer architecture) to learn patterns, grammar, context, and semantics in language.\n• Examples of LLMs include models like OpenAI’s GPT series, Google’s BERT, and others.\n• They can perform a wide range of language tasks such as answering questions, summarizing documents, translating languages, writing creative content, and more.\n\nIt’s worth noting that in other contexts, "LLM" might also refer to a Master of Laws degree. However, in discussions related to AI and natural language processing, LLM almost always refers to a Large Language Model.', error=None, usage=CompletionUsage(completion_tokens=570, prompt_tokens=45, total_tokens=615), raw_response='LLM most commonly stands for "Large Language Model." This is a type of artificial intelligence system that has been trained on vast amounts of text data to understand, generate, and interact using human language. Here are some key points about LLMs:\n\n• They use advanced deep learning techniques (often based on the Transformer architecture) to learn patterns, grammar, context, and semantics in language.\n• Examples of LLMs include models like OpenAI’s GPT series, Google’s BERT, and others.\n• They can perform a wide range of language tasks such as answering questions, summarizing documents, translating languages, writing creative content, and more.\n\nIt’s worth noting that in other contexts, "LLM" might also refer to a Master of Laws degree. However, in discussions related to AI and natural language processing, LLM almost always refers to a Large Language Model.', metadata=None)
+
+
+Here is how you can print out the prompt:
 
 .. code-block:: python
 
-    response = gen({"input_str": "Hello"})
+    llm.print_prompt(**prompt_kwargs)
 
-    # Access different parts of the response
-    print(response.raw_response)  # Raw model output
-    print(response.data)          # Processed data (if using output processors)
-    print(response.error)         # Error message if something went wrong
-    print(response.usage)         # Token usage information
+Now, let's use a simple and customized template to perform a task of counting objects:
 
-When to Create a Subclass
------------------------
 
-You should create a Generator subclass in two main cases:
-
-1. **Different Model Types**: When using non-LLM endpoints
-
-   .. code-block:: python
-
-    class ImageGenerator(Generator):
-        """For DALL-E and other image generation models"""
-        model_type = ModelType.IMAGE_GENERATION
-
-2. **Custom Processing**: When you need special input/output handling
-
-   .. code-block:: python
-
-    class CustomGenerator(Generator):
-        def _pre_call(self, prompt_kwargs, model_kwargs):
-            # Custom preprocessing
-            return super()._pre_call(prompt_kwargs, model_kwargs)
-
-When NOT to Subclass
-------------------
-
-Don't create a subclass for:
-
-1. **Model Parameters**: Use ``model_kwargs`` instead
-
-   .. code-block:: python
-
-    # Just pass parameters directly
-    gen = Generator(
-        model_client=client,
-        model_kwargs={
-            "model": "gpt-4o-mini",
-            "temperature": 0.9
-        }
-    )
-
-2. **Output Processing**: Use output processors
-
-   .. code-block:: python
-
-    from adalflow.components.output_processors import JsonParser
-
-    gen = Generator(
-        model_client=client,
-        output_processors=JsonParser()  # Process output as JSON
-    )
-
-Common Patterns
--------------
-
-1. **Error Handling**:
-
-   .. code-block:: python
-
-    response = gen({"input_str": "Query"})
-    if response.error:
-        print(f"Error: {response.error}")
-    else:
-        print(response.raw_response)
-
-2. **Async Usage**:
-
-   .. code-block:: python
-
-    async def generate():
-        response = await gen.acall({"input_str": "Hello"})
-        print(response.raw_response)
-
-3. **Streaming**:
-
-   .. code-block:: python
-
-    gen = Generator(
-        model_client=client,
-        model_kwargs={"stream": True}
-    )
-    for chunk in gen({"input_str": "Tell me a story"}):
-        print(chunk)
-
-Model Types
-----------
-
-Generator supports different model types through ``ModelType``:
-
-- ``ModelType.LLM``: Text generation (default)
-- ``ModelType.IMAGE_GENERATION``: Image generation (DALL-E)
-- ``ModelType.EMBEDDER``: Text embeddings
-- ``ModelType.RERANKER``: Document reranking
-
-Best Practices
-------------
-
-1. Always check for errors in the response
-2. Use output processors for structured outputs
-3. Set model parameters in ``model_kwargs``
-4. Use async methods for better performance in async contexts
-5. Use streaming for long responses
-
-Remember: The Generator is designed to provide a consistent interface regardless of the underlying model or task.
-
-Generator In Action
----------------------------------------
-
-We will create a simple one-turn chatbot to demonstrate how to use the Generator.
-
-Minimum Example
-^^^^^^^^^^^^^^^^^
-
-The minimum setup to initiate a generator in the code:
 
 .. code-block:: python
 
     import adalflow as adal
-    from adalflow.components.model_client import GroqAPIClient
 
-    generator = adal.Generator(
-        model_client=GroqAPIClient(),
-        model_kwargs={"model": "llama3-8b-8192"},
-    )
-    print(generator)
-
-The structure of generator using ``print``:
-
-.. raw:: html
-
-    <div style="max-height: 300px; overflow-y: auto;">
-        <pre>
-            <code class="language-python">
-        Generator(
-        model_kwargs={'model': 'llama3-8b-8192'},
-        (prompt): Prompt(
-            template: <SYS>
-            {# task desc #}
-            {% if task_desc_str %}
-            {{task_desc_str}}
-            {% else %}
-            You are a helpful assistant.
-            {% endif %}
-            {# output format #}
-            {% if output_format_str %}
-            <OUTPUT_FORMAT>
-            {{output_format_str}}
-            </OUTPUT_FORMAT>
-            {% endif %}
-            {# tools #}
-            {% if tools_str %}
-            <TOOLS>
-            {{tools_str}}
-            </TOOLS>
-            {% endif %}
-            {# example #}
-            {% if examples_str %}
-            <EXAMPLES>
-            {{examples_str}}
-            </EXAMPLES>
-            {% endif %}
-            {# chat history #}
-            {% if chat_history_str %}
-            <CHAT_HISTORY>
-            {{chat_history_str}}
-            </CHAT_HISTORY>
-            {% endif %}
-            {#contex#}
-            {% if context_str %}
-            <CONTEXT>
-            {{context_str}}
-            </CONTEXT>
-            {% endif %}
-            {# steps #}
-            {% if steps_str %}
-            <STEPS>
-            {{steps_str}}
-            </STEPS>
-            {% endif %}
-            </SYS>
-            {% if input_str %}
-            <User>
-            {{input_str}}
-            </User>
-            {% endif %}
-            You:
-            , prompt_variables: ['input_str', 'tools_str', 'context_str', 'steps_str', 'task_desc_str', 'chat_history_str', 'output_format_str', 'examples_str']
-        )
-        (model_client): GroqAPIClient()
-        )
-            </code>
-        </pre>
-    </div>
-
-**Show the Final Prompt**
-
-
-The `Generator` 's ``print_prompt`` method will simply relay the method from the `Prompt` component:
-
-.. code-block:: python
-
-    prompt_kwargs = {"input_str": "What is LLM? Explain in one sentence."}
-    generator.print_prompt(**prompt_kwargs)
-
-The output will be the formatted prompt:
-
-.. code-block::
-
-    <User>
-    What is LLM? Explain in one sentence.
-    </User>
-    You:
-
-
-
-**Call the Generator**
-
-.. code-block:: python
-
-    output = generator(
-        prompt_kwargs=prompt_kwargs,
-    )
-    print(output)
-
-The output will be the `GeneratorOutput` object:
-
-.. code-block::
-
-    GeneratorOutput(data='LLM stands for Large Language Model, a type of artificial intelligence that is trained on vast amounts of text data to generate human-like language outputs, such as conversations, text, or summaries.', error=None, usage=None, raw_response='LLM stands for Large Language Model, a type of artificial intelligence that is trained on vast amounts of text data to generate human-like language outputs, such as conversations, text, or summaries.', metadata=None)
-
-Use Template
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-In this example, we will use a customized template to format the prompt.
-We intialized the prompt with one variable `task_desc_str`, which is further combined with the `input_str` in the prompt.
-
-.. code-block:: python
-
-    template = r"""<SYS>{{task_desc_str}}</SYS>
-    User: {{input_str}}
-    You:"""
-    generator = Generator(
-        model_client=GroqAPIClient(),
-        model_kwargs={"model": "llama3-8b-8192"},
-        template=template,
-        prompt_kwargs={"task_desc_str": "You are a helpful assistant"},
-    )
-
-    prompt_kwargs = {"input_str": "What is LLM?"}
-
-    generator.print_prompt(
-        **prompt_kwargs,
-    )
-    output = generator(
-        prompt_kwargs=prompt_kwargs,
-    )
-
-The final prompt is:
-
-.. code-block::
-
-    <SYS>You are a helpful assistant</SYS>
-    User: What is LLM?
-    You:
-
-.. note::
-
-    It is quite straightforward to use any prompt.
-    They only need to stick to ``jinja2`` syntax.
-
-
-Use output_processors
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-In this example, we will instruct the LLM to output a JSON object in response.
-We will use the `JsonParser` to parse the output back to a `dict` object.
-
-
-.. code-block:: python
-
-    from adalflow.core import Generator
-    from adalflow.core.types import GeneratorOutput
-    from adalflow.components.model_client import OpenAIClient
-    from adalflow.core.string_parser import JsonParser
-
-    output_format_str = r"""Your output should be formatted as a standard JSON object with two keys:
-    {
-        "explanation": "A brief explanation of the concept in one sentence.",
-        "example": "An example of the concept in a sentence."
-    }
+    # the template has three variables: system_prompt, few_shot_demos, and input_str
+    few_shot_template = r"""<START_OF_SYSTEM_PROMPT>
+    {{system_prompt}}
+    {# Few shot demos #}
+    {% if few_shot_demos is not none %}
+    Here are some examples:
+    {{few_shot_demos}}
+    {% endif %}
+    <END_OF_SYSTEM_PROMPT>
+    <START_OF_USER>
+    {{input_str}}
+    <END_OF_USER>
     """
 
-    generator = Generator(
-        model_client=OpenAIClient(),
-        model_kwargs={"model": "gpt-3.5-turbo"},
-        prompt_kwargs={"output_format_str": output_format_str},
-        output_processors=JsonParser(),
-    )
-
-    prompt_kwargs = {"input_str": "What is LLM?"}
-    generator.print_prompt(**prompt_kwargs)
-
-    output: GeneratorOutput = generator(prompt_kwargs=prompt_kwargs)
-    print(type(output.data))
-    print(output.data)
-
-The final prompt is:
-
-.. code-block::
-
-
-    <SYS>
-    <OUTPUT_FORMAT>
-    Your output should be formatted as a standard JSON object with two keys:
-        {
-            "explanation": "A brief explanation of the concept in one sentence.",
-            "example": "An example of the concept in a sentence."
-        }
-
-    </OUTPUT_FORMAT>
-    </SYS>
-    <User>
-    What is LLM?
-    </User>
-    You:
-
-The above printout is:
-
-.. code-block::
-
-    <class 'dict'>
-    {'explanation': 'LLM stands for Large Language Model, which are deep learning models trained on enormous amounts of text data.', 'example': 'An example of a LLM is GPT-3, which can generate human-like text based on the input provided.'}
-
-Please refer to :doc:`output_parsers` for a more comprehensive guide on the `Parser` components.
-
-Switch the model_client
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Also, did you notice that we have already switched to using models from `OpenAI` in the above example?
-This demonstrates how easy it is to switch the `model_client` in the Generator, making it a truly model-agnostic component.
-We can even use :class:`ModelClientType<core.types.ModelClientType>` to switch the model client without handling multiple imports.
-
-.. code-block:: python
-
-    from adalflow.core.types import ModelClientType
-
-    generator = Generator(
-        model_client=ModelClientType.OPENAI(),  # or ModelClientType.GROQ()
-        model_kwargs={"model": "gpt-3.5-turbo"},
-    )
-
-Get Errors in GeneratorOutput
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-We will use an incorrect API key to delibrately create an error.
-We will still get a response, but it will only contain empty ``data`` and an error message.
-Here is an example of an API key error with OpenAI:
-
-
-.. code-block:: python
-
-    GeneratorOutput(data=None, error="Error code: 401 - {'error': {'message': 'Incorrect API key provided: ab. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}", usage=None, raw_response=None, metadata=None)
-
-
-Create from Configs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-As with all components, we can create the generator purely from configs.
-
-
-**Know it is a Generator**
-
-In this case, we know we are creating a generator, we will use ``from_config`` method from the ``Generator`` class.
-
-.. code-block:: python
-
-    from adalflow.core import Generator
-
-    config = {
-        "model_client": {
-            "component_name": "GroqAPIClient",
-            "component_config": {},
-        },
-        "model_kwargs": {
+    object_counter = Generator(
+        model_client=adal.GroqAPIClient(),
+        model_kwargs={
             "model": "llama3-8b-8192",
         },
-    }
-
-    generator: Generator = Generator.from_config(config)
-    print(generator)
-
-    prompt_kwargs = {"input_str": "What is LLM? Explain in one sentence."}
-    generator.print_prompt(**prompt_kwargs)
-    output = generator(
-        prompt_kwargs=prompt_kwargs,
+        template=few_shot_template,
+        prompt_kwargs={
+            "system_prompt": "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+        }
     )
-    print(output)
+
+    question = "I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?"
+    response = object_counter(prompt_kwargs={"input_str": question})
+    print(response)
+
+    prompt = object_counter.print_prompt(input_str=question)
+    print(prompt)
 
 
-**Purely from the Configs**
+The output will be:
 
-This is even more general.
-This method can be used to create any component from configs.
-We just need to follow the config structure: ``component_name`` and ``component_config`` for all arguments.
+.. code-block::
 
+    GeneratorOutput(id=None, data="I'll think step by step!\n\nI'm given a list of items, and I need to identify the musical instruments. Let's go through the list:\n\n* Flute: yes, it's a musical instrument\n* Piano: yes, it's a musical instrument\n* Trombone: yes, it's a musical instrument\n* Violin: yes, it's a musical instrument\n* Accordion: yes, it's a musical instrument\n* Clarinet: yes, it's a musical instrument\n* Drum: yes, it's a musical instrument\n* Trumpet: yes, it's a musical instrument\n\nI've identified 8 musical instruments so far.\n\nNow, let's check if there are any non-musical items on the list:\n\n* Four stoves: no, these are not musical instruments\n* Two lamps: no, these are not musical instruments\n\nSo, I've identified all the musical instruments, and I'm done.\n\nAnswer: 8", error=None, usage=CompletionUsage(completion_tokens=198, prompt_tokens=116, total_tokens=314), raw_response="I'll think step by step!\n\nI'm given a list of items, and I need to identify the musical instruments. Let's go through the list:\n\n* Flute: yes, it's a musical instrument\n* Piano: yes, it's a musical instrument\n* Trombone: yes, it's a musical instrument\n* Violin: yes, it's a musical instrument\n* Accordion: yes, it's a musical instrument\n* Clarinet: yes, it's a musical instrument\n* Drum: yes, it's a musical instrument\n* Trumpet: yes, it's a musical instrument\n\nI've identified 8 musical instruments so far.\n\nNow, let's check if there are any non-musical items on the list:\n\n* Four stoves: no, these are not musical instruments\n* Two lamps: no, these are not musical instruments\n\nSo, I've identified all the musical instruments, and I'm done.\n\nAnswer: 8", metadata=None)
+
+The prompt will be:
+
+.. code-block::
+
+    <START_OF_SYSTEM_PROMPT>
+    You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.
+    <END_OF_SYSTEM_PROMPT>
+    <START_OF_USER>
+    I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?
+    <END_OF_USER>
+
+
+
+In the next section, we will introduce more advanced features such as structured output, tool usage, and defining trainable prompts.
+
+Structured Output
+---------------------------------------
+First, in the object count example, we want to extract the answer which ideally should be converted to integer.
+The best way to do this is to customize a parser that will leverage regular expressions to extract the answer.
 
 
 .. code-block:: python
 
-    from adalflow.utils.config import new_component
-    from adalflow.core import Generator
+    import re
 
-    config = {
-        "generator": {
-            "component_name": "Generator",
-            "component_config": {
-                "model_client": {
-                    "component_name": "GroqAPIClient",
-                    "component_config": {},
-                },
-                "model_kwargs": {
-                    "model": "llama3-8b-8192",
-                },
-            },
-        }
+    @adal.func_to_data_component
+    def parse_integer_answer(answer: str):
+        try:
+            numbers = re.findall(r"\d+", answer)
+            if numbers:
+                answer = int(numbers[-1])
+            else:
+                answer = -1
+        except ValueError:
+            answer = -1
+
+        return answer
+
+    object_counter = Generator(
+        model_client=adal.GroqAPIClient(),
+        model_kwargs={
+            "model": "llama3-8b-8192",
+        },
+        template=few_shot_template,
+        prompt_kwargs={
+            "system_prompt": "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+        },
+        output_processors=parse_integer_answer,
+    )
+
+    response = object_counter(prompt_kwargs={"input_str": question})
+    print(response)
+    print(type(response.data))
+
+The output will be:
+
+.. code-block::
+
+    GeneratorOutput(id=None, data=7, error=None, usage=CompletionUsage(completion_tokens=69, prompt_tokens=116, total_tokens=185), raw_response='The problem asks me to count the number of musical instruments.\n\nI will list down all the instruments I have:\n\n1. Flute\n2. Piano\n3. Trombone\n4. Violin\n5. Accordion\n6. Clarinet\n7. Trumpet\n\nThere are 7 musical instruments. \n\nAnswer: 7', metadata=None)
+    <class 'int'>
+
+The ``data`` field now is an integer instead of the whole string output. But you can still find all string response from ``raw_response``.
+
+Now, we can achieve the same result via more advanced data structure.
+We will leverage `DataClass` to define a structured output with two fields: ``thought`` and ``answer``.
+Then, we leverage :class:`DataClassParser<components.parser.outputs.data_class_parser.DataClassParser>` to parse the output back to the structured data.
+
+.. code-block::
+
+    # 1. add an output_format_str variable in the template
+    template = r"""<START_OF_SYSTEM_PROMPT>
+    {{system_prompt}}
+    <OUTPUT_FORMAT>
+    {{output_format_str}}
+    </OUTPUT_FORMAT>
+    <END_OF_SYSTEM_PROMPT>
+    <START_OF_USER>
+    {{input_str}}
+    <END_OF_USER>"""
+
+
+    # 2. define the structured output
+
+    from dataclasses import dataclass, field
+
+    @dataclass
+    class QAOutput(DataClass):
+        thought: str = field(
+            metadata={
+                "desc": "Your thought process for the question to reach the answer."
+            }
+        )
+        answer: int = field(metadata={"desc": "The answer to the question."})
+
+        __output_fields__ = ["thought", "answer"]
+
+    # 3. define the parser
+
+    parser = adal.DataClassParser(
+        data_class=QAOutput, return_data_class=True, format_type="json"
+    )
+
+    object_counter = Generator(
+        model_client=adal.GroqAPIClient(),
+        model_kwargs={
+            "model": "llama3-8b-8192",
+        },
+        template=template,
+        prompt_kwargs={
+            "system_prompt": "You will answer a reasoning question. Think step by step. ",
+            "output_format_str": parser.get_output_format_str(), # 4. add the output_format_str in the prompt_kwargs
+        },
+        output_processors=parser, # 5. add the parser as the output_processors
+    )
+
+    response = object_counter(prompt_kwargs={"input_str": question})
+    print(response)
+
+    object_counter.print_prompt(input_str=question)
+
+
+The output will be:
+
+.. code-block::
+
+    GeneratorOutput(id=None, data=customize_template.<locals>.QAOutput(thought="First, I'll identify the musical instruments in my list. I see flute, piano, trombone, violin, accordion, clarinet, and trumpet, which are all musical instruments. Then, I will count them to find out how many I have. Flute, piano, trombone, violin, accordion, clarinet, and trumpet makes a total of 7 musical instruments.", answer=7), error=None, usage=CompletionUsage(completion_tokens=94, prompt_tokens=229, total_tokens=323), raw_response='```\n{\n    "thought": "First, I\'ll identify the musical instruments in my list. I see flute, piano, trombone, violin, accordion, clarinet, and trumpet, which are all musical instruments. Then, I will count them to find out how many I have. Flute, piano, trombone, violin, accordion, clarinet, and trumpet makes a total of 7 musical instruments.",\n    "answer": 7\n}', metadata=None)
+
+    Prompt:
+    ______________________
+    <START_OF_SYSTEM_PROMPT>
+    You will answer a reasoning question. Think step by step.
+    <OUTPUT_FORMAT>
+    Your output should be formatted as a standard JSON instance with the following schema:
+    ```
+    {
+        "thought": "Your thought process for the question to reach the answer. (str) (required)",
+        "answer": "The answer to the question. (int) (required)"
+    }
+    ```
+    -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
+    -Use double quotes for the keys and string values.
+    -DO NOT mistaken the "properties" and "type" in the schema as the actual fields in the JSON output.
+    -Follow the JSON formatting conventions.
+    </OUTPUT_FORMAT>
+    <END_OF_SYSTEM_PROMPT>
+    <START_OF_USER>
+    I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?
+    <END_OF_USER>
+
+From the response we can get ``QAOutput`` in the ``data`` field, which is a structured output with two fields: ``thought`` as string and ``answer`` as integer.
+The way we achieve this is via the ``DataClassParser``'s built-in prompt formatting (via ``output_format_str`` variable in the prompt) and parsing as the ``output_processors``.
+
+**We allow developers to do very complicated data structure and even multi-level of nested data structure.** Check out this `colab example <https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_dataclasses.ipynb>`_ for more details.
+
+
+Trainable Prompt as Parameter
+---------------------------------------
+To train the prompt, developers need to define it as ``Parameter``.
+For example, if we want to prompt tune the ``system_prompt`` in the object counter example, this is what we do instead:
+
+.. code-block:: python
+
+    from adalflow.optim.parameter import ParameterType
+
+    system_prompt = adal.Parameter(
+            data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+            role_desc="To give task instruction to the language model in the system prompt",
+            requires_opt=True,
+            param_type=ParameterType.PROMPT, # leverages LLM-AutoDiff to optimize the prompt
+            instruction_to_optimizer="You can try to show examples to see if it helps.",
+    )
+
+If you want to also leverage Few-shot learning, you can define the ``few_shot_demos`` as another parameter:
+
+
+.. code-block:: python
+
+    few_shot_demos = adal.Parameter(
+            data=None,
+            role_desc="To provide few shot demos to the language model",
+            requires_opt=True,
+            param_type=ParameterType.DEMOS,
+    )
+
+And then you can pass these parameters to the prompt_kwargs:
+
+.. code-block:: python
+
+    prompt_kwargs={
+        "system_prompt": system_prompt,
+        "few_shot_demos": few_shot_demos,
     }
 
-    generator: Generator = new_component(config["generator"])
-    print(generator)
+By doing so, the trainer will automatically detect these parameters and optimize them accordingly.
 
-    prompt_kwargs = {"input_str": "What is LLM? Explain in one sentence."}
-    generator.print_prompt(**prompt_kwargs)
-    output = generator(
-        prompt_kwargs=prompt_kwargs,
-    )
-    print(output)
 
-It works exactly the same as the previous example.
-We imported ``Generator`` in this case to only show the type hinting.
-
-.. note::
-
-    Please refer to the :doc:`configurations<configs>` for more details on how to create components from configs.
-
+Tool
+---------------------------------------
+LM can use tools in the same way how we did the structured output.
+We will need a convenient way to describe each tool or function in the prompt and instruct it using the ``output_format_str`` to manage the function calls.
+We have to manage some context variables to achieve the function call.
+You can check out :ref:`Tool<tool>` for more details.
 
 Examples Across the Library
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 Besides these examples, LLM is like water, even in our library, we have components that have adpated Generator to various other functionalities.
 
@@ -606,94 +337,6 @@ Besides these examples, LLM is like water, even in our library, we have componen
 - :class:`TGDOptimizer<optim.text_grad.tgd_optimizer.TGDOptimizer>` is an optimizer that uses Generator to call LLM to optimize the prompt.
 - :class:`ReAct Agent Planner<components.agent.react.ReActAgent>` is an LLM planner that uses Generator to plan and to call functions in ReAct Agent.
 
-Tracing
----------------------------------------
-
-
-
-In particular, we provide two tracing methods to help you develop and improve the ``Generator``:
-
-1. Trace the history change (states) on prompt during your development process.
-2. Trace all failed LLM predictions for further improvement.
-
-As this note is getting rather long. Please refer to the :doc:`tracing<logging_tracing>` to learn about these two tracing methods.
-
-
-Training
----------------------------------------
-Generator in default support training mode.
-It will require users to define ``Parameter`` and pass it to the ``prompt_kwargs``.
-
-.. A Note on Tokenization#
-.. By default, LlamaIndex uses a global tokenizer for all token counting. This defaults to cl100k from tiktoken, which is the tokenizer to match the default LLM gpt-3.5-turbo.
-
-.. If you change the LLM, you may need to update this tokenizer to ensure accurate token counts, chunking, and prompting.
-
-Image Generation
--------------------------------------------------
-
-The Generator class also supports image generation through DALL-E models. First, you need to define a Generator subclass with the correct model type:
-
-.. code-block:: python
-
-    from adalflow import Generator
-    from adalflow.core.types import ModelType
-
-    class ImageGenerator(Generator):
-        """Generator subclass for image generation."""
-        model_type = ModelType.IMAGE_GENERATION
-
-Then you can use it like this:
-
-.. code-block:: python
-
-    from adalflow import OpenAIClient
-
-    generator = ImageGenerator(
-        model_client=OpenAIClient(),
-        model_kwargs={
-            "model": "dall-e-3",  # or "dall-e-2"
-            "size": "1024x1024",  # "1024x1024", "1024x1792", or "1792x1024" for DALL-E 3
-            "quality": "standard",  # "standard" or "hd" (DALL-E 3 only)
-            "n": 1  # Number of images (1 for DALL-E 3, 1-10 for DALL-E 2)
-        }
-    )
-
-    # Generate an image from text
-    response = generator(
-        prompt_kwargs={"input_str": "A white siamese cat in a space suit"}
-    )
-    # response.data will contain the image URL
-
-    # Edit an existing image
-    response = generator(
-        prompt_kwargs={"input_str": "Add a red hat"},
-        model_kwargs={
-            "model": "dall-e-2",
-            "image": "path/to/cat.png",  # Original image
-            "mask": "path/to/mask.png"   # Optional mask showing where to edit
-        }
-    )
-
-    # Create variations of an image
-    response = generator(
-        prompt_kwargs={"input_str": None},  # Not needed for variations
-        model_kwargs={
-            "model": "dall-e-2",
-            "image": "path/to/cat.png"  # Image to create variations of
-        }
-    )
-
-The generator supports:
-
-- Image generation from text descriptions using DALL-E 3 or DALL-E 2
-- Image editing with optional masking (DALL-E 2)
-- Creating variations of existing images (DALL-E 2)
-- Both local file paths and base64-encoded images
-- Various image sizes and quality settings
-- Multiple output formats (URL or base64)
-
-The response will always be wrapped in a ``GeneratorOutput`` object, maintaining consistency with other AdalFlow operations. The generated image(s) will be available in the ``data`` field as either a URL or base64 string.
 
 .. admonition:: API reference
    :class: highlight
@@ -705,10 +348,7 @@ The response will always be wrapped in a ``GeneratorOutput`` object, maintaining
    - :class:`core.types.ModelType`
    - :class:`core.string_parser.JsonParser`
    - :class:`core.prompt_builder.Prompt`
-   - :class:`tracing.generator_call_logger.GeneratorCallLogger`
-   - :class:`tracing.generator_state_logger.GeneratorStateLogger`
    - :class:`components.retriever.llm_retriever.LLMRetriever`
    - :class:`components.agent.react.ReActAgent`
    - :class:`eval.llm_as_judge.DefaultLLMJudge`
    - :class:`optim.text_grad.tgd_optimizer.TGDOptimizer`
-   - :func:`utils.config.new_component`
