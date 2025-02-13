@@ -88,7 +88,7 @@ class ToEmbeddings(DataComponent):
         # convert documents to a list of strings
         embedder_input: BatchEmbedderInputType = [chunk.text for chunk in output]
         outputs: BatchEmbedderOutputType = self.batch_embedder(input=embedder_input)
-        # n them back to the original order along with its query
+        # put them back to the original order along with its query
         for batch_idx, batch_output in tqdm(
             enumerate(outputs), desc="Adding embeddings to documents from batch"
         ):

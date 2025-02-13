@@ -1,5 +1,5 @@
 
-*"Say Goodbye to Manual Prompting and No More Vendor Lock-in"*
+*"Say Goodbye to Manual Prompting"*
 
 Getting Started: Install AdalFlow and Run Your First Query
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -9,8 +9,10 @@ Getting Started: Install AdalFlow and Run Your First Query
 
    pip install -U adalflow
 
-.. tabs::
+LM apps often relys on other cloud or local model services and each of them often has their own Python SDKs.
+AdalFlow handles all of them as optional packages, so that developers only need to install the ones they need.
 
+.. tabs::
 
    .. tab:: OpenAI
 
@@ -601,30 +603,21 @@ Community
    :hidden:
 
    new_tutorials/index
-   .. :caption: Tutorials - How each part works
-   .. :hidden:
 
 
-.. .. Hide the use cases for now
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :hidden:
+
+   integrations/index
+
 .. toctree::
    :maxdepth: 1
    :hidden:
 
    use_cases/index
 
-
-      .. :caption: Benchmarks
-
-      .. Manually add documents for the code in benchmarks
-
-
-..    :glob:
-..    :maxdepth: 1
-..    :caption: Resources
-
-..    resources/index
-
-.. hide the for contributors now
 
 .. toctree::
    :glob:

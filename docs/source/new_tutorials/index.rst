@@ -15,4 +15,3 @@ Tutorials
    parser
    generator
    embedder
-   integrations

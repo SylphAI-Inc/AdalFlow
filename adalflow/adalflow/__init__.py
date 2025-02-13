@@ -1,4 +1,4 @@
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 from adalflow.core.component import (
     Component,
@@ -21,7 +21,7 @@ from adalflow.core.types import (
     Document,
 )
 from adalflow.core.model_client import ModelClient
-from adalflow.core.embedder import Embedder
+from adalflow.core.embedder import Embedder, BatchEmbedder
 
 # parser
 from adalflow.core.string_parser import (
@@ -74,7 +74,6 @@ from adalflow.components.model_client import (
 
 # data pipeline
 from adalflow.components.data_process.text_splitter import TextSplitter
-from adalflow.components.data_process.data_components import ToEmbeddings
 
 __all__ = [
     "Component",
@@ -96,6 +95,7 @@ __all__ = [
     "ModelClient",
     "Generator",
     "Embedder",
+    "BatchEmbedder",
     "Retriever",
     "Parameter",
     "AdalComponent",

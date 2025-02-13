@@ -16,17 +16,24 @@
 Embedder
 ============
 
+.. figure:: /_static/images/embedder.png
+    :align: center
+    :alt: AdalFlow generator design
+    :width: 700px
+
+    Embedder - Converts a list of strings into a list of vectors with embedding models.
 
 Introduction
 ------------------
 
 :class:`core.embedder.Embedder` allows developers to use different embedding models easily.
 Like `Generator`, `Embedder` is a user-facing component that orchestrates embedding models via `ModelClient` and `output_processors`, it outputs :class:`EmbedderOutput<core.types.EmbedderOutput>`.
-Unlike `Generator` which is trainable, `Embedder` is just a `DataComponent` that likely transforms input strings into embeddings/vectors.
+Unlike `Generator` which is trainable, `Embedder` is just a `DataComponent` that only transforms input strings into embeddings/vectors.
 
 
 By switching the ``ModelClient``, you can use different embedding models in your task pipeline easily, or even embedd different data such as text, image, etc.
-
+For end developers, most likely you want to use :class:`ToEmbeddings<components.data_process.data_components.ToEmbeddings>` together with `Embedder` as it (1) directly supports a sequence of `Document` objects, and (2) it handles batch processing out of box.
+:class:`Document<core.types.Document>` is a container that AdalFlow uses to also process data in :class:`TextSplitter<components.data_process.text_splitter.TextSplitter>` which are often required in a RAG pipeline.
 .. EmbedderOutput
 .. --------------
 
@@ -45,13 +52,14 @@ By switching the ``ModelClient``, you can use different embedding models in your
 
 
 We currently support `all embedding models from OpenAI <https://platform.openai.com/docs/guides/embeddings>`_ and `'thenlper/gte-base' <https://huggingface.co/thenlper/gte-base>`_ from HuggingFace `transformers <https://huggingface.co/docs/transformers/en/index>`_.
-We will use these two to demonstrate how to use ``Embedder``, one from the API provider and the other using local model. For the local model, you might need to ensure ``transformers`` is installed.
+We will use these two to demonstrate how to use ``Embedder``. For the local model, you need to ensure you have ``transformers`` installed.
 
-.. note ::
-    The ``output_processors`` can be a component or a ``Sequential`` container to chain together multiple components. The output processors are applied in order and is adapted only on the ``data`` field of the ``EmbedderOutput``.
-
-Use OpenAI embedding models
+Use Embedder
 ----------------------------
+OpenAI Embedding Model
+^^^^^^^^^^^^^^^^^^^^^
+
+
 Before you start ensure you config the API key either in the environment variable or `.env` file, or directly pass it to the ``OpenAIClient``.
 
 .. code-block:: python
@@ -68,7 +76,7 @@ Before you start ensure you config the API key either in the environment variabl
         "encoding_format": "float",
     }
 
-    query = "What is the capital of China?"
+    query = "What is LLM?"
 
     queries = [query] * 100
 
@@ -95,7 +103,7 @@ Run the embedder and print the length and embedding dimension of the output.
     # 1 256 True
 
 
-**Embed batch queries**:
+**Embed a single batch of queries**:
 
 .. code-block:: python
 
@@ -103,8 +111,8 @@ Run the embedder and print the length and embedding dimension of the output.
     print(output.length, output.embedding_dim)
     # 100 256
 
-Use Local Model
--------------------
+Local Model
+^^^^^^^^^^^^^^^^^^^^^
 Set up the embedder with the local model.
 
 .. code-block:: python
@@ -128,7 +136,8 @@ Now, call the embedder with the same query and queries.
     # 100 768 True
 
 Use Output Processors
-----------------------
+^^^^^^^^^^^^^^^^^^^^^
+
 If we want to decreate the embedding dimension to only 256 to save memory, we can customize an additional output processing step and pass it to embedder via the ``output_processors`` argument.
 
 .. code-block:: python
@@ -192,8 +201,24 @@ Run a query:
     # 1 256 True
 
 
-BatchEmbedder
---------------
+ToEmbeddings
+----------------
+Once we know how to config and set up Embedder, we can use :class:`ToEmbeddings<components.data_process.data_components.ToEmbeddings>` to directly convert a list of `Document` objects into embeddings.
+
+.. code-block:: python
+
+    from adalflow.components.data_process.data_components import ToEmbeddings
+    from adalflow.core.types import Document
+
+    to_embeddings = ToEmbeddings(embedder=embedder, batch_size=100)
+
+    docs = [Document(text="What is LLM?")] * 1000
+    output = to_embeddings(docs)
+    print(f"Response - Length: {len(response)})")
+    # 1000
+
+[Optional]BatchEmbedder
+--------------------------
 Especially in data processing pipelines, you can often have more than 1000 queries to embed. We need to chunk our queries into smaller batches to avoid memory overflow.
 :class:`core.embedder.BatchEmbedder` is designed to handle this situation. For now, the code is rather simple, but in the future it can be extended to support multi-processing when you use AdalFlow in production data pipeline.
 
