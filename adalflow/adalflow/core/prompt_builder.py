@@ -223,3 +223,39 @@ def get_jinja2_environment():
         return default_environment
     except Exception as e:
         raise ValueError(f"Invalid Jinja2 environment: {e}")
+
+
+if __name__ == "__main__":
+
+    import adalflow as adal
+
+    template = r"""<START_OF_SYSTEM_MESSAGE>{{ task_desc_str }}<END_OF_SYSTEM_MESSAGE>
+{# tools #}
+{% if tools %}
+<TOOLS>
+{% for tool in tools %}
+{{loop.index}}. {{ tool }}
+{% endfor %}
+</TOOLS>{% endif %}
+<START_OF_USER>{{ input_str }} <END_OF_USER>"""
+
+    task_desc_str = "You are a helpful assitant"
+
+    tools = ["google", "wikipedia", "wikidata"]
+
+    prompt = adal.Prompt(
+        template=template,
+        prompt_kwargs={
+            "task_desc_str": task_desc_str,
+            "tools": tools,
+        },
+    )
+
+    print(prompt(input_str="What is the capital of France?"))
+
+    to_dict = prompt.to_dict()
+
+    prompt_restructured = adal.Prompt.from_dict(to_dict)
+
+    print(to_dict)
+    print(prompt_restructured)

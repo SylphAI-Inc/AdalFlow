@@ -111,7 +111,6 @@ Step {{ loop.index }}.
 "kwargs": {{history.action.kwargs}}",
 {% endif %}
 "Observation": "{{history.observation}}"
-
 ------------------------
 {% endfor %}
 </STEPS>

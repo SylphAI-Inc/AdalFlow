@@ -141,7 +141,7 @@ class Usage:
 
 @dataclass
 class EmbedderOutput(DataClass):
-    __doc__ = r"""Container to hold the response from an Embedder model. Only Per-batch.
+    __doc__ = r"""Container to hold the response from an Embedder datacomponent for a single batch of input.
 
     Data standard for Embedder model output to interact with other components.
     Batch processing is often available, thus we need a list of Embedding objects.

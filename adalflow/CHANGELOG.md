@@ -1,3 +1,11 @@
+
+## [1.0.4] - 2025-02-13
+
+### Modified
+- `Embedder` and `BatchEmbedder` changed to `DataComponent`.
+
+### model_client (added)
+- `list_models` method.
 ## [1.0.2] - 2025-02-02
 ### Added
 - Added `TogetherClient` to support the Together API.

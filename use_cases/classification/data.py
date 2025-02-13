@@ -14,12 +14,15 @@ _COARSE_LABELS = [
 
 @dataclass
 class TRECExtendedData(TrecData):
+    """Dataclass for TREC dataset"""
+
     rationale: str = field(
         metadata={
             "desc": "Your step-by-step reasoning to classify the question to class_name"
         },
         default=None,
     )
+
     __input_fields__ = ["question"]
     __output_fields__ = ["rationale", "class_name"]
 

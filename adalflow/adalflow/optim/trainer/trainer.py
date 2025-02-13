@@ -460,6 +460,9 @@ class Trainer(Component):
         train_loader = train_loader or self.train_loader
         train_dataset = train_dataset or self.train_dataset
 
+        if not train_loader and not train_dataset:
+            raise ValueError("train_loader or train_dataset should be provided")
+
         if not train_loader and train_dataset:
             batch_size = self.train_batch_size
 
@@ -470,7 +473,11 @@ class Trainer(Component):
                 seed=self.random_seed,
             )
         val_dataset = val_dataset or self.val_dataset
+
         test_dataset = test_dataset or self.test_dataset
+
+        if not val_dataset:
+            raise ValueError("val_dataset should be provided")
         # check train_loader and val_dataset and test_dataset, reject tuple
         if train_loader:
             exam_batch = next(iter(train_loader))

@@ -39,7 +39,7 @@ class TrecClassifierAdal(adal.AdalComponent):
         )
 
     def prepare_task(self, sample: TRECExtendedData):
-        return self.task.call, {"question": sample.question, "id": sample.id}
+        return self.task.bicall, {"question": sample.question, "id": sample.id}
 
     def prepare_eval(
         self, sample: TRECExtendedData, y_pred: adal.GeneratorOutput

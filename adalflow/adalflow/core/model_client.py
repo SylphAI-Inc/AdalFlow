@@ -119,3 +119,9 @@ Check the subclasses in `components/model_client/` directory for the functional 
 
     def __call__(self, *args, **kwargs):
         return super().__call__(*args, **kwargs)
+
+    def list_models(self):
+        """List all available models from this provider"""
+        raise NotImplementedError(
+            f"{type(self).__name__} must implement list_models method"
+        )
