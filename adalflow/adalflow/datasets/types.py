@@ -27,6 +27,27 @@ class Example(DataClass):
 
 
 @dataclass
+class GSM8KData(Example):
+    __doc__ = """A dataclass for representing examples in the GSM8K dataset.
+
+    You can reset the output fields:
+
+    .. code-block:: python
+
+        GSM8KData.set_output_fields(["answer"])
+    """
+    gold_reasoning: str = field(
+        metadata={"desc": "The ground truth reasoning for the answer"}, default=None
+    )
+    reasoning: str = field(
+        metadata={"desc": "The reasoning for the answer"}, default=None
+    )  # your model's reasoning
+
+    __input_fields__ = ["question"]
+    __output_fields__ = ["reasoning", "answer"]  # default output fields
+
+
+@dataclass
 class HotPotQAData(Example):
     __doc__ = """A dataclass for representing examples in the HotPotQA dataset."""
     gold_titles: set = field(

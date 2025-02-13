@@ -34,6 +34,7 @@ Unlike `Generator` which is trainable, `Embedder` is just a `DataComponent` that
 By switching the ``ModelClient``, you can use different embedding models in your task pipeline easily, or even embedd different data such as text, image, etc.
 For end developers, most likely you want to use :class:`ToEmbeddings<components.data_process.data_components.ToEmbeddings>` together with `Embedder` as it (1) directly supports a sequence of `Document` objects, and (2) it handles batch processing out of box.
 :class:`Document<core.types.Document>` is a container that AdalFlow uses to also process data in :class:`TextSplitter<components.data_process.text_splitter.TextSplitter>` which are often required in a RAG pipeline.
+
 .. EmbedderOutput
 .. --------------
 
