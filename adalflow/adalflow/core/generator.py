@@ -550,9 +550,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         log.debug(f"Predecessors: {predecessors} for generator {self.name}")
 
         def data_to_prompt_map_fn(data: Parameter) -> str:
+            """GeneratorOutput will show the raw response instead of just the final data.
+            The backward engine and optimizer should look at all reasoning to decide the gradient.
+            """
             data: GeneratorOutput = data.data
-            # if data.data is not None:
-            #     return data.data
             if data.error is not None:
                 return f"Response: {data.raw_response} parsed with error: {data.error}"
             return f" {data.raw_response}"

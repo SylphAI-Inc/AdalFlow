@@ -466,7 +466,7 @@ Auto-optimize your LLM workflow with both Prompt Tuning and Few-shot Learning
 
          def load_datasets():
             train_data = TrecDataset(split="train")
-            val_data = TrecDataset(split="val")ßß
+            val_data = TrecDataset(split="val")
             test_data = TrecDataset(split="test")
             return train_data, val_data, test_data
 

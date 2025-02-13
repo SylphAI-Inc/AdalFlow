@@ -3,6 +3,7 @@
 
 ### Modified
 - `Embedder` and `BatchEmbedder` changed to `DataComponent`.
+- Add `GSM8K` dataset.
 
 ### model_client (added)
 - `list_models` method.
