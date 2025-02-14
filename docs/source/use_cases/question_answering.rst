@@ -148,7 +148,7 @@ We'll instruct the LLM to respond with a chain of thought and end the response w
     import adalflow as adal
     import re
 
-    @adal.func_to_component
+    @adal.func_to_data_component
     def parse_integer_answer(answer: str):
         """A function that parses the last integer from a string using regular expressions."""
         try:
