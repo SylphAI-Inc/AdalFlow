@@ -1,6 +1,5 @@
 """Base building block for building LLM task pipelines.
-It handles states recursively, such as training, components, parameters recursively along with serialization and deserialization.
-"""
+It handles states recursively, such as training, components, parameters recursively along with serialization and deserialization."""
 
 from collections import OrderedDict, namedtuple
 from typing import (
@@ -978,137 +977,44 @@ class DataComponent(Component):
         return self.call(*args, **kwargs)
 
 
-class FuncDataComponent(DataComponent):
-    r"""Component that wraps a function.
+def func_to_data_component(fun: Callable) -> DataComponent:
+    """Converts a function into an AdalFlow DataComponent.
 
-    Args:
-        fun (Callable): The function to be wrapped.
+    Wraps any function for use as a `DataComponent` in AdalFlow pipelines.
 
-    Examples:
+    Example:
 
-    function = lambda x: x + 1
-    fun_component = FuncDataComponent(function)
-    print(fun_component(1))  # 2
-    """
+        .. code-block:: python
 
-    def __init__(self, fun: Optional[Callable] = None, afun: Optional[Callable] = None):
-        super().__init__()
-        self.fun_name = fun.__name__
-        EntityMapping.register(self.fun_name, fun)
-        self.fun = fun
+            from adalflow.core.component import func_to_data_component
 
-    def call(self, *args, **kwargs):
-        # fun = EntityMapping.get(self.fun_name)
+            def my_text_processor(text: str) -> str:
+                return text.upper()
 
-        return self.fun(*args, **kwargs)
-
-    def __repr__(self) -> str:
-        return super().__repr__() + f"fun_name={self.fun_name}"
-
-
-def func_to_data_component(fun) -> FuncDataComponent:
-    r"""Helper function to convert a function into a Parser class.
-    its own class name.
-
-    Can be used as both a decorator and a function.
-
-    Args:
-        fun (Callable): The function to be wrapped.
-    Returns:
-        FuncDataComponent: The component that wraps the function.
-
-    Examples:
-    1. As a decorator:
-        >>> @func_to_data_component
-        >>> def my_function(x):
-        >>>     return x + 1
-        >>> # is equivalent to
-        >>> class MyFunctionDataComponent(FuncDataComponent):
-        >>>     def __init__(self):
-        >>>         super().__init__(my_function)
-
-    2. As a function:
-        >>> my_function_data_component = func_to_data_component(my_function)
-    """
-
-    class_name = (
-        "".join(part.capitalize() for part in fun.__name__.split("_")) + "DataComponent"
-    )
-    EntityMapping.register(fun.__name__, fun)
-    parser_class = type(
-        class_name,
-        (FuncDataComponent,),
-        {"__init__": lambda self: FuncDataComponent.__init__(self, fun)},
-    )
-    EntityMapping.register(class_name, parser_class)
-
-    return parser_class()
-
-
-class FuncComponent(Component):
-    r"""Component that wraps a function.
-
-    Args:
-        fun (Callable): The function to be wrapped.
-
-    Examples:
-
-    function = lambda x: x + 1
-    fun_component = FuncComponent(function)
-    print(fun_component(1))  # 2
-    """
-
-    def __init__(self, fun: Optional[Callable] = None, afun: Optional[Callable] = None):
-        super().__init__()
-        self.fun_name = fun.__name__
-        EntityMapping.register(self.fun_name, fun)
-        self.fun = fun
-
-    def call(self, *args, **kwargs):
-
-        return self.fun(*args, **kwargs)
-
-    def __repr__(self) -> str:
-        return super().__repr__() + f"fun_name={self.fun_name}"
-
-
-def func_to_component(fun) -> FuncComponent:
-    r"""Helper function to convert a function into a Component class.
-    its own class name.
-
-    Can be used as both a decorator and a function.
-
-    Args:
-        fun (Callable): The function to be wrapped.
-    Returns:
-        FuncComponent: The component that wraps the function.
-
-    Examples:
-    1. As a decorator:
-        >>> @func_to_component
-        >>> def my_function(x):
-        >>>     return x + 1
-        >>> # is equivalent to
-        >>> class MyFunctionComponent(FuncComponent):
-        >>>     def __init__(self):
-        >>>         super().__init__(my_function)
-
-    2. As a function:
-        >>> my_function_component = func_to_component(my_function)
+            MyProcessor = func_to_data_component(my_text_processor)
+            processor_instance = MyProcessor()
+            result = processor_instance("hello")  # result will be "HELLO"
     """
 
     class_name = (
         "".join(part.capitalize() for part in fun.__name__.split("_")) + "Component"
     )
-    EntityMapping.register(fun.__name__, fun)
-    parser_class = type(
-        class_name,
-        (FuncComponent,),
-        {"__init__": lambda self: FuncComponent.__init__(self, fun)},
-    )
-    EntityMapping.register(class_name, parser_class)
+    EntityMapping.register(fun.__name__, fun)  # Keep registration for consistency
 
-    return parser_class()
+    # Dynamically create the class, inheriting from DataComponent
+    component_class = type(
+        class_name,
+        (DataComponent,),  # Inherit from DataComponent
+        {
+            "__init__": lambda self, f=fun: DataComponent.__init__(self)
+            or setattr(self, "fun", f)
+            or setattr(self, "fun_name", f.__name__),
+            "call": lambda self, *args, **kwargs: self.fun(*args, **kwargs),
+        },
+    )
+    EntityMapping.register(class_name, component_class)  # Keep for consistency
+
+    return component_class  # Return the *class*, not an instance
 
 
 # TODO: not used yet, will further investigate dict mode
@@ -1252,14 +1158,4 @@ def func_to_component(fun) -> FuncComponent:
 
 
 if __name__ == "__main__":
-    from adalflow.core.component import FuncComponent
-
-    def add_one(x):
-        return x + 1
-
-    fun_component = FuncComponent(add_one)
-    print(fun_component(1))
-    print(type(fun_component))
-
-    fun_component = func_to_component(add_one)
-    print(fun_component(1))
+    pass

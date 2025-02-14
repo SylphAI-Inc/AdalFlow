@@ -3,10 +3,7 @@ __version__ = "1.0.3"
 from adalflow.core.component import (
     Component,
     DataComponent,
-    FuncComponent,
-    FuncDataComponent,
     func_to_data_component,
-    func_to_component,
 )
 from adalflow.core.container import Sequential, ComponentList
 from adalflow.core.base_data_class import DataClass, DataClassFormatType, required_field
@@ -79,10 +76,7 @@ from adalflow.components.data_process.data_components import ToEmbeddings
 __all__ = [
     "Component",
     "DataComponent",
-    "FuncComponent",
-    "FuncDataComponent",
     "func_to_data_component",
-    "func_to_component",
     # dataclass
     "DataClass",
     "DataClassFormatType",
