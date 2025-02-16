@@ -161,7 +161,7 @@ class LocalDB(Component):
     ) -> str:
         """Register a transformer to be used later for transforming the data."""
         if key is None:
-            key = self._get_transformer_name(transformer)
+            key = self._get_transformer_name(transformer=transformer)
             log.info(f"Generated key for transformer: {key}")
         self.transformer_setups[key] = transformer
         if map_fn is not None:
@@ -206,7 +206,7 @@ class LocalDB(Component):
         """
         key_to_use = key
         if transformer:
-            key = self.register_transformer(transformer, key, map_fn)
+            key = self.register_transformer(transformer=transformer, key=key, map_fn=map_fn)
             key_to_use = key
         if key_to_use is None:
             raise ValueError("Key must be provided.")
