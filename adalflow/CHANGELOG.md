@@ -1,4 +1,12 @@
 
+## [1.0.5] - 2025-02-15
+
+### Fixed
+- `LocalDB` fixed with keyword arguments.
+
+### Deleted
+- `FuncComponent` and `func_to_component` decorator.
+
 ## [1.0.4] - 2025-02-13
 
 ### Modified
