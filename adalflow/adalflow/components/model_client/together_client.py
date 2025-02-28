@@ -59,7 +59,8 @@ class TogetherClient(OpenAIClient):
     def __init__(
         self,
         api_key: Optional[str] = None,
-        chat_completion_parser: Callable[[Completion], Any] = None,
+        non_streaming_chat_completion_parser: Callable[[Completion], Any] = None,
+        streaming_chat_completion_parser: Callable[[Completion], Any] = None,
         input_type: Literal["text", "messages"] = "text",
         base_url: Optional[str] = None,
         env_api_key_name: str = "TOGETHER_API_KEY",
@@ -75,7 +76,8 @@ class TogetherClient(OpenAIClient):
         """
         super().__init__(
             api_key=api_key,
-            chat_completion_parser=chat_completion_parser,
+            non_streaming_chat_completion_parser=non_streaming_chat_completion_parser,
+            streaming_chat_completion_parser=streaming_chat_completion_parser,
             input_type=input_type,
             base_url=base_url,
             env_api_key_name=env_api_key_name,

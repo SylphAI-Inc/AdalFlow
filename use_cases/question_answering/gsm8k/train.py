@@ -83,6 +83,7 @@ def train():
         val_dataset=val_data,
         test_dataset=test_data,
         debug=False,
+        resume_from_ckpt="/Users/liyin/.adalflow/ckpt/StandardTrain/random_max_steps_10_57bb8_run_1.json",
     )
 
 

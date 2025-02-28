@@ -70,6 +70,8 @@ from adalflow.components.model_client import (
     AnthropicAPIClient,
 )
 
+from adalflow.components.agent import ReActAgent
+
 # data pipeline
 from adalflow.components.data_process.text_splitter import TextSplitter
 
@@ -143,4 +145,6 @@ __all__ = [
     "BedrockAPIClient",
     "TogetherClient",
     "AnthropicAPIClient",
+    # Agent
+    "ReActAgent",
 ]

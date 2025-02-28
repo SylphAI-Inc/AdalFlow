@@ -562,7 +562,6 @@ def fun_to_grad_component(desc: str = "", doc_string=None) -> Callable:
             + "GradComponent"
         )
         # 2) define the new class
-        printc(f"fun doc 1: {doc_string}, desc: {desc}")
         component_class = type(
             class_name,
             (FunGradComponent,),
