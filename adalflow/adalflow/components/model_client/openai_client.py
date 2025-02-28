@@ -86,7 +86,11 @@ def estimate_token_count(text: str) -> int:
 
 def parse_stream_response(completion: ChatCompletionChunk) -> str:
     r"""Parse the response of the stream API."""
-    return completion.choices[0].delta.content
+    output = completion.choices[0].delta.content
+    if hasattr(completion, "citations"):
+        citations = completion.citations
+        return output, citations
+    return output
 
 
 def handle_streaming_response(generator: Stream[ChatCompletionChunk]):
@@ -144,8 +148,10 @@ class OpenAIClient(ModelClient):
 
     Args:
         api_key (Optional[str], optional): OpenAI API key. Defaults to `None`.
-        chat_completion_parser (Callable[[Completion], Any], optional): A function to parse the chat completion into a `str`. Defaults to `None`.
-            The default parser is `get_first_message_content`.
+        non_streaming_chat_completion_parser (Callable[[Completion], Any], optional): The parser for non-streaming chat completions.
+            Defaults to `get_first_message_content`.
+        streaming_chat_completion_parser (Callable[[Completion], Any], optional): The parser for streaming chat completions.
+            Defaults to `handle_streaming_response`.
         base_url (str): The API base URL to use when initializing the client.
             Defaults to `"https://api.openai.com"`, but can be customized for third-party API providers or self-hosted models.
         env_api_key_name (str): The environment variable name for the API key. Defaults to `"OPENAI_API_KEY"`.
@@ -156,12 +162,20 @@ class OpenAIClient(ModelClient):
         - Chat Completion Models: https://platform.openai.com/docs/guides/text-generation
         - Vision Models: https://platform.openai.com/docs/guides/vision
         - Image Generation: https://platform.openai.com/docs/guides/images
+
+    Note:
+        - Ensure each OpenAIClient instance is used by one generator only.
     """
 
     def __init__(
         self,
         api_key: Optional[str] = None,
-        chat_completion_parser: Callable[[Completion], Any] = None,
+        non_streaming_chat_completion_parser: Callable[
+            [Completion], Any
+        ] = None,  # non-streaming parser
+        streaming_chat_completion_parser: Callable[
+            [Completion], Any
+        ] = None,  # streaming parser
         input_type: Literal["text", "messages"] = "text",
         base_url: str = "https://api.openai.com/v1/",
         env_api_key_name: str = "OPENAI_API_KEY",
@@ -179,8 +193,12 @@ class OpenAIClient(ModelClient):
         self.base_url = base_url
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
-        self.chat_completion_parser = (
-            chat_completion_parser or get_first_message_content
+        self.non_streaming_chat_completion_parser = (
+            non_streaming_chat_completion_parser or get_first_message_content
+        )
+        self.chat_completion_parser = self.non_streaming_chat_completion_parser
+        self.streaming_chat_completion_parser = (
+            streaming_chat_completion_parser or handle_streaming_response
         )
         self._input_type = input_type
         self._api_kwargs = {}  # add api kwargs when the OpenAI Client is called
@@ -417,9 +435,12 @@ class OpenAIClient(ModelClient):
         elif model_type == ModelType.LLM:
             if "stream" in api_kwargs and api_kwargs.get("stream", False):
                 log.debug("streaming call")
-                self.chat_completion_parser = handle_streaming_response
+                self.chat_completion_parser = self.streaming_chat_completion_parser
                 return self.sync_client.chat.completions.create(**api_kwargs)
-            return self.sync_client.chat.completions.create(**api_kwargs)
+            else:
+                log.debug("non-streaming call")
+                self.chat_completion_parser = self.non_streaming_chat_completion_parser
+                return self.sync_client.chat.completions.create(**api_kwargs)
         elif model_type == ModelType.IMAGE_GENERATION:
             # Determine which image API to call based on the presence of image/mask
             if "image" in api_kwargs:

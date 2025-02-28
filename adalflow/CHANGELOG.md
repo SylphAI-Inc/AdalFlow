@@ -4,6 +4,11 @@
 ### Fixed
 - `LocalDB` fixed with keyword arguments.
 
+### Improved
+- `React` agent:
+  - allow `answer` to be customized to any data type and even `DataClass` via `answer_data_type`.
+  - allow `role_desc` to be customized to any use case.
+
 ### Deleted
 - `FuncComponent` and `func_to_component` decorator.
 

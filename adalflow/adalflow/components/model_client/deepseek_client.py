@@ -25,7 +25,8 @@ class DeepSeekClient(OpenAIClient):
 
     Args:
         api_key (Optional[str], optional): DeepSeek API key. Defaults to `None`.
-        chat_completion_parser (Callable[[Completion], Any], optional): A function to parse API responses.
+        non_streaming_chat_completion_parser (Callable[[Completion], Any], optional): A function to parse API responses.
+        streaming_chat_completion_parser (Callable[[Completion], Any], optional): A function to parse API responses.
         input_type (Literal["text", "messages"], optional): Defines how input is handled. Defaults to `"text"`.
         base_url (str, optional): API base URL, defaults to `"https://api.deepseek.com/v1/"`.
     """
@@ -33,7 +34,8 @@ class DeepSeekClient(OpenAIClient):
     def __init__(
         self,
         api_key: Optional[str] = None,
-        chat_completion_parser: Callable[[Completion], Any] = None,
+        non_streaming_chat_completion_parser: Callable[[Completion], Any] = None,
+        streaming_chat_completion_parser: Callable[[Completion], Any] = None,
         input_type: Literal["text", "messages"] = "messages",
         base_url: str = "https://api.deepseek.com/v1/",
         env_api_key_name: str = "DEEPSEEK_API_KEY",
@@ -41,7 +43,8 @@ class DeepSeekClient(OpenAIClient):
         """Initializes DeepSeek API client with the correct base URL. The input_type is set to "messages" by default to be compatible with DeepSeek reasoner."""
         super().__init__(
             api_key=api_key,
-            chat_completion_parser=chat_completion_parser,
+            non_streaming_chat_completion_parser=non_streaming_chat_completion_parser,
+            streaming_chat_completion_parser=streaming_chat_completion_parser,
             input_type=input_type,
             base_url=base_url,
             env_api_key_name=env_api_key_name,
