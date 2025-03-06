@@ -203,19 +203,19 @@ It is good practice to ensure that any of your components are pickable.
 
 FuncComponent
 --------------
- Use :func:`func_to_component<core.component.func_to_component>` as a decorator to convert any function to a Component with its unique class name.
+ Use :func:`func_to_data_component<core.component.func_to_data_component>` as a decorator to convert any function to a DataComponent with its unique class name.
 
-:class:`FuncComponent<core.component.FuncComponent>` is a subclass of :class:`Component<core.component.Component>` that allows you to define a component with a function.
+:class:`FuncDataComponent<core.component.FuncDataComponent>` is a subclass of :class:`Component<core.component.Component>` that allows you to define a component with a function.
 You can directly use this class as:
 
 .. code-block:: python
 
-    from adalflow.core.component import FuncComponent
+    from adalflow.core.component import FuncDataComponent
 
     def add_one(x):
         return x + 1
 
-    fun_component = FuncComponent(add_one)
+    fun_component = FuncDataComponent(add_one)
     print(fun_component(1))
     print(type(fun_component))
 
@@ -224,11 +224,11 @@ The printout:
 .. code-block::
 
     2
-    <class 'core.component.FuncComponent'>
+    <class 'core.component.FuncDataComponent'>
 
 
 
-We also have :func:`func_to_component<core.component.func_to_component>` to convert a function to a `FuncComponent` via a decorator or by directly calling the function.
+We also have :func:`func_to_data_component<core.component.func_to_data_component>` to convert a function to a `FuncDataComponent` via a decorator or by directly calling the function.
 This approach gives you a unique component converted from the function name.
 
 Via direct call:
@@ -236,9 +236,9 @@ Via direct call:
 
 .. code-block:: python
 
-    from adalflow.core.component import func_to_component
+    from adalflow.core.component import func_to_data_component
 
-    fun_component = func_to_component(add_one)
+    fun_component = func_to_data_component(add_one)
     print(fun_component(1))
     print(type(fun_component))
 
@@ -256,7 +256,7 @@ Using a decorator is an even more convenient way to create a component from a fu
 
 .. code-block:: python
 
-    @func_to_component
+    @func_to_data_component
     def add_one(x):
         return x + 1
 
@@ -274,13 +274,13 @@ Sequential
 
 We have the :class:`Sequential<core.container.Sequential>` class, which is similar to PyTorch's ``nn.Sequential`` class.
 This is especially useful for chaining together components in a sequence, much like the concept of ``chain`` or ``pipeline`` in other LLM libraries.
-Let's put the `FuncComponent`` and `DocQA`` together in a sequence:
+Let's put the `FuncDataComponent`` and `DocQA`` together in a sequence:
 
 .. code-block:: python
 
     from adalflow.core.container import Sequential
 
-    @func_to_component
+    @func_to_data_component
     def enhance_query(query:str) -> str:
         return query + "Please be concise and only list the top treatments."
 
@@ -320,9 +320,9 @@ The structure of the sequence using ``print(seq)``:
    :class: highlight
 
    - :class:`core.component.Component`
-   - :class:`core.component.FuncComponent`
+   - :class:`core.component.FuncDataComponent`
    - :class:`core.container.Sequential`
-   - :func:`core.component.func_to_component`
+   - :func:`core.component.func_to_data_component`
 
 
 We will cover more advanced use cases in the upcoming tutorials.

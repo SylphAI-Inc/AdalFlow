@@ -24,7 +24,7 @@ from anthropic import (
     UnprocessableEntityError,
     BadRequestError,
 )
-from anthropic.types import Message, Usage
+from anthropic.types import Message, Usage, Completion
 
 log = logging.getLogger(__name__)
 
@@ -56,7 +56,8 @@ class AnthropicAPIClient(ModelClient):
     def __init__(
         self,
         api_key: Optional[str] = None,
-        chat_completion_parser: Callable[[Message], Any] = None,
+        non_streaming_chat_completion_parser: Callable[[Completion], Any] = None,
+        streaming_chat_completion_parser: Callable[[Completion], Any] = None,
     ):
         r"""It is recommended to set the ANTHROPIC_API_KEY environment variable instead of passing it as an argument."""
         super().__init__()
@@ -64,9 +65,11 @@ class AnthropicAPIClient(ModelClient):
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
         self.tested_llm_models = ["claude-3-opus-20240229"]
-        self.chat_completion_parser = (
-            chat_completion_parser or get_first_message_content
+        self.non_streaming_chat_completion_parser = (
+            non_streaming_chat_completion_parser or get_first_message_content
         )
+        self.streaming_chat_completion_parser = streaming_chat_completion_parser or None
+        self.chat_completion_parser = self.non_streaming_chat_completion_parser
         self.default_max_tokens = 512
 
     def init_sync_client(self):
@@ -146,6 +149,12 @@ class AnthropicAPIClient(ModelClient):
         if model_type == ModelType.EMBEDDER:
             raise ValueError(f"Model type {model_type} not supported")
         elif model_type == ModelType.LLM:
+            if "stream" in api_kwargs and api_kwargs.get("stream", False):
+                log.debug("streaming call")
+                self.chat_completion_parser = self.streaming_chat_completion_parser
+            else:
+                log.debug("non-streaming call")
+                self.chat_completion_parser = self.non_streaming_chat_completion_parser
             return self.sync_client.messages.create(**api_kwargs)
         else:
             raise ValueError(f"model_type {model_type} is not supported")

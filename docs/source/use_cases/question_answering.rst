@@ -164,7 +164,7 @@ We'll instruct the LLM to respond with a chain of thought and end the response w
 
         return answer
 
-``adal.func_to_component`` is a decorator that converts a function to a component so that we can pass it to the generator as a output processor.
+``adal.func_to_data_component`` is a decorator that converts a function to a component so that we can pass it to the generator as a output processor.
 
 For the task, we will use a simple template taking three arguments: ``system_prompt``, ``few_shot_demos``, and ``input_str``.
 

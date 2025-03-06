@@ -79,13 +79,13 @@ You are a helpful assistant.
 {% if input_str %}
 {{input_str}}
 {% endif %}
-<END_OF_USER_PROMPT>
 {# steps #}
 {% if steps_str %}
 <START_OF_ASSISTANT_STEPS>
 {{steps_str}}
 <END_OF_ASSISTANT_STEPS>
 {% endif %}
+<END_OF_USER_PROMPT>
 """
 """This is the default system prompt template used in the AdalFlow.
 
