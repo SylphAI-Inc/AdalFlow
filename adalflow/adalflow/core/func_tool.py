@@ -136,7 +136,7 @@ class FunctionTool(Component):
             self.fn = fn.__call__
         else:
             self.fn = fn
-        self._is_async = iscoroutinefunction(fn)
+        self._is_async = iscoroutinefunction(fn) or inspect.isasyncgenfunction(fn)
         if isinstance(fn, Component):
             self.definition = (
                 definition or self._create_fn_definition_for_grad_component(fn)
@@ -224,6 +224,7 @@ class FunctionTool(Component):
             tool_1 = FunctionTool(sync_function_1)
             output = tool_1.call()
         """
+        printc(f"call: {self.fn}", color="yellow")
         return self.bicall(*args, **kwargs)
         # if self._is_async:
         #     raise ValueError("FunctionTool is asynchronous, use acall instead")
@@ -264,9 +265,17 @@ class FunctionTool(Component):
         # NOTE: special case:
         # self.fn can have both train and eval mode or untrainable as a function.
         try:
-            # printc(f"args: {args}, kwargs: {kwargs}, fn: {self.fn}", color="yellow")
+            printc(f"args: {args}, kwargs: {kwargs}, fn: {self.fn}", color="yellow")
             output = self.fn(*args, **kwargs)
-            # printc(f"output 1: {output}", color="yellow")
+            printc(f"output 1: {output}", color="yellow")
+            import inspect
+
+            if inspect.isasyncgen(output):
+                # just yield from it
+                return output
+            elif inspect.isgenerator(output):
+                # just yield from it
+                return output
         except Exception as e:
             log.error(f"Error at calling {self.fn}: {e}")
             error = f"Error at calling {self.fn}: {e}"
@@ -321,6 +330,14 @@ class FunctionTool(Component):
         error = None
         try:
             output = await self.fn(*args, **kwargs)
+            import inspect
+
+            if inspect.isasyncgen(output):
+                # just yield from it
+                return output
+            elif inspect.isgenerator(output):
+                # just yield from it
+                return output
         except Exception as e:
             log.error(f"Error at calling {self.fn}: {e}")
             error = str(e)
