@@ -461,7 +461,64 @@ class DataClass:
             return cls.from_dict(data)
         except yaml.YAMLError as e:
             raise ValueError(f"Failed to load YAML string: {e}")
+        
+    @classmethod
+    def to_pydantic(cls, instance: "DataClass"):
+        """
+        Convert the current dataclass instance into an equivalent Pydantic model instance.
+        The returned Pydantic model class will have the same fields and types as the dataclass.
 
+        Args:
+        instance (DataClass): The dataclass instance to convert.
+
+        Returns:
+        A Pydantic model instance with the same field values as the dataclass instance.
+        """
+        from dataclasses import MISSING, fields as dc_fields
+        from pydantic import create_model
+
+        field_definitions = {}
+        for f in dc_fields(cls):
+            if f.default is not MISSING:
+                field_definitions[f.name] = (f.type, f.default)
+            elif f.default_factory is not MISSING:
+                # Check if the default_factory is our required_field (which should raise when called)
+                if f.default_factory.__name__ == "required_field":
+                    field_definitions[f.name] = (f.type, ...)
+                else:
+                    field_definitions[f.name] = (f.type, f.default_factory())
+            else:
+                field_definitions[f.name] = (f.type, ...)
+        pydantic_model = create_model(f"{cls.__name__}Pydantic", **field_definitions)
+        data = instance.to_dict()
+        return pydantic_model(**data)
+    
+    @classmethod
+    def pydantic_to_dataclass(cls, pydantic_obj):
+        """
+        Convert a Pydantic model instance into a corresponding DataClass instance.
+        This is achieved by extracting the dictionary representation of the Pydantic model
+        and then passing it to the existing from_dict method.
+
+        Args:
+            pydantic_obj (pydantic.BaseModel): A Pydantic model instance.
+
+        Returns:
+            DataClass: An instance of the DataClass converted from the Pydantic model.
+        """
+        from pydantic import BaseModel
+
+        if not isinstance(pydantic_obj, BaseModel):
+            raise TypeError(
+                f"Expected a Pydantic model instance, got {type(pydantic_obj)} instead."
+            )
+        # Convert the pydantic model instance to a dict and then create a DataClass instance.
+        data = pydantic_obj.model_dump()
+        try:
+            return cls.from_dict(data)
+        except Exception as e:
+            raise ValueError(f"Failed to convert pydantic model to DataClass: {e}")
+        
     def to_yaml_obj(
         self,
         exclude: ExcludeType = None,
