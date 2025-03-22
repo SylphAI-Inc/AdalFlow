@@ -16,7 +16,7 @@ class TestDeepSeekClient(unittest.TestCase):
     def test_deepseek_init(self):
         self.assertEqual(self.client.base_url, "https://api.deepseek.com/v1/")
         self.assertEqual(self.client._input_type, "messages")
-        self.assertEqual(self.client.env_api_key_name, "DEEPSEEK_API_KEY")
+        self.assertEqual(self.client._env_api_key_name, "DEEPSEEK_API_KEY")
 
     # mock os.getenv(self._env_api_key_name) with getenv_side_effect
     @patch("os.getenv")

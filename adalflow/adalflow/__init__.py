@@ -135,6 +135,7 @@ __all__ = [
     "OpenAIClient",
     "GoogleGenAIClient",
     "GroqAPIClient",
+    "DeepSeekClient",
     "OllamaClient",
     "TransformersClient",
     "AnthropicAPIClient",
