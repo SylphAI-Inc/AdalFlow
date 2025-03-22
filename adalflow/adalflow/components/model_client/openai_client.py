@@ -170,6 +170,8 @@ class OpenAIClient(ModelClient):
 
         Args:
             api_key (Optional[str], optional): OpenAI API key. Defaults to None.
+            base_url (str): The API base URL to use when initializing the client.
+            env_api_key_name (str): The environment variable name for the API key. Defaults to `"OPENAI_API_KEY"`.
         """
         super().__init__()
         self._api_key = api_key
