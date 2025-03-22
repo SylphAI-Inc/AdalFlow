@@ -4,7 +4,6 @@ It is a pipeline that consists of three subcomponents."""
 
 import json
 import re
-import os
 from pathlib import Path
 
 from typing import Any, Dict, Optional, Union, Callable, Tuple, List
@@ -17,7 +16,7 @@ from adalflow.core.types import (
     GeneratorOutput,
     GeneratorOutputType,
 )
-from adalflow.core.component import Component
+from adalflow.core.component import Component, DataComponent
 from adalflow.optim.grad_component import GradComponent
 from adalflow.core.base_data_class import DataClass
 
@@ -37,7 +36,7 @@ from adalflow.optim.function import BackwardContext
 from adalflow.utils.cache import CachedEngine
 from adalflow.tracing.callback_manager import CallbackManager
 from adalflow.utils.global_config import get_adalflow_default_root_path
-from adalflow.core.string_parser import JsonParser, Parser
+from adalflow.core.string_parser import JsonParser
 
 
 from adalflow.optim.text_grad.backend_engine_prompt import (
@@ -50,14 +49,12 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
     OBJECTIVE_INSTRUCTION_BASE,
     OBJECTIVE_INSTRUCTION_CHAIN,
 )
-from adalflow.utils.logger import printc
 
 __all__ = ["Generator", "BackwardEngine", "create_teacher_generator"]
 
 
 log = logging.getLogger(__name__)
 
-DEBUG_MODE = os.environ.get("DEBUG_MODE", False)
 
 PromptArgType = Dict[str, Union[str, Parameter]]
 
@@ -76,6 +73,7 @@ class BackwardPassSetup(DataClass):
     )
 
 
+# TODO: better debug mode
 class Generator(GradComponent, CachedEngine, CallbackManager):
     __doc__ = """An user-facing orchestration component for LLM prediction.
 
@@ -96,8 +94,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         trainable_params (Optional[List[str]], optional): The list of trainable parameters. Defaults to [].
 
     Note:
-        The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output.
+        1. The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output.
         And we encourage you to only use it to parse the response to data format you will use later.
+        2. For structured output, you should avoid using `stream` as the output_processors can only be run after all the data is available.
     """
 
     model_type: ModelType = ModelType.LLM
@@ -122,7 +121,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         template: Optional[str] = None,
         prompt_kwargs: Optional[Dict] = {},
         # args for the output processing
-        output_processors: Optional[Parser] = None,
+        output_processors: Optional[DataComponent] = None,
         name: Optional[str] = None,
         # args for the cache
         cache_path: Optional[str] = None,
@@ -169,9 +168,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         self.output_processors = output_processors
 
-        if output_processors and (not isinstance(output_processors, Parser)):
+        if output_processors and (not isinstance(output_processors, DataComponent)):
             raise ValueError(
-                f"output_processors should be a Parser instance, got {type(output_processors)}"
+                f"output_processors should be a DataComponent instance, got {type(output_processors)}"
             )
 
         self.set_parameters(prompt_kwargs)
@@ -337,7 +336,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         r"""Get string completion and process it with the output_processors."""
         # parse chat completion will only fill the raw_response
         output: GeneratorOutput = self.model_client.parse_chat_completion(completion)
-        # Now adding the data filed to the output
+        # Now adding the data field to the output
         data = output.raw_response
         if self.output_processors:
             if data:
@@ -367,7 +366,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             model_kwargs=composed_model_kwargs,
             model_type=self.model_type,
         )
-        # printc(f"api_kwargs: {api_kwargs}", color="red")
         return api_kwargs
 
     def _model_client_call(self, api_kwargs: Dict, use_cache: bool = False) -> Any:
@@ -498,11 +496,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 unwrapped_prompt_kwargs[k] = v.map_to_successor(self)
             else:
                 unwrapped_prompt_kwargs[k] = v
-        if DEBUG_MODE:
-            print(
+            log.debug(
                 f"unwrapped_prompt_kwargs: {unwrapped_prompt_kwargs}, model_kwargs: {model_kwargs}"
             )
-            print(f"prompt template: {self.template}")
+            log.debug(f"prompt template: {self.template}")
 
         output: GeneratorOutputType = None
         input_args = {}
@@ -511,11 +508,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         else:
             if self.teacher_mode and not isinstance(self, BackwardEngine):
                 if not self._teacher:
-                    if DEBUG_MODE:
-                        print(
-                            f"unwrapped_prompt_kwargs: {unwrapped_prompt_kwargs}, model_kwargs: {model_kwargs}"
-                        )
-                        print(f"names: {self.name}")
+                    log.debug(
+                        f"unwrapped_prompt_kwargs: {unwrapped_prompt_kwargs}, model_kwargs: {model_kwargs}"
+                    )
+                    log.debug(f"names: {self.name}")
                     raise ValueError("Teacher generator is not set.")
                 log.info(f"Using teacher: {self._teacher}")
                 input_args = {
@@ -536,7 +532,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                         self.model_kwargs, model_kwargs
                     ),
                 }
-                # printc(f"input_args: {input_args}", color="red")
 
                 output = self.call(**input_args, id=id)
                 if not isinstance(output, GeneratorOutput):
@@ -555,9 +550,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         log.debug(f"Predecessors: {predecessors} for generator {self.name}")
 
         def data_to_prompt_map_fn(data: Parameter) -> str:
+            """GeneratorOutput will show the raw response instead of just the final data.
+            The backward engine and optimizer should look at all reasoning to decide the gradient.
+            """
             data: GeneratorOutput = data.data
-            # if data.data is not None:
-            #     return data.data
             if data.error is not None:
                 return f"Response: {data.raw_response} parsed with error: {data.error}"
             return f" {data.raw_response}"
@@ -609,8 +605,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         #     log.debug(f"Backward engine: {self.backward_engine}")
 
         # attach a funtion to compute gradient for predecessors
-
-        printc(f"disable_backward_engine config: {self._disable_backward_engine}")
+        log.debug(f"disable_backward_engine: {self._disable_backward_engine}")
 
         response.set_grad_fn(
             BackwardContext(
@@ -642,7 +637,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         backward_pass_setup = (
             backward_engine.backward_pass_setup if backward_engine else None
         )
-        printc(
+        log.debug(
             f"backward pass setup: {backward_pass_setup}, name: {self.name}",
             color="red",
         )
@@ -761,8 +756,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             template=ALL_PRED_INFO,
         )()
 
-        printc(f"all_pred_info: {all_pred_info}")
-
         conv_ins_template = None  # CONVERSATION_START_INSTRUCTION_BASE
         obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
         if is_intermediate_node:  # TODO: this will always be true
@@ -842,9 +835,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 )
                 if failure_message:
                     response_gradient_list = [failure_message] * len(children_params)
-                printc(f"failure_message: {failure_message}", color="red")
 
-        print(f"gradient list: {response_gradient_list}")
+                log.debug(f"failure_message: {failure_message}")
 
         # computes gradient for each prompt predecessor
         for i, pred in enumerate(children_params):
@@ -987,7 +979,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # print(f"Backward engine prompt: {backward_engine_prompt_str}")
         gradient_value = None
         if not disable_backward_engine:
-            printc("doing backward engine")
             gradient_output: GeneratorOutput = None
             if (
                 backward_pass_setup.compute_grad_for_errors_only
@@ -1008,13 +999,15 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 gradient_output: GeneratorOutput = backward_engine(
                     prompt_kwargs=backward_engine_prompt_kwargs
                 )
-                prompt_str = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
-                printc(f"Backward engine prompt: {prompt_str}")
+                prompt_str = backward_engine.get_prompt(  # noqa F841
+                    **backward_engine_prompt_kwargs
+                )
+                # printc(f"Backward engine prompt: {prompt_str}")
                 if not isinstance(gradient_output, GeneratorOutput):
                     raise ValueError(
                         f"Generator: Backward Engine should return a GeneratorOutput. Got {gradient_output} instead."
                     )
-            printc(f"Backward engine gradient: {gradient_output}")
+            # printc(f"Backward engine gradient: {gradient_output}")
 
             # USE this to trace each node's input and output, all nodes can be visualized
             log.info(
@@ -1196,7 +1189,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         ]
 
         s += f"trainable_prompt_kwargs={prompt_kwargs_repr}"
-        s += f", prompt={self.prompt}"
         return s
 
     def to_dict(self) -> Dict[str, Any]:

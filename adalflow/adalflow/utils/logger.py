@@ -195,7 +195,7 @@ def printc(
 ):
     """Color enhanced print function with logger-like format.
 
-    LightRAG's customized print with colored text, position of code block the print is set, and current timestamp.
+    AdalFlow's customized print with colored text, position of code block the print is set, and current timestamp.
 
     Args:
         text (str): Text to be printed.

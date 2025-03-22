@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath("../../adalflow/adalflow"))
 
 project = "AdalFlow"
-copyright = "2024, SylphAI, Inc"
+copyright = "2025, SylphAI, Inc"
 author = "SylphAI, Inc"
 
 extensions = [
@@ -23,6 +23,9 @@ extensions = [
     "sphinx_copybutton",
     "nbsphinx",
     "sphinx_search.extension",
+    "sphinx_tabs.tabs",
+    "sphinx_design",
+    "sphinx_copybutton",
     # "sphinx_sitemap",
 ]
 
@@ -32,19 +35,34 @@ templates_path = ["_templates"]
 
 exclude_patterns = ["adalflow/tests"]
 
-html_theme = "pydata_sphinx_theme"
+html_theme = "furo"
+
 html_show_sourcelink = False
 
-html_logo = "./_static/images/adalflow-logo.png"
+html_static_path = ["_static"]
+
 # autodoc_mock_imports = ["datasets"]
 
 html_theme_options = {
+    "light_logo": "images/AdalFlow.svg",  # For light mode
+    "dark_logo": "images/AdalFlow_black_bg.svg",  # For dark mode
+    "top_of_page_button": "edit",  # Remove default Furo buttons
+    "light_css_variables": {
+        "color-brand-primary": "#FF6F00",
+        "color-brand-content": "#1E2A38",
+    },
+    "dark_css_variables": {
+        "color-brand-primary": "#FF8F00",
+        "color-brand-content": "#CFD8DC",
+    },
+    "dark_mode_code_blocks": False,  # Remove mixed code block styling
+    "theme_switcher": ["light", "dark"],  # Show only two theme options
     "collapse_navigation": False,
     "navigation_depth": 8,
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/SylphAI-Inc/LightRAG",
+            "url": "https://github.com/SylphAI-Inc/AdalFlow",
             "icon": "fa-brands fa-github",
         },
         {
@@ -65,7 +83,7 @@ html_theme_options = {
     #             banner.className = 'announcement-banner';
     #             // Create the content for the announcement
     #             banner.innerHTML = `
-    #                 <p>⭐️ If you find AdalFlow helpful, please star us on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
+    #                 <p>⭐️ If you find AdalFlow helpful, please star us on <a href='https://github.com/SylphAI-Inc/AdalFlow'>GitHub!</a> ⭐️</p>
     #                 <button onclick="closeBanner()">×</button>
     #             `;
     #             // Append the banner to the banner header
@@ -103,16 +121,30 @@ html_theme_options = {
 }
 
 
-html_static_path = ["_static"]
+html_sidebars = {
+    "**": [
+        "sidebar/brand.html",
+        "github-link.html",  # New custom link
+        "sidebar/search.html",
+        "sidebar/scroll-start.html",
+        "sidebar/navigation.html",
+        "sidebar/ethical-ads.html",
+        "sidebar/scroll-end.html",
+    ]
+}
 
-# html_short_title = "Lightrag"
-html_title = "AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines"
+html_css_files = [
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+]
+
+html_title = "Build and Optimize LM Workflows"
+# html_title = "AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines"
 html_favicon = "./_static/images/LightRAG-logo-circle.png"
 # html_context = {
-#     "docstitle": "LightRAG: The Lightning Library for LLM Applications"
+#     "docstitle": "AdalFlow: The Lightning Library for LLM Applications"
 # }
 # html_theme_options = {
-#    "announcement": "⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'> GitHub! </a> ⭐️",
+#    "announcement": "⭐️ If you find AdalFlow helpful, give it a star on <a href='https://github.com/SylphAI-Inc/AdalFlow'> GitHub! </a> ⭐️",
 # }
 
 # html_meta = {

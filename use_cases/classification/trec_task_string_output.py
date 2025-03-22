@@ -15,7 +15,7 @@ template = r"""<START_OF_SYSTEM_MESSAGE>
 """
 
 
-@adal.fun_to_component
+@adal.func_to_data_component
 def extract_class_index_value(text: str, get_feedback=False):
     pattern = re.compile(r"Answer\s*:\s*\$?(\d+)")
 

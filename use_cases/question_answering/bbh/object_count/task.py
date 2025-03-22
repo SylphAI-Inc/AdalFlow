@@ -30,7 +30,6 @@ class ObjectCountTaskPipeline(adal.Component):
         super().__init__()
 
         system_prompt = adal.Parameter(
-            # data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
             data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
             role_desc="To give task instruction to the language model in the system prompt",
             requires_opt=True,

@@ -4,7 +4,7 @@ from adalflow.core.types import ModelType
 from adalflow.utils import setup_env
 
 # Initialize the DeepSeekClient
-setup_env() 
+setup_env()
 deepseek_client = DeepSeekClient()
 
 # Example query for the DeepSeek reasoning model
@@ -21,7 +21,12 @@ system_prompt = "You are a helpful assistant."
 prompt = f"<START_OF_SYSTEM_PROMPT>\n{system_prompt}\n<END_OF_SYSTEM_PROMPT>\n<START_OF_USER_PROMPT>\n{query}\n<END_OF_USER_PROMPT>"
 
 # Define model-specific parameters
-model_kwargs = {"model": "deepseek-reasoner", "temperature": 0.7, "max_tokens": 100, "stream": False}
+model_kwargs = {
+    "model": "deepseek-reasoner",
+    "temperature": 0.7,
+    "max_tokens": 100,
+    "stream": False,
+}
 
 # Convert the inputs into API-compatible arguments
 api_kwargs = deepseek_client.convert_inputs_to_api_kwargs(

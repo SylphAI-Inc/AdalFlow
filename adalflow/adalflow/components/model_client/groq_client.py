@@ -163,3 +163,16 @@ class GroqAPIClient(ModelClient):
         ]  # unserializable object
         output = super().to_dict(exclude=exclude)
         return output
+
+    def list_models(self):
+        return self.sync_client.models.list()
+
+
+if __name__ == "__main__":
+
+    from adalflow.utils import setup_env
+
+    setup_env()
+
+    client = GroqAPIClient()
+    print(client.list_models())

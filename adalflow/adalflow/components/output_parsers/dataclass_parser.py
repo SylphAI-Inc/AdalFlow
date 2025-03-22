@@ -5,7 +5,8 @@ from typing import Any, Literal, List, Optional
 import logging
 
 from adalflow.core.prompt_builder import Prompt
-from adalflow.core.string_parser import YamlParser, JsonParser, Parser
+from adalflow.core.component import DataComponent
+from adalflow.core.string_parser import YamlParser, JsonParser
 from adalflow.core.base_data_class import DataClass, DataClassFormatType
 from adalflow.core.base_data_class import ExcludeType, IncludeType
 
@@ -20,7 +21,7 @@ JSON_OUTPUT_FORMAT = r"""Your output should be formatted as a standard JSON inst
 ```
 -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
 -Use double quotes for the keys and string values.
--DO NOT mistaken the "properties" and "type" in the schema as the actual fields in the JSON output.
+-DO NOT mistake the "properties" and "type" in the schema for the actual fields in the JSON output.
 -Follow the JSON formatting conventions."""
 
 YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML instance with the following schema:
@@ -29,7 +30,7 @@ YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML inst
 ```
 -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
 -Follow the YAML formatting conventions with an indent of 2 spaces.
--DO NOT mistaken the "properties" and "type" in the schema as the actual fields in the YAML output.
+-DO NOT mistak the "properties" and "type" in the schema for the actual fields in the YAML output.
 -Quote the string values properly."""
 
 EXAMPLES_FORMAT = r"""
@@ -42,7 +43,7 @@ __________
 """
 
 
-class DataClassParser(Parser):
+class DataClassParser(DataComponent):
     __doc__ = r"""Made the structured output even simpler compared with JsonOutputParser and YamlOutputParser.
 
         1. Understands __input_fields__ and __output_fields__ from the DataClass (no need to use include/exclude to decide fields).
@@ -165,9 +166,6 @@ class DataClassParser(Parser):
 
         examples_str = Prompt(template=EXAMPLES_FORMAT)(examples=str_examples)
         return examples_str
-
-    def __call__(self, *args, **kwargs):
-        return self.call(*args, **kwargs)
 
     def call(self, input: str) -> Any:
         r"""Parse the output string to the desired format and return the parsed output."""

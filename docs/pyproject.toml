@@ -2,26 +2,32 @@
 name = "adalflow-docs"
 version = "0.0.0.beta.1"
 description = "Documentation for the adalflow project"
-authors = ["Your Name <your.email@example.com>"]
+authors = [
+    "Li Yin <li@sylph.ai>",
+    "Nicholas Fleischhauer <nicholas@sylphai.com>",
+]
 license = "MIT"
-packages = [{ from = "_dummy", include = "dummy" }]    # empty packages
+packages = [{ from = "_dummy", include = "dummy" }] # empty packages
 
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
-adalflow = { path = "../adalflow", develop = true } # document always follow the latest version of the library
+adalflow = { path = "../adalflow", develop = true } # Follow latest adalflow version
 pyvis = "^0.3.2"
-
+sphinx-tabs = "^3.4.7"
+furo = "^2024.8.6"
 
 [tool.poetry.group.doc.dependencies]
+# Sphinx documentation dependencies
+sphinx = "^7.3.7"
 pydata-sphinx-theme = "^0.15.3"
 sphinx-design = "^0.6.0"
 sphinx-copybutton = "^0.5.2"
-sphinx = "^7.3.7"
 nbsphinx = "^0.9.4"
 nbconvert = "^7.16.4"
 pandoc = "^2.3"
 readthedocs-sphinx-search = "^0.3.2"
-# add optional packages to compile the documents correctly
+
+# Additional dependencies for document compilation
 datasets = "^2.20.0"
 sqlalchemy = "^2.0.31"
 google-generativeai = "^0.7.1"
@@ -38,10 +44,9 @@ lancedb = "^0.14.0"
 diskcache = "^5.6.3"
 torch = "^2.4.0"
 
-# azure model_client
+# Azure client dependencies
 azure-identity = "^1.18.0"
 azure-core = "^1.31.0"
-
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

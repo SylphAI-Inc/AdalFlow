@@ -1,5 +1,6 @@
 """Base building block for building LLM task pipelines.
-It handles states recursively, such as training, components, parameters recursively along with serialization and deserialization."""
+It handles states recursively, such as training, components, parameters recursively along with serialization and deserialization.
+"""
 
 from collections import OrderedDict, namedtuple
 from typing import (
@@ -14,6 +15,7 @@ from typing import (
     TypeVar,
     Type,
     TYPE_CHECKING,
+    Callable,
 )
 
 import logging
@@ -124,15 +126,21 @@ class Component:
 
     _component_type = "base"
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, name: Optional[str] = None, *args, **kwargs) -> None:
         super().__setattr__("_components", OrderedDict())
         super().__setattr__("_parameters", OrderedDict())
         super().__setattr__("training", False)
         super().__setattr__("teacher_mode", False)
         super().__setattr__("tracing", False)
-        super().__setattr__("name", self.__class__.__name__)
+        if name is not None:
+            super().__setattr__("name", name)
+        else:
+            super().__setattr__("name", self.__class__.__name__)
         # only for tracking the init args
         super().__setattr__("_init_args", self._get_init_args(*args, **kwargs))
+
+        # save this class to the registry
+        EntityMapping.register(self.__class__.__name__, self.__class__)
 
     def use_teacher(self, mode: bool = True):
         r"""Sets the component in teacher mode."""
@@ -469,7 +477,13 @@ class Component:
         User must override this for the training scenario
         if bicall is not defined.
         """
-        raise NotImplementedError("Subclasses must implement `forward` or `bicall`.")
+        if self._has_bicall():
+            output = self.bicall(*args, **kwargs)
+            return output
+        else:
+            raise NotImplementedError(
+                "Subclasses must implement `forward` or `bicall`."
+            )
 
     def call(self, *args, **kwargs):
         """
@@ -479,7 +493,8 @@ class Component:
         if self._has_bicall():
             output = self.bicall(*args, **kwargs)
             return output
-        raise NotImplementedError("Subclasses must implement `call` or `bicall`.")
+        else:
+            raise NotImplementedError("Subclasses must implement `call` or `bicall`.")
 
     def bicall(self, *args, **kwargs):
         """
@@ -942,6 +957,94 @@ class Component:
         return init_args
 
 
+# TODO: it is possible to separate all other data component from component and have its own to_dict and from_dict, and other functionalities instead of being tied to component
+class DataComponent(Component):
+    r"""
+    Base class for all components that are handling data pre- and post-processing.
+    Example: Prompt, Parser. TextSplitter, etc.
+
+    Compared with a normal Component, it is not trainable and can process parameters as input but does not return any parameters.
+
+    Args:
+        data (Optional[Union[Dict[str, Any], Any]]): input data for the component.
+    """
+
+    _component_type = "data"
+
+    def train(self, mode: bool = False):
+        self.training = False
+
+    def __call__(self, *args, **kwargs):
+        return self.call(*args, **kwargs)
+
+
+class FuncDataComponent(DataComponent):
+    r"""Component that wraps a function.
+
+    Args:
+        fun (Callable): The function to be wrapped.
+
+    Examples:
+
+    function = lambda x: x + 1
+    fun_component = FuncDataComponent(function)
+    print(fun_component(1))  # 2
+    """
+
+    def __init__(self, fun: Optional[Callable] = None, afun: Optional[Callable] = None):
+        super().__init__()
+        self.fun_name = fun.__name__
+        EntityMapping.register(self.fun_name, fun)
+        self.fun = fun
+
+    def call(self, *args, **kwargs):
+        # fun = EntityMapping.get(self.fun_name)
+
+        return self.fun(*args, **kwargs)
+
+    def __repr__(self) -> str:
+        return super().__repr__() + f"fun_name={self.fun_name}"
+
+
+def func_to_data_component(fun) -> FuncDataComponent:
+    r"""Helper function to convert a function into a Parser class.
+    its own class name.
+
+    Can be used as both a decorator and a function.
+
+    Args:
+        fun (Callable): The function to be wrapped.
+    Returns:
+        FuncDataComponent: The component that wraps the function.
+
+    Examples:
+    1. As a decorator:
+        >>> @func_to_data_component
+        >>> def my_function(x):
+        >>>     return x + 1
+        >>> # is equivalent to
+        >>> class MyFunctionDataComponent(FuncDataComponent):
+        >>>     def __init__(self):
+        >>>         super().__init__(my_function)
+
+    2. As a function:
+        >>> my_function_data_component = func_to_data_component(my_function)
+    """
+
+    class_name = (
+        "".join(part.capitalize() for part in fun.__name__.split("_")) + "DataComponent"
+    )
+    EntityMapping.register(fun.__name__, fun)
+    parser_class = type(
+        class_name,
+        (FuncDataComponent,),
+        {"__init__": lambda self: FuncDataComponent.__init__(self, fun)},
+    )
+    EntityMapping.register(class_name, parser_class)
+
+    return parser_class()
+
+
 # TODO: not used yet, will further investigate dict mode
 # class ComponentDict(Component):
 #     r"""
@@ -1080,3 +1183,17 @@ class Component:
 #                 self[m[0]] = m[1]  # type: ignore[assignment]
 
 #     # remove forward alltogether to fallback on Module's _forward_unimplemented
+
+
+if __name__ == "__main__":
+    from adalflow.core.component import FuncDataComponent
+
+    def add_one(x):
+        return x + 1
+
+    func_data_component = FuncDataComponent(add_one)
+    print(func_data_component(1))
+    print(type(func_data_component))
+
+    func_data_component = func_to_data_component(add_one)
+    print(func_data_component(1))

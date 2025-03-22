@@ -1,6 +1,11 @@
-__version__ = "0.2.7"
+__version__ = "1.0.4"
 
-from adalflow.core.component import Component
+from adalflow.core.component import (
+    Component,
+    DataComponent,
+    FuncDataComponent,
+    func_to_data_component,
+)
 from adalflow.core.container import Sequential, ComponentList
 from adalflow.core.base_data_class import DataClass, DataClassFormatType, required_field
 
@@ -14,7 +19,7 @@ from adalflow.core.types import (
     Document,
 )
 from adalflow.core.model_client import ModelClient
-from adalflow.core.embedder import Embedder
+from adalflow.core.embedder import Embedder, BatchEmbedder
 
 # parser
 from adalflow.core.string_parser import (
@@ -24,9 +29,6 @@ from adalflow.core.string_parser import (
     FloatParser,
     ListParser,
     BooleanParser,
-    Parser,
-    func_to_parser,
-    FuncParser,
 )
 from adalflow.core.retriever import Retriever
 from adalflow.components.output_parsers import (
@@ -61,18 +63,21 @@ from adalflow.components.model_client import (
     GroqAPIClient,
     OllamaClient,
     TransformersClient,
-    AnthropicAPIClient,
     CohereAPIClient,
     BedrockAPIClient,
+    DeepSeekClient,
+    TogetherClient,
+    AnthropicAPIClient,
 )
 
 # data pipeline
 from adalflow.components.data_process.text_splitter import TextSplitter
-from adalflow.components.data_process.data_components import ToEmbeddings
 
 __all__ = [
     "Component",
-    "fun_to_component",
+    "DataComponent",
+    "FuncDataComponent",
+    "func_to_data_component",
     # dataclass
     "DataClass",
     "DataClassFormatType",
@@ -86,6 +91,7 @@ __all__ = [
     "ModelClient",
     "Generator",
     "Embedder",
+    "BatchEmbedder",
     "Retriever",
     "Parameter",
     "AdalComponent",
@@ -105,7 +111,6 @@ __all__ = [
     "ListParser",
     "BooleanParser",
     "Parser",
-    "func_to_parser",
     "FuncParser",
     # Output Parsers with dataclass formatting
     "YamlOutputParser",
@@ -135,4 +140,6 @@ __all__ = [
     "AnthropicAPIClient",
     "CohereAPIClient",
     "BedrockAPIClient",
+    "TogetherClient",
+    "AnthropicAPIClient",
 ]

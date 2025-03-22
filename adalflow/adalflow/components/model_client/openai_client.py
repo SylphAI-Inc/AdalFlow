@@ -58,11 +58,13 @@ T = TypeVar("T")
 def get_first_message_content(completion: ChatCompletion) -> str:
     r"""When we only need the content of the first message.
     It is the default parser for chat completion."""
+    log.debug(f"raw completion: {completion}")
     return completion.choices[0].message.content
 
 
 # def _get_chat_completion_usage(completion: ChatCompletion) -> OpenAICompletionUsage:
 #     return completion.usage
+
 
 # A simple heuristic to estimate token count for estimating number of tokens in a Streaming response
 def estimate_token_count(text: str) -> int:
@@ -141,16 +143,19 @@ class OpenAIClient(ModelClient):
         - response_format: "url" or "b64_json"
 
     Args:
-        api_key (Optional[str], optional): OpenAI API key. Defaults to None.
-        chat_completion_parser (Callable[[Completion], Any], optional): A function to parse the chat completion to a str. Defaults to None.
-            Default is `get_first_message_content`.
+        api_key (Optional[str], optional): OpenAI API key. Defaults to `None`.
+        chat_completion_parser (Callable[[Completion], Any], optional): A function to parse the chat completion into a `str`. Defaults to `None`.
+            The default parser is `get_first_message_content`.
+        base_url (str): The API base URL to use when initializing the client.
+            Defaults to `"https://api.openai.com"`, but can be customized for third-party API providers or self-hosted models.
+        env_api_key_name (str): The environment variable name for the API key. Defaults to `"OPENAI_API_KEY"`.
 
     References:
-        - Embeddings models: https://platform.openai.com/docs/guides/embeddings
-        - Chat models: https://platform.openai.com/docs/guides/text-generation
-        - Vision models: https://platform.openai.com/docs/guides/vision
-        - Image models: https://platform.openai.com/docs/guides/images
-        - OpenAI docs: https://platform.openai.com/docs/introduction
+        - OpenAI API Overview: https://platform.openai.com/docs/introduction
+        - Embeddings Guide: https://platform.openai.com/docs/guides/embeddings
+        - Chat Completion Models: https://platform.openai.com/docs/guides/text-generation
+        - Vision Models: https://platform.openai.com/docs/guides/vision
+        - Image Generation: https://platform.openai.com/docs/guides/images
     """
 
     def __init__(
@@ -158,6 +163,8 @@ class OpenAIClient(ModelClient):
         api_key: Optional[str] = None,
         chat_completion_parser: Callable[[Completion], Any] = None,
         input_type: Literal["text", "messages"] = "text",
+        base_url: str = "https://api.openai.com/v1/",
+        env_api_key_name: str = "OPENAI_API_KEY",
     ):
         r"""It is recommended to set the OPENAI_API_KEY environment variable instead of passing it as an argument.
 
@@ -166,25 +173,31 @@ class OpenAIClient(ModelClient):
         """
         super().__init__()
         self._api_key = api_key
+        self.base_url = base_url
+        self.env_api_key_name = env_api_key_name
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
         self.chat_completion_parser = (
             chat_completion_parser or get_first_message_content
         )
         self._input_type = input_type
-        self._api_kwargs = {} # add api kwargs when the OpenAI Client is called
+        self._api_kwargs = {}  # add api kwargs when the OpenAI Client is called
 
     def init_sync_client(self):
         api_key = self._api_key or os.getenv("OPENAI_API_KEY")
         if not api_key:
-            raise ValueError("Environment variable OPENAI_API_KEY must be set")
-        return OpenAI(api_key=api_key)
+            raise ValueError(
+                f"Environment variable {self._env_api_key_name} must be set"
+            )
+        return OpenAI(api_key=api_key, base_url=self.base_url)
 
     def init_async_client(self):
         api_key = self._api_key or os.getenv("OPENAI_API_KEY")
         if not api_key:
-            raise ValueError("Environment variable OPENAI_API_KEY must be set")
-        return AsyncOpenAI(api_key=api_key)
+            raise ValueError(
+                f"Environment variable {self._env_api_key_name} must be set"
+            )
+        return AsyncOpenAI(api_key=api_key, base_url=self.base_url)
 
     # def _parse_chat_completion(self, completion: ChatCompletion) -> "GeneratorOutput":
     #     # TODO: raw output it is better to save the whole completion as a source of truth instead of just the message
@@ -206,27 +219,36 @@ class OpenAIClient(ModelClient):
         log.debug(f"completion: {completion}, parser: {self.chat_completion_parser}")
         try:
             data = self.chat_completion_parser(completion)
+        except Exception as e:
+            log.error(f"Error parsing the completion: {e}")
+            return GeneratorOutput(data=None, error=str(e), raw_response=completion)
+
+        try:
             usage = self.track_completion_usage(completion)
             return GeneratorOutput(
                 data=None, error=None, raw_response=data, usage=usage
             )
         except Exception as e:
-            log.error(f"Error parsing the completion: {e}")
-            return GeneratorOutput(data=None, error=str(e), raw_response=completion)
+            log.error(f"Error tracking the completion usage: {e}")
+            return GeneratorOutput(data=None, error=str(e), raw_response=data)
 
     def track_completion_usage(
         self,
         completion: Union[ChatCompletion, Generator[ChatCompletionChunk, None, None]],
     ) -> CompletionUsage:
-        if isinstance(completion, ChatCompletion):
+
+        try:
             usage: CompletionUsage = CompletionUsage(
                 completion_tokens=completion.usage.completion_tokens,
                 prompt_tokens=completion.usage.prompt_tokens,
                 total_tokens=completion.usage.total_tokens,
             )
             return usage
-        else:
-            raise ValueError(f"Unsupported completion type: {type(completion)}")
+        except Exception as e:
+            log.error(f"Error tracking the completion usage: {e}")
+            return CompletionUsage(
+                completion_tokens=None, prompt_tokens=None, total_tokens=None
+            )
 
     def parse_embedding_response(
         self, response: CreateEmbeddingResponse
@@ -284,9 +306,17 @@ class OpenAIClient(ModelClient):
                 system_end_tag = "<END_OF_SYSTEM_PROMPT>"
                 user_start_tag = "<START_OF_USER_PROMPT>"
                 user_end_tag = "<END_OF_USER_PROMPT>"
-                pattern = f"{system_start_tag}(.*?){system_end_tag}{user_start_tag}(.*?){user_end_tag}"
+
+                # new regex pattern to ignore special characters such as \n
+                pattern = (
+                    rf"{system_start_tag}\s*(.*?)\s*{system_end_tag}\s*"
+                    rf"{user_start_tag}\s*(.*?)\s*{user_end_tag}"
+                )
+
                 # Compile the regular expression
-                regex = re.compile(pattern)
+
+                # re.DOTALL is to allow . to match newline so that (.*?) does not match in a single line
+                regex = re.compile(pattern, re.DOTALL)
                 # Match the pattern
                 match = regex.search(input)
                 system_prompt, input_str = None, None
@@ -420,7 +450,7 @@ class OpenAIClient(ModelClient):
         """
         kwargs is the combined input and model_kwargs
         """
-        # store the api kwargs in the client 
+        # store the api kwargs in the client
         self._api_kwargs = api_kwargs
         if self.async_client is None:
             self.async_client = self.init_async_client()
@@ -519,19 +549,41 @@ class OpenAIClient(ModelClient):
 # Example usage:
 if __name__ == "__main__":
     from adalflow.core import Generator
-    from adalflow.utils import setup_env, get_logger
+    from adalflow.utils import setup_env
 
-    log = get_logger(level="DEBUG")
+    # log = get_logger(level="DEBUG")
 
     setup_env()
     prompt_kwargs = {"input_str": "What is the meaning of life?"}
 
     gen = Generator(
         model_client=OpenAIClient(),
-        model_kwargs={"model": "gpt-3.5-turbo", "stream": True},
+        model_kwargs={"model": "gpt-3.5-turbo", "stream": False},
     )
     gen_response = gen(prompt_kwargs)
     print(f"gen_response: {gen_response}")
 
-    for genout in gen_response.data:
-        print(f"genout: {genout}")
+    # for genout in gen_response.data:
+    #     print(f"genout: {genout}")
+
+    # test that to_dict and from_dict works
+    # model_client = OpenAIClient()
+    # model_client_dict = model_client.to_dict()
+    # from_dict_model_client = OpenAIClient.from_dict(model_client_dict)
+    # assert model_client_dict == from_dict_model_client.to_dict()
+
+
+if __name__ == "__main__":
+    import adalflow as adal
+
+    # setup env or pass the api_key
+    from adalflow.utils import setup_env
+
+    setup_env()
+
+    openai_llm = adal.Generator(
+        model_client=adal.OpenAIClient(), model_kwargs={"model": "gpt-3.5-turbo"}
+    )
+    resopnse = openai_llm(prompt_kwargs={"input_str": "What is LLM?"})
+    print(resopnse)
+

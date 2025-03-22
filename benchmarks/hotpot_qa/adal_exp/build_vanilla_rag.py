@@ -107,7 +107,7 @@ class DspyRetriever(Retriever):
         if not input:
             raise ValueError(f"Input cannot be empty, top_k: {k}")
 
-        output = self.dspy_retriever(query_or_queries=input, k=k)
+        output = self.dspy_retriever(query=input, k=k)
         # print(f"dsy_retriever output: {output}")
         documents = output.passages
 
@@ -166,8 +166,7 @@ Question: {{question}}
                     param_type=adal.ParameterType.PROMPT,
                     requires_opt=True,
                     instruction_to_backward_engine="You need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
-                    instruction_to_optimizer="ou need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
-                    # + "Given existing context, ensure the task instructions can maximize the performance.",
+                    instruction_to_optimizer="You need find the best way(where does the right answer come from the context) to extract the RIGHT answer from the context.",
                 ),
                 # "few_shot_demos": adal.Parameter(
                 #     # data=demo_str,

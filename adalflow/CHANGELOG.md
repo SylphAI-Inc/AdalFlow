@@ -1,3 +1,19 @@
+
+## [1.0.4] - 2025-02-13
+
+### Modified
+- `Embedder` and `BatchEmbedder` changed to `DataComponent`.
+- Add `GSM8K` dataset.
+
+### model_client (added)
+- `list_models` method.
+## [1.0.2] - 2025-02-02
+### Added
+- Added `TogetherClient` to support the Together API.
+
+### Modified
+- `OpenAIClient` to is adapted to support other model clients that are highly similar.
+
 ## [1.0.0.beta.1] - 2025-01-28
 Updates mainly follow our first arxiv paper: [Auto-Differentiating Any LLM Workflow: A Farewell to Manual Prompting](https://arxiv.org/abs/2501.16673)
 
@@ -11,14 +27,14 @@ Updates mainly follow our first arxiv paper: [Auto-Differentiating Any LLM Workf
 - Updated `__call__` to use `bicall` when available (dual train/eval modes)
 
 #### Parser
-- Migrated all parsers from `Component` to `Parser` class
-- Deprecated `FunComponent` and `fun_to_component`
-- Replaced with `FuncParser` and `func_to_parser`
+- Migrated all parsers from `Component` to `DataComponent`.
 
 #### Component
 - Added `forward` and `bicall` methods
-- Enhanced `FunctionTool` compatibility with default `__call__`
-- Introduced `GradComponent` base class for training operations
+- Added `DataComponent` base class for non-trainable components.
+- Added `func_to_data_component` decorator
+- Modified the `fun_to_component` decorator to `func_to_component`, `FunComponent` to `FuncComponent`.
+- Introduced `GradComponent` base class for unit grad components that hands computation graph predecessors. Considering it a unit.
 - Added `fun_to_grad_component` decorator
 
 #### Generator
@@ -58,6 +74,7 @@ Updates mainly follow our first arxiv paper: [Auto-Differentiating Any LLM Workf
   - `F1_score` implementation
 
 #### Tooling & Utilities
+- Parser: inherited `DataComponent` for all parsers instead of `Component`
 - Revamped `tool_manager` with:
   - `CallFunctionTool` component
   - `FunctionExpressionToFunction` converter
@@ -177,7 +194,7 @@ Rename the `lightrag` package to `adalflow`.
 ## [0.1.0-beta.5] - 2024-07-23
 
 ### Fixed
-- [issue 134](https://github.com/SylphAI-Inc/AdalFlow/issues/134) Suppport Enum in `DataClass` schema. https://github.com/SylphAI-Inc/LightRAG/pull/135
+- [issue 134](https://github.com/SylphAI-Inc/AdalFlow/issues/134) Suppport Enum in `DataClass` schema. https://github.com/SylphAI-Inc/AdalFlow/pull/135
 - [issue 154](https://github.com/SylphAI-Inc/AdalFlow/issues/154) Fixed the `DataClass.from_dict` failure on `list[int]` type due to conditional check failure in the functional.
 
 ### Added

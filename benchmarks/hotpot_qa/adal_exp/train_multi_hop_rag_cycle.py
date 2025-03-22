@@ -214,7 +214,6 @@ if __name__ == "__main__":
         tg=use_tg,
         strategy=set_strategy,
         max_proposals_per_step=max_proposals_per_step,
-        # resume_from_ckpt="/Users/liyin/Documents/test/LightRAG/.adalflow/ckpt/MultiHopRAGCycleAdal/constrained_max_steps_12_69e07_run_1.json",
     )
     print(f"ckpt: {ckpt}")
     if set_output_path:

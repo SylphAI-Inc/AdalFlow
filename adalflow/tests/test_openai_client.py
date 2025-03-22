@@ -417,6 +417,13 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(isinstance(output, GeneratorOutput))
         self.assertEqual(output.data, "https://example.com/generated_image.jpg")
 
+    def test_from_dict_to_dict(self):
+        test_api_key = "fake_api"
+        client = OpenAIClient(api_key=test_api_key)
+        client_dict = client.to_dict()
+        new_client = OpenAIClient.from_dict(client_dict)
+        self.assertEqual(new_client.to_dict(), client_dict)
+
 
 if __name__ == "__main__":
     unittest.main()

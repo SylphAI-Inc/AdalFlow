@@ -1,22 +1,22 @@
 Introduction to BaseDataClass
 =======================================
 
-In this tutorial, we will discuss how to use ``BaseDataClass`` to streamline the data handling, serialization and description in LightRAG.
+In this tutorial, we will discuss how to use ``BaseDataClass`` to streamline the data handling, serialization and description in AdalFlow.
 
 `OpenAI's cookbook <https://cookbook.openai.com/articles/techniques_to_improve_reliability>`_ emphasizes that LLM works better when operating **structured** and **consistent** data.
-To solve this, ``LightRAG`` provides ``BaseDataClass`` for developers to manage data with control and flexibility, including:
+To solve this, ``AdalFlow`` provides ``BaseDataClass`` for developers to manage data with control and flexibility, including:
 
 * getting structured dataclass/instance metadata(`signature` or `schema`)
 * formatting class instance to ``yaml``, ``dict`` or ``json``
 * loading data from dictionary
 
-Like the role of ``Tensor`` in ``PyTorch``, ``BaseDataClass`` in ``LightRAG`` is the base class across all **dataclasses**.
+Like the role of ``Tensor`` in ``PyTorch``, ``BaseDataClass`` in ``AdalFlow`` is the base class across all **dataclasses**.
 ``BaseDataClass`` offers to create `signature` or `schema` from both classeses and instances. It will also generate structured instances data. Developers can use ``BaseDataClass`` to easily define and describe dataclasses that handle the data input or output in LLM applications, keeping data consistent and structured.
 In the following tutorial, we will investigate the functionality of ``BaseDataClass`` with examples.
 
 **1. Create Signature and Schema**
 
-* **Signature:** Signature has simpler content and structure and hence more token efficient than schema. ``LightRAG`` supports ``json`` and ``yaml`` formating.
+* **Signature:** Signature has simpler content and structure and hence more token efficient than schema. ``AdalFlow`` supports ``json`` and ``yaml`` formating.
 
 * **Schema:** Schema is enssentially a dictionary containing more keys to show detailed information. Because of the detailed content, schema can mislead the model if not used properly.
 
@@ -169,7 +169,7 @@ If developers want to load data from a dictionary to a certain data class, they 
 **4. Implement with Other Components**
 
 What's more, developers can use the dataclasses to interact with the ``Prompt`` and ``Generator`` classes, enhancing the consistency and structure of the application data flow.
-(``LightRAG`` uses ``jinja2`` for prompt template, make sure you've checked ``jinja2`` template tutorial before reading the example.)
+(``AdalFlow`` uses ``jinja2`` for prompt template, make sure you've checked ``jinja2`` template tutorial before reading the example.)
 
 Example:
 

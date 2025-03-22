@@ -335,7 +335,7 @@ class AzureAIClient(ModelClient):
     def parse_embedding_response(
         self, response: CreateEmbeddingResponse
     ) -> EmbedderOutput:
-        r"""Parse the embedding response to a structure LightRAG components can understand.
+        r"""Parse the embedding response to a structure AdalFlow components can understand.
 
         Should be called in ``Embedder``.
         """
