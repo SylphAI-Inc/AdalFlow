@@ -15,7 +15,7 @@ You will answer a reasoning question. Think step by step. The last line of your 
 """
 
 
-@adal.fun_to_component
+@adal.func_to_data_component
 def parse_integer_answer(answer: str):
     """A function that parses the last integer from a string using regular expressions."""
     try:
@@ -40,7 +40,7 @@ class ObjectCountTaskPipeline(adal.Component):
             output_processors=parse_integer_answer,
         )
 
-    def call(self, question: str, id: str = None) -> adal.GeneratorOutput:
+    def bicall(self, question: str, id: str = None) -> adal.GeneratorOutput:
         output = self.llm_counter(prompt_kwargs={"input_str": question}, id=id)
         return output
 
@@ -89,7 +89,7 @@ class ObjectCountTaskStrucutredPipeline(adal.Component):
             output_processors=parser,
         )
 
-    def call(self, question: str, id: str = None) -> adal.GeneratorOutput:
+    def bicall(self, question: str, id: str = None) -> adal.GeneratorOutput:
         output = self.llm_counter(prompt_kwargs={"input_str": question}, id=id)
         return output
 
@@ -138,7 +138,7 @@ class ObjectCountTaskPipelineTrainable(adal.Component):
             use_cache=True,
         )
 
-    def call(
+    def bicall(
         self, question: str, id: str = None
     ) -> Union[adal.GeneratorOutput, adal.Parameter]:
         output = self.llm_counter(prompt_kwargs={"input_str": question}, id=id)

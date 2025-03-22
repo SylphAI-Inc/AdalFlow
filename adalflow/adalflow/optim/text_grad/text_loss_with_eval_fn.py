@@ -26,7 +26,8 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
     OBJECTIVE_INSTRUCTION_BASE,
     OBJECTIVE_INSTRUCTION_CHAIN,  # often not used
 )
-from adalflow.utils import printc
+
+# from adalflow.utils import printc
 
 
 log = logging.getLogger(__name__)
@@ -318,11 +319,7 @@ class EvalFnToTextLoss(LossComponent):
         if response.score is not None:
             pred.set_score(response.score)
         pred.set_gt(ground_truth)
-        printc(f"pred: {pred.eval_input}, gt: {ground_truth}")
-        # print(f"setting pred name {pred.name} score to {response.data}")
-        # print(f"gradient_param: {pred.gradients}")
-
-        # TODO: reduce meta
+        log.debug(f"pred: {pred.eval_input}, gt: {ground_truth}")
 
     def backward(
         self,
@@ -381,11 +378,9 @@ class EvalFnToTextLoss(LossComponent):
                     f"EvalFnToTextLoss: response.data must be a float. Got {type(response.data)}."
                 )
             pred.score = response.data
-            from adalflow.utils.logger import printc
 
-            printc(
+            log.debug(
                 f"EvalFnToTextLoss: {pred.name} set_score: {response.data}, {response.name}",
-                "blue",
             )
             log.info(f"setting pred name {pred.name} score to {response.data}")
 
@@ -396,7 +391,7 @@ if __name__ == "__main__":
     from adalflow.eval.answer_match_acc import AnswerMatchAcc
     from adalflow.components.model_client import OpenAIClient  # dir: model_client
     from adalflow.core.generator import Generator, BackwardEngine
-    from adalflow.core.component import fun_to_component
+    from adalflow.core.component import func_to_data_component
 
     logger = get_logger(level="DEBUG", filename="lib_text_grad.log")
 
@@ -415,7 +410,7 @@ if __name__ == "__main__":
         },
     }
 
-    @fun_to_component
+    @func_to_data_component
     def parse_integer_answer(answer: str, only_first_line: bool = False):
         try:
             if only_first_line:

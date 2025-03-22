@@ -1,13 +1,6 @@
-import os
-import logging
-import backoff
 from typing import (
-    Dict,
-    Sequence,
     Optional,
-    List,
     Any,
-    TypeVar,
     Callable,
     Literal,
 )
@@ -18,11 +11,12 @@ from openai.types import Completion
 
 openai = safe_import(OptionalPackages.OPENAI.value[0], OptionalPackages.OPENAI.value[1])
 
+
 class DeepSeekClient(OpenAIClient):
     """
     A component wrapper for the DeepSeek API client.
 
-    DeepSeek's API is compatible with OpenAI's API, making it possible to use OpenAI SDKs 
+    DeepSeek's API is compatible with OpenAI's API, making it possible to use OpenAI SDKs
     or OpenAI-compatible software with DeepSeek by adjusting the API base URL.
 
     This client extends `OpenAIClient` but modifies the default `base_url` to use DeepSeek's API.
@@ -42,11 +36,17 @@ class DeepSeekClient(OpenAIClient):
         chat_completion_parser: Callable[[Completion], Any] = None,
         input_type: Literal["text", "messages"] = "messages",
         base_url: str = "https://api.deepseek.com/v1/",
-        env_api_key_name: str = "DEEPSEEK_API_KEY"
+        env_api_key_name: str = "DEEPSEEK_API_KEY",
     ):
-        """Initializes DeepSeek API client with the correct base URL. The input_type is set to "messages" by default to be compatible with DeepSeek reasoner. 
-        """
-        super().__init__(api_key=api_key, chat_completion_parser=chat_completion_parser, input_type=input_type, base_url=base_url, env_api_key_name=env_api_key_name)
+        """Initializes DeepSeek API client with the correct base URL. The input_type is set to "messages" by default to be compatible with DeepSeek reasoner."""
+        super().__init__(
+            api_key=api_key,
+            chat_completion_parser=chat_completion_parser,
+            input_type=input_type,
+            base_url=base_url,
+            env_api_key_name=env_api_key_name,
+        )
+
 
 # Example usage:
 if __name__ == "__main__":
@@ -63,10 +63,9 @@ if __name__ == "__main__":
         model_client=DeepSeekClient(),
         model_kwargs={"model": "deepseek-reasoner", "stream": True},
     )
-    
+
     gen_response = gen(prompt_kwargs)
     print(f"gen_response: {gen_response}")
 
     for genout in gen_response.data:
         print(f"genout: {genout}")
-

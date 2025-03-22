@@ -4,7 +4,7 @@
 </h4> -->
 
 <h4 align="center">
-    <img alt="AdalFlow logo" src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/adalflow-logo.png" style="width: 100%;">
+    <img alt="AdalFlow logo" src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/adalflow-logo.png" style="width: 100%;">
 </h4>
 
 
@@ -315,17 +315,4 @@ AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_L
 
 # Contributors
 
-[![contributors](https://contrib.rocks/image?repo=SylphAI-Inc/LightRAG&max=2000)](https://github.com/SylphAI-Inc/LightRAG/graphs/contributors)
-
-# Citation
-
-```bibtex
-@software{Yin2024AdalFlow,
-  author = {Li Yin},
-  title = {{AdalFlow: The Library for Large Language Model (LLM) Applications}},
-  month = {7},
-  year = {2024},
-  doi = {10.5281/zenodo.12639531},
-  url = {https://github.com/SylphAI-Inc/LightRAG}
-}
-```
+[![contributors](https://contrib.rocks/image?repo=SylphAI-Inc/AdalFlow&max=2000)](https://github.com/SylphAI-Inc/AdalFlow/graphs/contributors)

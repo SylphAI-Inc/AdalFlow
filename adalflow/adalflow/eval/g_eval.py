@@ -1,5 +1,6 @@
 """Implementation of G-Eval: G-eval <https://arxiv.org/abs/2303.08774, https://github.com/nlpyang/geval>
-Instead of getting 1/5 as the score, AdalFlow will use 0.2 as the score, so that we can have a score in range [0, 1] for all metrics."""
+Instead of getting 1/5 as the score, AdalFlow will use 0.2 as the score, so that we can have a score in range [0, 1] for all metrics.
+"""
 
 from enum import Enum
 from typing import Dict, Any, Optional, List, Tuple

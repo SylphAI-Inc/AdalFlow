@@ -4,7 +4,7 @@
       <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/tutorials/adalflow_component.ipynb" target="_blank" style="margin-right: 10px;">
          <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
       </a>
-      <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/adalflow/adalflow/core/component.py" target="_blank" style="display: flex; align-items: center;">
+      <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/adalflow/adalflow/core/component.py" target="_blank" style="display: flex; align-items: center;">
          <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
          <span style="vertical-align: middle;"> Open Source Code</span>
       </a>
@@ -26,7 +26,7 @@ Component
 
 
 :ref:`Component<core-component>` is to LLM task pipelines what `nn.Module` is to PyTorch models.
-It is the base class for components such as ``Prompt``, ``ModelClient``, ``Generator``, ``Retriever`` in LightRAG.
+It is the base class for components such as ``Prompt``, ``ModelClient``, ``Generator``, ``Retriever`` in AdalFlow.
 Your task pipeline should also subclass from ``Component``.
 
 
@@ -39,7 +39,7 @@ Different from PyTorch's nn.Module, which works exclusively with Tensor and Para
 ..  `Parameter` that can be any data type for LLM in-context learning, from manual to auto prompt engineering.
 
 
-Here is the comparison of writing a PyTorch model and a LightRAG task pipeline.
+Here is the comparison of writing a PyTorch model and a AdalFlow task pipeline.
 
 
 .. grid:: 1
@@ -101,20 +101,10 @@ As the fundamental building block in LLM task pipelines, the component is design
 5. **Make all components configurable using `json` or `yaml` files**.
    This is especially useful for experimenting or building data processing pipelines.
 
-These features are key to keeping the LightRAG pipeline transparent, flexible, and easy to use.
+These features are key to keeping the AdalFlow pipeline transparent, flexible, and easy to use.
 By subclassing from the `Component` class, you will get most of these features out of the box.
 
 
-.. As the foundamental building block in LLM task pipeline, the component is designed to serve five main purposes:
-
-.. 1. **Standarize the interface for all components.** This includes the `__init__` method, the `call` method for synchronous call, the `acall` method for asynchronous call, and the `__call__` which in default calls the `call` method.
-.. 2. **Provide a unified way to visualize the structure of the task pipeline** via `__repr__` method. And subclass can additional add `_extra_repr` method to add more information than the default `__repr__` method.
-.. 3. **Tracks, adds all subcomponents and parameters automatically and recursively** to assistant the building and optimizing process of the task pipeline.
-.. 4. **Manages the states and serialization**, with `state_dict` and `load_state_dict` methods in particular for parameters and `to_dict` method for serialization of all the states fall into the component's attributes, from subcomponents to parameters, to any other attributes of various data type.
-.. 5. **Make all components configurable from using `json` or `yaml` files**. This is especially useful for experimenting or building data processing pipelines.
-
-.. These features are key to keep LightRAG pipeline transparent, flexible, and easy to use.
-.. By subclassing from the `Component` class, you will get most of these features out of the box.
 
 
 Component in Action
@@ -197,7 +187,7 @@ You can easily save the detailed states:
 
     save_json(doc.to_dict(), "doc.json")
 
-To add even more flexibility, we provide :class:`FunComponent<core.component.FunComponent>` and :class:`Sequential<core.container.Sequential>` for more advanced use cases.
+To add even more flexibility, we provide :class:`FuncComponent<core.component.FuncComponent>` and :class:`Sequential<core.container.Sequential>` for more advanced use cases.
 
 
 
@@ -211,21 +201,21 @@ It is good practice to ensure that any of your components are pickable.
 
 
 
-FunComponent
+FuncComponent
 --------------
- Use :func:`fun_to_component<core.component.fun_to_component>` as a decorator to convert any function to a Component with its unique class name.
+ Use :func:`func_to_component<core.component.func_to_component>` as a decorator to convert any function to a Component with its unique class name.
 
-:class:`FunComponent<core.component.FunComponent>` is a subclass of :class:`Component<core.component.Component>` that allows you to define a component with a function.
+:class:`FuncComponent<core.component.FuncComponent>` is a subclass of :class:`Component<core.component.Component>` that allows you to define a component with a function.
 You can directly use this class as:
 
 .. code-block:: python
 
-    from adalflow.core.component import FunComponent
+    from adalflow.core.component import FuncComponent
 
     def add_one(x):
         return x + 1
 
-    fun_component = FunComponent(add_one)
+    fun_component = FuncComponent(add_one)
     print(fun_component(1))
     print(type(fun_component))
 
@@ -234,11 +224,11 @@ The printout:
 .. code-block::
 
     2
-    <class 'core.component.FunComponent'>
+    <class 'core.component.FuncComponent'>
 
 
 
-We also have :func:`fun_to_component<core.component.fun_to_component>` to convert a function to a `FunComponent` via a decorator or by directly calling the function.
+We also have :func:`func_to_component<core.component.func_to_component>` to convert a function to a `FuncComponent` via a decorator or by directly calling the function.
 This approach gives you a unique component converted from the function name.
 
 Via direct call:
@@ -246,9 +236,9 @@ Via direct call:
 
 .. code-block:: python
 
-    from adalflow.core.component import fun_to_component
+    from adalflow.core.component import func_to_component
 
-    fun_component = fun_to_component(add_one)
+    fun_component = func_to_component(add_one)
     print(fun_component(1))
     print(type(fun_component))
 
@@ -266,7 +256,7 @@ Using a decorator is an even more convenient way to create a component from a fu
 
 .. code-block:: python
 
-    @fun_to_component
+    @func_to_component
     def add_one(x):
         return x + 1
 
@@ -284,13 +274,13 @@ Sequential
 
 We have the :class:`Sequential<core.container.Sequential>` class, which is similar to PyTorch's ``nn.Sequential`` class.
 This is especially useful for chaining together components in a sequence, much like the concept of ``chain`` or ``pipeline`` in other LLM libraries.
-Let's put the `FunComponent`` and `DocQA`` together in a sequence:
+Let's put the `FuncComponent`` and `DocQA`` together in a sequence:
 
 .. code-block:: python
 
     from adalflow.core.container import Sequential
 
-    @fun_to_component
+    @func_to_component
     def enhance_query(query:str) -> str:
         return query + "Please be concise and only list the top treatments."
 
@@ -330,9 +320,9 @@ The structure of the sequence using ``print(seq)``:
    :class: highlight
 
    - :class:`core.component.Component`
-   - :class:`core.component.FunComponent`
+   - :class:`core.component.FuncComponent`
    - :class:`core.container.Sequential`
-   - :func:`core.component.fun_to_component`
+   - :func:`core.component.func_to_component`
 
 
 We will cover more advanced use cases in the upcoming tutorials.

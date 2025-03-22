@@ -31,4 +31,3 @@ By `Li Yin <https://github.com/liyin2015>`_.
 
    contribution
    contribute_to_code
-   .. version_control

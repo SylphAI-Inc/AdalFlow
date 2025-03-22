@@ -27,13 +27,11 @@ local_cache/
 *.log
 storage/
 *.pkl
-/*.png
+# /*.png
 /*.dot
-/*.svg
 /*.csv
 index.faiss
 *.json
-*.svg
 # ignore the softlink to adalflow cache
 *.adalflow
 .idea

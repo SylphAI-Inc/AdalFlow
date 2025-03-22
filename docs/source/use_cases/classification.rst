@@ -11,6 +11,8 @@
       </a>
    </div>
 
+.. _classification_end_to_end:
+
 Classification Optimization
 =============================
 

@@ -39,7 +39,7 @@ class TrecClassifierAdal(adal.AdalComponent):
         )
 
     def prepare_task(self, sample: TRECExtendedData):
-        return self.task.call, {"question": sample.question, "id": sample.id}
+        return self.task.bicall, {"question": sample.question, "id": sample.id}
 
     def prepare_eval(
         self, sample: TRECExtendedData, y_pred: adal.GeneratorOutput
@@ -144,6 +144,8 @@ if __name__ == "__main__":
     #     Evaluating step(6): 0.7333 across 30 samples, Max potential: 0.7778:  83%|▊| 30/36 [00:08<00:01,
     # Optimizer revert: 0.7096774193548387 <= 0.7777777777777778
     import json
+
+    # get_logger(enable_file=False)
 
     import random
 

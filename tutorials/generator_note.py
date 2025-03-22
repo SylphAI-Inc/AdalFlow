@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 
 from adalflow.core import Component, Generator, DataClass
 
-# fun_to_component, Sequential
 from adalflow.components.model_client import GroqAPIClient
 from adalflow.components.output_parsers import JsonOutputParser
 from adalflow.utils import setup_env
@@ -38,11 +37,6 @@ class QAOutput(DataClass):
         metadata={"desc": "A brief explanation of the concept in one sentence."}
     )
     example: str = field(metadata={"desc": "An example of the concept in a sentence."})
-
-
-# @fun_to_component
-# def to_qa_output(data: dict) -> QAOutput:
-#     return QAOutput.from_dict(data)
 
 
 qa_template = r"""<SYS>
@@ -219,6 +213,154 @@ def create_purely_from_config_2():
     print(output)
 
 
+def simple_query():
+
+    from adalflow.core import Generator
+    from adalflow.components.model_client.openai_client import OpenAIClient
+
+    gen = Generator(
+        model_client=OpenAIClient(),
+        model_kwargs={
+            "model": "o3-mini",
+        },
+    )
+
+    response = gen({"input_str": "What is LLM?"})
+    print(response)
+
+
+def customize_template():
+
+    import adalflow as adal
+
+    # the template has three variables: system_prompt, few_shot_demos, and input_str
+    few_shot_template = r"""<START_OF_SYSTEM_PROMPT>
+{{system_prompt}}
+{# Few shot demos #}
+{% if few_shot_demos is not none %}
+Here are some examples:
+{{few_shot_demos}}
+{% endif %}
+<END_OF_SYSTEM_PROMPT>
+<START_OF_USER>
+{{input_str}}
+<END_OF_USER>"""
+
+    object_counter = Generator(
+        model_client=adal.GroqAPIClient(),
+        model_kwargs={
+            "model": "llama3-8b-8192",
+        },
+        template=few_shot_template,
+        prompt_kwargs={
+            "system_prompt": "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+        },
+    )
+
+    question = "I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?"
+    response = object_counter(prompt_kwargs={"input_str": question})
+    print(response)
+
+    object_counter.print_prompt(input_str=question)
+
+    # use an int parser
+
+    from adalflow.core.string_parser import IntParser
+
+    object_counter = Generator(
+        model_client=adal.GroqAPIClient(),
+        model_kwargs={
+            "model": "llama3-8b-8192",
+        },
+        template=few_shot_template,
+        prompt_kwargs={
+            "system_prompt": "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+        },
+        output_processors=IntParser(),
+    )
+
+    response = object_counter(prompt_kwargs={"input_str": question})
+    print(response)
+    print(type(response.data))
+
+    # use customize parser
+    import re
+
+    @adal.func_to_data_component
+    def parse_integer_answer(answer: str):
+        try:
+            numbers = re.findall(r"\d+", answer)
+            if numbers:
+                answer = int(numbers[-1])
+            else:
+                answer = -1
+        except ValueError:
+            answer = -1
+
+        return answer
+
+    object_counter = Generator(
+        model_client=adal.GroqAPIClient(),
+        model_kwargs={
+            "model": "llama3-8b-8192",
+        },
+        template=few_shot_template,
+        prompt_kwargs={
+            "system_prompt": "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+        },
+        output_processors=parse_integer_answer,
+    )
+
+    response = object_counter(prompt_kwargs={"input_str": question})
+    print(response)
+    print(type(response.data))
+
+    template = r"""<START_OF_SYSTEM_PROMPT>
+{{system_prompt}}
+<OUTPUT_FORMAT>
+{{output_format_str}}
+</OUTPUT_FORMAT>
+<END_OF_SYSTEM_PROMPT>
+<START_OF_USER>
+{{input_str}}
+<END_OF_USER>"""
+
+    from dataclasses import dataclass, field
+
+    @dataclass
+    class QAOutput(DataClass):
+        thought: str = field(
+            metadata={
+                "desc": "Your thought process for the question to reach the answer."
+            }
+        )
+        answer: int = field(metadata={"desc": "The answer to the question."})
+
+        __output_fields__ = ["thought", "answer"]
+
+    parser = adal.DataClassParser(
+        data_class=QAOutput, return_data_class=True, format_type="json"
+    )
+
+    object_counter = Generator(
+        model_client=adal.GroqAPIClient(),
+        model_kwargs={
+            "model": "llama3-8b-8192",
+        },
+        template=template,
+        prompt_kwargs={
+            "system_prompt": "You will answer a reasoning question. Think step by step. ",
+            "output_format_str": parser.get_output_format_str(),
+        },
+        output_processors=parser,
+    )
+
+    response = object_counter(prompt_kwargs={"input_str": question})
+    print(response)
+
+    object_counter.print_prompt(input_str=question)
+
+
 if __name__ == "__main__":
     qa1 = SimpleQA()
     answer = qa1("What is adalflow?")
@@ -234,6 +376,8 @@ if __name__ == "__main__":
     )
 
     minimum_generator()
+    simple_query()
+    customize_template()
     # use_a_json_parser()
     # use_its_own_template()
     # use_model_client_enum_to_switch_client()

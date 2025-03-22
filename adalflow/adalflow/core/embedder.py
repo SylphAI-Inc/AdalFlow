@@ -12,7 +12,7 @@ from adalflow.core.types import (
     BatchEmbedderInputType,
     BatchEmbedderOutputType,
 )
-from adalflow.core.component import Component
+from adalflow.core.component import DataComponent
 import adalflow.core.functional as F
 
 __all__ = ["Embedder", "BatchEmbedder"]
@@ -20,7 +20,7 @@ __all__ = ["Embedder", "BatchEmbedder"]
 log = logging.getLogger(__name__)
 
 
-class Embedder(Component):
+class Embedder(DataComponent):
     r"""
     A user-facing component that orchestrates an embedder model via the model client and output processors.
 
@@ -39,14 +39,14 @@ class Embedder(Component):
 
     model_type: ModelType = ModelType.EMBEDDER
     model_client: ModelClient
-    output_processors: Optional[Component]
+    output_processors: Optional[DataComponent]
 
     def __init__(
         self,
         *,
         model_client: ModelClient,
         model_kwargs: Dict[str, Any] = {},
-        output_processors: Optional[Component] = None,
+        output_processors: Optional[DataComponent] = None,
     ) -> None:
 
         super().__init__(model_kwargs=model_kwargs)
@@ -192,7 +192,7 @@ class Embedder(Component):
         return s
 
 
-class BatchEmbedder(Component):
+class BatchEmbedder(DataComponent):
     __doc__ = r"""Adds batching to the embedder component.
 
     Args:

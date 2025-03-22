@@ -4,7 +4,12 @@ import adalflow as adal
 
 from benchmarks.hotpot_qa.config import load_datasets
 from benchmarks.hotpot_qa.adal_exp.build_vanilla_rag import VanillaRAG
-from use_cases.config import gpt_3_model, gpt_4o_model
+from use_cases.config import (
+    gpt_3_model,
+    gpt_4o_model,
+    gpt_o3_mini_model,
+    deepseek_r1_distilled_model,
+)
 from benchmarks.hotpot_qa.adal_exp.adal_task import HotPotQAAdal
 
 
@@ -28,7 +33,7 @@ def train_diagnose(
         text_optimizer_model_config=gpt_3_model,
     )
     trainer = adal.Trainer(adaltask=adal_component)
-    trainer.diagnose(dataset=trainset, split="train")
+    trainer.diagnose(dataset=testset, split="test")
     # trainer.diagnose(dataset=valset, split="val")
     # trainer.diagnose(dataset=testset, split="test")
 
@@ -37,6 +42,9 @@ from adalflow.core.generator import BackwardPassSetup
 
 
 def train(
+    task_model_config: Dict,
+    text_optimizer_model_config: Dict,
+    backward_engine_model_config: Dict,
     train_batch_size=4,  # larger batch size is not that effective, probably because of llm's lost in the middle
     raw_shots: int = 0,
     bootstrap_shots: int = 4,
@@ -54,15 +62,14 @@ def train(
     disable_backward: bool = False,
 ):
     task = VanillaRAG(
-        **gpt_3_model,
+        **task_model_config,
         passages_per_hop=3,
     )
 
     adal_component = HotPotQAAdal(
         task=task,
-        teacher_model_config=gpt_4o_model,
-        text_optimizer_model_config=gpt_4o_model,
-        backward_engine_model_config=gpt_4o_model,
+        text_optimizer_model_config=text_optimizer_model_config,
+        backward_engine_model_config=backward_engine_model_config,
     )
     print(adal_component)
     backward_pass_setup = None
@@ -140,7 +147,24 @@ if __name__ == "__main__":
 
     # train_diagnose(**gpt_3_model)
 
+    # ckpt = train(
+    #     task_model_config=gpt_3_model,
+    # text_optimizer_model_config=gpt_4o_model,
+    # backward_engine_model_config=gpt_4o_model,
+    #     debug=False,
+    #     max_steps=12,
+    #     seed=2025,  # pass the numpy seed
+    #     tg=use_tg,
+    #     strategy=set_strategy,
+    #     max_proposals_per_step=max_proposals_per_step,
+    #     disable_backward=disable_backward,
+    #     disable_backward_gradients=disable_backward_gradients,
+    # )
+
     ckpt = train(
+        task_model_config=deepseek_r1_distilled_model,
+        text_optimizer_model_config=gpt_o3_mini_model,
+        backward_engine_model_config=gpt_o3_mini_model,
         debug=False,
         max_steps=12,
         seed=2025,  # pass the numpy seed
@@ -149,9 +173,6 @@ if __name__ == "__main__":
         max_proposals_per_step=max_proposals_per_step,
         disable_backward=disable_backward,
         disable_backward_gradients=disable_backward_gradients,
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/VallinaRAGAdal/constrained_max_steps_12_8cdad_run_1.json",
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/VallinaRAGAdal/constrained_max_steps_12_5a4b4_run_1.json",
-        # resume_from_ckpt="/Users/liyin/.adalflow/ckpt/ValinaRAGAdal/random_max_steps_12_7c091_run_1.json",
     )
     print(f"ckpt: {ckpt}")
     if set_output_path:

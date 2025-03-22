@@ -9,8 +9,7 @@ from jinja2 import Template, Environment, StrictUndefined, meta
 
 from adalflow.core.default_prompt_template import DEFAULT_ADALFLOW_SYSTEM_PROMPT
 from adalflow.optim.parameter import Parameter
-from dataclasses import dataclass, field
-from adalflow.core.base_data_class import DataClass
+from adalflow.core.component import DataComponent
 
 
 logger = logging.getLogger(__name__)
@@ -18,8 +17,7 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
-@dataclass
-class Prompt(DataClass):
+class Prompt(DataComponent):
     __doc__ = r"""Renders a text string(prompt) from a Jinja2 template string.
 
     In default, we use the :ref:`DEFAULT_ADALFLOW_SYSTEM_PROMPT<core-default_prompt_template>`  as the template.
@@ -50,14 +48,15 @@ class Prompt(DataClass):
         >>> # pass it to the main prompt
         >>> prompt.print_prompt(examples_str=examples_str)
     """
-    # save these two fields for serialization, using to_dict and from_dict
-    template: str = field(
-        default=DEFAULT_ADALFLOW_SYSTEM_PROMPT,
-        metadata={"desc": "The Jinja2 template string."},
-    )
-    prompt_kwargs: Dict[str, Parameter] = field(
-        default_factory=dict, metadata={"desc": "The preset prompt kwargs."}
-    )
+    # # save these two fields for serialization, using to_dict and from_dict
+    # template: str = field(
+    #     default=DEFAULT_ADALFLOW_SYSTEM_PROMPT,
+    #     metadata={"desc": "The Jinja2 template string."},
+    # )
+    # prompt_kwargs: Dict[str, Parameter] = field(
+    #     default_factory=dict, metadata={"desc": "The preset prompt kwargs."}
+    # )
+    # prompt_va
 
     def __init__(
         self,
@@ -135,8 +134,8 @@ class Prompt(DataClass):
         except Exception as e:
             raise ValueError(f"Error rendering Jinja2 template: {e}")
 
-    def __call__(self, *args: Any, **kwds: Any) -> Any:
-        return self.call(*args, **kwds)
+    # def __call__(self, *args: Any, **kwds: Any) -> Any:
+    #     return self.call(*args, **kwds)
 
     def call(self, **kwargs) -> str:
         """
@@ -224,3 +223,39 @@ def get_jinja2_environment():
         return default_environment
     except Exception as e:
         raise ValueError(f"Invalid Jinja2 environment: {e}")
+
+
+if __name__ == "__main__":
+
+    import adalflow as adal
+
+    template = r"""<START_OF_SYSTEM_MESSAGE>{{ task_desc_str }}<END_OF_SYSTEM_MESSAGE>
+{# tools #}
+{% if tools %}
+<TOOLS>
+{% for tool in tools %}
+{{loop.index}}. {{ tool }}
+{% endfor %}
+</TOOLS>{% endif %}
+<START_OF_USER>{{ input_str }} <END_OF_USER>"""
+
+    task_desc_str = "You are a helpful assitant"
+
+    tools = ["google", "wikipedia", "wikidata"]
+
+    prompt = adal.Prompt(
+        template=template,
+        prompt_kwargs={
+            "task_desc_str": task_desc_str,
+            "tools": tools,
+        },
+    )
+
+    print(prompt(input_str="What is the capital of France?"))
+
+    to_dict = prompt.to_dict()
+
+    prompt_restructured = adal.Prompt.from_dict(to_dict)
+
+    print(to_dict)
+    print(prompt_restructured)

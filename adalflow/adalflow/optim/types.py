@@ -153,10 +153,10 @@ class TrainerResult(DataClass):
     time_stamp: str = field(
         default_factory=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
-    trainer_state: Dict[str, Any] = field(
-        default=None, metadata={"desc": "Save the most detailed state of the trainer"}
-    )
     total_time: float = field(
         default=0.0, metadata={"desc": "Total time taken for training"}
     )
     test_score: float = field(default=None, metadata={"desc": "Test score"})
+    trainer_state: Dict[str, Any] = field(
+        default=None, metadata={"desc": "Save the most detailed state of the trainer"}
+    )
