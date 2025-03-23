@@ -263,6 +263,7 @@ class ToolManager(Component):
         *,
         expr_or_fun: Union[FunctionExpression, Function],
         step: Literal["execute"] = "execute",
+        stream: bool = False,
     ) -> Union[FunctionOutput, Function, Parameter]:
         if not isinstance(expr_or_fun, (Function, FunctionExpression)):
             raise ValueError(
@@ -274,7 +275,7 @@ class ToolManager(Component):
             return self.parse_func_expr(expr_or_fun)
         elif step == "execute":
             if isinstance(expr_or_fun, Function):
-                return self.execute_func(expr_or_fun)
+                return self.execute_func(expr_or_fun, stream=stream)
             return self.execute_func_expr(expr_or_fun)
         else:
             raise ValueError(f"step should be either 'parse' or 'execute'. Got {step}")
@@ -308,7 +309,10 @@ class ToolManager(Component):
             raise ValueError(f"expr_or_fun should be a Parameter. Got {expr_or_fun}")
 
     def execute_func(
-        self, func: Union[Function, Parameter], map_fn: Callable = lambda x: x.data
+        self,
+        func: Union[Function, Parameter],
+        map_fn: Callable = lambda x: x.data,
+        stream: bool = False,
     ) -> Union[FunctionOutput, Parameter]:
         r"""Execute the function. If the function is async, use asyncio.run to execute it."""
 
@@ -327,12 +331,43 @@ class ToolManager(Component):
         else:
             try:
                 tool: FunctionTool = self.context[func.name]
+                printc(f"tool: {tool}", color="yellow")
                 if tool.is_async:
-                    return run_async_in_new_loop(tool.acall(*func.args, **func.kwargs))
+                    # Add diagnostic logs
+                    printc(f"Executing async function: {func.name}")
+                    result = tool.acall(*func.args, **func.kwargs)
+                    printc(f"Async result type: {type(result)}")
+
+                    # Check if result is an async generator
+                    import inspect
+
+                    if inspect.isasyncgen(result):
+                        printc("Result is an async generator, collecting results")
+
+                        # We need to handle async generators differently
+                        async def collect_async_gen():
+                            items = []
+                            async for item in result:
+                                items.append(item)
+                            return items
+
+                        return run_async_in_new_loop(collect_async_gen())
+                    else:
+                        log.info("Result is a regular coroutine")
+                        return run_async_in_new_loop(result)
 
                 else:
-                    output = tool.call(*func.args, **func.kwargs)
-                    return output
+                    printc(f"Executing sync function: {func.name}", color="yellow")
+                    if stream:
+                        # add stream = True to the kwargs
+                        use_func_kwargs = deepcopy(func.kwargs)
+                        use_func_kwargs["stream"] = True
+                        output = tool.call(*func.args, **use_func_kwargs)
+                        return output
+                    else:
+                        output = tool.call(*func.args, **func.kwargs)
+                        printc(f"output: {output}", color="yellow")
+                        return output
             except Exception as e:
                 log.error(f"Error {e} executing function: {func}")
                 raise ValueError(f"Error {e} executing function: {func}")
@@ -340,7 +375,12 @@ class ToolManager(Component):
     async def execute_func_async(self, func: Function) -> FunctionOutput:
         r"""Execute the function. If the function is sync, use await to execute it."""
         try:
+            printc(f"Executing async function: {func.name}", color="yellow")
             tool: FunctionTool = self.context[func.name]
+            is_async_generator = tool.is_async_generator
+            printc(f"is_async_generator: {is_async_generator}", color="yellow")
+            if is_async_generator:
+                return tool.acall(*func.args, **func.kwargs)
             if tool.is_async:
                 return await tool.acall(*func.args, **func.kwargs)
             else:

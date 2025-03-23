@@ -150,6 +150,13 @@ class FunctionTool(Component):
     def is_async(self) -> bool:
         return self._is_async
 
+    @property
+    def is_async_generator(self):
+        """Check if the function is an async generator."""
+        import inspect
+
+        return inspect.isasyncgenfunction(self.fn)
+
     def _create_fn_definition_for_grad_component(
         self, fn: FunGradComponent
     ) -> FunctionDefinition:
@@ -177,7 +184,7 @@ class FunctionTool(Component):
         # Get the class that owns the method, if applicable
         cls_name = None
         instance = None
-        if ismethod(self.fn):  # Check if it’s a bound method
+        if ismethod(self.fn):  # Check if it's a bound method
             instance = self.fn.__self__
             instance = find_instance_name_from_self(instance)
             if name == "__call__" and not instance:
@@ -265,17 +272,17 @@ class FunctionTool(Component):
         # NOTE: special case:
         # self.fn can have both train and eval mode or untrainable as a function.
         try:
-            printc(f"args: {args}, kwargs: {kwargs}, fn: {self.fn}", color="yellow")
+            log.debug(f"bicall args: {args}, kwargs: {kwargs}, fn: {self.fn}")
             output = self.fn(*args, **kwargs)
+            log.debug(f"output 1: {output}")
             printc(f"output 1: {output}", color="yellow")
-            import inspect
-
-            if inspect.isasyncgen(output):
-                # just yield from it
-                return output
-            elif inspect.isgenerator(output):
-                # just yield from it
-                return output
+            # import inspect
+            # if inspect.isasyncgen(output):
+            #     # just yield from it
+            #     return output
+            # elif inspect.isgenerator(output):
+            #     # just yield from it
+            #     return output
         except Exception as e:
             log.error(f"Error at calling {self.fn}: {e}")
             error = f"Error at calling {self.fn}: {e}"
@@ -295,59 +302,30 @@ class FunctionTool(Component):
                 error=error,
             )
             return output
-        # printc(f"output: {output}", color="yellow")
-        return FunctionOutput(
+
+        output = FunctionOutput(
             name=self.definition.func_name,
             # raw_input={"args": args, "kwargs": kwargs},
             input=Function(name=self.definition.func_name, args=args, kwargs=kwargs),
             output=output,
             error=error,
         )
+        printc(f"function output: {output}", color="yellow")
+        return output
 
-    async def acall(self, *args: Any, **kwargs: Any) -> FunctionOutput:
-        r"""Execute the function asynchronously.
-
-        Need to be called in an async function or using asyncio.run.
-
-        Example:
-
-        .. code-block:: python
-
-            import asyncio
-            async def async_function_1():
-                await asyncio.sleep(1)  # Simulate async work
-                return "Function 1 completed"
-
-            async def call_async_function():
-                tool_1 = FunctionTool(async_function_1)
-                output = await tool_1.acall()
-
-            asyncio.run(call_async_function())
-        """
-        if not self._is_async:
-            raise ValueError("FunctionTool is not asynchronous, use call instead")
-        output = None
-        error = None
-        try:
-            output = await self.fn(*args, **kwargs)
-            import inspect
-
-            if inspect.isasyncgen(output):
-                # just yield from it
-                return output
-            elif inspect.isgenerator(output):
-                # just yield from it
-                return output
-        except Exception as e:
-            log.error(f"Error at calling {self.fn}: {e}")
-            error = str(e)
-
-        return FunctionOutput(
-            name=self.definition.func_name,
-            input=Function(name=self.definition.func_name, args=args, kwargs=kwargs),
-            output=output,
-            error=error,
-        )
+    async def acall(self, *args, **kwargs):
+        """Async call the function."""
+        if self._is_async:
+            if self.is_async_generator:
+                # For async generators, return the generator directly
+                # Don't await it - it needs to be consumed with async for
+                return self.fn(*args, **kwargs)
+            else:
+                # For regular async functions, await the result
+                result = await self.fn(*args, **kwargs)
+                return result
+        else:
+            return self.call(*args, **kwargs)
 
     def execute(self, *args, **kwargs) -> FunctionOutput:
         r"""Execute the function synchronously or asynchronously based on the function type.
