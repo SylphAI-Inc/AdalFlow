@@ -88,7 +88,7 @@ class DataClassParser(DataComponent):
     def __init__(
         self,
         data_class: DataClass,
-        return_data_class: bool = False,
+        return_data_class: bool = True,
         format_type: Literal["yaml", "json"] = "json",
     ):
         super().__init__()
