@@ -165,6 +165,8 @@ class OpenAIClient(ModelClient):
         input_type: Literal["text", "messages"] = "text",
         base_url: str = "https://api.openai.com/v1/",
         env_api_key_name: str = "OPENAI_API_KEY",
+        organization: Optional[str] = None,
+        headers: Optional[Dict[str, str]] = None,
     ):
         r"""It is recommended to set the OPENAI_API_KEY environment variable instead of passing it as an argument.
 
@@ -172,11 +174,15 @@ class OpenAIClient(ModelClient):
             api_key (Optional[str], optional): OpenAI API key. Defaults to None.
             base_url (str): The API base URL to use when initializing the client.
             env_api_key_name (str): The environment variable name for the API key. Defaults to `"OPENAI_API_KEY"`.
+            organization (Optional[str], optional): OpenAI organization key. Defaults to None.
+            headers (Optional[Dict[str, str]], optional): Additional headers to include in API requests. Defaults to None.
         """
         super().__init__()
         self._api_key = api_key
         self.base_url = base_url
         self._env_api_key_name = env_api_key_name
+        self.organization = organization
+        self.headers = headers or {}
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
         self.chat_completion_parser = (
@@ -191,7 +197,12 @@ class OpenAIClient(ModelClient):
             raise ValueError(
                 f"Environment variable {self._env_api_key_name} must be set"
             )
-        return OpenAI(api_key=api_key, base_url=self.base_url)
+        return OpenAI(
+            api_key=api_key,
+            base_url=self.base_url,
+            organization=self.organization,
+            default_headers=self.headers,
+        )
 
     def init_async_client(self):
         api_key = self._api_key or os.getenv(self._env_api_key_name)
@@ -199,7 +210,12 @@ class OpenAIClient(ModelClient):
             raise ValueError(
                 f"Environment variable {self._env_api_key_name} must be set"
             )
-        return AsyncOpenAI(api_key=api_key, base_url=self.base_url)
+        return AsyncOpenAI(
+            api_key=api_key,
+            base_url=self.base_url,
+            organization=self.organization,
+            default_headers=self.headers,
+        )
 
     # def _parse_chat_completion(self, completion: ChatCompletion) -> "GeneratorOutput":
     #     # TODO: raw output it is better to save the whole completion as a source of truth instead of just the message
@@ -588,4 +604,3 @@ if __name__ == "__main__":
     )
     resopnse = openai_llm(prompt_kwargs={"input_str": "What is LLM?"})
     print(resopnse)
-

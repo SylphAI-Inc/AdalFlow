@@ -424,6 +424,117 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         new_client = OpenAIClient.from_dict(client_dict)
         self.assertEqual(new_client.to_dict(), client_dict)
 
+    @patch("adalflow.components.model_client.openai_client.OpenAI")
+    def test_init_sync_client_with_headers_and_organization(self, MockOpenAI):
+        headers = {"Custom-Header": "CustomValue"}
+        organization = "test-organization"
+
+        # First call happens during __init__
+        client = OpenAIClient(
+            api_key="fake_api_key",
+            headers=headers,
+            organization=organization,
+        )
+
+        # Clear previous calls so we only test the explicit one below
+        MockOpenAI.reset_mock()
+
+        # Now call init_sync_client explicitly to trigger the OpenAI call
+        _ = client.init_sync_client()
+
+        # Assert OpenAI was called with correct parameters
+        MockOpenAI.assert_called_once_with(
+            api_key="fake_api_key",
+            base_url="https://api.openai.com/v1/",
+            organization=organization,
+            default_headers=headers,
+        )
+
+    @patch("adalflow.components.model_client.openai_client.AsyncOpenAI")
+    async def test_init_async_client_with_headers_and_organization(
+        self, MockAsyncOpenAI
+    ):
+        headers = {"Custom-Header": "CustomValue"}
+        organization = "test-organization"
+
+        # Manually assign an AsyncMock to the return value
+        mock_async_client = AsyncMock()
+        MockAsyncOpenAI.return_value = mock_async_client
+
+        client = OpenAIClient(
+            api_key="fake_api_key",
+            headers=headers,
+            organization=organization,
+        )
+
+        async_client = client.init_async_client()  # Do NOT await here
+
+        MockAsyncOpenAI.assert_called_once_with(
+            api_key="fake_api_key",
+            base_url="https://api.openai.com/v1/",
+            organization=organization,
+            default_headers=headers,
+        )
+        self.assertEqual(async_client, mock_async_client)
+
+    @patch("adalflow.components.model_client.openai_client.OpenAI")
+    def test_call_with_custom_headers_and_organization(self, MockOpenAI):
+        # Test that headers and organization are passed during a call
+        headers = {"Custom-Header": "CustomValue"}
+        organization = "test-organization"
+        mock_sync_client = Mock()
+        MockOpenAI.return_value = mock_sync_client
+
+        client = OpenAIClient(
+            api_key="fake_api_key",
+            headers=headers,
+            organization=organization,
+        )
+        client.sync_client = mock_sync_client
+
+        # Mock the API call
+        mock_sync_client.chat.completions.create = Mock(return_value=self.mock_response)
+
+        # Call the method
+        result = client.call(api_kwargs=self.api_kwargs, model_type=ModelType.LLM)
+
+        # Assertions
+        mock_sync_client.chat.completions.create.assert_called_once_with(
+            **self.api_kwargs
+        )
+        self.assertEqual(result, self.mock_response)
+
+    @patch("adalflow.components.model_client.openai_client.AsyncOpenAI")
+    async def test_acall_with_custom_headers_and_organization(self, MockAsyncOpenAI):
+        # Test that headers and organization are passed during an async call
+        headers = {"Custom-Header": "CustomValue"}
+        organization = "test-organization"
+        mock_async_client = AsyncMock()
+        MockAsyncOpenAI.return_value = mock_async_client
+
+        client = OpenAIClient(
+            api_key="fake_api_key",
+            headers=headers,
+            organization=organization,
+        )
+        client.async_client = mock_async_client
+
+        # Mock the API call
+        mock_async_client.chat.completions.create = AsyncMock(
+            return_value=self.mock_response
+        )
+
+        # Call the method
+        result = await client.acall(
+            api_kwargs=self.api_kwargs, model_type=ModelType.LLM
+        )
+
+        # Assertions
+        mock_async_client.chat.completions.create.assert_awaited_once_with(
+            **self.api_kwargs
+        )
+        self.assertEqual(result, self.mock_response)
+
 
 if __name__ == "__main__":
     unittest.main()
