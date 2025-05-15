@@ -1,10 +1,23 @@
-from .react import DEFAULT_REACT_AGENT_SYSTEM_PROMPT, ReActAgent
-from adalflow.utils.registry import EntityMapping
+"""Agent components for AdalFlow."""
+
+from .react import ReActAgent as LegacyReActAgent
+from .react_agent import ReActAgent as NewReActAgent
+from .base_agent import (
+    BaseAgent,
+    BasePlanner,
+    BaseToolManager,
+    BaseMemory,
+    Step,
+    AgentOutput,
+)
 
 __all__ = [
-    "ReActAgent",
-    "DEFAULT_REACT_AGENT_SYSTEM_PROMPT",
+    "LegacyReActAgent",  # Old implementation for backward compatibility
+    "NewReActAgent",  # New implementation using base agent
+    "BaseAgent",  # Base agent class
+    "BasePlanner",  # Base planner interface
+    "BaseToolManager",  # Base tool manager interface
+    "BaseMemory",  # Base memory interface
+    "Step",  # Step data class
+    "AgentOutput",  # Output data class
 ]
-
-for name in __all__:
-    EntityMapping.register(name, globals()[name])

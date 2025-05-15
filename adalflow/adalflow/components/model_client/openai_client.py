@@ -588,4 +588,3 @@ if __name__ == "__main__":
     )
     resopnse = openai_llm(prompt_kwargs={"input_str": "What is LLM?"})
     print(resopnse)
-
