@@ -106,27 +106,6 @@ Step {{ loop.index }}.
 <END_OF_USER_QUERY>
 """
 
-OUTPUT_FORMAT = r"""You should provide a JSON object in this structure:
-{
-    "thought": "Your reasoning about what to do next",
-    "name": "Name of the function/tool to call",
-    "kwargs": {
-        # Any arguments the function needs
-    }
-}
-
-For example:
-{
-    "thought": "I should calculate 15 * 3 to get the result",
-    "name": "finish",
-    "kwargs": {"answer": "45"}
-}
-
--Make sure to always provide a valid JSON object
--Use double quotes for strings
--Include thought, name and kwargs fields
--Wrap function arguments in kwargs object"""
-
 
 class ReActPlanner(BasePlanner):
     """ReAct-specific planner implementation."""
@@ -161,6 +140,7 @@ class ReActPlanner(BasePlanner):
     def plan(self, input: str, context: Dict) -> Function:
         """Plan the next action using ReAct format."""
         print("Reaching for fun ****************")
+        print("CONTEXT_VARIABLES", context)
         prompt_kwargs = {
             "input_str": input,
             "step_history": context.get("step_history", []),
@@ -174,6 +154,13 @@ class ReActPlanner(BasePlanner):
                 role_desc="Task instruction for the agent to plan steps to solve a question in sequential and multi-steps to get the final answer. \
                 For optimizer: you need to adapt this to the current specific task.",
                 param_type=ParameterType.PROMPT,
+                requires_opt=True,
+            ),
+            "examples": Parameter(
+                name="examples",
+                data=self.examples,
+                role_desc="Examples for the ReAct agent.",
+                param_type=ParameterType.DEMOS,
                 requires_opt=True,
             ),
             "output_format_str": self.output_parser.format_instructions(),
