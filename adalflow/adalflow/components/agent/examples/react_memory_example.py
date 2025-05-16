@@ -69,11 +69,6 @@ def main():
             kwargs={"n": 5},
         ),
         Function(
-            thought="Based on the extracted information, I can now provide a final answer.",
-            name="finish",
-            kwargs={"answer": "The square of 3 is 9"},
-        ),
-        Function(
             thought="I need to context data of previous conversation.",
             name="extract_result",
             kwargs={"history": "history"},
@@ -87,7 +82,6 @@ def main():
     # Create function tools
     calc_tool = FunctionTool(calculate)
     factorial_tool = FunctionTool(get_factorial)
-    finish_tool = FunctionTool(finish)
     extract_result_tool = FunctionTool(extract_result)
     square_tool = FunctionTool(square)
 
@@ -96,7 +90,6 @@ def main():
         tools=[
             calc_tool,
             factorial_tool,
-            finish_tool,
             extract_result_tool,
             square_tool,
         ],

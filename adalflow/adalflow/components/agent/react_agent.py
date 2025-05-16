@@ -196,12 +196,36 @@ class ReActToolManager(BaseToolManager):
         super().__init__(tools)
         self.add_llm_as_fallback = add_llm_as_fallback
 
+        # Add default finish tool if not already present
+        self._add_default_finish_tool()
+
         # Add LLM fallback if requested
         if add_llm_as_fallback and model_client:
             self._add_llm_fallback(model_client, model_kwargs)
 
         # Initialize tool manager
         self.tool_manager = ToolManager(tools=self.tools)
+
+    def _add_default_finish_tool(self):
+        """Add a default finish tool if one doesn't already exist."""
+        # Check if a finish tool already exists
+        finish_exists = any(
+            (
+                tool.name == "finish"
+                if isinstance(tool, FunctionTool)
+                else getattr(tool, "__name__", "") == "finish"
+            )
+            for tool in self.tools
+        )
+
+        if not finish_exists:
+
+            def finish(answer: str, **kwargs) -> str:
+                """Finish the conversation with a final answer."""
+                return answer
+
+            self.tools.append(FunctionTool(finish))
+            log.info("Added default 'finish' tool to ReActAgent")
 
     def _add_llm_fallback(self, model_client: ModelClient, model_kwargs: Dict):
         """Add LLM as a fallback tool."""
@@ -241,7 +265,11 @@ class ReActMemory(BaseMemory):
 
 
 class ReActAgent(BaseAgent):
-    """ReAct agent implementation using the base agent."""
+    """ReAct agent implementation using the base agent.
+
+    The agent automatically adds a default 'finish' tool that can be used to complete
+    the conversation with a final answer. Users do not need to manually add this tool.
+    """
 
     def __init__(
         self,
