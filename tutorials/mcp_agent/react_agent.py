@@ -1,3 +1,4 @@
+import os
 from adalflow.components.agent import ReActAgent
 from adalflow.core import ModelClientType, ModelClient
 from adalflow.utils import setup_env
@@ -30,6 +31,22 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
         args=["mcp_server.py"],  # Arguments (path to your server script)
         env=None  # Optional environment variables
     ))
+    # Find the configure at https://smithery.ai/server/@nickclyde/duckduckgo-mcp-server
+    # manager.add_server("duckduckgo-mcp-server", StdioServerParameters(
+    #     command="npx",  # Command to run the server
+    #     args=[
+    #         "-y",
+    #         "@smithery/cli@latest",
+    #         "run",
+    #         "@nickclyde/duckduckgo-mcp-server",
+    #         "--key",
+    #         "smithery-api-key"
+    #     ],
+    # ))
+    # Load the DuckDuckGo MCP server from a JSON file.
+    json_path = os.path.join(os.path.dirname(__file__), "mcp_servers.json")
+    manager.add_servers_from_json_file(json_path)
+    
     await manager.list_all_resources()
     tools = await manager.get_all_tools()
     # print(tools)
@@ -40,7 +57,7 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
 
     queries = [
         "What is the capital of France? What is the weather there? What is 465 times 321 then add 95297 and then divide by 13.2?",
-        # "Give me 5 words rhyming with cool, and make a 4-sentence poem using them",
+        "Use DuckDuckGo to search for the winner on European Championship in 2025.",
     ]
 
     react = ReActAgent(

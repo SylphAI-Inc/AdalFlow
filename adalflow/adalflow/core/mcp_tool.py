@@ -1,3 +1,5 @@
+import os
+import json
 from adalflow.core.func_tool import FunctionTool
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
@@ -141,6 +143,25 @@ class MCPClientManager(Component):
     """
     def __init__(self):
         self.server_params = {}
+
+    def add_servers_from_json_file(self, json_path: str):
+        """Read MCP server configurations from a JSON file and add them to the manager."""
+        if os.path.exists(json_path):
+            with open(json_path, "r") as f:
+                config = json.load(f)
+            mcp_servers = config.get("mcpServers", {})
+            for name, params in mcp_servers.items():
+                self.add_server(
+                    name,
+                    StdioServerParameters(
+                        command=params.get("command"),
+                        args=params.get("args", []),
+                        env=params.get("env", None),
+                    ),
+                )
+        else:
+            print(
+                f"Warning: {json_path} not found. No additional servers loaded.")
 
     def add_server(self, name: str, server_params: StdioServerParameters):
         """
