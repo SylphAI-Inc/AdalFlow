@@ -55,7 +55,6 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
     smithery_api_key = os.environ.get("SMITHERY_API_KEY")
     smithery_server_id = "@nickclyde/duckduckgo-mcp-server"
     mcp_server_url = f"https://server.smithery.ai/{smithery_server_id}/mcp?api_key={smithery_api_key}"
-    # https://server.smithery.ai/@nickclyde/duckduckgo-mcp-server/mcp?api_key=c520e3ed-003a-4d30-98dc-74cfe50fa891
     manager.add_server("duckduckgo-mcp-server", mcp_server_url)
 
     await manager.list_all_tools()
