@@ -28,7 +28,8 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
     # Add servers
     manager.add_server("calculator_server", StdioServerParameters(
         command="python",  # Command to run the server
-        args=["mcp_server.py"],  # Arguments (path to your server script)
+        # Arguments (path to your server script)
+        args=["mcp_calculator_server.py"],
         env=None  # Optional environment variables
     ))
     # Find the configure at https://smithery.ai/server/@nickclyde/duckduckgo-mcp-server
@@ -56,7 +57,8 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
     print("Tools loaded successfully.")
 
     queries = [
-        "What is the capital of France? What is the weather there? What is 465 times 321 then add 95297 and then divide by 13.2?",
+        "What is the capital of the Texas? How is the weather there?",
+        "What is 465 times 321 then add 95297 and then divide by 13.2?",
         "Use DuckDuckGo to search for the winner on European Championship in 2025.",
     ]
 

@@ -102,27 +102,6 @@ def calculate_bmi(weight_kg: float, height_m: float) -> dict:
         "height_m": height_m
     }
 
-
-@mcp.tool()
-async def fetch_weather(city: str, ctx: Context) -> str:
-    """Fetch current weather information for a city"""
-    # Using a free weather API (OpenWeatherMap requires API key in real usage)
-    # This is a mock implementation for demo purposes
-
-    await ctx.info(f"Fetching weather for {city}")
-
-    # Mock weather data since we don't have a real API key
-    weather_data = {
-        "city": city,
-        "temperature": "22°C",
-        "condition": "Partly cloudy",
-        "humidity": "65%",
-        "wind": "5 km/h"
-    }
-
-    return f"Weather in {city}: {weather_data['temperature']}, {weather_data['condition']}, Humidity: {weather_data['humidity']}"
-
-
 @mcp.tool()
 def generate_password(length: int = 12, include_symbols: bool = True) -> str:
     """Generate a random password"""
