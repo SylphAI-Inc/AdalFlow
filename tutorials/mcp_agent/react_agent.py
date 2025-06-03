@@ -32,7 +32,9 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
         args=["mcp_calculator_server.py"],
         env=None  # Optional environment variables
     ))
-    # Find the configure at https://smithery.ai/server/@nickclyde/duckduckgo-mcp-server
+    
+    # duckduckgo MCP server: Find the configure at https://smithery.ai/server/@nickclyde/duckduckgo-mcp-server
+    # ======= Example 1: Add via npx server. =======
     # manager.add_server("duckduckgo-mcp-server", StdioServerParameters(
     #     command="npx",  # Command to run the server
     #     args=[
@@ -44,11 +46,19 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
     #         "smithery-api-key"
     #     ],
     # ))
-    # Load the DuckDuckGo MCP server from a JSON file.
-    json_path = os.path.join(os.path.dirname(__file__), "mcp_servers.json")
-    manager.add_servers_from_json_file(json_path)
     
-    await manager.list_all_resources()
+    # ======= Example 2: Load servers from a JSON file. =======
+    # json_path = os.path.join(os.path.dirname(__file__), "mcp_servers.json")
+    # manager.add_servers_from_json_file(json_path)
+    
+    # ======= Example 3: Load server from sse URL. =======
+    smithery_api_key = os.environ.get("SMITHERY_API_KEY")
+    smithery_server_id = "@nickclyde/duckduckgo-mcp-server"
+    mcp_server_url = f"https://server.smithery.ai/{smithery_server_id}/mcp?api_key={smithery_api_key}"
+    # https://server.smithery.ai/@nickclyde/duckduckgo-mcp-server/mcp?api_key=c520e3ed-003a-4d30-98dc-74cfe50fa891
+    manager.add_server("duckduckgo-mcp-server", mcp_server_url)
+
+    await manager.list_all_tools()
     tools = await manager.get_all_tools()
     # print(tools)
     for tool in tools:
@@ -80,8 +90,6 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
         for step in agent_response.step_history:
             print(
                 f"  - {step.step} {step.action}\n\t\t{step.action.thought} observation: {step.observation}")
-        ground_truth = (465 * 321 + 95297) / 13.2
-        print(f"Ground truth: {ground_truth}")
         print("")
 
 
