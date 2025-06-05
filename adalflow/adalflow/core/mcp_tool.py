@@ -22,6 +22,7 @@ from adalflow.utils.logger import printc
 from adalflow.core.types import (
     FunctionDefinition,
     FunctionOutput,
+    Function
 )
 
 log = logging.getLogger(__name__)
@@ -129,13 +130,9 @@ class MCPFunctionTool(FunctionTool):
 
         async with mcp_session_context(server_params) as session:
             tools = await session.list_tools()
-            tool = tools[0]
+            tool = tools.tools[0]
             mcp_func_tool = MCPFunctionTool(server_params, tool)
             output = await mcp_func_tool.acall(param1="value1")
-
-    Args:
-        server_params (MCPServerParameters): Connection parameters for the MCP server (either StdioServerParameters or a URL string).
-        mcp_tool (types.Tool): The MCP tool instance to wrap.
     
     Features:
     - Wraps an MCP tool (from an MCP server) as a FunctionTool, providing a standardized interface for agent-based workflows.
@@ -214,21 +211,29 @@ class MCPFunctionTool(FunctionTool):
             args) == 0, "FunctionTool does not support positional arguments, use keyword arguments only"
         args = [self.server_params, self.definition.func_name]
         # Call the parent method to handle common logic
-        return await super().acall(*args, **kwargs)
+        func_output = await super().acall(*args, **kwargs)
+
+        return FunctionOutput(
+            name=func_output.name,
+            input=Function(name=self.definition.func_name,
+                           args=args[2:], kwargs=kwargs),
+            output=func_output.output,
+            error=func_output.error,
+        )
     
     def bicall(self, *args, **kwargs):
         """This function is not supported in MCPFunctionTool."""
-        raise NotImplementedError(
+        raise ValueError(
             "MCPFunctionTool does not support bicall. Use acall instead, which is designed for asynchronous execution.")
 
     def call(self, *args, **kwargs):
         """This function is not supported in MCPFunctionTool."""
-        raise NotImplementedError(
+        raise ValueError(
             "MCPFunctionTool does not support call. Use acall instead, which is designed for asynchronous execution.")
 
 
 class MCPClientManager(Component):
-    """Manage MCP client connections and resources.
+    __doc__ = r"""Manage MCP client connections and resources.
     
     Example:
     
