@@ -19,7 +19,6 @@ python server.py
 
 import asyncio
 import json
-import httpx
 from datetime import datetime
 from mcp.server.fastmcp import FastMCP, Context
 
@@ -37,7 +36,7 @@ def get_app_config() -> str:
         "app_name": "MCP Demo Server",
         "version": "1.0.0",
         "created": datetime.now().isoformat(),
-        "features": ["calculator", "weather", "greetings"]
+        "features": ["calculator", "weather", "greetings"],
     }
     return json.dumps(config, indent=2)
 
@@ -54,6 +53,7 @@ def get_greeting(name: str) -> str:
 def get_current_time() -> str:
     """Get the current date and time"""
     return f"Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+
 
 # === TOOLS ===
 # Tools allow LLMs to perform actions (like POST endpoints)
@@ -83,7 +83,7 @@ def calculate_bmi(weight_kg: float, height_m: float) -> dict:
     if height_m <= 0:
         raise ValueError("Height must be greater than 0")
 
-    bmi = weight_kg / (height_m ** 2)
+    bmi = weight_kg / (height_m**2)
 
     # Determine BMI category
     if bmi < 18.5:
@@ -99,8 +99,9 @@ def calculate_bmi(weight_kg: float, height_m: float) -> dict:
         "bmi": round(bmi, 2),
         "category": category,
         "weight_kg": weight_kg,
-        "height_m": height_m
+        "height_m": height_m,
     }
+
 
 @mcp.tool()
 def generate_password(length: int = 12, include_symbols: bool = True) -> str:
@@ -115,8 +116,9 @@ def generate_password(length: int = 12, include_symbols: bool = True) -> str:
     if include_symbols:
         chars += "!@#$%^&*"
 
-    password = ''.join(random.choice(chars) for _ in range(length))
+    password = "".join(random.choice(chars) for _ in range(length))
     return password
+
 
 # === PROMPTS ===
 # Prompts are reusable templates for LLM interactions
@@ -179,6 +181,7 @@ Please help me:
 
     return prompt
 
+
 # === ADVANCED TOOL WITH CONTEXT ===
 
 
@@ -217,8 +220,9 @@ async def process_list(items: list[str], operation: str, ctx: Context) -> dict:
         "operation": operation,
         "original_items": items,
         "processed_items": results,
-        "total_processed": len(results)
+        "total_processed": len(results),
     }
+
 
 # === MAIN EXECUTION ===
 

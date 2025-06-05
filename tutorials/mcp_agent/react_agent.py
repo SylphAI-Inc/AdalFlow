@@ -12,7 +12,7 @@ from adalflow.core.mcp_tool import MCPClientManager
 
 log = logging.getLogger(__name__)
 
-setup_env('.env')
+setup_env(".env")
 
 
 gpt_model_kwargs = {
@@ -26,13 +26,16 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
     print("\n=== Multiple Server Management ===")
     manager = MCPClientManager()
     # Add servers
-    manager.add_server("calculator_server", StdioServerParameters(
-        command="python",  # Command to run the server
-        # Arguments (path to your server script)
-        args=["mcp_calculator_server.py"],
-        env=None  # Optional environment variables
-    ))
-    
+    manager.add_server(
+        "calculator_server",
+        StdioServerParameters(
+            command="python",  # Command to run the server
+            # Arguments (path to your server script)
+            args=["mcp_calculator_server.py"],
+            env=None,  # Optional environment variables
+        ),
+    )
+
     # duckduckgo MCP server: Find the configure at https://smithery.ai/server/@nickclyde/duckduckgo-mcp-server
     # ======= Example 1: Add via npx server. =======
     # manager.add_server("duckduckgo-mcp-server", StdioServerParameters(
@@ -46,11 +49,11 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
     #         "smithery-api-key"
     #     ],
     # ))
-    
+
     # ======= Example 2: Load servers from a JSON file. =======
     # json_path = os.path.join(os.path.dirname(__file__), "mcp_servers.json")
     # manager.add_servers_from_json_file(json_path)
-    
+
     # ======= Example 3: Load server from sse URL. =======
     smithery_api_key = os.environ.get("SMITHERY_API_KEY")
     smithery_server_id = "@nickclyde/duckduckgo-mcp-server"
@@ -61,7 +64,7 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
     tools = await manager.get_all_tools()
     # print(tools)
     for tool in tools:
-        sig = tool.definition.func_desc.split('\n')[0]
+        sig = tool.definition.func_desc.split("\n")[0]
         print(f"- Tool: {tool.definition.func_name}, Signature: {sig}")
     print("Tools loaded successfully.")
 
@@ -88,7 +91,8 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
         print("\nStep history:")
         for step in agent_response.step_history:
             print(
-                f"  - {step.step} {step.action}\n\t\t{step.action.thought} observation: {step.observation}")
+                f"  - {step.step} {step.action}\n\t\t{step.action.thought} observation: {step.observation}"
+            )
         print("")
 
 

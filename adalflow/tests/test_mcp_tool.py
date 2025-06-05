@@ -1,7 +1,11 @@
 import pytest
 import asyncio
 
-from adalflow.core.mcp_tool import MCPFunctionTool, mcp_session_context, MCPClientManager
+from adalflow.core.mcp_tool import (
+    MCPFunctionTool,
+    mcp_session_context,
+    MCPClientManager,
+)
 from adalflow.core.types import FunctionDefinition
 from mcp import StdioServerParameters
 
@@ -10,13 +14,12 @@ metadata = FunctionDefinition(func_desc="A simple addition tool", func_name="add
 
 mcp_server_path = "tutorials/mcp_agent/mcp_calculator_server.py"
 
+
 def test_function_tool_async():
     async def retrieve_tool():
         # use default metadata
         server_params = StdioServerParameters(
-            command="python",
-            args=[mcp_server_path],
-            env=None
+            command="python", args=[mcp_server_path], env=None
         )
 
         async with mcp_session_context(server_params) as session:
@@ -34,8 +37,8 @@ def test_function_tool_async():
     assert output.name == "add", "The name should be set to the function name"
     assert hasattr(output.input, "args")
     assert output.input.args == []
-    assert output.input.kwargs['a'] == 3
-    assert output.input.kwargs['b'] == 4
+    assert output.input.kwargs["a"] == 3
+    assert output.input.kwargs["b"] == 4
 
     # call with sync call with raise ValueError
     with pytest.raises(ValueError):
@@ -46,16 +49,20 @@ def test_mcp_client_manager():
     async def get_all_tools():
         manager = MCPClientManager()
         # Add servers. Here we used a local stdio server defined in `mcp_server.py`.
-        manager.add_server("calculator_server", StdioServerParameters(
-            command="python",  # Command to run the server
-            args=[mcp_server_path],  # Arguments (path to your server script)
-            env=None  # Optional environment variables
-        ))
+        manager.add_server(
+            "calculator_server",
+            StdioServerParameters(
+                command="python",  # Command to run the server
+                args=[mcp_server_path],  # Arguments (path to your server script)
+                env=None,  # Optional environment variables
+            ),
+        )
         # to see all available resources/tools/prompts. But we only use tools.
         await manager.list_all_tools()
         return await manager.get_all_tools()
-    
+
     tools = asyncio.run(get_all_tools())
     assert len(tools) > 0, "There should be at least one tool available"
+
 
 # TODO Test MCP function tools with gradient components

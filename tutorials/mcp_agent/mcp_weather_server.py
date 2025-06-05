@@ -12,10 +12,7 @@ USER_AGENT = "weather-app/1.0"
 
 async def make_nws_request(url: str) -> dict[str, Any] | None:
     """Make a request to the NWS API with proper error handling."""
-    headers = {
-        "User-Agent": USER_AGENT,
-        "Accept": "application/geo+json"
-    }
+    headers = {"User-Agent": USER_AGENT, "Accept": "application/geo+json"}
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(url, headers=headers, timeout=30.0)
@@ -93,7 +90,8 @@ Forecast: {period['detailedForecast']}
 
     return "\n---\n".join(forecasts)
 
+
 if __name__ == "__main__":
     # Initialize and run the server
     print("starting weather MCP server...")
-    mcp.run(transport='stdio')
+    mcp.run(transport="stdio")

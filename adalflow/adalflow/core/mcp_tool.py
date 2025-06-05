@@ -7,6 +7,7 @@ Features:
 
 The module enables dynamic discovery and invocation of MCP tools for agent-based workflows.
 """
+
 import os
 import json
 from adalflow.core.func_tool import FunctionTool
@@ -19,11 +20,7 @@ from typing import Union, List, Any
 
 from adalflow.core.component import Component
 from adalflow.utils.logger import printc
-from adalflow.core.types import (
-    FunctionDefinition,
-    FunctionOutput,
-    Function
-)
+from adalflow.core.types import FunctionDefinition, FunctionOutput, Function
 
 log = logging.getLogger(__name__)
 
@@ -53,22 +50,26 @@ async def mcp_session_context(server_params: MCPServerParameters):
     if isinstance(server_params, StdioServerParameters):
         async with stdio_client(server_params) as (read, write):
             async with ClientSession(read, write) as session:
-                printc("📡 Initializing connection...", color='magenta')
+                printc("📡 Initializing connection...", color="magenta")
                 await session.initialize()
-                printc("✅ Connection established!", color='magenta')
+                printc("✅ Connection established!", color="magenta")
                 yield session
     elif isinstance(server_params, str):  # URL
         async with streamablehttp_client(server_params) as (read, write, _):
             async with ClientSession(read, write) as session:
-                printc("📡 Initializing connection...", color='magenta')
+                printc("📡 Initializing connection...", color="magenta")
                 await session.initialize()
-                printc("✅ Connection established!", color='magenta')
+                printc("✅ Connection established!", color="magenta")
                 yield session
     else:
-        raise ValueError(f"Unsupported server parameters type. Must be StdioServerParameters or URL string. But got {type(server_params)}")
+        raise ValueError(
+            f"Unsupported server parameters type. Must be StdioServerParameters or URL string. But got {type(server_params)}"
+        )
 
 
-async def execute_mcp_op(server_params: MCPServerParameters, tool_name: str, id=None, **params: dict) -> str:
+async def execute_mcp_op(
+    server_params: MCPServerParameters, tool_name: str, id=None, **params: dict
+) -> str:
     """
     Executes an operation using a specified MCP tool within a new client session.
 
@@ -94,9 +95,9 @@ async def execute_mcp_op(server_params: MCPServerParameters, tool_name: str, id=
     async with mcp_session_context(server_params) as session:
         try:
             result = await session.call_tool(tool_name, params)
-            printc(f"{tool_name} {params} = {result.content[0].text}", color='magenta')
+            printc(f"{tool_name} {params} = {result.content[0].text}", color="magenta")
         except Exception as e:
-            printc(f"❌ Error calling {tool_name} tool: {e}", color='magenta')
+            printc(f"❌ Error calling {tool_name} tool: {e}", color="magenta")
     return result.content[0].text if result else None
 
 
@@ -108,10 +109,10 @@ class MCPFunctionTool(FunctionTool):
     It allows dynamic discovery, description, and invocation of MCP tools, making them accessible to LLM-based agents or pipelines.
 
     Note:
-    
+
         Different from FunctionTool, MCPFunctionTool only supports `acall` since all
         tools are executed asynchronously in the MCP protocol.
-    
+
     Args:
         server_params (MCPServerParameters): The parameters required to connect to the MCP server. Could be a mcp.StdioServerParameters instance or a URL string.
         mcp_tool (mcp.types.Tool): The MCP tool instance to be used by this function tool.
@@ -133,14 +134,14 @@ class MCPFunctionTool(FunctionTool):
             tool = tools.tools[0]
             mcp_func_tool = MCPFunctionTool(server_params, tool)
             output = await mcp_func_tool.acall(param1="value1")
-    
+
     Features:
     - Wraps an MCP tool (from an MCP server) as a FunctionTool, providing a standardized interface for agent-based workflows.
     - Automatically generates a FunctionDefinition based on the MCP tool's schema and description.
     - Supports asynchronous execution of the tool via the MCP protocol, using the provided server parameters.
     - Handles both stdio and HTTP-based MCP server connections.
     """
-    
+
     def __init__(self, server_params: MCPServerParameters, mcp_tool: types.Tool):
         """
         Initialize the MCPFunctionTool with the specified server parameters and MCP tool.
@@ -153,17 +154,22 @@ class MCPFunctionTool(FunctionTool):
     def _create_fn_definition(self) -> FunctionDefinition:
         """
         Create a FunctionDefinition for the MCP tool.
-        This overrides the base class method to customize the function signature and description based on the MCP tool's schema. 
+        This overrides the base class method to customize the function signature and description based on the MCP tool's schema.
         """
         # remove 'title' from function parameters
         func_parameters = {
-            k: v for k, v in self.mcp_tool.inputSchema.items() if k != 'title'}
-        func_parameters['properties'] = {
-            arg_name: {k: v for k, v in props.items() if k != 'title'} for arg_name, props in func_parameters['properties'].items()}
+            k: v for k, v in self.mcp_tool.inputSchema.items() if k != "title"
+        }
+        func_parameters["properties"] = {
+            arg_name: {k: v for k, v in props.items() if k != "title"}
+            for arg_name, props in func_parameters["properties"].items()
+        }
 
         # Build the description
-        arg_list = [f'{arg_name}: {props["type"]}' for arg_name,
-                    props in func_parameters["properties"].items()]
+        arg_list = [
+            f'{arg_name}: {props["type"]}'
+            for arg_name, props in func_parameters["properties"].items()
+        ]
         signature_str = f"({', '.join(arg_list)})"
         description = f"{self.mcp_tool.name}{signature_str}\n"
         # signature_str: add(a: int, b: int, id=None) -> int
@@ -207,36 +213,40 @@ class MCPFunctionTool(FunctionTool):
 
             asyncio.run(call_async_function())
         """
-        assert len(
-            args) == 0, "FunctionTool does not support positional arguments, use keyword arguments only"
+        assert (
+            len(args) == 0
+        ), "FunctionTool does not support positional arguments, use keyword arguments only"
         args = [self.server_params, self.definition.func_name]
         # Call the parent method to handle common logic
         func_output = await super().acall(*args, **kwargs)
 
         return FunctionOutput(
             name=func_output.name,
-            input=Function(name=self.definition.func_name,
-                           args=args[2:], kwargs=kwargs),
+            input=Function(
+                name=self.definition.func_name, args=args[2:], kwargs=kwargs
+            ),
             output=func_output.output,
             error=func_output.error,
         )
-    
+
     def bicall(self, *args, **kwargs):
         """This function is not supported in MCPFunctionTool."""
         raise ValueError(
-            "MCPFunctionTool does not support bicall. Use acall instead, which is designed for asynchronous execution.")
+            "MCPFunctionTool does not support bicall. Use acall instead, which is designed for asynchronous execution."
+        )
 
     def call(self, *args, **kwargs):
         """This function is not supported in MCPFunctionTool."""
         raise ValueError(
-            "MCPFunctionTool does not support call. Use acall instead, which is designed for asynchronous execution.")
+            "MCPFunctionTool does not support call. Use acall instead, which is designed for asynchronous execution."
+        )
 
 
 class MCPClientManager(Component):
     __doc__ = r"""Manage MCP client connections and resources.
-    
+
     Example:
-    
+
     .. code-block:: python
 
         from adalflow.core.mcp_tool import MCPClientManager, StdioServerParameters
@@ -259,17 +269,18 @@ class MCPClientManager(Component):
             model_kwargs=model_kwargs,
         )
     """
+
     def __init__(self):
         self.server_params = {}
 
     def add_servers_from_json_file(self, json_path: str):
         """Read MCP server configurations from a JSON file and add them to the manager.
-        
+
         Args:
             json_path (str): Path to the JSON file containing MCP server configurations.
-        
+
         Example of JSON structure:
-        
+
         .. code-block:: json
 
             {
@@ -297,8 +308,7 @@ class MCPClientManager(Component):
                     ),
                 )
         else:
-            print(
-                f"Warning: {json_path} not found. No additional servers loaded.")
+            print(f"Warning: {json_path} not found. No additional servers loaded.")
 
     def add_server(self, name: str, server_params: MCPServerParameters):
         """Adds a new MCP server to the internal server registry.
@@ -318,7 +328,9 @@ class MCPClientManager(Component):
             print(f"Adding server: {name}")
             self.server_params[name] = server_params
         else:
-            raise ValueError(f"Server {name} already exists. Cannot override existing server configuration.")
+            raise ValueError(
+                f"Server {name} already exists. Cannot override existing server configuration."
+            )
 
     async def list_all_tools(self):
         """

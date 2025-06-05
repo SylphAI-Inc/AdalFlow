@@ -464,7 +464,7 @@ class DataClass:
             return cls.from_dict(data)
         except yaml.YAMLError as e:
             raise ValueError(f"Failed to load YAML string: {e}")
-        
+
     @classmethod
     def to_pydantic(cls, instance: "DataClass"):
         """
@@ -495,7 +495,7 @@ class DataClass:
         pydantic_model = create_model(f"{cls.__name__}Pydantic", **field_definitions)
         data = instance.to_dict()
         return pydantic_model(**data)
-    
+
     @classmethod
     def pydantic_to_dataclass(cls, pydantic_obj):
         """
@@ -521,7 +521,7 @@ class DataClass:
             return cls.from_dict(data)
         except Exception as e:
             raise ValueError(f"Failed to convert pydantic model to DataClass: {e}")
-        
+
     def to_yaml_obj(
         self,
         exclude: ExcludeType = None,
