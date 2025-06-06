@@ -174,7 +174,6 @@ class MCPFunctionTool(FunctionTool):
         description = f"{self.mcp_tool.name}{signature_str}\n"
         # signature_str: add(a: int, b: int, id=None) -> int
 
-        # TODO I don't understand what the `class` is for in adalflow.
         cls_name = self.mcp_tool.name
         if cls_name:
             description += f"Belongs to class: {cls_name}\n"
