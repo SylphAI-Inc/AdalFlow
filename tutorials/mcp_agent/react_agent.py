@@ -3,9 +3,12 @@ from adalflow.components.agent import ReActAgent
 from adalflow.core import ModelClientType, ModelClient
 from adalflow.utils import setup_env
 import asyncio
-from mcp import StdioServerParameters
 import logging
-from adalflow.core.mcp_tool import MCPClientManager
+from adalflow.core.mcp_tool import (
+    MCPToolManager,
+    MCPServerStreamableHttpParams,
+    MCPServerStdioParams,
+)
 
 # get_logger(level="DEBUG")
 # logging.basicConfig(level=logging.DEBUG)
@@ -24,11 +27,11 @@ gpt_model_kwargs = {
 async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
 
     print("\n=== Multiple Server Management ===")
-    manager = MCPClientManager()
+    manager = MCPToolManager()
     # Add servers
     manager.add_server(
         "calculator_server",
-        StdioServerParameters(
+        MCPServerStdioParams(
             command="python",  # Command to run the server
             # Arguments (path to your server script)
             args=["mcp_calculator_server.py"],
@@ -38,7 +41,7 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
 
     # duckduckgo MCP server: Find the configure at https://smithery.ai/server/@nickclyde/duckduckgo-mcp-server
     # ======= Example 1: Add via npx server. =======
-    # manager.add_server("duckduckgo-mcp-server", StdioServerParameters(
+    # manager.add_server("duckduckgo-mcp-server", MCPServerStdioParams(
     #     command="npx",  # Command to run the server
     #     args=[
     #         "-y",
@@ -58,7 +61,9 @@ async def test_react_agent(model_client: ModelClient, model_kwargs: dict):
     smithery_api_key = os.environ.get("SMITHERY_API_KEY")
     smithery_server_id = "@nickclyde/duckduckgo-mcp-server"
     mcp_server_url = f"https://server.smithery.ai/{smithery_server_id}/mcp?api_key={smithery_api_key}"
-    manager.add_server("duckduckgo-mcp-server", mcp_server_url)
+    manager.add_server(
+        "duckduckgo-mcp-server", MCPServerStreamableHttpParams(url=mcp_server_url)
+    )
 
     await manager.list_all_tools()
     tools = await manager.get_all_tools()

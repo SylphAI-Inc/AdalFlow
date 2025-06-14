@@ -897,12 +897,12 @@ To configure a Server-Sent Events (SSE) MCP client, you can use MCP server URLs 
 **Using MCP Tools from Marketplace**. You can reuse the tools from marketplace. Below is a step-by-step example.
 
 1. Find a tool at smithery.ai. For example, https://smithery.ai/server/@nickclyde/duckduckgo-mcp-server.
-2. Load the server. A MCP server provides multiple tools. With `MCPClientManager`, you can easily load them as `MCPFunctionTool` instances all at once. First, create a client manager:
+2. Load the server. A MCP server provides multiple tools. With `MCPToolManager`, you can easily load them as `MCPFunctionTool` instances all at once. First, create a client manager:
 
 .. code-block:: python
 
-    from adalflow.core.mcp_tool import MCPClientManager
-    mcp_client_manager = MCPClientManager(server_params)
+    from adalflow.core.mcp_tool import MCPToolManager
+    mcp_client_manager = MCPToolManager(server_params)
 
 You can add servers to the manager in several ways. For example, we use the DuckDuckGo parameters (`@nickclyde/duckduckgo-mcp-server <https://smithery.ai/server/@nickclyde/duckduckgo-mcp-server>`_), choose one of the following options:
 
@@ -1020,7 +1020,7 @@ The example output of a step execution is shown below.
    - :class:`core.types.FunctionOutput`
    - :class:`core.func_tool.FunctionTool`
    - :func:`core.mcp_tool.MCPFunctionTool`
-   - :func:`core.mcp_tool.MCPClientManager`
+   - :func:`core.mcp_tool.MCPToolManager`
    - :class:`core.tool_manager.ToolManager`
    - :func:`core.functional.get_fun_schema`
    - :func:`core.functional.parse_function_call_expr`

@@ -73,13 +73,13 @@ MCPFunctionTool only supports asynchronous execution (``acall``), as all MCP too
 
 **Managing Multiple MCP Servers**
 
-The :class:`MCPClientManager <adalflow.core.mcp_tool.MCPClientManager>` helps manage multiple MCP servers and aggregate all available tools for agent workflows.
+The :class:`MCPToolManager <adalflow.core.mcp_tool.MCPToolManager>` helps manage multiple MCP servers and aggregate all available tools for agent workflows.
 
 .. code-block:: python
 
-    from adalflow.core.mcp_tool import MCPClientManager, StdioServerParameters
+    from adalflow.core.mcp_tool import MCPToolManager, StdioServerParameters
 
-    manager = MCPClientManager()
+    manager = MCPToolManager()
     manager.add_server("calculator_server", StdioServerParameters(
         command="python",
         args=["mcp_server.py"],
@@ -124,4 +124,4 @@ References
 
     - :class:`adalflow.core.func_tool.FunctionTool`
     - :class:`adalflow.core.mcp_tool.MCPFunctionTool`
-    - :class:`adalflow.core.mcp_tool.MCPClientManager`
+    - :class:`adalflow.core.mcp_tool.MCPToolManager`

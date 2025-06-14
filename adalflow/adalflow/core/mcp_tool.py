@@ -3,7 +3,7 @@ MCP (Modular Command Protocol) Tools are function tools defined in a unified sta
 
 Features:
 - The MCPFunctionTool class, which wraps MCP tools as FunctionTool instances for use in agent workflows.
-- The MCPClientManager class, which manages multiple MCP server connections, loads server configurations from JSON, lists available resources/tools/prompts, and provides all tools as FunctionTool instances.
+- The MCPToolManager class, which manages multiple MCP server connections, loads server configurations from JSON, lists available resources/tools/prompts, and provides all tools as FunctionTool instances.
 
 The module enables dynamic discovery and invocation of MCP tools for agent-based workflows.
 """
@@ -19,8 +19,10 @@ from mcp.client.sse import sse_client
 from mcp.client.streamable_http import streamablehttp_client
 from contextlib import asynccontextmanager
 import logging
-from typing import Union, List, Any, TypedDict, NotRequired, Literal
+from typing import Union, List, Any, NotRequired, Literal
+from dataclasses import dataclass, field
 
+from adalflow.core.base_data_class import DataClass
 from adalflow.core.component import Component
 from adalflow.utils.logger import printc
 from adalflow.core.types import FunctionDefinition, FunctionOutput, Function
@@ -28,68 +30,88 @@ from adalflow.core.types import FunctionDefinition, FunctionOutput, Function
 log = logging.getLogger(__name__)
 
 
-class MCPServerStdioParams(TypedDict):
-    """Mirrors `mcp.client.stdio.StdioServerParameters`, but lets you pass params without another
-    import.
+@dataclass
+class MCPServerStdioParams(DataClass):
+    r"""Mirrors `mcp.client.stdio.StdioServerParameters`, but lets you pass params without another import."""
+
+    command: str = field(
+        metadata={
+            "desc": "The executable to run to start the server. For example, `python` or `node`."
+        }
+    )
+    args: NotRequired[list[str]] = field(
+        default=None,
+        metadata={
+            "desc": "Command line args to pass to the `command` executable. For example, `['foo.py']` or `['server.js', '--port', '8080']`."
+        },
+    )
+    env: NotRequired[dict[str, str]] = field(
+        default=None,
+        metadata={"desc": "The environment variables to set for the server."},
+    )
+    cwd: NotRequired[str | Path] = field(
+        default=None,
+        metadata={"desc": "The working directory to use when spawning the process."},
+    )
+    encoding: NotRequired[str] = field(
+        default="utf-8",
+        metadata={
+            "desc": "The text encoding used when sending/receiving messages to the server. Defaults to `utf-8`."
+        },
+    )
+    encoding_error_handler: NotRequired[Literal["strict", "ignore", "replace"]] = field(
+        default="strict",
+        metadata={
+            "desc": "The text encoding error handler. Defaults to `strict`. See https://docs.python.org/3/library/codecs.html#codec-base-classes for explanations of possible values."
+        },
+    )
+
+
+@dataclass
+class MCPServerSseParams(DataClass):
+    """
+    Mirrors the params in `mcp.client.sse.sse_client`.
     """
 
-    command: str
-    """The executable to run to start the server. For example, `python` or `node`."""
+    url: str = field(metadata={"desc": "The URL of the server."})
+    headers: NotRequired[dict[str, str]] = field(
+        default=None, metadata={"desc": "The headers to send to the server."}
+    )
+    timeout: NotRequired[float] = field(
+        default=5,
+        metadata={"desc": "The timeout for the HTTP request. Defaults to 5 seconds."},
+    )
+    sse_read_timeout: NotRequired[float] = field(
+        default=60 * 5,
+        metadata={
+            "desc": "The timeout for the SSE connection, in seconds. Defaults to 5 minutes."
+        },
+    )
 
-    args: NotRequired[list[str]]
-    """Command line args to pass to the `command` executable. For example, `['foo.py']` or
-    `['server.js', '--port', '8080']`."""
 
-    env: NotRequired[dict[str, str]]
-    """The environment variables to set for the server. ."""
-
-    cwd: NotRequired[str | Path]
-    """The working directory to use when spawning the process."""
-
-    encoding: NotRequired[str]
-    """The text encoding used when sending/receiving messages to the server. Defaults to `utf-8`."""
-
-    encoding_error_handler: NotRequired[Literal["strict", "ignore", "replace"]]
-    """The text encoding error handler. Defaults to `strict`.
-
-    See https://docs.python.org/3/library/codecs.html#codec-base-classes for
-    explanations of possible values.
+@dataclass
+class MCPServerStreamableHttpParams(DataClass):
+    """
+    Mirrors the params in `mcp.client.streamable_http.streamablehttp_client`.
     """
 
-
-class MCPServerSseParams(TypedDict):
-    """Mirrors the params in`mcp.client.sse.sse_client`."""
-
-    url: str
-    """The URL of the server."""
-
-    headers: NotRequired[dict[str, str]]
-    """The headers to send to the server."""
-
-    timeout: NotRequired[float]
-    """The timeout for the HTTP request. Defaults to 5 seconds."""
-
-    sse_read_timeout: NotRequired[float]
-    """The timeout for the SSE connection, in seconds. Defaults to 5 minutes."""
-
-
-class MCPServerStreamableHttpParams(TypedDict):
-    """Mirrors the params in`mcp.client.streamable_http.streamablehttp_client`."""
-
-    url: str
-    """The URL of the server."""
-
-    headers: NotRequired[dict[str, str]]
-    """The headers to send to the server."""
-
-    timeout: NotRequired[timedelta]
-    """The timeout for the HTTP request. Defaults to 5 seconds."""
-
-    sse_read_timeout: NotRequired[timedelta]
-    """The timeout for the SSE connection, in seconds. Defaults to 5 minutes."""
-
-    terminate_on_close: NotRequired[bool]
-    """Terminate on close"""
+    url: str = field(metadata={"desc": "The URL of the server."})
+    headers: NotRequired[dict[str, str]] = field(
+        default=None, metadata={"desc": "The headers to send to the server."}
+    )
+    timeout: NotRequired[timedelta] = field(
+        default=timedelta(seconds=30),
+        metadata={"desc": "The timeout for the HTTP request. Defaults to 30 seconds."},
+    )
+    sse_read_timeout: NotRequired[timedelta] = field(
+        default=timedelta(seconds=60 * 5),
+        metadata={
+            "desc": "The timeout for the SSE connection, in seconds. Defaults to 5 minutes."
+        },
+    )
+    terminate_on_close: NotRequired[bool] = field(
+        default=True, metadata={"desc": "Terminate on close"}
+    )
 
 
 MCPServerParameters = Union[
@@ -117,7 +139,16 @@ async def mcp_session_context(server_params: MCPServerParameters):
         ValueError: If `server_params` is not a supported type.
     """
     if isinstance(server_params, MCPServerStdioParams):
-        async with stdio_client(server_params) as (read, write):
+        async with stdio_client(
+            StdioServerParameters(
+                command=server_params.command,
+                args=server_params.args,
+                env=server_params.env,
+                cwd=server_params.cwd,
+                encoding=server_params.encoding,
+                encoding_error_handler=server_params.encoding_error_handler,
+            )
+        ) as (read, write):
             async with ClientSession(read, write) as session:
                 printc("📡 Initializing connection...", color="magenta")
                 await session.initialize()
@@ -125,13 +156,11 @@ async def mcp_session_context(server_params: MCPServerParameters):
                 yield session
     elif isinstance(server_params, MCPServerStreamableHttpParams):  # URL
         async with streamablehttp_client(
-            url=server_params["url"],
-            headers=server_params.get("headers", None),
-            timeout=server_params.get("timeout", timedelta(seconds=30)),
-            sse_read_timeout=server_params.get(
-                "sse_read_timeout", timedelta(seconds=60 * 5)
-            ),
-            terminate_on_close=server_params.get("terminate_on_close", True),
+            url=server_params.url,
+            headers=server_params.headers,
+            timeout=server_params.timeout,
+            sse_read_timeout=server_params.sse_read_timeout,
+            terminate_on_close=server_params.terminate_on_close,
         ) as (read, write, _):
             async with ClientSession(read, write) as session:
                 printc("📡 Initializing connection...", color="magenta")
@@ -140,10 +169,10 @@ async def mcp_session_context(server_params: MCPServerParameters):
                 yield session
     elif isinstance(server_params, MCPServerSseParams):  # URL
         async with sse_client(
-            url=server_params["url"],
-            headers=server_params.get("headers", None),
-            timeout=server_params.get("timeout", 5),
-            sse_read_timeout=server_params.get("sse_read_timeout", 60 * 5),
+            url=server_params.url,
+            headers=server_params.headers,
+            timeout=server_params.timeout,
+            sse_read_timeout=server_params.sse_read_timeout,
         ) as (read, write, _):
             async with ClientSession(read, write) as session:
                 printc("📡 Initializing connection...", color="magenta")
@@ -152,7 +181,7 @@ async def mcp_session_context(server_params: MCPServerParameters):
                 yield session
     else:
         raise ValueError(
-            f"Unsupported server parameters type. Must be StdioServerParameters or URL string. But got {type(server_params)}"
+            f"Unsupported server parameters type. Must be one of MCPServerStdioParams, MCPServerSseParams, MCPServerStreamableHttpParams. But got {type(server_params)}"
         )
 
 
@@ -330,16 +359,16 @@ class MCPFunctionTool(FunctionTool):
         )
 
 
-class MCPClientManager(Component):
+class MCPToolManager(Component):
     __doc__ = r"""Manage MCP client connections and resources.
 
     Example:
 
     .. code-block:: python
 
-        from adalflow.core.mcp_tool import MCPClientManager, StdioServerParameters
+        from adalflow.core.mcp_tool import MCPToolManager, StdioServerParameters
 
-        manager = MCPClientManager()
+        manager = MCPToolManager()
         # Add servers. Here we used a local stdio server defined in `mcp_server.py`.
         manager.add_server("calculator_server", StdioServerParameters(
             command="python",  # Command to run the server
@@ -358,8 +387,19 @@ class MCPClientManager(Component):
         )
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        cache_tools_list: bool = True,
+        client_session_timeout_seconds: float | None = None,
+    ):
         self.server_params = {}
+        self.cache_tools_list = cache_tools_list
+
+        self.client_session_timeout_seconds = client_session_timeout_seconds
+
+        # The cache is always dirty at startup, so that we fetch tools at least once
+        self._tools_list: list[MCPFunctionTool] | None = []
+        self._cached_servers: list[str] = []
 
     def add_servers_from_json_file(self, json_path: str):
         """Read MCP server configurations from a JSON file and add them to the manager.
@@ -415,6 +455,7 @@ class MCPClientManager(Component):
         if name not in self.server_params:
             print(f"Adding server: {name}")
             self.server_params[name] = server_params
+            self._cache_dirty = True  # Mark cache as dirty since we added a new server
         else:
             raise ValueError(
                 f"Server {name} already exists. Cannot override existing server configuration."
@@ -434,12 +475,12 @@ class MCPClientManager(Component):
 
     async def _list_all_server_tools(self, server_params: MCPServerParameters):
         async with mcp_session_context(server_params) as session:
-            # List available resources
-            print("\n🗂️  Available Resources:")
-            resources = await session.list_resources()
-            for resource in resources.resources:
-                print(f"  • {resource.name}: {resource.description}")
-                print(f"    URI: {resource.uri}")
+            # # List available resources
+            # print("\n🗂️  Available Resources:")
+            # resources = await session.list_resources()
+            # for resource in resources.resources:
+            #     print(f"  • {resource.name}: {resource.description}")
+            #     print(f"    URI: {resource.uri}")
 
             # List available tools
             print("\n🔧 Available Tools:")
@@ -447,24 +488,28 @@ class MCPClientManager(Component):
             for tool in tools.tools:
                 print(f"  • {tool.name}: {tool.description}")
 
-            # List available prompts
-            print("\n📝 Available Prompts:")
-            prompts = await session.list_prompts()
-            for prompt in prompts.prompts:
-                print(f"  • {prompt.name}: {prompt.description}")
+            # # List available prompts
+            # print("\n📝 Available Prompts:")
+            # prompts = await session.list_prompts()
+            # for prompt in prompts.prompts:
+            #     print(f"  • {prompt.name}: {prompt.description}")
 
-    async def get_all_tools(self) -> List[FunctionTool]:
+    async def get_all_tools(self) -> List[MCPFunctionTool]:
         """
         Get all available functions from added servers as FunctionTool instances.
         """
-        tools = []
         for name, params in self.server_params.items():
+            if name in self._cached_servers:
+                print(f"🔧 Using cached tools for server {name}.")
+                continue
+
             print(f"\n🔧 Getting Tools from server {name}:")
             # get all tools from the server
-            tools.extend(await self._get_all_server_tools(params))
-        return tools
+            self._tools_list.extend(await self._get_all_server_tools(params))
+            self._cached_servers.append(name)
+        return self._tools_list
 
-    async def _get_all_server_tools(self, server_params) -> List[FunctionTool]:
+    async def _get_all_server_tools(self, server_params) -> List[MCPFunctionTool]:
         """
         Get all available tools from all added servers.
         """

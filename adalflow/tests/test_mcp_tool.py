@@ -4,10 +4,10 @@ import asyncio
 from adalflow.core.mcp_tool import (
     MCPFunctionTool,
     mcp_session_context,
-    MCPClientManager,
+    MCPToolManager,
+    MCPServerStdioParams,
 )
 from adalflow.core.types import FunctionDefinition
-from mcp import StdioServerParameters
 
 
 metadata = FunctionDefinition(func_desc="A simple addition tool", func_name="add")
@@ -18,7 +18,7 @@ mcp_server_path = "tutorials/mcp_agent/mcp_calculator_server.py"
 def test_function_tool_async():
     async def retrieve_tool():
         # use default metadata
-        server_params = StdioServerParameters(
+        server_params = MCPServerStdioParams(
             command="python", args=[mcp_server_path], env=None
         )
 
@@ -47,11 +47,11 @@ def test_function_tool_async():
 
 def test_mcp_client_manager():
     async def get_all_tools():
-        manager = MCPClientManager()
+        manager = MCPToolManager()
         # Add servers. Here we used a local stdio server defined in `mcp_server.py`.
         manager.add_server(
             "calculator_server",
-            StdioServerParameters(
+            MCPServerStdioParams(
                 command="python",  # Command to run the server
                 args=[mcp_server_path],  # Arguments (path to your server script)
                 env=None,  # Optional environment variables
