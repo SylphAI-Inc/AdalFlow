@@ -864,8 +864,8 @@ Importantly, you don't need to rewrite every tools. Instead, you can directly re
 
 .. code-block:: python
 
-    from mcp import StdioServerParameters
-    server_params = StdioServerParameters(
+    from mcp import MCPServerStdioParams
+    server_params = MCPServerStdioParams(
         command="python",
         args=["mcp_calculator_server.py"],
     )
@@ -909,7 +909,7 @@ You can add servers to the manager in several ways. For example, we use the Duck
 .. code-block:: python
 
     # ======= Example 1: Add via stdio command. =======
-    manager.add_server("duckduckgo-mcp-server", StdioServerParameters(
+    manager.add_server("duckduckgo-mcp-server", MCPServerStdioParams(
         command="npx",  # Command to run the server
         args=[
             "-y",

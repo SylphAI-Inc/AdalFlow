@@ -54,9 +54,9 @@ MCP (Modular Command Protocol) enables dynamic discovery and invocation of tools
 
 .. code-block:: python
 
-    from adalflow.core.mcp_tool import MCPFunctionTool, mcp_session_context, StdioServerParameters
+    from adalflow.core.mcp_tool import MCPFunctionTool, mcp_session_context, MCPServerStdioParams
 
-    server_params = StdioServerParameters(
+    server_params = MCPServerStdioParams(
         command="python",
         args=["mcp_server.py"],
         env=None
@@ -77,10 +77,10 @@ The :class:`MCPToolManager <adalflow.core.mcp_tool.MCPToolManager>` helps manage
 
 .. code-block:: python
 
-    from adalflow.core.mcp_tool import MCPToolManager, StdioServerParameters
+    from adalflow.core.mcp_tool import MCPToolManager, MCPServerStdioParams
 
     manager = MCPToolManager()
-    manager.add_server("calculator_server", StdioServerParameters(
+    manager.add_server("calculator_server", MCPServerStdioParams(
         command="python",
         args=["mcp_server.py"],
         env=None
