@@ -876,7 +876,7 @@ To configure a Server-Sent Events (SSE) MCP client, you can use MCP server URLs 
 
     smithery_api_key = os.environ.get("SMITHERY_API_KEY")
     smithery_server_id = "@nickclyde/duckduckgo-mcp-server"
-    server_params = f"https://server.smithery.ai/{smithery_server_id}/mcp?api_key={smithery_api_key}"
+    server_params = MCPServerStreamableHttpParams(url=f"https://server.smithery.ai/{smithery_server_id}/mcp?api_key={smithery_api_key}")
 
 **Executing MCP Tools**. You can execute an MCP tool as an asynchronous function. The `MCPFunctionTool` can be used in the same way as a general `FunctionTool`:
 
@@ -906,7 +906,7 @@ To configure a Server-Sent Events (SSE) MCP client, you can use MCP server URLs 
 
 You can add servers to the manager in several ways. For example, we use the DuckDuckGo parameters (`@nickclyde/duckduckgo-mcp-server <https://smithery.ai/server/@nickclyde/duckduckgo-mcp-server>`_), choose one of the following options:
 
-.. code-block:: python  
+.. code-block:: python
 
     # ======= Example 1: Add via stdio command. =======
     manager.add_server("duckduckgo-mcp-server", StdioServerParameters(
@@ -920,11 +920,11 @@ You can add servers to the manager in several ways. For example, we use the Duck
             "smithery-api-key"
         ],
     ))
-    
+
     # ======= Example 2: Load servers from a JSON file. =======
     json_path = os.path.join(os.path.dirname(__file__), "mcp_servers.json")
     manager.add_servers_from_json_file(json_path)
-    
+
     # ======= Example 3: Load server from SSE URL. =======
     smithery_api_key = os.environ.get("SMITHERY_API_KEY")
     smithery_server_id = "@nickclyde/duckduckgo-mcp-server"
@@ -956,7 +956,7 @@ You can list all tools available on the server and use it with agent. A complete
 
 .. code-block:: python
 
-    tools = await mcp_client_manager.list_tools()  # List[MCPFunctionTool]
+    tools = await mcp_client_manager.get_all_tools()  # List[MCPFunctionTool]
     for tool in tools:
         sig = tool.definition.func_desc.split('\n')[0]
         print(f"- Tool: {tool.definition.func_name}, Signature: {sig}")
@@ -972,15 +972,15 @@ Example outputs when we list the tools from DuckDuckGo
     🗂️  Available Resources:
 
     🔧 Available Tools:
-    • search: 
+    • search:
         Search DuckDuckGo and return formatted results.
 
         Args:
             query: The search query string
             max_results: Maximum number of results to return (default: 10)
             ctx: MCP context for logging
-        
-    • fetch_content: 
+
+    • fetch_content:
         Fetch and parse content from a webpage URL.
 
         Args:
@@ -1002,7 +1002,7 @@ The example output of a step execution is shown below.
 
 .. code-block:: python
 
-    2025-06-03 17:15:43 - [react.py:468:_execute_action_eval_mode] - Step 1: 
+    2025-06-03 17:15:43 - [react.py:468:_execute_action_eval_mode] - Step 1:
     StepOutput(step=1, action=Function(thought='The search results indicate that the UEFA European Championship (Euros) was last held in 2024, with Spain winning. There are no results for a winner of the UEFA European Championship in 2025, which suggests it has not occurred yet. Therefore, I will conclude that there is no winner for the European Championship in 2025.', name='finish', args=[], kwargs={'answer': 'The UEFA European Championship in 2025 has not occurred yet, so there is no winner.', 'id': None}), function=None, observation='The UEFA European Championship in 2025 has not occurred yet, so there is no winner.')
 
 .. admonition:: References

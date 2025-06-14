@@ -10,13 +10,16 @@ The module enables dynamic discovery and invocation of MCP tools for agent-based
 
 import os
 import json
+from datetime import timedelta
+from pathlib import Path
 from adalflow.core.func_tool import FunctionTool
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
+from mcp.client.sse import sse_client
 from mcp.client.streamable_http import streamablehttp_client
 from contextlib import asynccontextmanager
 import logging
-from typing import Union, List, Any
+from typing import Union, List, Any, TypedDict, NotRequired, Literal
 
 from adalflow.core.component import Component
 from adalflow.utils.logger import printc
@@ -24,7 +27,74 @@ from adalflow.core.types import FunctionDefinition, FunctionOutput, Function
 
 log = logging.getLogger(__name__)
 
-MCPServerParameters = Union[StdioServerParameters, str]
+
+class MCPServerStdioParams(TypedDict):
+    """Mirrors `mcp.client.stdio.StdioServerParameters`, but lets you pass params without another
+    import.
+    """
+
+    command: str
+    """The executable to run to start the server. For example, `python` or `node`."""
+
+    args: NotRequired[list[str]]
+    """Command line args to pass to the `command` executable. For example, `['foo.py']` or
+    `['server.js', '--port', '8080']`."""
+
+    env: NotRequired[dict[str, str]]
+    """The environment variables to set for the server. ."""
+
+    cwd: NotRequired[str | Path]
+    """The working directory to use when spawning the process."""
+
+    encoding: NotRequired[str]
+    """The text encoding used when sending/receiving messages to the server. Defaults to `utf-8`."""
+
+    encoding_error_handler: NotRequired[Literal["strict", "ignore", "replace"]]
+    """The text encoding error handler. Defaults to `strict`.
+
+    See https://docs.python.org/3/library/codecs.html#codec-base-classes for
+    explanations of possible values.
+    """
+
+
+class MCPServerSseParams(TypedDict):
+    """Mirrors the params in`mcp.client.sse.sse_client`."""
+
+    url: str
+    """The URL of the server."""
+
+    headers: NotRequired[dict[str, str]]
+    """The headers to send to the server."""
+
+    timeout: NotRequired[float]
+    """The timeout for the HTTP request. Defaults to 5 seconds."""
+
+    sse_read_timeout: NotRequired[float]
+    """The timeout for the SSE connection, in seconds. Defaults to 5 minutes."""
+
+
+class MCPServerStreamableHttpParams(TypedDict):
+    """Mirrors the params in`mcp.client.streamable_http.streamablehttp_client`."""
+
+    url: str
+    """The URL of the server."""
+
+    headers: NotRequired[dict[str, str]]
+    """The headers to send to the server."""
+
+    timeout: NotRequired[timedelta]
+    """The timeout for the HTTP request. Defaults to 5 seconds."""
+
+    sse_read_timeout: NotRequired[timedelta]
+    """The timeout for the SSE connection, in seconds. Defaults to 5 minutes."""
+
+    terminate_on_close: NotRequired[bool]
+    """Terminate on close"""
+
+
+MCPServerParameters = Union[
+    MCPServerStdioParams, MCPServerSseParams, MCPServerStreamableHttpParams
+]
 
 
 @asynccontextmanager
@@ -36,7 +106,7 @@ async def mcp_session_context(server_params: MCPServerParameters):
     either via standard I/O or HTTP streaming, and yields an initialized `ClientSession` object.
 
     Args:
-        server_params (MCPServerParameters or str): Parameters for connecting to the MCP server.
+        server_params (MCPServerParameters): Parameters for connecting to the MCP server.
             - If an instance of `StdioServerParameters`, connects via standard I/O.
             - If a string (interpreted as a URL), connects via HTTP streaming.
 
@@ -46,16 +116,35 @@ async def mcp_session_context(server_params: MCPServerParameters):
     Raises:
         ValueError: If `server_params` is not a supported type.
     """
-    """"""
-    if isinstance(server_params, StdioServerParameters):
+    if isinstance(server_params, MCPServerStdioParams):
         async with stdio_client(server_params) as (read, write):
             async with ClientSession(read, write) as session:
                 printc("📡 Initializing connection...", color="magenta")
                 await session.initialize()
                 printc("✅ Connection established!", color="magenta")
                 yield session
-    elif isinstance(server_params, str):  # URL
-        async with streamablehttp_client(server_params) as (read, write, _):
+    elif isinstance(server_params, MCPServerStreamableHttpParams):  # URL
+        async with streamablehttp_client(
+            url=server_params["url"],
+            headers=server_params.get("headers", None),
+            timeout=server_params.get("timeout", timedelta(seconds=30)),
+            sse_read_timeout=server_params.get(
+                "sse_read_timeout", timedelta(seconds=60 * 5)
+            ),
+            terminate_on_close=server_params.get("terminate_on_close", True),
+        ) as (read, write, _):
+            async with ClientSession(read, write) as session:
+                printc("📡 Initializing connection...", color="magenta")
+                await session.initialize()
+                printc("✅ Connection established!", color="magenta")
+                yield session
+    elif isinstance(server_params, MCPServerSseParams):  # URL
+        async with sse_client(
+            url=server_params["url"],
+            headers=server_params.get("headers", None),
+            timeout=server_params.get("timeout", 5),
+            sse_read_timeout=server_params.get("sse_read_timeout", 60 * 5),
+        ) as (read, write, _):
             async with ClientSession(read, write) as session:
                 printc("📡 Initializing connection...", color="magenta")
                 await session.initialize()
@@ -333,7 +422,7 @@ class MCPClientManager(Component):
 
     async def list_all_tools(self):
         """
-        List all available resources, tools, and prompts from all added servers.
+        Print out all available resources, tools, and prompts from all added servers.
         """
         if not self.server_params:
             print("No servers added. Please add a server first.")
