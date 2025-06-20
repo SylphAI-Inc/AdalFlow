@@ -22,7 +22,6 @@ import logging
 from typing import Union, List, Any, NotRequired, Literal
 from dataclasses import dataclass, field
 
-from adalflow.core.base_data_class import DataClass
 from adalflow.core.component import Component
 from adalflow.utils.logger import printc
 from adalflow.core.types import FunctionDefinition, FunctionOutput, Function
@@ -31,7 +30,7 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class MCPServerStdioParams(DataClass):
+class MCPServerStdioParams:
     r"""Mirrors `mcp.client.stdio.StdioServerParameters`, but lets you pass params without another import."""
 
     command: str = field(
@@ -68,7 +67,7 @@ class MCPServerStdioParams(DataClass):
 
 
 @dataclass
-class MCPServerSseParams(DataClass):
+class MCPServerSseParams:
     """
     Mirrors the params in `mcp.client.sse.sse_client`.
     """
@@ -90,7 +89,7 @@ class MCPServerSseParams(DataClass):
 
 
 @dataclass
-class MCPServerStreamableHttpParams(DataClass):
+class MCPServerStreamableHttpParams:
     """
     Mirrors the params in `mcp.client.streamable_http.streamablehttp_client`.
     """
@@ -370,12 +369,16 @@ class MCPToolManager(Component):
 
         manager = MCPToolManager()
         # Add servers. Here we used a local stdio server defined in `mcp_server.py`.
+        # you can add more servers by calling `add_server` for multiple times.
         manager.add_server("calculator_server", StdioServerParameters(
             command="python",  # Command to run the server
             args=["mcp_server.py"],  # Arguments (path to your server script)
-            env=None  # Optional environment variables
         ))
-        await manager.list_all_tools()  # to see all available resources/tools/prompts. But we only use tools.
+        manager.add_server("weather_server", StdioServerParameters(
+            command="python",  # Command to run the server
+            args=["mcp_weather_server.py"],  # Arguments (path to your weather server script)
+        ))
+        await manager.list_all_tools()  # to see all available tools from all servers.
         tools = await manager.get_all_tools()
         # Add tools to agent
         react = ReActAgent(
@@ -461,15 +464,22 @@ class MCPToolManager(Component):
                 f"Server {name} already exists. Cannot override existing server configuration."
             )
 
-    async def list_all_tools(self):
+    async def list_all_tools(self, server_names: List[str] = None):
         """
         Print out all available resources, tools, and prompts from all added servers.
+        If `server_names` is provided, only list tools for those specific servers.
+
+        Args:
+            server_names (List[str], optional): A list of server names to filter the tools.
+                If None, all servers are listed.
         """
         if not self.server_params:
             print("No servers added. Please add a server first.")
             return
 
         for name, params in self.server_params.items():
+            if server_names and name not in server_names:
+                continue
             print(f"\nListing tools for server: {name}")
             await self._list_all_server_tools(params)
 
@@ -494,11 +504,20 @@ class MCPToolManager(Component):
             # for prompt in prompts.prompts:
             #     print(f"  • {prompt.name}: {prompt.description}")
 
-    async def get_all_tools(self) -> List[MCPFunctionTool]:
+    async def get_all_tools(
+        self, server_names: List[str] = None
+    ) -> List[MCPFunctionTool]:
         """
         Get all available functions from added servers as FunctionTool instances.
+        If `server_names` is provided, only list tools for those specific servers.
+
+        Args:
+            server_names (List[str], optional): A list of server names to filter the tools.
+                If None, all servers are listed.
         """
         for name, params in self.server_params.items():
+            if server_names and name not in server_names:
+                continue
             if name in self._cached_servers:
                 print(f"🔧 Using cached tools for server {name}.")
                 continue

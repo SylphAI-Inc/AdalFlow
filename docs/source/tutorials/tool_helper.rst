@@ -870,7 +870,7 @@ Importantly, you don't need to rewrite every tools. Instead, you can directly re
         args=["mcp_calculator_server.py"],
     )
 
-To configure a Server-Sent Events (SSE) MCP client, you can use MCP server URLs from https://server.smithery.ai:
+To configure a HTTP MCP client, you can use MCP server URLs from https://server.smithery.ai:
 
 .. code-block:: python
 
@@ -925,11 +925,16 @@ You can add servers to the manager in several ways. For example, we use the Duck
     json_path = os.path.join(os.path.dirname(__file__), "mcp_servers.json")
     manager.add_servers_from_json_file(json_path)
 
-    # ======= Example 3: Load server from SSE URL. =======
+    # ======= Example 3: Load server from HTTP client. =======
     smithery_api_key = os.environ.get("SMITHERY_API_KEY")
     smithery_server_id = "@nickclyde/duckduckgo-mcp-server"
     mcp_server_url = f"https://server.smithery.ai/{smithery_server_id}/mcp?api_key={smithery_api_key}"
-    manager.add_server("duckduckgo-mcp-server", mcp_server_url)
+    manager.add_server("duckduckgo-mcp-server", MCPServerStreamableHttpParams(url=mcp_server_url))
+
+    # ======= Example 4: Load server from SSE client. =======
+    manager.add_server("example-mcp", MCPServerSseParams(
+        url="https://example-server.modelcontextprotocol.io/sse",
+    ))
 
 An example `mcp_servers.json` file:
 
@@ -999,6 +1004,33 @@ With the tool, we can create an agent and ask it to search for news.
     agent.call("Use DuckDuckGo to search for the winner on European Championship in 2025.")
 
 The example output of a step execution is shown below.
+
+
+Example: Using multiple MCP servers with MCPToolManager and one agent
+
+.. code-block:: python
+
+    api_key = os.environ.get("SMITHERY_API_KEY")
+    manager = MCPToolManager()
+    manager.add_server("duckduckgo", MCPServerStreamableHttpParams(
+        url=f"https://server.smithery.ai/@nickclyde/duckduckgo-mcp-server/mcp?api_key={api_key}"
+    ))
+    manager.add_server("wikipedia", MCPServerStreamableHttpParams(
+        url=f"https://server.smithery.ai/@smithery/wikipedia-mcp-server/mcp?api_key={api_key}"
+    ))
+
+    tools = await manager.get_all_tools()
+    agent = ReActAgent(tools=tools)
+    result = await agent.acall("Search for the capital of France and summarize its Wikipedia page.")
+    print(result)
+
+Example: Adding tool to multiple agents.
+
+.. code-block:: python
+
+    agent2 = ReActAgent(tools=tools)
+    result2 = await agent2.acall("Search for the capital of Germany and summarize its Wikipedia page.")
+    print("Agent 2 result:", result2)
 
 .. code-block:: python
 
