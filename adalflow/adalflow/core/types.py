@@ -57,6 +57,7 @@ class ModelType(Enum):
      It helps ModelClient identify the model type required to correctly call the model."""
     EMBEDDER = auto()
     LLM = auto()
+    LLM_REASONING = auto()  # use reasoning model compatible to openai.responses
     RERANKER = auto()  # ranking model
     IMAGE_GENERATION = auto()  # image generation models like DALL-E
     UNDEFINED = auto()
@@ -223,6 +224,38 @@ class CompletionUsage:
 
 
 @dataclass
+class InputTokensDetails:
+    __doc__ = r"Details about input tokens used in a response"
+    cached_tokens: Optional[int] = field(
+        metadata={"desc": "Number of cached tokens used"}, default=0
+    )
+
+
+@dataclass
+class OutputTokensDetails:
+    __doc__ = r"Details about output tokens used in a response"
+    reasoning_tokens: Optional[int] = field(
+        metadata={"desc": "Number of tokens used for reasoning"}, default=0
+    )
+
+
+@dataclass
+class ResponseUsage:
+    __doc__ = r"Usage information for a response, including token counts, in sync with OpenAI response usage api spec at openai/types/response_usage.py"
+    input_tokens: int = field(metadata={"desc": "Number of input tokens used"})
+    output_tokens: int = field(metadata={"desc": "Number of output tokens used"})
+    total_tokens: int = field(metadata={"desc": "Total number of tokens used"})
+    input_tokens_details: InputTokensDetails = field(
+        metadata={"desc": "Details about input tokens"},
+        default_factory=InputTokensDetails,
+    )
+    output_tokens_details: OutputTokensDetails = field(
+        metadata={"desc": "Details about output tokens"},
+        default_factory=OutputTokensDetails,
+    )
+
+
+@dataclass
 class GeneratorOutput(DataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
@@ -254,6 +287,10 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     raw_response: Optional[str] = field(
         default=None, metadata={"desc": "Raw string response from the model"}
     )  # parsed from model client response
+
+    api_response: Optional[Any] = field(
+        default=None, metadata={"desc": "Raw response from the api/model client"}
+    )
     metadata: Optional[Dict[str, object]] = field(
         default=None, metadata={"desc": "Additional metadata"}
     )

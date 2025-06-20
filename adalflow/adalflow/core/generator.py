@@ -117,6 +117,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # args for the model
         model_client: ModelClient,  # will be intialized in the main script
         model_kwargs: PromptArgType = {},
+        model_type: ModelType = ModelType.LLM,
         # args for the prompt
         template: Optional[str] = None,
         prompt_kwargs: Optional[Dict] = {},
@@ -165,6 +166,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self.model_kwargs = model_kwargs.copy()
         # init the model client
         self.model_client = model_client
+        self.model_type = model_type
 
         self.output_processors = output_processors
 
@@ -336,6 +338,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         r"""Get string completion and process it with the output_processors."""
         # parse chat completion will only fill the raw_response
         output: GeneratorOutput = self.model_client.parse_chat_completion(completion)
+        # save the api response
+        output.api_response = completion
         # Now adding the data field to the output
         data = output.raw_response
         if self.output_processors:
