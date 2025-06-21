@@ -64,6 +64,7 @@ __all__ = [
     "DataClassFormatType",
     "required_field",
     "Generator",
+    "Agent",
     "BackwardEngine",
     "Prompt",
     "DEFAULT_ADALFLOW_SYSTEM_PROMPT",

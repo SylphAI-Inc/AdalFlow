@@ -1,0 +1,55 @@
+
+from adal import Component
+from adalflow import Generator
+from adalflow.core.tool_manager import ToolManager
+from adalflow.core.output_parser import OutputParser
+
+__all__ = ["Agent"]
+
+class Agent(adal.Component):
+    """
+    A custom agent class that holds adal.Generator
+    
+    Attributes:
+        name (str): Name of the agent
+        tool_manager (adalflow.core.ToolManager): Stores and manages tools
+        parser (Optional[OutputParser]): e.g. JsonOutputparser for parsing GeneratorOutput
+        stream_parser (Optional): Parser for streaming GeneratorOutput chunks
+        generator (adal.Generator): Contains:
+            - model_client (ModelClient): Model client for generation
+            - model_kwargs (Dict[str, Any]): Model configuration parameters
+            - prompt_kwargs (Optional[Dict]): Prompt template variables
+            - output_processors (Optional[Component]): Post-processing components
+            - trainable_params (Optional[List[str]]): Trainable parameters
+    """
+    
+    def __init__(self, name: str, tool_manager: adalflow.core.ToolManager, 
+                 generator, model_client, **kwargs):
+        """Initialize agent with required components."""
+        pass
+        
+    def _create_prompt_kwargs(self, user_query: str, current_objective: Optional[str] = None,
+                            memory: Optional[str] = None, context: Optional[List[str]] = None):
+        """Create prompt kwargs from inputs and set generator's prompt kwargs."""
+        pass
+        
+    def update_config(self, generator: Optional = None, tool_manager: Optional = None,
+                     parser: Optional = None, stream_parser: Optional = None):
+        """Update agent configuration components."""
+        pass
+        
+    def get_prompt(self, **kwargs) -> str:
+        """Get formatted prompt using generator's prompt template."""
+        pass
+        
+    def get_all_tools(self) -> List:
+        """Get list of available tools from tool manager."""
+        pass
+        
+    def load_state_dict(self, state_dict, strict=True):
+        """Load agent state from configuration dictionary."""
+        pass
+        
+    def return_state_dict(self, save=False):
+        """Return serializable state dictionary for saving/loading."""
+        pass 
