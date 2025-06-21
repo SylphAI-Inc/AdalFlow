@@ -175,6 +175,8 @@ class OpenAIClient(ModelClient):
         """
         super().__init__()
         self._api_key = api_key
+        self.base_url = base_url
+        self._env_api_key_name = env_api_key_name
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
         self.chat_completion_parser = (
@@ -184,7 +186,7 @@ class OpenAIClient(ModelClient):
         self._api_kwargs = {}  # add api kwargs when the OpenAI Client is called
 
     def init_sync_client(self):
-        api_key = self._api_key or os.getenv("OPENAI_API_KEY")
+        api_key = self._api_key or os.getenv(self._env_api_key_name)
         if not api_key:
             raise ValueError(
                 f"Environment variable {self._env_api_key_name} must be set"
@@ -192,7 +194,7 @@ class OpenAIClient(ModelClient):
         return OpenAI(api_key=api_key, base_url=self.base_url)
 
     def init_async_client(self):
-        api_key = self._api_key or os.getenv("OPENAI_API_KEY")
+        api_key = self._api_key or os.getenv(self._env_api_key_name)
         if not api_key:
             raise ValueError(
                 f"Environment variable {self._env_api_key_name} must be set"
@@ -318,7 +320,7 @@ class OpenAIClient(ModelClient):
                 # re.DOTALL is to allow . to match newline so that (.*?) does not match in a single line
                 regex = re.compile(pattern, re.DOTALL)
                 # Match the pattern
-                match = regex.search(input)
+                match = regex.match(input)
                 system_prompt, input_str = None, None
 
                 if match:
@@ -586,3 +588,4 @@ if __name__ == "__main__":
     )
     resopnse = openai_llm(prompt_kwargs={"input_str": "What is LLM?"})
     print(resopnse)
+
