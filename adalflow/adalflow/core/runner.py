@@ -1,12 +1,16 @@
-from adal import Component
-from adalflow import Generator
+from adalflow.core.component import Component
+from adalflow.core.generator import Generator
 from adalflow.core.tool_manager import ToolManager
-from adalflow.core.output_parser import OutputParser
+from adalflow.components.output_parsers.outputs import OutputParser
 from adalflow.core.agent import Agent
 
-from typing import Dict, Optional, List, Any, Callable, Type, TypeVar, Generic
+from typing import Generator as GeneratorType, Dict, Optional, List, Any, Callable, Type, TypeVar, Generic, Union
 from dataclasses import dataclass, field
-from adalflow.core.types import GeneratorOutput
+from adalflow.core.types import GeneratorOutput, FunctionOutput
+
+from adalflow.optim.parameter import Parameter
+from adalflow.core.types import Function
+
 import logging
 
 import asyncio
@@ -23,12 +27,11 @@ class RunnerConfig:
     """Configuration for the Runner class.
     
     Attributes:
-        output_parser: Optional dictionary of parse functions that parse the necessary attributes to the parsed class
+        output_parser: Optional output parser 
         output_class: Optional output class type
-        context_map: Optional context map
         stream_parser: Optional stream parser
     """
-    output_parser: Optional[Callable[[GeneratorOutput], Dict[str, Any]]] = None
+    output_parser: Optional[OutputParser] = None
     output_class: Optional[Type[T]] = GeneratorOutput
     stream_parser: Optional["StreamParser"] = None
 
@@ -44,7 +47,7 @@ class Runner(Component):
         self, 
         agent: Agent, 
         stream_parser: Optional["StreamParser"] = None,
-        output_parser: Optional[Callable[[GeneratorOutput], Dict[str, Any]]] = None,
+        output_parser: Optional[OutputParser] = None,
         output_class: Optional[Type[T]] = GeneratorOutput,
         **kwargs
     ) -> None:
@@ -53,27 +56,26 @@ class Runner(Component):
         Args:
             agent: The agent instance to execute
             stream_parser: Optional stream parser
-            output_parser: Optional dictionary of parse functions that parse the necessary attributes to the parsed class
+            output_parser: Optional output parser
             output_class: Optional output class type
-            context_map: Optional context map
-            stream_parser: Optional stream parser
         """
+        super().__init__(**kwargs)
         self.agent = agent
         self.config = RunnerConfig(
             stream_parser=stream_parser,
             output_parser=output_parser,
             output_class=output_class, 
         )
-        super().__init__(**kwargs)
 
     def call(
         self,
         user_query: str,
         current_objective: Optional[str] = None,
         memory: Optional[str] = None,
-        model_kwargs: Optional[Dict[str, Any]] = None,
+        model_kwargs: Optional[Dict[str, Any]] = {},
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
+        context: Optional[Dict[str, Any]] = None,
     ) -> T:
         """Execute the agent synchronously and return generator output after parsing to desire output class type 
         
@@ -88,13 +90,14 @@ class Runner(Component):
         Returns:
             The generator output of type specified in self.config.output_class
         """
-        generator_output = self.agent(
+        generator_output = self.agent.call(
             user_query=user_query,
             current_objective=current_objective,
             memory=memory,
             model_kwargs=model_kwargs,
             use_cache=use_cache,
-            id=id
+            id=id,
+            context=context
         )
 
         if not self.config.output_parser: 
@@ -102,8 +105,9 @@ class Runner(Component):
 
         # parse function is a generic utility function that takes a generator output and returns a dictionary of attributes 
         try: 
+            # TODO consider when output_class has arguments needed for initialization and consider more complicated structured types
             parsed_output = self.config.output_class()
-            attrs = self.config.output_parser(generator_output)
+            attrs = self.config.output_parser.call(generator_output)
             # set attributes on the parsed output object to the class 
             for attr, value in attrs.items():
                 setattr(parsed_output, attr, value)
@@ -125,9 +129,10 @@ class Runner(Component):
         model_kwargs: Optional[Dict[str, Any]] = {},
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
+        context: Optional[Dict[str, Any]] = None,
     ) -> GeneratorOutput:
         """Call the generator with the given arguments."""
-        generator_output = self.agent.acall(user_query, current_objective, memory, model_kwargs, use_cache, id)
+        generator_output = self.agent.acall(user_query, current_objective, memory, model_kwargs, use_cache, id, context)
 
         if not self.config.output_parser: 
             return generator_output
@@ -135,7 +140,7 @@ class Runner(Component):
         # parse function is a generic utility function that takes a generator output and returns a dictionary of attributes 
         try: 
             parsed_output = self.config.output_class()
-            attrs = self.config.output_parser(generator_output) # TODO output parser call can be made asynchronous 
+            attrs = self.config.output_parser.call(generator_output) # TODO output parser call can be made asynchronous 
             # set attributes on the parsed output object to the class 
             for attr, value in attrs.items():
                 setattr(parsed_output, attr, value)
@@ -155,11 +160,12 @@ class Runner(Component):
         user_query: str, 
         current_objective: Optional[str] = None,
         memory: Optional[str] = None,
-    ) -> Generator["StreamChunk", None, None]:
+    ) -> GeneratorType[Any, None, None]:
         """
         Synchronously executes the agent output and stream results.
         Optionally parse and post-process each chunk.
         """
+        # TODO replace Any type with StreamChunk type 
         try: 
             generator_output = self.call(user_query, current_objective, memory)
 
@@ -183,11 +189,12 @@ class Runner(Component):
         user_query: str, 
         current_objective: Optional[str] = None,
         memory: Optional[str] = None,
-    ) -> Generator[StreamChunk, None, None]:
+    ) -> GeneratorType[Any, None, None]:
         """
         Execute the agent asynchronously and stream results.
         Optionally parse and post-process each chunk.
         """
+        # TODO replace Any type with StreamChunk type 
         ... 
         # This would require relying on the async_stream of the model_client instance of the generator and parsing that 
         # using custom logic to buffer chunks and only stream when they complete a certain top-level field
@@ -217,7 +224,7 @@ class Runner(Component):
     def update_runner(
         self,
         agent: Optional[Agent] = None,
-        stream_parser: Optional[StreamParser] = None,
+        stream_parser: Optional["StreamParser"] = None,
         output_parser: Optional[OutputParser] = None,
         output_class: Optional[Type] = None,
         context_map: Optional[Dict[str, Function]] = None,

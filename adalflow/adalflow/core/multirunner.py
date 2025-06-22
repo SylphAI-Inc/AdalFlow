@@ -1,14 +1,16 @@
-from typing import Dict, Optional, List, Callable, Generator, Any, Union
-from dataclasses import dataclass
+import logging
+from typing import Generator as GeneratorType, Dict, Optional, List, Any, Callable, Type, TypeVar, Generic, Union, Generator
+from dataclasses import dataclass, field
+
 from adalflow.core.component import Component
 from adalflow.core.generator import Generator
 from adalflow.core.tool_manager import ToolManager
-from adalflow.core.output_parser import OutputParser
+from adalflow.components.output_parsers.outputs import OutputParser
 from adalflow.core.agent import Agent
 from adalflow.core.runner import Runner
-from adalflow.core.types import StreamChunk, Parameter, AssistantResponse
-import asyncio
-import logging
+from adalflow.core.types import GeneratorOutput, FunctionOutput 
+from adalflow.optim.parameter import Parameter
+from adalflow.core.types import Function
 
 log = logging.getLogger(__name__)
 
@@ -30,6 +32,20 @@ class MultiRunner(Component):
         """
         super().__init__(**kwargs)
         self.runners = runners
+
+    def add_runner(self, runner_name: str, runner: Runner) -> None:
+        """Add a runner to the current dictionary of runners.
+        
+        Args:
+            runner_name: Name for the runner
+            runner: Runner instance to add
+            
+        Raises:
+            ValueError: If a runner with the same name already exists
+        """
+        if runner_name in self.runners:
+            raise ValueError(f"Runner with name {runner_name} already exists")
+        self.runners[runner_name] = runner
 
     def get_runner(self, runner_name: str) -> Runner:
         """Get a runner by name.
@@ -55,7 +71,8 @@ class MultiRunner(Component):
         memory: Optional[str] = None,
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
-        id: Optional[str] = None
+        id: Optional[str] = None,
+		context: Optional[Dict[str, Any]] = None
     ) -> Any:
         """
         Execute the specified runner synchronously.
@@ -79,7 +96,8 @@ class MultiRunner(Component):
             memory=memory,
             model_kwargs=model_kwargs or {},
             use_cache=use_cache,
-            id=id
+            id=id,
+			context=context
         )
 
     async def acall(
@@ -90,7 +108,8 @@ class MultiRunner(Component):
         memory: Optional[str] = None,
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
-        id: Optional[str] = None
+        id: Optional[str] = None,
+		context: Optional[Dict[str, Any]] = None
     ) -> Any:
         """
         Execute the specified runner asynchronously.
@@ -114,7 +133,8 @@ class MultiRunner(Component):
             memory=memory,
             model_kwargs=model_kwargs or {},
             use_cache=use_cache,
-            id=id
+            id=id,
+			context=context
         )
 
     def stream(
@@ -122,8 +142,9 @@ class MultiRunner(Component):
         runner_name: str, 
         user_query: str, 
         current_objective: Optional[str] = None,
-        memory: Optional[str] = None
-    ) -> Generator[StreamChunk, None, None]:
+        memory: Optional[str] = None,
+		context: Optional[Dict[str, Any]] = None
+    ) -> GeneratorType[Any, None, None]:
         """
         Stream results from the specified runner synchronously.
         
@@ -136,11 +157,13 @@ class MultiRunner(Component):
         Yields:
             StreamChunk objects containing the streamed output
         """
+		# TODO modify Any to StreamChunk
         runner = self.get_runner(runner_name)
         yield from runner.stream(
             user_query=user_query,
             current_objective=current_objective,
-            memory=memory
+            memory=memory,
+			context=context
         )
 
     async def astream(
@@ -148,8 +171,9 @@ class MultiRunner(Component):
         runner_name: str, 
         user_query: str, 
         current_objective: Optional[str] = None,
-        memory: Optional[str] = None
-    ) -> Generator[StreamChunk, None, None]:
+        memory: Optional[str] = None,
+		context: Optional[Dict[str, Any]] = None
+    ) -> GeneratorType[Any, None, None]:
         """
         Stream results from the specified runner asynchronously.
         
@@ -162,11 +186,15 @@ class MultiRunner(Component):
         Yields:
             StreamChunk objects containing the streamed output
         """
+
+		# TODO modify Any to StreamChunk
+
         runner = self.get_runner(runner_name)
         async for chunk in runner.astream(
             user_query=user_query,
             current_objective=current_objective,
-            memory=memory
+            memory=memory,
+			context=context
         ):
             yield chunk
 

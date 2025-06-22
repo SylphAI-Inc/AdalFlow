@@ -1,10 +1,10 @@
 from typing import Dict, List, Optional, Type, Any
-from adal import Component
+from adalflow.core.component import Component
 from adalflow.core.model_client import ModelClient
 from adalflow.core.generator import Generator
 from adalflow.core.tool_manager import ToolManager
-from adalflow.core.prompt import Prompt  # Assuming Prompt is defined in this module
-
+from adalflow.core.prompt_builder import Prompt
+from adalflow.core.types import GeneratorOutput
 __all__ = ["Agent"] 
 
 class Agent(Component):
@@ -123,8 +123,6 @@ class Agent(Component):
         generator_config: Optional[Dict[str, Any]] = None,
         system_prompt: Optional[str] = None,
         current_mode: Optional[str] = None, 
-        parser: Optional[OutputParser] = None, 
-        stream_parser: Optional[StreamParser] = None,
     ) -> None:
         """Update agent configuration components.
         
@@ -141,14 +139,10 @@ class Agent(Component):
             self.generator = Generator.from_config(generator_config)
         if tool_manager is not None:
             self.tool_manager = tool_manager
-        if parser is not None:
-            self.parser = parser
         if system_prompt is not None:
             self.system_prompt = system_prompt
         if current_mode is not None:
             self.current_mode = current_mode
-        if stream_parser is not None:
-            self.stream_parser = stream_parser
         if name is not None:
             self.name = name
 
@@ -160,6 +154,7 @@ class Agent(Component):
         model_kwargs: Optional[Dict[str, Any]] = {},
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
+        context: Optional[List[str]] = None,
     ) -> GeneratorOutput:
         """Call the generator with the given arguments."""
         prompt_kwargs = self._create_prompt_kwargs(user_query, current_objective, memory, context)
@@ -167,20 +162,19 @@ class Agent(Component):
         model_kwargs = model_kwargs or {}
         return self.generator(prompt_kwargs, model_kwargs=model_kwargs, use_cache=use_cache, id=id)
 
-    def acall ( 
-        self,
+    async def acall(self,
         user_query: str,
         current_objective: Optional[str] = None,
         memory: Optional[str] = None,
         model_kwargs: Optional[Dict[str, Any]] = {},
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
+        context: Optional[List[str]] = None,
     ) -> GeneratorOutput:
-        """Call the generator with the given arguments."""
+        """Call the generator with the given arguments asynchronously."""
         prompt_kwargs = self._create_prompt_kwargs(user_query, current_objective, memory, context)
-
         model_kwargs = model_kwargs or {}
-        return self.generator.acall(prompt_kwargs, model_kwargs=model_kwargs, use_cache=use_cache, id=id)
+        return await self.generator.acall(prompt_kwargs, model_kwargs=model_kwargs, use_cache=use_cache, id=id)
         
     def get_prompt(self, **kwargs) -> str:
         """Get formatted prompt using generator's prompt template.
