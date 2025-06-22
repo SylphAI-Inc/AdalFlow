@@ -20,6 +20,8 @@ from .agent import Agent
 from .runner import Runner
 from .multirunner import MultiRunner
 
+from .prompt_builder import Prompt
+
 from .retriever import Retriever
 from .tokenizer import Tokenizer
 
@@ -70,6 +72,7 @@ __all__ = [
     "Runner",
     "MultiRunner",
     "BackwardEngine",
+    "Prompt",
     "DEFAULT_ADALFLOW_SYSTEM_PROMPT",
     # "Parameter",
     "required_field",
