@@ -1,5 +1,5 @@
 
-## [1.0.5] - 2025-02-15
+## [1.0.5] - Release Date TBD
 
 ### Fixed
 - `LocalDB` fixed with keyword arguments.
@@ -8,6 +8,15 @@
 - `React` agent:
   - allow `answer` to be customized to any data type and even `DataClass` via `answer_data_type`.
   - allow `role_desc` to be customized to any use case.
+
+- `AnthropicAPIClient`, `SambaNovaClient`
+  - added `handle_streaming_response` to support streaming response.
+
+- `Generator`
+  - added `model_type` to support `LLM_REASONING`.
+  - inside of `GeneratorOutput`, support `api_response` so that the whole api_response is saved besides of the `raw_response` which is mainly text message.
+- `ToolManager` and `FunctionTool`
+  - added `is_async_generator` property in `FunctionTool` to support streaming output
 
 ### Deleted
 - `FuncComponent` and `func_to_component` decorator.
