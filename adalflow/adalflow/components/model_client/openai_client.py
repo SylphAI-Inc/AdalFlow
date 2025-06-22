@@ -130,27 +130,27 @@ def get_probabilities(completion: ChatCompletion) -> List[List[TokenLogProb]]:
 class OpenAIClient(ModelClient):
     __doc__ = r"""A component wrapper for the OpenAI API client.
 
-    Supports both embedding and chat completion APIs, including multimodal capabilities.
+    Support both embedding and chat completion API, including multimodal capabilities.
 
-    Users can:
-    1. Simplify use of ``Embedder`` and ``Generator`` components by passing `OpenAIClient()` as the `model_client`.
-    2. Use this as a reference to create their own API client or extend this class by copying and modifying the code.
+    Users (1) simplify use ``Embedder`` and ``Generator`` components by passing OpenAIClient() as the model_client.
+    (2) can use this as an example to create their own API client or extend this class(copying and modifing the code) in their own project.
 
     Note:
-        We recommend avoiding `response_format` to enforce output data type or `tools` and `tool_choice` in `model_kwargs` when calling the API.
-        OpenAI's internal formatting and added prompts are unknown. Instead:
-        - Use :ref:`OutputParser<components-output_parsers>` for response parsing and formatting.
+        We suggest users not to use `response_format` to enforce output data type or `tools` and `tool_choice`  in your model_kwargs when calling the API.
+        We do not know how OpenAI is doing the formating or what prompt they have added.
+        Instead
+        - use :ref:`OutputParser<components-output_parsers>` for response parsing and formating.
 
-        For multimodal inputs, provide images in `model_kwargs["images"]` as a path, URL, or list of them.
-        The model must support vision capabilities (e.g., `gpt-4o`, `gpt-4o-mini`, `o1`, `o1-mini`).
+        For multimodal inputs, provide images in model_kwargs["images"] as a path, URL, or list of them.
+        The model must support vision capabilities (e.g., gpt-4o, gpt-4o-mini, o1, o1-mini).
 
-        For image generation, use `model_type=ModelType.IMAGE_GENERATION` and provide:
-        - model: `"dall-e-3"` or `"dall-e-2"`
+        For image generation, use model_type=ModelType.IMAGE_GENERATION and provide:
+        - model: "dall-e-3" or "dall-e-2"
         - prompt: Text description of the image to generate
-        - size: `"1024x1024"`, `"1024x1792"`, or `"1792x1024"` for DALL-E 3; `"256x256"`, `"512x512"`, or `"1024x1024"` for DALL-E 2
-        - quality: `"standard"` or `"hd"` (DALL-E 3 only)
+        - size: "1024x1024", "1024x1792", or "1792x1024" for DALL-E 3; "256x256", "512x512", or "1024x1024" for DALL-E 2
+        - quality: "standard" or "hd" (DALL-E 3 only)
         - n: Number of images to generate (1 for DALL-E 3, 1-10 for DALL-E 2)
-        - response_format: `"url"` or `"b64_json"`
+        - response_format: "url" or "b64_json"
 
     Args:
         api_key (Optional[str], optional): OpenAI API key. Defaults to `None`.
@@ -198,8 +198,8 @@ class OpenAIClient(ModelClient):
         """
         super().__init__()
         self._api_key = api_key
-        self._env_api_key_name = env_api_key_name
         self.base_url = base_url
+        self._env_api_key_name = env_api_key_name
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
         self.non_streaming_chat_completion_parser = (
@@ -449,7 +449,6 @@ class OpenAIClient(ModelClient):
                 final_model_kwargs["mask"] = self._encode_image(mask)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
-
         return final_model_kwargs
 
     def parse_image_generation_response(self, response: List[Image]) -> GeneratorOutput:
