@@ -19,7 +19,7 @@ from mcp.client.sse import sse_client
 from mcp.client.streamable_http import streamablehttp_client
 from contextlib import asynccontextmanager
 import logging
-from typing import Union, List, Any, NotRequired, Literal
+from typing import Union, List, Any, Optional, Literal
 from dataclasses import dataclass, field
 
 from adalflow.core.component import Component
@@ -38,27 +38,27 @@ class MCPServerStdioParams:
             "desc": "The executable to run to start the server. For example, `python` or `node`."
         }
     )
-    args: NotRequired[list[str]] = field(
+    args: Optional[list[str]] = field(
         default=None,
         metadata={
             "desc": "Command line args to pass to the `command` executable. For example, `['foo.py']` or `['server.js', '--port', '8080']`."
         },
     )
-    env: NotRequired[dict[str, str]] = field(
+    env: Optional[dict[str, str]] = field(
         default=None,
         metadata={"desc": "The environment variables to set for the server."},
     )
-    cwd: NotRequired[str | Path] = field(
+    cwd: Optional[str | Path] = field(
         default=None,
         metadata={"desc": "The working directory to use when spawning the process."},
     )
-    encoding: NotRequired[str] = field(
+    encoding: Optional[str] = field(
         default="utf-8",
         metadata={
             "desc": "The text encoding used when sending/receiving messages to the server. Defaults to `utf-8`."
         },
     )
-    encoding_error_handler: NotRequired[Literal["strict", "ignore", "replace"]] = field(
+    encoding_error_handler: Optional[Literal["strict", "ignore", "replace"]] = field(
         default="strict",
         metadata={
             "desc": "The text encoding error handler. Defaults to `strict`. See https://docs.python.org/3/library/codecs.html#codec-base-classes for explanations of possible values."
@@ -73,14 +73,14 @@ class MCPServerSseParams:
     """
 
     url: str = field(metadata={"desc": "The URL of the server."})
-    headers: NotRequired[dict[str, str]] = field(
+    headers: Optional[dict[str, str]] = field(
         default=None, metadata={"desc": "The headers to send to the server."}
     )
-    timeout: NotRequired[float] = field(
+    timeout: Optional[float] = field(
         default=5,
         metadata={"desc": "The timeout for the HTTP request. Defaults to 5 seconds."},
     )
-    sse_read_timeout: NotRequired[float] = field(
+    sse_read_timeout: Optional[float] = field(
         default=60 * 5,
         metadata={
             "desc": "The timeout for the SSE connection, in seconds. Defaults to 5 minutes."
@@ -95,20 +95,20 @@ class MCPServerStreamableHttpParams:
     """
 
     url: str = field(metadata={"desc": "The URL of the server."})
-    headers: NotRequired[dict[str, str]] = field(
+    headers: Optional[dict[str, str]] = field(
         default=None, metadata={"desc": "The headers to send to the server."}
     )
-    timeout: NotRequired[timedelta] = field(
+    timeout: Optional[timedelta] = field(
         default=timedelta(seconds=30),
         metadata={"desc": "The timeout for the HTTP request. Defaults to 30 seconds."},
     )
-    sse_read_timeout: NotRequired[timedelta] = field(
+    sse_read_timeout: Optional[timedelta] = field(
         default=timedelta(seconds=60 * 5),
         metadata={
             "desc": "The timeout for the SSE connection, in seconds. Defaults to 5 minutes."
         },
     )
-    terminate_on_close: NotRequired[bool] = field(
+    terminate_on_close: Optional[bool] = field(
         default=True, metadata={"desc": "Terminate on close"}
     )
 
