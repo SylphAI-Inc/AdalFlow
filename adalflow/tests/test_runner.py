@@ -1,181 +1,262 @@
-# Update the imports at the top of the file
-from dataclasses import asdict
 import pytest
-from unittest.mock import Mock, patch, MagicMock, AsyncMock
-from adalflow.core.runner import Runner, RunnerConfig
-from adalflow.core.agent import Agent
-from adalflow.core.types import GeneratorOutput
-from adalflow.components.output_parsers.outputs import OutputParser
-from typing import Dict, Any, Optional
 import json
-
-class MockOutputParser(OutputParser):
-    def parse(self, output: GeneratorOutput) -> Dict[str, Any]:
-        return {"text": output.data, "metadata": {}}
+from unittest.mock import Mock, patch, AsyncMock, call, ANY
+from adalflow.core.runner import Runner
+from adalflow.core.agent import Agent
+from adalflow.core.types import (
+    GeneratorOutput, 
+    StepOutput, 
+    Function, 
+    FunctionOutput,
+    FunctionExpression
+)
+from adalflow.core.exceptions import ToolExecutionError
 
 class TestRunner:
     @pytest.fixture(autouse=True)
     def setup(self):
-        # Mock Agent
-        self.mock_agent = Mock(spec=Agent)
-        
-        # Create proper GeneratorOutput instances
-        self.mock_output = GeneratorOutput(data="test response")
-        self.mock_async_output = GeneratorOutput(data="test async response")
-        
-        # Configure agent mocks
-        self.mock_agent.call.return_value = self.mock_output
-        self.mock_agent.acall = AsyncMock(return_value=self.mock_async_output)
-        
-        # Create mock parser with parse method
-        self.mock_parser = Mock(spec=OutputParser)
-        self.mock_parser.parse = Mock(return_value={"text": "test response", "metadata": {}})
-        
-        # Create a serializable config
-        self.sample_config = {
-            "agent": {
-                "name": "test_agent",
-                "tool_manager": {"tools": []},
-                "system_prompt": "test",
-                "model_client": {"component_name": "MockClient"},
-                "model_kwargs": {"model": "test"}
-            },
-            "output_parser": {
-                "component_name": "MockOutputParser"
-            },
-            "output_class": "GeneratorOutput"
-        }
-
-    # TODO need to include more test cases with parss 
-
-    def test_call_with_parser(self):
-        """Test call method with output parser"""
-        # Create a simple class for our output
-        class TestOutput:
-            pass
-
-        # Create a mock output class that returns our test output
-        mock_output_class = Mock(side_effect=lambda: TestOutput())
-        
-        # Create a real instance of MockOutputParser
-        parser = MockOutputParser()
-        
-        # Mock the call method on the parser to return our test data
-        parser.call = Mock(return_value={"text": "text response", "metadata": {}})
-        
-        # Create the runner with our mocked components
-        runner = Runner(
-            agent=self.mock_agent, 
-            output_parser=parser,
-            output_class=mock_output_class
+        # Create test data
+        self.test_function = Function(
+            name="test_tool",
+            arguments=json.dumps({"param1": "value1"})
         )
         
-        # Mock the agent's call to return a proper GeneratorOutput
-        test_output = GeneratorOutput(data="test response")
-        self.mock_agent.call.return_value = test_output
+        self.test_step_output = StepOutput(
+            step=1,
+            action="test_action",
+            function=self.test_function,
+            observation={"result": "test result"}
+        )
         
-        # Call the method under test
-        response = runner.call("test query")
+        self.generator_output = GeneratorOutput(
+            data=self.test_step_output,
+            raw_response="raw response"
+        )
         
-        # Verify the response is an instance of our test output class
-        assert isinstance(response, TestOutput)
+        # Mock Agent
+        self.mock_agent = Mock()
+        self.mock_agent.call = Mock(return_value=self.generator_output)
+        self.mock_agent.acall = AsyncMock(return_value=self.generator_output)
+        self.mock_agent.tool_manager.get_tool.return_value = Mock()
+        self.mock_agent.tool_manager.execute_func.return_value = "tool result"
+        self.mock_agent.tool_manager.aexecute_func = AsyncMock(return_value="async tool result")
+        self.mock_agent.is_training.return_value = False
         
-        # Verify the parser's call method was called with the generator output
-        parser.call.assert_called_once_with(test_output)
+        # Mock output type
+        self.mock_output_type = Mock()
+        self.mock_output_type.__name__ = "MockOutput"
         
-        # Verify the output class was instantiated
-        mock_output_class.assert_called_once()
+        # Create runner
+        self.runner = Runner(
+            agent=self.mock_agent,
+            output_type=self.mock_output_type,
+            max_steps=5
+        )
+
+    # Test Initialization
+    def test_init(self):
+        """Test runner initialization"""
+        assert self.runner.agent == self.mock_agent
+        assert self.runner.max_steps == 5
+        assert len(self.runner.step_history) == 0
+        assert self.runner.config.output_type == self.mock_output_type
+
+    # Test Call Methods
+    def test_call(self):
+        """Test synchronous call"""
+        prompt_kwargs = {"input": "test input"}
+        model_kwargs = {"temperature": 0.7}
         
-        # Verify the attributes were set on the output instance
-        assert response.text == "text response"
-        assert response.metadata == {}
+        step_history, result = self.runner.call(
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=model_kwargs,
+            use_cache=True,
+            id="test_call"
+        )
+        
+        # Verify agent was called correctly
+        self.mock_agent.call.assert_called_once_with(
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=model_kwargs,
+            use_cache=True,
+            id="test_call"
+        )
+        
+        # Verify step history
+        assert len(step_history) == 1
+        assert step_history[0] == self.generator_output
+        
+        # Verify result was processed
+        assert result is not None
 
     @pytest.mark.asyncio
     async def test_acall(self):
-        """Test async call method"""
-        runner = Runner(agent=self.mock_agent)
-        response = await runner.acall("test query")
-        assert response == self.mock_async_output
-        self.mock_agent.acall.assert_called_once_with(
-            "test query",  # user_query
-            None,          # current_objective
-            None,          # memory
-            {},            # model_kwargs
-            None,          # use_cache
-            None,          # id
-            None           # context
+        """Test asynchronous call"""
+        prompt_kwargs = {"input": "async test"}
+        
+        step_history, result = await self.runner.acall(
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=None,
+            use_cache=False,
+            id="test_acall"
         )
+        
+        # Verify agent was called correctly
+        self.mock_agent.acall.assert_awaited_once_with(
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=None,
+            use_cache=False,
+            id="test_acall"
+        )
+        
+        # Verify step history
+        assert len(step_history) == 1
+        assert step_history[0] == self.generator_output
+        
+        # Verify result was processed
+        assert result is not None
 
-    def test_serialization_deserialization(self):
-        """Test serializing and deserializing the runner"""
-        # Create a runner with all components
+    # Test Function Call Processing
+    def test_process_function_calls(self):
+        """Test function call processing"""
+        function = Function(
+            name="test_tool",
+            arguments=json.dumps({"param1": "value1"})
+        )
+        
+        result = self.runner._process_function_calls(function)
+        
+        # Verify function was executed
+        self.mock_agent.tool_manager.execute_func.assert_called_once_with(function)
+        assert isinstance(result, FunctionOutput)
+        assert result.name == "test_tool"
+        assert result.output == "tool result"
+
+    @pytest.mark.asyncio
+    async def test_aprocess_function_calls(self):
+        """Test async function call processing"""
+        function = Function(
+            name="test_tool",
+            arguments=json.dumps({"param1": "value1"})
+        )
+        
+        result = await self.runner._aprocess_function_calls(function)
+        
+        # Verify function was executed
+        self.mock_agent.tool_manager.aexecute_func.assert_awaited_once_with(function)
+        assert isinstance(result, FunctionOutput)
+        assert result.name == "test_tool"
+        assert result.output == "async tool result"
+
+    # Test Step Processing
+    def test_process_data(self):
+        """Test data processing"""
+        step_output = StepOutput(
+            step=1,
+            action="test",
+            function=None,
+            observation={"field1": "value1", "field2": 42}
+        )
+        
+        # Configure mock to return the observation dict as is
+        self.mock_output_type.return_value = step_output.observation
+        
+        result = self.runner._process_data(step_output, "test_id")
+        
+        assert result == step_output.observation
+        self.mock_output_type.assert_called_once_with(**step_output.observation)
+
+    # Test Edge Cases
+    def test_max_steps(self):
+        """Test max steps handling"""
+        # Create a runner with max_steps=1
         runner = Runner(
             agent=self.mock_agent,
-            output_parser=self.mock_parser
+            output_type=self.mock_output_type,
+            max_steps=1
         )
         
-        # Mock the return_state_dict method
-        with patch.object(runner, 'return_state_dict') as mock_return_state:
-            mock_return_state.return_value = {
-                "config": {
-                    "output_parser": {"component_name": "MockOutputParser"},
-                    "output_class": "GeneratorOutput"
-                }
-            }
-            
-            # Test serialization
-            runner_dict = runner.return_state_dict()
-            assert isinstance(runner_dict, dict)
-            
-            # Test deserialization
-            with patch('adalflow.core.agent.Agent.from_config') as mock_agent_config, \
-                patch('adalflow.components.output_parsers.outputs.OutputParser.from_config') as mock_parser_config:
-                
-                mock_agent_config.return_value = self.mock_agent
-                mock_parser_config.return_value = self.mock_parser
-                
-                new_runner = Runner.from_config(runner_dict)
-                assert new_runner.config.output_class == runner.config.output_class
+        # First call should work
+        step_history, result = runner.call(prompt_kwargs={"input": "test"})
+        assert len(step_history) == 1
+        
+        # Second call should not exceed max_steps
+        step_history, result = runner.call(prompt_kwargs={"input": "test2"})
+        assert len(step_history) == 1  # Should not have increased
 
-    def test_call_with_additional_kwargs(self):
-        """Test call method with additional kwargs"""
-        runner = Runner(agent=self.mock_agent)
+    @pytest.mark.asyncio
+    async def test_error_handling(self):
+        """Test error handling in async call"""
+        self.mock_agent.acall.side_effect = Exception("Test error")
         
-        runner.call(
-            "test query",
-            current_objective="test objective",
-            memory="test memory",
-            context=["context1", "context2"]
-        )
-        
-        self.mock_agent.call.assert_called_once_with(
-            "test query",         # user_query
-            "test objective",     # current_objective
-            "test memory",        # memory
-            {},                   # model_kwargs
-            None,                 # use_cache
-            None,                 # id
-            ["context1", "context2"]  # context
-        )
+        with pytest.raises(Exception, match="Test error"):
+            await self.runner.acall(prompt_kwargs={"input": "test"})
 
-    def test_call_with_additional_kwargs(self):
-        """Test call method with additional kwargs"""
-        runner = Runner(agent=self.mock_agent)
+    # Test Training Mode
+    def test_training_mode(self):
+        """Test behavior in training mode"""
+        # Configure agent to be in training mode
+        self.mock_agent.is_training.return_value = True
         
-        runner.call(
-            "test query",
-            current_objective="test objective",
-            memory="test memory",
-            context=["context1", "context2"]
+        # Create a training step output
+        training_step = StepOutput(
+            step=1,
+            action="train",
+            function=None,
+            observation={"loss": 0.5, "accuracy": 0.9}
         )
         
-        # Update to use keyword arguments in the assertion
-        self.mock_agent.call.assert_called_once_with(
-            user_query="test query",
-            current_objective="test objective",
-            memory="test memory",
-            model_kwargs={},
-            use_cache=None,
-            id=None,
-            context=["context1", "context2"]
+        training_output = GeneratorOutput(
+            data=GeneratorOutput(data=training_step),
+            raw_response="training response"
         )
+        
+        self.mock_agent.call.return_value = training_output
+        
+        step_history, result = self.runner.call(prompt_kwargs={"input": "train"})
+        
+        assert len(step_history) == 1
+        assert step_history[0] == training_output
+        assert result == training_step.observation
+
+    # Test Function Chain
+    def test_function_chaining(self):
+        """Test chaining multiple function calls"""
+        # First function call
+        func1 = Function(name="first_func", arguments=json.dumps({"param": "value"}))
+        step1 = StepOutput(
+            step=1,
+            action="function",
+            function=func1,
+            observation=None
+        )
+        
+        # Second function call with result from first
+        func2 = Function(name="second_func", arguments=json.dumps({"result": "tool result"}))
+        step2 = StepOutput(
+            step=2,
+            action="function",
+            function=func2,
+            observation={"final": "result"}
+        )
+        
+        # Configure mock to return different outputs
+        self.mock_agent.call.side_effect = [
+            GeneratorOutput(data=step1),
+            GeneratorOutput(data=step2)
+        ]
+        
+        # First call should process func1
+        step_history, result = self.runner.call(prompt_kwargs={"input": "chain"})
+        
+        # Should have called execute_func with func1
+        self.mock_agent.tool_manager.execute_func.assert_called_once_with(func1)
+        
+        # Second call should process func2 with result from func1
+        step_history, result = self.runner.call(
+            prompt_kwargs={"function_results": "tool result"}
+        )
+        
+        # Should have called execute_func with func2
+        assert self.mock_agent.tool_manager.execute_func.call_count == 2
+        assert "final" in result

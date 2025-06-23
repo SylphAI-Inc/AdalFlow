@@ -237,21 +237,30 @@ class MultiRunner(Component):
         self,
         runner_name: str,
         func: Union[Callable, Parameter],
-        map_fn: Optional[Callable] = None
+        map_fn: Optional[Callable] = None,
     ) -> Any:
-        """
-        Execute a tool function through the specified runner's tool manager.
-        
+        """Execute a tool function through the specified runner's tool manager.
+
+        This wrapper aligns with the current `Runner._tool_execute` signature, which
+        only accepts the function to execute.  If a ``map_fn`` is provided we apply
+        it to the result **after** the underlying runner call so that existing user
+        code which relies on the mapping behaviour still works.
+
         Args:
-            runner_name: Name of the runner whose tool manager to use
-            func: The function to execute
-            map_fn: Optional mapping function to apply to the function output
-            
+            runner_name: Name of the runner whose tool manager to use.
+            func: The function (or ``Function`` expression/``Parameter``) to execute.
+            map_fn: Optional callable applied to the runner result.
+
         Returns:
-            The result of the tool execution
+            The raw or post-processed result of the tool execution.
         """
         runner = self.get_runner(runner_name)
-        return runner._tool_execute(func=func, map_fn=map_fn)
+
+        # Execute using the runner – signature now only expects ``func``
+        result = runner._tool_execute(func)
+
+        # Apply optional mapping for backwards compatibility
+        return map_fn(result) if map_fn is not None else result
 
     def update_runner(
         self,

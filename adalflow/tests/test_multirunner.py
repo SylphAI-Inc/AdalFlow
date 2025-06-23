@@ -1,89 +1,148 @@
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+import asyncio
+from unittest.mock import Mock, patch, AsyncMock, call, ANY
 from adalflow.core.multirunner import MultiRunner
 from adalflow.core.runner import Runner
 from adalflow.core.agent import Agent
-from adalflow.core.types import GeneratorOutput
+from adalflow.core.types import GeneratorOutput, StepOutput, Function
+from adalflow.core.exceptions import RunnerError
 
 class TestMultiRunner:
     @pytest.fixture(autouse=True)
     def setup(self):
-        # Mock Runner
-        self.mock_runner = Mock(spec=Runner)
-        self.mock_runner.call.return_value = GeneratorOutput(data="test response")
-        self.mock_runner.acall.return_value = GeneratorOutput(data="test async response")
-        
-        # Mock Agent for runner creation
-        self.mock_agent = Mock(spec=Agent)
-        
-        # Sample config
-        self.sample_runner_config = {
-            "agent": {
-                "name": "test_agent",
-                "tool_manager": {"tools": []},
-                "system_prompt": "test",
-                "model_client": {"component_name": "MockClient"},
-                "model_kwargs": {"model": "test"}
-            }
-        }
-        
-    def create_multi_runner(self):
-        """Helper to create a MultiRunner with an empty runners dict"""
-        return MultiRunner(runners={})
-        
-    def test_add_get_runner(self):
-        """Test adding and getting a runner"""
-        mr = self.create_multi_runner()
-        mr.add_runner("test_runner", self.mock_runner)
-        assert mr.get_runner("test_runner") == self.mock_runner
-
-    def test_duplicate_runner(self):
-        """Test adding duplicate runner name"""
-        mr = self.create_multi_runner()
-        mr.add_runner("test_runner", self.mock_runner)
-        with pytest.raises(ValueError):
-            mr.add_runner("test_runner", self.mock_runner)
-
-    def test_call(self):
-        """Test calling a runner through multirunner"""
-        mr = self.create_multi_runner()
-        mr.add_runner("test_runner", self.mock_runner)
-        
-        response = mr.call("test_runner", "test query")
-        assert response.data == "test response"
-        self.mock_runner.call.assert_called_once_with(
-            user_query="test query",
-            current_objective=None,
-            memory=None,
-            model_kwargs={},  # Changed from None to {}
-            use_cache=None,
-            id=None,
-            context=None  # Added context parameter
+        # Create test data
+        self.step_output = StepOutput(
+            step=1,
+            action="test",
+            function=None,
+            observation={"result": "test result"}
         )
-
-    def test_update_runner(self):
-        """Test updating a runner's configuration"""
-        mr = self.create_multi_runner()
-        mr.add_runner("test_runner", self.mock_runner)
         
-        update_config = {"agent_config": {"name": "updated"}}
-        mr.update_runner("test_runner", **update_config)
-        self.mock_runner.update_runner.assert_called_once_with(**update_config)
-
-    def test_nonexistent_runner(self):
-        """Test operations on non-existent runner"""
-        mr = self.create_multi_runner()
-        with pytest.raises(KeyError):
-            mr.get_runner("nonexistent")
+        self.generator_output = GeneratorOutput(
+            data=self.step_output,
+            raw_response="raw response"
+        )
         
-        with pytest.raises(KeyError):
-            mr.call("nonexistent", "test")
+        # Create mock runners
+        self.runner1 = Mock(spec=Runner)
+        self.runner1.call.return_value = ([self.generator_output], "result1")
+        self.runner1.acall = AsyncMock(return_value=([self.generator_output], "async result1"))
         
-        with pytest.raises(KeyError):
-            mr.update_runner("nonexistent", agent_config={})
+        self.runner2 = Mock(spec=Runner)
+        self.runner2.call.return_value = ([self.generator_output], "result2")
+        self.runner2.acall = AsyncMock(return_value=([self.generator_output], "async result2"))
+        
+        # Create MultiRunner instance
+        self.multi_runner = MultiRunner(runners={
+            "runner1": self.runner1,
+            "runner2": self.runner2
+        })
 
+    # Test Initialization
+    def test_init(self):
+        """Test MultiRunner initialization"""
+        assert "runner1" in self.multi_runner.runners
+        assert "runner2" in self.multi_runner.runners
+        assert self.multi_runner.get_runner("runner1") == self.runner1
+
+    # Test Runner Management
     def test_add_runner(self):
         """Test adding a runner"""
-        mr = self.create_multi_runner()
-        mr.add_runner("test_runner", self.mock_runner)
-        assert mr.get_runner("test_runner") == self.mock_runner
+        new_runner = Mock(spec=Runner)
+        self.multi_runner.add_runner("new_runner", new_runner)
+        assert "new_runner" in self.multi_runner.runners
+        assert self.multi_runner.get_runner("new_runner") == new_runner
+
+    def test_add_duplicate_runner(self):
+        """Test adding a duplicate runner"""
+        with pytest.raises(ValueError, match="Runner with name runner1 already exists"):
+            self.multi_runner.add_runner("runner1", self.runner1)
+
+    def test_remove_runner(self):
+        """Test removing a runner"""
+        self.multi_runner.remove_runner("runner1")
+        assert "runner1" not in self.multi_runner.runners
+        with pytest.raises(ValueError, match="Runner runner1 not found"):
+            self.multi_runner.get_runner("runner1")
+
+    # Test Call Methods
+    def test_call(self):
+        """Test calling a runner"""
+        prompt_kwargs = {"input": "test"}
+        
+        # Call first runner
+        step_history, result = self.multi_runner.call(
+            "runner1",
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs={"temperature": 0.7},
+            use_cache=True,
+            id="test1"
+        )
+        
+        # Verify runner1 was called correctly
+        self.runner1.call.assert_called_once_with(
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs={"temperature": 0.7},
+            use_cache=True,
+            id="test1"
+        )
+        
+        assert result == "result1"
+        
+        # Call second runner
+        step_history, result = self.multi_runner.call("runner2", prompt_kwargs)
+        assert result == "result2"
+
+    @pytest.mark.asyncio
+    async def test_acall(self):
+        """Test async calling a runner"""
+        prompt_kwargs = {"input": "async test"}
+        
+        # Call first runner
+        step_history, result = await self.multi_runner.acall(
+            "runner1",
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=None,
+            use_cache=False,
+            id="async_test"
+        )
+        
+        # Verify runner1 was called correctly
+        self.runner1.acall.assert_awaited_once_with(
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=None,
+            use_cache=False,
+            id="async_test"
+        )
+        
+        assert result == "async result1"
+
+    # Test Error Cases
+    def test_call_nonexistent_runner(self):
+        """Test calling a non-existent runner"""
+        with pytest.raises(ValueError, match="Runner nonexistent not found"):
+            self.multi_runner.call("nonexistent", {"input": "test"})
+
+    @pytest.mark.asyncio
+    async def test_acall_runner_error(self):
+        """Test error handling in async call"""
+        self.runner1.acall.side_effect = Exception("Test error")
+        
+        with pytest.raises(Exception, match="Test error"):
+            await self.multi_runner.acall("runner1", {"input": "test"})
+
+    # Test Batch Operations
+    def test_call_all(self):
+        """Test calling all runners"""
+        prompt_kwargs = {"input": "batch test"}
+        
+        results = self.multi_runner.call_all(
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs={"batch": True},
+            use_cache=True,
+            id="batch_test"
+        )
+        
+        assert len(results) == 2
+        assert results["runner1"] == "result1"
+        assert results["runner2"] == "result2"
