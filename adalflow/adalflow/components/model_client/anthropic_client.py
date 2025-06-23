@@ -1,7 +1,7 @@
 """Anthropic ModelClient integration."""
 
 import os
-from typing import Dict, Optional, Any, Callable
+from typing import Dict, Optional, Any, Callable, Union, Generator as GeneratorType
 import backoff
 import logging
 
@@ -23,8 +23,9 @@ from anthropic import (
     InternalServerError,
     UnprocessableEntityError,
     BadRequestError,
+    MessageStreamManager,
 )
-from anthropic.types import Message, Usage
+from anthropic.types import Message, Usage, Completion
 
 log = logging.getLogger(__name__)
 
@@ -33,6 +34,17 @@ def get_first_message_content(completion: Message) -> str:
     r"""When we only need the content of the first message.
     It is the default parser for chat completion."""
     return completion.content[0].text
+
+
+def handle_streaming_response(generator: MessageStreamManager):
+    r"""Handle the streaming response."""
+    stream = generator.__enter__()
+    log.debug(f"stream: {stream}")
+    try:
+        for chunk in stream:
+            yield chunk
+    finally:
+        stream.__exit__()
 
 
 __all__ = ["AnthropicAPIClient", "get_first_message_content"]
@@ -56,7 +68,8 @@ class AnthropicAPIClient(ModelClient):
     def __init__(
         self,
         api_key: Optional[str] = None,
-        chat_completion_parser: Callable[[Message], Any] = None,
+        non_streaming_chat_completion_parser: Callable[[Completion], Any] = None,
+        streaming_chat_completion_parser: Callable[[Completion], Any] = None,
     ):
         r"""It is recommended to set the ANTHROPIC_API_KEY environment variable instead of passing it as an argument."""
         super().__init__()
@@ -64,9 +77,13 @@ class AnthropicAPIClient(ModelClient):
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
         self.tested_llm_models = ["claude-3-opus-20240229"]
-        self.chat_completion_parser = (
-            chat_completion_parser or get_first_message_content
+        self.non_streaming_chat_completion_parser = (
+            non_streaming_chat_completion_parser or get_first_message_content
         )
+        self.streaming_chat_completion_parser = (
+            streaming_chat_completion_parser or handle_streaming_response
+        )
+        self.chat_completion_parser = self.non_streaming_chat_completion_parser
         self.default_max_tokens = 512
 
     def init_sync_client(self):
@@ -81,17 +98,26 @@ class AnthropicAPIClient(ModelClient):
             raise ValueError("Environment variable ANTHROPIC_API_KEY must be set")
         return anthropic.AsyncAnthropic(api_key=api_key)
 
-    def parse_chat_completion(self, completion: Message) -> GeneratorOutput:
-        log.debug(f"completion: {completion}")
+    def parse_chat_completion(
+        self,
+        completion: Union[Completion, GeneratorType[MessageStreamManager, None, None]],
+    ) -> "GeneratorOutput":
+        """Parse the completion, and put it into the raw_response."""
+        log.debug(f"completion: {completion}, parser: {self.chat_completion_parser}")
         try:
-            data = completion.content[0].text
-            usage = self.track_completion_usage(completion)
-            return GeneratorOutput(data=None, usage=usage, raw_response=data)
+            data = self.chat_completion_parser(completion)
         except Exception as e:
-            log.error(f"Error parsing completion: {e}")
+            log.error(f"Error parsing the completion: {e}")
+            return GeneratorOutput(data=None, error=str(e), raw_response=completion)
+
+        try:
+            usage = self.track_completion_usage(completion)
             return GeneratorOutput(
-                data=None, error=str(e), raw_response=str(completion)
+                data=None, error=None, raw_response=data, usage=usage
             )
+        except Exception as e:
+            log.error(f"Error tracking the completion usage: {e}")
+            return GeneratorOutput(data=None, error=str(e), raw_response=data)
 
     def track_completion_usage(self, completion: Message) -> CompletionUsage:
         r"""Track the completion usage."""
@@ -146,7 +172,16 @@ class AnthropicAPIClient(ModelClient):
         if model_type == ModelType.EMBEDDER:
             raise ValueError(f"Model type {model_type} not supported")
         elif model_type == ModelType.LLM:
-            return self.sync_client.messages.create(**api_kwargs)
+            if "stream" in api_kwargs and api_kwargs.get("stream", False):
+                log.debug("streaming call")
+                # remove the stream from the api_kwargs
+                api_kwargs.pop("stream", None)
+                self.chat_completion_parser = self.streaming_chat_completion_parser
+                return self.sync_client.messages.stream(**api_kwargs)
+            else:
+                log.debug("non-streaming call")
+                self.chat_completion_parser = self.non_streaming_chat_completion_parser
+                return self.sync_client.messages.create(**api_kwargs)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
 
