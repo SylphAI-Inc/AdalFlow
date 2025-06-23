@@ -317,12 +317,21 @@ class FunctionTool(Component):
         """Async call the function."""
         if self._is_async:
             if self.is_async_generator:
+                # TODO: need to support the async_generator better
                 # For async generators, return the generator directly
                 # Don't await it - it needs to be consumed with async for
                 return self.fn(*args, **kwargs)
             else:
                 # For regular async functions, await the result
                 result = await self.fn(*args, **kwargs)
+                # wrap the result in FunctionOutput
+                result = FunctionOutput(
+                    name=self.definition.func_name,
+                    input=Function(
+                        name=self.definition.func_name, args=args, kwargs=kwargs
+                    ),
+                    output=result,
+                )
                 return result
         else:
             return self.call(*args, **kwargs)
