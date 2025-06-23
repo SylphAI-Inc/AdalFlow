@@ -1,4 +1,9 @@
+import sys
 import pytest
+
+if sys.version_info < (3, 10):
+    pytest.skip("Requires Python 3.10 or higher", allow_module_level=True)
+
 import asyncio
 
 from adalflow.core.mcp_tool import (
