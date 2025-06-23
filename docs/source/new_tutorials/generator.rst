@@ -32,10 +32,11 @@ Introduction
 2. It is a `GradComponnent` that has both `forward` and `backward` methods. Developers can optimize the prompt when it is defined as a `Parameter` and being used together with `Trainer`.
 
 
-Generator has two desirable properties:
+Generator has three desirable properties:
 
 1. Model Agnostic: The Generator levarages a standard interface--`ModelClient`--to interact with different LLM models. This makes it easy to switch between different models simply via configuration.
-2. Unified Output: With :class:`GeneratorOutput<core.types.GeneratorOutput>`, we ensure it can capture the final parsed output in ``data``, any error message in ``error``, and the raw response in ``raw_response``. ``id`` and ``usage`` are also included for tracking purposes.
+2. Full Controllable and Transparent Prompt: Unlike many libraries where users can only customize an instruction, we allow users to define their own prompt template with Jinja2 that comes with customized parameters to fill in. These parameters in the prompt can be further optimized end to end.
+3. Unified Output: With :class:`GeneratorOutput<core.types.GeneratorOutput>`, we ensure it can capture the final parsed output in ``data``, any error message in ``error``, and the raw response in ``raw_response``. ``id`` and ``usage`` are also included for tracking purposes.
 
 .. note::
 

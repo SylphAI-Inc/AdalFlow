@@ -34,7 +34,7 @@ class ObjectCountTaskPipeline(adal.Component):
             role_desc="To give task instruction to the language model in the system prompt",
             requires_opt=True,
             param_type=ParameterType.PROMPT,
-            instruction_to_optimizer="You can try to show examples to see if it helps.",
+            # instruction_to_optimizer="You can try to show examples to see if it helps.",
         )
         # few_shot_demos = adal.Parameter(
         #     data=None,
