@@ -19,7 +19,7 @@ Function calls
 
 ..    `Li Yin <https://github.com/liyin2015>`_
 
-Tools are means LLM can use to interact with the world beyond of its internal knowledge. Technically speaking, retrievers are tools to help LLM to get more relevant context, and memory is a tool for LLM to carry out a conversation.
+Tools are means LLM can use to interact with the world beyond of its internal knowledge [1]_. Technically speaking, retrievers are tools to help LLM to get more relevant context, and memory is a tool for LLM to carry out a conversation.
 Deciding when, which, and how to use a tool, and even to creating a tool is an agentic behavior:
 Function calls is a process of showing LLM a list of funciton definitions and prompt it to choose one or few of them.
 Many places use tools and function calls interchangably.
@@ -29,6 +29,7 @@ In this note we will covert function calls, including
 1. Function call walkthrough
 2. Overall design
 3. Function call in action
+4. MCP (Model Context Protocol) tools [2]_ as function calls.
 
 
 Quick Walkthrough
@@ -850,10 +851,197 @@ By using an example to help with calling ``add_point``, we can now successfully 
     Function_expr: [FunctionExpression(thought=None, action='add(a=y, b=5)')]
     Function output: FunctionOutput(name='add(a=y, b=5)', input=FunctionExpression(thought=None, action='add(a=y, b=5)'), parsed_input=None, output=FunctionOutput(name='add', input=Function(thought=None, name='add', args=(), kwargs={'a': 0, 'b': 5}), parsed_input=None, output=5, error=None), error=None)
 
+
+MCP (Model Context Protocol) Tools
+-------------------------
+
+In addition to the above, AdalFlow also supports MCP tools [2]_, which enable interaction with LLM models and their environments through the MCP protocol.
+Compared to the general function call defined above, MCP provides a unified interface between different tool providers and model vendors.
+Importantly, you don't need to rewrite every tools. Instead, you can directly re-use the tools from the marketplace like `smithery.ai <https://smithery.ai/>`_.
+
+
+**Configuring an MCP Client**. To configure a standard input/output (stdio) MCP client with your own server. An example of python server implementation is at `tutorials/mcp_agent/mcp_calculator_server.py`.
+
+.. code-block:: python
+
+    from mcp import MCPServerStdioParams
+    server_params = MCPServerStdioParams(
+        command="python",
+        args=["mcp_calculator_server.py"],
+    )
+
+To configure a HTTP MCP client, you can use MCP server URLs from https://server.smithery.ai:
+
+.. code-block:: python
+
+    smithery_api_key = os.environ.get("SMITHERY_API_KEY")
+    smithery_server_id = "@nickclyde/duckduckgo-mcp-server"
+    server_params = MCPServerStreamableHttpParams(url=f"https://server.smithery.ai/{smithery_server_id}/mcp?api_key={smithery_api_key}")
+
+**Executing MCP Tools**. You can execute an MCP tool as an asynchronous function. The `MCPFunctionTool` can be used in the same way as a general `FunctionTool`:
+
+.. code-block:: python
+
+    import asyncio
+    from adalflow.core.mcp_tool import MCPFunctionTool
+    # Get tools from the server
+    async with mcp_session_context(server_params) as session:
+        tools = await session.list_tools()
+    async def call_async_function():
+        tool = MCPFunctionTool(server_params, tools[0])
+        output = await tool.acall()
+
+    asyncio.run(call_async_function())
+
+
+**Using MCP Tools from Marketplace**. You can reuse the tools from marketplace. Below is a step-by-step example.
+
+1. Find a tool at smithery.ai. For example, https://smithery.ai/server/@nickclyde/duckduckgo-mcp-server.
+2. Load the server. A MCP server provides multiple tools. With `MCPToolManager`, you can easily load them as `MCPFunctionTool` instances all at once. First, create a client manager:
+
+.. code-block:: python
+
+    from adalflow.core.mcp_tool import MCPToolManager
+    mcp_client_manager = MCPToolManager(server_params)
+
+You can add servers to the manager in several ways. For example, we use the DuckDuckGo parameters (`@nickclyde/duckduckgo-mcp-server <https://smithery.ai/server/@nickclyde/duckduckgo-mcp-server>`_), choose one of the following options:
+
+.. code-block:: python
+
+    # ======= Example 1: Add via stdio command. =======
+    manager.add_server("duckduckgo-mcp-server", MCPServerStdioParams(
+        command="npx",  # Command to run the server
+        args=[
+            "-y",
+            "@smithery/cli@latest",
+            "run",
+            "@nickclyde/duckduckgo-mcp-server",
+            "--key",
+            "smithery-api-key"
+        ],
+    ))
+
+    # ======= Example 2: Load servers from a JSON file. =======
+    json_path = os.path.join(os.path.dirname(__file__), "mcp_servers.json")
+    manager.add_servers_from_json_file(json_path)
+
+    # ======= Example 3: Load server from HTTP client. =======
+    smithery_api_key = os.environ.get("SMITHERY_API_KEY")
+    smithery_server_id = "@nickclyde/duckduckgo-mcp-server"
+    mcp_server_url = f"https://server.smithery.ai/{smithery_server_id}/mcp?api_key={smithery_api_key}"
+    manager.add_server("duckduckgo-mcp-server", MCPServerStreamableHttpParams(url=mcp_server_url))
+
+    # ======= Example 4: Load server from SSE client. =======
+    manager.add_server("example-mcp", MCPServerSseParams(
+        url="https://example-server.modelcontextprotocol.io/sse",
+    ))
+
+An example `mcp_servers.json` file:
+
+.. code-block:: json
+
+    {
+        "mcpServers": {
+            "duckduckgo-mcp-server": {
+                "command": "npx",
+                "args": [
+                    "-y",
+                    "@smithery/cli@latest",
+                    "run",
+                    "@nickclyde/duckduckgo-mcp-server",
+                    "--key",
+                    "smithery-api-key"
+                ]
+            }
+        }
+    }
+
+3. Use the manager to create `MCPFunctionTool` instances.
+You can list all tools available on the server and use it with agent. A complete example of using MCP tools with agents can be found under the `tutorials/mcp_agent` folder.
+
+.. code-block:: python
+
+    tools = await mcp_client_manager.get_all_tools()  # List[MCPFunctionTool]
+    for tool in tools:
+        sig = tool.definition.func_desc.split('\n')[0]
+        print(f"- Tool: {tool.definition.func_name}, Signature: {sig}")
+
+Example outputs when we list the tools from DuckDuckGo
+
+.. code-block:: python
+
+    Listing tools for server: duckduckgo-mcp-server
+    2025-06-03 17:15:22 - [mcp_tool.py:36:mcp_session_context] - 📡 Initializing connection...
+    2025-06-03 17:15:23 - [mcp_tool.py:38:mcp_session_context] - ✅ Connection established!
+
+    🗂️  Available Resources:
+
+    🔧 Available Tools:
+    • search:
+        Search DuckDuckGo and return formatted results.
+
+        Args:
+            query: The search query string
+            max_results: Maximum number of results to return (default: 10)
+            ctx: MCP context for logging
+
+    • fetch_content:
+        Fetch and parse content from a webpage URL.
+
+        Args:
+            url: The webpage URL to fetch content from
+            ctx: MCP context for logging
+
+4. Use or optimize prompts or agents with the function as if you are using the FunctionTool.
+With the tool, we can create an agent and ask it to search for news.
+
+.. code-block:: python
+
+    agent = ReActAgent(
+        tools=tools,
+        ...
+    )
+    agent.call("Use DuckDuckGo to search for the winner on European Championship in 2025.")
+
+The example output of a step execution is shown below.
+
+
+Example: Using multiple MCP servers with MCPToolManager and one agent
+
+.. code-block:: python
+
+    api_key = os.environ.get("SMITHERY_API_KEY")
+    manager = MCPToolManager()
+    manager.add_server("duckduckgo", MCPServerStreamableHttpParams(
+        url=f"https://server.smithery.ai/@nickclyde/duckduckgo-mcp-server/mcp?api_key={api_key}"
+    ))
+    manager.add_server("wikipedia", MCPServerStreamableHttpParams(
+        url=f"https://server.smithery.ai/@smithery/wikipedia-mcp-server/mcp?api_key={api_key}"
+    ))
+
+    tools = await manager.get_all_tools()
+    agent = ReActAgent(tools=tools)
+    result = await agent.acall("Search for the capital of France and summarize its Wikipedia page.")
+    print(result)
+
+Example: Adding tool to multiple agents.
+
+.. code-block:: python
+
+    agent2 = ReActAgent(tools=tools)
+    result2 = await agent2.acall("Search for the capital of Germany and summarize its Wikipedia page.")
+    print("Agent 2 result:", result2)
+
+.. code-block:: python
+
+    2025-06-03 17:15:43 - [react.py:468:_execute_action_eval_mode] - Step 1:
+    StepOutput(step=1, action=Function(thought='The search results indicate that the UEFA European Championship (Euros) was last held in 2024, with Spain winning. There are no results for a winner of the UEFA European Championship in 2025, which suggests it has not occurred yet. Therefore, I will conclude that there is no winner for the European Championship in 2025.', name='finish', args=[], kwargs={'answer': 'The UEFA European Championship in 2025 has not occurred yet, so there is no winner.', 'id': None}), function=None, observation='The UEFA European Championship in 2025 has not occurred yet, so there is no winner.')
+
 .. admonition:: References
    :class: highlight
 
-   1. OpenAI tools API: https://beta.openai.com/docs/api-reference/tools
+   .. [1] OpenAI tools API: https://beta.openai.com/docs/api-reference/tools
+   .. [2] Anthropic MCP document: https://modelcontextprotocol.io/introduction
 
 .. admonition:: API References
    :class: highlight
@@ -863,6 +1051,8 @@ By using an example to help with calling ``add_point``, we can now successfully 
    - :class:`core.types.FunctionExpression`
    - :class:`core.types.FunctionOutput`
    - :class:`core.func_tool.FunctionTool`
+   - :func:`core.mcp_tool.MCPFunctionTool`
+   - :func:`core.mcp_tool.MCPToolManager`
    - :class:`core.tool_manager.ToolManager`
    - :func:`core.functional.get_fun_schema`
    - :func:`core.functional.parse_function_call_expr`
