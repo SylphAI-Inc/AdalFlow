@@ -12,7 +12,7 @@ from adalflow.core.types import FunctionDefinition
 
 metadata = FunctionDefinition(func_desc="A simple addition tool", func_name="add")
 
-mcp_server_path = "tutorials/mcp_agent/mcp_calculator_server.py"
+mcp_server_path = "../tutorials/mcp_agent/mcp_calculator_server.py"
 
 
 def test_function_tool_async():
