@@ -47,7 +47,8 @@ class MistralClient(OpenAIClient):
         base_url: str = BASE_URL,
         input_type: Literal["text", "messages"] = "text",
         env_api_key_name: str = "MISTRAL_API_KEY",
-        chat_completion_parser: Callable[[Completion], Any] = None,
+        non_streaming_chat_completion_parser: Callable[[Completion], Any] = None,
+        streaming_chat_completion_parser: Callable[[Completion], Any] = None,
     ):
         """
         Initialize a MistralClient instance.
@@ -60,7 +61,8 @@ class MistralClient(OpenAIClient):
         """
         super().__init__(
             api_key=api_key,
-            chat_completion_parser=chat_completion_parser,
+            non_streaming_chat_completion_parser=non_streaming_chat_completion_parser,
+            streaming_chat_completion_parser=streaming_chat_completion_parser,
             input_type=input_type,
             base_url=base_url,
             env_api_key_name=env_api_key_name,

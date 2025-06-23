@@ -33,12 +33,9 @@ from openai import (
     UnprocessableEntityError,
     BadRequestError,
 )
-from openai.types import (
-    Completion,
-    CreateEmbeddingResponse,
-    Image,
-)
+from openai.types import Completion, CreateEmbeddingResponse, Image
 from openai.types.chat import ChatCompletionChunk, ChatCompletion
+from openai.types.responses import Response, ResponseUsage
 
 from adalflow.core.model_client import ModelClient
 from adalflow.core.types import (
@@ -46,6 +43,9 @@ from adalflow.core.types import (
     EmbedderOutput,
     TokenLogProb,
     CompletionUsage,
+    ResponseUsage as AdalFlowResponseUsage,
+    InputTokensDetails,
+    OutputTokensDetails,
     GeneratorOutput,
 )
 from adalflow.components.model_client.utils import parse_embedding_response
@@ -60,6 +60,12 @@ def get_first_message_content(completion: ChatCompletion) -> str:
     It is the default parser for chat completion."""
     log.debug(f"raw completion: {completion}")
     return completion.choices[0].message.content
+
+
+def get_response_output_text(response: Response) -> str:
+    """Used to extract the data field for the reasoning model"""
+    log.debug(f"raw response: {response}")
+    return response.output_text
 
 
 # def _get_chat_completion_usage(completion: ChatCompletion) -> OpenAICompletionUsage:
@@ -86,7 +92,11 @@ def estimate_token_count(text: str) -> int:
 
 def parse_stream_response(completion: ChatCompletionChunk) -> str:
     r"""Parse the response of the stream API."""
-    return completion.choices[0].delta.content
+    output = completion.choices[0].delta.content
+    if hasattr(completion, "citations"):
+        citations = completion.citations
+        return output, citations
+    return output
 
 
 def handle_streaming_response(generator: Stream[ChatCompletionChunk]):
@@ -144,8 +154,10 @@ class OpenAIClient(ModelClient):
 
     Args:
         api_key (Optional[str], optional): OpenAI API key. Defaults to `None`.
-        chat_completion_parser (Callable[[Completion], Any], optional): A function to parse the chat completion into a `str`. Defaults to `None`.
-            The default parser is `get_first_message_content`.
+        non_streaming_chat_completion_parser (Callable[[Completion], Any], optional): The parser for non-streaming chat completions.
+            Defaults to `get_first_message_content`.
+        streaming_chat_completion_parser (Callable[[Completion], Any], optional): The parser for streaming chat completions.
+            Defaults to `handle_streaming_response`.
         base_url (str): The API base URL to use when initializing the client.
             Defaults to `"https://api.openai.com"`, but can be customized for third-party API providers or self-hosted models.
         env_api_key_name (str): The environment variable name for the API key. Defaults to `"OPENAI_API_KEY"`.
@@ -156,15 +168,28 @@ class OpenAIClient(ModelClient):
         - Chat Completion Models: https://platform.openai.com/docs/guides/text-generation
         - Vision Models: https://platform.openai.com/docs/guides/vision
         - Image Generation: https://platform.openai.com/docs/guides/images
+
+    Note:
+        - Ensure each OpenAIClient instance is used by one generator only.
     """
 
     def __init__(
         self,
         api_key: Optional[str] = None,
-        chat_completion_parser: Callable[[Completion], Any] = None,
+        non_streaming_chat_completion_parser: Callable[
+            [Completion], Any
+        ] = None,  # non-streaming parser
+        streaming_chat_completion_parser: Callable[
+            [Completion], Any
+        ] = None,  # streaming parser
+        # parser for responses (api used for reasoning modeles)
+        non_streaming_response_parser: Callable[[Completion], Any] = None,
+        streaming_response_parser: Callable[[Completion], Any] = None,
         input_type: Literal["text", "messages"] = "text",
         base_url: str = "https://api.openai.com/v1/",
         env_api_key_name: str = "OPENAI_API_KEY",
+        organization: Optional[str] = None,
+        headers: Optional[Dict[str, str]] = None,
     ):
         r"""It is recommended to set the OPENAI_API_KEY environment variable instead of passing it as an argument.
 
@@ -172,16 +197,29 @@ class OpenAIClient(ModelClient):
             api_key (Optional[str], optional): OpenAI API key. Defaults to None.
             base_url (str): The API base URL to use when initializing the client.
             env_api_key_name (str): The environment variable name for the API key. Defaults to `"OPENAI_API_KEY"`.
+            organization (Optional[str], optional): OpenAI organization key. Defaults to None.
+            headers (Optional[Dict[str, str]], optional): Additional headers to include in API requests. Defaults to None.
         """
         super().__init__()
         self._api_key = api_key
         self.base_url = base_url
         self._env_api_key_name = env_api_key_name
+        self.organization = organization
+        self.headers = headers or {}
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
-        self.chat_completion_parser = (
-            chat_completion_parser or get_first_message_content
+        self.non_streaming_chat_completion_parser = (
+            non_streaming_chat_completion_parser or get_first_message_content
         )
+        self.chat_completion_parser = self.non_streaming_chat_completion_parser
+        self.streaming_chat_completion_parser = (
+            streaming_chat_completion_parser or handle_streaming_response
+        )
+        self.non_streaming_response_parser = (
+            non_streaming_response_parser or get_response_output_text
+        )
+        self.streaming_response_parser = streaming_response_parser or None
+        self.response_parser = self.non_streaming_response_parser
         self._input_type = input_type
         self._api_kwargs = {}  # add api kwargs when the OpenAI Client is called
 
@@ -191,7 +229,12 @@ class OpenAIClient(ModelClient):
             raise ValueError(
                 f"Environment variable {self._env_api_key_name} must be set"
             )
-        return OpenAI(api_key=api_key, base_url=self.base_url)
+        return OpenAI(
+            api_key=api_key,
+            base_url=self.base_url,
+            organization=self.organization,
+            default_headers=self.headers,
+        )
 
     def init_async_client(self):
         api_key = self._api_key or os.getenv(self._env_api_key_name)
@@ -199,7 +242,12 @@ class OpenAIClient(ModelClient):
             raise ValueError(
                 f"Environment variable {self._env_api_key_name} must be set"
             )
-        return AsyncOpenAI(api_key=api_key, base_url=self.base_url)
+        return AsyncOpenAI(
+            api_key=api_key,
+            base_url=self.base_url,
+            organization=self.organization,
+            default_headers=self.headers,
+        )
 
     # def _parse_chat_completion(self, completion: ChatCompletion) -> "GeneratorOutput":
     #     # TODO: raw output it is better to save the whole completion as a source of truth instead of just the message
@@ -213,14 +261,22 @@ class OpenAIClient(ModelClient):
     #         log.error(f"Error parsing the completion: {e}")
     #         return GeneratorOutput(data=None, error=str(e), raw_response=completion)
 
+    # NOTE: this is adapted to parse both completion and response
     def parse_chat_completion(
         self,
-        completion: Union[ChatCompletion, Generator[ChatCompletionChunk, None, None]],
+        completion: Union[
+            ChatCompletion, Generator[ChatCompletionChunk, None, None], Response
+        ],
     ) -> "GeneratorOutput":
         """Parse the completion, and put it into the raw_response."""
-        log.debug(f"completion: {completion}, parser: {self.chat_completion_parser}")
+        parser = (
+            self.chat_completion_parser
+            if isinstance(completion, ChatCompletion)
+            else self.response_parser
+        )
+        log.debug(f"completion/response: {completion}, parser: {parser}")
         try:
-            data = self.chat_completion_parser(completion)
+            data = parser(completion)
         except Exception as e:
             log.error(f"Error parsing the completion: {e}")
             return GeneratorOutput(data=None, error=str(e), raw_response=completion)
@@ -234,17 +290,38 @@ class OpenAIClient(ModelClient):
             log.error(f"Error tracking the completion usage: {e}")
             return GeneratorOutput(data=None, error=str(e), raw_response=data)
 
+    # NOTE: this is adapted to parse both completion and response
     def track_completion_usage(
         self,
-        completion: Union[ChatCompletion, Generator[ChatCompletionChunk, None, None]],
-    ) -> CompletionUsage:
-
+        completion: Union[
+            ChatCompletion, Generator[ChatCompletionChunk, None, None], Response
+        ],
+    ) -> Union[CompletionUsage, ResponseUsage]:
         try:
-            usage: CompletionUsage = CompletionUsage(
-                completion_tokens=completion.usage.completion_tokens,
-                prompt_tokens=completion.usage.prompt_tokens,
-                total_tokens=completion.usage.total_tokens,
-            )
+            if isinstance(completion, Response):
+                # Handle Response object with ResponseUsage structure
+                input_tokens_details = InputTokensDetails(
+                    cached_tokens=getattr(completion.usage, "cached_tokens", 0)
+                )
+
+                output_tokens_details = OutputTokensDetails(
+                    reasoning_tokens=getattr(completion.usage, "reasoning_tokens", 0)
+                )
+
+                usage = AdalFlowResponseUsage(
+                    input_tokens=completion.usage.input_tokens,
+                    input_tokens_details=input_tokens_details,
+                    output_tokens=completion.usage.output_tokens,
+                    output_tokens_details=output_tokens_details,
+                    total_tokens=completion.usage.total_tokens,
+                )
+            else:
+                # Handle ChatCompletion with CompletionUsage structure
+                usage = CompletionUsage(
+                    completion_tokens=completion.usage.completion_tokens,
+                    prompt_tokens=completion.usage.prompt_tokens,
+                    total_tokens=completion.usage.total_tokens,
+                )
             return usage
         except Exception as e:
             log.error(f"Error tracking the completion usage: {e}")
@@ -264,6 +341,63 @@ class OpenAIClient(ModelClient):
         except Exception as e:
             log.error(f"Error parsing the embedding response: {e}")
             return EmbedderOutput(data=[], error=str(e), raw_response=response)
+
+    def _convert_llm_inputs_to_messages(
+        self,
+        input: Optional[Any] = None,
+        images: Optional[Any] = None,
+        detail: Optional[str] = "auto",
+    ) -> List[Dict[str, str]]:
+        # convert input to messages
+        messages: List[Dict[str, str]] = []
+        if self._input_type == "messages":
+            system_start_tag = "<START_OF_SYSTEM_PROMPT>"
+            system_end_tag = "<END_OF_SYSTEM_PROMPT>"
+            user_start_tag = "<START_OF_USER_PROMPT>"
+            user_end_tag = "<END_OF_USER_PROMPT>"
+
+            # new regex pattern to ignore special characters such as \n
+            pattern = (
+                rf"{system_start_tag}\s*(.*?)\s*{system_end_tag}\s*"
+                rf"{user_start_tag}\s*(.*?)\s*{user_end_tag}"
+            )
+
+            # Compile the regular expression
+            regex = re.compile(pattern, re.DOTALL)
+
+            # re.DOTALL is to allow . to match newline so that (.*?) does not match in a single line
+            regex = re.compile(pattern, re.DOTALL)
+            # Match the pattern
+            match = regex.match(input)
+            system_prompt, input_str = None, None
+
+            if match:
+                system_prompt = match.group(1)
+                input_str = match.group(2)
+            else:
+                print("No match found.")
+            if system_prompt and input_str:
+                messages.append({"role": "system", "content": system_prompt})
+                if images:
+                    content = [{"type": "text", "text": input_str}]
+                    if isinstance(images, (str, dict)):
+                        images = [images]
+                    for img in images:
+                        content.append(self._prepare_image_content(img, detail))
+                    messages.append({"role": "user", "content": content})
+                else:
+                    messages.append({"role": "user", "content": input_str})
+        if len(messages) == 0:
+            if images:
+                content = [{"type": "text", "text": input}]
+                if isinstance(images, (str, dict)):
+                    images = [images]
+                for img in images:
+                    content.append(self._prepare_image_content(img, detail))
+                messages.append({"role": "user", "content": content})
+            else:
+                messages.append({"role": "system", "content": input})
+        return messages
 
     def convert_inputs_to_api_kwargs(
         self,
@@ -297,59 +431,14 @@ class OpenAIClient(ModelClient):
             if not isinstance(input, Sequence):
                 raise TypeError("input must be a sequence of text")
             final_model_kwargs["input"] = input
-        elif model_type == ModelType.LLM:
+        elif model_type == ModelType.LLM or model_type == ModelType.LLM_REASONING:
             # convert input to messages
             messages: List[Dict[str, str]] = []
             images = final_model_kwargs.pop("images", None)
             detail = final_model_kwargs.pop("detail", "auto")
-
-            if self._input_type == "messages":
-                system_start_tag = "<START_OF_SYSTEM_PROMPT>"
-                system_end_tag = "<END_OF_SYSTEM_PROMPT>"
-                user_start_tag = "<START_OF_USER_PROMPT>"
-                user_end_tag = "<END_OF_USER_PROMPT>"
-
-                # new regex pattern to ignore special characters such as \n
-                pattern = (
-                    rf"{system_start_tag}\s*(.*?)\s*{system_end_tag}\s*"
-                    rf"{user_start_tag}\s*(.*?)\s*{user_end_tag}"
-                )
-
-                # Compile the regular expression
-
-                # re.DOTALL is to allow . to match newline so that (.*?) does not match in a single line
-                regex = re.compile(pattern, re.DOTALL)
-                # Match the pattern
-                match = regex.match(input)
-                system_prompt, input_str = None, None
-
-                if match:
-                    system_prompt = match.group(1)
-                    input_str = match.group(2)
-                else:
-                    print("No match found.")
-                if system_prompt and input_str:
-                    messages.append({"role": "system", "content": system_prompt})
-                    if images:
-                        content = [{"type": "text", "text": input_str}]
-                        if isinstance(images, (str, dict)):
-                            images = [images]
-                        for img in images:
-                            content.append(self._prepare_image_content(img, detail))
-                        messages.append({"role": "user", "content": content})
-                    else:
-                        messages.append({"role": "user", "content": input_str})
-            if len(messages) == 0:
-                if images:
-                    content = [{"type": "text", "text": input}]
-                    if isinstance(images, (str, dict)):
-                        images = [images]
-                    for img in images:
-                        content.append(self._prepare_image_content(img, detail))
-                    messages.append({"role": "user", "content": content})
-                else:
-                    messages.append({"role": "system", "content": input})
+            messages = self._convert_llm_inputs_to_messages(input, images, detail)
             final_model_kwargs["messages"] = messages
+
         elif model_type == ModelType.IMAGE_GENERATION:
             # For image generation, input is the prompt
             final_model_kwargs["prompt"] = input
@@ -408,6 +497,15 @@ class OpenAIClient(ModelClient):
     def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
         """
         kwargs is the combined input and model_kwargs.  Support streaming call.
+        For reasoning model, users can add "reasoning" key to the api_kwargs to pass the reasoning config.
+        eg:
+        model_kwargs = {
+            "model": "gpt-4o-reasoning",
+            "reasoning": {
+                "effort": "medium", # low, medium, high
+                "summary": "auto", #detailed, auto, none
+            }
+        }
         """
         log.info(f"api_kwargs: {api_kwargs}")
         self._api_kwargs = api_kwargs
@@ -416,9 +514,23 @@ class OpenAIClient(ModelClient):
         elif model_type == ModelType.LLM:
             if "stream" in api_kwargs and api_kwargs.get("stream", False):
                 log.debug("streaming call")
-                self.chat_completion_parser = handle_streaming_response
+                self.chat_completion_parser = self.streaming_chat_completion_parser
                 return self.sync_client.chat.completions.create(**api_kwargs)
-            return self.sync_client.chat.completions.create(**api_kwargs)
+            else:
+                log.debug("non-streaming call")
+                self.chat_completion_parser = self.non_streaming_chat_completion_parser
+                return self.sync_client.chat.completions.create(**api_kwargs)
+        elif model_type == ModelType.LLM_REASONING:
+            # convert messages to input by changing only the naming
+            api_kwargs["input"] = api_kwargs.pop("messages", None)
+
+            if "stream" in api_kwargs and api_kwargs.get("stream", False):
+                log.debug("streaming call")
+                raise ValueError("streaming call is not supported for LLM_REASONING")
+            else:
+                log.debug("non-streaming call")
+                self.chat_completion_parser = self.non_streaming_chat_completion_parser
+                return self.sync_client.responses.create(**api_kwargs)
         elif model_type == ModelType.IMAGE_GENERATION:
             # Determine which image API to call based on the presence of image/mask
             if "image" in api_kwargs:
@@ -576,15 +688,41 @@ if __name__ == "__main__":
 
 
 if __name__ == "__main__":
-    import adalflow as adal
 
-    # setup env or pass the api_key
-    from adalflow.utils import setup_env
+    def test_openai_llm():
+        import adalflow as adal
 
-    setup_env()
+        # setup env or pass the api_key
+        from adalflow.utils import setup_env
 
-    openai_llm = adal.Generator(
-        model_client=adal.OpenAIClient(), model_kwargs={"model": "gpt-3.5-turbo"}
-    )
-    resopnse = openai_llm(prompt_kwargs={"input_str": "What is LLM?"})
-    print(resopnse)
+        setup_env()
+
+        openai_llm = adal.Generator(
+            model_client=adal.OpenAIClient(), model_kwargs={"model": "gpt-3.5-turbo"}
+        )
+        resopnse = openai_llm(prompt_kwargs={"input_str": "What is LLM?"})
+        print(resopnse)
+
+    def test_openai_reasoning():
+        import adalflow as adal
+
+        # setup env or pass the api_key
+        from adalflow.utils import setup_env
+
+        setup_env()
+
+        from adalflow.core.types import ModelType
+
+        openai_llm = adal.Generator(
+            model_client=adal.OpenAIClient(),
+            model_type=ModelType.LLM_REASONING,
+            model_kwargs={
+                "model": "o3",
+                "reasoning": {"effort": "medium", "summary": "auto"},
+            },
+        )
+
+        resopnse = openai_llm(prompt_kwargs={"input_str": "What is LLM?"})
+        print(resopnse)
+
+    test_openai_reasoning()

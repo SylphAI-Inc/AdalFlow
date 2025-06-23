@@ -88,6 +88,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     Args:
         model_client (ModelClient): The model client to use for the generator.
         model_kwargs (Dict[str, Any], optional): The model kwargs to pass to the model client. Defaults to {}. Please refer to :ref:`ModelClient<components-model_client>` for the details on how to set the model_kwargs for your specific model if it is from our library.
+        model_type (ModelType, optional): The type of the model. Defaults to ModelType.LLM. When using reasoning models which calls different api, you should set it to ModelType.LLM_REASONING.
         template (Optional[str], optional): The template for the prompt.  Defaults to :ref:`DEFAULT_ADALFLOW_SYSTEM_PROMPT<core-default_prompt_template>`.
         prompt_kwargs (Optional[Dict], optional): The preset prompt kwargs to fill in the variables in the prompt. Defaults to None.
         output_processors (Optional[Component], optional):  The output processors after model call. It can be a single component or a chained component via ``Sequential``. Defaults to None.
@@ -117,6 +118,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # args for the model
         model_client: ModelClient,  # will be intialized in the main script
         model_kwargs: PromptArgType = {},
+        model_type: Optional[ModelType] = ModelType.LLM,
         # args for the prompt
         template: Optional[str] = None,
         prompt_kwargs: Optional[Dict] = {},
@@ -165,6 +167,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self.model_kwargs = model_kwargs.copy()
         # init the model client
         self.model_client = model_client
+        self.model_type = model_type
 
         self.output_processors = output_processors
 
@@ -336,6 +339,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         r"""Get string completion and process it with the output_processors."""
         # parse chat completion will only fill the raw_response
         output: GeneratorOutput = self.model_client.parse_chat_completion(completion)
+        # save the api response
+        output.api_response = completion
         # Now adding the data field to the output
         data = output.raw_response
         if self.output_processors:
