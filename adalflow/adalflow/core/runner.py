@@ -146,7 +146,7 @@ class Runner(Component):
         assert(isinstance(step, Function), f"Expected Function, but got {type(step)}, value: {step}")
         
         # Check if it's a finish step
-        if step.action == "finish":
+        if step.name == "finish":
             return True
         
         return False

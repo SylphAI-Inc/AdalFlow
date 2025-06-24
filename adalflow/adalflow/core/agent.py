@@ -89,6 +89,7 @@ class Agent(Component):
                 'model_client': model_client,
                 'model_kwargs': model_kwargs,
                 'template': template,
+                'task_desc': task_desc,
                 'prompt_kwargs': prompt_kwargs,
                 'output_processors': output_processors,
                 'name': generator_name,

@@ -65,136 +65,106 @@ class MultiRunner(Component):
 
     def call(
         self,
-        runner_name: str, 
-        user_query: str,
-        current_objective: Optional[str] = None,
-        memory: Optional[str] = None,
+        runner_name: str,
+        prompt_kwargs: Dict[str, Any],
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
-		context: Optional[Dict[str, Any]] = None
-    ) -> Any:
-        """
-        Execute the specified runner synchronously.
+    ) -> Tuple[List[GeneratorOutput], Any]:
+        """Execute the specified runner synchronously.
         
         Args:
             runner_name: Name of the runner to execute
-            user_query: The user's input query
-            current_objective: Optional current objective/context
-            memory: Optional memory/chat history
-            model_kwargs: Optional model-specific parameters
-            use_cache: Whether to use cached responses if available
-            id: Optional identifier for the request
+            prompt_kwargs: Dictionary of prompt arguments for the generator
+            model_kwargs: Optional model parameters to override defaults
+            use_cache: Whether to use cached results if available
+            id: Optional unique identifier for the request
             
         Returns:
-            The output from the runner's call method
+            Tuple containing:
+                - List of step history (GeneratorOutput objects)
+                - Final processed output
         """
         runner = self.get_runner(runner_name)
         return runner.call(
-            user_query=user_query,
-            current_objective=current_objective,
-            memory=memory,
+            prompt_kwargs=prompt_kwargs,
             model_kwargs=model_kwargs or {},
             use_cache=use_cache,
-            id=id,
-			context=context
+            id=id
         )
 
     async def acall(
         self,
         runner_name: str,
-        user_query: str,
-        current_objective: Optional[str] = None,
-        memory: Optional[str] = None,
+        prompt_kwargs: Dict[str, Any],
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
-		context: Optional[Dict[str, Any]] = None
-    ) -> Any:
-        """
-        Execute the specified runner asynchronously.
+    ) -> Tuple[List[GeneratorOutput], Any]:
+        """Execute the specified runner asynchronously.
         
         Args:
             runner_name: Name of the runner to execute
-            user_query: The user's input query
-            current_objective: Optional current objective/context
-            memory: Optional memory/chat history
-            model_kwargs: Optional model-specific parameters
-            use_cache: Whether to use cached responses if available
-            id: Optional identifier for the request
+            prompt_kwargs: Dictionary of prompt arguments for the generator
+            model_kwargs: Optional model parameters to override defaults
+            use_cache: Whether to use cached results if available
+            id: Optional unique identifier for the request
             
         Returns:
-            The output from the runner's acall method
+            Tuple containing:
+                - List of step history (GeneratorOutput objects)
+                - Final processed output
         """
         runner = self.get_runner(runner_name)
         return await runner.acall(
-            user_query=user_query,
-            current_objective=current_objective,
-            memory=memory,
+            prompt_kwargs=prompt_kwargs,
             model_kwargs=model_kwargs or {},
             use_cache=use_cache,
-            id=id,
-			context=context
+            id=id
         )
 
     def stream(
         self,
-        runner_name: str, 
-        user_query: str, 
-        current_objective: Optional[str] = None,
-        memory: Optional[str] = None,
-		context: Optional[Dict[str, Any]] = None
+        runner_name: str,
+        prompt_kwargs: Dict[str, Any],
+        model_kwargs: Optional[Dict[str, Any]] = None,
     ) -> GeneratorType[Any, None, None]:
-        """
-        Stream results from the specified runner synchronously.
+        """Stream results from the specified runner synchronously.
         
         Args:
             runner_name: Name of the runner to execute
-            user_query: The user's input query
-            current_objective: Optional current objective/context
-            memory: Optional memory/chat history
+            prompt_kwargs: Dictionary of prompt arguments for the generator
+            model_kwargs: Optional model parameters to override defaults
             
         Yields:
             StreamChunk objects containing the streamed output
         """
-		# TODO modify Any to StreamChunk
         runner = self.get_runner(runner_name)
         yield from runner.stream(
-            user_query=user_query,
-            current_objective=current_objective,
-            memory=memory,
-			context=context
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=model_kwargs or {}
         )
 
     async def astream(
         self,
-        runner_name: str, 
-        user_query: str, 
-        current_objective: Optional[str] = None,
-        memory: Optional[str] = None,
-		context: Optional[Dict[str, Any]] = None
+        runner_name: str,
+        prompt_kwargs: Dict[str, Any],
+        model_kwargs: Optional[Dict[str, Any]] = None,
     ) -> GeneratorType[Any, None, None]:
-        """
-        Stream results from the specified runner asynchronously.
+        """Stream results from the specified runner asynchronously.
         
         Args:
             runner_name: Name of the runner to execute
-            user_query: The user's input query
-            current_objective: Optional current objective/context
-            memory: Optional memory/chat history
+            prompt_kwargs: Dictionary of prompt arguments for the generator
+            model_kwargs: Optional model parameters to override defaults
             
         Yields:
             StreamChunk objects containing the streamed output
         """
-
-		# TODO modify Any to StreamChunk
-
         runner = self.get_runner(runner_name)
         async for chunk in runner.astream(
-            user_query=user_query,
-            current_objective=current_objective,
-            memory=memory,
-			context=context
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=model_kwargs or {}
         ):
             yield chunk
 

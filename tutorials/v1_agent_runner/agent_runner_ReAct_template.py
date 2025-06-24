@@ -37,59 +37,6 @@ logger = logging.getLogger(__name__)
 # Type variable for generic return type
 T = TypeVar('T')
 
-
-from adalflow.components.agent.react import updated_react_agent_updated_task_desc
-
-def parse_step_output_from_string(log_string: str) -> StepOutput:
-    """Extract and parse JSON string from log output into a StepOutput object."""
-    # Extract the JSON part using a more robust pattern
-    match = re.search(r"(\{[\s\S]*\})", log_string)
-    if not match:
-        raise ValueError("No JSON found in the input string")
-    
-    json_str = match.group(1)
-    
-    try:
-        # Clean up the string before JSON parsing
-        # Replace escaped single quotes with double quotes
-        json_str = json_str.replace("\\'", "'")
-        # Remove any trailing commas that might be after the JSON object
-        json_str = re.sub(r',\s*\}', '}', json_str)
-        json_str = re.sub(r',\s*\]', ']', json_str)
-        
-        # Parse the JSON
-        data = json.loads(json_str)
-        
-        # Create and return StepOutput
-        if data.get("function"):
-            function = Function(
-                **data.get("function")
-            )
-        else:
-            function = None
-        return StepOutput(
-            action=data.get("action"),
-            function=function,
-            observation=data.get("observation"),
-            step=data.get("step", 0),
-        )
-        
-    except json.JSONDecodeError as e:
-        # For debugging, print the problematic string
-        print(f"Failed to parse JSON. String was: {json_str}")
-        raise ValueError(f"Failed to parse JSON: {e}")
-
-class StepOutputProcessor(DataComponent):
-    def __init__(self, func):
-        super().__init__()
-        self.func = func
-
-    def call(self, response: str) -> Any:
-        return self.func(response)
-
-    def bicall(self, response: str) -> Any:
-        return self.func(response)
-
 # ---------------------------------------------------------------------------
 # Tool Definitions
 # ---------------------------------------------------------------------------
@@ -157,19 +104,17 @@ def run_react_agent_example():
             ],
         )
 
-        print(output_parser.format_instructions()) 
-
         
         # Create the ReAct agent
         agent = Agent(
             name="ReActAgent",
             tools=tools,
             model_client=model_client,
-            # use default template, 
+            # use default template and use default task description 
             prompt_kwargs={
                 "tool_definitions": ToolManager(tools).yaml_definitions,
             },
-            output_processors=output_parser,
+            output_processors=output_parser, 
         )
         
         # Create the runner
@@ -187,7 +132,6 @@ def run_react_agent_example():
             prompt_kwargs={
                 "input_str": query, 
                 "output_format_str": output_parser.format_instructions(),
-                "task_desc": updated_react_agent_updated_task_desc,
             },
             model_kwargs={"model": "gpt-4o-mini", "temperature": 0.7}
         )
