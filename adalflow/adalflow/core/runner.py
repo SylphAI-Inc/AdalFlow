@@ -396,7 +396,7 @@ class Runner(Component):
         Execute a tool function through the planner's tool manager.
         Handles both sync and async functions.
         """
-        return self.planner.tool_manager.call(expr_or_fun=func, step="execute")
+        return self.agent.tool_manager.call(expr_or_fun=func, step="execute")
 
         # except Exception as e:
         #     # TODO check map_f

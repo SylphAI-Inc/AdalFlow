@@ -233,10 +233,10 @@ class Agent(Component):
             str
         ] = None,  # allow users to update the template but cant delete any parameters
         task_desc: Optional[str] = None,
-        answer_data_type: Optional[Type[T]] = str,  # the data type of the final answer
         cache_path: Optional[str] = None,
         use_cache: Optional[bool] = False,
         # default agent parameters
+        answer_data_type: Optional[Type[T]] = str,  # the data type of the final answer
         max_steps: Optional[int] = 10,
         # for fully customize the agent
         tool_manager: Optional[
