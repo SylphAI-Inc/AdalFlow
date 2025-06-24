@@ -73,6 +73,27 @@ from adalflow.components.model_client import (
 # data pipeline
 from adalflow.components.data_process.text_splitter import TextSplitter
 
+# WebThinker components
+from adalflow.components.webthinker import (
+    WebThinkerAgent,
+    SearchQueryGenerator,
+    AnswerSynthesizer,
+    SearchIntentAnalyzer,
+    ContentAnalyzer,
+    InformationIntegrator,
+    WebThinkerConfig,
+    WebThinkerPrompts,
+)
+
+# Web search tools
+from adalflow.tools.web_search import (
+    web_search_tool,
+    content_analysis_tool,
+    WebSearchProcessor,
+    create_web_search_tool,
+    create_content_analysis_tool,
+)
+
 __all__ = [
     "Component",
     "DataComponent",
@@ -143,4 +164,19 @@ __all__ = [
     "BedrockAPIClient",
     "TogetherClient",
     "AnthropicAPIClient",
+    # WebThinker components
+    "WebThinkerAgent",
+    "SearchQueryGenerator",
+    "AnswerSynthesizer", 
+    "SearchIntentAnalyzer",
+    "ContentAnalyzer",
+    "InformationIntegrator",
+    "WebThinkerConfig",
+    "WebThinkerPrompts",
+    # Web search tools
+    "web_search_tool",
+    "content_analysis_tool",
+    "WebSearchProcessor",
+    "create_web_search_tool",
+    "create_content_analysis_tool",
 ]

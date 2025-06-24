@@ -425,6 +425,65 @@ class FunctionTool(Component):
         return s
 
 
+# Web search tool decorators
+def web_search_tool(
+    engine: str = "serper",
+    api_key_env: str = None,
+    max_results: int = 5,
+    use_jina: bool = False,
+    **kwargs
+):
+    """
+    Decorator for creating web search tools.
+    
+    Args:
+        engine: Search engine to use ("serper" or "bing")
+        api_key_env: Environment variable name for API key
+        max_results: Maximum number of search results
+        use_jina: Whether to use Jina for content processing
+        **kwargs: Additional arguments for FunctionTool
+        
+    Returns:
+        Decorator function
+    """
+    def decorator(func):
+        from ..tools.web_search import WebSearchProcessor
+        
+        # Create processor with configuration
+        processor = WebSearchProcessor(
+            engine=engine,
+            api_key=None,  # Will be loaded from environment
+            use_jina=use_jina
+        )
+        
+        return FunctionTool(func, component=processor, **kwargs)
+    return decorator
+
+
+def content_analysis_tool(
+    analyzer_component=None,
+    **kwargs
+):
+    """
+    Decorator for creating content analysis tools.
+    
+    Args:
+        analyzer_component: Optional content analyzer component
+        **kwargs: Additional arguments for FunctionTool
+        
+    Returns:
+        Decorator function
+    """
+    def decorator(func):
+        from ..tools.web_search import ContentAnalysisProcessor
+        
+        # Create processor with optional analyzer
+        processor = ContentAnalysisProcessor(content_analyzer=analyzer_component)
+        
+        return FunctionTool(func, component=processor, **kwargs)
+    return decorator
+
+
 if __name__ == "__main__":
 
     # import asyncio

@@ -1,10 +1,9 @@
 """Anthropic ModelClient integration."""
 
 import os
-from typing import Dict, Optional, Any, Callable
+from typing import Dict, Optional, Any, Callable, List, Union
 import backoff
 import logging
-
 
 from adalflow.core.model_client import ModelClient
 from adalflow.core.types import ModelType, CompletionUsage, GeneratorOutput
@@ -24,7 +23,7 @@ from anthropic import (
     UnprocessableEntityError,
     BadRequestError,
 )
-from anthropic.types import Message, Usage
+from anthropic.types import Message, Usage, TextBlock, ToolUseBlock, ContentBlock
 
 log = logging.getLogger(__name__)
 
@@ -32,7 +31,13 @@ log = logging.getLogger(__name__)
 def get_first_message_content(completion: Message) -> str:
     r"""When we only need the content of the first message.
     It is the default parser for chat completion."""
-    return completion.content[0].text
+    # Handle different content types
+    if isinstance(completion.content[0], TextBlock):
+        return completion.content[0].text
+    elif hasattr(completion.content[0], 'text'):
+        return completion.content[0].text
+    else:
+        return str(completion.content[0])
 
 
 __all__ = ["AnthropicAPIClient", "get_first_message_content"]
@@ -57,17 +62,19 @@ class AnthropicAPIClient(ModelClient):
         self,
         api_key: Optional[str] = None,
         chat_completion_parser: Callable[[Message], Any] = None,
+        support_interleaved_thinking: bool = False,
     ):
         r"""It is recommended to set the ANTHROPIC_API_KEY environment variable instead of passing it as an argument."""
         super().__init__()
         self._api_key = api_key
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
-        self.tested_llm_models = ["claude-3-opus-20240229"]
+        self.tested_llm_models = ["claude-3-opus-20240229", "claude-sonnet-4-20250514"]
         self.chat_completion_parser = (
             chat_completion_parser or get_first_message_content
         )
         self.default_max_tokens = 512
+        self.support_interleaved_thinking = support_interleaved_thinking
 
     def init_sync_client(self):
         api_key = self._api_key or os.getenv("ANTHROPIC_API_KEY")
@@ -84,9 +91,43 @@ class AnthropicAPIClient(ModelClient):
     def parse_chat_completion(self, completion: Message) -> GeneratorOutput:
         log.debug(f"completion: {completion}")
         try:
-            data = completion.content[0].text
+            # Handle interleaved thinking response
+            if self.support_interleaved_thinking and hasattr(completion, 'content'):
+                thinking_blocks = []
+                text_blocks = []
+                tool_use_blocks = []
+                
+                for block in completion.content:
+                    if hasattr(block, 'type'):
+                        if block.type == "thinking":
+                            thinking_blocks.append(block.thinking)
+                        elif block.type == "text":
+                            text_blocks.append(block.text)
+                        elif block.type == "tool_use":
+                            tool_use_blocks.append({
+                                'id': block.id,
+                                'name': block.name,
+                                'input': block.input
+                            })
+                    elif hasattr(block, 'text'):
+                        text_blocks.append(block.text)
+                
+                # Return structured data for interleaved thinking
+                data = {
+                    'thinking': thinking_blocks,
+                    'text': text_blocks,
+                    'tool_use': tool_use_blocks,
+                    'raw_content': completion.content
+                }
+            else:
+                # Standard text response
+                if hasattr(completion.content[0], 'text'):
+                    data = completion.content[0].text
+                else:
+                    data = str(completion.content[0])
+            
             usage = self.track_completion_usage(completion)
-            return GeneratorOutput(data=None, usage=usage, raw_response=data)
+            return GeneratorOutput(data=data, usage=usage, raw_response=completion)
         except Exception as e:
             log.error(f"Error parsing completion: {e}")
             return GeneratorOutput(
@@ -117,13 +158,33 @@ class AnthropicAPIClient(ModelClient):
         """
         api_kwargs = model_kwargs.copy()
         if model_type == ModelType.LLM:
-            api_kwargs["messages"] = [
-                {"role": "user", "content": input},
-            ]
+            # Handle interleaved thinking mode
+            if self.support_interleaved_thinking:
+                # Set up interleaved thinking parameters
+                if "thinking" not in api_kwargs:
+                    api_kwargs["thinking"] = {
+                        "type": "enabled",
+                        "budget_tokens": 10000
+                    }
+                if "extra_headers" not in api_kwargs:
+                    api_kwargs["extra_headers"] = {
+                        "anthropic-beta": "interleaved-thinking-2025-05-14"
+                    }
+            
+            # Handle different input types
+            if isinstance(input, list):
+                # Messages format for conversation history
+                api_kwargs["messages"] = input
+            elif isinstance(input, str):
+                # Simple string input
+                api_kwargs["messages"] = [
+                    {"role": "user", "content": input},
+                ]
+            else:
+                raise ValueError(f"Unsupported input type: {type(input)}")
+                
             if "max_tokens" not in api_kwargs:
                 api_kwargs["max_tokens"] = self.default_max_tokens
-            # if input and input != "":
-            #     api_kwargs["system"] = input
         else:
             raise ValueError(f"Model type {model_type} not supported")
         return api_kwargs
