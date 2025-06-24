@@ -126,7 +126,7 @@ class Runner(Component):
 
 
         # append the llm tool to planner 
-        updated_tools = ComponentList(list(self.planner.tool_manager.tools)).append(FunctionTool(fn=llm_tool))
+        updated_tools = ComponentList(list(self.planner.tool_manager.tools)).extend([FunctionTool(fn=llm_tool), FunctionTool(fn=finish)])
         additional_context = self.planner.tool_manager.additional_context.copy()
         self.planner.tool_manager = ToolManager(tools=updated_tools, additional_context=additional_context)
 
@@ -231,20 +231,20 @@ class Runner(Component):
                 assert(isinstance(function, Function), f"Expected Function type, but got {type(function)}, value: {function}")
 
                 function_results = self._tool_execute(function)
-
-                if self._check_last_step(function):
-                    return self.step_history, self._process_data(function_results.output) 
+                last_output = self._process_data(function_results.output)
 
                 step_ouput: StepOutput = StepOutput(step=step, function = function, output=function_results.output)
                 self.step_history.append(step_ouput)
-                last_output = self._process_data(function_results.output)
+
+                if self._check_last_step(function):
+                    break 
 
                 # Add function results to prompt for next step
                 if "step_history" not in prompt_kwargs:
                     prompt_kwargs['step_history'] = [] 
                 else:
                     # Format function results more clearly
-                    prompt_kwargs['step_history'].append(function)
+                    prompt_kwargs['step_history'].append(step_ouput)
                 log.info("The prompt with the prompt template is {}".format(self.planner.get_prompt(**prompt_kwargs)))
                     
                 step_count += 1
@@ -313,20 +313,20 @@ class Runner(Component):
                 assert(isinstance(function, Function), f"Expected Function type, but got {type(function)}, value: {function}")
 
                 function_results = self._tool_execute(function)
-
-                if self._check_last_step(function):
-                    return self.step_history, self._process_data(function_results.output) 
+                last_output = self._process_data(function_results.output)
 
                 step_output: StepOutput = StepOutput(step=step_count, function=function, output=function_results.output)
                 self.step_history.append(step_output)
-                last_output = self._process_data(function_results.output)
+
+                if self._check_last_step(function):
+                    break
 
                 # Add function results to prompt for next step
                 if "step_history" not in prompt_kwargs:
                     prompt_kwargs['step_history'] = [] 
                 else:
                     # Format function results more clearly
-                    prompt_kwargs['step_history'].append(function)
+                    prompt_kwargs['step_history'].append(step_output)
                 log.info("The prompt with the prompt template is {}".format(self.planner.get_prompt(**prompt_kwargs)))
                 
                 step_count += 1
