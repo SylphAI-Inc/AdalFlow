@@ -177,7 +177,7 @@ def run_react_agent_example():
         runner = Runner(planner=agent, max_steps=5)
         
         # Example query
-        query = "What is 2 + 2? Then search for information about the result."
+        query = "What is 5 * 5000 + 10000? Then search for information about the result."
         print(f"\n{'='*80}")
         print(f"QUERY: {query}")
         print(f"{'='*80}")
