@@ -1,3 +1,8 @@
+"""
+The code is from
+https://modelcontextprotocol.io/quickstart/server
+"""
+
 from typing import Any
 import httpx
 from mcp.server.fastmcp import FastMCP
@@ -91,6 +96,8 @@ Forecast: {period['detailedForecast']}
     return "\n---\n".join(forecasts)
 
 
+# NOTE: you only need to run this to conform if the server is working well
+# no need to keep it running while using the server from the client side
 if __name__ == "__main__":
     # Initialize and run the server
     print("starting weather MCP server...")

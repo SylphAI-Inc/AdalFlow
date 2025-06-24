@@ -84,5 +84,10 @@ if __name__ == "__main__":
         query = "What files are in the directory?"
         output = react.call(query)
         print(output)
+        final_answer = output.answer
+        print(f"Final answer: {final_answer}")
 
     asyncio.run(test_mcp_agent())
+
+    # TODO: agent with multiple servers instead of passing tools
+    # Referrence: https://github.com/openai/openai-agents-python/blob/main/examples/mcp/filesystem_example/main.py

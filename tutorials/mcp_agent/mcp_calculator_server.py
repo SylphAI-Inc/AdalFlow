@@ -15,6 +15,8 @@ mcp install server.py
 
 # Run directly
 python server.py
+
+
 """
 
 import asyncio
