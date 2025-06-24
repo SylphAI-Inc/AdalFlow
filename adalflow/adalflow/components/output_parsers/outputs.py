@@ -246,7 +246,11 @@ class JsonOutputParser(OutputParser):
                 f"Provided class is not a subclass of DataClass: {data_class}"
             )
 
-        if examples is not None and not isinstance(examples[0], data_class):
+        if (
+            examples is not None
+            and len(examples) > 0
+            and not isinstance(examples[0], data_class)
+        ):
             raise TypeError(
                 f"Provided example is not an instance of the data class: {data_class}"
             )

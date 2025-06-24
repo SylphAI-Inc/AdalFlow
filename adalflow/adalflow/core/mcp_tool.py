@@ -118,8 +118,12 @@ MCPServerParameters = Union[
 ]
 
 
+# NOTE: mcp_session_context only works with one server at a time.
 @asynccontextmanager
-async def mcp_session_context(server_params: MCPServerParameters):
+async def mcp_session_context(
+    server_params: MCPServerParameters,
+    name: Optional[str] = None,
+):
     """
     Asynchronous context manager for establishing an MCP (Modular Communication Protocol) session.
 
@@ -137,6 +141,12 @@ async def mcp_session_context(server_params: MCPServerParameters):
     Raises:
         ValueError: If `server_params` is not a supported type.
     """
+    msg = (
+        f"📡 Initializing connection to {name}..."
+        if name
+        else "📡 Initializing connection..."
+    )
+
     if isinstance(server_params, MCPServerStdioParams):
         async with stdio_client(
             StdioServerParameters(
@@ -149,7 +159,7 @@ async def mcp_session_context(server_params: MCPServerParameters):
             )
         ) as (read, write):
             async with ClientSession(read, write) as session:
-                printc("📡 Initializing connection...", color="magenta")
+                printc(msg, color="magenta")
                 await session.initialize()
                 printc("✅ Connection established!", color="magenta")
                 yield session
@@ -162,7 +172,8 @@ async def mcp_session_context(server_params: MCPServerParameters):
             terminate_on_close=server_params.terminate_on_close,
         ) as (read, write, _):
             async with ClientSession(read, write) as session:
-                printc("📡 Initializing connection...", color="magenta")
+
+                printc(msg, color="magenta")
                 await session.initialize()
                 printc("✅ Connection established!", color="magenta")
                 yield session
@@ -174,7 +185,7 @@ async def mcp_session_context(server_params: MCPServerParameters):
             sse_read_timeout=server_params.sse_read_timeout,
         ) as (read, write, _):
             async with ClientSession(read, write) as session:
-                printc("📡 Initializing connection...", color="magenta")
+                printc(msg, color="magenta")
                 await session.initialize()
                 printc("✅ Connection established!", color="magenta")
                 yield session
