@@ -166,6 +166,10 @@ class ToolManager(Component):
             f"Initialized ToolManager with {len(self.tools)} tools and additional context {self._additional_context}"
         )
 
+    @property
+    def context_variables(self) -> Dict[str, object]:
+        return self._additional_context
+
     @staticmethod
     def get_context_index(tool: FunctionTool) -> Dict[str, object]:
         index = tool.definition.func_name

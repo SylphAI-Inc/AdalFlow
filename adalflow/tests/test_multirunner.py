@@ -1,42 +1,39 @@
 import pytest
-import asyncio
-from unittest.mock import Mock, patch, AsyncMock, call, ANY
+from unittest.mock import Mock, AsyncMock
 from adalflow.core.multirunner import MultiRunner
 from adalflow.core.runner import Runner
-from adalflow.core.agent import Agent
-from adalflow.core.types import GeneratorOutput, StepOutput, Function
-from adalflow.core.exceptions import RunnerError
+from adalflow.core.types import GeneratorOutput, StepOutput
+
 
 class TestMultiRunner:
     @pytest.fixture(autouse=True)
     def setup(self):
         # Create test data
         self.step_output = StepOutput(
-            step=1,
-            action="test",
-            function=None,
-            observation={"result": "test result"}
+            step=1, action="test", function=None, observation={"result": "test result"}
         )
-        
+
         self.generator_output = GeneratorOutput(
-            data=self.step_output,
-            raw_response="raw response"
+            data=self.step_output, raw_response="raw response"
         )
-        
+
         # Create mock runners
         self.runner1 = Mock(spec=Runner)
         self.runner1.call.return_value = ([self.generator_output], "result1")
-        self.runner1.acall = AsyncMock(return_value=([self.generator_output], "async result1"))
-        
+        self.runner1.acall = AsyncMock(
+            return_value=([self.generator_output], "async result1")
+        )
+
         self.runner2 = Mock(spec=Runner)
         self.runner2.call.return_value = ([self.generator_output], "result2")
-        self.runner2.acall = AsyncMock(return_value=([self.generator_output], "async result2"))
-        
+        self.runner2.acall = AsyncMock(
+            return_value=([self.generator_output], "async result2")
+        )
+
         # Create MultiRunner instance
-        self.multi_runner = MultiRunner(runners={
-            "runner1": self.runner1,
-            "runner2": self.runner2
-        })
+        self.multi_runner = MultiRunner(
+            runners={"runner1": self.runner1, "runner2": self.runner2}
+        )
 
     # Test Initialization
     def test_init(self):
@@ -69,26 +66,26 @@ class TestMultiRunner:
     def test_call(self):
         """Test calling a runner"""
         prompt_kwargs = {"input": "test"}
-        
+
         # Call first runner
         step_history, result = self.multi_runner.call(
             "runner1",
             prompt_kwargs=prompt_kwargs,
             model_kwargs={"temperature": 0.7},
             use_cache=True,
-            id="test1"
+            id="test1",
         )
-        
+
         # Verify runner1 was called correctly
         self.runner1.call.assert_called_once_with(
             prompt_kwargs=prompt_kwargs,
             model_kwargs={"temperature": 0.7},
             use_cache=True,
-            id="test1"
+            id="test1",
         )
-        
+
         assert result == "result1"
-        
+
         # Call second runner
         step_history, result = self.multi_runner.call("runner2", prompt_kwargs)
         assert result == "result2"
@@ -97,24 +94,24 @@ class TestMultiRunner:
     async def test_acall(self):
         """Test async calling a runner"""
         prompt_kwargs = {"input": "async test"}
-        
+
         # Call first runner
         step_history, result = await self.multi_runner.acall(
             "runner1",
             prompt_kwargs=prompt_kwargs,
             model_kwargs=None,
             use_cache=False,
-            id="async_test"
+            id="async_test",
         )
-        
+
         # Verify runner1 was called correctly
         self.runner1.acall.assert_awaited_once_with(
             prompt_kwargs=prompt_kwargs,
             model_kwargs=None,
             use_cache=False,
-            id="async_test"
+            id="async_test",
         )
-        
+
         assert result == "async result1"
 
     # Test Error Cases
@@ -127,7 +124,7 @@ class TestMultiRunner:
     async def test_acall_runner_error(self):
         """Test error handling in async call"""
         self.runner1.acall.side_effect = Exception("Test error")
-        
+
         with pytest.raises(Exception, match="Test error"):
             await self.multi_runner.acall("runner1", {"input": "test"})
 
@@ -135,14 +132,14 @@ class TestMultiRunner:
     def test_call_all(self):
         """Test calling all runners"""
         prompt_kwargs = {"input": "batch test"}
-        
+
         results = self.multi_runner.call_all(
             prompt_kwargs=prompt_kwargs,
             model_kwargs={"batch": True},
             use_cache=True,
-            id="batch_test"
+            id="batch_test",
         )
-        
+
         assert len(results) == 2
         assert results["runner1"] == "result1"
         assert results["runner2"] == "result2"
