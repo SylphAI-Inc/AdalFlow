@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 T = TypeVar('T')
 
 
-from adalflow.components.agent.react import DEFAULT_REACT_AGENT_SYSTEM_PROMPT, react_agent_updated_task_desc
+from adalflow.components.agent.react import updated_react_agent_updated_task_desc
 
 def parse_step_output_from_string(log_string: str) -> StepOutput:
     """Extract and parse JSON string from log output into a StepOutput object."""
@@ -148,7 +148,7 @@ def run_react_agent_example():
         model_client = OpenAIClient(api_key=api_key)
 
         output_parser = JsonOutputParser(
-            data_class=StepOutput,
+            data_class=Function,
             return_data_class=True,
             include_fields=[
                 "action",
@@ -187,7 +187,7 @@ def run_react_agent_example():
             prompt_kwargs={
                 "input_str": query, 
                 "output_format_str": output_parser.format_instructions(),
-                "task_desc": "Use a set of given tools to answer the user's query",
+                "task_desc": updated_react_agent_updated_task_desc,
             },
             model_kwargs={"model": "gpt-4o-mini", "temperature": 0.7}
         )

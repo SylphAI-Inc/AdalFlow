@@ -33,16 +33,24 @@ class RunnerConfig:
 
 class Runner(Component):
     """A runner class that executes an adal.Agent instance with multi-step execution.
+
+    It internally maintains a planner LLM and an executor and adds a LLM call to the executor as a tool for the planner. 
+
+    The output to the planner agent  call is expected to be a Function object. The planner iterates through at most 
+    max_steps unless the planner sets the action to "finish" then the planner returns the final response. 
+
+    If the user optionally specifies the output_type then the Runner parses the Function object to the output_type. 
     
     Attributes:
-        agent (Agent): The agent instance to execute
+        planner (Agent): The agent instance to execute
         config (RunnerConfig): Configuration for the runner
         max_steps (int): Maximum number of steps to execute
     """
 
     def __init__(
         self, 
-        agent: Agent, 
+        planner: Agent, 
+        executor: Optional[Agent] = None,
         stream_parser: Optional["StreamParser"] = None,
         output_type: Optional[Type[T]] = None,
         max_steps: int = 10,
@@ -51,95 +59,80 @@ class Runner(Component):
         """Initialize runner with an agent and configuration.
         
         Args:
-            agent: The agent instance to execute
+            planner: The agent instance to execute
+            executor: Optional executor agent
             stream_parser: Optional stream parser
             output_type: Optional Pydantic data class type
             max_steps: Maximum number of steps to execute
         """
         super().__init__(**kwargs)
-        self.agent = agent
+        self.planner = planner 
+        executor = executor if executor else self._init_executor()
+        self.executor = executor
         self.max_steps = max_steps
         self.config = RunnerConfig(
             stream_parser=stream_parser,
             output_type=output_type,
         )
         self.step_history = []
-       
+        self._add_basic_tool() 
+        # add the llm call to the executor as a tool 
 
-    def _process_function_calls(self, func: Function) -> FunctionOutput:
-        """Process and execute function calls using the Agent's tool_manager.
-        
-        Args:
-            func: The Function object containing the function call to execute
-            
-        Returns:
-            str: The string representation of the function execution result
-            
-        Raises:
-            ValueError: If the function name is not found in the tool_manager
-            Exception: If function execution fails
+    def _init_executor(self) -> Agent:
+        """ 
+        Initialize executor by default
         """
-        try:
-            # Get the tool from the tool manager
-            tool = self.agent.tool_manager.get_tool(func.name)
-            if tool is None:
-                raise ValueError(f"Function '{func.name}' not found in tool_manager")
-            
-            # Execute the function with the provided arguments
-            result = self.agent.tool_manager.execute_func(func)
-            
-            # Create FunctionOutput and convert to string
-            func_output = FunctionOutput(
-                name=func.name,
-                input=func,
-                output=result,
-                error=None
-            )
-            
-            # Convert to string format for prompt
-            return func_output
-            
-        except Exception as e:
-            log.error(f"Failed to execute function {func.name}: {str(e)}")
-            return f"Function {func.name} failed to execute: {str(e)}"
+        # use the default LLM template of the generator 
+        return Agent(
+            name="LLM executor", 
+            model_client=self.planner.model_client,
+            model_kwargs=self.planner.model_kwargs,
+        )
 
-    async def _aprocess_function_calls(self, func: Function) -> FunctionOutput:
-        """Asynchronously process and execute function calls using the Agent's tool_manager.
-        
-        Args:
-            func: The Function object containing the function call to execute
-            
-        Returns:
-            FunctionOutput: The result of the function execution
-        """
-        try:
-            # Get the tool from the tool manager
-            tool = self.agent.tool_manager.get_tool(func.name)
-            if tool is None:
-                raise ValueError(f"Function '{func.name}' not found in tool_manager")
-            
-            # Execute the function directly on the current event loop
-            result = await self.agent.tool_manager.aexecute_func(func)
-            
-            # Create FunctionOutput and return
-            return FunctionOutput(
-                name=func.name,
-                input=func,
-                output=result,
-                error=None
-            )
-            
-        except Exception as e:
-            log.error(f"Failed to execute function {func.name}: {str(e)}", exc_info=True)
-            return FunctionOutput(
-                name=func.name,
-                input=func,
-                output=None,
-                error=str(e)
-            )
+    def _add_basic_tool(self): 
+        # the variable self is added to the closure of the function 
+        # TODO pass in more keyword arguments based on the template of the executor 
+        def llm_tool(input_string: str, **kwargs) -> str:
+            """I answer any input query with llm's world knowledge. Use me as a fallback tool or when the query is simple."""
+            # not thread safe though 
+            # self.executor instead of executor as executor might be garbage collected
+            try:
+                output: GeneratorOutput = self.executor(
+                    prompt_kwargs={"input_str": input_string}
+                )
+                response = output.data if output else None
+                return response
+            except Exception as e:
+                log.error(f"Error using the llm_tool: {e}")
+                print(f"Error using the llm_tool: {e}")
+
+            return None
+
+        # always add **kwargs for us to track the id, __doc__ as the predecessors.
+        from adalflow.optim.grad_component import fun_to_grad_component
+
+        @fun_to_grad_component(
+            desc="Finish",
+            doc_string=Parameter(
+                data="Finish the task with the final answer in the kwargs.",
+                param_type=ParameterType.PROMPT,
+                requires_opt=True,
+                role_desc="Instruct the agent on how to create the final answer from the step history.",
+                name="doc_string",
+            ),
+        )
+        def finish(answer: self.answer_data_type, **kwargs) -> str:
+            return answer
+
+
+        # append the llm tool to planner 
+        updated_tools = ComponentList(list(self.planner.tool_manager.tools)).append(FunctionTool(fn=llm_tool))
+        additional_context = self.planner.tool_manager.additional_context.copy()
+        self.planner.tool_manager = ToolManager(tools=updated_tools, additional_context=additional_context)
+
 
     def _check_last_step(
-        self, step: StepOutput
+        self, step: Function
     ) -> bool:
         """Check if the last step is the finish step.
 
@@ -150,39 +143,15 @@ class Runner(Component):
             bool: True if the last step is a finish step
         """
         
-        assert(isinstance(step, StepOutput), f"Expected StepOutput, but got {type(step)}, value: {step}")
+        assert(isinstance(step, Function), f"Expected Function, but got {type(step)}, value: {step}")
         
         # Check if it's a finish step
-        if isinstance(step, StepOutput):
-            action = step.action
-            if action and (action.name == "finish" or getattr(action, "finish", False)):
-                return True
+        if step.action == "finish":
+            return True
         
         return False
 
-    def _check_observation_step(
-        self, step: StepOutput
-    ) -> bool:
-        """Check if the step is an observation step.
-
-        Args:
-            step_history: List of previous steps
-
-        Returns:
-            bool: True if the step is an observation step
-        """
-        
-        assert(isinstance(step, StepOutput), f"Expected StepOutput, but got {type(step)}, value: {step}")
-        
-        # Check if it's an observation step
-        if isinstance(step, StepOutput):
-            action = step.action
-            if action and (action.name == "observation" or getattr(action, "observation", False)):
-                return True
-        
-        return False
-
-    def _process_data(self, data: StepOutput, id: Optional[str] = None) -> T:
+    def _process_data(self, data: Object, id: Optional[str] = None) -> T:
         """Process the generator output data field and convert to the specified pydantic data class of output_type.
         
         Args:
@@ -193,13 +162,12 @@ class Runner(Component):
             str: The processed data as a string
         """
         if not self.config.output_type:
-            return data.observation
+            return data
 
-        try: 
-            assert isinstance(data, StepOutput), f"Expected StepOutput, but got {type(data)}, value: {data}"
-            assert isinstance(data.observation, dict), f"Expected data.observation to be a dictionary, but got {type(data.observation)}, value: {data.observation}" # expect data.observation to be a dictionary 
+        try:    
+            # expect data.observation to be a dictionary
             # Convert to Pydantic model
-            model_output = self.config.output_type(**data.observation)
+            model_output = self.config.output_type(**data)
             
             return model_output
             
@@ -214,7 +182,9 @@ class Runner(Component):
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
     ) -> Tuple[List[GeneratorOutput], Any]:
-        """Execute the agent synchronously for multiple steps with function calling support.
+        """Execute the planner synchronously for multiple steps with function calling support.
+
+        At the last step the action should be set to "finish" instead which terminates the sequence 
         
         Args:
             prompt_kwargs: Dictionary of prompt arguments for the generator
@@ -228,13 +198,13 @@ class Runner(Component):
         self.step_history = []
         prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {} 
         model_kwargs = model_kwargs.copy() if model_kwargs else {}
-        step = 0
+        step_count = 0
         last_output = None
         
-        while step < self.max_steps:
+        while step_count < self.max_steps:
             try:
                 # Execute one step
-                output = self.agent.call(
+                output = self.planner.call(
                     prompt_kwargs=prompt_kwargs,
                     model_kwargs=model_kwargs,
                     use_cache=use_cache,
@@ -246,45 +216,42 @@ class Runner(Component):
                         f"Expected GeneratorOutput, but got {type(output)}, value: {output}"
                     )
                 
-                self.step_history.append(output)
-                
                 # Process function calls if any
-                if self.agent.is_training():
-                    # agent generated response using generator's forward 
+                if self.planner.is_training():
+                    # planner generated response using generator's forward 
                     if not isinstance(output.data, GeneratorOutput):
                         raise ValueError(
                             f"Expected GeneratorOutput for output.data, but got {type(output.data)}, value: {output.data}"
                         )
-                    step = output.data.data 
+                    function = output.data.data 
                 else: 
-                    # agent generated response using generator's call (inference)
-                    step = output.data 
+                    # planner generated response using generator's call (inference)
+                    function = output.data 
 
-                assert(isinstance(step, StepOutput), f"Expected OutputProcessor to return StepOutput type, but got {type(step)}, value: {step}")
+                assert(isinstance(function, Function), f"Expected Function type, but got {type(function)}, value: {function}")
 
-                if self._check_last_step(step):
-                    return self.step_history, self._process_data(step)
+                function_results = self._tool_execute(function)
 
-                # Check if the action is a Function and its name is 'finish'
-                if step.function and isinstance(step.function, Function): 
+                if self._check_last_step(function):
+                    return self.step_history, self._process_data(function_results.output) 
 
-                    function_results = self._process_function_calls(step.function)
-                    # Add function results to prompt for next step
-                    prompt_kwargs['function_results'] = str(function_results) # use pydantic data class's __str__ method 
-                    continue
-                elif self._check_observation_step(step):
-                    # Process the output
-                    processed = self._process_data(step, id) 
-                    last_output = processed
-                    # wrap previous output in prompt_kwargs and add prompt data from previous output 
-                    # use pydantic data class's __str__ method 
-                    prompt_kwargs['previous_output'] = str(processed) if isinstance(processed, self.config.output_type) else processed
+                step_ouput: StepOutput = StepOutput(step=step, function = function, output=function_results.output)
+                self.step_history.append(step_ouput)
+                last_output = self._process_data(function_results.output)
+
+                # Add function results to prompt for next step
+                if "step_history" not in prompt_kwargs:
+                    prompt_kwargs['step_history'] = [] 
+                else:
+                    # Format function results more clearly
+                    prompt_kwargs['step_history'].append(function)
+                log.info("The prompt with the prompt template is {}".format(self.planner.get_prompt(**prompt_kwargs)))
                     
-                step += 1
-                    
+                step_count += 1
+
             except Exception as e:
-                log.error(f"Error in step {step}: {str(e)}")
-                return f"Error in step {step}: {str(e)}"
+                log.error(f"Error in step {step_count}: {str(e)}")
+                return f"Error in step {step_count}: {str(e)}"
 
         return self.step_history, last_output
 
@@ -295,7 +262,9 @@ class Runner(Component):
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
     ) -> Tuple[List[GeneratorOutput], T]:
-        """Execute the agent asynchronously for multiple steps with function calling support.
+        """Execute the planner asynchronously for multiple steps with function calling support.
+
+        At the last step the action should be set to "finish" instead which terminates the sequence 
         
         Args:
             prompt_kwargs: Dictionary of prompt arguments for the generator
@@ -317,7 +286,7 @@ class Runner(Component):
         while step_count < self.max_steps:
             try:
                 # Execute one step asynchronously
-                output = await self.agent.acall(
+                output = await self.planner.acall(
                     prompt_kwargs=prompt_kwargs,
                     model_kwargs=model_kwargs,
                     use_cache=use_cache,
@@ -329,44 +298,43 @@ class Runner(Component):
                         f"Expected GeneratorOutput, but got {type(output)}, value: {output}"
                     )
                 
-                self.step_history.append(output)
-                
                 # Process function calls if any
-                if self.agent.is_training():
-                    # agent generated response using generator's forward 
+                if self.planner.is_training():
+                    # planner generated response using generator's forward 
                     if not isinstance(output.data, GeneratorOutput):
                         raise ValueError(
                             f"Expected GeneratorOutput for output.data, but got {type(output.data)}, value: {output.data}"
                         )
-                    step = output.data.data 
+                    function = output.data.data 
                 else: 
-                    # agent generated response using generator's call (inference)
-                    step = output.data 
+                    # planner generated response using generator's call (inference)
+                    function = output.data 
 
-                assert(isinstance(step, StepOutput), 
-                    f"Expected OutputProcessor to return StepOutput type, but got {type(step)}, value: {step}")
+                assert(isinstance(function, Function), f"Expected Function type, but got {type(function)}, value: {function}")
 
-                # Check if the action is a Function and its name is 'finish'
-                if step.function and isinstance(step.function, Function): 
-                    if self._check_last_step(step):
-                        return self.step_history, self._process_data(step)
+                function_results = self._tool_execute(function)
 
-                    function_results = await self._aprocess_function_calls(step.function)
-                    # Add function results to prompt for next step
-                    prompt_kwargs['function_results'] = str(function_results)
-                    continue
-                elif self._check_observation_step(step):
-                    # Process the output
-                    processed = self._process_data(step, id) 
-                    last_output = processed
-                    # wrap previous output in prompt_kwargs and add prompt data from previous output 
-                    prompt_kwargs['previous_output'] = str(processed) if isinstance(processed, self.config.output_type) else processed
-                    
+                if self._check_last_step(function):
+                    return self.step_history, self._process_data(function_results.output) 
+
+                step_output: StepOutput = StepOutput(step=step_count, function=function, output=function_results.output)
+                self.step_history.append(step_output)
+                last_output = self._process_data(function_results.output)
+
+                # Add function results to prompt for next step
+                if "step_history" not in prompt_kwargs:
+                    prompt_kwargs['step_history'] = [] 
+                else:
+                    # Format function results more clearly
+                    prompt_kwargs['step_history'].append(function)
+                log.info("The prompt with the prompt template is {}".format(self.planner.get_prompt(**prompt_kwargs)))
+                
                 step_count += 1
-                    
+
             except Exception as e:
-                log.error(f"Error in step {step_count}: {str(e)}")
-                return f"Error in step {step_count}: {str(e)}"
+                error_msg = f"Error in step {step_count}: {str(e)}"
+                log.error(error_msg)
+                return self.step_history, error_msg
 
         return self.step_history, last_output
 
@@ -377,7 +345,7 @@ class Runner(Component):
         memory: Optional[str] = None,
     ) -> GeneratorType[Any, None, None]:
         """
-        Synchronously executes the agent output and stream results.
+        Synchronously executes the planner output and stream results.
         Optionally parse and post-process each chunk.
         """
         # TODO replace Any type with StreamChunk type 
@@ -408,7 +376,7 @@ class Runner(Component):
         memory: Optional[str] = None,
     ) -> GeneratorType[Any, None, None]:
         """
-        Execute the agent asynchronously and stream results.
+        Execute the planner asynchronously and stream results.
         Optionally parse and post-process each chunk.
         """
         # TODO replace Any type with StreamChunk type 
@@ -426,10 +394,10 @@ class Runner(Component):
         disable_backward_engine: bool = False
     ):
         """
-        Run backward pass on the agent.
+        Run backward pass on the planner.
         Template is expected to be the template to guide the backward pass. 
         """
-        return self.agent.backward(
+        return self.planner.backward(
             response=response,
             prompt_kwargs=prompt_kwargs,
             template=template,
@@ -440,22 +408,22 @@ class Runner(Component):
 
     def update_runner(
         self,
-        agent: Optional[Agent] = None,
+        planner: Optional[Agent] = None,
         stream_parser: Optional["StreamParser"] = None,
         output_parser: Optional[OutputParser] = None,
         output_class: Optional[Type] = None,
         context_map: Optional[Dict[str, Function]] = None,
-        agent_config: Optional[Dict[str, Any]] = None,
+        planner_config: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """Update runner configuration where the user can optionally provide a new agent instance or 
-        a configuration of the agent if it is to be updated."""
+        """Update runner configuration where the user can optionally provide a new planner instance or 
+        a configuration of the planner if it is to be updated."""
 
-        # if both agent instance and agent_config is provided update using agent 
-        if agent is not None: 
-            self.agent = agent
+        # if both planner instance and planner_config is provided update using planner 
+        if planner is not None: 
+            self.planner = planner
         else: 
-            if agent_config is not None:
-                self.agent = Agent.from_config(agent_config)
+            if planner_config is not None:
+                self.planner = Agent.from_config(planner_config)
 
         # keep as is if None 
         self.config = RunnerConfig(
@@ -473,86 +441,86 @@ class Runner(Component):
         func: Function,
     ) -> Union[FunctionOutput, Parameter]:
         """
-        Execute a tool function through the agent's tool manager.
+        Execute a tool function through the planner's tool manager.
         Handles both sync and async functions.
-        """
-        return self.agent.tool_manager.call(expr_or_fun=func, step="execute")
+        """ 
+        return self.planner.tool_manager.call(expr_or_fun=func, step="execute")
 
         # except Exception as e: 
         #     # TODO check map_f 
         #     if func is not None and isinstance(func, Function) and map_fn is None:
         #         function_call_response = asyncio.run(
-        #             self.agent.context_map[func.name](**func.kwargs)
+        #             self.planner.context_map[func.name](**func.kwargs)
         #         )
         #         return function_call_response
         #     else: 
         #         raise ValueError(f"Error {e} executing function: {func}")
 
-    @classmethod
-    def from_config(cls, config: Dict[str, Any]) -> 'Runner':
-        """Create a Runner instance from a configuration dictionary.
+    # @classmethod
+    # def from_config(cls, config: Dict[str, Any]) -> 'Runner':
+    #     """Create a Runner instance from a configuration dictionary.
         
-        Args:
-            config: Configuration dictionary containing:
-                - agent: Agent configuration 
-                - stream_parser: Optional stream parser
-                - output_parser: Optional output parser
-                - output_class: Optional output class
-                - context_map: Optional context map
-                - name: Optional name for the runner
+    #     Args:
+    #         config: Configuration dictionary containing:
+    #             - planner: planner configuration 
+    #             - stream_parser: Optional stream parser
+    #             - output_parser: Optional output parser
+    #             - output_class: Optional output class
+    #             - context_map: Optional context map
+    #             - name: Optional name for the runner
 
-        Example 1: Create a Runner from a config dictionary
-        runner_config = {
-            'name': 'example_runner',
-            'agent': {
-                'name': 'example_agent',
-                'system_prompt': 'You are a helpful assistant.',
-                'model_client': {
-                    'component_name': 'OpenAIClient',
-                    'component_config': {
-                'api_key': 'your-api-key',
-                        'model': 'gpt-3.5-turbo'
-                    }
-                },
-                'tool_manager': {
-                    'tools': []  # List of tools would go here
-                }
-            },
-            'output_parser': lambda x: {'text': x.text},  # Simple output parser
-            'output_class': GeneratorOutput,
-        }
+    #     Example 1: Create a Runner from a config dictionary
+    #     runner_config = {
+    #         'name': 'example_runner',
+    #         'planner': {
+    #             'name': 'example_planner',
+    #             'system_prompt': 'You are a helpful assistant.',
+    #             'model_client': {
+    #                 'component_name': 'OpenAIClient',
+    #                 'component_config': {
+    #             'api_key': 'your-api-key',
+    #                     'model': 'gpt-3.5-turbo'
+    #                 }
+    #             },
+    #             'tool_manager': {
+    #                 'tools': []  # List of tools would go here
+    #             }
+    #         },
+    #         'output_parser': lambda x: {'text': x.text},  # Simple output parser
+    #         'output_class': GeneratorOutput,
+    #     }
                 
-        Returns:
-            Configured Runner instance
-        """
+    #     Returns:
+    #         Configured Runner instance
+    #     """
         
-        # Extract agent config/instance
-        try: 
-            agent = Agent.from_config(config.get('agent'))
-        except Exception as e: 
-            raise ValueError(f"Failed to create agent from config: {e}")
+    #     # Extract planner config/instance
+    #     try: 
+    #         planner = planner.from_config(config.get('planner'))
+    #     except Exception as e: 
+    #         raise ValueError(f"Failed to create planner from config: {e}")
         
-        # Create runner instance
-        runner = cls(
-            agent=agent,
-            stream_parser=config.get('stream_parser', None),
-            output_parser=config.get('output_parser', None),
-            output_class=config.get('output_class', GeneratorOutput),
-        )
+    #     # Create runner instance
+    #     runner = cls(
+    #         planner=planner,
+    #         stream_parser=config.get('stream_parser', None),
+    #         output_parser=config.get('output_parser', None),
+    #         output_class=config.get('output_class', GeneratorOutput),
+    #     )
         
-        return runner
+    #     return runner
 
-    def return_state_dict(self) -> Dict[str, Any]:
-        """Return the state of the runner as a dictionary that can be used to recreate it.
+    # def return_state_dict(self) -> Dict[str, Any]:
+    #     """Return the state of the runner as a dictionary that can be used to recreate it.
         
-        Returns:
-            Dictionary containing the runner's state
-        """
-        return {
-            'agent': self.agent.return_state_dict(),
-            'stream_parser': self.config.stream_parser,
-            'output_parser': self.config.output_parser,
-            'output_class': self.config.output_class,
-            'class_name': self.__class__.__name__,
-            'module_name': self.__class__.__module__
-        }
+    #     Returns:
+    #         Dictionary containing the runner's state
+    #     """
+    #     return {
+    #         'planner': self.planner.return_state_dict(),
+    #         'stream_parser': self.config.stream_parser,
+    #         'output_parser': self.config.output_parser,
+    #         'output_class': self.config.output_class,
+    #         'class_name': self.__class__.__name__,
+    #         'module_name': self.__class__.__module__
+    #     }

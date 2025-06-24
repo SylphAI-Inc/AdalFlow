@@ -4,15 +4,19 @@ from adalflow.core.model_client import ModelClient
 from adalflow.core.generator import Generator
 from adalflow.core.tool_manager import ToolManager
 from adalflow.core.prompt_builder import Prompt
-from adalflow.core.types import GeneratorOutput, ModelType
+from adalflow.core.types import GeneratorOutput, ModelType, FunctionType 
+
+from adalflow.components.agent.react import DEFAULT_REACT_AGENT_SYSTEM_PROMPT, react_agent_task_desc
+
+
+
 __all__ = ["Agent"] 
 
 class Agent(Component):
     """
     A custom agent class that orchestrates generation and tool usage.
     
-    The Agent class holds a Generator and a ToolManager
-    for tool usage, and system_prompt and other internal configurations that will be used by the Runner 
+    The Agent class holds a Generator and a ToolManager for tool usage, and other configurations for the agent and Generator 
 
     It also stores convenient methods for storing the Agent as a compact representation using load_state_dict and creating the Agent 
     from a compact representation using from_config
@@ -31,9 +35,10 @@ class Agent(Component):
                  model_client: Optional[ModelClient] = None,
                  model_kwargs: Optional[Dict[str, Any]] = {},
                  model_type: Optional[ModelType] = ModelType.LLM,
-                 template: Optional[str] = None,
+                 template: Optional[str] = None ,
+                 task_desc: Optional[str] = None,
                  prompt_kwargs: Optional[Dict] = {},
-                 output_processors: Optional[Any] = None,
+                 output_processors: Optional[Any] = None, 
                  generator_name: Optional[str] = None,
                  cache_path: Optional[str] = None,
                  use_cache: Optional[bool] = False,
@@ -55,7 +60,7 @@ class Agent(Component):
             model_kwargs: Model configuration parameters (e.g., model name, temperature)
             template: Optional template for the generator prompt
             prompt_kwargs: Additional prompt parameters (The prompt_kwargs must incldue details on )
-            output_processors: Optional output processors for the generator
+            output_processors: Optional output processors for the generator (should haeve Function as the output type) 
             generator_name: Optional name for the generator
             cache_path: Path for caching generator outputs
             use_cache: Whether to use caching for generator outputs
@@ -67,6 +72,13 @@ class Agent(Component):
         super().__init__(**kwargs)
         self.name = name
         self.tool_manager = ToolManager(tools=tools or [], additional_context=additional_context or {})
+
+        template = template or DEFAULT_REACT_AGENT_SYSTEM_PROMPT
+        task_desc = task_desc or react_agent_task_desc
+
+
+        prompt_kwargs = prompt_kwargs or {}
+        prompt_kwargs.update({"task_desc": task_desc})
 
         if config_generator:
             self.config_generator = config_generator
@@ -94,6 +106,11 @@ class Agent(Component):
             cache_path=cache_path,
             use_cache=use_cache
         )
+
+    @property
+    def template(self):
+        return self._template
+    
         
     # TODO need to fix from_config method 
     def update_agent(
@@ -209,7 +226,6 @@ class Agent(Component):
         Returns:
             The generator output
         """
-        model_kwargs = model_kwargs or {}
         return self.generator(prompt_kwargs, model_kwargs=model_kwargs, use_cache=use_cache, id=id)
 
     async def acall(
@@ -230,7 +246,7 @@ class Agent(Component):
         Returns:
             The generator output
         """
-        model_kwargs = model_kwargs or {}
+
         return await self.generator.acall(prompt_kwargs, model_kwargs=model_kwargs, use_cache=use_cache, id=id)
     
     def is_training(self) -> bool:
