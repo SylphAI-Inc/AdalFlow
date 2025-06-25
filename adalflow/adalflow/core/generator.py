@@ -263,7 +263,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self.mock_output_data = "mock data"
 
     def set_parameters(self, prompt_kwargs: PromptArgType):
-        r"""Set name for each paramter and set all context for each other.
+        r"""Set name for each parameter and set all context for each other.
         Make all parameters attributes to the generator for finding them easily
         for optimizers and other components.
         """
@@ -408,7 +408,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         id: Optional[str] = None,
     ):
         r"""Automatically create a demo data instance from the input and output of the generator.
-        Used to trace the demos for the demo paramter in the prompt_kwargs.
+        Used to trace the demos for the demo parameter in the prompt_kwargs.
         Part of the few-shot learning.
         """
         from adalflow.core.base_data_class import DynamicDataClassFactory
