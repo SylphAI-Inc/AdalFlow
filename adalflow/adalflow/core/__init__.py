@@ -16,6 +16,11 @@ from .string_parser import (
     BooleanParser,
 )
 
+from .agent import Agent
+from .runner import Runner
+
+# from .multirunner import MultiRunner
+
 from .prompt_builder import Prompt
 
 from .retriever import Retriever
@@ -64,6 +69,9 @@ __all__ = [
     "DataClassFormatType",
     "required_field",
     "Generator",
+    "Agent",
+    "Runner",
+    # "MultiRunner",
     "BackwardEngine",
     "Prompt",
     "DEFAULT_ADALFLOW_SYSTEM_PROMPT",

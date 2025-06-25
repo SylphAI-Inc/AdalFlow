@@ -167,7 +167,7 @@ class ReActAgent(Component):
     Users need to set up:
     - tools: a list of tools to use to complete the task. Each tool is a function or a function tool.
     - max_steps: the maximum number of steps the agent can take to complete the task.
-    - use_llm_as_fallback: a boolean to decide whether to use an additional LLM model as a fallback tool to answer the query.
+    - add_llm_as_fallback: a boolean to decide whether to use an additional LLM model as a fallback tool to answer the query.
     - model_client: the model client to use to generate the response.
     - model_kwargs: the model kwargs to use to generate the response.
     - template: the template to use to generate the prompt. Default is DEFAULT_REACT_AGENT_SYSTEM_PROMPT.
@@ -463,6 +463,7 @@ class ReActAgent(Component):
             step_output.action = None
             log.error(error_msg)
             return step_output
+
         else:
             try:
                 fun_expr: Function = x.data
