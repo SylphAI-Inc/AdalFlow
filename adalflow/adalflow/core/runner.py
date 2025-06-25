@@ -26,19 +26,6 @@ log = logging.getLogger(__name__)
 T = TypeVar("T", bound=BaseModel)  # Changed to use Pydantic BaseModel
 
 
-# @dataclass
-# class RunnerConfig:
-#     """Configuration for the Runner class.
-
-#     Attributes:
-#         output_type: Optional Pydantic data class type
-#         stream_parser: Optional stream parser
-#     """
-
-#     output_type: Optional[Type[T]] = None
-#     stream_parser: Optional["StreamParser"] = None
-
-
 class Runner(Component):
     """A runner class that executes an Agent instance with multi-step execution.
 
@@ -58,9 +45,6 @@ class Runner(Component):
     def __init__(
         self,
         agent: Agent,
-        # stream_parser: Optional["StreamParser"] = None,
-        # output_type: Optional[Type[T]] = None,
-        # max_steps: int = 10,
         **kwargs,
     ) -> None:
         """Initialize runner with an agent and configuration.
@@ -73,14 +57,11 @@ class Runner(Component):
         """
         super().__init__(**kwargs)
         self.agent = agent
-        # executor = executor if executor else self._init_executor()
-        # self.executor = executor
+
+        # get agent requirements
         self.max_steps = agent.max_steps
         self.answer_data_type = agent.answer_data_type
-        # self.config = RunnerConfig(
-        #     stream_parser=stream_parser,
-        #     output_type=output_type,
-        # )
+
         self.step_history = []
         # add the llm call to the executor as a tool
 
@@ -93,11 +74,6 @@ class Runner(Component):
         Returns:
             bool: True if the last step is a finish step
         """
-
-        # assert (
-        #     isinstance(step, Function),
-        #     f"Expected Function, but got {type(step)}, value: {step}",
-        # )
 
         # Check if it's a finish step
         if step.name == "finish":
@@ -124,28 +100,29 @@ class Runner(Component):
 
             if isinstance(data, str):
                 try:
-                    data = json.loads(data.replace("'", '"')) 
+                    data = json.loads(data.replace("'", '"'))
                     log.info(data)
                 except json.JSONDecodeError:
                     log.error(f"Failed to parse string as JSON: {data}")
                     return f"Error: Invalid JSON string: {data}"
 
-            # return only the 'properties key of the object and then load into the class 
-            
-            # TODO make more robust 
-            def recursive_parse(data): 
+            # return only the 'properties key of the object and then load into the class
+
+            # TODO make more robust
+            def recursive_parse(data):
                 # Return primitive types as-is
                 if isinstance(data, (str, int, float, bool, type(None))):
                     return data
 
                 # Handle dictionaries
                 if isinstance(data, dict):
-                    if "properties" in data: 
+                    if "properties" in data:
                         return recursive_parse(data["properties"])
                     return {k: recursive_parse(v) for k, v in data.items()}
 
                 # Handle other iterables (including lists, tuples, sets, etc.)
                 from collections.abc import Iterable, Sequence
+
                 if isinstance(data, Iterable) and not isinstance(data, (str, bytes)):
                     # For sequences (lists, tuples), preserve the type
                     if isinstance(data, Sequence):
@@ -165,6 +142,27 @@ class Runner(Component):
         except Exception as e:
             log.error(f"Failed to parse output: {e}")
             return f"Error processing output: {str(e)}"
+
+    @classmethod
+    def _get_planner_function(self, output: GeneratorOutput) -> Function:
+        """Check the planner output and return the function.
+
+        Args:
+            output: The planner output
+        """
+        if not isinstance(output, GeneratorOutput):
+            raise ValueError(
+                f"Expected GeneratorOutput, but got {type(output)}, value: {output}"
+            )
+
+        function = output.data
+
+        if not isinstance(function, Function):
+            raise ValueError(
+                f"Expected Function in the data field of the GeneratorOutput, but got {type(function)}, value: {function}"
+            )
+
+        return function
 
     def call(
         self,
@@ -188,14 +186,22 @@ class Runner(Component):
         Returns:
             The generator output of type specified in self.answer_data_type
         """
+        # reset the step history
         self.step_history = []
+
+        # take in the query in prompt_kwargs
         prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
+        prompt_kwargs["step_history"] = (
+            self.step_history
+        )  # a reference to the step history
+
         model_kwargs = model_kwargs.copy() if model_kwargs else {}
+
         step_count = 0
         last_output = None
 
-        # set maximum number of steps for the planner into the prompt 
-        prompt_kwargs["max_steps"] = self.max_steps
+        # set maximum number of steps for the planner into the prompt
+        # prompt_kwargs["max_steps"] = self.max_steps
 
         while step_count < self.max_steps:
             try:
@@ -207,23 +213,17 @@ class Runner(Component):
                     id=id,
                 )
 
-                if not isinstance(output, GeneratorOutput):
-                    raise ValueError(
-                        f"Expected GeneratorOutput, but got {type(output)}, value: {output}"
-                    )
+                function = self._get_planner_function(output)
 
-                function = output.data
-
-                # assert (
-                #     isinstance(function, Function),
-                #     f"Expected Function type, but got {type(function)}, value: {function}",
-                # )
-
+                # execute the tool
                 function_results = self._tool_execute(function)
-                last_output = function_results.output
 
+                # create a step output
                 step_ouput: StepOutput = StepOutput(
-                    step=step_count, function=function, observation=function_results.output
+                    step=step_count,
+                    action=function,
+                    function=function,
+                    observation=function_results.output,
                 )
                 self.step_history.append(step_ouput)
 
@@ -231,17 +231,17 @@ class Runner(Component):
                     last_output = self._process_data(function_results.output)
                     break
 
-                # Add function results to prompt for next step
-                if "step_history" not in prompt_kwargs:
-                    prompt_kwargs["step_history"] = []
-                else:
-                    # Format function results more clearly
-                    prompt_kwargs["step_history"].append(step_ouput)
-                # log.info(
-                #     "The prompt with the prompt template is {}".format(
-                #         self.agent.planner.get_prompt(**prompt_kwargs)
-                #     )
-                # )
+                # # Add function results to prompt for next step
+                # if "step_history" not in prompt_kwargs:
+                #     prompt_kwargs["step_history"] = []
+                # else:
+                #     # Format function results more clearly
+                #     prompt_kwargs["step_history"].append(step_ouput)
+                log.info(
+                    "The prompt with the prompt template is {}".format(
+                        self.agent.planner.get_prompt(**prompt_kwargs)
+                    )
+                )
 
                 step_count += 1
 
@@ -275,6 +275,11 @@ class Runner(Component):
         """
         self.step_history = []
         prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
+
+        prompt_kwargs["step_history"] = (
+            self.step_history
+        )  # a reference to the step history
+
         model_kwargs = model_kwargs.copy() if model_kwargs else {}
         step_count = 0
         last_output = None
@@ -289,41 +294,32 @@ class Runner(Component):
                     id=id,
                 )
 
-                if not isinstance(output, GeneratorOutput):
-                    raise ValueError(
-                        f"Expected GeneratorOutput, but got {type(output)}, value: {output}"
-                    )
-
-                # planner generated response using generator's call (inference)
-                function = output.data
-
-                # assert (
-                #     isinstance(function, Function),
-                #     f"Expected Function type, but got {type(function)}, value: {function}",
-                # )
-
+                function = self._get_planner_function(output)
                 function_results = self._tool_execute(function)
-                last_output = self._process_data(function_results.output)
 
                 step_output: StepOutput = StepOutput(
-                    step=step_count, function=function, observation=function_results.output
+                    step=step_count,
+                    action=function,
+                    function=function,
+                    observation=function_results.output,
                 )
                 self.step_history.append(step_output)
 
                 if self._check_last_step(function):
+                    last_output = self._process_data(function_results.output)
                     break
 
-                # Add function results to prompt for next step
-                if "step_history" not in prompt_kwargs:
-                    prompt_kwargs["step_history"] = []
-                else:
-                    # Format function results more clearly
-                    prompt_kwargs["step_history"].append(step_output)
-                # log.info(
-                #     "The prompt with the prompt template is {}".format(
-                #         self.agent.planner.get_prompt(**prompt_kwargs)
-                #     )
-                # )
+                # # Add function results to prompt for next step
+                # if "step_history" not in prompt_kwargs:
+                #     prompt_kwargs["step_history"] = []
+                # else:
+                #     # Format function results more clearly
+                #     prompt_kwargs["step_history"].append(step_output)
+                log.info(
+                    "The prompt with the prompt template is {}".format(
+                        self.agent.planner.get_prompt(**prompt_kwargs)
+                    )
+                )
 
                 step_count += 1
 
@@ -378,59 +374,6 @@ class Runner(Component):
         # This would require relying on the async_stream of the model_client instance of the generator and parsing that
         # using custom logic to buffer chunks and only stream when they complete a certain top-level field
 
-    # def backward(
-    #     self,
-    #     response: Parameter,
-    #     prompt_kwargs: Optional[Dict] = None,
-    #     template: Optional[str] = None,
-    #     backward_engine: Optional["Generator"] = None,
-    #     id: Optional[str] = None,
-    #     disable_backward_engine: bool = False,
-    # ):
-    #     """
-    #     Run backward pass on the planner.
-    #     Template is expected to be the template to guide the backward pass.
-    #     """
-    #     return self.planner.backward(
-    #         response=response,
-    #         prompt_kwargs=prompt_kwargs,
-    #         template=template,
-    #         backward_engine=backward_engine,
-    #         id=id,
-    #         disable_backward_engine=disable_backward_engine,
-    #     )
-
-    # def update_runner(
-    #     self,
-    #     planner: Optional[Agent] = None,
-    #     stream_parser: Optional["StreamParser"] = None,
-    #     output_parser: Optional[OutputParser] = None,
-    #     output_class: Optional[Type] = None,
-    #     context_map: Optional[Dict[str, Function]] = None,
-    #     planner_config: Optional[Dict[str, Any]] = None,
-    # ) -> None:
-    #     """Update runner configuration where the user can optionally provide a new planner instance or
-    #     a configuration of the planner if it is to be updated."""
-
-    #     # if both planner instance and planner_config is provided update using planner
-    #     if planner is not None:
-    #         self.planner = planner
-    #     else:
-    #         if planner_config is not None:
-    #             self.planner = Agent.from_config(planner_config)
-
-    #     # keep as is if None
-    #     self.config = RunnerConfig(
-    #         stream_parser=stream_parser or self.config.stream_parser,
-    #         output_parser=output_parser or self.config.output_parser,
-    #         output_class=output_class or self.config.output_class,
-    #         context_map=context_map or self.config.context_map,
-    #     )
-
-    # """
-    #   internal tool to execute tools as necessary based on the generator output of call and stream_call
-    # """
-
     def _tool_execute(
         self,
         func: Function,
@@ -439,83 +382,5 @@ class Runner(Component):
         Execute a tool function through the planner's tool manager.
         Handles both sync and async functions.
         """
+        # TODO: understand the tool call and its support for async
         return self.agent.tool_manager.call(expr_or_fun=func, step="execute")
-
-        # except Exception as e:
-        #     # TODO check map_f
-        #     if func is not None and isinstance(func, Function) and map_fn is None:
-        #         function_call_response = asyncio.run(
-        #             self.planner.context_map[func.name](**func.kwargs)
-        #         )
-        #         return function_call_response
-        #     else:
-        #         raise ValueError(f"Error {e} executing function: {func}")
-
-    # @classmethod
-    # def from_config(cls, config: Dict[str, Any]) -> 'Runner':
-    #     """Create a Runner instance from a configuration dictionary.
-
-    #     Args:
-    #         config: Configuration dictionary containing:
-    #             - planner: planner configuration
-    #             - stream_parser: Optional stream parser
-    #             - output_parser: Optional output parser
-    #             - output_class: Optional output class
-    #             - context_map: Optional context map
-    #             - name: Optional name for the runner
-
-    #     Example 1: Create a Runner from a config dictionary
-    #     runner_config = {
-    #         'name': 'example_runner',
-    #         'planner': {
-    #             'name': 'example_planner',
-    #             'system_prompt': 'You are a helpful assistant.',
-    #             'model_client': {
-    #                 'component_name': 'OpenAIClient',
-    #                 'component_config': {
-    #             'api_key': 'your-api-key',
-    #                     'model': 'gpt-3.5-turbo'
-    #                 }
-    #             },
-    #             'tool_manager': {
-    #                 'tools': []  # List of tools would go here
-    #             }
-    #         },
-    #         'output_parser': lambda x: {'text': x.text},  # Simple output parser
-    #         'output_class': GeneratorOutput,
-    #     }
-
-    #     Returns:
-    #         Configured Runner instance
-    #     """
-
-    #     # Extract planner config/instance
-    #     try:
-    #         planner = planner.from_config(config.get('planner'))
-    #     except Exception as e:
-    #         raise ValueError(f"Failed to create planner from config: {e}")
-
-    #     # Create runner instance
-    #     runner = cls(
-    #         planner=planner,
-    #         stream_parser=config.get('stream_parser', None),
-    #         output_parser=config.get('output_parser', None),
-    #         output_class=config.get('output_class', GeneratorOutput),
-    #     )
-
-    #     return runner
-
-    # def return_state_dict(self) -> Dict[str, Any]:
-    #     """Return the state of the runner as a dictionary that can be used to recreate it.
-
-    #     Returns:
-    #         Dictionary containing the runner's state
-    #     """
-    #     return {
-    #         'planner': self.planner.return_state_dict(),
-    #         'stream_parser': self.config.stream_parser,
-    #         'output_parser': self.config.output_parser,
-    #         'output_class': self.config.output_class,
-    #         'class_name': self.__class__.__name__,
-    #         'module_name': self.__class__.__module__
-    #     }

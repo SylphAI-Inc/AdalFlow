@@ -13,6 +13,7 @@ from adalflow.core.types import GeneratorOutput
 
 class DummyFunction:
     """Mimics adalflow.core.types.Function."""
+
     def __init__(self, name, kwargs=None):
         self.name = name
         self.kwargs = kwargs or {}
@@ -20,6 +21,7 @@ class DummyFunction:
 
 class FakePlanner:
     """Planner stub that returns a sequence of GeneratorOutput or raw."""
+
     def __init__(self, outputs):
         self._outputs = outputs
         self._idx = 0
@@ -36,13 +38,14 @@ class FakePlanner:
             use_cache=use_cache,
             id=id,
         )
-    
+
     def get_prompt(self, **kwargs):
         return ""
 
 
 class DummyAgent:
     """Bare-bones Agent for Runner, including answer_data_type for Runner.__init__."""
+
     def __init__(self, planner, max_steps=10, tool_manager=None, answer_data_type=None):
         self.planner = planner
         self.max_steps = max_steps
@@ -52,18 +55,19 @@ class DummyAgent:
 
 class DummyStepOutput:
     """Stub for StepOutput with flexible constructor."""
+
     def __init__(self, *args, **kwargs):
-        self.step = kwargs.get('step', args[0] if len(args) > 0 else None)
-        self.function = kwargs.get('function', args[1] if len(args) > 1 else None)
+        self.step = kwargs.get("step", args[0] if len(args) > 0 else None)
+        self.function = kwargs.get("function", args[1] if len(args) > 1 else None)
         # Runner uses 'observation'; fallback to 'output'
-        self.output = kwargs.get('observation', kwargs.get('output', None))
+        self.output = kwargs.get("observation", kwargs.get("output", None))
 
 
 class TestRunner(unittest.TestCase):
     def setUp(self):
         # Patch out the real StepOutput to avoid signature mismatch
         self.step_output_patcher = unittest.mock.patch.object(
-            runner_module, 'StepOutput', DummyStepOutput
+            runner_module, "StepOutput", DummyStepOutput
         )
         self.step_output_patcher.start()
 
@@ -109,7 +113,9 @@ class TestRunner(unittest.TestCase):
     def test_call_respects_max_steps_without_finish(self):
         fn = DummyFunction(name="no_finish")
         go = GeneratorOutput(data=fn)
-        agent = DummyAgent(planner=FakePlanner([go, go, go]), max_steps=2, answer_data_type=None)
+        agent = DummyAgent(
+            planner=FakePlanner([go, go, go]), max_steps=2, answer_data_type=None
+        )
         runner = Runner(agent=agent)
         runner._tool_execute = lambda func: SimpleNamespace(output="out")
 
@@ -178,12 +184,7 @@ class TestRunner(unittest.TestCase):
         data = {
             "properties": {
                 "name": "test",
-                "nested": {
-                    "properties": {
-                        "value": "hello",
-                        "count": 42
-                    }
-                }
+                "nested": {"properties": {"value": "hello", "count": 42}},
             }
         }
         result = runner._process_data(data)
@@ -206,7 +207,7 @@ class TestRunner(unittest.TestCase):
             "properties": {
                 "items": [
                     {"properties": {"id": 1, "name": "one"}},
-                    {"properties": {"id": 2, "name": "two"}}
+                    {"properties": {"id": 2, "name": "two"}},
                 ]
             }
         }

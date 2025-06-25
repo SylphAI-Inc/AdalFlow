@@ -5,14 +5,15 @@ import types
 from unittest.mock import patch
 
 import adalflow.core.agent as agent_module
-from adalflow.core.types import ModelType
 from adalflow.core.types import FunctionOutput
 
 
 # --- Dummy stubs for dependencies ---
 
+
 class FallbackModelClient:
     pass
+
 
 class DummyGenerator:
     def __init__(
@@ -45,15 +46,14 @@ class DummyGenerator:
 class TestAgent(unittest.TestCase):
     def setUp(self):
         # Stub out the real Generator
-        self.gen_patcher = patch.object(agent_module, 'Generator', DummyGenerator)
+        self.gen_patcher = patch.object(agent_module, "Generator", DummyGenerator)
         self.gen_patcher.start()
 
         # No-op the fun_to_grad_component decorator so `finish` tool registers cleanly
         import adalflow.optim.grad_component as grad_comp
+
         self.decorator_patcher = patch.object(
-            grad_comp,
-            'fun_to_grad_component',
-            lambda *args, **kwargs: (lambda fn: fn)
+            grad_comp, "fun_to_grad_component", lambda *args, **kwargs: (lambda fn: fn)
         )
         self.decorator_patcher.start()
 
@@ -64,22 +64,22 @@ class TestAgent(unittest.TestCase):
     def test_default_agent_with_llm_fallback(self):
         mc = FallbackModelClient()
         agent = agent_module.Agent(
-            name='agent-with-fallback',
+            name="agent-with-fallback",
             tools=[],
-            context_variables={'foo': 'bar'},
+            context_variables={"foo": "bar"},
             add_llm_as_fallback=True,
             model_client=mc,
         )
 
         # Name & planner
-        self.assertEqual(agent.name, 'agent-with-fallback')
+        self.assertEqual(agent.name, "agent-with-fallback")
         self.assertIsInstance(agent.planner, DummyGenerator)
 
         # Tools include both fallback and finish
         tool_map = agent.tool_manager._context_map
         self.assertIsInstance(tool_map, dict)
-        self.assertIn('llm_tool', tool_map)
-        self.assertIn('finish',   tool_map)
+        self.assertIn("llm_tool", tool_map)
+        self.assertIn("finish", tool_map)
 
         # Prompt delegation
         prompt = agent.get_prompt(example=123)
@@ -92,7 +92,7 @@ class TestAgent(unittest.TestCase):
     def test_default_agent_without_llm_fallback(self):
         mc = FallbackModelClient()
         agent = agent_module.Agent(
-            name='agent-no-fallback',
+            name="agent-no-fallback",
             tools=[],
             context_variables={},
             add_llm_as_fallback=False,
@@ -101,12 +101,12 @@ class TestAgent(unittest.TestCase):
 
         # Only the finish tool
         tool_map = agent.tool_manager._context_map
-        self.assertNotIn('llm_tool', tool_map)
-        self.assertIn('finish',     tool_map)
+        self.assertNotIn("llm_tool", tool_map)
+        self.assertIn("finish", tool_map)
 
         # Planner still present
         self.assertIsInstance(agent.planner, DummyGenerator)
-        self.assertTrue(agent.get_prompt(x=1).startswith('dummy-prompt'))
+        self.assertTrue(agent.get_prompt(x=1).startswith("dummy-prompt"))
 
     def test_agent_accepts_custom_tools(self):
         # A user-defined tool should appear in the map
@@ -115,7 +115,7 @@ class TestAgent(unittest.TestCase):
 
         mc = FallbackModelClient()
         agent = agent_module.Agent(
-            name='agent-tools',
+            name="agent-tools",
             tools=[custom_tool],
             context_variables={},
             add_llm_as_fallback=False,
@@ -123,53 +123,52 @@ class TestAgent(unittest.TestCase):
         )
 
         tool_map = agent.tool_manager._context_map
-        self.assertIn('custom_tool', tool_map)
-        self.assertTrue(callable(tool_map['custom_tool']))
+        self.assertIn("custom_tool", tool_map)
+        self.assertTrue(callable(tool_map["custom_tool"]))
 
         FunctionOutput
 
-        self.assertEqual(tool_map['custom_tool'].call(10).output, 20)
+        self.assertEqual(tool_map["custom_tool"].call(10).output, 20)
 
     def test_model_kwargs_and_template_propagate_to_planner(self):
         mc = FallbackModelClient()
         agent = agent_module.Agent(
-            name='agent-params',
+            name="agent-params",
             tools=[],
             context_variables={},
             add_llm_as_fallback=False,
             model_client=mc,
-            model_kwargs={'beta': 99},
-            template='my-custom-tpl',
+            model_kwargs={"beta": 99},
+            template="my-custom-tpl",
         )
 
         # Our DummyGenerator recorded those args
-        self.assertEqual(agent.planner.model_kwargs, {'beta': 99})
-        self.assertEqual(agent.planner.template, 'my-custom-tpl')
+        self.assertEqual(agent.planner.model_kwargs, {"beta": 99})
+        self.assertEqual(agent.planner.template, "my-custom-tpl")
 
     def test_override_tool_manager_and_planner(self):
         # Create fakes that track identity
         class FakeTM:
             def __init__(self):
-                self._context_map = {'x': 'y'}
+                self._context_map = {"x": "y"}
+
         fake_tm = FakeTM()
         fake_pg = DummyGenerator()
 
         agent = agent_module.Agent(
-            name='agent-override',
-            tool_manager=fake_tm,
-            planner=fake_pg
+            name="agent-override", tool_manager=fake_tm, planner=fake_pg
         )
 
         self.assertIs(agent.tool_manager, fake_tm)
-        self.assertIs(agent.planner,      fake_pg)
+        self.assertIs(agent.planner, fake_pg)
         # Directly accessing the context map from tool manager
         self.assertEqual(agent.tool_manager._context_map, fake_tm._context_map)
 
     def test_context_variables_wired_into_tool_manager(self):
         mc = FallbackModelClient()
-        ctx = {'user': 'alice'}
+        ctx = {"user": "alice"}
         agent = agent_module.Agent(
-            name='agent-context',
+            name="agent-context",
             tools=[],
             context_variables=ctx,
             add_llm_as_fallback=False,
@@ -178,8 +177,7 @@ class TestAgent(unittest.TestCase):
 
         # The default TM stores it in its private additional_context
         self.assertEqual(
-            agent.tool_manager._additional_context['context_variables'],
-            ctx
+            agent.tool_manager._additional_context["context_variables"], ctx
         )
 
 

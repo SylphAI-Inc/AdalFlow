@@ -10,32 +10,22 @@ for multi-step reasoning and tool usage. The example shows how to:
 5. Process and display results
 """
 
-import logging
-import asyncio
-from typing import TypeVar, List, Any, Tuple, Optional
+from typing import TypeVar, List, Any, Optional
 
 # Import AdalFlow components
 from adalflow.core.agent import Agent
 from adalflow.core.runner import Runner
-from adalflow.core.tool_manager import ToolManager
 from adalflow.core.func_tool import FunctionTool
-from adalflow.core.types import Function
 from adalflow.components.model_client.openai_client import OpenAIClient
-from adalflow.components.output_parsers import JsonOutputParser
-import os
-import json
-from pydantic import BaseModel
 
 from adalflow.core.base_data_class import DataClass
 from dataclasses import dataclass
 
-from dotenv import load_dotenv
+from adalflow.utils import setup_env, get_logger
 
-load_dotenv()
+setup_env()
 
-# Set up logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = get_logger(level="DEBUG", enable_file=False)
 
 # Type variable for generic return type
 T = TypeVar("T")
@@ -58,23 +48,30 @@ def search_tool(query: str) -> str:
     logger.info(f"Searching for: {query}")
     return f"Search results for '{query}': [Result 1, Result 2, Result 3]"
 
+
 def add_tool(x: int, y: int) -> int:
     return x + y
+
 
 def sub_tool(x: int, y: int) -> int:
     return x - y
 
+
 async def async_sub_tool(x: int, y: int) -> int:
     return x - y
+
 
 async def async_multiply_tool(x: int, y: int) -> int:
     return x * y
 
+
 async def async_divide_tool(x: int, y: int) -> int:
     return x / y
 
+
 def square_root_tool(x: int) -> int:
-    return x ** 0.5
+    return x**0.5
+
 
 # ---------------------------------------------------------------------------
 # ReAct Agent Setup
@@ -95,7 +92,7 @@ def run_react_agent_example():
             ),
             FunctionTool(
                 fn=add_tool,
-            ), 
+            ),
             FunctionTool(
                 fn=sub_tool,
             ),
@@ -113,18 +110,15 @@ def run_react_agent_example():
             ),
         ]
 
-        api_key = os.getenv("OPENAI_API_KEY")
-
-        model_client = OpenAIClient(api_key=api_key)
-
         @dataclass
         class Summary(DataClass):
             """Stores the results of an agent's execution."""
+
             step_count: int
             final_output: Any
             search_tool_calls: List[str]
 
-        @dataclass 
+        @dataclass
         class Person(DataClass):
             name: str
             age: int
@@ -134,7 +128,7 @@ def run_react_agent_example():
         agent = Agent(
             name="ReActAgent",
             tools=tools,
-            model_client=model_client,
+            model_client=OpenAIClient(),
             model_kwargs={"model": "gpt-4o-mini", "temperature": 0.7},
             answer_data_type=Person,
         )
@@ -203,12 +197,10 @@ async def arun_react_agent_example():
             ),
         ]
 
-        api_key = os.getenv("OPENAI_API_KEY")
-        model_client = OpenAIClient(api_key=api_key)
-
         @dataclass
         class Summary(DataClass):
             """Stores the results of an agent's execution."""
+
             step_count: int
             final_output: Any
             search_tool_calls: List[str]
@@ -217,7 +209,7 @@ async def arun_react_agent_example():
         agent = Agent(
             name="AsyncReActAgent",
             tools=tools,
-            model_client=model_client,
+            model_client=OpenAIClient(),
             model_kwargs={"model": "gpt-4o-mini", "temperature": 0.7},
             answer_data_type=Summary,
         )
@@ -253,15 +245,18 @@ async def arun_react_agent_example():
         logger.error(f"Error running async ReAct agent example: {str(e)}")
         raise
 
+
 # ---------------------------------------------------------------------------
 # Nested Dataclass Structures
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class ToolCall(DataClass):
     tool_name: str
     input_args: Any
     output: Any
+
 
 @dataclass
 class StepDetail(DataClass):
@@ -270,6 +265,7 @@ class StepDetail(DataClass):
     observation: str
     tool_call: Optional[ToolCall]
 
+
 @dataclass
 class Summary(DataClass):
     step_count: int
@@ -277,15 +273,18 @@ class Summary(DataClass):
     steps: List[StepDetail]
     tool_calls: List[ToolCall]
 
+
 @dataclass
 class Metrics(DataClass):
     time_taken_seconds: float
     tokens_used: int
 
+
 @dataclass
 class PersonSummary(DataClass):
     summary: Summary
     metrics: Metrics
+
 
 @dataclass
 class Person(DataClass):
@@ -293,32 +292,40 @@ class Person(DataClass):
     age: int
     details: PersonSummary
 
+
 @dataclass
 class Department(DataClass):
     department_name: str
     members: List[Person]
+
 
 @dataclass
 class Organization(DataClass):
     org_name: str
     departments: List[Department]
 
+
 # ---------------------------------------------------------------------------
 # ReAct Agent Runner Example
 # ---------------------------------------------------------------------------
 
+
 def run_advanced_react_agent():
     # Create tool instances
-    tools = [FunctionTool(fn=search_tool), FunctionTool(fn=add_tool), FunctionTool(fn=async_sub_tool), FunctionTool(fn=async_multiply_tool), FunctionTool(fn=async_divide_tool), FunctionTool(fn=square_root_tool)]
-
-    api_key = os.getenv("OPENAI_API_KEY")
-    model_client = OpenAIClient(api_key=api_key)
+    tools = [
+        FunctionTool(fn=search_tool),
+        FunctionTool(fn=add_tool),
+        FunctionTool(fn=async_sub_tool),
+        FunctionTool(fn=async_multiply_tool),
+        FunctionTool(fn=async_divide_tool),
+        FunctionTool(fn=square_root_tool),
+    ]
 
     # Instantiate the agent with the complex answer data type
     agent = Agent(
         name="AdvancedReActAgent",
         tools=tools,
-        model_client=model_client,
+        model_client=OpenAIClient(),
         model_kwargs={"model": "gpt-4o-mini", "temperature": 0.5},
         answer_data_type=Organization,
     )
@@ -345,19 +352,26 @@ def run_advanced_react_agent():
 
     return history, result
 
+
 # ---------------------------------------------------------------------------
 # Async Example
 # ---------------------------------------------------------------------------
 
+
 async def arun_advanced_react_agent():
-    tools = [FunctionTool(fn=search_tool), FunctionTool(fn=add_tool), FunctionTool(fn=async_sub_tool), FunctionTool(fn=async_multiply_tool), FunctionTool(fn=async_divide_tool), FunctionTool(fn=square_root_tool)]
-    api_key = os.getenv("OPENAI_API_KEY")
-    model_client = OpenAIClient(api_key=api_key)
+    tools = [
+        FunctionTool(fn=search_tool),
+        FunctionTool(fn=add_tool),
+        FunctionTool(fn=async_sub_tool),
+        FunctionTool(fn=async_multiply_tool),
+        FunctionTool(fn=async_divide_tool),
+        FunctionTool(fn=square_root_tool),
+    ]
 
     agent = Agent(
         name="AsyncAdvancedReActAgent",
         tools=tools,
-        model_client=model_client,
+        model_client=OpenAIClient(),
         model_kwargs={"model": "gpt-4o-mini", "temperature": 0.5},
         answer_data_type=Organization,
     )
@@ -365,9 +379,7 @@ async def arun_advanced_react_agent():
     # Increase max_steps to allow deeper reasoning
     runner = Runner(agent=agent, max_steps=12)
 
-    query = (
-        "Find 7 * 6, search details for '42 meaning', then summarize how the number appears in popular culture."  
-    )
+    query = "Find 7 * 6, search details for '42 meaning', then summarize how the number appears in popular culture."
 
     print("RUNNING ADVANCED ASYNC REACT AGENT EXAMPLE")
     history, result = await runner.acall(prompt_kwargs={"input_str": query})
@@ -376,10 +388,11 @@ async def arun_advanced_react_agent():
     for step in history:
         print(step)
 
-    print("\nFINAL RESULT") 
+    print("\nFINAL RESULT")
     print(result)
 
     return history, result
+
 
 # ---------------------------------------------------------------------------
 # Main Execution
@@ -391,14 +404,14 @@ if __name__ == "__main__":
     run_react_agent_example()
 
     # Run async example
-    print("\n" + "=" * 80)
-    print("Running async ReAct agent example...")
-    asyncio.run(arun_react_agent_example())
+    # print("\n" + "=" * 80)
+    # print("Running async ReAct agent example...")
+    # asyncio.run(arun_react_agent_example())
 
-    print("\n" + "=" * 80)
-    print("Running advanced ReAct agent example...")
-    run_advanced_react_agent()
+    # print("\n" + "=" * 80)
+    # print("Running advanced ReAct agent example...")
+    # run_advanced_react_agent()
 
-    print("\n" + "=" * 80)
-    print("Running advanced async ReAct agent example...")
-    asyncio.run(arun_advanced_react_agent())
+    # print("\n" + "=" * 80)
+    # print("Running advanced async ReAct agent example...")
+    # asyncio.run(arun_advanced_react_agent())
