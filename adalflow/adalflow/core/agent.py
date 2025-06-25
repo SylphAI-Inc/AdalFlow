@@ -19,6 +19,9 @@ from adalflow.core.prompt_builder import Prompt
 from adalflow.core.types import GeneratorOutput, ModelType, Function
 from adalflow.optim.parameter import Parameter, ParameterType
 from adalflow.components.output_parsers import JsonOutputParser
+from adalflow.core.container import ComponentList
+from adalflow.core.func_tool import FunctionTool 
+
 import logging
 
 
@@ -305,7 +308,7 @@ class Agent(Component):
             raise ValueError("Planner must be provided to the agent. ")
 
     def is_training(self) -> bool:
-        return self.generator.training
+        return self.planner.training
 
     def get_prompt(self, **kwargs) -> str:
         """Get formatted prompt using generator's prompt template.
@@ -316,15 +319,15 @@ class Agent(Component):
         Returns:
             Formatted prompt string
         """
-        return self.generator.get_prompt(**kwargs)
+        return self.planner.get_prompt(**kwargs)
 
-    def get_all_tools(self) -> List[Dict[str, Any]]:
+    def get_all_tools(self) -> Dict[str, object]:
         """Get list of available tools from tool manager.
 
         Returns:
-            List of tool dictionaries with name, description, and schema
+            List of tool dictionaries with name as the key correspond to the function 
         """
-        return self.tool_manager.get_all_tools()
+        return self.tool_manager._context_map
 
     # TODO fix errors with from_config
     # @classmethod

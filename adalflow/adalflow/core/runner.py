@@ -39,7 +39,7 @@ T = TypeVar("T", bound=BaseModel)  # Changed to use Pydantic BaseModel
 
 
 class Runner(Component):
-    """A runner class that executes an adal.Agent instance with multi-step execution.
+    """A runner class that executes an Agent instance with multi-step execution.
 
     It internally maintains a planner LLM and an executor and adds a LLM call to the executor as a tool for the planner.
 
@@ -75,6 +75,7 @@ class Runner(Component):
         # executor = executor if executor else self._init_executor()
         # self.executor = executor
         self.max_steps = agent.max_steps
+        self.answer_data_type = agent.answer_data_type
         # self.config = RunnerConfig(
         #     stream_parser=stream_parser,
         #     output_type=output_type,
@@ -103,7 +104,7 @@ class Runner(Component):
 
         return False
 
-    def _process_data(self, data: Any, id: Optional[str] = None) -> T:
+    def _process_data(self, data: dict[str, Any], id: Optional[str] = None) -> T:
         """Process the generator output data field and convert to the specified pydantic data class of output_type.
 
         Args:
@@ -113,13 +114,13 @@ class Runner(Component):
         Returns:
             str: The processed data as a string
         """
-        if not self.config.output_type:
+        if not self.answer_data_type:
             return data
 
         try:
             # expect data.observation to be a dictionary
             # Convert to Pydantic model
-            model_output = self.config.output_type(**data)
+            model_output = self.answer_data_type(**data)
 
             return model_output
 
@@ -147,7 +148,7 @@ class Runner(Component):
             id: Optional unique identifier for the request
 
         Returns:
-            The generator output of type specified in self.config.output_type
+            The generator output of type specified in self.answer_data_type
         """
         self.step_history = []
         prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
@@ -181,7 +182,7 @@ class Runner(Component):
                 last_output = self._process_data(function_results.output)
 
                 step_ouput: StepOutput = StepOutput(
-                    step=step_count, function=function, output=function_results.output
+                    step=step_count, function=function, observation=function_results.output
                 )
                 self.step_history.append(step_ouput)
 
@@ -196,7 +197,7 @@ class Runner(Component):
                     prompt_kwargs["step_history"].append(step_ouput)
                 log.info(
                     "The prompt with the prompt template is {}".format(
-                        self.planner.get_prompt(**prompt_kwargs)
+                        self.agent.planner.get_prompt(**prompt_kwargs)
                     )
                 )
 
@@ -263,7 +264,7 @@ class Runner(Component):
                 last_output = self._process_data(function_results.output)
 
                 step_output: StepOutput = StepOutput(
-                    step=step_count, function=function, output=function_results.output
+                    step=step_count, function=function, observation=function_results.output
                 )
                 self.step_history.append(step_output)
 
@@ -278,7 +279,7 @@ class Runner(Component):
                     prompt_kwargs["step_history"].append(step_output)
                 log.info(
                     "The prompt with the prompt template is {}".format(
-                        self.planner.get_prompt(**prompt_kwargs)
+                        self.agent.planner.get_prompt(**prompt_kwargs)
                     )
                 )
 

@@ -1,238 +1,187 @@
-import pytest
-import json
-from unittest.mock import Mock, patch, AsyncMock
-from adalflow.core.agent import Agent
-from adalflow.core.tool_manager import ToolManager
-from adalflow.core.types import GeneratorOutput, StepOutput, Function
-from adalflow.core.model_client import ModelClient
+# tests/test_agent_via_agent.py
 
-# from adalflow.core.exceptions import ToolExecutionError
+import unittest
+import types
+from unittest.mock import patch
 
-import asyncio
+import adalflow.core.agent as agent_module
+from adalflow.core.types import ModelType
+from adalflow.core.types import FunctionOutput
 
 
-class TestAgent:
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        # Mock dependencies
-        self.mock_tool_manager = Mock(spec=ToolManager)
-        self.mock_tool_manager.get_all_tools = Mock(return_value=[])
-        self.mock_tool_manager.get_tool = Mock(return_value=Mock())
-        self.mock_tool_manager.execute_func = Mock(return_value="tool result")
-        self.mock_tool_manager.aexecute_func = AsyncMock(
-            return_value="async tool result"
+# --- Dummy stubs for dependencies ---
+
+class FallbackModelClient:
+    pass
+
+class DummyGenerator:
+    def __init__(
+        self,
+        model_client=None,
+        model_kwargs=None,
+        model_type=None,
+        template=None,
+        prompt_kwargs=None,
+        output_processors=None,
+        name=None,
+        **kwargs,
+    ):
+        self.training = False
+        self.model_client = model_client
+        self.model_kwargs = model_kwargs
+        self.model_type = model_type
+        self.template = template
+        self.prompt_kwargs = prompt_kwargs
+        self.output_processors = output_processors
+        self.name = name
+
+    def get_prompt(self, **kwargs):
+        return f"dummy-prompt({kwargs})"
+
+    def __call__(self, *args, **kwargs):
+        return types.SimpleNamespace(data="dummy response")
+
+
+class TestAgent(unittest.TestCase):
+    def setUp(self):
+        # Stub out the real Generator
+        self.gen_patcher = patch.object(agent_module, 'Generator', DummyGenerator)
+        self.gen_patcher.start()
+
+        # No-op the fun_to_grad_component decorator so `finish` tool registers cleanly
+        import adalflow.optim.grad_component as grad_comp
+        self.decorator_patcher = patch.object(
+            grad_comp,
+            'fun_to_grad_component',
+            lambda *args, **kwargs: (lambda fn: fn)
+        )
+        self.decorator_patcher.start()
+
+    def tearDown(self):
+        self.gen_patcher.stop()
+        self.decorator_patcher.stop()
+
+    def test_default_agent_with_llm_fallback(self):
+        mc = FallbackModelClient()
+        agent = agent_module.Agent(
+            name='agent-with-fallback',
+            tools=[],
+            context_variables={'foo': 'bar'},
+            add_llm_as_fallback=True,
+            model_client=mc,
         )
 
-        self.mock_model_client = Mock(spec=ModelClient)
-        self.mock_model_client.to_dict.return_value = {"component_name": "MockClient"}
+        # Name & planner
+        self.assertEqual(agent.name, 'agent-with-fallback')
+        self.assertIsInstance(agent.planner, DummyGenerator)
 
-        # Sample config
-        self.sample_config = {
-            "name": "test_agent",
-            "tool_manager": {"tools": []},
-            "system_prompt": "Test system prompt",
-            "model_client": {"component_name": "MockClient"},
-            "model_kwargs": {"model": "test"},
-        }
+        # Tools include both fallback and finish
+        tool_map = agent.get_all_tools()
+        self.assertIsInstance(tool_map, dict)
+        self.assertIn('llm_tool', tool_map)
+        self.assertIn('finish',   tool_map)
 
-        # Create test functions and outputs
-        self.test_function = Function(
-            name="test_func", arguments=json.dumps({"arg1": "value1"})
+        # Prompt delegation
+        prompt = agent.get_prompt(example=123)
+        self.assertEqual(prompt, "dummy-prompt({'example': 123})")
+
+        # Training flag mirrored
+        agent.planner.training = True
+        self.assertTrue(agent.is_training())
+
+    def test_default_agent_without_llm_fallback(self):
+        mc = FallbackModelClient()
+        agent = agent_module.Agent(
+            name='agent-no-fallback',
+            tools=[],
+            context_variables={},
+            add_llm_as_fallback=False,
+            model_client=mc,
         )
 
-        self.test_step_output = StepOutput(
-            step=1,
-            action="test_action",
-            function=self.test_function,
-            observation={"result": "test result"},
+        # Only the finish tool
+        tool_map = agent.get_all_tools()
+        self.assertNotIn('llm_tool', tool_map)
+        self.assertIn('finish',     tool_map)
+
+        # Planner still present
+        self.assertIsInstance(agent.planner, DummyGenerator)
+        self.assertTrue(agent.get_prompt(x=1).startswith('dummy-prompt'))
+
+    def test_agent_accepts_custom_tools(self):
+        # A user-defined tool should appear in the map
+        def custom_tool(x: int) -> int:
+            return x * 2
+
+        mc = FallbackModelClient()
+        agent = agent_module.Agent(
+            name='agent-tools',
+            tools=[custom_tool],
+            context_variables={},
+            add_llm_as_fallback=False,
+            model_client=mc,
         )
 
-        self.generator_output = GeneratorOutput(
-            data=self.test_step_output, raw_response="raw response"
+        tool_map = agent.get_all_tools()
+        self.assertIn('custom_tool', tool_map)
+        self.assertTrue(callable(tool_map['custom_tool']))
+
+        FunctionOutput
+
+        self.assertEqual(tool_map['custom_tool'].call(10).output, 20)
+
+    def test_model_kwargs_and_template_propagate_to_planner(self):
+        mc = FallbackModelClient()
+        agent = agent_module.Agent(
+            name='agent-params',
+            tools=[],
+            context_variables={},
+            add_llm_as_fallback=False,
+            model_client=mc,
+            model_kwargs={'beta': 99},
+            template='my-custom-tpl',
         )
 
-        # Mock generator
-        self.mock_generator = Mock()
-        self.mock_generator.call = Mock(return_value=self.generator_output)
-        self.mock_generator.acall = AsyncMock(return_value=self.generator_output)
+        # Our DummyGenerator recorded those args
+        self.assertEqual(agent.planner.model_kwargs, {'beta': 99})
+        self.assertEqual(agent.planner.template, 'my-custom-tpl')
 
-        # Patch Generator class
-        self.generator_patcher = patch(
-            "adalflow.core.agent.Generator", return_value=self.mock_generator
-        )
-        self.mock_generator_class = self.generator_patcher.start()
+    def test_override_tool_manager_and_planner(self):
+        # Create fakes that track identity
+        class FakeTM:
+            def __init__(self):
+                self._context_map = {'x': 'y'}
+        fake_tm = FakeTM()
+        fake_pg = DummyGenerator()
 
-        yield
-
-        # Cleanup
-        self.generator_patcher.stop()
-
-    # Test Initialization
-    def test_init_with_tools(self):
-        """Test agent initialization with tools"""
-        tools = [Mock(), Mock()]
-        agent = Agent(
-            name="test_agent",
-            system_prompt="Test",
-            model_client=self.mock_model_client,
-            tools=tools,
+        agent = agent_module.Agent(
+            name='agent-override',
+            tool_manager=fake_tm,
+            planner=fake_pg
         )
 
-        assert agent.name == "test_agent"
-        assert len(agent.tool_manager.tools) == 2
+        self.assertIs(agent.tool_manager, fake_tm)
+        self.assertIs(agent.planner,      fake_pg)
+        # get_all_tools now returns the exact map on the provided TM
+        self.assertEqual(agent.get_all_tools(), fake_tm._context_map)
 
-    # Test Call Methods
-    def test_call(self):
-        """Test agent call method"""
-        agent = Agent(
-            name="test_agent", system_prompt="Test", model_client=self.mock_model_client
+    def test_context_variables_wired_into_tool_manager(self):
+        mc = FallbackModelClient()
+        ctx = {'user': 'alice'}
+        agent = agent_module.Agent(
+            name='agent-context',
+            tools=[],
+            context_variables=ctx,
+            add_llm_as_fallback=False,
+            model_client=mc,
         )
 
-        prompt_kwargs = {"input": "test input", "context": "test context"}
-        model_kwargs = {"temperature": 0.7}
-
-        result = agent.call(
-            prompt_kwargs=prompt_kwargs,
-            model_kwargs=model_kwargs,
-            use_cache=True,
-            id="test_id",
+        # The default TM stores it in its private additional_context
+        self.assertEqual(
+            agent.tool_manager._additional_context['context_variables'],
+            ctx
         )
 
-        # Verify generator was called with correct arguments
-        self.mock_generator.call.assert_called_once_with(
-            prompt_kwargs=prompt_kwargs,
-            model_kwargs=model_kwargs,
-            use_cache=True,
-            id="test_id",
-        )
 
-        assert result == self.generator_output
-
-    @pytest.mark.asyncio
-    async def test_acall(self):
-        """Test agent async call method"""
-        agent = Agent(
-            name="test_agent", system_prompt="Test", model_client=self.mock_model_client
-        )
-
-        prompt_kwargs = {"input": "test input"}
-
-        result = await agent.acall(
-            prompt_kwargs=prompt_kwargs,
-            model_kwargs=None,
-            use_cache=False,
-            id="async_test",
-        )
-
-        # Verify generator was called with correct arguments
-        self.mock_generator.acall.assert_awaited_once_with(
-            prompt_kwargs=prompt_kwargs,
-            model_kwargs=None,
-            use_cache=False,
-            id="async_test",
-        )
-
-        assert result == self.generator_output
-
-    # Test Tool Execution
-    def test_execute_tool(self):
-        """Test tool execution"""
-        agent = Agent(
-            name="test_agent", system_prompt="Test", model_client=self.mock_model_client
-        )
-
-        result = agent.tool_manager.execute_func(self.test_function)
-        assert result == "tool result"
-        self.mock_tool_manager.execute_func.assert_called_once_with(self.test_function)
-
-    @pytest.mark.asyncio
-    async def test_aexecute_tool(self):
-        """Test async tool execution"""
-        agent = Agent(
-            name="test_agent", system_prompt="Test", model_client=self.mock_model_client
-        )
-
-        result = await agent.tool_manager.aexecute_func(self.test_function)
-        assert result == "async tool result"
-        self.mock_tool_manager.aexecute_func.assert_awaited_once_with(
-            self.test_function
-        )
-
-    # Test Error Cases
-    def test_call_with_invalid_prompt_kwargs(self):
-        """Test call with invalid prompt kwargs"""
-        agent = Agent(
-            name="test_agent", system_prompt="Test", model_client=self.mock_model_client
-        )
-
-        with pytest.raises(ValueError):
-            agent.call(prompt_kwargs=None)
-
-    # @pytest.mark.asyncio
-    # async def test_tool_execution_error(self):
-    #     """Test tool execution error handling"""
-    #     self.mock_tool_manager.execute_func.side_effect = ToolExecutionError(
-    #         "Tool failed"
-    #     )
-
-    #     agent = Agent(
-    #         name="test_agent", system_prompt="Test", model_client=self.mock_model_client
-    #     )
-
-    #     with pytest.raises(ToolExecutionError):
-    #         agent.tool_manager.execute_func(self.test_function)
-
-    # Test Configuration
-    def test_update_config(self):
-        """Test updating agent configuration"""
-        agent = Agent(
-            name="test_agent", system_prompt="Test", model_client=self.mock_model_client
-        )
-
-        new_config = {
-            "name": "updated_agent",
-            "system_prompt": "Updated prompt",
-            "model_kwargs": {"temperature": 0.8},
-        }
-
-        agent.update_agent_config(**new_config)
-
-        assert agent.name == "updated_agent"
-        assert agent.system_prompt == "Updated prompt"
-        assert agent.model_kwargs["temperature"] == 0.8
-
-    # Test Serialization
-    def test_to_dict(self):
-        """Test agent serialization to dictionary"""
-        agent = Agent(
-            name="test_agent",
-            system_prompt="Test",
-            model_client=self.mock_model_client,
-            tools=[Mock()],
-        )
-
-        agent_dict = agent.to_dict()
-
-        assert agent_dict["name"] == "test_agent"
-        assert agent_dict["system_prompt"] == "Test"
-        assert "tools" in agent_dict
-        assert "model_client" in agent_dict
-
-    @pytest.mark.asyncio
-    async def test_concurrent_calls(self):
-        """Test multiple concurrent async calls"""
-        agent = Agent(
-            name="test_agent", system_prompt="Test", model_client=self.mock_model_client
-        )
-
-        # Create multiple tasks
-        tasks = [
-            agent.acall(prompt_kwargs={"input": f"test {i}"}, id=f"task-{i}")
-            for i in range(5)
-        ]
-
-        results = await asyncio.gather(*tasks)
-
-        assert len(results) == 5
-        assert all(isinstance(r, GeneratorOutput) for r in results)
-        assert self.mock_generator.acall.await_count == 5
+if __name__ == "__main__":
+    unittest.main()

@@ -18,7 +18,7 @@ from .string_parser import (
 
 from .agent import Agent
 from .runner import Runner
-from .multirunner import MultiRunner
+# from .multirunner import MultiRunner
 
 from .prompt_builder import Prompt
 
@@ -70,7 +70,7 @@ __all__ = [
     "Generator",
     "Agent",
     "Runner",
-    "MultiRunner",
+    # "MultiRunner",
     "BackwardEngine",
     "Prompt",
     "DEFAULT_ADALFLOW_SYSTEM_PROMPT",
