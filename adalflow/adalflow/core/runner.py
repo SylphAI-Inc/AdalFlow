@@ -16,6 +16,7 @@ from adalflow.optim.parameter import Parameter
 from adalflow.core.types import Function
 from pydantic import BaseModel
 import logging
+import json
 
 
 __all__ = ["Runner"]
@@ -104,7 +105,7 @@ class Runner(Component):
 
         return False
 
-    def _process_data(self, data: dict[str, Any], id: Optional[str] = None) -> T:
+    def _process_data(self, data: Dict[str, Any], id: Optional[str] = None) -> T:
         """Process the generator output data field and convert to the specified pydantic data class of output_type.
 
         Args:
@@ -118,8 +119,45 @@ class Runner(Component):
             return data
 
         try:
-            # expect data.observation to be a dictionary
+            # expect data.observation to be a strict
             # Convert to Pydantic model
+
+            if isinstance(data, str):
+                try:
+                    data = json.loads(data.replace("'", '"')) 
+                    log.info(data)
+                except json.JSONDecodeError:
+                    log.error(f"Failed to parse string as JSON: {data}")
+                    return f"Error: Invalid JSON string: {data}"
+
+            # return only the 'properties key of the object and then load into the class 
+            
+            # TODO make more robust 
+            def recursive_parse(data): 
+                # Return primitive types as-is
+                if isinstance(data, (str, int, float, bool, type(None))):
+                    return data
+
+                # Handle dictionaries
+                if isinstance(data, dict):
+                    if "properties" in data: 
+                        return recursive_parse(data["properties"])
+                    return {k: recursive_parse(v) for k, v in data.items()}
+
+                # Handle other iterables (including lists, tuples, sets, etc.)
+                from collections.abc import Iterable, Sequence
+                if isinstance(data, Iterable) and not isinstance(data, (str, bytes)):
+                    # For sequences (lists, tuples), preserve the type
+                    if isinstance(data, Sequence):
+                        return type(data)(recursive_parse(item) for item in data)
+                    # For non-sequence iterables (sets, generators), convert to list
+                    return [recursive_parse(item) for item in data]
+
+                # Return as-is if not an iterable we handle
+                return data
+
+            data = recursive_parse(data)
+
             model_output = self.answer_data_type(**data)
 
             return model_output
@@ -156,6 +194,9 @@ class Runner(Component):
         step_count = 0
         last_output = None
 
+        # set maximum number of steps for the planner into the prompt 
+        prompt_kwargs["max_steps"] = self.max_steps
+
         while step_count < self.max_steps:
             try:
                 # Execute one step
@@ -179,7 +220,7 @@ class Runner(Component):
                 # )
 
                 function_results = self._tool_execute(function)
-                last_output = self._process_data(function_results.output)
+                last_output = function_results.output
 
                 step_ouput: StepOutput = StepOutput(
                     step=step_count, function=function, observation=function_results.output
@@ -187,6 +228,7 @@ class Runner(Component):
                 self.step_history.append(step_ouput)
 
                 if self._check_last_step(function):
+                    last_output = self._process_data(function_results.output)
                     break
 
                 # Add function results to prompt for next step
@@ -195,11 +237,11 @@ class Runner(Component):
                 else:
                     # Format function results more clearly
                     prompt_kwargs["step_history"].append(step_ouput)
-                log.info(
-                    "The prompt with the prompt template is {}".format(
-                        self.agent.planner.get_prompt(**prompt_kwargs)
-                    )
-                )
+                # log.info(
+                #     "The prompt with the prompt template is {}".format(
+                #         self.agent.planner.get_prompt(**prompt_kwargs)
+                #     )
+                # )
 
                 step_count += 1
 
@@ -277,11 +319,11 @@ class Runner(Component):
                 else:
                     # Format function results more clearly
                     prompt_kwargs["step_history"].append(step_output)
-                log.info(
-                    "The prompt with the prompt template is {}".format(
-                        self.agent.planner.get_prompt(**prompt_kwargs)
-                    )
-                )
+                # log.info(
+                #     "The prompt with the prompt template is {}".format(
+                #         self.agent.planner.get_prompt(**prompt_kwargs)
+                #     )
+                # )
 
                 step_count += 1
 

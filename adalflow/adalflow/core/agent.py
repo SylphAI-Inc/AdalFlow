@@ -21,6 +21,8 @@ from adalflow.optim.parameter import Parameter, ParameterType
 from adalflow.components.output_parsers import JsonOutputParser
 from adalflow.core.container import ComponentList
 from adalflow.core.func_tool import FunctionTool 
+from dotenv import load_dotenv
+import os
 
 import logging
 
@@ -58,6 +60,10 @@ def create_default_tool_manager(
 ) -> ToolManager:
     """Create a default tool manager with the given tools, context variables, and add_llm_as_fallback."""
 
+    # raise error when there is no model_client
+    if not model_client:
+        raise ValueError("model_client and model_kwargs are required")
+
     def _init_tools(
         tools: List[Union[Callable, AsyncCallable, FunctionTool]],
         model_client: ModelClient,
@@ -65,19 +71,16 @@ def create_default_tool_manager(
     ):
         r"""Initialize the tools. Using reference or else with (copy or deepcopy) we can not set the training/eval mode for each tool."""
         processed_tools = []
-        _additional_llm_tool = (
-            Generator(model_client=model_client, model_kwargs=model_kwargs)
-            if add_llm_as_fallback
-            else None
-        )
+        _additional_llm_tool = Generator(model_client=model_client, model_kwargs=model_kwargs) if add_llm_as_fallback else None
 
-        def llm_tool(input: str, **kwargs) -> str:
+        def llm_tool(input_str: str) -> str:
             """I answer any input query with llm's world knowledge. Use me as a fallback tool or when the query is simple."""
             try:
                 output: GeneratorOutput = _additional_llm_tool(
-                    prompt_kwargs={"input_str": input}
+                    prompt_kwargs={"input_str": input_str}
                 )
                 response = output.data if output else None
+ 
                 return response
             except Exception as e:
                 log.error(f"Error using the llm_tool: {e}")
@@ -102,7 +105,9 @@ def create_default_tool_manager(
             return answer
 
         _finish = FunctionTool(fn=finish, component=finish)
-        processed_tools = tools.copy()
+
+        print(_finish.definition)
+        processed_tools = tools.copy() if tools else []
         if add_llm_as_fallback:
             processed_tools.append(llm_tool)
         processed_tools.append(_finish)
@@ -138,8 +143,11 @@ def create_default_planner(
     # default agent parameters
     max_steps: Optional[int] = 10,
     **kwargs,
-) -> Tuple[ToolManager, Generator]:
+) -> Generator:
     """Create a default planner with the given model client, model kwargs, template, task desc, cache path, use cache, max steps."""
+
+    if not model_client:
+        raise ValueError("model_client and model_kwargs are required")
 
     template = template or DEFAULT_REACT_AGENT_SYSTEM_PROMPT
     task_desc = task_desc or react_agent_task_desc
@@ -188,6 +196,10 @@ def create_default_planner(
         "max_steps": max_steps,  # move to the 2nd step
     }
 
+    # fix step_history bug 
+    if "step_history" not in prompt_kwargs:
+        prompt_kwargs["step_history"] = []
+
     # 3. create default Generator
     planner = Generator(
         model_client=model_client,
@@ -200,6 +212,8 @@ def create_default_planner(
         cache_path=cache_path,
         use_cache=use_cache,
     )
+
+
     return planner
 
 
@@ -224,12 +238,12 @@ class Agent(Component):
     def __init__(
         self,
         name: str,
+        model_client: Optional[ModelClient] = None,
         # pass this if using default agent config
         tools: Optional[List[Any]] = None,
         context_variables: Optional[Dict] = None,  # context variables
         add_llm_as_fallback: Optional[bool] = True,
         # Generator parameters
-        model_client: Optional[ModelClient] = None,
         model_kwargs: Optional[Dict[str, Any]] = {},
         model_type: Optional[ModelType] = ModelType.LLM,
         template: Optional[
@@ -278,6 +292,8 @@ class Agent(Component):
         # name the agent
         self.name = name
 
+        # planner or model_client exists 
+
         self.tool_manager = tool_manager or create_default_tool_manager(
             tools=tools,
             context_variables=context_variables,
@@ -321,13 +337,13 @@ class Agent(Component):
         """
         return self.planner.get_prompt(**kwargs)
 
-    def get_all_tools(self) -> Dict[str, object]:
-        """Get list of available tools from tool manager.
+    # def get_all_tools(self) -> Dict[str, object]:
+    #     """Get list of available tools from tool manager.
 
-        Returns:
-            List of tool dictionaries with name as the key correspond to the function 
-        """
-        return self.tool_manager._context_map
+    #     Returns:
+    #         List of tool dictionaries with name as the key correspond to the function 
+    #     """
+    #     return self.tool_manager._context_map
 
     # TODO fix errors with from_config
     # @classmethod

@@ -76,7 +76,7 @@ class TestAgent(unittest.TestCase):
         self.assertIsInstance(agent.planner, DummyGenerator)
 
         # Tools include both fallback and finish
-        tool_map = agent.get_all_tools()
+        tool_map = agent.tool_manager._context_map
         self.assertIsInstance(tool_map, dict)
         self.assertIn('llm_tool', tool_map)
         self.assertIn('finish',   tool_map)
@@ -100,7 +100,7 @@ class TestAgent(unittest.TestCase):
         )
 
         # Only the finish tool
-        tool_map = agent.get_all_tools()
+        tool_map = agent.tool_manager._context_map
         self.assertNotIn('llm_tool', tool_map)
         self.assertIn('finish',     tool_map)
 
@@ -122,7 +122,7 @@ class TestAgent(unittest.TestCase):
             model_client=mc,
         )
 
-        tool_map = agent.get_all_tools()
+        tool_map = agent.tool_manager._context_map
         self.assertIn('custom_tool', tool_map)
         self.assertTrue(callable(tool_map['custom_tool']))
 
@@ -162,8 +162,8 @@ class TestAgent(unittest.TestCase):
 
         self.assertIs(agent.tool_manager, fake_tm)
         self.assertIs(agent.planner,      fake_pg)
-        # get_all_tools now returns the exact map on the provided TM
-        self.assertEqual(agent.get_all_tools(), fake_tm._context_map)
+        # Directly accessing the context map from tool manager
+        self.assertEqual(agent.tool_manager._context_map, fake_tm._context_map)
 
     def test_context_variables_wired_into_tool_manager(self):
         mc = FallbackModelClient()

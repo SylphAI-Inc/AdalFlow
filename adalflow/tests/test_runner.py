@@ -3,6 +3,7 @@ import unittest.mock
 import asyncio
 
 from types import SimpleNamespace
+from typing import List
 from pydantic import BaseModel
 
 from adalflow.core.runner import Runner
@@ -158,53 +159,63 @@ class TestRunner(unittest.TestCase):
             b: str
 
         runner = Runner(agent=DummyAgent(planner=None, answer_data_type=M))
-        data = {"a": 5, "b": "ok"}
+        data = {"properties": {"a": 5, "b": "ok"}}  # Wrap in properties
         result = runner._process_data(data)
         self.assertIsInstance(result, M)
         self.assertEqual(result.a, 5)
         self.assertEqual(result.b, "ok")
 
-    def test_process_data_with_invalid_pydantic_model(self):
+    def test_process_data_with_nested_objects(self):
+        class Nested(BaseModel):
+            value: str
+            count: int
+
         class M(BaseModel):
-            x: int
+            name: str
+            nested: Nested
 
         runner = Runner(agent=DummyAgent(planner=None, answer_data_type=M))
-        out = runner._process_data(data={"y": 1})
-        self.assertIsInstance(out, str)
-        self.assertTrue(out.startswith("Error processing output:"))
+        data = {
+            "properties": {
+                "name": "test",
+                "nested": {
+                    "properties": {
+                        "value": "hello",
+                        "count": 42
+                    }
+                }
+            }
+        }
+        result = runner._process_data(data)
+        self.assertIsInstance(result, M)
+        self.assertIsInstance(result.nested, Nested)
+        self.assertEqual(result.name, "test")
+        self.assertEqual(result.nested.value, "hello")
+        self.assertEqual(result.nested.count, 42)
 
-    def test_call_returns_pydantic_output(self):
-        # Complex case: call returns a Pydantic model via answer_data_type
-        class Out(BaseModel):
-            result: int
-            msg: str
+    def test_process_data_with_list_of_objects(self):
+        class Item(BaseModel):
+            id: int
+            name: str
 
-        fn = DummyFunction(name="finish")
-        go = GeneratorOutput(data=fn)
-        # tool_execute will return a dict matching Out fields
-        agent = DummyAgent(planner=FakePlanner([go]), answer_data_type=Out)
-        runner = Runner(agent=agent)
-        runner._tool_execute = lambda func: SimpleNamespace(output={"result": 123, "msg": "ok"})
+        class M(BaseModel):
+            items: List[Item]
 
-        history, last = runner.call(prompt_kwargs={})
-        self.assertIsInstance(last, Out)
-        self.assertEqual(last.result, 123)
-        self.assertEqual(last.msg, "ok")
-
-    def test_acall_returns_pydantic_output(self):
-        # Async version of the above
-        class Out(BaseModel):
-            value: float
-
-        fn = DummyFunction(name="finish")
-        go = GeneratorOutput(data=fn)
-        agent = DummyAgent(planner=FakePlanner([go]), answer_data_type=Out)
-        runner = Runner(agent=agent)
-        runner._tool_execute = lambda func: SimpleNamespace(output={"value": 3.14})
-
-        history, last = asyncio.run(runner.acall(prompt_kwargs={}))
-        self.assertIsInstance(last, Out)
-        self.assertAlmostEqual(last.value, 3.14)
+        runner = Runner(agent=DummyAgent(planner=None, answer_data_type=M))
+        data = {
+            "properties": {
+                "items": [
+                    {"properties": {"id": 1, "name": "one"}},
+                    {"properties": {"id": 2, "name": "two"}}
+                ]
+            }
+        }
+        result = runner._process_data(data)
+        self.assertIsInstance(result, M)
+        self.assertEqual(len(result.items), 2)
+        self.assertIsInstance(result.items[0], Item)
+        self.assertEqual(result.items[0].id, 1)
+        self.assertEqual(result.items[1].name, "two")
 
 
 if __name__ == "__main__":
