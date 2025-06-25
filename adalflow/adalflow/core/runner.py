@@ -231,13 +231,7 @@ class Runner(Component):
                     last_output = self._process_data(function_results.output)
                     break
 
-                # # Add function results to prompt for next step
-                # if "step_history" not in prompt_kwargs:
-                #     prompt_kwargs["step_history"] = []
-                # else:
-                #     # Format function results more clearly
-                #     prompt_kwargs["step_history"].append(step_ouput)
-                log.info(
+                log.debug(
                     "The prompt with the prompt template is {}".format(
                         self.agent.planner.get_prompt(**prompt_kwargs)
                     )
@@ -309,13 +303,8 @@ class Runner(Component):
                     last_output = self._process_data(function_results.output)
                     break
 
-                # # Add function results to prompt for next step
-                # if "step_history" not in prompt_kwargs:
-                #     prompt_kwargs["step_history"] = []
-                # else:
-                #     # Format function results more clearly
-                #     prompt_kwargs["step_history"].append(step_output)
-                log.info(
+                # important to ensure the prompt at each step is correct
+                log.debug(
                     "The prompt with the prompt template is {}".format(
                         self.agent.planner.get_prompt(**prompt_kwargs)
                     )
