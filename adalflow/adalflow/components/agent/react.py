@@ -218,7 +218,7 @@ class ReActAgent(Component):
         max_steps: int = 10,
         add_llm_as_fallback: bool = True,
         # TODO: the examples are just for specifying the output format, not end to end input-output examples, need further optimization
-        examples: Union[List[Function], List[str]] = [],
+        examples: Optional[Union[List[Function], List[str]]] = None,
         *,
         # the following arguments are mainly for the planner
         model_client: ModelClient,
@@ -250,7 +250,7 @@ class ReActAgent(Component):
 
         ouput_data_class = Function
 
-        self._examples = examples
+        self._examples = examples or []
 
         output_parser = JsonOutputParser(
             data_class=ouput_data_class,
