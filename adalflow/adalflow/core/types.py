@@ -42,7 +42,6 @@ from adalflow.components.model_client import (
     OllamaClient,
 )
 
-
 logger = logging.getLogger(__name__)
 
 T_co = TypeVar("T_co", covariant=True)
@@ -360,7 +359,7 @@ class Function(DataClass):
     """
     thought: Optional[str] = field(
         default=None, metadata={"desc": "Why the function is called"}
-    )
+    )  # if the model itself is a thinking model, disable thought field
     name: str = field(default="", metadata={"desc": "The name of the function"})
     args: Optional[List[object]] = field(
         default_factory=list,

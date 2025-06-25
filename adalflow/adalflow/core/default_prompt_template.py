@@ -87,6 +87,15 @@ You are a helpful assistant.
 {% endif %}
 <END_OF_USER_PROMPT>
 """
+# 1. use steps_str for agentic with multiple loop
+# 2. use context_str for RAG's contex
+# 3. use chat_history_str for chat history
+# 4. use examples_str for examples
+# 5. use tools_str for tools definition (or you can directly pass in model_kwargs as "tools")
+# 6. use output_format_str for output format
+# 7. use input_format_str for input format
+# 8. use task_desc_str for task description
+
 """This is the default system prompt template used in the AdalFlow.
 
 Use :ref:`Prompt <core-prompt_builder>` class  to manage it.
