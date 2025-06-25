@@ -111,7 +111,9 @@ Your previous steps:
 {% for history in step_history %}
 Step {{ loop.index }}.
 {% if history.action %}
+{% if history.action.thought %}
 "thought": "{{history.action.thought}}",
+{% endif %}
 "name": "{{history.action.name}},
 "kwargs": {{history.action.kwargs}}",
 {% endif %}
@@ -227,6 +229,7 @@ class ReActAgent(Component):
         template: Optional[str] = None,  # allow users to customize the template
         role_desc: Optional[str] = default_role_desc,
         context_variables: Optional[Dict] = None,  # context variables
+        is_thinking_model: bool = False,
         use_cache: bool = True,
         debug: bool = False,
         answer_data_type: Type[T] = str,
@@ -252,15 +255,16 @@ class ReActAgent(Component):
 
         self._examples = examples or []
 
+        self.is_thinking_model = is_thinking_model
+        include_fields = ["name", "kwargs"]  # thinking model already outputs thinking
+        if not is_thinking_model:
+            include_fields.append("thought")
+
         output_parser = JsonOutputParser(
             data_class=ouput_data_class,
             examples=self._examples,
             return_data_class=True,
-            include_fields=[
-                "thought",
-                "name",
-                "kwargs",
-            ],
+            include_fields=include_fields,
         )
 
         task_desc = Prompt(
@@ -380,6 +384,10 @@ class ReActAgent(Component):
             try:
 
                 step_output.action = response.data.data
+                # if thinking exists, then add it to the action.thought field
+                if response.data.thinking:
+                    step_output.action.thought = response.data.thinking
+
                 if self.debug:
                     printc(
                         f"Step test train:  {step}: {step_output.action}", color="blue"
@@ -458,6 +466,8 @@ class ReActAgent(Component):
         else:
             try:
                 fun_expr: Function = x.data
+                if x.thinking:
+                    fun_expr.thought = x.thinking
 
                 step_output.action = fun_expr
                 # # add id to the function
