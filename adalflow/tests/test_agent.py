@@ -69,6 +69,7 @@ class TestAgent(unittest.TestCase):
             context_variables={"foo": "bar"},
             add_llm_as_fallback=True,
             model_client=mc,
+            model_kwargs={"temperature": 0.0, "model": "gpt-4o-mini"},
         )
 
         # Name & planner
