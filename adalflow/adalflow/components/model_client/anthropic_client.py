@@ -7,7 +7,7 @@ import logging
 
 
 from adalflow.core.model_client import ModelClient
-from adalflow.core.types import ModelType, CompletionUsage, GeneratorOutput
+from adalflow.core.types import ModelType, CompletionUsage, GeneratorOutput, Function
 
 # optional import
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
@@ -26,14 +26,42 @@ from anthropic import (
     MessageStreamManager,
 )
 from anthropic.types import Message, Usage, Completion
+from pydantic import BaseModel
 
 log = logging.getLogger(__name__)
 
 
-def get_first_message_content(completion: Message) -> str:
+class LLMResponse(BaseModel):
+    """
+    LLM Response
+    """
+
+    content: Optional[str] = None
+    thinking: Optional[str] = None
+    tool_use: Optional[Function] = None
+
+
+def get_first_message_content(completion: Message) -> LLMResponse:
     r"""When we only need the content of the first message.
     It is the default parser for chat completion."""
-    return completion.content[0].text
+    try:
+        first_message = completion.content
+    except Exception as e:
+        log.error(f"Error getting the first message: {e}")
+        return LLMResponse()
+
+    output = LLMResponse()
+    for block in first_message:
+        if block.type == "text":
+            output.content = block.text
+        elif block.type == "thinking":
+            output.thinking = block.thinking
+        elif block.type == "tool_use":
+            name = block.name
+            input = block.input
+            output.tool_use = Function(name=name, kwargs=input)
+
+    return output
 
 
 def handle_streaming_response(generator: MessageStreamManager):
@@ -61,8 +89,9 @@ class AnthropicAPIClient(ModelClient):
     As antropic API needs users to set max_tokens, we set up a default value of 512 for the max_tokens.
     You can override this value by passing the max_tokens in the model_kwargs.
 
-    Reference: 8/1/2024
+    Reference:
     - https://docs.anthropic.com/en/docs/about-claude/models
+    - interlevad thinking:https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking#interleaved-thinking
     """
 
     def __init__(
@@ -76,7 +105,7 @@ class AnthropicAPIClient(ModelClient):
         self._api_key = api_key
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
-        self.tested_llm_models = ["claude-3-opus-20240229"]
+        self.tested_llm_models = ["claude-3-opus-20240229", "claude-sonnet-4-20250514"]
         self.non_streaming_chat_completion_parser = (
             non_streaming_chat_completion_parser or get_first_message_content
         )
@@ -112,9 +141,20 @@ class AnthropicAPIClient(ModelClient):
 
         try:
             usage = self.track_completion_usage(completion)
-            return GeneratorOutput(
-                data=None, error=None, raw_response=data, usage=usage
-            )
+            if isinstance(data, LLMResponse):
+                return GeneratorOutput(
+                    data=None,
+                    error=None,
+                    raw_response=data.content,  # the final text answer
+                    thinking=data.thinking,
+                    tool_use=data.tool_use,
+                    usage=usage,
+                )
+            else:
+                # data will be the one parsed from the raw response
+                return GeneratorOutput(
+                    data=None, error=None, raw_response=data, usage=usage
+                )
         except Exception as e:
             log.error(f"Error tracking the completion usage: {e}")
             return GeneratorOutput(data=None, error=str(e), raw_response=data)

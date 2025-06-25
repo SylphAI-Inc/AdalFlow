@@ -24,7 +24,7 @@ black = { extras = ["jupyter"], version = "^24.10.0" }
 [tool.poetry.group.dev.dependencies]
 
 pre-commit = "^3.7.0"
-anthropic = "^0.26.0"
+anthropic = "^0.55.0"
 torchmetrics = "^1.4.0.post0"
 jupyter = "^1.0.0"
 ipykernel = "^6.29.4"
