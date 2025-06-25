@@ -1,6 +1,11 @@
 
 ## [1.0.5] - Release Date TBD
 
+# Added
+
+-  `Runner` v1 runner to be able to do sync/async agent call.
+-  `Agent` v1 agent contains the planner, tools to collaborate with the Runner.
+
 ### Fixed
 - `LocalDB` fixed with keyword arguments.
 

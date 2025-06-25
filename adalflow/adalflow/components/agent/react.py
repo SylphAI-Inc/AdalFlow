@@ -455,6 +455,7 @@ class ReActAgent(Component):
             step_output.action = None
             log.error(error_msg)
             return step_output
+
         else:
             try:
                 fun_expr: Function = x.data
