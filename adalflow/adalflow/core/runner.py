@@ -91,8 +91,9 @@ class Runner(Component):
         Returns:
             str: The processed data as a string
         """
-        if not self.answer_data_type:
-            return data
+        return data
+        # if not self.answer_data_type:
+        #     return data
 
         try:
             # expect data.observation to be a strict
@@ -216,7 +217,7 @@ class Runner(Component):
                 function = self._get_planner_function(output)
 
                 # execute the tool
-                function_results = self._tool_execute(function)
+                function_results = self._tool_execute_sync(function)
 
                 # create a step output
                 step_ouput: StepOutput = StepOutput(
@@ -244,6 +245,37 @@ class Runner(Component):
                 return f"Error in step {step_count}: {str(e)}"
 
         return self.step_history, last_output
+
+    def _tool_execute_sync(
+        self,
+        func: Function,
+    ) -> Union[FunctionOutput, Parameter]:
+        """
+        Call this in the call method.
+        Handles both sync and async functions by running async ones in event loop.
+        """
+        import inspect
+        import asyncio
+
+        result = self.agent.tool_manager(expr_or_fun=func, step="execute")
+
+        # Check if result is a coroutine (async tool)
+        if inspect.iscoroutine(result):
+            return asyncio.run(result)
+        # async generator
+        elif inspect.isasyncgen(result):
+            # For async generators, we need to collect all yielded values
+            async def collect_async_gen():
+                items = []
+                async for item in result:
+                    items.append(item)
+                # Return the final meaningful result (last item)
+                return items[-1] if items else None
+
+            return asyncio.run(collect_async_gen())
+        else:
+            # Sync tool result
+            return result
 
     async def acall(
         self,
@@ -289,7 +321,7 @@ class Runner(Component):
                 )
 
                 function = self._get_planner_function(output)
-                function_results = self._tool_execute(function)
+                function_results = await self._tool_execute_async(function)
 
                 step_output: StepOutput = StepOutput(
                     step=step_count,
@@ -318,6 +350,28 @@ class Runner(Component):
                 return self.step_history, error_msg
 
         return self.step_history, last_output
+
+    async def _tool_execute_async(
+        self,
+        func: Function,
+    ) -> Union[FunctionOutput, Parameter]:
+        """
+        Call this in the acall method.
+        Handles both sync and async functions.
+        """
+        import inspect
+
+        result = self.agent.tool_manager(expr_or_fun=func, step="execute")
+
+        # Check if result is a coroutine (async tool)
+        if inspect.iscoroutine(result):
+            return await result
+        # async generator
+        elif inspect.isasyncgen(result):
+            return await result
+        else:
+            # Sync tool result
+            return result
 
     def stream(
         self,
@@ -362,14 +416,3 @@ class Runner(Component):
         ...
         # This would require relying on the async_stream of the model_client instance of the generator and parsing that
         # using custom logic to buffer chunks and only stream when they complete a certain top-level field
-
-    def _tool_execute(
-        self,
-        func: Function,
-    ) -> Union[FunctionOutput, Parameter]:
-        """
-        Execute a tool function through the planner's tool manager.
-        Handles both sync and async functions.
-        """
-        # TODO: understand the tool call and its support for async
-        return self.agent.tool_manager.call(expr_or_fun=func, step="execute")
