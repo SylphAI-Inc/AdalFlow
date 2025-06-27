@@ -192,8 +192,9 @@ class FunctionTool(Component):
                     "Please provide a name for the instance in the calling context"
                 )
             cls_name = self.fn.__self__.__class__.__name__
-        elif isfunction(self.fn):  # Unbound method
-            cls_name = self.fn.__qualname__.split(".")[0]
+        # elif isfunction(self.fn):  # Unbound method
+        #     cls_name = self.fn.__qualname__.split(".")[0]
+        # No class name for a normal function
 
         # Build the description
         description = f"{name}{signature_str}\n"

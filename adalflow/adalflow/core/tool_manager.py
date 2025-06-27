@@ -345,6 +345,7 @@ class ToolManager(Component):
                     # Check if result is an async generator
                     import inspect
 
+                    # for streaming
                     if inspect.isasyncgen(result):
                         printc("Result is an async generator, collecting results")
 
@@ -356,7 +357,10 @@ class ToolManager(Component):
                             return items
 
                         return run_async_in_new_loop(collect_async_gen())
+
+                    # for non-streaming
                     else:
+                        printc("Result is a regular coroutine", color="yellow")
                         log.info("Result is a regular coroutine")
                         return run_async_in_new_loop(result)
 
