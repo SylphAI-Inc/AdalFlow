@@ -18,6 +18,8 @@ packages = [
 python = ">=3.11, <4.0"
 adalflow = { path = "adalflow", develop = true }
 black = { extras = ["jupyter"], version = "^24.10.0" }
+openai = "^1.91.0"
+openai-agents = "^0.0.19"
 
 
 [tool.poetry.group.dev.dependencies]

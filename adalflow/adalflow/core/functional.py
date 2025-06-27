@@ -30,6 +30,9 @@ import threading
 from inspect import signature, Parameter
 from dataclasses import fields, is_dataclass, MISSING, Field
 
+from pydantic import BaseModel
+from pydantic.dataclasses import is_pydantic_dataclass
+
 log = logging.getLogger(__name__)
 
 ExcludeType = Optional[Dict[str, List[str]]]
@@ -444,6 +447,18 @@ def get_type_schema(
         # Handle Enum types
         enum_members = ", ".join([f"{e.name}={e.value}" for e in type_obj])
         return f"Enum[{type_obj.__name__}({enum_members})]"
+
+    # Handle Pydantic BaseModel classes
+    elif BaseModel and isinstance(type_obj, type) and issubclass(type_obj, BaseModel):
+        schema = type_obj.schema()
+        return str(schema)
+
+    # Handle Pydantic dataclasses
+    elif is_pydantic_dataclass(type_obj):
+        # pydantic dataclass wraps a BaseModel under __pydantic_model__
+        model = getattr(type_obj, "__pydantic_model__", None)
+        if model is not None and BaseModel and issubclass(model, BaseModel):
+            return str(model.schema())
 
     return type_obj.__name__ if hasattr(type_obj, "__name__") else str(type_obj)
 

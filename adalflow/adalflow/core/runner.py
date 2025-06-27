@@ -16,7 +16,8 @@ from adalflow.optim.parameter import Parameter
 from adalflow.core.types import Function
 from pydantic import BaseModel
 import logging
-import json
+from adalflow.core.base_data_class import DataClass
+import ast
 
 
 __all__ = ["Runner"]
@@ -24,6 +25,16 @@ __all__ = ["Runner"]
 log = logging.getLogger(__name__)
 
 T = TypeVar("T", bound=BaseModel)  # Changed to use Pydantic BaseModel
+
+
+def _is_pydantic_dataclass(cls: Any) -> bool:
+    # check whether cls is a pydantic dataclass
+    return isinstance(cls, type) and issubclass(cls, BaseModel)
+
+
+def _is_adalflow_dataclass(cls: Any) -> bool:
+    # check whether cls is a adalflow dataclass
+    return isinstance(cls, type) and issubclass(cls, DataClass)
 
 
 class Runner(Component):
@@ -81,7 +92,7 @@ class Runner(Component):
 
         return False
 
-    def _process_data(self, data: Dict[str, Any], id: Optional[str] = None) -> T:
+    def _process_data(self, data: str, id: Optional[str] = None) -> T:
         """Process the generator output data field and convert to the specified pydantic data class of output_type.
 
         Args:
@@ -92,50 +103,52 @@ class Runner(Component):
             str: The processed data as a string
         """
         if not self.answer_data_type:
+            log.info(f"answer_data_type: {self.answer_data_type}, data: {data}")
+            # by default when the answer data type is a string return the data directly
             return data
 
         try:
-            # expect data.observation to be a strict
-            # Convert to Pydantic model
-
-            if isinstance(data, str):
+            model_output = None
+            log.info(f"answer_data_type: {type(self.answer_data_type)}")
+            if _is_pydantic_dataclass(self.answer_data_type):
+                # data should be a string that represents a dictionary
+                log.info(
+                    f"initial answer returned by finish when user passed a pydantic type: {data}, type: {type(data)}"
+                )
+                data = str(data)
+                dict_obj = ast.literal_eval(data)
+                log.info(
+                    f"initial answer after being evaluated using ast: {dict_obj}, type: {type(dict_obj)}"
+                )
+                model_output = self.answer_data_type(**dict_obj)
+            elif _is_adalflow_dataclass(self.answer_data_type):
+                # data should be a string that represents a dictionary
+                log.info(
+                    f"initial answer returned by finish when user passed a adalflow dataclass type: {data}, type: {type(data)}"
+                )
+                data = str(data)
+                dict_obj = ast.literal_eval(data)
+                log.info(
+                    f"initial answer after being evaluated using ast: {dict_obj}, type: {type(dict_obj)}"
+                )
+                model_output = self.answer_data_type.from_dict(dict_obj)
+            else:  # expect data to be a python built_in_type
+                log.info(
+                    f"type of answer is neither a pydantic dataclass or adalflow dataclass, answer before being casted again for safety: {data}, type: {type(data)}"
+                )
                 try:
-                    data = json.loads(data.replace("'", '"'))
-                    log.info(data)
-                except json.JSONDecodeError:
-                    log.error(f"Failed to parse string as JSON: {data}")
-                    return f"Error: Invalid JSON string: {data}"
+                    model_output = self.answer_data_type(
+                        data
+                    )  # cast again to the answer_data_type as safety measure
+                except Exception as e:
+                    log.error(
+                        f"Failed to parse output: {data}, {e} for answer_data_type: {self.answer_data_type}"
+                    )
+                    model_output = None
 
-            # return only the 'properties key of the object and then load into the class
-
-            # TODO make more robust
-            def recursive_parse(data):
-                # Return primitive types as-is
-                if isinstance(data, (str, int, float, bool, type(None))):
-                    return data
-
-                # Handle dictionaries
-                if isinstance(data, dict):
-                    if "properties" in data:
-                        return recursive_parse(data["properties"])
-                    return {k: recursive_parse(v) for k, v in data.items()}
-
-                # Handle other iterables (including lists, tuples, sets, etc.)
-                from collections.abc import Iterable, Sequence
-
-                if isinstance(data, Iterable) and not isinstance(data, (str, bytes)):
-                    # For sequences (lists, tuples), preserve the type
-                    if isinstance(data, Sequence):
-                        return type(data)(recursive_parse(item) for item in data)
-                    # For non-sequence iterables (sets, generators), convert to list
-                    return [recursive_parse(item) for item in data]
-
-                # Return as-is if not an iterable we handle
-                return data
-
-            data = recursive_parse(data)
-
-            model_output = self.answer_data_type(**data)
+            # model_ouput is not pydantic or adalflow dataclass
+            if not model_output:
+                raise ValueError(f"Failed to parse output: {data}")
 
             return model_output
 
@@ -321,31 +334,51 @@ class Runner(Component):
 
     def stream(
         self,
-        user_query: str,
-        current_objective: Optional[str] = None,
-        memory: Optional[str] = None,
+        prompt_kwargs: Dict[str, Any],
+        model_kwargs: Optional[Dict[str, Any]] = None,
+        use_cache: Optional[bool] = None,
+        id: Optional[str] = None,
     ) -> GeneratorType[Any, None, None]:
         """
         Synchronously executes the planner output and stream results.
         Optionally parse and post-process each chunk.
-        """
-        # TODO replace Any type with StreamChunk type
-        try:
-            generator_output = self.call(user_query, current_objective, memory)
 
-            if self.config.stream_parser:
-                for chunk in generator_output.data:
-                    yield self.config.stream_parser(chunk)
+        Args:
+            prompt_kwargs: Dictionary containing the prompt and related parameters
+            model_kwargs: Optional dictionary of model-specific parameters
+            use_cache: Whether to use cached results if available
+            id: Optional identifier for the stream
+
+        Yields:
+            Chunks of the generated output, optionally parsed by the stream_parser
+        """
+        try:
+            # Call the underlying model with the provided parameters
+            generator_output = self.call(
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
+                use_cache=use_cache,
+                id=id,
+            )
+
+            # Check if the output has a data attribute that can be iterated over
+            if hasattr(generator_output, "data") and hasattr(
+                generator_output.data, "__iter__"
+            ):
+                if self.config.stream_parser:
+                    for chunk in generator_output.data:
+                        yield self.config.stream_parser(chunk)
+                else:
+                    log.warning("StreamParser not specified, yielding raw chunks")
+                    for chunk in generator_output.data:
+                        yield chunk
             else:
-                log.error("StreamParser not specified")
-                for chunk in generator_output.data:
-                    yield chunk
-                # TODO: need to define a StreamChunk type in library
+                log.error("Generator output does not contain iterable data")
+                yield generator_output
 
         except Exception as e:
             log.error(f"Failed to stream generator output: {e}")
-            yield generator_output
-            # TODO: need to define a StreamChunk type in library
+            raise  # Re-raise the exception to be handled by the caller
 
     # TODO implement async stream
     async def astream(
