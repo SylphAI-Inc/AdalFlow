@@ -219,6 +219,25 @@ class Runner(Component):
                 # execute the tool
                 function_results = self._tool_execute_sync(function)
 
+                # support async generator
+                if isinstance(function_results, GeneratorType):
+                    function_results = list(function_results)
+                    function_results = function_results[-1]
+
+                    # TODO: need to improve
+                    function_results = FunctionOutput(
+                        name=function.name,
+                        input=function,
+                        output=function_results,
+                    )
+                elif not isinstance(function_results, FunctionOutput):
+                    # for async function.
+                    function_results = FunctionOutput(
+                        name=function.name,
+                        input=function,
+                        output=function_results,
+                    )
+
                 # create a step output
                 step_ouput: StepOutput = StepOutput(
                     step=step_count,
@@ -261,7 +280,15 @@ class Runner(Component):
 
         # Check if result is a coroutine (async tool)
         if inspect.iscoroutine(result):
-            return asyncio.run(result)
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                # no loop: safe to use asyncio.run
+                return asyncio.run(result)
+            else:
+                # loop is running: schedule and block until done
+                fut = asyncio.ensure_future(result, loop=loop)
+                return loop.run_until_complete(fut)
         # async generator
         elif inspect.isasyncgen(result):
             # For async generators, we need to collect all yielded values
@@ -272,7 +299,15 @@ class Runner(Component):
                 # Return the final meaningful result (last item)
                 return items[-1] if items else None
 
-            return asyncio.run(collect_async_gen())
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                # no loop: safe to use asyncio.run
+                return asyncio.run(collect_async_gen())
+            else:
+                # loop is running: schedule and block until done
+                fut = asyncio.ensure_future(collect_async_gen(), loop=loop)
+                return loop.run_until_complete(fut)
         else:
             # Sync tool result
             return result
@@ -321,7 +356,15 @@ class Runner(Component):
                 )
 
                 function = self._get_planner_function(output)
-                function_results = await self._tool_execute_async(function)
+                result = self._tool_execute_async(function)
+
+                if inspect.iscoroutine(result):
+                    function_results = await result
+                else:
+                    function_results = None
+                    async for item in result:
+                        function_results = item
+                # function_results = await self._tool_execute_async(function)
 
                 step_output: StepOutput = StepOutput(
                     step=step_count,
@@ -358,6 +401,7 @@ class Runner(Component):
         """
         Call this in the acall method.
         Handles both sync and async functions.
+        Note: this version has no support for streaming.
         """
         import inspect
 
@@ -368,7 +412,20 @@ class Runner(Component):
             return await result
         # async generator
         elif inspect.isasyncgen(result):
-            return await result
+            collected_result = []
+            async for item in result:
+                collected_result.append(item)
+
+            # assume the last item is the final result.
+            # TODO: need to improve
+            raw_response = collected_result[-1] if collected_result else None
+            output = FunctionOutput(
+                name=func.name,
+                input=func,
+                output=raw_response,
+            )
+            return output
+            # return await result
         else:
             # Sync tool result
             return result

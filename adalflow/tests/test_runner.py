@@ -158,6 +158,50 @@ class TestRunner(unittest.TestCase):
         out = self.runner._process_data(data="raw", id=None)
         self.assertEqual(out, "raw")
 
+    def test_tool_execute_sync_with_sync_function(self):
+        """Test _tool_execute_sync with synchronous function result."""
+        mock_function = DummyFunction(name="test_func")
+        mock_result = SimpleNamespace(output="sync_result")
+        
+        # Mock the tool_manager to return a sync result
+        self.runner.agent.tool_manager = unittest.mock.Mock(return_value=mock_result)
+        
+        result = self.runner._tool_execute_sync(mock_function)
+        self.assertEqual(result, mock_result)
+
+    def test_tool_execute_sync_with_async_function_no_loop(self):
+        """Test _tool_execute_sync with async function when no event loop is running."""
+        import asyncio
+        
+        mock_function = DummyFunction(name="test_async_func")
+        mock_result = SimpleNamespace(output="async_result")
+        
+        async def async_mock():
+            return mock_result
+        
+        # Mock the tool_manager to return a coroutine
+        self.runner.agent.tool_manager = unittest.mock.Mock(return_value=async_mock())
+        
+        result = self.runner._tool_execute_sync(mock_function)
+        self.assertEqual(result, mock_result)
+
+    def test_tool_execute_sync_with_async_generator_no_loop(self):
+        """Test _tool_execute_sync with async generator when no event loop is running."""
+        import asyncio
+        
+        mock_function = DummyFunction(name="test_async_gen")
+        
+        async def async_generator():
+            yield SimpleNamespace(output="item1")
+            yield SimpleNamespace(output="item2")
+            yield SimpleNamespace(output="final_result")
+        
+        # Mock the tool_manager to return an async generator
+        self.runner.agent.tool_manager = unittest.mock.Mock(return_value=async_generator())
+        
+        result = self.runner._tool_execute_sync(mock_function)
+        self.assertEqual(result.output, "final_result")
+
     # temporary disable the test for process_data
 
     # def test_process_data_with_valid_pydantic_model(self):
