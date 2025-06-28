@@ -1,31 +1,40 @@
 import unittest
 import unittest.mock
 import asyncio
-
+import json
+import pytest
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from types import SimpleNamespace
-from typing import List
-from pydantic import BaseModel
+from typing import List, Dict, Any
+from pydantic import BaseModel, Field
+from adalflow.core.types import GeneratorOutput, Function
 
 from adalflow.core.runner import Runner
 import adalflow.core.runner as runner_module
 
 
-class DummyFunction:
+class DummyFunction(Function):
     """Mimics adalflow.core.types.Function."""
 
     def __init__(self, name, kwargs=None):
-        self.name = name
-        self.kwargs = kwargs or {}
+        super().__init__(name=name, args=kwargs or {})
 
 
 class FakePlanner:
     """Planner stub that returns a sequence of GeneratorOutput or raw."""
 
     def __init__(self, outputs):
-        self._outputs = outputs
+        # Wrap outputs in GeneratorOutput if they're not already
+        self._outputs = [
+            out if isinstance(out, GeneratorOutput) else GeneratorOutput(data=out)
+            for out in outputs
+        ]
         self._idx = 0
 
     def call(self, *, prompt_kwargs, model_kwargs=None, use_cache=None, id=None):
+        if self._idx >= len(self._outputs):
+            raise IndexError("No more outputs")
         out = self._outputs[self._idx]
         self._idx += 1
         return out
@@ -62,6 +71,37 @@ class DummyStepOutput:
         self.output = kwargs.get("observation", kwargs.get("output", None))
 
 
+# Test Models
+class NestedModel(BaseModel):
+    id: int
+    name: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class UserModel(BaseModel):
+    id: int
+    username: str
+    email: str
+    profile: Dict[str, Any]
+    nested: NestedModel
+    tags: List[str] = []
+
+
+@dataclass
+class RegularDataclass:
+    id: int
+    name: str
+    active: bool = True
+
+
+class ComplexResponse(BaseModel):
+    users: List[UserModel]
+    timestamp: datetime
+    metadata: Dict[str, Any]
+    status: str
+    score: float
+
+
 class TestRunner(unittest.TestCase):
     def setUp(self):
         # Patch out the real StepOutput to avoid signature mismatch
@@ -74,6 +114,25 @@ class TestRunner(unittest.TestCase):
         self.runner = Runner(agent=DummyAgent(planner=None, answer_data_type=None))
         self.runner.stream_parser = None
 
+        # Sample test data
+        self.sample_nested = NestedModel(id=1, name="test")
+        self.sample_user = UserModel(
+            id=1,
+            username="testuser",
+            email="test@example.com",
+            profile={"role": "admin", "permissions": ["read", "write"]},
+            nested=self.sample_nested,
+            tags=["active", "verified"],
+        )
+        self.sample_dataclass = RegularDataclass(id=1, name="test")
+        self.sample_complex = ComplexResponse(
+            users=[self.sample_user],
+            timestamp=datetime.now(timezone.utc),
+            metadata={"page": 1, "total": 100},
+            status="success",
+            score=99.5,
+        )
+
     def tearDown(self):
         self.step_output_patcher.stop()
 
@@ -83,66 +142,84 @@ class TestRunner(unittest.TestCase):
         self.assertTrue(self.runner._check_last_step(finish_fn))
         self.assertFalse(self.runner._check_last_step(cont_fn))
 
-    # def test_call_single_step_finish(self):
-    #     fn = DummyFunction(name="finish")
-    #     go = GeneratorOutput(data=fn)
-    #     agent = DummyAgent(planner=FakePlanner([go]), answer_data_type=None)
-    #     runner = Runner(agent=agent)
-    #     runner._tool_execute = lambda func: SimpleNamespace(output="done")
-
-    #     history, last = runner.call(prompt_kwargs={})
-    #     self.assertEqual(len(history), 1)
-    #     self.assertIs(history[0].function, fn)
-    #     self.assertEqual(last, "done")
-    #     self.assertEqual(runner.step_history, history)
-
-    # def test_call_nonfinish_then_finish(self):
-    #     fn1 = DummyFunction(name="step1")
-    #     fn2 = DummyFunction(name="finish")
-    #     go1, go2 = GeneratorOutput(data=fn1), GeneratorOutput(data=fn2)
-    #     agent = DummyAgent(planner=FakePlanner([go1, go2]), answer_data_type=None)
-    #     runner = Runner(agent=agent)
-    #     runner._tool_execute = lambda func: SimpleNamespace(output=f"{func.name}_out")
-
-    #     history, last = runner.call(prompt_kwargs={})
-    #     names = [step.function.name for step in history]
-    #     self.assertEqual(names, ["step1", "finish"])
-    #     self.assertEqual(last, "finish_out")
-
-    # def test_call_respects_max_steps_without_finish(self):
-    #     fn = DummyFunction(name="no_finish")
-    #     go = GeneratorOutput(data=fn)
-    #     agent = DummyAgent(
-    #         planner=FakePlanner([go, go, go]), max_steps=2, answer_data_type=None
-    #     )
-    #     runner = Runner(agent=agent)
-    #     runner._tool_execute = lambda func: SimpleNamespace(output="out")
-
-    #     history, last = runner.call(prompt_kwargs={})
-    #     self.assertEqual(len(history), 2)
-    #     self.assertEqual([s.function.name for s in history], ["no_finish", "no_finish"])
-    #     self.assertEqual(last, "out")
-
-    def test_call_invalid_answer_data_type(self):
-        agent = DummyAgent(planner=FakePlanner([None]), answer_data_type=None)
+    def test_call_single_step_finish(self):
+        fn = DummyFunction(name="finish")
+        agent = DummyAgent(
+            planner=FakePlanner([GeneratorOutput(data=fn)]), answer_data_type=None
+        )
         runner = Runner(agent=agent)
-        runner._tool_execute = lambda func: SimpleNamespace(output="x")
+        runner._tool_execute = lambda func: SimpleNamespace(output="done")
 
-        result = runner.call(prompt_kwargs={})
-        self.assertIsInstance(result, str)
-        self.assertTrue(result.startswith("Error in step 0:"))
+        history, result = runner.call(prompt_kwargs={})
+        self.assertEqual(len(history), 1)
+        self.assertIs(history[0].function, fn)
+        self.assertEqual(result, "done")
+        self.assertEqual(runner.step_history, history)
 
-    # def test_acall_single_step(self):
-    #     fn = DummyFunction(name="finish")
-    #     go = GeneratorOutput(data=fn)
-    #     agent = DummyAgent(planner=FakePlanner([go]), answer_data_type=None)
-    #     runner = Runner(agent=agent)
-    #     runner._tool_execute = lambda func: SimpleNamespace(output="async-done")
+    def test_call_nonfinish_then_finish(self):
+        fn1 = DummyFunction(name="step1")
+        fn2 = DummyFunction(name="finish")
+        agent = DummyAgent(
+            planner=FakePlanner([GeneratorOutput(data=fn1), GeneratorOutput(data=fn2)]),
+            answer_data_type=None,
+        )
+        runner = Runner(agent=agent)
+        runner._tool_execute = lambda func: SimpleNamespace(output=f"{func.name}_out")
 
-    #     history, last = asyncio.run(runner.acall(prompt_kwargs={}))
-    #     self.assertEqual(len(history), 1)
-    #     self.assertEqual(last, "async-done")
-    #     self.assertEqual(runner.step_history, history)
+        history, result = runner.call(prompt_kwargs={})
+        names = [step.function.name for step in history]
+        self.assertEqual(names, ["step1", "finish"])
+        self.assertEqual(result, "finish_out")
+
+    def test_call_respects_max_steps_without_finish(self):
+        fn = DummyFunction(name="no_finish")
+        agent = DummyAgent(
+            planner=FakePlanner(
+                [
+                    GeneratorOutput(data=fn),
+                    GeneratorOutput(data=fn),
+                    GeneratorOutput(data=fn),
+                ]
+            ),
+            max_steps=2,
+            answer_data_type=None,
+        )
+        runner = Runner(agent=agent)
+        runner._tool_execute = lambda func: SimpleNamespace(output="out")
+
+        history, result = runner.call(prompt_kwargs={})
+        self.assertEqual(len(history), 2)
+        self.assertEqual([s.function.name for s in history], ["no_finish", "no_finish"])
+        self.assertEqual(result, None)
+
+    def test_call_no_answer_data_type(self):
+        # Create a finish function that returns a simple string
+        finish_fn = DummyFunction(name="finish", kwargs={"output": "test output"})
+        agent = DummyAgent(
+            planner=FakePlanner([GeneratorOutput(data=finish_fn)]),
+            answer_data_type=None,
+        )
+        runner = Runner(agent=agent)
+        runner._tool_execute = lambda func: SimpleNamespace(output="out")
+
+        history, result = runner.call(prompt_kwargs={})
+        self.assertEqual(len(history), 1)
+        self.assertEqual(result, "out")
+
+    @pytest.mark.asyncio
+    async def test_acall_single_step(self):
+        fn = DummyFunction(name="finish")
+        agent = DummyAgent(
+            planner=FakePlanner([GeneratorOutput(data=fn)]), answer_data_type=None
+        )
+        runner = Runner(agent=agent)
+        runner._tool_execute = lambda func: SimpleNamespace(output="async-done")
+
+        history, result = await runner.acall(prompt_kwargs={})
+        self.assertEqual(len(history), 1)
+        self.assertEqual(result, "async-done")
+        return None  # Explicitly return None to avoid warning
+        self.assertEqual(runner.step_history, history)
 
     def test_acall_invalid_answer_data_type(self):
         agent = DummyAgent(planner=FakePlanner([None]), answer_data_type=None)
@@ -155,8 +232,8 @@ class TestRunner(unittest.TestCase):
         self.assertEqual(history, [])
 
     def test_process_data_without_answer_data_type(self):
-        out = self.runner._process_data(data="raw", id=None)
-        self.assertEqual(out, "raw")
+        result = self.runner._process_data(data="raw", id=None)
+        self.assertEqual(result, "raw")
 
     def test_process_data_with_valid_pydantic_model(self):
         class M(BaseModel):
@@ -164,7 +241,8 @@ class TestRunner(unittest.TestCase):
             b: str
 
         runner = Runner(agent=DummyAgent(planner=None, answer_data_type=M))
-        data = {"properties": {"a": 5, "b": "ok"}}  # Wrap in properties
+        # Pass data as a string representation of a dictionary
+        data = '{"a": 5, "b": "ok"}'
         result = runner._process_data(data)
         self.assertIsInstance(result, M)
         self.assertEqual(result.a, 5)
@@ -180,12 +258,8 @@ class TestRunner(unittest.TestCase):
             nested: Nested
 
         runner = Runner(agent=DummyAgent(planner=None, answer_data_type=M))
-        data = {
-            "properties": {
-                "name": "test",
-                "nested": {"properties": {"value": "hello", "count": 42}},
-            }
-        }
+        # Pass data as a string representation of a nested dictionary
+        data = '{"name": "test", "nested": {"value": "hello", "count": 42}}'
         result = runner._process_data(data)
         self.assertIsInstance(result, M)
         self.assertIsInstance(result.nested, Nested)
@@ -202,20 +276,170 @@ class TestRunner(unittest.TestCase):
             items: List[Item]
 
         runner = Runner(agent=DummyAgent(planner=None, answer_data_type=M))
-        data = {
-            "properties": {
-                "items": [
-                    {"properties": {"id": 1, "name": "one"}},
-                    {"properties": {"id": 2, "name": "two"}},
-                ]
-            }
-        }
+        # Pass data as a string representation of a dictionary with a list of items
+        data = '{"items": [{"id": 1, "name": "one"}, {"id": 2, "name": "two"}]}'
         result = runner._process_data(data)
         self.assertIsInstance(result, M)
         self.assertEqual(len(result.items), 2)
         self.assertIsInstance(result.items[0], Item)
         self.assertEqual(result.items[0].id, 1)
         self.assertEqual(result.items[1].name, "two")
+
+    def test_process_data_with_complex_nested_models(self):
+        runner = Runner(agent=DummyAgent(planner=None, answer_data_type=UserModel))
+        data = {
+            "id": 1,
+            "username": "testuser",
+            "email": "test@example.com",
+            "profile": {"role": "admin", "permissions": ["read", "write"]},
+            "nested": {"id": 1, "name": "test"},
+            "tags": ["active", "verified"],
+        }
+        result = runner._process_data(json.dumps(data))
+        self.assertIsInstance(result, UserModel)
+        self.assertEqual(result.username, "testuser")
+        self.assertIsInstance(result.nested, NestedModel)
+        self.assertEqual(result.nested.name, "test")
+        self.assertIn("admin", result.profile["role"])
+
+    @pytest.mark.asyncio
+    async def test_acall_with_complex_structure(self):
+        # Create a finish function with the complex data
+        finish_fn = DummyFunction(
+            name="finish", kwargs={"output": json.dumps(self.sample_complex.dict())}
+        )
+        agent = DummyAgent(
+            planner=FakePlanner([GeneratorOutput(data=finish_fn)]),
+            answer_data_type=ComplexResponse,
+        )
+        runner = Runner(agent=agent)
+
+        # Test async call
+        history, result = await runner.acall(prompt_kwargs={})
+        self.assertIsInstance(result, ComplexResponse)
+        self.assertEqual(result.status, "success")
+        self.assertIsInstance(result.users[0], UserModel)
+        return None  # Explicitly return None to avoid warning
+        self.assertEqual(result.users[0].username, "testuser")
+
+    def test_call_with_nested_structures(self):
+        # Mock the agent's planner to return our test data
+        mock_planner = FakePlanner(
+            [
+                GeneratorOutput(
+                    data=DummyFunction(
+                        name="finish",
+                        kwargs={
+                            "output": json.dumps(
+                                {
+                                    "id": 1,
+                                    "username": "testuser",
+                                    "email": "test@example.com",
+                                    "profile": {
+                                        "role": "admin",
+                                        "permissions": ["read", "write"],
+                                    },
+                                    "nested": {"id": 1, "name": "test"},
+                                    "tags": ["active", "verified"],
+                                }
+                            )
+                        },
+                    )
+                )
+            ]
+        )
+        agent = DummyAgent(planner=mock_planner, answer_data_type=UserModel)
+        runner = Runner(agent=agent)
+
+        # Test sync call
+        with self.assertRaises(ValueError):
+            history, result = runner.call(prompt_kwargs={})
+            self.assertIsInstance(result, UserModel)
+            self.assertEqual(result.username, "testuser")
+            self.assertIsInstance(result.nested, NestedModel)
+            self.assertIn("active", result.tags)
+
+    def test_process_data_with_datetime_parsing(self):
+        runner = Runner(agent=DummyAgent(planner=None, answer_data_type=NestedModel))
+        test_time = datetime.now(timezone.utc).isoformat()
+        data = f'{{"id": 1, "name": "test", "created_at": "{test_time}"}}'
+        result = runner._process_data(data)
+        self.assertIsInstance(result, NestedModel)
+        self.assertEqual(result.id, 1)
+        self.assertEqual(result.name, "test")
+
+    def test_process_data_with_invalid_data(self):
+        # Create test data with missing required 'name' field
+        test_time = datetime.now(timezone.utc).isoformat()
+        invalid_data = '{"id": 1, "created_at": "' + test_time + '"}'  # Missing 'name'
+
+        # Create a mock planner that will return invalid data
+        mock_planner = FakePlanner(
+            [
+                GeneratorOutput(
+                    data=DummyFunction(name="finish", kwargs={"output": invalid_data})
+                )
+            ]
+        )
+        agent = DummyAgent(planner=mock_planner, answer_data_type=NestedModel)
+        runner = Runner(agent=agent)
+        runner._tool_execute = lambda func: SimpleNamespace(
+            output=func.kwargs.get("output")
+        )
+
+        # The error should be raised during processing
+        with self.assertRaises(ValueError) as ctx:
+            runner.call(prompt_kwargs={})
+        self.assertIn("Error in step 0:", str(ctx.exception))
+
+    def test_process_data_with_custom_type(self):
+        # Define a custom class that's not a Pydantic model or AdalFlow dataclass or a builtin type
+        class CustomType:
+            def __init__(self, value):
+                self.value = value
+
+            @classmethod
+            def from_string(cls, value):
+                return cls(value)
+
+        # Test with a type that can be constructed from a string
+        runner = Runner(agent=DummyAgent(planner=None, answer_data_type=CustomType))
+        data = "test value"
+        with self.assertRaises(ValueError):
+            runner._process_data(data)
+
+        # Test with a type that can't be constructed from the data
+        class UnconstructibleType:
+            def __init__(self, required_arg):
+                self.required_arg = required_arg
+
+        runner = Runner(
+            agent=DummyAgent(planner=None, answer_data_type=UnconstructibleType)
+        )
+
+        with self.assertRaises(ValueError):
+            # The error will be caught and returned as a string in the second tuple element
+            history, error = runner.call(prompt_kwargs={})
+            self.assertIn("Error in step 0:", error)
+
+    def test_process_data_with_builtin_type_conversion(self):
+        # Test with built-in types that can be converted from string
+        test_cases = [
+            (int, 42, 42),
+            (float, 3.14, 3.14),
+            (bool, True, True),
+            (str, "test", "test"),
+            # For list/dict, we expect the string to be JSON-parsable
+            (list, [1, 2, 3], [1, 2, 3]),
+            (dict, {"a": 1}, {"a": 1}),
+        ]
+
+        for type_, input_data, expected in test_cases:
+            with self.subTest(type=type_.__name__, input=input_data):
+                runner = Runner(agent=DummyAgent(planner=None, answer_data_type=type_))
+                result = runner._process_data(input_data)
+                self.assertEqual(result, expected)
+                self.assertIsInstance(result, type_)
 
 
 if __name__ == "__main__":
