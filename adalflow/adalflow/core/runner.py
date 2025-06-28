@@ -2,19 +2,28 @@ from adalflow.core.component import Component
 from adalflow.core.agent import Agent
 
 from typing import (
-    Generator as GeneratorType,
-    Dict,
-    Optional,
-    List,
     Any,
+    Dict,
+    Generator as GeneratorType,
+    List,
+    Optional,
+    Tuple,
+    Type,
     TypeVar,
     Union,
-    Tuple,
 )
-from adalflow.core.types import GeneratorOutput, FunctionOutput, StepOutput
-from adalflow.optim.parameter import Parameter
-from adalflow.core.types import Function
+from typing_extensions import TypeAlias
 from pydantic import BaseModel
+
+# Type aliases for better type hints
+BuiltInType: TypeAlias = Union[str, int, float, bool, list, dict, tuple, set, None]
+PydanticDataClass: TypeAlias = Type[BaseModel]
+AdalflowDataClass: TypeAlias = Type[
+    Any
+]  # Replace with your actual Adalflow dataclass type if available
+
+from adalflow.optim.parameter import Parameter
+from adalflow.core.types import GeneratorOutput, FunctionOutput, StepOutput, Function
 import logging
 from adalflow.core.base_data_class import DataClass
 import ast
@@ -92,7 +101,11 @@ class Runner(Component):
 
         return False
 
-    def _process_data(self, data: str, id: Optional[str] = None) -> T:
+    def _process_data(
+        self,
+        data: Union[BuiltInType, PydanticDataClass, AdalflowDataClass],
+        id: Optional[str] = None,
+    ) -> T:
         """Process the generator output data field and convert to the specified pydantic data class of output_type.
 
         Args:
@@ -103,8 +116,9 @@ class Runner(Component):
             str: The processed data as a string
         """
         if not self.answer_data_type:
+            print(data)
             log.info(f"answer_data_type: {self.answer_data_type}, data: {data}")
-            # by default when the answer data type is a string return the data directly
+            # by default when the answer data type is not provided return the data directly
             return data
 
         try:
@@ -137,24 +151,29 @@ class Runner(Component):
                     f"type of answer is neither a pydantic dataclass or adalflow dataclass, answer before being casted again for safety: {data}, type: {type(data)}"
                 )
                 try:
-                    model_output = self.answer_data_type(
-                        data
-                    )  # cast again to the answer_data_type as safety measure
+                    # if the data is a python built_in_type then we can return it directly
+                    # as the prompt passed to the LLM requires this
+                    if not isinstance(data, self.answer_data_type):
+                        raise ValueError(
+                            f"Expected data of type {self.answer_data_type}, but got {type(data)}"
+                        )
+                    model_output = data
                 except Exception as e:
                     log.error(
                         f"Failed to parse output: {data}, {e} for answer_data_type: {self.answer_data_type}"
                     )
                     model_output = None
+                    raise ValueError(f"Error processing output: {str(e)}")
 
-            # model_ouput is not pydantic or adalflow dataclass
+            # model_ouput is not pydantic or adalflow dataclass or a built in python type
             if not model_output:
                 raise ValueError(f"Failed to parse output: {data}")
 
             return model_output
 
         except Exception as e:
-            log.error(f"Failed to parse output: {e}")
-            return f"Error processing output: {str(e)}"
+            log.error(f"Error processing output: {str(e)}")
+            raise ValueError(f"Error processing output: {str(e)}")
 
     @classmethod
     def _get_planner_function(self, output: GeneratorOutput) -> Function:
@@ -185,7 +204,7 @@ class Runner(Component):
         ] = None,  # if some call use a different config
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
-    ) -> Tuple[List[GeneratorOutput], Any]:
+    ) -> Tuple[List[StepOutput], T]:
         """Execute the planner synchronously for multiple steps with function calling support.
 
         At the last step the action should be set to "finish" instead which terminates the sequence
@@ -197,7 +216,9 @@ class Runner(Component):
             id: Optional unique identifier for the request
 
         Returns:
-            The generator output of type specified in self.answer_data_type
+            Tuple containing:
+                - List of step history (StepOutput objects)
+                - Final processed output of type specified in self.answer_data_type
         """
         # reset the step history
         self.step_history = []
@@ -253,8 +274,9 @@ class Runner(Component):
                 step_count += 1
 
             except Exception as e:
-                log.error(f"Error in step {step_count}: {str(e)}")
-                return f"Error in step {step_count}: {str(e)}"
+                error_msg = f"Error in step {step_count}: {str(e)}"
+                log.error(error_msg)
+                raise ValueError(error_msg)
 
         return self.step_history, last_output
 

@@ -88,9 +88,12 @@ def create_default_tool_manager(
             desc="Finish",
             doc_string=Parameter(
                 data="""
-                Finish the task with the final answer as an argument.
-                If the user provided a default Python built-in type, you must provide the answer as an object of the direct corresponding type.
-                Otherwise, pass in the answer as a string. The string will be directly parsed by the caller, it must be serializable using AST.literal_eval and should be able to be parsed into the provided type.
+                Finish the task with the final answer passed as an argument.
+                These rules MUST BE FOLLOWED:
+                1. If the specified type of the answer is a Python built-in type, have the answer be an object of that type.
+                2. If it is not, pass in the answer as a string but with these rules:
+                    - This string will be directly parsed by the caller by using AST.literal_eval, so it must be deserializable using AST.literal_eval.
+                    - Once the string is deserialized, it should be able to be parsed by the caller into the provided type.
                 """,
                 param_type=ParameterType.PROMPT,
                 requires_opt=True,

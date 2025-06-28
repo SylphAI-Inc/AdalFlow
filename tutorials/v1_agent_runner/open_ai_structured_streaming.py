@@ -16,6 +16,8 @@ import json
 
 load_dotenv()
 
+OpenAI.log = "debug"  # or: openai.debug = True
+
 
 # 1) Your structured output model
 class ActionOut(BaseModel):
@@ -48,6 +50,7 @@ agent = Agent[MyContext](
     model="gpt-4o-mini",
     tools=[get_time],
     output_type=ActionOut,  # <-- not output_schema
+    # text_format = ActionOut
 )
 
 

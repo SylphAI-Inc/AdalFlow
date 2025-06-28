@@ -23,6 +23,8 @@ from dataclasses import dataclass
 
 from adalflow.utils import setup_env, get_logger
 
+import asyncio
+
 setup_env()
 
 logger = get_logger(level="DEBUG", enable_file=False)
@@ -651,12 +653,15 @@ if __name__ == "__main__":
 
     # Define all examples to run
     examples = [
-        # ("Synchronous ReAct Agent", run_react_agent_example),
-        # ("Primitive Type ReAct Agent", run_react_agent_primitive_type),
-        # ("Async ReAct Agent", lambda: asyncio.run(arun_react_agent_example())),
-        # ("Advanced ReAct Agent", run_advanced_react_agent),
-        # ("Advanced Async ReAct Agent", lambda: asyncio.run(arun_advanced_react_agent())),
-        # ("No Structured Output Agent", no_structured_output_run_agent),
+        ("Synchronous ReAct Agent", run_react_agent_example),
+        ("Primitive Type ReAct Agent", run_react_agent_primitive_type),
+        ("Async ReAct Agent", lambda: asyncio.run(arun_react_agent_example())),
+        ("Advanced ReAct Agent", run_advanced_react_agent),
+        (
+            "Advanced Async ReAct Agent",
+            lambda: asyncio.run(arun_advanced_react_agent()),
+        ),
+        ("No Structured Output Agent", no_structured_output_run_agent),
         ("Pydantic Dataclass Agent", pydantic_dataclass_run_agent),
     ]
 
