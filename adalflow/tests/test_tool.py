@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from adalflow.core.func_tool import FunctionTool, FunctionType
 from adalflow.core.tool_manager import ToolManager
-from adalflow.core.types import FunctionDefinition
+from adalflow.core.types import FunctionDefinition, Function, FunctionOutput
 from adalflow.core.component import Component
 from adalflow.core.container import ComponentList
 
@@ -448,6 +448,274 @@ async def test_error_handling_async():
 
 
 # =============== END OF MERGED TESTS ===============
+
+
+# =============== TOOL MANAGER EXECUTE TESTS ===============
+
+def test_tool_manager_execute_func():
+    """Test ToolManager.execute_func with different function types"""
+    print("=== Testing ToolManager.execute_func ===")
+    
+    # Create test functions
+    def add_numbers(x: int, y: int) -> int:
+        """Add two numbers"""
+        return x + y
+    
+    def multiply_numbers(x: int, y: int) -> int:
+        """Multiply two numbers"""
+        return x * y
+    
+    # Create function tools
+    add_tool = FunctionTool(add_numbers)
+    multiply_tool = FunctionTool(multiply_numbers)
+    
+    # Create tool manager
+    tool_manager = ToolManager(tools=[add_tool, multiply_tool])
+    
+    # Test execute_func with different functions
+    print("Testing add function:")
+    add_func = Function(name="add_numbers", args=[3, 5], kwargs={})
+    result = tool_manager.execute_func(add_func)
+    print(f"  Result: {result}")
+    assert isinstance(result, FunctionOutput)
+    assert result.output == 8
+    assert result.name == "add_numbers"
+    
+    print("\nTesting multiply function:")
+    multiply_func = Function(name="multiply_numbers", args=[4, 6], kwargs={})
+    result = tool_manager.execute_func(multiply_func)
+    print(f"  Result: {result}")
+    assert isinstance(result, FunctionOutput)
+    assert result.output == 24
+    assert result.name == "multiply_numbers"
+    
+    # Test with kwargs
+    print("\nTesting function with kwargs:")
+    add_func_kwargs = Function(name="add_numbers", args=[2], kwargs={"y": 7})
+    result = tool_manager.execute_func(add_func_kwargs)
+    print(f"  Result: {result}")
+    assert isinstance(result, FunctionOutput)
+    assert result.output == 9
+    
+    print("ToolManager.execute_func tests passed!")
+
+
+@pytest.mark.asyncio
+async def test_tool_manager_execute_func_async():
+    """Test ToolManager.execute_func_async with sync and async functions"""
+    print("=== Testing ToolManager.execute_func_async ===")
+    
+    # Create sync function
+    def sync_divide(x: int, y: int) -> float:
+        """Divide two numbers"""
+        return x / y
+    
+    # Create async function
+    async def async_power(x: int, y: int) -> int:
+        """Raise x to the power of y"""
+        await asyncio.sleep(0.01)  # Small delay to ensure it's async
+        return x ** y
+    
+    # Create function tools
+    divide_tool = FunctionTool(sync_divide)
+    power_tool = FunctionTool(async_power)
+    
+    # Create tool manager
+    tool_manager = ToolManager(tools=[divide_tool, power_tool])
+    
+    # Test execute_func_async with sync function
+    print("Testing sync function via async execution:")
+    divide_func = Function(name="sync_divide", args=[10, 2], kwargs={})
+    result = await tool_manager.execute_func_async(divide_func)
+    print(f"  Result: {result}")
+    assert isinstance(result, FunctionOutput)
+    assert result.output == 5.0
+    assert result.name == "sync_divide"
+    
+    # Test execute_func_async with async function
+    print("\nTesting async function via async execution:")
+    power_func = Function(name="async_power", args=[2, 3], kwargs={})
+    result = await tool_manager.execute_func_async(power_func)
+    print(f"  Result: {result}")
+    assert isinstance(result, FunctionOutput)
+    assert result.output == 8
+    assert result.name == "async_power"
+    
+    # Test with kwargs
+    print("\nTesting async function with kwargs:")
+    power_func_kwargs = Function(name="async_power", args=[3], kwargs={"y": 2})
+    result = await tool_manager.execute_func_async(power_func_kwargs)
+    print(f"  Result: {result}")
+    assert isinstance(result, FunctionOutput)
+    assert result.output == 9
+    
+    print("ToolManager.execute_func_async tests passed!")
+
+
+def test_tool_manager_execute_func_streaming():
+    """Test ToolManager.execute_func with streaming parameter"""
+    print("=== Testing ToolManager.execute_func with streaming ===")
+    
+    # Create a generator function for streaming
+    def stream_numbers(count: int):
+        """Generate a sequence of numbers"""
+        for i in range(count):
+            yield i
+        return count  # Final return value
+    
+    # Create function tool
+    stream_tool = FunctionTool(stream_numbers)
+    
+    # Create tool manager
+    tool_manager = ToolManager(tools=[stream_tool])
+    
+    # Test without streaming
+    print("Testing without streaming:")
+    stream_func = Function(name="stream_numbers", args=[3], kwargs={})
+    result = tool_manager.execute_func(stream_func, stream=False)
+    print(f"  Result: {result}")
+    assert isinstance(result, FunctionOutput)
+    
+    # Test with streaming enabled
+    print("\nTesting with streaming enabled:")
+    result_stream = tool_manager.execute_func(stream_func, stream=True)
+    print(f"  Result: {result_stream}")
+    assert isinstance(result_stream, FunctionOutput)
+    
+    print("ToolManager.execute_func streaming tests passed!")
+
+
+def test_tool_manager_execute_func_error_handling():
+    """Test error handling in ToolManager.execute_func"""
+    print("=== Testing ToolManager.execute_func Error Handling ===")
+    
+    # Create a function that raises an error
+    def error_function(x: int):
+        """A function that always raises an error"""
+        raise ValueError(f"Test error with input: {x}")
+    
+    # Create function tool
+    error_tool = FunctionTool(error_function)
+    
+    # Create tool manager
+    tool_manager = ToolManager(tools=[error_tool])
+    
+    # Test error handling
+    print("Testing function that raises error:")
+    error_func = Function(name="error_function", args=[42], kwargs={})
+    
+    # FunctionTool catches errors and wraps them in FunctionOutput.error
+    result = tool_manager.execute_func(error_func)
+    print(f"  Result: {result}")
+    assert isinstance(result, FunctionOutput)
+    assert result.error is not None
+    assert "Test error with input: 42" in str(result.error)
+    print(f"  Error properly captured: {result.error}")
+    
+    print("ToolManager.execute_func error handling tests passed!")
+
+
+@pytest.mark.asyncio
+async def test_tool_manager_execute_func_async_error_handling():
+    """Test error handling in ToolManager.execute_func_async"""
+    print("=== Testing ToolManager.execute_func_async Error Handling ===")
+    
+    # Create sync function that raises error
+    def sync_error_function(x: int):
+        """A sync function that raises an error"""
+        raise RuntimeError(f"Sync error with input: {x}")
+    
+    # Create async function that raises error
+    async def async_error_function(x: int):
+        """An async function that raises an error"""
+        await asyncio.sleep(0.01)
+        raise RuntimeError(f"Async error with input: {x}")
+    
+    # Create function tools
+    sync_error_tool = FunctionTool(sync_error_function)
+    async_error_tool = FunctionTool(async_error_function)
+    
+    # Create tool manager
+    tool_manager = ToolManager(tools=[sync_error_tool, async_error_tool])
+    
+    # Test sync function error in async execution - FunctionTool.acall catches errors
+    print("Testing sync function error in async mode:")
+    sync_error_func = Function(name="sync_error_function", args=[42], kwargs={})
+    
+    result = await tool_manager.execute_func_async(sync_error_func)
+    print(f"  Result: {result}")
+    assert isinstance(result, FunctionOutput)
+    assert result.error is not None
+    assert "Sync error with input: 42" in str(result.error)
+    print(f"  Error properly captured: {result.error}")
+    
+    # Test async function error in async execution - FunctionTool.acall catches errors
+    print("\nTesting async function error in async mode:")
+    async_error_func = Function(name="async_error_function", args=[99], kwargs={})
+    
+    result = await tool_manager.execute_func_async(async_error_func)
+    print(f"  Result: {result}")
+    assert isinstance(result, FunctionOutput)
+    assert result.error is not None
+    assert "Async error with input: 99" in str(result.error)
+    print(f"  Error properly captured: {result.error}")
+    
+    print("ToolManager.execute_func_async error handling tests passed!")
+
+
+def test_tool_manager_execute_func_with_generators():
+    """Test ToolManager.execute_func with generator functions"""
+    print("=== Testing ToolManager.execute_func with Generators ===")
+    
+    # Create sync generator function
+    def sync_generator_func(n: int):
+        """Generate numbers from 0 to n-1"""
+        for i in range(n):
+            yield f"item_{i}"
+    
+    # Create async generator function  
+    async def async_generator_func(n: int):
+        """Async generate numbers from 0 to n-1"""
+        for i in range(n):
+            await asyncio.sleep(0.001)  # Small async delay
+            yield f"async_item_{i}"
+    
+    # Create function tools
+    sync_gen_tool = FunctionTool(sync_generator_func)
+    async_gen_tool = FunctionTool(async_generator_func)
+    
+    # Create tool manager
+    tool_manager = ToolManager(tools=[sync_gen_tool, async_gen_tool])
+    
+    # Test sync generator
+    print("Testing sync generator function:")
+    sync_gen_func = Function(name="sync_generator_func", args=[3], kwargs={})
+    result = tool_manager.execute_func(sync_gen_func)
+    print(f"  Result: {result}")
+    assert isinstance(result, FunctionOutput)
+    
+    # Test the generator output
+    generator = result.output
+    items = list(generator)
+    print(f"  Generated items: {items}")
+    assert items == ["item_0", "item_1", "item_2"]
+    
+    # Test async generator (should be handled in sync mode)
+    print("\nTesting async generator function in sync mode:")
+    async_gen_func = Function(name="async_generator_func", args=[2], kwargs={})
+    result = tool_manager.execute_func(async_gen_func)
+    print(f"  Result: {result}")
+    assert isinstance(result, FunctionOutput)
+    
+    # In sync mode, async generators should be converted to lists
+    if isinstance(result.output, list):
+        print(f"  Async generator converted to list: {result.output}")
+        assert result.output == ["async_item_0", "async_item_1"]
+    
+    print("ToolManager.execute_func generator tests passed!")
+
+
+# =============== END OF TOOL MANAGER EXECUTE TESTS ===============
 
 
 from adalflow.optim.grad_component import GradComponent

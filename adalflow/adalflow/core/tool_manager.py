@@ -301,13 +301,14 @@ class ToolManager(Component):
         else:
             raise ValueError(f"expr_or_fun should be a Parameter. Got {expr_or_fun}")
 
+
     def execute_func(
         self,
         func: Union[Function, Parameter],
         map_fn: Callable = lambda x: x.data,
         stream: bool = False,
     ) -> Union[FunctionOutput, Parameter]:
-        r"""Execute the function. If the function is async, use asyncio.run to execute it."""
+        r"""Execute the function synchronously"""
 
         if isinstance(func, Parameter):
             try:
@@ -325,57 +326,99 @@ class ToolManager(Component):
             try:
                 tool: FunctionTool = self.context[func.name]
                 printc(f"tool: {tool}", color="yellow")
-                if tool.is_async:
-                    # Add diagnostic logs
-                    printc(f"Executing async function: {func.name}")
-                    result = tool.acall(*func.args, **func.kwargs)
-                    printc(f"Async result type: {type(result)}")
 
-                    # Check if result is an async generator
-                    import inspect
-                    return result
-
-                    # for streaming
-                    if inspect.isasyncgen(result):
-
-                        # wrap it in FunctionOutput
-                        result = FunctionOutput(name=func.name, input=func, output=result)
-                        return result
-                        # printc("Result is an async generator, collecting results")
-
-                        # # We need to handle async generators differently
-                        # async def collect_async_gen():
-                        #     items = []
-                        #     async for item in result:
-                        #         items.append(item)
-                        #     return items
-
-                        # return run_async_in_new_loop(collect_async_gen())
-
-                    # for non-streaming
-                    else:
-                        # wrap it in FunctionOutput
-                        result = FunctionOutput(name=func.name, input=func, output=result)
-                        return result
-                        printc("Result is a regular coroutine", color="yellow")
-                        log.info("Result is a regular coroutine")
-                        # return run_async_in_new_loop(result)
-
+                output = None
+                
+                if stream:
+                    # add stream = True to the kwargs
+                    use_func_kwargs = deepcopy(func.kwargs)
+                    use_func_kwargs["stream"] = True
+                    output = tool.call(*func.args, **use_func_kwargs)
                 else:
-                    printc(f"Executing sync function: {func.name}", color="yellow")
-                    if stream:
-                        # add stream = True to the kwargs
-                        use_func_kwargs = deepcopy(func.kwargs)
-                        use_func_kwargs["stream"] = True
-                        output = tool.call(*func.args, **use_func_kwargs)
-                        return output
-                    else:
-                        output = tool.call(*func.args, **func.kwargs)
-                        printc(f"output: {output}", color="yellow")
-                        return output
+                    output = tool.call(*func.args, **func.kwargs)
+                    printc(f"output: {output}", color="yellow")
+                if not isinstance(output, FunctionOutput):
+                    raise ValueError(f"Output should be FunctionOutput. Got {output}")
+                return output
             except Exception as e:
                 log.error(f"Error {e} executing function: {func}")
                 raise ValueError(f"Error {e} executing function: {func}")
+
+    # def execute_func(
+    #     self,
+    #     func: Union[Function, Parameter],
+    #     map_fn: Callable = lambda x: x.data,
+    #     stream: bool = False,
+    # ) -> Union[FunctionOutput, Parameter]:
+    #     r"""Execute the function synchronously"""
+
+    #     if isinstance(func, Parameter):
+    #         try:
+
+    #             call_func_tool = CallFunctionTool()
+    #             func.add_successor_map_fn(call_func_tool, map_fn=map_fn)
+    #             return call_func_tool.forward(func, context=self.context)
+
+    #         except Exception as e:
+    #             log.error(f"Error {e} executing function: {func.data}")
+    #             error_msg = f"Error {e} executing function: {func.data}"
+    #             return error_msg
+
+    #     else:
+    #         try:
+    #             tool: FunctionTool = self.context[func.name]
+    #             printc(f"tool: {tool}", color="yellow")
+    #             if tool.is_async:
+    #                 # Add diagnostic logs
+    #                 printc(f"Executing async function: {func.name}")
+    #                 result = tool.acall(*func.args, **func.kwargs)
+    #                 printc(f"Async result type: {type(result)}")
+
+    #                 # Check if result is an async generator
+    #                 import inspect
+    #                 return result
+
+    #                 # for streaming
+    #                 if inspect.isasyncgen(result):
+
+    #                     # wrap it in FunctionOutput
+    #                     result = FunctionOutput(name=func.name, input=func, output=result)
+    #                     return result
+    #                     # printc("Result is an async generator, collecting results")
+
+    #                     # # We need to handle async generators differently
+    #                     # async def collect_async_gen():
+    #                     #     items = []
+    #                     #     async for item in result:
+    #                     #         items.append(item)
+    #                     #     return items
+
+    #                     # return run_async_in_new_loop(collect_async_gen())
+
+    #                 # for non-streaming
+    #                 else:
+    #                     # wrap it in FunctionOutput
+    #                     result = FunctionOutput(name=func.name, input=func, output=result)
+    #                     return result
+    #                     printc("Result is a regular coroutine", color="yellow")
+    #                     log.info("Result is a regular coroutine")
+    #                     # return run_async_in_new_loop(result)
+
+    #             else:
+    #                 printc(f"Executing sync function: {func.name}", color="yellow")
+    #                 if stream:
+    #                     # add stream = True to the kwargs
+    #                     use_func_kwargs = deepcopy(func.kwargs)
+    #                     use_func_kwargs["stream"] = True
+    #                     output = tool.call(*func.args, **use_func_kwargs)
+    #                     return output
+    #                 else:
+    #                     output = tool.call(*func.args, **func.kwargs)
+    #                     printc(f"output: {output}", color="yellow")
+    #                     return output
+    #         except Exception as e:
+    #             log.error(f"Error {e} executing function: {func}")
+    #             raise ValueError(f"Error {e} executing function: {func}")
 
     async def execute_func_async(self, func: Function) -> FunctionOutput:
         r"""Execute the function. If the function is sync, use await to execute it."""
@@ -403,21 +446,6 @@ class ToolManager(Component):
                 log.error(error_msg)
                 raise ValueError(error_msg)
             return result
-                
-            # if inspect.isasyncgen(result):
-            #     return result
-            # else:
-            #     return await result
-            # printc(f"is_async_generator: {is_async_generator}", color="yellow")
-            # if is_async_generator:
-            #     printc(f"Executing async generator: {func.name}", color="yellow")
-            #     return tool.acall(*func.args, **func.kwargs)
-            # if tool.is_async:
-            #     printc(f"Executing async function: {func.name}", color="yellow")
-            #     return await tool.acall(*func.args, **func.kwargs)
-            # else:
-            #     printc(f"Executing sync function: {func.name}", color="yellow")
-            #     return asyncio.to_thread(self.call, *func.args, **func.kwargs)
         except Exception as e:
             log.error(f"Error {e} executing function: {func}")
             raise ValueError(f"Error {e} executing function: {func}")
