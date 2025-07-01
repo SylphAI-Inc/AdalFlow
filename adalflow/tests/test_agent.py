@@ -127,8 +127,6 @@ class TestAgent(unittest.TestCase):
         self.assertIn("custom_tool", tool_map)
         self.assertTrue(callable(tool_map["custom_tool"]))
 
-        FunctionOutput
-
         self.assertEqual(tool_map["custom_tool"].call(10).output, 20)
 
     def test_model_kwargs_and_template_propagate_to_planner(self):

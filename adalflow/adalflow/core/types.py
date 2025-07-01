@@ -13,6 +13,9 @@ from typing import (
     Literal,
     Callable,
     Awaitable,
+    Generator,
+    AsyncGenerator,
+    Coroutine,
 )
 from collections import OrderedDict
 from dataclasses import (
@@ -305,10 +308,11 @@ AsyncCallable = Callable[..., Awaitable[Any]]
 @dataclass
 class FunctionDefinition(DataClass):
     __doc__ = r"""The data modeling of a function definition, including the name, description, and parameters."""
-    class_instance: Optional[Any] = field(
-        default=None,
-        metadata={"desc": "The instance of the class this function belongs to"},
-    )
+    # class_instance: Optional[Any] = field(
+    #     default=None,
+    #     metadata={"desc": "The instance of the class this function belongs to"},
+    # ) 
+    # NOTE: for class method: cls_name + "_" + name
     func_name: str = field(
         metadata={"desc": "The name of the tool"}, default=required_field
     )
@@ -565,6 +569,12 @@ class FunctionExpression(DataClass):
             raise ValueError(f"Error generating function expression: {e}")
         return cls(action=action, thought=thought)
 
+FunctionOutputValueType = Union[
+    Any,
+    Generator[Any, Any, Any],
+    AsyncGenerator[Any, Any],
+    Coroutine[Any, Any, Any],
+]
 
 @dataclass
 class FunctionOutput(DataClass):
@@ -583,8 +593,10 @@ class FunctionOutput(DataClass):
             "desc": "The parsed Function object if the input is FunctionExpression"
         },
     )
-    output: Optional[object] = field(
-        default=None, metadata={"desc": "The output of the function execution"}
+    output: Optional[
+        FunctionOutputValueType
+    ] = field(
+        default=None, metadata={"desc": "The output of the function execution - supports sync functions, sync generators, async functions, and async generators"}
     )
     error: Optional[str] = field(
         default=None, metadata={"desc": "The error message if any"}

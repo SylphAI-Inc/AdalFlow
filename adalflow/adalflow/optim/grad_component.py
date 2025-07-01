@@ -483,11 +483,12 @@ class FunGradComponent(GradComponent):
 
     def __init__(
         self,
-        fun: Optional[Callable] = None,
-        afun: Optional[Callable] = None,
+        fun: Callable,
+        # afun: Optional[Callable] = None,
         desc: str = "",
         doc_string=None,
     ):
+
         desc = desc or fun.__doc__ or f"Function: {fun.__name__}"
 
         super().__init__(desc=desc, name=fun.__name__)

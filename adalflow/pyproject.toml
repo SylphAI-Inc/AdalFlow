@@ -77,6 +77,7 @@ lancedb = "^0.5.2"
 boto3 = "^1.35.19"
 pydantic = ">=2.10.0,<2.11.0"
 mcp = { version = "^1.9.4", markers = "python_version >= '3.10'" }
+pytest-asyncio = "^1.0.0"
 
 [tool.poetry.group.qdrant.dependencies]
 # Group dependencies are inherently optional, so `optional = true` isn't strictly needed
