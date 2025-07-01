@@ -176,15 +176,15 @@ class OpenAIClient(ModelClient):
     def __init__(
         self,
         api_key: Optional[str] = None,
-        non_streaming_chat_completion_parser: Callable[
-            [Completion], Any
+        non_streaming_chat_completion_parser: Optional[
+            Callable[[Completion], Any]
         ] = None,  # non-streaming parser
-        streaming_chat_completion_parser: Callable[
-            [Completion], Any
+        streaming_chat_completion_parser: Optional[
+            Callable[[Completion], Any]
         ] = None,  # streaming parser
         # parser for responses (api used for reasoning modeles)
-        non_streaming_response_parser: Callable[[Completion], Any] = None,
-        streaming_response_parser: Callable[[Completion], Any] = None,
+        non_streaming_response_parser: Optional[Callable[[Completion], Any]] = None,
+        streaming_response_parser: Optional[Callable[[Completion], Any]] = None,
         input_type: Literal["text", "messages"] = "text",
         base_url: str = "https://api.openai.com/v1/",
         env_api_key_name: str = "OPENAI_API_KEY",

@@ -68,7 +68,7 @@ class DummyStepOutput:
         self.step = kwargs.get("step", args[0] if len(args) > 0 else None)
         self.function = kwargs.get("function", args[1] if len(args) > 1 else None)
         # Runner uses 'observation'; fallback to 'output'
-        self.output = kwargs.get("observation", kwargs.get("output", None))
+        self.observation = kwargs.get("observation", kwargs.get("output", None))
 
 
 # Test Models
@@ -144,11 +144,14 @@ class TestRunner(unittest.TestCase):
 
     def test_call_single_step_finish(self):
         fn = DummyFunction(name="finish")
+        # Create a mock tool manager that returns a FunctionOutput
+        mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(output="done")
         agent = DummyAgent(
-            planner=FakePlanner([GeneratorOutput(data=fn)]), answer_data_type=None
+            planner=FakePlanner([GeneratorOutput(data=fn)]), 
+            answer_data_type=None,
+            tool_manager=mock_tool_manager
         )
         runner = Runner(agent=agent)
-        runner._tool_execute = lambda func: SimpleNamespace(output="done")
 
         history, result = runner.call(prompt_kwargs={})
         self.assertEqual(len(history), 1)
@@ -157,54 +160,58 @@ class TestRunner(unittest.TestCase):
         self.assertEqual(runner.step_history, history)
 
     def test_call_nonfinish_then_finish(self):
-        fn1 = DummyFunction(name="step1")
+        fn1 = DummyFunction(name="search")
         fn2 = DummyFunction(name="finish")
+        # Create a mock tool manager that returns a FunctionOutput
+        mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(output="test output")
         agent = DummyAgent(
             planner=FakePlanner([GeneratorOutput(data=fn1), GeneratorOutput(data=fn2)]),
             answer_data_type=None,
+            tool_manager=mock_tool_manager
         )
         runner = Runner(agent=agent)
-        runner._tool_execute = lambda func: SimpleNamespace(output=f"{func.name}_out")
-
-        history, result = runner.call(prompt_kwargs={})
-        names = [step.function.name for step in history]
-        self.assertEqual(names, ["step1", "finish"])
-        self.assertEqual(result, "finish_out")
-
-    def test_call_respects_max_steps_without_finish(self):
-        fn = DummyFunction(name="no_finish")
-        agent = DummyAgent(
-            planner=FakePlanner(
-                [
-                    GeneratorOutput(data=fn),
-                    GeneratorOutput(data=fn),
-                    GeneratorOutput(data=fn),
-                ]
-            ),
-            max_steps=2,
-            answer_data_type=None,
-        )
-        runner = Runner(agent=agent)
-        runner._tool_execute = lambda func: SimpleNamespace(output="out")
 
         history, result = runner.call(prompt_kwargs={})
         self.assertEqual(len(history), 2)
-        self.assertEqual([s.function.name for s in history], ["no_finish", "no_finish"])
-        self.assertEqual(result, None)
+        self.assertEqual(result, "test output")
 
-    def test_call_no_answer_data_type(self):
-        # Create a finish function that returns a simple string
-        finish_fn = DummyFunction(name="finish", kwargs={"output": "test output"})
+    def test_call_respects_max_steps_without_finish(self):
+        # Create outputs for 5 steps without finish
+        functions = [DummyFunction(name=f"action_{i}") for i in range(5)]
+        outputs = [GeneratorOutput(data=fn) for fn in functions]
+        # Create a mock tool manager that returns a FunctionOutput
+        mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(output=f"output_{expr_or_fun.name}")
         agent = DummyAgent(
-            planner=FakePlanner([GeneratorOutput(data=finish_fn)]),
+            planner=FakePlanner(outputs), 
+            max_steps=3, 
             answer_data_type=None,
+            tool_manager=mock_tool_manager
         )
         runner = Runner(agent=agent)
-        runner._tool_execute = lambda func: SimpleNamespace(output="out")
+
+        history, result = runner.call(prompt_kwargs={})
+        # Should only execute 3 steps due to max_steps limit
+        self.assertEqual(len(history), 3)
+        self.assertIsNone(result)  # No finish step was reached
+        # Check that the correct functions were executed
+        for i, step in enumerate(history):
+            self.assertEqual(step.function.name, f"action_{i}")
+            self.assertEqual(step.observation, f"output_action_{i}")
+
+    def test_call_no_answer_data_type(self):
+        fn = DummyFunction(name="finish")
+        # Create a mock tool manager that returns a FunctionOutput
+        mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(output={"result": "success"})
+        agent = DummyAgent(
+            planner=FakePlanner([GeneratorOutput(data=fn)]), 
+            answer_data_type=None,
+            tool_manager=mock_tool_manager
+        )
+        runner = Runner(agent=agent)
 
         history, result = runner.call(prompt_kwargs={})
         self.assertEqual(len(history), 1)
-        self.assertEqual(result, "out")
+        self.assertEqual(result, {"result": "success"})
 
     @pytest.mark.asyncio
     async def test_acall_single_step(self):
