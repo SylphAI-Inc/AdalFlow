@@ -6,6 +6,29 @@
 
 While `FunctionTool` can wrap any callable function, `ComponentTool` specifically refers to the pattern of using `FunctionTool` to wrap methods from `Component` subclasses. This pattern provides significant advantages for complex, stateful tools that need to maintain context across calls.
 
+```mermaid
+graph TB
+    subgraph "Function Tool Pattern"
+        FT["FunctionTool(fn)"]
+        PF["Pure Function"]
+        FT --> PF
+        PF --> |"All context as parameters"| LLM1["LLM sees all params"]
+    end
+    
+    subgraph "Component Tool Pattern"
+        CT["FunctionTool(component.acall)"]
+        C["Component"]
+        CC["Hidden Context<br/>• Configuration<br/>• State<br/>• Credentials"]
+        CT --> C
+        C --> CC
+        C --> |"Clean interface"| LLM2["LLM sees only query"]
+    end
+    
+    style CC fill:#e1f5fe
+    style LLM1 fill:#ffecb3
+    style LLM2 fill:#c8e6c9
+```
+
 ## Key Advantages Over Pure Functions
 
 ### 1. **Context Persistence**
@@ -47,6 +70,30 @@ Components automatically support AdalFlow's training and optimization pipeline w
 ## ComponentToolOutput Pattern
 
 The `ComponentToolOutput` class enables sophisticated output control:
+
+```mermaid
+flowchart LR
+    subgraph "Component Processing"
+        A["User Query"] --> B["Component.acall()"]
+        B --> C["Raw Processing"]
+        C --> D["Large Data Results"]
+    end
+    
+    subgraph "Output Transformation"
+        D --> E["ComponentToolOutput"]
+        E --> F["output: Full Data"]
+        E --> G["observation: LLM Summary"]
+    end
+    
+    subgraph "Usage"
+        F --> H["Internal Processing<br/>Downstream Components"]
+        G --> I["LLM Context<br/>Agent Decision Making"]
+    end
+    
+    style E fill:#e8f5e8
+    style F fill:#fff3e0
+    style G fill:#e3f2fd
+```
 
 ### Raw Output vs Observation
 - **`output`**: The complete, potentially large raw data
@@ -275,6 +322,38 @@ planner_tool = FunctionTool(fn=planner_agent.call)
 
 ## Integration with Agent Framework
 
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant R as Runner
+    participant A as Agent
+    participant CT as ComponentTool
+    participant C as Component
+    participant LLM as Language Model
+    
+    U->>R: Query
+    R->>A: Execute with tools
+    A->>LLM: Plan with available tools
+    LLM->>A: Tool call decision
+    A->>CT: FunctionTool.call()
+    CT->>C: component.acall(query)
+    
+    Note over C: Accesses persistent<br/>context & state
+    
+    C->>C: Process with full context
+    C->>CT: ComponentToolOutput
+    
+    Note over CT: Separates output<br/>from observation
+    
+    CT->>A: observation (for LLM)
+    A->>LLM: Tool result
+    LLM->>A: Next action/final answer
+    A->>R: Result
+    R->>U: Final response
+    
+    Note over C,A: Component maintains<br/>state across calls
+```
+
 ### Agent Setup
 ```python
 from adalflow.core import Agent, Runner
@@ -325,6 +404,54 @@ asyncio.run(main())
 ```
 
 ## Component Tool vs Function Tool Comparison
+
+```mermaid
+graph TB
+    subgraph "Function Tool Architecture"
+        direction TB
+        FT1["FunctionTool"]
+        F1["Pure Function"]
+        P1["fn(param1, param2, ..., paramN)"]
+        R1["Direct Return"]
+        
+        FT1 --> F1
+        F1 --> P1
+        P1 --> R1
+        
+        P1 -.-> |"All visible to LLM"| LLM1["LLM Context"]
+    end
+    
+    subgraph "Component Tool Architecture"
+        direction TB
+        FT2["FunctionTool"]
+        C2["Component"]
+        M2["component.acall(query)"]
+        
+        subgraph "Hidden Context"
+            direction LR
+            HC["• Configuration<br/>• Credentials<br/>• State<br/>• History"]
+        end
+        
+        CTO["ComponentToolOutput"]
+        O2["output: Full Data"]
+        OB2["observation: Summary"]
+        
+        FT2 --> C2
+        C2 --> M2
+        HC --> C2
+        M2 --> CTO
+        CTO --> O2
+        CTO --> OB2
+        
+        OB2 -.-> |"Clean interface"| LLM2["LLM Context"]
+        O2 -.-> |"Full data"| DS["Downstream Systems"]
+    end
+    
+    style HC fill:#ffe0e0
+    style CTO fill:#e0f0e0
+    style LLM1 fill:#fff3e0
+    style LLM2 fill:#e3f2fd
+```
 
 | Aspect | Function Tool | Component Tool |
 |--------|---------------|----------------|
@@ -398,6 +525,56 @@ async def acall(self, query: str) -> ComponentToolOutput:
 - [`Runner`](./Runner.md): Executes agents with tool support
 
 ## Migration from Function Tools
+
+```mermaid
+flowchart TD
+    subgraph "Before: Function Tool"
+        direction TB
+        FT1["FunctionTool(search_web)"]
+        SF1["search_web()"]
+        P1["Parameters:<br/>• query: str<br/>• api_key: str<br/>• user_id: str<br/>• preferences: dict"]
+        R1["Raw Results"]
+        
+        FT1 --> SF1
+        SF1 --> P1
+        P1 --> R1
+        
+        P1 -.-> |"All exposed"| LLM1["LLM sees all params"]
+        R1 -.-> |"Direct output"| LLM1
+    end
+    
+    subgraph "After: Component Tool"
+        direction TB
+        FT2["FunctionTool(component.acall)"]
+        ST2["SearchTool Component"]
+        
+        subgraph "Hidden in __init__"
+            HC2["• api_key<br/>• user_id<br/>• preferences<br/>• client"]
+        end
+        
+        AC2["acall(query: str)"]
+        CTO2["ComponentToolOutput"]
+        OUT2["output: Full Results"]
+        OBS2["observation: LLM Summary"]
+        
+        FT2 --> ST2
+        HC2 --> ST2
+        ST2 --> AC2
+        AC2 --> CTO2
+        CTO2 --> OUT2
+        CTO2 --> OBS2
+        
+        AC2 -.-> |"Clean interface"| LLM2["LLM sees only query"]
+        OBS2 -.-> |"Optimized output"| LLM2
+    end
+    
+    FT1 -.-> |"Migration"| FT2
+    
+    style HC2 fill:#ffe0e0
+    style CTO2 fill:#e0f0e0
+    style LLM1 fill:#fff3e0  
+    style LLM2 fill:#e3f2fd
+```
 
 ### Before (Function Tool)
 ```python
