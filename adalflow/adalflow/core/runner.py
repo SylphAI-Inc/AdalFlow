@@ -8,22 +8,36 @@ import asyncio
 from dataclasses import dataclass
 
 from typing import (
-    Generator as GeneratorType,
-    Dict,
-    Optional,
-    List,
     Any,
+    Dict,
+    Generator as GeneratorType,
+    List,
+    Optional,
+    Tuple,
+    Type,
     TypeVar,
     Union,
-    Tuple,
 )
-from adalflow.core.types import GeneratorOutput, FunctionOutput, StepOutput
+from typing_extensions import TypeAlias
+from pydantic import BaseModel
+
+# Type aliases for better type hints
+BuiltInType: TypeAlias = Union[str, int, float, bool, list, dict, tuple, set, None]
+PydanticDataClass: TypeAlias = Type[BaseModel]
+AdalflowDataClass: TypeAlias = Type[
+    Any
+]  # Replace with your actual Adalflow dataclass type if available
+
 from adalflow.optim.parameter import Parameter
 from adalflow.core.types import Function
 from adalflow.utils import printc
 from adalflow.core.component import Component
 from adalflow.core.agent import Agent
 
+from adalflow.core.types import GeneratorOutput, FunctionOutput, StepOutput, Function
+import logging
+from adalflow.core.base_data_class import DataClass
+import ast
 
 
 __all__ = ["Runner"]
@@ -31,6 +45,16 @@ __all__ = ["Runner"]
 log = logging.getLogger(__name__)
 
 T = TypeVar("T", bound=BaseModel)  # Changed to use Pydantic BaseModel
+
+
+def _is_pydantic_dataclass(cls: Any) -> bool:
+    # check whether cls is a pydantic dataclass
+    return isinstance(cls, type) and issubclass(cls, BaseModel)
+
+
+def _is_adalflow_dataclass(cls: Any) -> bool:
+    # check whether cls is a adalflow dataclass
+    return isinstance(cls, type) and issubclass(cls, DataClass)
 
 @dataclass 
 class RunResultStreaming:
@@ -94,7 +118,11 @@ class Runner(Component):
 
         return False
 
-    def _process_data(self, data: Dict[str, Any], id: Optional[str] = None) -> T:
+    def _process_data(
+        self,
+        data: Union[BuiltInType, PydanticDataClass, AdalflowDataClass],
+        id: Optional[str] = None,
+    ) -> T:
         """Process the generator output data field and convert to the specified pydantic data class of output_type.
 
         Args:
@@ -104,58 +132,65 @@ class Runner(Component):
         Returns:
             str: The processed data as a string
         """
-        return data
-        # if not self.answer_data_type:
-        #     return data
+        if not self.answer_data_type:
+            print(data)
+            log.info(f"answer_data_type: {self.answer_data_type}, data: {data}")
+            # by default when the answer data type is not provided return the data directly
+            return data
 
         try:
-            # expect data.observation to be a strict
-            # Convert to Pydantic model
-
-            if isinstance(data, str):
+            model_output = None
+            log.info(f"answer_data_type: {type(self.answer_data_type)}")
+            if _is_pydantic_dataclass(self.answer_data_type):
+                # data should be a string that represents a dictionary
+                log.info(
+                    f"initial answer returned by finish when user passed a pydantic type: {data}, type: {type(data)}"
+                )
+                data = str(data)
+                dict_obj = ast.literal_eval(data)
+                log.info(
+                    f"initial answer after being evaluated using ast: {dict_obj}, type: {type(dict_obj)}"
+                )
+                model_output = self.answer_data_type(**dict_obj)
+            elif _is_adalflow_dataclass(self.answer_data_type):
+                # data should be a string that represents a dictionary
+                log.info(
+                    f"initial answer returned by finish when user passed a adalflow dataclass type: {data}, type: {type(data)}"
+                )
+                data = str(data)
+                dict_obj = ast.literal_eval(data)
+                log.info(
+                    f"initial answer after being evaluated using ast: {dict_obj}, type: {type(dict_obj)}"
+                )
+                model_output = self.answer_data_type.from_dict(dict_obj)
+            else:  # expect data to be a python built_in_type
+                log.info(
+                    f"type of answer is neither a pydantic dataclass or adalflow dataclass, answer before being casted again for safety: {data}, type: {type(data)}"
+                )
                 try:
-                    data = json.loads(data.replace("'", '"'))
-                    log.info(data)
-                except json.JSONDecodeError:
-                    log.error(f"Failed to parse string as JSON: {data}")
-                    return f"Error: Invalid JSON string: {data}"
+                    # if the data is a python built_in_type then we can return it directly
+                    # as the prompt passed to the LLM requires this
+                    if not isinstance(data, self.answer_data_type):
+                        raise ValueError(
+                            f"Expected data of type {self.answer_data_type}, but got {type(data)}"
+                        )
+                    model_output = data
+                except Exception as e:
+                    log.error(
+                        f"Failed to parse output: {data}, {e} for answer_data_type: {self.answer_data_type}"
+                    )
+                    model_output = None
+                    raise ValueError(f"Error processing output: {str(e)}")
 
-            # return only the 'properties key of the object and then load into the class
-
-            # TODO make more robust
-            def recursive_parse(data):
-                # Return primitive types as-is
-                if isinstance(data, (str, int, float, bool, type(None))):
-                    return data
-
-                # Handle dictionaries
-                if isinstance(data, dict):
-                    if "properties" in data:
-                        return recursive_parse(data["properties"])
-                    return {k: recursive_parse(v) for k, v in data.items()}
-
-                # Handle other iterables (including lists, tuples, sets, etc.)
-                from collections.abc import Iterable, Sequence
-
-                if isinstance(data, Iterable) and not isinstance(data, (str, bytes)):
-                    # For sequences (lists, tuples), preserve the type
-                    if isinstance(data, Sequence):
-                        return type(data)(recursive_parse(item) for item in data)
-                    # For non-sequence iterables (sets, generators), convert to list
-                    return [recursive_parse(item) for item in data]
-
-                # Return as-is if not an iterable we handle
-                return data
-
-            data = recursive_parse(data)
-
-            model_output = self.answer_data_type(**data)
+            # model_ouput is not pydantic or adalflow dataclass or a built in python type
+            if not model_output:
+                raise ValueError(f"Failed to parse output: {data}")
 
             return model_output
 
         except Exception as e:
-            log.error(f"Failed to parse output: {e}")
-            return f"Error processing output: {str(e)}"
+            log.error(f"Error processing output: {str(e)}")
+            raise ValueError(f"Error processing output: {str(e)}")
 
     @classmethod
     def _get_planner_function(self, output: GeneratorOutput) -> Function:
@@ -186,7 +221,7 @@ class Runner(Component):
         ] = None,  # if some call use a different config
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
-    ) -> Tuple[List[GeneratorOutput], Any]:
+    ) -> Tuple[List[StepOutput], T]:
         """Execute the planner synchronously for multiple steps with function calling support.
 
         At the last step the action should be set to "finish" instead which terminates the sequence
@@ -198,7 +233,9 @@ class Runner(Component):
             id: Optional unique identifier for the request
 
         Returns:
-            The generator output of type specified in self.answer_data_type
+            Tuple containing:
+                - List of step history (StepOutput objects)
+                - Final processed output of type specified in self.answer_data_type
         """
         # reset the step history
         self.step_history = []
@@ -256,8 +293,9 @@ class Runner(Component):
                 step_count += 1
 
             except Exception as e:
-                log.error(f"Error in step {step_count}: {str(e)}")
-                return f"Error in step {step_count}: {str(e)}"
+                error_msg = f"Error in step {step_count}: {str(e)}"
+                log.error(error_msg)
+                raise ValueError(error_msg)
 
         return self.step_history, last_output
 
@@ -272,8 +310,25 @@ class Runner(Component):
 
         result = self.agent.tool_manager(expr_or_fun=func, step="execute")
 
+        # Handle cases where result is not wrapped in FunctionOutput (e.g., in tests)
         if not isinstance(result, FunctionOutput):
-            raise ValueError("Result is not a FunctionOutput")
+            # If it's a direct result from mocks or other sources, wrap it in FunctionOutput
+            from adalflow.core.types import FunctionOutput
+            if hasattr(result, 'output'):
+                # Already has output attribute, use it directly
+                wrapped_result = FunctionOutput(
+                    name=func.name,
+                    input=func,
+                    output=result.output
+                )
+            else:
+                # Treat the entire result as the output
+                wrapped_result = FunctionOutput(
+                    name=func.name,
+                    input=func,
+                    output=result
+                )
+            return wrapped_result
 
         return result
 

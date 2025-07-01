@@ -105,14 +105,24 @@ def create_default_tool_manager(
         @fun_to_grad_component(
             desc="Finish",
             doc_string=Parameter(
-                data="Finish the task with the final answer in the kwargs.",
+                data="""
+                Finish the task with the final answer passed as an argument.
+                These rules MUST BE FOLLOWED:
+                1. If the specified type of the answer is a Python built-in type, have the answer be an object of that type.
+                2. If it is not, pass in the answer as a string but with these rules:
+                    - This string will be directly parsed by the caller by using AST.literal_eval, so it must be deserializable using AST.literal_eval.
+                    - Once the string is deserialized, it should be able to be parsed by the caller into the provided type.
+                """,
                 param_type=ParameterType.PROMPT,
                 requires_opt=True,
                 role_desc="Instruct the agent on how to create the final answer from the step history.",
                 name="doc_string",
             ),
         )
-        def finish(answer: answer_data_type, **kwargs) -> str:
+        def finish(answer: answer_data_type, **kwargs) -> Union[str, answer_data_type]:
+            # returns a string that is an AST for the answer_data_type
+            log.info(f"answer: {answer}, type: {type(answer)}")
+            # answer will be passed as a dict
             return answer
 
         _finish = FunctionTool(fn=finish)
