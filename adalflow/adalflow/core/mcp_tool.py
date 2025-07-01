@@ -313,7 +313,6 @@ class MCPFunctionTool(FunctionTool):
             func_name=self.mcp_tool.name,
             func_desc=description,
             func_parameters=func_parameters,
-            class_instance=None,
         )
 
     async def acall(self, *args: Any, **kwargs: Any) -> FunctionOutput:
