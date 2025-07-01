@@ -4,11 +4,12 @@ This helps to standardize the tool interface and metadata to communicate with th
 """
 
 from typing import Any, Optional, Callable, Awaitable, Union
-from inspect import iscoroutinefunction, ismethod, isfunction
+from inspect import ismethod
 import inspect
 import logging
 import asyncio
 import nest_asyncio
+from enum import Enum, auto
 
 
 from adalflow.core.types import (
@@ -56,14 +57,27 @@ def find_instance_name_from_self(instance):
     return None
 
 
-FunctionType = Union[Callable[..., Any], Awaitable[Callable[..., Any]]]
+# Specific function types supported by FunctionTool:
+# - Regular functions (sync/async)
+# - Generator functions (sync/async)
+# - Bound methods (class methods)
+# - FunGradComponent instances (trainable components)
+
+
+class FunctionType(Enum):
+    """Enumeration of the 4 core function types supported by FunctionTool."""
+
+    SYNC = auto()  # Regular sync function: def func(): return value
+    ASYNC = auto()  # Async function: async def func(): return value
+    SYNC_GENERATOR = auto()  # Sync generator: def func(): yield value
+    ASYNC_GENERATOR = auto()  # Async generator: async def func(): yield value
 
 
 # TODO: improve the support for async functions, similarly a component might be used as a tool
 class FunctionTool(Component):
     __doc__ = r"""Describing and Parsing(to LLM) and executing a function.
 
-    Supports both normal callable functions and methods(__call__) of a component.
+    Supports both normal callable functions and class methods.
     When component is used, we support both the training and eval mode.
 
     Note:
@@ -72,7 +86,6 @@ class FunctionTool(Component):
 
     Args:
         fn (Callable): The function to be executed.
-        component (Component, optional): The component that owns the function. Defaults to None.
         definition (FunctionDefinition, optional): The definition of the function. Defaults to None.
 
 
@@ -118,10 +131,18 @@ class FunctionTool(Component):
     A FunctionTool allows other GradComponent(as a tool) to pass through correctly.
     """
 
+    # key attributes:
+    fn: Callable
+    definition: FunctionDefinition
+    function_type: FunctionType
+
+    # not used in particular, but only for training control
+    class_instance: Optional[object] = None
+
+    # it inherits the training attribute from Component
     def __init__(
         self,
-        fn: FunctionType,
-        component: Optional[Component] = None,
+        fn: Union[Callable, FunGradComponent],
         definition: Optional[FunctionDefinition] = None,
     ):
         super().__init__(
@@ -130,14 +151,17 @@ class FunctionTool(Component):
         nest_asyncio.apply()
         assert fn is not None, "fn must be provided"
 
-        # self.fn = fn  # it can be a function or component
-        self.component = component  # pass it here to control the training mode
-        if isinstance(fn, Component):
-            self.fn = fn.__call__
-        else:
-            self.fn = fn
-        self._is_async = iscoroutinefunction(fn) or inspect.isasyncgenfunction(fn)
-        if isinstance(fn, Component):
+        # TODO: support FunGradComponent later.
+
+        self.fn = fn
+        self.function_type = self.detect_function_type(fn)
+        self._is_async = self.function_type in [
+            FunctionType.ASYNC,
+            FunctionType.ASYNC_GENERATOR,
+        ]
+        self.class_instance = self._autodetect_class_instance(fn)
+        if isinstance(fn, FunGradComponent):
+            print(f"FunctionTool: {fn} is a component")
             self.definition = (
                 definition or self._create_fn_definition_for_grad_component(fn)
             )
@@ -146,16 +170,66 @@ class FunctionTool(Component):
         if self._is_async:
             log.info(f"FunctionTool: {fn} is async: {self._is_async}")
 
-    @property
-    def is_async(self) -> bool:
-        return self._is_async
+    @classmethod
+    def detect_function_type(cls, fn: Callable) -> FunctionType:
+        """
+        Detect the function type of a given callable.
 
-    @property
-    def is_async_generator(self):
-        """Check if the function is an async generator."""
-        import inspect
+        Args:
+            fn: The callable to analyze
 
-        return inspect.isasyncgenfunction(self.fn)
+        Returns:
+            FunctionType: The detected function type
+
+        Raises:
+            ValueError: If the function type cannot be determined or is not supported
+        """
+        if fn is None:
+            raise ValueError("Function cannot be None")
+
+        # Check for async generator functions
+        if inspect.isasyncgenfunction(fn):
+            return FunctionType.ASYNC_GENERATOR
+
+        # Check for sync generator functions
+        if inspect.isgeneratorfunction(fn):
+            return FunctionType.SYNC_GENERATOR
+
+        # Check for async functions (coroutines)
+        if inspect.iscoroutinefunction(fn):
+            return FunctionType.ASYNC
+
+        # Check for regular functions
+        if inspect.isfunction(fn) or inspect.ismethod(fn):
+            return FunctionType.SYNC
+
+        # Check for callable objects (like classes with __call__)
+        if callable(fn):
+            # For callable objects, we need to check their __call__ method
+            if hasattr(fn, "__call__"):
+                call_method = fn.__call__
+                if inspect.ismethod(call_method):
+                    # It's a bound method, check the underlying function
+                    if inspect.isasyncgenfunction(call_method.__func__):
+                        return FunctionType.ASYNC_GENERATOR
+                    elif inspect.isgeneratorfunction(call_method.__func__):
+                        return FunctionType.SYNC_GENERATOR
+                    elif inspect.iscoroutinefunction(call_method.__func__):
+                        return FunctionType.ASYNC
+                    else:
+                        return FunctionType.SYNC
+                else:
+                    # It's a function, check directly
+                    if inspect.isasyncgenfunction(call_method):
+                        return FunctionType.ASYNC_GENERATOR
+                    elif inspect.isgeneratorfunction(call_method):
+                        return FunctionType.SYNC_GENERATOR
+                    elif inspect.iscoroutinefunction(call_method):
+                        return FunctionType.ASYNC
+                    else:
+                        return FunctionType.SYNC
+
+        raise ValueError(f"Cannot determine function type for {fn}")
 
     def _create_fn_definition_for_grad_component(
         self, fn: FunGradComponent
@@ -163,7 +237,11 @@ class FunctionTool(Component):
         name = fn.fun_name
         docstring = fn.doc_string
         signature_str = str(signature(fn.fun))
-        instance = None
+        cls_name = None
+        if ismethod(fn.fun):
+            cls_name = fn.fun.__self__.__class__.__name__
+
+        name = cls_name + "_" + name if cls_name else name
         return FunctionDefinition(
             func_name=name,
             func_desc=(
@@ -172,8 +250,12 @@ class FunctionTool(Component):
                 else f"{name}{signature_str}\nDocstring:{docstring.data}"
             ),
             func_parameters=get_fun_schema(name, fn.fun),
-            class_instance=instance,
         )
+
+    def _autodetect_class_instance(self, fn: Callable) -> Optional[Any]:
+        if ismethod(fn):
+            return fn.__self__
+        return None
 
     def _create_fn_definition(self) -> FunctionDefinition:
 
@@ -183,17 +265,8 @@ class FunctionTool(Component):
 
         # Get the class that owns the method, if applicable
         cls_name = None
-        instance = None
         if ismethod(self.fn):  # Check if it's a bound method
-            instance = self.fn.__self__
-            instance = find_instance_name_from_self(instance)
-            if name == "__call__" and not instance:
-                raise ValueError(
-                    "Please provide a name for the instance in the calling context"
-                )
             cls_name = self.fn.__self__.__class__.__name__
-        elif isfunction(self.fn):  # Unbound method
-            cls_name = self.fn.__qualname__.split(".")[0]
 
         # Build the description
         description = f"{name}{signature_str}\n"
@@ -205,65 +278,129 @@ class FunctionTool(Component):
         # Get function parameters schema
         fn_parameters = get_fun_schema(name, self.fn)
 
+        name = cls_name + "_" + name if cls_name else name
+        # create a unique identifier as the class method name
+
         return FunctionDefinition(
             func_name=name,
             func_desc=description,
             func_parameters=fn_parameters,
-            class_instance=instance,
         )
 
     def forward(self, *args, **kwargs) -> Parameter:
         r"""Forward the function tool."""
         return self.bicall(*args, **kwargs)
 
+    def _call_sync(self, fn: Callable, *args: Any, **kwargs: Any) -> Any:
+        """Call a sync function."""
+        if self.function_type == FunctionType.SYNC:
+            return fn(*args, **kwargs)
+        elif self.function_type == FunctionType.ASYNC:
+            if is_running_in_event_loop():
+                loop = asyncio.get_running_loop()
+                task = loop.create_task(fn(*args, **kwargs))
+                return asyncio.run_coroutine_threadsafe(task, loop).result()
+            else:
+                return asyncio.run(fn(*args, **kwargs))
+        elif self.function_type == FunctionType.SYNC_GENERATOR:
+            return fn(*args, **kwargs)
+        elif self.function_type == FunctionType.ASYNC_GENERATOR:
+            if is_running_in_event_loop():
+                loop = asyncio.get_running_loop()
+
+                async def collect_generator():
+                    result = []
+                    async for item in fn(*args, **kwargs):
+                        result.append(item)
+                        return result
+
+                task = loop.create_task(collect_generator())
+                output = asyncio.run_coroutine_threadsafe(task, loop).result()
+                return output
+
+            else:
+
+                # No event loop running, safe to create new one
+                async def collect_generator():
+                    result = []
+                    async for item in fn(*args, **kwargs):
+                        result.append(item)
+                    return result
+
+                output = asyncio.run(collect_generator())
+                return output
+        else:
+            raise ValueError(f"Unsupported function type: {self.function_type}")
+
     def call(self, *args: Any, **kwargs: Any) -> FunctionOutput:
-        r"""Execute the function synchronously.
+        """
+        Execute the function synchronously, supporting all function types.
+
+        This method provides a unified sync interface for all function types:
+        - SYNC: Calls the function directly
+        - ASYNC: Runs the coroutine in a new event loop (blocks until complete)
+        - SYNC_GENERATOR: Returns the generator object
+        - ASYNC_GENERATOR: Runs the async generator and collects all values into a list
+
+        Warning: For async functions, this will block the current thread until completion.
+        For better performance with async functions, consider using acall() instead.
 
         Example:
+            import asyncio
 
-        .. code-block:: python
+            async def async_func():
+                await asyncio.sleep(1)
+                return "async result"
 
-            import time
-            def sync_function_1():
-                time.sleep(1)
-                return "Function 1 completed"
+            def sync_func():
+                return "sync result"
 
-            tool_1 = FunctionTool(sync_function_1)
-            output = tool_1.call()
+            tool1 = FunctionTool(async_func)
+            tool2 = FunctionTool(sync_func)
+
+            # Both work synchronously
+            result1 = tool1.call()  # Blocks for 1 second
+            result2 = tool2.call()  # Returns immediately
         """
-        printc(f"call: {self.fn}", color="yellow")
-        return self.bicall(*args, **kwargs)
-        # if self._is_async:
-        #     raise ValueError("FunctionTool is asynchronous, use acall instead")
-        # output, error = None, None
-        # try:
-        #     output = self.fn(*args, **kwargs)
-        # except Exception as e:
-        #     log.error(f"Error at calling {self.fn}: {e}")
-        #     # raise ValueError(f"Error: {e}")
-        #     error = str(e)
-        # return FunctionOutput(
-        #     name=self.definition.func_name,
-        #     # raw_input={"args": args, "kwargs": kwargs},
-        #     input=Function(name=self.definition.func_name, args=args, kwargs=kwargs),
-        #     output=output,
-        #     error=error,
-        # )
+        output, error = None, None
+
+        try:
+            output = self._call_sync(self.fn, *args, **kwargs)
+
+        except Exception as e:
+            log.error(f"Error at calling {self.fn}: {e}")
+            error = f"Error at calling {self.fn}: {e}"
+
+        # Handle Parameter output (training mode)
+        if isinstance(output, Parameter):
+            if not self.training:
+                raise ValueError(
+                    f"FunctionTool {self.definition.func_name} is in eval mode, but the output is Parameter"
+                )
+            output.data = FunctionOutput(
+                name=self.definition.func_name,
+                input=Function(
+                    name=self.definition.func_name, args=args, kwargs=kwargs
+                ),
+                output=output.data,
+                error=error,
+            )
+            return output
+
+        # Create FunctionOutput
+        function_output = FunctionOutput(
+            name=self.definition.func_name,
+            input=Function(name=self.definition.func_name, args=args, kwargs=kwargs),
+            output=output,
+            error=error,
+        )
+
+        printc(f"call output: {function_output}", color="yellow")
+        return function_output
 
     def bicall(self, *args: Any, **kwargs: Any) -> Union[FunctionOutput, Parameter]:
-        r"""Execute the function synchronously.
-
-        Example:
-
-        .. code-block:: python
-
-            import time
-            def sync_function_1():
-                time.sleep(1)
-                return "Function 1 completed"
-
-            tool_1 = FunctionTool(sync_function_1)
-            output = tool_1.call()
+        r"""This should only be used in training, where a fun is required to be a FunGradComponent
+        where the output from function execution is a Parameter.
         """
         if self._is_async:
             raise ValueError("FunctionTool is asynchronous, use acall instead")
@@ -273,16 +410,10 @@ class FunctionTool(Component):
         # self.fn can have both train and eval mode or untrainable as a function.
         try:
             log.debug(f"bicall args: {args}, kwargs: {kwargs}, fn: {self.fn}")
+            # TODO: might to support more types of functions
             output = self.fn(*args, **kwargs)
             log.debug(f"output 1: {output}")
             printc(f"output 1: {output}", color="yellow")
-            # import inspect
-            # if inspect.isasyncgen(output):
-            #     # just yield from it
-            #     return output
-            # elif inspect.isgenerator(output):
-            #     # just yield from it
-            #     return output
         except Exception as e:
             log.error(f"Error at calling {self.fn}: {e}")
             error = f"Error at calling {self.fn}: {e}"
@@ -305,7 +436,6 @@ class FunctionTool(Component):
 
         output = FunctionOutput(
             name=self.definition.func_name,
-            # raw_input={"args": args, "kwargs": kwargs},
             input=Function(name=self.definition.func_name, args=args, kwargs=kwargs),
             output=output,
             error=error,
@@ -313,119 +443,160 @@ class FunctionTool(Component):
         printc(f"function output: {output}", color="yellow")
         return output
 
-    async def acall(self, *args, **kwargs):
-        """Async call the function."""
-        if self._is_async:
-            if self.is_async_generator:
-                # TODO: need to support the async_generator better
-                # For async generators, return the generator directly
-                # Don't await it - it needs to be consumed with async for
-                return self.fn(*args, **kwargs)
-            else:
-                # For regular async functions, await the result
-                result = await self.fn(*args, **kwargs)
-                # wrap the result in FunctionOutput
-                result = FunctionOutput(
-                    name=self.definition.func_name,
-                    input=Function(
-                        name=self.definition.func_name, args=args, kwargs=kwargs
-                    ),
-                    output=result,
-                )
-                return result
-        else:
-            return self.call(*args, **kwargs)
-
-    def execute(self, *args, **kwargs) -> FunctionOutput:
-        r"""Execute the function synchronously or asynchronously based on the function type.
-
-        No matter of the function type, you can run the function using both asyncio and without asyncio.
-
-
-        Use it with caution as it might block the event loop.
-
-        Example:
-
-        .. code-block:: python
-
-            import asyncio
-            import time
-
-            async def async_function_1():
-                await asyncio.sleep(1)
-                return "Function 1 completed"
-
-            def sync_function_1():
-                time.sleep(1)
-                return "Function 1 completed"
-
-            async def async_function_2():
-                await asyncio.sleep(2)
-                return "Function 2 completed"
-
-            def sync_function_2():
-                time.sleep(2)
-                return "Function 2 completed"
-
-            async_tool_1 = FunctionTool(async_function_1)
-            sync_tool_1 = FunctionTool(sync_function_2)
-            async_tool_2 = FunctionTool(async_function_2)
-            sync_tool_2 = FunctionTool(sync_function_2)
-
-            def run_sync_and_async_mix_without_wait():
-                # both sync and async tool can use execute
-                # sync tool can also use call
-                # takes 5 seconds (1+1+2) + overhead
-                start_time = time.time()
-                results = [
-                    async_tool_1.execute(),
-                    sync_tool_1.execute(),
-                    sync_tool_2.call(),
-                ]
-                end_time = time.time()
-                print(f"run_sync_and_async_mix_without_wait time: {end_time - start_time}")
-                return results
-
-            async def run_sync_and_async_mix():
-                # both sync and async tool can use execute&to_thread
-                # async tool can also use acall without to_thread
-                # takes a bit over 2 seconds max(2)
-                start_time = time.time()
-                results = await asyncio.gather(
-                    async_tool_1.execute(),
-                    sync_tool_1.execute(),
-                    async_tool_2.acall(),
-                )
-                end_time = time.time()
-                print(f"run_sync_and_async_mix time: {end_time - start_time}")
-                return results
-
-            run_sync_and_async_mix_without_wait()
-            asyncio.run(run_sync_and_async_mix())
+    async def acall(self, *args, **kwargs) -> Union[FunctionOutput, Parameter]:
         """
-        if self._is_async:
-            log.debug(f"Running async function: {self.fn}")
-            if is_running_in_event_loop():
-                result = asyncio.create_task(self.acall(*args, **kwargs))
-            else:
-                result = asyncio.run(self.acall(*args, **kwargs))
-        # NOTE: in juptyer notebook, it is always running in event loop
-        else:
-            log.debug(f"Running sync function: {self.fn}")
-            if is_running_in_event_loop():
-                log.debug(f"Running sync function in event loop: {self.fn}")
-                result = asyncio.to_thread(self.call, *args, **kwargs)
-            else:
-                result = self.call(*args, **kwargs)
+        Async call the function. Handles all function types appropriately.
 
-        return result
+        For different function types:
+        - SYNC: Returns FunctionOutput with the result
+        - ASYNC: Awaits the coroutine and returns FunctionOutput with the result
+        - SYNC_GENERATOR: Returns FunctionOutput with the generator object
+        - ASYNC_GENERATOR: Returns FunctionOutput with the async generator object
+
+        Note: For generators, users need to iterate over the generator themselves.
+        """
+        output, error = None, None
+
+        try:
+            if self.function_type == FunctionType.SYNC:
+                # Sync function - call directly
+                output = self.fn(*args, **kwargs)
+
+            elif self.function_type == FunctionType.ASYNC:
+                # Async function - await the coroutine
+                output = await self.fn(*args, **kwargs)
+
+            elif self.function_type == FunctionType.SYNC_GENERATOR:
+                # Sync generator - return the generator object
+                output = self.fn(*args, **kwargs)
+
+            elif self.function_type == FunctionType.ASYNC_GENERATOR:
+                # Async generator - return the async generator object
+                output = self.fn(*args, **kwargs)
+
+            else:
+                raise ValueError(f"Unsupported function type: {self.function_type}")
+
+        except Exception as e:
+            log.error(f"Error at calling {self.fn}: {e}")
+            error = f"Error at calling {self.fn}: {e}"
+
+        # Handle Parameter output (training mode)
+        if isinstance(output, Parameter):
+            if not self.training:
+                raise ValueError(
+                    f"FunctionTool {self.definition.func_name} is in eval mode, but the output is Parameter"
+                )
+            output.data = FunctionOutput(
+                name=self.definition.func_name,
+                input=Function(
+                    name=self.definition.func_name, args=args, kwargs=kwargs
+                ),
+                output=output.data,
+                error=error,
+            )
+            return output
+
+        function_output = FunctionOutput(
+            name=self.definition.func_name,
+            input=Function(name=self.definition.func_name, args=args, kwargs=kwargs),
+            output=output,
+            error=error,
+        )
+
+        return function_output
+
+    # def execute(self, *args, **kwargs) -> FunctionOutput:
+    #     r"""Execute the function synchronously or asynchronously based on the function type.
+
+    #     No matter of the function type, you can run the function using both asyncio and without asyncio.
+
+    #     Use it with caution as it might block the event loop.
+
+    #     Example:
+
+    #     .. code-block:: python
+
+    #         import asyncio
+    #         import time
+
+    #         async def async_function_1():
+    #             await asyncio.sleep(1)
+    #             return "Function 1 completed"
+
+    #         def sync_function_1():
+    #             time.sleep(1)
+    #             return "Function 1 completed"
+
+    #         async def async_function_2():
+    #             await asyncio.sleep(2)
+    #             return "Function 2 completed"
+
+    #         def sync_function_2():
+    #             time.sleep(2)
+    #             return "Function 2 completed"
+
+    #         async_tool_1 = FunctionTool(async_function_1)
+    #         sync_tool_1 = FunctionTool(sync_function_2)
+    #         async_tool_2 = FunctionTool(async_function_2)
+    #         sync_tool_2 = FunctionTool(sync_function_2)
+
+    #         def run_sync_and_async_mix_without_wait():
+    #             # both sync and async tool can use execute
+    #             # sync tool can also use call
+    #             # takes 5 seconds (1+1+2) + overhead
+    #             start_time = time.time()
+    #             results = [
+    #                 async_tool_1.execute(),
+    #                 sync_tool_1.execute(),
+    #                 sync_tool_2.call(),
+    #             ]
+    #             end_time = time.time()
+    #             print(f"run_sync_and_async_mix_without_wait time: {end_time - start_time}")
+    #             return results
+
+    #         async def run_sync_and_async_mix():
+    #             # both sync and async tool can use execute&to_thread
+    #             # async tool can also use acall without to_thread
+    #             # takes a bit over 2 seconds max(2)
+    #             start_time = time.time()
+    #             results = await asyncio.gather(
+    #                 async_tool_1.execute(),
+    #                 sync_tool_1.execute(),
+    #                 async_tool_2.acall(),
+    #             )
+    #             end_time = time.time()
+    #             print(f"run_sync_and_async_mix time: {end_time - start_time}")
+    #             return results
+
+    #         run_sync_and_async_mix_without_wait()
+    #         asyncio.run(run_sync_and_async_mix())
+    #     """
+    #     if self._is_async:
+    #         log.debug(f"Running async function: {self.fn}")
+    #         if is_running_in_event_loop():
+    #             result = asyncio.create_task(self.acall(*args, **kwargs))
+    #         else:
+    #             result = asyncio.run(self.acall(*args, **kwargs))
+    #     # NOTE: in juptyer notebook, it is always running in event loop
+    #     else:
+    #         log.debug(f"Running sync function: {self.fn}")
+    #         if is_running_in_event_loop():
+    #             log.debug(f"Running sync function in event loop: {self.fn}")
+    #             result = asyncio.to_thread(self.call, *args, **kwargs)
+    #         else:
+    #             result = self.call(*args, **kwargs)
+
+    #     return result
 
     # def __call__(self, *args, **kwargs) -> FunctionOutput:
     #     r"""Execute the function synchronously or asynchronously based on the function type."""
     #     return self.execute(*args, **kwargs)
 
     def _extra_repr(self) -> str:
-        s = f"fn: {self.fn}, async: {self._is_async}, definition: {self.definition}"
+        s = f"fn: {self.fn}, type: {self.function_type}, definition: {self.definition}"
+        if self.class_instance is not None:
+            s += f", class_instance: {self.class_instance}"
         return s
 
 

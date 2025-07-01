@@ -5,7 +5,6 @@ import types
 from unittest.mock import patch
 
 import adalflow.core.agent as agent_module
-from adalflow.core.types import FunctionOutput
 
 
 # --- Dummy stubs for dependencies ---
@@ -126,8 +125,6 @@ class TestAgent(unittest.TestCase):
         tool_map = agent.tool_manager._context_map
         self.assertIn("custom_tool", tool_map)
         self.assertTrue(callable(tool_map["custom_tool"]))
-
-        FunctionOutput
 
         self.assertEqual(tool_map["custom_tool"].call(10).output, 20)
 
