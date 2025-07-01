@@ -4,7 +4,7 @@ This helps to standardize the tool interface and metadata to communicate with th
 """
 
 from typing import Any, Optional, Callable, Awaitable, Union
-from inspect import iscoroutinefunction, ismethod, isfunction
+from inspect import ismethod
 import inspect
 import logging
 import asyncio
@@ -495,7 +495,6 @@ class FunctionTool(Component):
             )
             return output
 
-        # Create FunctionOutput
         function_output = FunctionOutput(
             name=self.definition.func_name,
             input=Function(name=self.definition.func_name, args=args, kwargs=kwargs),
