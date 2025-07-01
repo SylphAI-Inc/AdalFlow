@@ -1,13 +1,3 @@
-# create 4 functions
-# sync return "sync"
-# async return "async"
-# sync with yield "sync_yield"
-# async with yield "async_yield"
-
-# create a function tool for each function
-# use the function tool to call the function
-# print the result
-
 from adalflow.core.func_tool import FunctionTool
 import inspect
 import asyncio

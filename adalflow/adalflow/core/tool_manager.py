@@ -174,12 +174,7 @@ class ToolManager(Component):
     @staticmethod
     def get_context_index(tool: FunctionTool) -> Dict[str, object]:
         index = tool.definition.func_name
-        if tool.definition.class_instance:
-            index = f"{tool.definition.class_instance}.{index}"
         output = {index: tool}
-        if tool.definition.func_name == "__call__":
-            # add another index of directly using the classinstance
-            output[f"{tool.definition.class_instance}"] = tool
         return output
 
     @staticmethod
@@ -199,21 +194,14 @@ class ToolManager(Component):
     def yaml_definitions(self) -> List[str]:
         output = []
         for tool in self.tools:
-            if not tool.definition.class_instance:
-                output.append(tool.definition.to_yaml(exclude=["class_instance"]))
-            else:
-                output.append(tool.definition.to_yaml())
+            output.append(tool.definition.to_yaml())
         return output
 
     @property
     def json_definitions(self) -> List[str]:
         output = []
         for tool in self.tools:
-            if not tool.definition.class_instance:
-                output.append(tool.definition.to_json(exclude=["class_instance"]))
-            else:
-                output.append(tool.definition.to_json())
-            output.append(tool.definition.to_json(exclude=["class_instance"]))
+            output.append(tool.definition.to_json())
         return output
 
     @property
