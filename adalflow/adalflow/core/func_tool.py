@@ -721,37 +721,3 @@ if __name__ == "__main__":
         "Finish the task with verbatim short factoid responses from retrieved context."
     )
     print(output)
-
-    # Test function type detection
-    def sync_function():
-        return "sync result"
-    
-    async def async_function():
-        await asyncio.sleep(0.1)
-        return "async result"
-    
-    def sync_generator():
-        yield "sync generator result"
-    
-    async def async_generator():
-        yield "async generator result"
-    
-    class CallableClass:
-        def __call__(self):
-            return "callable class result"
-    
-    # Test the detection
-    print("Testing function type detection:")
-    print(f"sync_function: {FunctionTool.detect_function_type(sync_function)}")
-    print(f"async_function: {FunctionTool.detect_function_type(async_function)}")
-    print(f"sync_generator: {FunctionTool.detect_function_type(sync_generator)}")
-    print(f"async_generator: {FunctionTool.detect_function_type(async_generator)}")
-    print(f"CallableClass: {FunctionTool.detect_function_type(CallableClass())}")
-    
-    # Test with FunctionTool instances
-    sync_tool = FunctionTool(sync_function)
-    async_tool = FunctionTool(async_function)
-    print(f"sync_tool.function_type: {sync_tool.function_type}")
-    print(f"async_tool.function_type: {async_tool.function_type}")
-
-    from adalflow.components.model_client import OpenAIClient
