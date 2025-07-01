@@ -5,9 +5,11 @@ import base64
 
 from openai.types import CompletionUsage, Image
 from openai.types.chat import ChatCompletion
+from openai.types.chat import ChatCompletionChunk
 
 from adalflow.core.types import ModelType, GeneratorOutput
 from adalflow.components.model_client.openai_client import OpenAIClient
+import asyncio
 
 
 def getenv_side_effect(key):
@@ -96,6 +98,49 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
             "quality": "standard",
             "n": 1,
         }
+
+        # Add streaming test data
+        self.streaming_chunks = [
+            ChatCompletionChunk(
+                id="cmpl-123",
+                object="chat.completion.chunk",
+                created=1635820005,
+                model="gpt-4",
+                choices=[
+                    {
+                        "delta": {"content": "Once "},
+                        "index": 0,
+                        "finish_reason": None,
+                    }
+                ],
+            ),
+            ChatCompletionChunk(
+                id="cmpl-123",
+                object="chat.completion.chunk",
+                created=1635820005,
+                model="gpt-4",
+                choices=[
+                    {
+                        "delta": {"content": "upon "},
+                        "index": 0,
+                        "finish_reason": None,
+                    }
+                ],
+            ),
+            ChatCompletionChunk(
+                id="cmpl-123",
+                object="chat.completion.chunk",
+                created=1635820005,
+                model="gpt-4",
+                choices=[
+                    {
+                        "delta": {},
+                        "index": 0,
+                        "finish_reason": "stop",
+                    }
+                ],
+            ),
+        ]
 
     def test_encode_image(self):
         # Create a temporary test image file
@@ -534,6 +579,88 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
             **self.api_kwargs
         )
         self.assertEqual(result, self.mock_response)
+
+    async def test_async_streaming(self):
+        """Test the async streaming method for OpenAIClient."""
+        # Setup mock
+        mock_async_client = AsyncMock()
+
+        # Create an async generator for the mock stream
+        async def mock_stream():
+            for chunk in self.streaming_chunks:
+                yield chunk
+                await asyncio.sleep(0.01)
+
+        mock_async_client.chat.completions.create.return_value = mock_stream()
+        self.client.async_client = mock_async_client
+
+        # Test API kwargs for streaming
+        api_kwargs = {
+            "model": "gpt-4",
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": "Tell me a short story."},
+            ],
+            "stream": True,
+            "max_tokens": 200,
+        }
+
+        # Call the async streaming method
+        stream = await self.client.acall(api_kwargs, ModelType.LLM)
+
+        # Verify the streaming parser is set
+        self.assertEqual(
+            self.client.chat_completion_parser,
+            self.client.streaming_chat_completion_parser,
+        )
+
+        # Process the stream
+        full_response = ""
+        async for chunk in stream:
+            if chunk.choices and chunk.choices[0].delta.content:
+                full_response += chunk.choices[0].delta.content
+
+        # Verify the response
+        self.assertIn("Once upon", full_response)
+
+        # Verify the API was called correctly
+        mock_async_client.chat.completions.create.assert_called_once_with(**api_kwargs)
+
+    async def test_parser_switching(self):
+        """Test that parser switching works correctly."""
+        # Initially should be non-streaming parser
+        self.assertEqual(
+            self.client.chat_completion_parser,
+            self.client.non_streaming_chat_completion_parser,
+        )
+
+        # Setup mock for streaming call
+        mock_async_client = AsyncMock()
+
+        async def mock_stream():
+            yield self.streaming_chunks[0]
+
+        mock_async_client.chat.completions.create.return_value = mock_stream()
+        self.client.async_client = mock_async_client
+
+        # Test streaming call - should switch to streaming parser
+        await self.client.acall(
+            {"model": "gpt-4", "messages": [], "stream": True}, ModelType.LLM
+        )
+        self.assertEqual(
+            self.client.chat_completion_parser,
+            self.client.streaming_chat_completion_parser,
+        )
+
+        # Test non-streaming call - should switch back to non-streaming parser
+        mock_async_client.chat.completions.create.return_value = self.mock_response
+        await self.client.acall(
+            {"model": "gpt-4", "messages": [], "stream": False}, ModelType.LLM
+        )
+        self.assertEqual(
+            self.client.chat_completion_parser,
+            self.client.non_streaming_chat_completion_parser,
+        )
 
 
 if __name__ == "__main__":

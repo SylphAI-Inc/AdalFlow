@@ -4,7 +4,6 @@ from adalflow.core.agent import Agent
 from typing import (
     Any,
     Dict,
-    Generator as GeneratorType,
     List,
     Optional,
     Tuple,
@@ -27,6 +26,18 @@ from adalflow.core.types import GeneratorOutput, FunctionOutput, StepOutput, Fun
 import logging
 from adalflow.core.base_data_class import DataClass
 import ast
+from adalflow.core.types import (
+    RunItemStreamEvent,
+    RawResponsesStreamEvent,
+    StreamEvent,
+    MessageRunItem,
+    ToolCallRunItem,
+    ToolOutputRunItem,
+    StepRunItem,
+)
+import asyncio
+from collections.abc import AsyncIterator
+from dataclasses import dataclass
 
 
 __all__ = ["Runner"]
@@ -34,6 +45,67 @@ __all__ = ["Runner"]
 log = logging.getLogger(__name__)
 
 T = TypeVar("T", bound=BaseModel)  # Changed to use Pydantic BaseModel
+
+
+@dataclass
+class QueueCompleteSentinel:
+    """Sentinel to indicate queue completion."""
+
+    pass
+
+
+class RunnerStreamingResult:
+    """Result object for streaming Runner execution similar to OpenAI Agents API."""
+
+    def __init__(
+        self,
+        input: Dict[str, Any],
+        max_steps: int,
+        runner: "Runner",
+    ):
+        self.input = input
+        self.max_steps = max_steps
+        self.runner = runner
+        self._event_queue: asyncio.Queue[StreamEvent | QueueCompleteSentinel] = (
+            asyncio.Queue()
+        )
+        self._run_task: Optional[asyncio.Task] = None
+        self._exception: Optional[Exception] = None
+        self._final_result: Optional[Any] = None
+        self._step_history: List[StepOutput] = []
+        self.is_complete = False
+
+    async def stream_events(self) -> AsyncIterator[StreamEvent]:
+        """Stream events from the runner execution."""
+        while True:
+            if self._exception:
+                raise self._exception
+
+            try:
+                item = await self._event_queue.get()
+                if isinstance(item, QueueCompleteSentinel):
+                    self._event_queue.task_done()
+                    break
+
+                yield item
+                self._event_queue.task_done()
+            except asyncio.CancelledError:
+                break
+
+    def cancel(self):
+        """Cancel the running task."""
+        if self._run_task and not self._run_task.done():
+            self._run_task.cancel()
+
+    @property
+    def final_result(self) -> Any:
+        """Get the final result after streaming is complete."""
+        return self._final_result
+
+    @property
+    def step_history(self) -> List[StepOutput]:
+        """Get the step history."""
+        return self._step_history
 
 
 def _is_pydantic_dataclass(cls: Any) -> bool:
@@ -176,22 +248,27 @@ class Runner(Component):
             raise ValueError(f"Error processing output: {str(e)}")
 
     @classmethod
-    def _get_planner_function(self, output: GeneratorOutput) -> Function:
+    def _get_planner_function(
+        self, output: Union[GeneratorOutput, Function]
+    ) -> Function:
         """Check the planner output and return the function.
 
         Args:
             output: The planner output
         """
-        if not isinstance(output, GeneratorOutput):
-            raise ValueError(
-                f"Expected GeneratorOutput, but got {type(output)}, value: {output}"
-            )
+        if isinstance(output, Function):
+            return output
+        elif isinstance(output, GeneratorOutput):
+            # assumes inference mode
+            function = output.data
 
-        function = output.data
-
-        if not isinstance(function, Function):
+            if not isinstance(function, Function):
+                raise ValueError(
+                    f"Expected Function in the data field of the GeneratorOutput, but got {type(function)}, value: {function}"
+                )
+        else:
             raise ValueError(
-                f"Expected Function in the data field of the GeneratorOutput, but got {type(function)}, value: {function}"
+                f"Expected Function or GeneratorOutput, but got {type(output)}, value: {output}"
             )
 
         return function
@@ -280,6 +357,181 @@ class Runner(Component):
 
         return self.step_history, last_output
 
+    def run_streamed(
+        self,
+        prompt_kwargs: Dict[str, Any],
+        model_kwargs: Optional[Dict[str, Any]] = None,
+        use_cache: Optional[bool] = None,
+        id: Optional[str] = None,
+    ) -> RunnerStreamingResult:
+        """Execute the runner in streaming mode, returning a result object with event streaming.
+
+        Args:
+            prompt_kwargs: Dictionary of prompt arguments for the generator
+            model_kwargs: Optional model parameters to override defaults
+            use_cache: Whether to use cached results if available
+            id: Optional unique identifier for the request
+
+        Returns:
+            RunnerStreamingResult: Object that provides async iteration over stream events
+        """
+        streaming_result = RunnerStreamingResult(
+            input=prompt_kwargs,
+            max_steps=self.max_steps,
+            runner=self,
+        )
+
+        # Start the streaming execution in the background
+        streaming_result._run_task = asyncio.create_task(
+            self._run_streamed_impl(
+                streaming_result=streaming_result,
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
+                use_cache=use_cache,
+                id=id,
+            )
+        )
+
+        return streaming_result
+
+    async def _run_streamed_impl(
+        self,
+        streaming_result: RunnerStreamingResult,
+        prompt_kwargs: Dict[str, Any],
+        model_kwargs: Optional[Dict[str, Any]] = None,
+        use_cache: Optional[bool] = None,
+        id: Optional[str] = None,
+    ):
+        """Implementation of streaming runner execution using Generator.stream method."""
+        try:
+            # Start the runner execution in streaming mode
+            step_count = 0
+
+            # Initialize the runner
+            self.step_history = []
+            prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
+            prompt_kwargs["step_history"] = self.step_history
+            model_kwargs = model_kwargs.copy() if model_kwargs else {}
+
+            while step_count < self.max_steps:
+                try:
+                    # Use the Generator's stream method which puts events to the streaming_result queue
+                    stream_output = await self.agent.planner.stream(
+                        prompt_kwargs=prompt_kwargs,
+                        model_kwargs=model_kwargs,
+                        use_cache=use_cache,
+                        id=id,
+                    )
+
+                    parsed_text = ""
+                    # iterate over stream events and put to the event queue
+                    async for event in stream_output.stream_events:
+                        # wrap event in RawResponsesStreamEvent
+                        if event.choices[0].delta.content:
+                            parsed_text += event.choices[0].delta.content
+                        await streaming_result._event_queue.put(
+                            RawResponsesStreamEvent(data=event)
+                        )
+
+                    output_data = None
+                    # pass into output processor
+                    if self.agent.planner.output_processors:
+                        output_data = self.agent.planner.output_processors(parsed_text)
+                    else:
+                        log.warning(
+                            "Output processors are not specified for the planner, using the raw text"
+                        )
+                        output_data = parsed_text
+
+                    log.info(
+                        f"The output processed data from the agent's planner is: {output_data}"
+                    )
+
+                    # Process the final output as if we called acall
+                    function = self._get_planner_function(output_data)
+
+                    # Emit tool call event
+                    tool_call_item = ToolCallRunItem(function=function, data=function)
+                    await streaming_result._event_queue.put(
+                        RunItemStreamEvent(name="tool_called", item=tool_call_item)
+                    )
+
+                    # Execute the tool
+                    function_results = self._tool_execute(function)
+
+                    # Emit tool output event
+                    tool_output_item = ToolOutputRunItem(
+                        function_output=function_results, data=function_results.output
+                    )
+                    await streaming_result._event_queue.put(
+                        RunItemStreamEvent(name="tool_output", item=tool_output_item)
+                    )
+
+                    # Create step output
+                    step_output = StepOutput(
+                        step=step_count,
+                        action=function,
+                        function=function,
+                        observation=function_results.output,
+                    )
+                    self.step_history.append(step_output)
+
+                    # Emit step completed event
+                    step_item = StepRunItem(step_output=step_output, data=step_output)
+                    await streaming_result._event_queue.put(
+                        RunItemStreamEvent(name="step_completed", item=step_item)
+                    )
+
+                    # Check if this is the final step
+                    if self._check_last_step(function):
+                        final_result = self._process_data(function_results.output)
+                        streaming_result._final_result = final_result
+                        streaming_result._step_history = self.step_history
+
+                        # Emit message output for final result
+                        message_item = MessageRunItem(
+                            message=str(final_result), data=final_result
+                        )
+                        await streaming_result._event_queue.put(
+                            RunItemStreamEvent(
+                                name="message_output_created", item=message_item
+                            )
+                        )
+
+                        # Emit runner finished event
+                        finish_item = MessageRunItem(
+                            message="Runner execution completed",
+                            data={
+                                "final_result": final_result,
+                                "step_history": self.step_history,
+                            },
+                        )
+                        await streaming_result._event_queue.put(
+                            RunItemStreamEvent(name="runner_finished", item=finish_item)
+                        )
+
+                        streaming_result.is_complete = True
+                        await streaming_result._event_queue.put(QueueCompleteSentinel())
+                        return
+
+                    step_count += 1
+
+                except Exception as e:
+                    error_msg = f"Error in step {step_count}: {str(e)}"
+                    log.error(error_msg)
+                    streaming_result._exception = Exception(error_msg)
+                    break
+
+            # Mark completion
+            streaming_result.is_complete = True
+            await streaming_result._event_queue.put(QueueCompleteSentinel())
+
+        except Exception as e:
+            log.error(f"Error in stream execution: {str(e)}")
+            streaming_result._exception = e
+            streaming_result.is_complete = True
+            await streaming_result._event_queue.put(QueueCompleteSentinel())
+
     async def acall(
         self,
         prompt_kwargs: Dict[str, Any],
@@ -353,70 +605,6 @@ class Runner(Component):
                 return self.step_history, error_msg
 
         return self.step_history, last_output
-
-    def stream(
-        self,
-        prompt_kwargs: Dict[str, Any],
-        model_kwargs: Optional[Dict[str, Any]] = None,
-        use_cache: Optional[bool] = None,
-        id: Optional[str] = None,
-    ) -> GeneratorType[Any, None, None]:
-        """
-        Synchronously executes the planner output and stream results.
-        Optionally parse and post-process each chunk.
-
-        Args:
-            prompt_kwargs: Dictionary containing the prompt and related parameters
-            model_kwargs: Optional dictionary of model-specific parameters
-            use_cache: Whether to use cached results if available
-            id: Optional identifier for the stream
-
-        Yields:
-            Chunks of the generated output, optionally parsed by the stream_parser
-        """
-        try:
-            # Call the underlying model with the provided parameters
-            generator_output = self.call(
-                prompt_kwargs=prompt_kwargs,
-                model_kwargs=model_kwargs,
-                use_cache=use_cache,
-                id=id,
-            )
-
-            # Check if the output has a data attribute that can be iterated over
-            if hasattr(generator_output, "data") and hasattr(
-                generator_output.data, "__iter__"
-            ):
-                if self.config.stream_parser:
-                    for chunk in generator_output.data:
-                        yield self.config.stream_parser(chunk)
-                else:
-                    log.warning("StreamParser not specified, yielding raw chunks")
-                    for chunk in generator_output.data:
-                        yield chunk
-            else:
-                log.error("Generator output does not contain iterable data")
-                yield generator_output
-
-        except Exception as e:
-            log.error(f"Failed to stream generator output: {e}")
-            raise  # Re-raise the exception to be handled by the caller
-
-    # TODO implement async stream
-    async def astream(
-        self,
-        user_query: str,
-        current_objective: Optional[str] = None,
-        memory: Optional[str] = None,
-    ) -> GeneratorType[Any, None, None]:
-        """
-        Execute the planner asynchronously and stream results.
-        Optionally parse and post-process each chunk.
-        """
-        # TODO replace Any type with StreamChunk type
-        ...
-        # This would require relying on the async_stream of the model_client instance of the generator and parsing that
-        # using custom logic to buffer chunks and only stream when they complete a certain top-level field
 
     def _tool_execute(
         self,

@@ -1157,14 +1157,68 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             log.error(f"Error calling the model: {e}")
             output = GeneratorOutput(error=str(e))
 
-        if completion:
-            try:
-                output = self._post_call(completion)
-            except Exception as e:
-                log.error(f"Error processing the output: {e}")
-                output = GeneratorOutput(raw_response=str(completion), error=str(e))
+        output = GeneratorOutput(stream_events=completion)
 
         log.info(f"output: {output}")
+        self._run_callbacks(
+            output,
+            input=api_kwargs,
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=model_kwargs,
+        )
+        self._trace_api_kwargs = api_kwargs  # tracing
+        return output
+
+    # TODO support training in stream
+    async def stream(
+        self,
+        prompt_kwargs: Optional[Dict] = {},
+        model_kwargs: Optional[Dict] = {},
+        use_cache: Optional[bool] = None,
+        id: Optional[str] = None,
+    ) -> GeneratorOutputType:
+        r"""Async call the model with streaming support.
+
+        Args:
+            prompt_kwargs: Dictionary of prompt arguments
+            model_kwargs: Dictionary of model arguments
+            use_cache: Whether to use cache
+            id: Optional request identifier
+            streaming_result: Optional RunnerStreamingResult to emit events to
+
+        Returns:
+            GeneratorOutput: The final processed output
+
+        Note:
+            If streaming_result is provided, raw response events will be emitted
+            to its event queue during streaming.
+        """
+        log.info(f"prompt_kwargs: {prompt_kwargs}")
+        log.info(f"model_kwargs: {model_kwargs}")
+
+        api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
+        api_kwargs["stream"] = True
+
+        # Ensure streaming is enabled if streaming_result is provided
+
+        output: GeneratorOutputType = None
+        completion = None
+
+        try:
+            # Call the streaming model client (acall with stream=True)
+            completion = await self.model_client.acall(
+                api_kwargs=api_kwargs, model_type=self.model_type
+            )
+
+        except Exception as e:
+            log.error(f"Error calling the model: {e}")
+            output = GeneratorOutput(error=str(e))
+
+        # don't do additional parsing on stream (current model client does not support parsing stream to get final output)
+
+        output = GeneratorOutput(stream_events=completion)
+        log.info(f"output: {output}")
+
         self._run_callbacks(
             output,
             input=api_kwargs,

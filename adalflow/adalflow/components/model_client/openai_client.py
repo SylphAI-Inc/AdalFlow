@@ -36,7 +36,6 @@ from openai import (
 from openai.types import Completion, CreateEmbeddingResponse, Image
 from openai.types.chat import ChatCompletionChunk, ChatCompletion
 from openai.types.responses import Response, ResponseUsage
-
 from adalflow.core.model_client import ModelClient
 from adalflow.core.types import (
     ModelType,
@@ -562,7 +561,7 @@ class OpenAIClient(ModelClient):
         self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
     ):
         """
-        kwargs is the combined input and model_kwargs
+        kwargs is the combined input and model_kwargs. Support async streaming call.
         """
         # store the api kwargs in the client
         self._api_kwargs = api_kwargs
@@ -571,7 +570,14 @@ class OpenAIClient(ModelClient):
         if model_type == ModelType.EMBEDDER:
             return await self.async_client.embeddings.create(**api_kwargs)
         elif model_type == ModelType.LLM:
-            return await self.async_client.chat.completions.create(**api_kwargs)
+            if "stream" in api_kwargs and api_kwargs.get("stream", False):
+                log.debug("async streaming call")
+                self.chat_completion_parser = self.streaming_chat_completion_parser
+                return await self.async_client.chat.completions.create(**api_kwargs)
+            else:
+                log.debug("async non-streaming call")
+                self.chat_completion_parser = self.non_streaming_chat_completion_parser
+                return await self.async_client.chat.completions.create(**api_kwargs)
         elif model_type == ModelType.IMAGE_GENERATION:
             # Determine which image API to call based on the presence of image/mask
             if "image" in api_kwargs:

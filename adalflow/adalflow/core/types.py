@@ -13,7 +13,9 @@ from typing import (
     Literal,
     Callable,
     Awaitable,
+    Iterator,
 )
+from typing_extensions import TypeAlias
 from collections import OrderedDict
 from dataclasses import (
     dataclass,
@@ -471,6 +473,10 @@ class GeneratorOutput(DataClass, Generic[T_co]):
         default=None, metadata={"desc": "Additional metadata"}
     )
 
+    stream_events: Optional[Iterator[Any]] = field(
+        default=None, metadata={"desc": "Stream events from the model"}
+    )
+
 
 GeneratorOutputType = GeneratorOutput[object]
 
@@ -910,3 +916,110 @@ class Conversation:
 
     def update_dialog_turn(self, order: int, dialog_turn: DialogTurn):
         self.dialog_turns[order] = dialog_turn
+
+
+@dataclass
+class RunItem(DataClass):
+    """Base class for items that can be processed during a runner execution."""
+
+    id: str = field(
+        default_factory=lambda: str(uuid.uuid4()),
+        metadata={"desc": "Unique identifier for this run item"},
+    )
+    type: str = field(default="base", metadata={"desc": "Type of run item"})
+    data: Optional[Any] = field(default=None, metadata={"desc": "Item data"})
+    timestamp: datetime = field(
+        default_factory=datetime.now,
+        metadata={"desc": "Timestamp when item was created"},
+    )
+
+
+@dataclass
+class MessageRunItem(RunItem):
+    """Run item for message outputs."""
+
+    type: str = field(default="message", metadata={"desc": "Type of run item"})
+    message: Optional[str] = field(default=None, metadata={"desc": "Message content"})
+
+
+@dataclass
+class ToolCallRunItem(RunItem):
+    """Run item for tool calls."""
+
+    type: str = field(default="tool_call", metadata={"desc": "Type of run item"})
+    function: Optional[Function] = field(
+        default=None, metadata={"desc": "Function call"}
+    )
+
+
+@dataclass
+class ToolOutputRunItem(RunItem):
+    """Run item for tool outputs."""
+
+    type: str = field(default="tool_output", metadata={"desc": "Type of run item"})
+    function_output: Optional[FunctionOutput] = field(
+        default=None, metadata={"desc": "Function output"}
+    )
+
+
+@dataclass
+class StepRunItem(RunItem):
+    """Run item for step completion."""
+
+    type: str = field(default="step", metadata={"desc": "Type of run item"})
+    step_output: Optional[StepOutput] = field(
+        default=None, metadata={"desc": "Step output"}
+    )
+
+
+@dataclass
+class RawLLMResponseRunItem(RunItem):
+    """Run item for raw LLM responses."""
+
+    type: str = field(default="raw_llm_response", metadata={"desc": "Type of run item"})
+    raw_response: Optional[str] = field(
+        default=None, metadata={"desc": "Raw LLM response"}
+    )
+
+
+@dataclass
+class RawResponsesStreamEvent:
+    """Streaming event from the LLM. These are 'raw' events, i.e. they are directly passed through
+    from the LLM.
+    """
+
+    data: Any
+    """The raw responses streaming event from the LLM."""
+
+    type: Literal["raw_response_event"] = "raw_response_event"
+    """The type of the event."""
+
+
+@dataclass
+class RunItemStreamEvent:
+    """Streaming events that wrap a `RunItem`. As the agent processes the LLM response, it will
+    generate these events for new messages, tool calls, tool outputs, handoffs, etc.
+    """
+
+    name: Literal[
+        "message_output_created",
+        "handoff_requested",
+        # This is misspelled, but we can't change it because that would be a breaking change
+        "handoff_occured",
+        "tool_called",
+        "tool_output",
+        "reasoning_item_created",
+        "mcp_approval_requested",
+        "mcp_list_tools",
+        "step_completed",
+        "runner_finished",
+    ]
+    """The name of the event."""
+
+    item: RunItem
+    """The item that was created."""
+
+    type: Literal["run_item_stream_event"] = "run_item_stream_event"
+
+
+StreamEvent: TypeAlias = Union[RawResponsesStreamEvent, RunItemStreamEvent]
