@@ -35,7 +35,25 @@ T = TypeVar("T")
 
 log = logging.getLogger(__name__)
 
+DEFAULT_MAX_STEPS = 10
+DEFAULT_ROLE_DESC = """You are an excellent task planner."""
 
+
+# NOTE: our function call supports component and its method
+
+# Tools and instructions:
+# 1.
+# class_instance: component
+# func_name: __call__
+# func_desc: '__call__(command: ''str'', **kwargs)
+
+#   Belongs to class: PermissionTool
+
+#   Docstring: Run bash command with permission check.
+
+#   '
+
+# the context will wrap the whole component
 def create_default_tool_manager(
     # Tool manager parameters
     tools: Optional[List[Any]] = None,
@@ -97,7 +115,7 @@ def create_default_tool_manager(
         def finish(answer: answer_data_type, **kwargs) -> str:
             return answer
 
-        _finish = FunctionTool(fn=finish, component=finish)
+        _finish = FunctionTool(fn=finish)
 
         print(_finish.definition)
         processed_tools = tools.copy() if tools else []
@@ -130,7 +148,7 @@ def create_default_planner(
     template: Optional[
         str
     ] = None,  # allow users to update the template but cant delete any parameters
-    task_desc: Optional[str] = None,
+    role_desc: Optional[str] = None,
     cache_path: Optional[str] = None,
     use_cache: Optional[bool] = False,
     # default agent parameters
@@ -144,7 +162,7 @@ def create_default_planner(
         raise ValueError("model_client and model_kwargs are required")
 
     template = template or DEFAULT_REACT_AGENT_SYSTEM_PROMPT
-    task_desc = task_desc or react_agent_task_desc
+    role_desc = role_desc or DEFAULT_ROLE_DESC
 
     # define the parser for the intermediate step, which is a Function class
     ouput_data_class = Function
@@ -163,11 +181,10 @@ def create_default_planner(
         return_data_class=True,
         include_fields=include_fields,
     )
-    default_role_desc = """You are an excellent task planner."""
 
     task_desc = Prompt(
         template=react_agent_task_desc,
-        prompt_kwargs={"role_desc": default_role_desc},
+        prompt_kwargs={"role_desc": role_desc},
     ).call()
 
     prompt_kwargs = {
@@ -243,7 +260,7 @@ class Agent(Component):
         template: Optional[
             str
         ] = None,  # allow users to update the template but cant delete any parameters
-        task_desc: Optional[str] = None,
+        role_desc: Optional[str] = None,
         cache_path: Optional[str] = None,
         use_cache: Optional[bool] = False,
         # default agent parameters
@@ -304,7 +321,7 @@ class Agent(Component):
             model_kwargs=model_kwargs,
             model_type=model_type,
             template=template,
-            task_desc=task_desc,
+            role_desc=role_desc,
             cache_path=cache_path,
             use_cache=use_cache,
             max_steps=max_steps,

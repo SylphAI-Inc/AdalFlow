@@ -99,6 +99,98 @@ class FunctionTool(Component):
     def is_generator_function(self) -> bool:
         """Check if function returns a generator (sync or async)."""
         return self.get_function_type() in ["sync_generator", "async_generator"]
+        
+    def execute_with_proper_wrapping(self, *args, **kwargs) -> FunctionOutput:
+        """Execute function and wrap output according to function type."""
+        func_type = self.get_function_type()
+        
+        try:
+            if func_type == "sync":
+                result = self.fn(*args, **kwargs)
+                return FunctionOutput(
+                    name=self.definition.name,
+                    input=Function(name=self.definition.name, args=args, kwargs=kwargs),
+                    output=result,
+                    is_streaming=False
+                )
+                
+            elif func_type == "sync_generator":
+                generator = self.fn(*args, **kwargs)
+                return FunctionOutput(
+                    name=self.definition.name,
+                    input=Function(name=self.definition.name, args=args, kwargs=kwargs),
+                    output=generator,  # Keep generator object for streaming
+                    is_streaming=True
+                )
+                
+            elif func_type == "async":
+                # This should be handled by acall
+                raise ValueError("Async function should use acall method")
+                
+            elif func_type == "async_generator":
+                # This should be handled by acall
+                raise ValueError("Async generator function should use acall method")
+                
+        except Exception as e:
+            return FunctionOutput(
+                name=self.definition.name,
+                input=Function(name=self.definition.name, args=args, kwargs=kwargs),
+                output=None,
+                error=str(e),
+                is_streaming=False
+            )
+    
+    async def aexecute_with_proper_wrapping(self, *args, **kwargs) -> FunctionOutput:
+        """Async execute function and wrap output according to function type."""
+        func_type = self.get_function_type()
+        
+        try:
+            if func_type == "sync":
+                # Run sync function in thread pool
+                result = await asyncio.to_thread(self.fn, *args, **kwargs)
+                return FunctionOutput(
+                    name=self.definition.name,
+                    input=Function(name=self.definition.name, args=args, kwargs=kwargs),
+                    output=result,
+                    is_streaming=False
+                )
+                
+            elif func_type == "sync_generator":
+                # Run sync generator in thread pool
+                generator = await asyncio.to_thread(self.fn, *args, **kwargs)
+                return FunctionOutput(
+                    name=self.definition.name,
+                    input=Function(name=self.definition.name, args=args, kwargs=kwargs),
+                    output=generator,
+                    is_streaming=True
+                )
+                
+            elif func_type == "async":
+                result = await self.fn(*args, **kwargs)
+                return FunctionOutput(
+                    name=self.definition.name,
+                    input=Function(name=self.definition.name, args=args, kwargs=kwargs),
+                    output=result,
+                    is_streaming=False
+                )
+                
+            elif func_type == "async_generator":
+                async_gen = self.fn(*args, **kwargs)
+                return FunctionOutput(
+                    name=self.definition.name,
+                    input=Function(name=self.definition.name, args=args, kwargs=kwargs),
+                    output=async_gen,  # Keep async generator for streaming
+                    is_streaming=True
+                )
+                
+        except Exception as e:
+            return FunctionOutput(
+                name=self.definition.name,
+                input=Function(name=self.definition.name, args=args, kwargs=kwargs),
+                output=None,
+                error=str(e),
+                is_streaming=False
+            )
 ```
 
 ### Phase 2: Enhanced Execution Methods

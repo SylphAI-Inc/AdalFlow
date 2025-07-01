@@ -13,6 +13,7 @@ from typing import (
     overload,
     Literal,
 )
+import inspect
 import logging
 from copy import deepcopy
 import asyncio
@@ -344,25 +345,33 @@ class ToolManager(Component):
 
                     # Check if result is an async generator
                     import inspect
+                    return result
 
                     # for streaming
                     if inspect.isasyncgen(result):
-                        printc("Result is an async generator, collecting results")
 
-                        # We need to handle async generators differently
-                        async def collect_async_gen():
-                            items = []
-                            async for item in result:
-                                items.append(item)
-                            return items
+                        # wrap it in FunctionOutput
+                        result = FunctionOutput(name=func.name, input=func, output=result)
+                        return result
+                        # printc("Result is an async generator, collecting results")
 
-                        return run_async_in_new_loop(collect_async_gen())
+                        # # We need to handle async generators differently
+                        # async def collect_async_gen():
+                        #     items = []
+                        #     async for item in result:
+                        #         items.append(item)
+                        #     return items
+
+                        # return run_async_in_new_loop(collect_async_gen())
 
                     # for non-streaming
                     else:
+                        # wrap it in FunctionOutput
+                        result = FunctionOutput(name=func.name, input=func, output=result)
+                        return result
                         printc("Result is a regular coroutine", color="yellow")
                         log.info("Result is a regular coroutine")
-                        return run_async_in_new_loop(result)
+                        # return run_async_in_new_loop(result)
 
                 else:
                     printc(f"Executing sync function: {func.name}", color="yellow")
@@ -385,14 +394,42 @@ class ToolManager(Component):
         try:
             printc(f"Executing async function: {func.name}", color="yellow")
             tool: FunctionTool = self.context[func.name]
-            is_async_generator = tool.is_async_generator
-            printc(f"is_async_generator: {is_async_generator}", color="yellow")
-            if is_async_generator:
-                return tool.acall(*func.args, **func.kwargs)
-            if tool.is_async:
-                return await tool.acall(*func.args, **func.kwargs)
+            # await the async call 
+            try:
+                result =  tool.acall(*func.args, **func.kwargs) 
+            except Exception as e:
+                error_msg = f"Error execute_func_async with Error {e} for function: {func}"
+                log.error(error_msg)
+                raise ValueError(error_msg)
+
+            # it can only be coroutine or function output
+            printc(f"result: {result}", color="yellow") 
+            if inspect.iscoroutine(result):
+                printc(f"result is coroutine", color="yellow")
+                result = await result
             else:
-                return asyncio.to_thread(self.call, *func.args, **func.kwargs)
+                printc(f"result is not coroutine", color="yellow")
+
+            if not isinstance(result, FunctionOutput):
+                error_msg = f"Output should be FunctionOutput. Got {result}"
+                log.error(error_msg)
+                raise ValueError(error_msg)
+            return result
+                
+            # if inspect.isasyncgen(result):
+            #     return result
+            # else:
+            #     return await result
+            # printc(f"is_async_generator: {is_async_generator}", color="yellow")
+            # if is_async_generator:
+            #     printc(f"Executing async generator: {func.name}", color="yellow")
+            #     return tool.acall(*func.args, **func.kwargs)
+            # if tool.is_async:
+            #     printc(f"Executing async function: {func.name}", color="yellow")
+            #     return await tool.acall(*func.args, **func.kwargs)
+            # else:
+            #     printc(f"Executing sync function: {func.name}", color="yellow")
+            #     return asyncio.to_thread(self.call, *func.args, **func.kwargs)
         except Exception as e:
             log.error(f"Error {e} executing function: {func}")
             raise ValueError(f"Error {e} executing function: {func}")

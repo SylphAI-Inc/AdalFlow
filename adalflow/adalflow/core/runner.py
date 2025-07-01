@@ -1,5 +1,11 @@
-from adalflow.core.component import Component
-from adalflow.core.agent import Agent
+
+
+from pydantic import BaseModel
+import logging
+import json
+import inspect
+import asyncio
+from dataclasses import dataclass
 
 from typing import (
     Generator as GeneratorType,
@@ -14,9 +20,10 @@ from typing import (
 from adalflow.core.types import GeneratorOutput, FunctionOutput, StepOutput
 from adalflow.optim.parameter import Parameter
 from adalflow.core.types import Function
-from pydantic import BaseModel
-import logging
-import json
+from adalflow.utils import printc
+from adalflow.core.component import Component
+from adalflow.core.agent import Agent
+
 
 
 __all__ = ["Runner"]
@@ -25,6 +32,12 @@ log = logging.getLogger(__name__)
 
 T = TypeVar("T", bound=BaseModel)  # Changed to use Pydantic BaseModel
 
+@dataclass 
+class RunResultStreaming:
+    step_history: List[StepOutput]
+    output: T
+    _run_impl_task: asyncio.Task 
+    _event_queue: asyncio.Queue 
 
 class Runner(Component):
     """A runner class that executes an Agent instance with multi-step execution.
@@ -273,8 +286,6 @@ class Runner(Component):
         Call this in the call method.
         Handles both sync and async functions by running async ones in event loop.
         """
-        import inspect
-        import asyncio
 
         result = self.agent.tool_manager(expr_or_fun=func, step="execute")
 
@@ -384,7 +395,114 @@ class Runner(Component):
                         self.agent.planner.get_prompt(**prompt_kwargs)
                     )
                 )
+                printc(f'agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}')
 
+                step_count += 1
+
+            except Exception as e:
+                error_msg = f"Error in step {step_count}: {str(e)}"
+                log.error(error_msg)
+                return self.step_history, error_msg
+
+        return self.step_history, last_output
+
+    def astream(self, prompt_kwargs: Dict[str, Any], model_kwargs: Optional[Dict[str, Any]] = None, use_cache: Optional[bool] = None, id: Optional[str] = None):
+        import asyncio
+        self._event_queue = asyncio.Queue()
+        self._run_impl_task = asyncio.create_task(self.impl_astream(prompt_kwargs, model_kwargs, use_cache, id))
+        return self._event_queue
+
+    async def impl_astream(
+        self,
+        prompt_kwargs: Dict[str, Any],
+        model_kwargs: Optional[Dict[str, Any]] = None,
+        use_cache: Optional[bool] = None,
+        id: Optional[str] = None,
+    ) -> Tuple[List[GeneratorOutput], T]:
+        """Execute the planner asynchronously for multiple steps with function calling support.
+
+        At the last step the action should be set to "finish" instead which terminates the sequence
+
+        Args:
+            prompt_kwargs: Dictionary of prompt arguments for the generator
+            model_kwargs: Optional model parameters to override defaults
+            use_cache: Whether to use cached results if available
+            id: Optional unique identifier for the request
+
+        Returns:
+            Tuple containing:
+                - List of step history (GeneratorOutput objects)
+                - Final processed output
+        """
+        self.step_history = []
+        prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
+
+        prompt_kwargs["step_history"] = (
+            self.step_history
+        )  # a reference to the step history
+
+        model_kwargs = model_kwargs.copy() if model_kwargs else {}
+        step_count = 0
+        last_output = None
+
+        while step_count < self.max_steps:
+            try:
+                 # important to ensure the prompt at each step is correct
+                log.debug(
+                    "The prompt with the prompt template is {}".format(
+                        self.agent.planner.get_prompt(**prompt_kwargs)
+                    )
+                )
+                printc(f'agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}')
+
+                # Execute one step asynchronously
+                output = await self.agent.planner.acall(
+                    prompt_kwargs=prompt_kwargs,
+                    model_kwargs=model_kwargs,
+                    use_cache=use_cache,
+                    id=id,
+                )
+
+                function = self._get_planner_function(output)
+                printc(f'function: {function}', color="yellow")
+                function_result = await self._tool_execute_async(function) # everything must be wrapped in FunctionOutput 
+
+                if not isinstance(function_result, FunctionOutput):
+                    raise ValueError(f"Result must be wrapped in FunctionOutput, got {type(function_result)}")
+
+                function_output = function_result.output 
+                real_function_output = None
+
+                if inspect.iscoroutine(function_output):
+                    real_function_output = await function_output
+                elif inspect.isasyncgen(function_output):
+                    # handle async generator
+                    printc(f"async generator detected")
+                    function_results = []
+                    async for item in function_output:
+                        self._event_queue.put_nowait(item)
+                        function_results.append(item)
+                    real_function_output = function_results[-1]
+                    # function_results = []
+                    # async for item in function_output:
+                    #     function_results.append(item)
+                    #     yield item 
+                    # real_function_output = function_results[-1]
+                # function_results = await self._tool_execute_async(function)
+
+                step_output: StepOutput = StepOutput(
+                    step=step_count,
+                    action=function,
+                    function=function,
+                    observation=real_function_output,
+                )
+                self.step_history.append(step_output)
+
+                if self._check_last_step(function):
+                    last_output = self._process_data(real_function_output)
+                    break
+
+               
                 step_count += 1
 
             except Exception as e:
@@ -403,9 +521,8 @@ class Runner(Component):
         Handles both sync and async functions.
         Note: this version has no support for streaming.
         """
-        import inspect
 
-        result = self.agent.tool_manager(expr_or_fun=func, step="execute")
+        result = await self.agent.tool_manager.execute_func_async(func=func)
 
         # Check if result is a coroutine (async tool)
         if inspect.iscoroutine(result):
@@ -430,46 +547,6 @@ class Runner(Component):
             # Sync tool result
             return result
 
-    def stream(
-        self,
-        user_query: str,
-        current_objective: Optional[str] = None,
-        memory: Optional[str] = None,
-    ) -> GeneratorType[Any, None, None]:
-        """
-        Synchronously executes the planner output and stream results.
-        Optionally parse and post-process each chunk.
-        """
-        # TODO replace Any type with StreamChunk type
-        try:
-            generator_output = self.call(user_query, current_objective, memory)
 
-            if self.config.stream_parser:
-                for chunk in generator_output.data:
-                    yield self.config.stream_parser(chunk)
-            else:
-                log.error("StreamParser not specified")
-                for chunk in generator_output.data:
-                    yield chunk
-                # TODO: need to define a StreamChunk type in library
 
-        except Exception as e:
-            log.error(f"Failed to stream generator output: {e}")
-            yield generator_output
-            # TODO: need to define a StreamChunk type in library
-
-    # TODO implement async stream
-    async def astream(
-        self,
-        user_query: str,
-        current_objective: Optional[str] = None,
-        memory: Optional[str] = None,
-    ) -> GeneratorType[Any, None, None]:
-        """
-        Execute the planner asynchronously and stream results.
-        Optionally parse and post-process each chunk.
-        """
-        # TODO replace Any type with StreamChunk type
-        ...
-        # This would require relying on the async_stream of the model_client instance of the generator and parsing that
-        # using custom logic to buffer chunks and only stream when they complete a certain top-level field
+    
