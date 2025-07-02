@@ -218,18 +218,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -460,6 +465,7 @@
     <span class="n">overload</span><span class="p">,</span>
     <span class="n">Literal</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
@@ -636,17 +642,16 @@
             <span class="sa">f</span><span class="s2">&quot;Initialized ToolManager with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">)</span><span class="si">}</span><span class="s2"> tools and additional context </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_additional_context</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">context_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_additional_context</span>
+
 <div class="viewcode-block" id="ToolManager.get_context_index">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.get_context_index">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_context_index</span><span class="p">(</span><span class="n">tool</span><span class="p">:</span> <span class="n">FunctionTool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span>
-        <span class="k">if</span> <span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">class_instance</span><span class="p">:</span>
-            <span class="n">index</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">class_instance</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">{</span><span class="n">index</span><span class="p">:</span> <span class="n">tool</span><span class="p">}</span>
-        <span class="k">if</span> <span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span> <span class="o">==</span> <span class="s2">&quot;__call__&quot;</span><span class="p">:</span>
-            <span class="c1"># add another index of directly using the classinstance</span>
-            <span class="n">output</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">class_instance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tool</span>
         <span class="k">return</span> <span class="n">output</span></div>
 
 
@@ -670,21 +675,14 @@
     <span class="k">def</span> <span class="nf">yaml_definitions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">class_instance</span><span class="p">:</span>
-                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;class_instance&quot;</span><span class="p">]))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">())</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">output</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">json_definitions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">class_instance</span><span class="p">:</span>
-                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;class_instance&quot;</span><span class="p">]))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
-            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;class_instance&quot;</span><span class="p">]))</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">output</span>
 
     <span class="nd">@property</span>
@@ -744,6 +742,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">expr_or_fun</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FunctionExpression</span><span class="p">,</span> <span class="n">Function</span><span class="p">],</span>
         <span class="n">step</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;execute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;execute&quot;</span><span class="p">,</span>
+        <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FunctionOutput</span><span class="p">,</span> <span class="n">Function</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expr_or_fun</span><span class="p">,</span> <span class="p">(</span><span class="n">Function</span><span class="p">,</span> <span class="n">FunctionExpression</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -755,7 +754,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_func_expr</span><span class="p">(</span><span class="n">expr_or_fun</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">step</span> <span class="o">==</span> <span class="s2">&quot;execute&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expr_or_fun</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_func</span><span class="p">(</span><span class="n">expr_or_fun</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_func</span><span class="p">(</span><span class="n">expr_or_fun</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_func_expr</span><span class="p">(</span><span class="n">expr_or_fun</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;step should be either &#39;parse&#39; or &#39;execute&#39;. Got </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
@@ -792,12 +791,16 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;expr_or_fun should be a Parameter. Got </span><span class="si">{</span><span class="n">expr_or_fun</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
+
 <div class="viewcode-block" id="ToolManager.execute_func">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func">[docs]</a>
     <span class="k">def</span> <span class="nf">execute_func</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Function</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">],</span> <span class="n">map_fn</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Function</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">],</span>
+        <span class="n">map_fn</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+        <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FunctionOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute the function. If the function is async, use asyncio.run to execute it.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute the function synchronously&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
@@ -814,27 +817,130 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">tool</span><span class="p">:</span> <span class="n">FunctionTool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">tool</span><span class="o">.</span><span class="n">is_async</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">run_async_in_new_loop</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span><span class="o">*</span><span class="n">func</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">func</span><span class="o">.</span><span class="n">kwargs</span><span class="p">))</span>
+                <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;tool: </span><span class="si">{</span><span class="n">tool</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
 
+                <span class="n">output</span> <span class="o">=</span> <span class="kc">None</span>
+                
+                <span class="k">if</span> <span class="n">stream</span><span class="p">:</span>
+                    <span class="c1"># add stream = True to the kwargs</span>
+                    <span class="n">use_func_kwargs</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="n">use_func_kwargs</span><span class="p">[</span><span class="s2">&quot;stream&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">output</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">func</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">use_func_kwargs</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">output</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">func</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">func</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="n">output</span>
+                    <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;output: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">FunctionOutput</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output should be FunctionOutput. Got </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">output</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> executing function: </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> executing function: </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
+
+    <span class="c1"># def execute_func(</span>
+    <span class="c1">#     self,</span>
+    <span class="c1">#     func: Union[Function, Parameter],</span>
+    <span class="c1">#     map_fn: Callable = lambda x: x.data,</span>
+    <span class="c1">#     stream: bool = False,</span>
+    <span class="c1"># ) -&gt; Union[FunctionOutput, Parameter]:</span>
+    <span class="c1">#     r&quot;&quot;&quot;Execute the function synchronously&quot;&quot;&quot;</span>
+
+    <span class="c1">#     if isinstance(func, Parameter):</span>
+    <span class="c1">#         try:</span>
+
+    <span class="c1">#             call_func_tool = CallFunctionTool()</span>
+    <span class="c1">#             func.add_successor_map_fn(call_func_tool, map_fn=map_fn)</span>
+    <span class="c1">#             return call_func_tool.forward(func, context=self.context)</span>
+
+    <span class="c1">#         except Exception as e:</span>
+    <span class="c1">#             log.error(f&quot;Error {e} executing function: {func.data}&quot;)</span>
+    <span class="c1">#             error_msg = f&quot;Error {e} executing function: {func.data}&quot;</span>
+    <span class="c1">#             return error_msg</span>
+
+    <span class="c1">#     else:</span>
+    <span class="c1">#         try:</span>
+    <span class="c1">#             tool: FunctionTool = self.context[func.name]</span>
+    <span class="c1">#             printc(f&quot;tool: {tool}&quot;, color=&quot;yellow&quot;)</span>
+    <span class="c1">#             if tool.is_async:</span>
+    <span class="c1">#                 # Add diagnostic logs</span>
+    <span class="c1">#                 printc(f&quot;Executing async function: {func.name}&quot;)</span>
+    <span class="c1">#                 result = tool.acall(*func.args, **func.kwargs)</span>
+    <span class="c1">#                 printc(f&quot;Async result type: {type(result)}&quot;)</span>
+
+    <span class="c1">#                 # Check if result is an async generator</span>
+    <span class="c1">#                 import inspect</span>
+    <span class="c1">#                 return result</span>
+
+    <span class="c1">#                 # for streaming</span>
+    <span class="c1">#                 if inspect.isasyncgen(result):</span>
+
+    <span class="c1">#                     # wrap it in FunctionOutput</span>
+    <span class="c1">#                     result = FunctionOutput(name=func.name, input=func, output=result)</span>
+    <span class="c1">#                     return result</span>
+    <span class="c1">#                     # printc(&quot;Result is an async generator, collecting results&quot;)</span>
+
+    <span class="c1">#                     # # We need to handle async generators differently</span>
+    <span class="c1">#                     # async def collect_async_gen():</span>
+    <span class="c1">#                     #     items = []</span>
+    <span class="c1">#                     #     async for item in result:</span>
+    <span class="c1">#                     #         items.append(item)</span>
+    <span class="c1">#                     #     return items</span>
+
+    <span class="c1">#                     # return run_async_in_new_loop(collect_async_gen())</span>
+
+    <span class="c1">#                 # for non-streaming</span>
+    <span class="c1">#                 else:</span>
+    <span class="c1">#                     # wrap it in FunctionOutput</span>
+    <span class="c1">#                     result = FunctionOutput(name=func.name, input=func, output=result)</span>
+    <span class="c1">#                     return result</span>
+    <span class="c1">#                     printc(&quot;Result is a regular coroutine&quot;, color=&quot;yellow&quot;)</span>
+    <span class="c1">#                     log.info(&quot;Result is a regular coroutine&quot;)</span>
+    <span class="c1">#                     # return run_async_in_new_loop(result)</span>
+
+    <span class="c1">#             else:</span>
+    <span class="c1">#                 printc(f&quot;Executing sync function: {func.name}&quot;, color=&quot;yellow&quot;)</span>
+    <span class="c1">#                 if stream:</span>
+    <span class="c1">#                     # add stream = True to the kwargs</span>
+    <span class="c1">#                     use_func_kwargs = deepcopy(func.kwargs)</span>
+    <span class="c1">#                     use_func_kwargs[&quot;stream&quot;] = True</span>
+    <span class="c1">#                     output = tool.call(*func.args, **use_func_kwargs)</span>
+    <span class="c1">#                     return output</span>
+    <span class="c1">#                 else:</span>
+    <span class="c1">#                     output = tool.call(*func.args, **func.kwargs)</span>
+    <span class="c1">#                     printc(f&quot;output: {output}&quot;, color=&quot;yellow&quot;)</span>
+    <span class="c1">#                     return output</span>
+    <span class="c1">#         except Exception as e:</span>
+    <span class="c1">#             log.error(f&quot;Error {e} executing function: {func}&quot;)</span>
+    <span class="c1">#             raise ValueError(f&quot;Error {e} executing function: {func}&quot;)</span>
 
 <div class="viewcode-block" id="ToolManager.execute_func_async">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_async">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">execute_func_async</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Function</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute the function. If the function is sync, use await to execute it.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
+            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Executing async function: </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
             <span class="n">tool</span><span class="p">:</span> <span class="n">FunctionTool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">tool</span><span class="o">.</span><span class="n">is_async</span><span class="p">:</span>
-                <span class="k">return</span> <span class="k">await</span> <span class="n">tool</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span><span class="o">*</span><span class="n">func</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">func</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="c1"># await the async call </span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span>  <span class="n">tool</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span><span class="o">*</span><span class="n">func</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">func</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> 
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error execute_func_async with Error </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> for function: </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+            <span class="c1"># it can only be coroutine or function output</span>
+            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span> 
+            <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutine</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+                <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;result is coroutine&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">result</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">to_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">,</span> <span class="o">*</span><span class="n">func</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">func</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;result is not coroutine&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">FunctionOutput</span><span class="p">):</span>
+                <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Output should be FunctionOutput. Got </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> executing function: </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> executing function: </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>

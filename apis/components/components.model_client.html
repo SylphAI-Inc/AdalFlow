@@ -219,18 +219,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -495,14 +500,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.deepseek_client.html">deepseek_client</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.deepseek_client.html#components.model_client.deepseek_client.DeepSeekClient"><code class="docutils literal notranslate"><span class="pre">DeepSeekClient</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.fireworks_client.html">fireworks_client</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.fireworks_client.html#components.model_client.fireworks_client.FireworksClient"><code class="docutils literal notranslate"><span class="pre">FireworksClient</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.deepseek_client.html">deepseek_client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.fireworks_client.html">fireworks_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.google_client.html">google_client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient.init_sync_client()</span></code></a></li>
@@ -530,10 +529,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.mistral_client.html">mistral_client</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.mistral_client.html#components.model_client.mistral_client.MistralClient"><code class="docutils literal notranslate"><span class="pre">MistralClient</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.mistral_client.html">mistral_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.ollama_client.html">ollama_client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.ollama_client.html#components.model_client.ollama_client.parse_stream_response"><code class="docutils literal notranslate"><span class="pre">parse_stream_response()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.ollama_client.html#components.model_client.ollama_client.parse_generate_response"><code class="docutils literal notranslate"><span class="pre">parse_generate_response()</span></code></a></li>
@@ -551,33 +547,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.openai_client.html">openai_client</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.get_first_message_content"><code class="docutils literal notranslate"><span class="pre">get_first_message_content()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.estimate_token_count"><code class="docutils literal notranslate"><span class="pre">estimate_token_count()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.parse_stream_response"><code class="docutils literal notranslate"><span class="pre">parse_stream_response()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.handle_streaming_response"><code class="docutils literal notranslate"><span class="pre">handle_streaming_response()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.get_all_messages_content"><code class="docutils literal notranslate"><span class="pre">get_all_messages_content()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.get_probabilities"><code class="docutils literal notranslate"><span class="pre">get_probabilities()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient"><code class="docutils literal notranslate"><span class="pre">OpenAIClient</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.init_sync_client()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.init_async_client()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.parse_chat_completion()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.track_completion_usage"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.track_completion_usage()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.parse_embedding_response()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_image_generation_response"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.parse_image_generation_response()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.call"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.call()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.acall"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.acall()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.from_dict"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.from_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.to_dict"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.to_dict()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.sambanova_client.html">sambanova_client</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.sambanova_client.html#components.model_client.sambanova_client.SambaNovaClient"><code class="docutils literal notranslate"><span class="pre">SambaNovaClient</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.openai_client.html">openai_client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.sambanova_client.html">sambanova_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.together_client.html">together_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.transformers_client.html">transformers_client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.average_pool"><code class="docutils literal notranslate"><span class="pre">average_pool()</span></code></a></li>
@@ -622,10 +593,7 @@
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.utils.html#components.model_client.utils.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">parse_embedding_response()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.xai_client.html">xai_client</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.xai_client.html#components.model_client.xai_client.XAIClient"><code class="docutils literal notranslate"><span class="pre">XAIClient</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.xai_client.html">xai_client</a></li>
 </ul>
 </div>
 <hr class="docutils" />

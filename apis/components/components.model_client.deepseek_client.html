@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -219,18 +219,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -441,45 +446,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-components.model_client.deepseek_client">
-<span id="deepseek-client"></span><span id="components-model-client-deepseek-client"></span><h1>deepseek_client<a class="headerlink" href="#module-components.model_client.deepseek_client" title="Link to this heading">¶</a></h1>
-<p class="rubric">Classes</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.deepseek_client.DeepSeekClient" title="components.model_client.deepseek_client.DeepSeekClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DeepSeekClient</span></code></a>([api_key, ...])</p></td>
-<td><p>A component wrapper for the DeepSeek API client.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="components.model_client.deepseek_client.DeepSeekClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeepSeekClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chat_completion_parser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Completion</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'text'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'messages'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'messages'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://api.deepseek.com/v1/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_api_key_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'DEEPSEEK_API_KEY'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/deepseek_client.html#DeepSeekClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.deepseek_client.DeepSeekClient" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIClient</span></code></p>
-<p>A component wrapper for the DeepSeek API client.</p>
-<p>DeepSeek’s API is compatible with OpenAI’s API, making it possible to use OpenAI SDKs
-or OpenAI-compatible software with DeepSeek by adjusting the API base URL.</p>
-<p>This client extends <cite>OpenAIClient</cite> but modifies the default <cite>base_url</cite> to use DeepSeek’s API.</p>
-<p>Documentation: <a class="reference external" href="https://api-docs.deepseek.com/guides/reasoning_model">https://api-docs.deepseek.com/guides/reasoning_model</a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>api_key</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – DeepSeek API key. Defaults to <cite>None</cite>.</p></li>
-<li><p><strong>chat_completion_parser</strong> (<em>Callable</em><em>[</em><em>[</em><em>Completion</em><em>]</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – A function to parse API responses.</p></li>
-<li><p><strong>input_type</strong> (<em>Literal</em><em>[</em><em>&quot;text&quot;</em><em>, </em><em>&quot;messages&quot;</em><em>]</em><em>, </em><em>optional</em>) – Defines how input is handled. Defaults to <cite>“text”</cite>.</p></li>
-<li><p><strong>base_url</strong> (<em>str</em><em>, </em><em>optional</em>) – API base URL, defaults to <cite>“https://api.deepseek.com/v1/”</cite>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
+          <section id="deepseek-client">
+<span id="components-model-client-deepseek-client"></span><h1>deepseek_client<a class="headerlink" href="#deepseek-client" title="Link to this heading">¶</a></h1>
 </section>
 
         </article>
@@ -524,27 +498,8 @@ or OpenAI-compatible software with DeepSeek by adjusting the API base URL.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">deepseek_client</a><ul>
-<li><a class="reference internal" href="#components.model_client.deepseek_client.DeepSeekClient"><code class="docutils literal notranslate"><span class="pre">DeepSeekClient</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

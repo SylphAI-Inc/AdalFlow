@@ -32,8 +32,11 @@ types
       FunctionExpression
       FunctionOutput
       GeneratorOutput
+      InputTokensDetails
       ModelClientType
       ModelType
+      OutputTokensDetails
+      ResponseUsage
       RetrieverOutput
       StepOutput
       TokenLogProb

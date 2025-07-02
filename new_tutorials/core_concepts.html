@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Prompt" href="prompt.html" /><link rel="prev" title="Tutorials" href="index.html" />
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>Get Started - Build and Optimize LM Workflows</title>
+        <title>Core Concepts - Build and Optimize LM Workflows</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -219,18 +219,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/introduction.html">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Getting Started</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Core Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser.html">Parser and Structured Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generator.html">Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -441,22 +446,114 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="get-started">
-<h1>Get Started<a class="headerlink" href="#get-started" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Install AdalFlow and Run your LM</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://colab.research.google.com/drive/1_YnD4HshzPRARvishoU4IA-qQuX9jHrT?usp=sharing">adalflow_in_15mins</a></li>
-<li class="toctree-l1"><a class="reference internal" href="community.html">Community</a></li>
-</ul>
+          <div style="display: flex; justify-content: flex-start; align-items: center; margin-top: 20px;">
+   <a href="https://colab.research.google.com/drive/1_YnD4HshzPRARvishoU4IA-qQuX9jHrT?usp=sharing" target="_blank" style="margin-right: 10px;">
+      <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+   </a>
+</div><section id="core-concepts">
+<h1>Core Concepts<a class="headerlink" href="#core-concepts" title="Link to this heading">¶</a></h1>
+<section id="llm-autodiff">
+<h2>LLM-AutoDiff<a class="headerlink" href="#llm-autodiff" title="Link to this heading">¶</a></h2>
+<p>AdalFlow mainly relys on <a class="reference external" href="https://arxiv.org/abs/2501.16673">LLM-AutoDiff</a> to do automatic prompt engineering(APE).</p>
+<p>Similar to Auto-differentiation in PyTorch, LLM-AutoDiff works by forming a runtime computation graph of prompts, hyperparameters, intermediate outputs, and losses in the <cite>forward</cite> pass.
+In the <cite>backward</cite> pass, the <cite>backward engine</cite> LLM we put at each node will work together to identify which prompts are the cause of errors, so that a <cite>feedback</cite>-driven LM optimizer can leverage it to propose new prompts.</p>
+</section>
+<section id="components">
+<h2>Components<a class="headerlink" href="#components" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="../apis/core/core.component.html#module-core.component" title="core.component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> is to LM task pipelines what <cite>nn.Module</cite> is to PyTorch models. It is the base class for components such as <code class="docutils literal notranslate"><span class="pre">Prompt</span></code>, <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>, <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> in AdalFlow.
+Your task pipeline should also subclass from <code class="docutils literal notranslate"><span class="pre">Component</span></code>.
+A component can recursively contain and register other components, allow easy control of (1) <cite>training</cite> and <cite>inference</cite> modes, (2) visualization of the workflow structure, and (3) serialization and deserialization of the component.</p>
+<p>We require a component to have (1) a <cite>call</cite> method, which will be called during the <cite>inference</cite> time,
+and (2) a <cite>forward</cite> method, which will be called during the <cite>training</cite> time and output a <cite>Parameter</cite> object which has the output of the component wrapped in the <cite>data</cite> field.</p>
+<p>There are four main types of components in AdalFlow:</p>
+<ol class="arabic simple">
+<li><p><cite>Component</cite>: the base class of all components. Used for LLM workflows. Supports both training and evaluation modes with <cite>forward</cite> (train mode), <cite>call</cite> (eval mode), and <cite>bicall</cite> (supports both eval and train modes).</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ObjectCountTaskPipeline</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">llm_counter</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span>
+            <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;User: {{input_str}}&quot;</span><span class="p">,</span>
+            <span class="n">output_processors</span><span class="o">=</span><span class="n">parse_integer_answer</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">bicall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_counter</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">question</span><span class="p">},</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+</pre></div>
 </div>
+<ol class="arabic simple" start="2">
+<li><p><cite>GradComponent</cite>: a subclass of <cite>Component</cite> that has a <cite>backward</cite> method. It defines a unit of computation that are capable of backpropagation. Our <cite>Generator</cite> and <cite>Retriever</cite> are GradComponents.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">generator</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
+    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;User: {{question}}&quot;</span>
+<span class="p">)</span>
+
+<span class="n">output</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="s2">&quot;How many apples do I have?&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p><cite>DataComponent</cite>: a subclass of <cite>Component</cite> that only has <cite>call</cite> method and does not handle any <cite>Parameter</cite> object. Examples include <cite>Prompt</cite>, <cite>DataClassParser</cite> which only handles the data formatting but rather the transformation.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@adal</span><span class="o">.</span><span class="n">func_to_data_component</span>
+<span class="k">def</span> <span class="nf">parse_integer_answer</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">re</span>
+    <span class="n">numbers</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">answer</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">numbers</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p><cite>LossComponent</cite>: a subclass of <cite>Component</cite> that likely takes an evaluation metric function and has a <cite>backward</cite> method. When it is attached to your LM workflow’s output, the whole training pipeline is capable of backpropagation.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">eval_fn</span> <span class="o">=</span> <span class="n">AnswerMatchAcc</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;exact_match&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">compute_single_item</span>
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">EvalFnToTextLoss</span><span class="p">(</span>
+    <span class="n">eval_fn</span><span class="o">=</span><span class="n">eval_fn</span><span class="p">,</span>
+    <span class="n">eval_fn_desc</span><span class="o">=</span><span class="s2">&quot;exact_match: 1 if str(y) == str(y_gt) else 0&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>For a full walkthrough of the component system, please refer to <a class="reference internal" href="../use_cases/question_answering.html#question-answering"><span class="std std-ref">Full Tutorial</span></a>.</p>
+</section>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="../apis/optim/optim.parameter.html#optim.parameter.Parameter" title="optim.parameter.Parameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code></a> are used to save (1) intermediate forward data and (2) gradients/feedback, and (3) graph information such as <cite>predecessors</cite>.
+It also has function like <cite>draw_graph</cite> to help you visualize the structure of your computation graph.</p>
+</section>
+<section id="dataclass-and-structured-output">
+<h2>DataClass and Structured Output<a class="headerlink" href="#dataclass-and-structured-output" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></a> is used for developers to define a data model.
+Similar to <cite>Pydantic</cite>, it has methods like <cite>to_yaml_signature</cite>, <cite>to_json_signature</cite>, <cite>to_yaml</cite>, <cite>to_json</cite> to help you generate the data model schema and to generate the json/yaml data representation as strings.
+It can be best used together with <a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code></a> for structured output.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">TrecData</span><span class="p">:</span>
+    <span class="n">question</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The question asked by the user&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The label of the question&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">DataClass</span></code> covers the following:</p>
+<ol class="arabic simple">
+<li><p>Generate the class <code class="docutils literal notranslate"><span class="pre">schema</span></code> and <code class="docutils literal notranslate"><span class="pre">signature</span></code> (less verbose) to describe the data format to LLMs.</p></li>
+<li><p>Convert the data instance to a json or yaml string to show the data example to LLMs.</p></li>
+<li><p>Load the data instance from a json or yaml string to get the data instance back to be processed in the program.</p></li>
+</ol>
+<p>Checkout <a class="reference internal" href="../tutorials/base_data_class.html#core-base-data-class-note"><span class="std std-ref">Developer Notes - DataClass</span></a> for more details.</p>
+</section>
 </section>
 
         </article>
@@ -464,8 +561,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="prompt.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Prompt</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Tutorials</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -483,8 +598,30 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Core Concepts</a><ul>
+<li><a class="reference internal" href="#llm-autodiff">LLM-AutoDiff</a></li>
+<li><a class="reference internal" href="#components">Components</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+<li><a class="reference internal" href="#dataclass-and-structured-output">DataClass and Structured Output</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

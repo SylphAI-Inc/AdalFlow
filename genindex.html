@@ -217,18 +217,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -446,7 +451,7 @@
           
 <section class="genindex-section">
   <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#J"><strong>J</strong></a> | <a href="#K"><strong>K</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#Q"><strong>Q</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#U"><strong>U</strong></a> | <a href="#V"><strong>V</strong></a> | <a href="#W"><strong>W</strong></a> | <a href="#X"><strong>X</strong></a> | <a href="#Y"><strong>Y</strong></a> | <a href="#Z"><strong>Z</strong></a></div>
+  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#J"><strong>J</strong></a> | <a href="#K"><strong>K</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#Q"><strong>Q</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#U"><strong>U</strong></a> | <a href="#V"><strong>V</strong></a> | <a href="#W"><strong>W</strong></a> | <a href="#Y"><strong>Y</strong></a> | <a href="#Z"><strong>Z</strong></a></div>
 </section>
 <section id="A" class="genindex-section">
   <h2>A</h2>
@@ -475,9 +480,9 @@
 </li>
           <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.acall">(OllamaClient method)</a>
 </li>
-          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.acall">(OpenAIClient method)</a>
-</li>
           <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.acall">(Retriever method)</a>
+</li>
+          <li><a href="apis/core/core.runner.html#core.runner.Runner.acall">(Runner method)</a>
 </li>
           <li><a href="apis/core/core.container.html#core.container.Sequential.acall">(Sequential method)</a>
 </li>
@@ -522,12 +527,12 @@
 </li>
         <li><a href="apis/optim/index.html#optim.TGDOptimizer.add_history">add_history() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.add_history">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.add_history">[2]</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/optim/index.html#optim.Gradient.add_prompt">add_prompt() (Gradient method)</a>, <a href="apis/optim/optim.gradient.html#optim.gradient.Gradient.add_prompt">[1]</a>
 </li>
         <li><a href="apis/optim/index.html#optim.TGDOptimizer.add_score_to_current_param">add_score_to_current_param() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.add_score_to_current_param">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.add_score_to_current_param">[2]</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/optim/index.html#optim.TGDOptimizer.add_score_to_params">add_score_to_params() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.add_score_to_params">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.add_score_to_params">[2]</a>
 </li>
         <li><a href="apis/optim/index.html#optim.Parameter.add_score_to_trace">add_score_to_trace() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.add_score_to_trace">[1]</a>
@@ -541,6 +546,8 @@
         <li><a href="apis/optim/index.html#optim.Parameter.add_successor_map_fn">add_successor_map_fn() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.add_successor_map_fn">[1]</a>
 </li>
         <li><a href="apis/eval/eval.base.html#eval.base.EvaluationResult.additional_info">additional_info (EvaluationResult attribute)</a>
+</li>
+        <li><a href="apis/core/core.agent.html#core.agent.Agent">Agent (class in core.agent)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.OutputParameter.allowed_types">allowed_types (OutputParameter attribute)</a>
 
@@ -570,6 +577,8 @@
           <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizerTrace.api_kwargs">(TGDOptimizerTrace attribute)</a>
 </li>
         </ul></li>
+        <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.api_response">api_response (GeneratorOutput attribute)</a>
+</li>
         <li><a href="apis/core/core.container.html#core.container.ComponentList.append">append() (ComponentList method)</a>
 
         <ul>
@@ -587,6 +596,12 @@
         <li><a href="apis/core/core.types.html#core.types.DialogTurn.assistant_response_timestamp">assistant_response_timestamp (DialogTurn attribute)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.AssistantResponse">AssistantResponse (class in core.types)</a>
+</li>
+        <li><a href="apis/core/core.runner.html#core.runner.Runner.astream">astream() (Runner method)</a>
+</li>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionType.ASYNC">ASYNC (FunctionType attribute)</a>
+</li>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionType.ASYNC_GENERATOR">ASYNC_GENERATOR (FunctionType attribute)</a>
 </li>
         <li><a href="apis/optim/optim.types.html#optim.types.TrainerStepResult.attempted_val_score">attempted_val_score (TrainerStepResult attribute)</a>
 </li>
@@ -712,6 +727,8 @@
   <h2>C</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="apis/core/core.types.html#core.types.InputTokensDetails.cached_tokens">cached_tokens (InputTokensDetails attribute)</a>
+</li>
         <li><a href="apis/utils/utils.cache.html#utils.cache.CachedEngine">CachedEngine (class in utils.cache)</a>
 </li>
         <li><a href="apis/datasets/datasets.trec.html#datasets.trec.calculate_class_weights">calculate_class_weights() (in module datasets.trec)</a>
@@ -751,8 +768,6 @@
 </li>
           <li><a href="apis/core/core.string_parser.html#core.string_parser.FloatParser.call">(FloatParser method)</a>
 </li>
-          <li><a href="apis/core/core.component.html#core.component.FuncComponent.call">(FuncComponent method)</a>
-</li>
           <li><a href="apis/core/core.component.html#core.component.FuncDataComponent.call">(FuncDataComponent method)</a>
 </li>
           <li><a href="apis/core/core.tool_manager.html#core.tool_manager.FunctionExperssionToFunction.call">(FunctionExperssionToFunction method)</a>
@@ -789,8 +804,6 @@
 </li>
           <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.call">(OllamaClient method)</a>
 </li>
-          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.call">(OpenAIClient method)</a>
-</li>
           <li><a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser.call">(OutputParser method)</a>
 </li>
           <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.call">(PostgresRetriever method)</a>
@@ -806,6 +819,8 @@
           <li><a href="apis/components/components.retriever.html#components.retriever.RerankerRetriever.call">(RerankerRetriever method)</a>, <a href="apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.call">[1]</a>
 </li>
           <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.call">(Retriever method)</a>
+</li>
+          <li><a href="apis/core/core.runner.html#core.runner.Runner.call">(Runner method)</a>
 </li>
           <li><a href="apis/optim/index.html#optim.Sampler.call">(Sampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.Sampler.call">[1]</a>
 </li>
@@ -850,7 +865,7 @@
 </li>
         <li><a href="apis/datasets/datasets.types.html#datasets.types.TrecData.class_index">class_index (TrecData attribute)</a>, <a href="apis/datasets/index.html#datasets.TrecData.class_index">[1]</a>
 </li>
-        <li><a href="apis/core/core.types.html#core.types.FunctionDefinition.class_instance">class_instance (FunctionDefinition attribute)</a>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.class_instance">class_instance (FunctionTool attribute)</a>
 </li>
         <li><a href="apis/datasets/datasets.types.html#datasets.types.TrecData.class_name">class_name (TrecData attribute)</a>, <a href="apis/datasets/index.html#datasets.TrecData.class_name">[1]</a>
 </li>
@@ -964,20 +979,6 @@
 </li>
         </ul></li>
         <li>
-    components.model_client.deepseek_client
-
-        <ul>
-          <li><a href="apis/components/components.model_client.deepseek_client.html#module-components.model_client.deepseek_client">module</a>
-</li>
-        </ul></li>
-        <li>
-    components.model_client.fireworks_client
-
-        <ul>
-          <li><a href="apis/components/components.model_client.fireworks_client.html#module-components.model_client.fireworks_client">module</a>
-</li>
-        </ul></li>
-        <li>
     components.model_client.google_client
 
         <ul>
@@ -992,33 +993,10 @@
 </li>
         </ul></li>
         <li>
-    components.model_client.mistral_client
-
-        <ul>
-          <li><a href="apis/components/components.model_client.mistral_client.html#module-components.model_client.mistral_client">module</a>
-</li>
-        </ul></li>
-        <li>
     components.model_client.ollama_client
 
         <ul>
           <li><a href="apis/components/components.model_client.ollama_client.html#module-components.model_client.ollama_client">module</a>
-</li>
-        </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li>
-    components.model_client.openai_client
-
-        <ul>
-          <li><a href="apis/components/components.model_client.openai_client.html#module-components.model_client.openai_client">module</a>
-</li>
-        </ul></li>
-        <li>
-    components.model_client.sambanova_client
-
-        <ul>
-          <li><a href="apis/components/components.model_client.sambanova_client.html#module-components.model_client.sambanova_client">module</a>
 </li>
         </ul></li>
         <li>
@@ -1028,18 +1006,13 @@
           <li><a href="apis/components/components.model_client.transformers_client.html#module-components.model_client.transformers_client">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     components.model_client.utils
 
         <ul>
           <li><a href="apis/components/components.model_client.utils.html#module-components.model_client.utils">module</a>
-</li>
-        </ul></li>
-        <li>
-    components.model_client.xai_client
-
-        <ul>
-          <li><a href="apis/components/components.model_client.xai_client.html#module-components.model_client.xai_client">module</a>
 </li>
         </ul></li>
         <li>
@@ -1151,6 +1124,8 @@
 </li>
         <li><a href="apis/eval/eval.functional.html#eval.functional.confidence_interval">confidence_interval() (in module eval.functional)</a>
 </li>
+        <li><a href="apis/core/core.runner.html#core.runner.Runner.config">config (Runner attribute)</a>
+</li>
         <li><a href="apis/optim/index.html#optim.BootstrapFewShot.config_dataset">config_dataset() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.config_dataset">[1]</a>
 </li>
         <li><a href="apis/optim/index.html#optim.BootstrapFewShot.config_shots">config_shots() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.config_shots">[1]</a>
@@ -1187,6 +1162,8 @@
           <li><a href="apis/datasets/datasets.types.html#datasets.types.HotPotQAData.context">(HotPotQAData attribute)</a>, <a href="apis/datasets/index.html#datasets.HotPotQAData.context">[1]</a>
 </li>
         </ul></li>
+        <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.context_variables">context_variables (ToolManager property)</a>
+</li>
         <li><a href="apis/components/components.memory.memory.html#components.memory.memory.conver_db">conver_db (in module components.memory.memory)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.Conversation">Conversation (class in core.types)</a>
@@ -1208,13 +1185,18 @@
 </li>
           <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.convert_inputs_to_api_kwargs">(OllamaClient method)</a>
 </li>
-          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs">(OpenAIClient method)</a>
-</li>
           <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.convert_inputs_to_api_kwargs">(TransformersClient method)</a>
 </li>
         </ul></li>
         <li><a href="apis/core/core.functional.html#core.functional.convert_schema_to_signature">convert_schema_to_signature() (in module core.functional)</a>
 </li>
+        <li>
+    core.agent
+
+        <ul>
+          <li><a href="apis/core/core.agent.html#module-core.agent">module</a>
+</li>
+        </ul></li>
         <li>
     core.base_data_class
 
@@ -1297,6 +1279,13 @@
 
         <ul>
           <li><a href="apis/core/core.retriever.html#module-core.retriever">module</a>
+</li>
+        </ul></li>
+        <li>
+    core.runner
+
+        <ul>
+          <li><a href="apis/core/core.runner.html#module-core.runner">module</a>
 </li>
         </ul></li>
         <li>
@@ -1456,13 +1445,11 @@
         </ul></li>
         <li><a href="apis/optim/index.html#optim.Trainer.debug">debug (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.debug">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.debug">[2]</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/optim/index.html#optim.Trainer.debug_report">debug_report() (Trainer method)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.debug_report">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.debug_report">[2]</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.decode">decode() (Tokenizer method)</a>
-</li>
-        <li><a href="apis/components/components.model_client.deepseek_client.html#components.model_client.deepseek_client.DeepSeekClient">DeepSeekClient (class in components.model_client.deepseek_client)</a>
 </li>
         <li><a href="apis/utils/utils.serialization.html#utils.serialization.default">default() (in module utils.serialization)</a>
 </li>
@@ -1471,6 +1458,8 @@
         <li><a href="apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT">DEFAULT_REACT_AGENT_SYSTEM_PROMPT (in module components.agent.react)</a>
 </li>
         <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge">DefaultLLMJudge (class in eval.llm_as_judge)</a>
+</li>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.definition">definition (FunctionTool attribute)</a>
 </li>
         <li><a href="apis/core/core.db.html#core.db.LocalDB.delete">delete() (LocalDB method)</a>
 </li>
@@ -1487,6 +1476,8 @@
         <li><a href="apis/optim/optim.types.html#optim.types.ParameterType.DEMOS">DEMOS (ParameterType attribute)</a>
 </li>
         <li><a href="apis/utils/utils.serialization.html#utils.serialization.deserialize">deserialize() (in module utils.serialization)</a>
+</li>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.detect_function_type">detect_function_type() (FunctionTool class method)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.Trainer.diagnose">diagnose() (Trainer method)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.diagnose">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.diagnose">[2]</a>
 </li>
@@ -1572,8 +1563,6 @@
           <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.error">(GeneratorOutput attribute)</a>
 </li>
         </ul></li>
-        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.estimate_token_count">estimate_token_count() (in module components.model_client.openai_client)</a>
-</li>
         <li><a href="apis/core/core.types.html#core.types.Document.estimated_num_tokens">estimated_num_tokens (Document attribute)</a>
 </li>
         <li>
@@ -1678,8 +1667,6 @@
 </li>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.ExcludeType">ExcludeType (in module core.base_data_class)</a>
 </li>
-        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.execute">execute() (FunctionTool method)</a>
-</li>
         <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func">execute_func() (ToolManager method)</a>
 </li>
         <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_async">execute_func_async() (ToolManager method)</a>
@@ -1750,8 +1737,6 @@
 </li>
         <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.FIREWORKS">FIREWORKS (OptionalPackages attribute)</a>
 </li>
-        <li><a href="apis/components/components.model_client.fireworks_client.html#components.model_client.fireworks_client.FireworksClient">FireworksClient (class in components.model_client.fireworks_client)</a>
-</li>
         <li><a href="apis/optim/index.html#optim.Trainer.fit">fit() (Trainer method)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.fit">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.fit">[2]</a>
 </li>
         <li><a href="apis/core/core.functional.html#core.functional.fix_json_escaped_single_quotes">fix_json_escaped_single_quotes() (in module core.functional)</a>
@@ -1761,6 +1746,8 @@
         <li><a href="apis/core/core.string_parser.html#core.string_parser.FloatParser">FloatParser (class in core.string_parser)</a>
 </li>
         <li><a href="apis/eval/eval.g_eval.html#eval.g_eval.GEvalMetric.FLUENCY">FLUENCY (GEvalMetric attribute)</a>, <a href="apis/eval/index.html#eval.GEvalMetric.FLUENCY">[1]</a>
+</li>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.fn">fn (FunctionTool attribute)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.FunctionDefinition.fn_schema_str">fn_schema_str() (FunctionDefinition method)</a>
 </li>
@@ -1839,8 +1826,6 @@
 </li>
           <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.from_dict">(OllamaClient class method)</a>
 </li>
-          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.from_dict">(OpenAIClient class method)</a>
-</li>
           <li><a href="apis/optim/index.html#optim.OutputParameter.from_dict">(OutputParameter class method)</a>
 </li>
           <li><a href="apis/optim/index.html#optim.Parameter.from_dict">(Parameter class method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.from_dict">[1]</a>
@@ -1884,11 +1869,7 @@
 </li>
         <li><a href="apis/core/core.types.html#core.types.FunctionDefinition.func_parameters">func_parameters (FunctionDefinition attribute)</a>
 </li>
-        <li><a href="apis/core/core.component.html#core.component.func_to_component">func_to_component() (in module core.component)</a>
-</li>
         <li><a href="apis/core/core.component.html#core.component.func_to_data_component">func_to_data_component() (in module core.component)</a>
-</li>
-        <li><a href="apis/core/core.component.html#core.component.FuncComponent">FuncComponent (class in core.component)</a>
 </li>
         <li><a href="apis/core/core.component.html#core.component.FuncDataComponent">FuncDataComponent (class in core.component)</a>
 </li>
@@ -1897,6 +1878,8 @@
         <li><a href="apis/core/core.types.html#core.types.StepOutput.function">function (StepOutput attribute)</a>
 </li>
         <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.function_definitions">function_definitions (ToolManager property)</a>
+</li>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.function_type">function_type (FunctionTool attribute)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.FunctionDefinition">FunctionDefinition (class in core.types)</a>
 </li>
@@ -1907,6 +1890,8 @@
         <li><a href="apis/core/core.types.html#core.types.FunctionOutput">FunctionOutput (class in core.types)</a>
 </li>
         <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool">FunctionTool (class in core.func_tool)</a>
+</li>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionType">FunctionType (class in core.func_tool)</a>
 </li>
         <li><a href="apis/optim/optim.grad_component.html#optim.grad_component.FunGradComponent">FunGradComponent (class in optim.grad_component)</a>
 </li>
@@ -1925,6 +1910,8 @@
         <li><a href="apis/optim/index.html#optim.Parameter.generate_node_html">generate_node_html() (Parameter static method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.generate_node_html">[1]</a>
 </li>
         <li><a href="apis/core/core.functional.html#core.functional.generate_readable_key_for_function">generate_readable_key_for_function() (in module core.functional)</a>
+</li>
+        <li><a href="apis/core/core.agent.html#core.agent.Agent.generator">generator (Agent attribute)</a>
 </li>
         <li><a href="apis/core/core.generator.html#core.generator.Generator">Generator (class in core.generator)</a>
 </li>
@@ -1950,8 +1937,6 @@
 </li>
         <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping.get_all">get_all() (EntityMapping class method)</a>
 </li>
-        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_all_messages_content">get_all_messages_content() (in module components.model_client.openai_client)</a>
-</li>
         <li><a href="apis/core/core.generator.html#core.generator.Generator.get_cache_path">get_cache_path() (Generator method)</a>
 </li>
         <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.get_calls">get_calls() (GeneratorCallLogger method)</a>
@@ -1975,11 +1960,7 @@
         <li><a href="apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser.get_examples_str">get_examples_str() (DataClassParser method)</a>, <a href="apis/components/components.output_parsers.html#components.output_parsers.DataClassParser.get_examples_str">[1]</a>
 </li>
         <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.get_first_message_content">get_first_message_content() (in module components.model_client.anthropic_client)</a>
-
-        <ul>
-          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_first_message_content">(in module components.model_client.openai_client)</a>
 </li>
-        </ul></li>
         <li><a href="apis/core/core.functional.html#core.functional.get_fun_schema">get_fun_schema() (in module core.functional)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.Parameter.get_grad_fn">get_grad_fn() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.get_grad_fn">[1]</a>
@@ -2022,10 +2003,12 @@
 </li>
         <li><a href="apis/optim/index.html#optim.Parameter.get_param_info">get_param_info() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.get_param_info">[1]</a>
 </li>
-        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_probabilities">get_probabilities() (in module components.model_client.openai_client)</a>
+        <li><a href="apis/core/core.agent.html#core.agent.Agent.get_prompt">get_prompt() (Agent method)</a>
+
+        <ul>
+          <li><a href="apis/core/core.generator.html#core.generator.Generator.get_prompt">(Generator method)</a>
 </li>
-        <li><a href="apis/core/core.generator.html#core.generator.Generator.get_prompt">get_prompt() (Generator method)</a>
-</li>
+        </ul></li>
         <li><a href="apis/optim/index.html#optim.Parameter.get_prompt_data">get_prompt_data() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.get_prompt_data">[1]</a>
 </li>
         <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.get_prompt_variables">get_prompt_variables() (Prompt method)</a>
@@ -2124,22 +2107,20 @@
   <h2>H</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.handle_streaming_response">handle_streaming_response() (in module components.model_client.openai_client)</a>
-</li>
         <li><a href="apis/utils/utils.cache.html#utils.cache.hash_text">hash_text() (in module utils.cache)</a>
 </li>
         <li><a href="apis/utils/utils.cache.html#utils.cache.hash_text_sha1">hash_text_sha1() (in module utils.cache)</a>
 </li>
         <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt">HistoryPrompt (class in optim.text_grad.tgd_optimizer)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/datasets/index.html#datasets.HotPotQA">HotPotQA (class in datasets)</a>
 
         <ul>
           <li><a href="apis/datasets/datasets.hotpot_qa.html#datasets.hotpot_qa.HotPotQA">(class in datasets.hotpot_qa)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/datasets/index.html#datasets.HotPotQAData">HotPotQAData (class in datasets)</a>
 
         <ul>
@@ -2188,6 +2169,8 @@
         </ul></li>
         <li><a href="apis/core/core.types.html#core.types.ModelType.IMAGE_GENERATION">IMAGE_GENERATION (ModelType attribute)</a>
 </li>
+        <li><a href="apis/core/core.runner.html#core.runner.Runner.impl_astream">impl_astream() (Runner method)</a>
+</li>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.IncludeType">IncludeType (in module core.base_data_class)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.TGDOptimizer.increment_steps_from_last_improvement">increment_steps_from_last_improvement() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.increment_steps_from_last_improvement">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.increment_steps_from_last_improvement">[2]</a>
@@ -2225,8 +2208,6 @@
 </li>
           <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.init_async_client">(OllamaClient method)</a>
 </li>
-          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_async_client">(OpenAIClient method)</a>
-</li>
         </ul></li>
         <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_llm_client">init_llm_client() (TransformersClient method)</a>
 </li>
@@ -2257,8 +2238,6 @@
 </li>
           <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.init_sync_client">(OllamaClient method)</a>
 </li>
-          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_sync_client">(OpenAIClient method)</a>
-</li>
           <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_sync_client">(TransformersClient method)</a>
 </li>
         </ul></li>
@@ -2280,6 +2259,12 @@
 </li>
         <li><a href="apis/optim/index.html#optim.GradientContext.input_output">input_output (GradientContext attribute)</a>, <a href="apis/optim/optim.gradient.html#optim.gradient.GradientContext.input_output">[1]</a>
 </li>
+        <li><a href="apis/core/core.types.html#core.types.ResponseUsage.input_tokens">input_tokens (ResponseUsage attribute)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.ResponseUsage.input_tokens_details">input_tokens_details (ResponseUsage attribute)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.InputTokensDetails">InputTokensDetails (class in core.types)</a>
+</li>
         <li><a href="apis/core/core.container.html#core.container.ComponentList.insert">insert() (ComponentList method)</a>
 
         <ul>
@@ -2296,8 +2281,6 @@
 </li>
         <li><a href="apis/core/core.string_parser.html#core.string_parser.IntParser">IntParser (class in core.string_parser)</a>
 </li>
-        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.is_async">is_async (FunctionTool property)</a>
-</li>
         <li><a href="apis/core/core.functional.html#core.functional.is_dataclass_instance">is_dataclass_instance() (in module core.functional)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.Gradient.is_default_copy">is_default_copy (Gradient attribute)</a>, <a href="apis/optim/optim.gradient.html#optim.gradient.Gradient.is_default_copy">[1]</a>
@@ -2313,6 +2296,8 @@
         <li><a href="apis/core/core.functional.html#core.functional.is_potential_dataclass">is_potential_dataclass() (in module core.functional)</a>
 </li>
         <li><a href="apis/core/core.func_tool.html#core.func_tool.is_running_in_event_loop">is_running_in_event_loop() (in module core.func_tool)</a>
+</li>
+        <li><a href="apis/core/core.agent.html#core.agent.Agent.is_training">is_training() (Agent method)</a>
 </li>
         <li><a href="apis/core/core.db.html#core.db.LocalDB.items">items (LocalDB attribute)</a>
 </li>
@@ -2387,6 +2372,8 @@
         <li><a href="apis/core/core.string_parser.html#core.string_parser.ListParser">ListParser (class in core.string_parser)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.ModelType.LLM">LLM (ModelType attribute)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.ModelType.LLM_REASONING">LLM_REASONING (ModelType attribute)</a>
 </li>
         <li><a href="apis/eval/index.html#eval.LLMasJudge">LLMasJudge (class in eval)</a>
 
@@ -2488,8 +2475,12 @@
 </li>
         <li><a href="apis/optim/optim.types.html#optim.types.TrainerValidateStats.max_score">max_score (TrainerValidateStats attribute)</a>
 </li>
-        <li><a href="apis/optim/index.html#optim.Trainer.max_steps">max_steps (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.max_steps">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.max_steps">[2]</a>
+        <li><a href="apis/core/core.runner.html#core.runner.Runner.max_steps">max_steps (Runner attribute)</a>
+
+        <ul>
+          <li><a href="apis/optim/index.html#optim.Trainer.max_steps">(Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.max_steps">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.max_steps">[2]</a>
 </li>
+        </ul></li>
         <li><a href="apis/optim/optim.types.html#optim.types.TrainerValidateStats.mean_of_score">mean_of_score (TrainerValidateStats attribute)</a>
 </li>
         <li><a href="apis/components/components.memory.memory.html#components.memory.memory.Memory">Memory (class in components.memory.memory)</a>
@@ -2521,8 +2512,6 @@
         <li><a href="apis/optim/optim.types.html#optim.types.TrainerValidateStats.min_score">min_score (TrainerValidateStats attribute)</a>
 </li>
         <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.MISTRAL">MISTRAL (OptionalPackages attribute)</a>
-</li>
-        <li><a href="apis/components/components.model_client.mistral_client.html#components.model_client.mistral_client.MistralClient">MistralClient (class in components.model_client.mistral_client)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.model">model (EmbedderOutput attribute)</a>
 </li>
@@ -2582,27 +2571,15 @@
 </li>
           <li><a href="apis/components/components.model_client.cohere_client.html#module-components.model_client.cohere_client">components.model_client.cohere_client</a>
 </li>
-          <li><a href="apis/components/components.model_client.deepseek_client.html#module-components.model_client.deepseek_client">components.model_client.deepseek_client</a>
-</li>
-          <li><a href="apis/components/components.model_client.fireworks_client.html#module-components.model_client.fireworks_client">components.model_client.fireworks_client</a>
-</li>
           <li><a href="apis/components/components.model_client.google_client.html#module-components.model_client.google_client">components.model_client.google_client</a>
 </li>
           <li><a href="apis/components/components.model_client.groq_client.html#module-components.model_client.groq_client">components.model_client.groq_client</a>
 </li>
-          <li><a href="apis/components/components.model_client.mistral_client.html#module-components.model_client.mistral_client">components.model_client.mistral_client</a>
-</li>
           <li><a href="apis/components/components.model_client.ollama_client.html#module-components.model_client.ollama_client">components.model_client.ollama_client</a>
-</li>
-          <li><a href="apis/components/components.model_client.openai_client.html#module-components.model_client.openai_client">components.model_client.openai_client</a>
-</li>
-          <li><a href="apis/components/components.model_client.sambanova_client.html#module-components.model_client.sambanova_client">components.model_client.sambanova_client</a>
 </li>
           <li><a href="apis/components/components.model_client.transformers_client.html#module-components.model_client.transformers_client">components.model_client.transformers_client</a>
 </li>
           <li><a href="apis/components/components.model_client.utils.html#module-components.model_client.utils">components.model_client.utils</a>
-</li>
-          <li><a href="apis/components/components.model_client.xai_client.html#module-components.model_client.xai_client">components.model_client.xai_client</a>
 </li>
           <li><a href="apis/components/components.output_parsers.html#module-components.output_parsers">components.output_parsers</a>
 </li>
@@ -2625,6 +2602,8 @@
           <li><a href="apis/components/components.retriever.qdrant_retriever.html#module-components.retriever.qdrant_retriever">components.retriever.qdrant_retriever</a>
 </li>
           <li><a href="apis/components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever">components.retriever.reranker_retriever</a>
+</li>
+          <li><a href="apis/core/core.agent.html#module-core.agent">core.agent</a>
 </li>
           <li><a href="apis/core/core.base_data_class.html#module-core.base_data_class">core.base_data_class</a>
 </li>
@@ -2649,6 +2628,8 @@
           <li><a href="apis/core/core.prompt_builder.html#module-core.prompt_builder">core.prompt_builder</a>
 </li>
           <li><a href="apis/core/core.retriever.html#module-core.retriever">core.retriever</a>
+</li>
+          <li><a href="apis/core/core.runner.html#module-core.runner">core.runner</a>
 </li>
           <li><a href="apis/core/core.string_parser.html#module-core.string_parser">core.string_parser</a>
 </li>
@@ -2765,9 +2746,11 @@
   <h2>N</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="apis/core/core.component.html#core.component.Component.name">name (Component attribute)</a>
+        <li><a href="apis/core/core.agent.html#core.agent.Agent.name">name (Agent attribute)</a>
 
         <ul>
+          <li><a href="apis/core/core.component.html#core.component.Component.name">(Component attribute)</a>
+</li>
           <li><a href="apis/optim/optim.parameter.html#optim.parameter.ComponentNode.name">(ComponentNode attribute)</a>
 </li>
           <li><a href="apis/optim/optim.parameter.html#optim.parameter.ComponentTrace.name">(ComponentTrace attribute)</a>
@@ -2837,13 +2820,7 @@
 </li>
         <li><a href="apis/optim/index.html#optim.TGDOptimizer.one_parameter_at_a_time">one_parameter_at_a_time (TGDOptimizer attribute)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.one_parameter_at_a_time">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.one_parameter_at_a_time">[2]</a>
 </li>
-        <li><a href="apis/core/core.types.html#core.types.ModelClientType.OPENAI">OPENAI (ModelClientType attribute)</a>
-
-        <ul>
-          <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.OPENAI">(OptionalPackages attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient">OpenAIClient (class in components.model_client.openai_client)</a>
+        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.OPENAI">OPENAI (OptionalPackages attribute)</a>
 </li>
         <li>
     optim
@@ -2929,8 +2906,6 @@
           <li><a href="apis/optim/optim.text_grad.backend_engine_prompt.html#module-optim.text_grad.backend_engine_prompt">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     optim.text_grad.llm_text_loss
 
@@ -2938,6 +2913,8 @@
           <li><a href="apis/optim/optim.text_grad.llm_text_loss.html#module-optim.text_grad.llm_text_loss">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     optim.text_grad.ops
 
@@ -3019,9 +2996,15 @@
 </li>
         <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.output_processors">output_processors (Embedder attribute)</a>
 </li>
+        <li><a href="apis/core/core.types.html#core.types.ResponseUsage.output_tokens">output_tokens (ResponseUsage attribute)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.ResponseUsage.output_tokens_details">output_tokens_details (ResponseUsage attribute)</a>
+</li>
         <li><a href="apis/optim/index.html#optim.OutputParameter">OutputParameter (class in optim)</a>
 </li>
         <li><a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser">OutputParser (class in components.output_parsers.outputs)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.OutputTokensDetails">OutputTokensDetails (class in core.types)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -3068,8 +3051,6 @@
 </li>
           <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.parse_chat_completion">(OllamaClient method)</a>
 </li>
-          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion">(OpenAIClient method)</a>
-</li>
           <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.parse_chat_completion">(TransformerLLM method)</a>
 </li>
           <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.parse_chat_completion">(TransformersClient method)</a>
@@ -3084,8 +3065,6 @@
 </li>
           <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.parse_embedding_response">(OllamaClient method)</a>
 </li>
-          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_embedding_response">(OpenAIClient method)</a>
-</li>
           <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.parse_embedding_response">(TransformersClient method)</a>
 </li>
         </ul></li>
@@ -3095,29 +3074,25 @@
 </li>
         <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.parse_generate_response">parse_generate_response() (in module components.model_client.ollama_client)</a>
 </li>
-        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_image_generation_response">parse_image_generation_response() (OpenAIClient method)</a>
-</li>
         <li><a href="apis/core/core.functional.html#core.functional.parse_json_str_to_obj">parse_json_str_to_obj() (in module core.functional)</a>
 </li>
         <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.parse_stream_response">parse_stream_response() (in module components.model_client.ollama_client)</a>
-
-        <ul>
-          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.parse_stream_response">(in module components.model_client.openai_client)</a>
 </li>
-        </ul></li>
         <li><a href="apis/core/core.functional.html#core.functional.parse_yaml_str_to_obj">parse_yaml_str_to_obj() (in module core.functional)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.FunctionOutput.parsed_input">parsed_input (FunctionOutput attribute)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.Parameter.peers">peers (Parameter attribute)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.peers">[1]</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/eval/eval.base.html#eval.base.EvaluationResult.per_item_scores">per_item_scores (EvaluationResult attribute)</a>
 </li>
         <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.PGVECTOR">PGVECTOR (OptionalPackages attribute)</a>
 </li>
         <li><a href="apis/core/core.component.html#core.component.Component.pickle_to_file">pickle_to_file() (Component method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="apis/core/core.runner.html#core.runner.Runner.planner">planner (Runner attribute)</a>
 </li>
         <li><a href="apis/core/core.container.html#core.container.ComponentList.pop">pop() (ComponentList method)</a>
 </li>
@@ -3193,6 +3168,8 @@
           <li><a href="apis/optim/index.html#optim.TGDOptimizer.proposing">(TGDOptimizer attribute)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.proposing">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.proposing">[2]</a>
 </li>
         </ul></li>
+        <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.pydantic_to_dataclass">pydantic_to_dataclass() (DataClass class method)</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -3271,6 +3248,8 @@
           <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDData.reasoning">(TGDData attribute)</a>
 </li>
         </ul></li>
+        <li><a href="apis/core/core.types.html#core.types.OutputTokensDetails.reasoning_tokens">reasoning_tokens (OutputTokensDetails attribute)</a>
+</li>
         <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping.register">register() (EntityMapping class method)</a>
 </li>
         <li><a href="apis/tracing/tracing.callback_manager.html#tracing.callback_manager.CallbackManager.register_callback">register_callback() (CallbackManager method)</a>
@@ -3339,6 +3318,8 @@
 </li>
         <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.Instruction.responses">responses (Instruction attribute)</a>
 </li>
+        <li><a href="apis/core/core.types.html#core.types.ResponseUsage">ResponseUsage (class in core.types)</a>
+</li>
         <li><a href="apis/optim/index.html#optim.Trainer.resume_params_from_ckpt">resume_params_from_ckpt() (Trainer method)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.resume_params_from_ckpt">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.resume_params_from_ckpt">[2]</a>
 </li>
         <li><a href="apis/components/components.retriever.lancedb_retriver.html#components.retriever.lancedb_retriver.LanceDBRetriever.retrieve">retrieve() (LanceDBRetriever method)</a>
@@ -3387,6 +3368,8 @@
 </li>
         <li><a href="apis/optim/index.html#optim.AdalComponent.run_one_task_sample">run_one_task_sample() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.run_one_task_sample">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.run_one_task_sample">[2]</a>
 </li>
+        <li><a href="apis/core/core.runner.html#core.runner.Runner">Runner (class in core.runner)</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -3396,8 +3379,6 @@
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.safe_import">safe_import() (in module utils.lazy_import)</a>
-</li>
-        <li><a href="apis/components/components.model_client.sambanova_client.html#components.model_client.sambanova_client.SambaNovaClient">SambaNovaClient (class in components.model_client.sambanova_client)</a>
 </li>
         <li><a href="apis/optim/optim.sampler.html#optim.sampler.Sample">Sample (class in optim.sampler)</a>
 </li>
@@ -3497,12 +3478,12 @@
 </li>
         <li><a href="apis/core/core.generator.html#core.generator.Generator.set_mock_output">set_mock_output() (Generator method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.set_output_fields">set_output_fields() (DataClass class method)</a>
 </li>
         <li><a href="apis/core/core.generator.html#core.generator.Generator.set_parameters">set_parameters() (Generator method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/optim/index.html#optim.Parameter.set_peers">set_peers() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.set_peers">[1]</a>
 </li>
         <li><a href="apis/optim/index.html#optim.Parameter.set_predecessors">set_predecessors() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.set_predecessors">[1]</a>
@@ -3605,6 +3586,10 @@
 </li>
         <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.support_models">support_models (TransformersClient attribute)</a>
 </li>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionType.SYNC">SYNC (FunctionType attribute)</a>
+</li>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionType.SYNC_GENERATOR">SYNC_GENERATOR (FunctionType attribute)</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -3673,6 +3658,8 @@
         </ul></li>
         <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizerTrace">TGDOptimizerTrace (class in optim.text_grad.tgd_optimizer)</a>
 </li>
+        <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.thinking">thinking (GeneratorOutput attribute)</a>
+</li>
         <li><a href="apis/core/core.types.html#core.types.Function.thought">thought (Function attribute)</a>
 
         <ul>
@@ -3704,8 +3691,6 @@
 </li>
           <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.to_dict">(OllamaClient method)</a>
 </li>
-          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.to_dict">(OpenAIClient method)</a>
-</li>
           <li><a href="apis/optim/index.html#optim.OutputParameter.to_dict">(OutputParameter method)</a>
 </li>
           <li><a href="apis/optim/index.html#optim.Parameter.to_dict">(Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.to_dict">[1]</a>
@@ -3728,6 +3713,8 @@
         <li><a href="apis/optim/index.html#optim.Gradient.to_pred_id">to_pred_id (Gradient attribute)</a>, <a href="apis/optim/optim.gradient.html#optim.gradient.Gradient.to_pred_id">[1]</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.StepOutput.to_prompt_str">to_prompt_str() (StepOutput method)</a>
+</li>
+        <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_pydantic">to_pydantic() (DataClass class method)</a>
 </li>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_schema">to_schema() (DataClass class method)</a>
 </li>
@@ -3759,12 +3746,16 @@
         </ul></li>
         <li><a href="apis/core/core.types.html#core.types.TokenLogProb">TokenLogProb (class in core.types)</a>
 </li>
+        <li><a href="apis/core/core.agent.html#core.agent.Agent.tool_manager">tool_manager (Agent attribute)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.tool_use">tool_use (GeneratorOutput attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager">ToolManager (class in core.tool_manager)</a>
 </li>
         <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.top_k">top_k (Retriever attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.TORCH">TORCH (OptionalPackages attribute)</a>
 </li>
         <li><a href="apis/optim/optim.types.html#optim.types.TrainerResult.total_time">total_time (TrainerResult attribute)</a>
@@ -3772,6 +3763,8 @@
         <li><a href="apis/core/core.types.html#core.types.CompletionUsage.total_tokens">total_tokens (CompletionUsage attribute)</a>
 
         <ul>
+          <li><a href="apis/core/core.types.html#core.types.ResponseUsage.total_tokens">(ResponseUsage attribute)</a>
+</li>
           <li><a href="apis/core/core.types.html#core.types.Usage.total_tokens">(Usage attribute)</a>
 </li>
         </ul></li>
@@ -3839,8 +3832,6 @@
           <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.track_completion_usage">(GroqAPIClient method)</a>
 </li>
           <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.track_completion_usage">(ModelClient method)</a>
-</li>
-          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.track_completion_usage">(OpenAIClient method)</a>
 </li>
         </ul></li>
         <li><a href="apis/core/core.component.html#core.component.Component.train">train() (Component method)</a>
@@ -4088,16 +4079,6 @@
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/utils/utils.file_io.html#utils.file_io.write_list_to_jsonl">write_list_to_jsonl() (in module utils.file_io)</a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="X" class="genindex-section">
-  <h2>X</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="apis/components/components.model_client.xai_client.html#components.model_client.xai_client.XAIClient">XAIClient (class in components.model_client.xai_client)</a>
 </li>
     </ul></td>
   </tr></table>

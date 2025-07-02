@@ -219,18 +219,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -487,6 +492,10 @@ For example:</p>
 How you do this is highly flexible.
 Here is an example of using a local embedding model (e.g., <code class="docutils literal notranslate"><span class="pre">thenlper/gte-base</span></code>) as a model (Refer to <a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder" title="components.model_client.transformers_client.TransformerEmbedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerEmbedder</span></code></a> for details).
 It really is just normal model inference code.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Integrating to different model providers such as DeepSeek, Mixtral etc has gotten easier as most providers are converging to just use OpenAI sdks and point to their own model endpoints.</p>
+</div>
 </section>
 <section id="modelclient-protocol">
 <h2>ModelClient Protocol<a class="headerlink" href="#modelclient-protocol" title="Link to this heading">¶</a></h2>
@@ -578,7 +587,7 @@ For Rerankers, you can refer to :class:`CohereAPIClient&lt;components.model_clie
 </div>
 <p>In addition, you can add any method that parses the SDK-specific output to a format compatible with AdalFlow components.
 Typically, an LLM needs to use <cite>parse_chat_completion</cite> to parse the completion to text and <cite>parse_embedding_response</cite> to parse the embedding response to a structure that AdalFlow components can understand.
-You can refer to <a class="reference internal" href="../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIClient</span></code></a> for API embedding model integration and <a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformersClient</span></code></a> for local embedding model integration.</p>
+You can refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIClient</span></code> for API embedding model integration and <a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformersClient</span></code></a> for local embedding model integration.</p>
 <p>Lastly, the <cite>call</cite> and <cite>acall</cite> methods are used to call model inference via their own arguments.
 We encourage subclasses to provide error handling and retry mechanisms in these methods.</p>
 <p>The <cite>OpenAIClient</cite> example:</p>
@@ -1781,7 +1790,7 @@ custom model client</p>
 <p class="admonition-title">API reference</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.model_client.ModelClient</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformersClient</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient" title="components.model_client.groq_client.GroqAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.groq_client.GroqAPIClient</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient" title="components.model_client.anthropic_client.AnthropicAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.anthropic_client.AnthropicAPIClient</span></code></a></p></li>

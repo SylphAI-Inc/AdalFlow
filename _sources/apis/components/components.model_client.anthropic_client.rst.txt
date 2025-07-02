@@ -14,10 +14,12 @@ anthropic_client
    .. autosummary::
 
       get_first_message_content
+      handle_streaming_response
 
    .. rubric:: Classes
 
    .. autosummary::
 
       AnthropicAPIClient
+      LLMResponse
 

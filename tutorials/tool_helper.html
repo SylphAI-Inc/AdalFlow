@@ -219,18 +219,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -457,7 +462,7 @@
 </a>
 </div><section id="function-calls">
 <span id="tool-helper"></span><h1>Function calls<a class="headerlink" href="#function-calls" title="Link to this heading">¶</a></h1>
-<p>Tools are means LLM can use to interact with the world beyond of its internal knowledge. Technically speaking, retrievers are tools to help LLM to get more relevant context, and memory is a tool for LLM to carry out a conversation.
+<p>Tools are means LLM can use to interact with the world beyond of its internal knowledge <a class="footnote-reference brackets" href="#id4" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. Technically speaking, retrievers are tools to help LLM to get more relevant context, and memory is a tool for LLM to carry out a conversation.
 Deciding when, which, and how to use a tool, and even to creating a tool is an agentic behavior:
 Function calls is a process of showing LLM a list of funciton definitions and prompt it to choose one or few of them.
 Many places use tools and function calls interchangably.</p>
@@ -466,6 +471,7 @@ Many places use tools and function calls interchangably.</p>
 <li><p>Function call walkthrough</p></li>
 <li><p>Overall design</p></li>
 <li><p>Function call in action</p></li>
+<li><p>MCP (Model Context Protocol) tools <a class="footnote-reference brackets" href="#id5" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> as function calls.</p></li>
 </ol>
 <section id="quick-walkthrough">
 <h2>Quick Walkthrough<a class="headerlink" href="#quick-walkthrough" title="Link to this heading">¶</a></h2>
@@ -1199,11 +1205,177 @@ Do not call multiple functions in one action field.
 <span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add(a=y, b=5)&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;add(a=y, b=5)&#39;</span><span class="p">),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="mcp-model-context-protocol-tools">
+<h2>MCP (Model Context Protocol) Tools<a class="headerlink" href="#mcp-model-context-protocol-tools" title="Link to this heading">¶</a></h2>
+<p>In addition to the above, AdalFlow also supports MCP tools <a class="footnote-reference brackets" href="#id5" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, which enable interaction with LLM models and their environments through the MCP protocol.
+Compared to the general function call defined above, MCP provides a unified interface between different tool providers and model vendors.
+Importantly, you don’t need to rewrite every tools. Instead, you can directly re-use the tools from the marketplace like <a class="reference external" href="https://smithery.ai/">smithery.ai</a>.</p>
+<p><strong>Configuring an MCP Client</strong>. To configure a standard input/output (stdio) MCP client with your own server. An example of python server implementation is at <cite>tutorials/mcp_agent/mcp_calculator_server.py</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcp</span> <span class="kn">import</span> <span class="n">MCPServerStdioParams</span>
+<span class="n">server_params</span> <span class="o">=</span> <span class="n">MCPServerStdioParams</span><span class="p">(</span>
+    <span class="n">command</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+    <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mcp_calculator_server.py&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>To configure a HTTP MCP client, you can use MCP server URLs from <a class="reference external" href="https://server.smithery.ai">https://server.smithery.ai</a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">smithery_api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SMITHERY_API_KEY&quot;</span><span class="p">)</span>
+<span class="n">smithery_server_id</span> <span class="o">=</span> <span class="s2">&quot;@nickclyde/duckduckgo-mcp-server&quot;</span>
+<span class="n">server_params</span> <span class="o">=</span> <span class="n">MCPServerStreamableHttpParams</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;https://server.smithery.ai/</span><span class="si">{</span><span class="n">smithery_server_id</span><span class="si">}</span><span class="s2">/mcp?api_key=</span><span class="si">{</span><span class="n">smithery_api_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Executing MCP Tools</strong>. You can execute an MCP tool as an asynchronous function. The <cite>MCPFunctionTool</cite> can be used in the same way as a general <cite>FunctionTool</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.mcp_tool</span> <span class="kn">import</span> <span class="n">MCPFunctionTool</span>
+<span class="c1"># Get tools from the server</span>
+<span class="k">async</span> <span class="k">with</span> <span class="n">mcp_session_context</span><span class="p">(</span><span class="n">server_params</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="n">tools</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">list_tools</span><span class="p">()</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">call_async_function</span><span class="p">():</span>
+    <span class="n">tool</span> <span class="o">=</span> <span class="n">MCPFunctionTool</span><span class="p">(</span><span class="n">server_params</span><span class="p">,</span> <span class="n">tools</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="k">await</span> <span class="n">tool</span><span class="o">.</span><span class="n">acall</span><span class="p">()</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">call_async_function</span><span class="p">())</span>
+</pre></div>
+</div>
+<p><strong>Using MCP Tools from Marketplace</strong>. You can reuse the tools from marketplace. Below is a step-by-step example.</p>
+<ol class="arabic simple">
+<li><p>Find a tool at smithery.ai. For example, <a class="reference external" href="https://smithery.ai/server/&#64;nickclyde/duckduckgo-mcp-server">https://smithery.ai/server/&#64;nickclyde/duckduckgo-mcp-server</a>.</p></li>
+<li><p>Load the server. A MCP server provides multiple tools. With <cite>MCPToolManager</cite>, you can easily load them as <cite>MCPFunctionTool</cite> instances all at once. First, create a client manager:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.mcp_tool</span> <span class="kn">import</span> <span class="n">MCPToolManager</span>
+<span class="n">mcp_client_manager</span> <span class="o">=</span> <span class="n">MCPToolManager</span><span class="p">(</span><span class="n">server_params</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can add servers to the manager in several ways. For example, we use the DuckDuckGo parameters (<a class="reference external" href="https://smithery.ai/server/&#64;nickclyde/duckduckgo-mcp-server">&#64;nickclyde/duckduckgo-mcp-server</a>), choose one of the following options:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ======= Example 1: Add via stdio command. =======</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">add_server</span><span class="p">(</span><span class="s2">&quot;duckduckgo-mcp-server&quot;</span><span class="p">,</span> <span class="n">MCPServerStdioParams</span><span class="p">(</span>
+    <span class="n">command</span><span class="o">=</span><span class="s2">&quot;npx&quot;</span><span class="p">,</span>  <span class="c1"># Command to run the server</span>
+    <span class="n">args</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;-y&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;@smithery/cli@latest&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;run&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;@nickclyde/duckduckgo-mcp-server&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;smithery-api-key&quot;</span>
+    <span class="p">],</span>
+<span class="p">))</span>
+
+<span class="c1"># ======= Example 2: Load servers from a JSON file. =======</span>
+<span class="n">json_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;mcp_servers.json&quot;</span><span class="p">)</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">add_servers_from_json_file</span><span class="p">(</span><span class="n">json_path</span><span class="p">)</span>
+
+<span class="c1"># ======= Example 3: Load server from HTTP client. =======</span>
+<span class="n">smithery_api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SMITHERY_API_KEY&quot;</span><span class="p">)</span>
+<span class="n">smithery_server_id</span> <span class="o">=</span> <span class="s2">&quot;@nickclyde/duckduckgo-mcp-server&quot;</span>
+<span class="n">mcp_server_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://server.smithery.ai/</span><span class="si">{</span><span class="n">smithery_server_id</span><span class="si">}</span><span class="s2">/mcp?api_key=</span><span class="si">{</span><span class="n">smithery_api_key</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">add_server</span><span class="p">(</span><span class="s2">&quot;duckduckgo-mcp-server&quot;</span><span class="p">,</span> <span class="n">MCPServerStreamableHttpParams</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">mcp_server_url</span><span class="p">))</span>
+
+<span class="c1"># ======= Example 4: Load server from SSE client. =======</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">add_server</span><span class="p">(</span><span class="s2">&quot;example-mcp&quot;</span><span class="p">,</span> <span class="n">MCPServerSseParams</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://example-server.modelcontextprotocol.io/sse&quot;</span><span class="p">,</span>
+<span class="p">))</span>
+</pre></div>
+</div>
+<p>An example <cite>mcp_servers.json</cite> file:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;mcpServers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;duckduckgo-mcp-server&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;npx&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;-y&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;@smithery/cli@latest&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;run&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;@nickclyde/duckduckgo-mcp-server&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;--key&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;smithery-api-key&quot;</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>3. Use the manager to create <cite>MCPFunctionTool</cite> instances.
+You can list all tools available on the server and use it with agent. A complete example of using MCP tools with agents can be found under the <cite>tutorials/mcp_agent</cite> folder.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tools</span> <span class="o">=</span> <span class="k">await</span> <span class="n">mcp_client_manager</span><span class="o">.</span><span class="n">get_all_tools</span><span class="p">()</span>  <span class="c1"># List[MCPFunctionTool]</span>
+<span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">tools</span><span class="p">:</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_desc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Tool: </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="si">}</span><span class="s2">, Signature: </span><span class="si">{</span><span class="n">sig</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Example outputs when we list the tools from DuckDuckGo</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Listing</span> <span class="n">tools</span> <span class="k">for</span> <span class="n">server</span><span class="p">:</span> <span class="n">duckduckgo</span><span class="o">-</span><span class="n">mcp</span><span class="o">-</span><span class="n">server</span>
+<span class="mi">2025</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">03</span> <span class="mi">17</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="mi">22</span> <span class="o">-</span> <span class="p">[</span><span class="n">mcp_tool</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">36</span><span class="p">:</span><span class="n">mcp_session_context</span><span class="p">]</span> <span class="o">-</span> <span class="err">📡</span> <span class="n">Initializing</span> <span class="n">connection</span><span class="o">...</span>
+<span class="mi">2025</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">03</span> <span class="mi">17</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="mi">23</span> <span class="o">-</span> <span class="p">[</span><span class="n">mcp_tool</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="n">mcp_session_context</span><span class="p">]</span> <span class="o">-</span> <span class="err">✅</span> <span class="n">Connection</span> <span class="n">established</span><span class="err">!</span>
+
+<span class="err">🗂️</span>  <span class="n">Available</span> <span class="n">Resources</span><span class="p">:</span>
+
+<span class="err">🔧</span> <span class="n">Available</span> <span class="n">Tools</span><span class="p">:</span>
+<span class="err">•</span> <span class="n">search</span><span class="p">:</span>
+    <span class="n">Search</span> <span class="n">DuckDuckGo</span> <span class="ow">and</span> <span class="k">return</span> <span class="n">formatted</span> <span class="n">results</span><span class="o">.</span>
+
+    <span class="n">Args</span><span class="p">:</span>
+        <span class="n">query</span><span class="p">:</span> <span class="n">The</span> <span class="n">search</span> <span class="n">query</span> <span class="n">string</span>
+        <span class="n">max_results</span><span class="p">:</span> <span class="n">Maximum</span> <span class="n">number</span> <span class="n">of</span> <span class="n">results</span> <span class="n">to</span> <span class="k">return</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="p">:</span> <span class="n">MCP</span> <span class="n">context</span> <span class="k">for</span> <span class="n">logging</span>
+
+<span class="err">•</span> <span class="n">fetch_content</span><span class="p">:</span>
+    <span class="n">Fetch</span> <span class="ow">and</span> <span class="n">parse</span> <span class="n">content</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">webpage</span> <span class="n">URL</span><span class="o">.</span>
+
+    <span class="n">Args</span><span class="p">:</span>
+        <span class="n">url</span><span class="p">:</span> <span class="n">The</span> <span class="n">webpage</span> <span class="n">URL</span> <span class="n">to</span> <span class="n">fetch</span> <span class="n">content</span> <span class="kn">from</span>
+        <span class="nn">ctx</span><span class="p">:</span> <span class="n">MCP</span> <span class="n">context</span> <span class="k">for</span> <span class="n">logging</span>
+</pre></div>
+</div>
+<p>4. Use or optimize prompts or agents with the function as if you are using the FunctionTool.
+With the tool, we can create an agent and ask it to search for news.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">agent</span> <span class="o">=</span> <span class="n">ReActAgent</span><span class="p">(</span>
+    <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+<span class="n">agent</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;Use DuckDuckGo to search for the winner on European Championship in 2025.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The example output of a step execution is shown below.</p>
+<p>Example: Using multiple MCP servers with MCPToolManager and one agent</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SMITHERY_API_KEY&quot;</span><span class="p">)</span>
+<span class="n">manager</span> <span class="o">=</span> <span class="n">MCPToolManager</span><span class="p">()</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">add_server</span><span class="p">(</span><span class="s2">&quot;duckduckgo&quot;</span><span class="p">,</span> <span class="n">MCPServerStreamableHttpParams</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;https://server.smithery.ai/@nickclyde/duckduckgo-mcp-server/mcp?api_key=</span><span class="si">{</span><span class="n">api_key</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">))</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">add_server</span><span class="p">(</span><span class="s2">&quot;wikipedia&quot;</span><span class="p">,</span> <span class="n">MCPServerStreamableHttpParams</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;https://server.smithery.ai/@smithery/wikipedia-mcp-server/mcp?api_key=</span><span class="si">{</span><span class="n">api_key</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">))</span>
+
+<span class="n">tools</span> <span class="o">=</span> <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_all_tools</span><span class="p">()</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">ReActAgent</span><span class="p">(</span><span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">agent</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span><span class="s2">&quot;Search for the capital of France and summarize its Wikipedia page.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Example: Adding tool to multiple agents.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">agent2</span> <span class="o">=</span> <span class="n">ReActAgent</span><span class="p">(</span><span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">)</span>
+<span class="n">result2</span> <span class="o">=</span> <span class="k">await</span> <span class="n">agent2</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span><span class="s2">&quot;Search for the capital of Germany and summarize its Wikipedia page.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Agent 2 result:&quot;</span><span class="p">,</span> <span class="n">result2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mi">2025</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">03</span> <span class="mi">17</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="mi">43</span> <span class="o">-</span> <span class="p">[</span><span class="n">react</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">468</span><span class="p">:</span><span class="n">_execute_action_eval_mode</span><span class="p">]</span> <span class="o">-</span> <span class="n">Step</span> <span class="mi">1</span><span class="p">:</span>
+<span class="n">StepOutput</span><span class="p">(</span><span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="s1">&#39;The search results indicate that the UEFA European Championship (Euros) was last held in 2024, with Spain winning. There are no results for a winner of the UEFA European Championship in 2025, which suggests it has not occurred yet. Therefore, I will conclude that there is no winner for the European Championship in 2025.&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;finish&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[],</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;answer&#39;</span><span class="p">:</span> <span class="s1">&#39;The UEFA European Championship in 2025 has not occurred yet, so there is no winner.&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}),</span> <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">observation</span><span class="o">=</span><span class="s1">&#39;The UEFA European Championship in 2025 has not occurred yet, so there is no winner.&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="highlight admonition">
 <p class="admonition-title">References</p>
-<ol class="arabic simple">
-<li><p>OpenAI tools API: <a class="reference external" href="https://beta.openai.com/docs/api-reference/tools">https://beta.openai.com/docs/api-reference/tools</a></p></li>
-</ol>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id4" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>OpenAI tools API: <a class="reference external" href="https://beta.openai.com/docs/api-reference/tools">https://beta.openai.com/docs/api-reference/tools</a></p>
+</aside>
+<aside class="footnote brackets" id="id5" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
+<p>Anthropic MCP document: <a class="reference external" href="https://modelcontextprotocol.io/introduction">https://modelcontextprotocol.io/introduction</a></p>
+</aside>
+</aside>
 </div>
 <div class="highlight admonition">
 <p class="admonition-title">API References</p>
@@ -1213,6 +1385,8 @@ Do not call multiple functions in one action field.
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionExpression" title="core.types.FunctionExpression"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionExpression</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionOutput" title="core.types.FunctionOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionOutput</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.func_tool.html#core.func_tool.FunctionTool" title="core.func_tool.FunctionTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.func_tool.FunctionTool</span></code></a></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">core.mcp_tool.MCPFunctionTool()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">core.mcp_tool.MCPToolManager()</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.get_fun_schema" title="core.functional.get_fun_schema"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.get_fun_schema()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.parse_function_call_expr" title="core.functional.parse_function_call_expr"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.parse_function_call_expr()</span></code></a></p></li>
@@ -1291,6 +1465,7 @@ Do not call multiple functions in one action field.
 </ul>
 </li>
 <li><a class="reference internal" href="#parallel-function-calls">Parallel Function Calls</a></li>
+<li><a class="reference internal" href="#mcp-model-context-protocol-tools">MCP (Model Context Protocol) Tools</a></li>
 </ul>
 </li>
 </ul>

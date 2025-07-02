@@ -219,18 +219,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -491,7 +496,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#core.types.Function" title="core.types.Function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Function</span></code></a>(thought, name, args, kwargs, ...)</p></td>
 <td><p>The data modeling of a function call, including the name and keyword arguments.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.FunctionDefinition" title="core.types.FunctionDefinition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionDefinition</span></code></a>(class_instance, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.FunctionDefinition" title="core.types.FunctionDefinition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionDefinition</span></code></a>(func_name, func_desc, ...)</p></td>
 <td><p>The data modeling of a function definition, including the name, description, and parameters.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#core.types.FunctionExpression" title="core.types.FunctionExpression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionExpression</span></code></a>(thought, action)</p></td>
@@ -500,28 +505,37 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#core.types.FunctionOutput" title="core.types.FunctionOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionOutput</span></code></a>([name, input, parsed_input, ...])</p></td>
 <td><p>The output of a tool, which could be a function, a class, or a module.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneratorOutput</span></code></a>([id, data, error, usage, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneratorOutput</span></code></a>([id, data, thinking, ...])</p></td>
 <td><p>The output data class for the Generator component.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.ModelClientType" title="core.types.ModelClientType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelClientType</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.InputTokensDetails" title="core.types.InputTokensDetails"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InputTokensDetails</span></code></a>([cached_tokens])</p></td>
+<td><p>Details about input tokens used in a response</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.ModelClientType" title="core.types.ModelClientType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelClientType</span></code></a>()</p></td>
 <td><p>A quick way to access all model clients in the ModelClient module.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.ModelType" title="core.types.ModelType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelType</span></code></a>(value[, names, module, qualname, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.ModelType" title="core.types.ModelType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelType</span></code></a>(value[, names, module, qualname, ...])</p></td>
 <td><p>The type of the model, including Embedder, LLM, Reranker.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.RetrieverOutput" title="core.types.RetrieverOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RetrieverOutput</span></code></a>(id, doc_indices, doc_scores, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.OutputTokensDetails" title="core.types.OutputTokensDetails"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OutputTokensDetails</span></code></a>([reasoning_tokens])</p></td>
+<td><p>Details about output tokens used in a response</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.ResponseUsage" title="core.types.ResponseUsage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResponseUsage</span></code></a>(input_tokens, output_tokens, ...)</p></td>
+<td><p>Usage information for a response, including token counts, in sync with OpenAI response usage api spec at openai/types/response_usage.py</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.RetrieverOutput" title="core.types.RetrieverOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RetrieverOutput</span></code></a>(id, doc_indices, doc_scores, ...)</p></td>
 <td><p>Save the output of a single query in retrievers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.StepOutput" title="core.types.StepOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StepOutput</span></code></a>([step, action, function, observation])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.StepOutput" title="core.types.StepOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StepOutput</span></code></a>([step, action, function, observation])</p></td>
 <td><p>The output of a single step in the agent.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.TokenLogProb" title="core.types.TokenLogProb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TokenLogProb</span></code></a>(token, logprob)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.TokenLogProb" title="core.types.TokenLogProb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TokenLogProb</span></code></a>(token, logprob)</p></td>
 <td><p>similar to openai.ChatCompletionTokenLogprob</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.Usage" title="core.types.Usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Usage</span></code></a>(prompt_tokens, total_tokens)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.Usage" title="core.types.Usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Usage</span></code></a>(prompt_tokens, total_tokens)</p></td>
 <td><p>In sync with OpenAI embedding api spec, same as openai/types/create_embedding_response.py</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.UserQuery" title="core.types.UserQuery"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UserQuery</span></code></a>(query_str[, metadata])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.UserQuery" title="core.types.UserQuery"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UserQuery</span></code></a>(query_str[, metadata])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -544,18 +558,23 @@ It helps ModelClient identify the model type required to correctly call the mode
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.ModelType.LLM_REASONING">
+<span class="sig-name descname"><span class="pre">LLM_REASONING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#core.types.ModelType.LLM_REASONING" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelType.RERANKER">
-<span class="sig-name descname"><span class="pre">RERANKER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#core.types.ModelType.RERANKER" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">RERANKER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#core.types.ModelType.RERANKER" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelType.IMAGE_GENERATION">
-<span class="sig-name descname"><span class="pre">IMAGE_GENERATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#core.types.ModelType.IMAGE_GENERATION" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">IMAGE_GENERATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#core.types.ModelType.IMAGE_GENERATION" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelType.UNDEFINED">
-<span class="sig-name descname"><span class="pre">UNDEFINED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#core.types.ModelType.UNDEFINED" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">UNDEFINED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#core.types.ModelType.UNDEFINED" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -595,11 +614,6 @@ It helps ModelClient identify the model type required to correctly call the mode
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelClientType.GROQ">
 <span class="sig-name descname"><span class="pre">GROQ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.GROQ" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.ModelClientType.OPENAI">
-<span class="sig-name descname"><span class="pre">OPENAI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.OPENAI" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -786,45 +800,57 @@ Batch processing is often available, thus we need a list of Embedding objects.</
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="core.types.GeneratorOutput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeneratorOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T_co</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.CompletionUsage" title="core.types.CompletionUsage"><span class="pre">CompletionUsage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#GeneratorOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.GeneratorOutput" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T_co</span></code>]</p>
-<p>The output data class for the Generator component.
-We can not control its output 100%, so we use this to track the error_message and
-allow the raw string output to be passed through.</p>
-<p>(1) When model predict and output processors are both without error,
-we have data as the final output, error as None.
-(2) When either model predict or output processors have error,
-we have data as None, error as the error message.</p>
-<p>Raw_response will depends on the model predict.</p>
+<dt class="sig sig-object py" id="core.types.InputTokensDetails">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InputTokensDetails</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cached_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#InputTokensDetails"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.InputTokensDetails" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Details about input tokens used in a response</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.GeneratorOutput.id">
-<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.id" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="core.types.InputTokensDetails.cached_tokens">
+<span class="sig-name descname"><span class="pre">cached_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#core.types.InputTokensDetails.cached_tokens" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.types.OutputTokensDetails">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">OutputTokensDetails</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reasoning_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#OutputTokensDetails"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.OutputTokensDetails" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Details about output tokens used in a response</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.OutputTokensDetails.reasoning_tokens">
+<span class="sig-name descname"><span class="pre">reasoning_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#core.types.OutputTokensDetails.reasoning_tokens" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.types.ResponseUsage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ResponseUsage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_tokens:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_tokens:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tokens:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_tokens_details:</span> <span class="pre">~core.types.InputTokensDetails</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_tokens_details:</span> <span class="pre">~core.types.OutputTokensDetails</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#ResponseUsage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.ResponseUsage" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Usage information for a response, including token counts, in sync with OpenAI response usage api spec at openai/types/response_usage.py</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.ResponseUsage.input_tokens">
+<span class="sig-name descname"><span class="pre">input_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#core.types.ResponseUsage.input_tokens" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.GeneratorOutput.data">
-<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T_co</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.data" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="core.types.ResponseUsage.output_tokens">
+<span class="sig-name descname"><span class="pre">output_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#core.types.ResponseUsage.output_tokens" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.GeneratorOutput.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.error" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="core.types.ResponseUsage.total_tokens">
+<span class="sig-name descname"><span class="pre">total_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#core.types.ResponseUsage.total_tokens" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.GeneratorOutput.usage">
-<span class="sig-name descname"><span class="pre">usage</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#core.types.CompletionUsage" title="core.types.CompletionUsage"><span class="pre">CompletionUsage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.usage" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="core.types.ResponseUsage.input_tokens_details">
+<span class="sig-name descname"><span class="pre">input_tokens_details</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#core.types.InputTokensDetails" title="core.types.InputTokensDetails"><span class="pre">InputTokensDetails</span></a></em><a class="headerlink" href="#core.types.ResponseUsage.input_tokens_details" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.GeneratorOutput.raw_response">
-<span class="sig-name descname"><span class="pre">raw_response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.raw_response" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.GeneratorOutput.metadata">
-<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.metadata" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="core.types.ResponseUsage.output_tokens_details">
+<span class="sig-name descname"><span class="pre">output_tokens_details</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#core.types.OutputTokensDetails" title="core.types.OutputTokensDetails"><span class="pre">OutputTokensDetails</span></a></em><a class="headerlink" href="#core.types.ResponseUsage.output_tokens_details" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -887,14 +913,9 @@ The returned callable raises a TypeError when invoked, indicating a required fie
 
 <dl class="py class">
 <dt class="sig sig-object py" id="core.types.FunctionDefinition">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FunctionDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_instance:</span> <span class="pre">~typing.Any</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func_name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">required_field&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func_desc:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func_parameters:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#FunctionDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.FunctionDefinition" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FunctionDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">required_field&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func_desc:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func_parameters:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#FunctionDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.FunctionDefinition" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
 <p>The data modeling of a function definition, including the name, description, and parameters.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.FunctionDefinition.class_instance">
-<span class="sig-name descname"><span class="pre">class_instance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.FunctionDefinition.class_instance" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="core.types.FunctionDefinition.func_name">
 <span class="sig-name descname"><span class="pre">func_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#core.types.FunctionDefinition.func_name" title="Link to this definition">¶</a></dt>
@@ -1023,6 +1044,65 @@ The returned callable raises a TypeError when invoked, indicating a required fie
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="core.types.GeneratorOutput">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeneratorOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T_co</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thinking</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_use</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.Function" title="core.types.Function"><span class="pre">Function</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.CompletionUsage" title="core.types.CompletionUsage"><span class="pre">CompletionUsage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#GeneratorOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.GeneratorOutput" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T_co</span></code>]</p>
+<p>The output data class for the Generator component.
+We can not control its output 100%, so we use this to track the error_message and
+allow the raw string output to be passed through.</p>
+<p>(1) When model predict and output processors are both without error,
+we have data as the final output, error as None.
+(2) When either model predict or output processors have error,
+we have data as None, error as the error message.</p>
+<p>Raw_response will depends on the model predict.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.GeneratorOutput.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.GeneratorOutput.data">
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T_co</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.GeneratorOutput.thinking">
+<span class="sig-name descname"><span class="pre">thinking</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.thinking" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.GeneratorOutput.tool_use">
+<span class="sig-name descname"><span class="pre">tool_use</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#core.types.Function" title="core.types.Function"><span class="pre">Function</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.tool_use" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.GeneratorOutput.error">
+<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.GeneratorOutput.usage">
+<span class="sig-name descname"><span class="pre">usage</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#core.types.CompletionUsage" title="core.types.CompletionUsage"><span class="pre">CompletionUsage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.usage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.GeneratorOutput.raw_response">
+<span class="sig-name descname"><span class="pre">raw_response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.raw_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.GeneratorOutput.api_response">
+<span class="sig-name descname"><span class="pre">api_response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.api_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.GeneratorOutput.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.metadata" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="core.types.FunctionExpression">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FunctionExpression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thought:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#FunctionExpression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.FunctionExpression" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
@@ -1109,7 +1189,7 @@ The returned callable raises a TypeError when invoked, indicating a required fie
 
 <dl class="py class">
 <dt class="sig sig-object py" id="core.types.FunctionOutput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FunctionOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.Function" title="core.types.Function"><span class="pre">Function</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#core.types.FunctionExpression" title="core.types.FunctionExpression"><span class="pre">FunctionExpression</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsed_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.Function" title="core.types.Function"><span class="pre">Function</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#FunctionOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.FunctionOutput" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FunctionOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.Function" title="core.types.Function"><span class="pre">Function</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#core.types.FunctionExpression" title="core.types.FunctionExpression"><span class="pre">FunctionExpression</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsed_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.Function" title="core.types.Function"><span class="pre">Function</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Coroutine</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#FunctionOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.FunctionOutput" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
 <p>The output of a tool, which could be a function, a class, or a module.</p>
 <dl class="py attribute">
@@ -1129,7 +1209,7 @@ The returned callable raises a TypeError when invoked, indicating a required fie
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.FunctionOutput.output">
-<span class="sig-name descname"><span class="pre">output</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.FunctionOutput.output" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">output</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Coroutine</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.FunctionOutput.output" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1491,6 +1571,7 @@ record or history.</p>
 <li><a class="reference internal" href="#core.types.ModelType"><code class="docutils literal notranslate"><span class="pre">ModelType</span></code></a><ul>
 <li><a class="reference internal" href="#core.types.ModelType.EMBEDDER"><code class="docutils literal notranslate"><span class="pre">ModelType.EMBEDDER</span></code></a></li>
 <li><a class="reference internal" href="#core.types.ModelType.LLM"><code class="docutils literal notranslate"><span class="pre">ModelType.LLM</span></code></a></li>
+<li><a class="reference internal" href="#core.types.ModelType.LLM_REASONING"><code class="docutils literal notranslate"><span class="pre">ModelType.LLM_REASONING</span></code></a></li>
 <li><a class="reference internal" href="#core.types.ModelType.RERANKER"><code class="docutils literal notranslate"><span class="pre">ModelType.RERANKER</span></code></a></li>
 <li><a class="reference internal" href="#core.types.ModelType.IMAGE_GENERATION"><code class="docutils literal notranslate"><span class="pre">ModelType.IMAGE_GENERATION</span></code></a></li>
 <li><a class="reference internal" href="#core.types.ModelType.UNDEFINED"><code class="docutils literal notranslate"><span class="pre">ModelType.UNDEFINED</span></code></a></li>
@@ -1501,7 +1582,6 @@ record or history.</p>
 <li><a class="reference internal" href="#core.types.ModelClientType.TRANSFORMERS"><code class="docutils literal notranslate"><span class="pre">ModelClientType.TRANSFORMERS</span></code></a></li>
 <li><a class="reference internal" href="#core.types.ModelClientType.ANTHROPIC"><code class="docutils literal notranslate"><span class="pre">ModelClientType.ANTHROPIC</span></code></a></li>
 <li><a class="reference internal" href="#core.types.ModelClientType.GROQ"><code class="docutils literal notranslate"><span class="pre">ModelClientType.GROQ</span></code></a></li>
-<li><a class="reference internal" href="#core.types.ModelClientType.OPENAI"><code class="docutils literal notranslate"><span class="pre">ModelClientType.OPENAI</span></code></a></li>
 <li><a class="reference internal" href="#core.types.ModelClientType.GOOGLE_GENAI"><code class="docutils literal notranslate"><span class="pre">ModelClientType.GOOGLE_GENAI</span></code></a></li>
 <li><a class="reference internal" href="#core.types.ModelClientType.OLLAMA"><code class="docutils literal notranslate"><span class="pre">ModelClientType.OLLAMA</span></code></a></li>
 </ul>
@@ -1541,13 +1621,20 @@ record or history.</p>
 <li><a class="reference internal" href="#core.types.CompletionUsage.total_tokens"><code class="docutils literal notranslate"><span class="pre">CompletionUsage.total_tokens</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#core.types.GeneratorOutput"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code></a><ul>
-<li><a class="reference internal" href="#core.types.GeneratorOutput.id"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.id</span></code></a></li>
-<li><a class="reference internal" href="#core.types.GeneratorOutput.data"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.data</span></code></a></li>
-<li><a class="reference internal" href="#core.types.GeneratorOutput.error"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.error</span></code></a></li>
-<li><a class="reference internal" href="#core.types.GeneratorOutput.usage"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.usage</span></code></a></li>
-<li><a class="reference internal" href="#core.types.GeneratorOutput.raw_response"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.raw_response</span></code></a></li>
-<li><a class="reference internal" href="#core.types.GeneratorOutput.metadata"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.metadata</span></code></a></li>
+<li><a class="reference internal" href="#core.types.InputTokensDetails"><code class="docutils literal notranslate"><span class="pre">InputTokensDetails</span></code></a><ul>
+<li><a class="reference internal" href="#core.types.InputTokensDetails.cached_tokens"><code class="docutils literal notranslate"><span class="pre">InputTokensDetails.cached_tokens</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core.types.OutputTokensDetails"><code class="docutils literal notranslate"><span class="pre">OutputTokensDetails</span></code></a><ul>
+<li><a class="reference internal" href="#core.types.OutputTokensDetails.reasoning_tokens"><code class="docutils literal notranslate"><span class="pre">OutputTokensDetails.reasoning_tokens</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core.types.ResponseUsage"><code class="docutils literal notranslate"><span class="pre">ResponseUsage</span></code></a><ul>
+<li><a class="reference internal" href="#core.types.ResponseUsage.input_tokens"><code class="docutils literal notranslate"><span class="pre">ResponseUsage.input_tokens</span></code></a></li>
+<li><a class="reference internal" href="#core.types.ResponseUsage.output_tokens"><code class="docutils literal notranslate"><span class="pre">ResponseUsage.output_tokens</span></code></a></li>
+<li><a class="reference internal" href="#core.types.ResponseUsage.total_tokens"><code class="docutils literal notranslate"><span class="pre">ResponseUsage.total_tokens</span></code></a></li>
+<li><a class="reference internal" href="#core.types.ResponseUsage.input_tokens_details"><code class="docutils literal notranslate"><span class="pre">ResponseUsage.input_tokens_details</span></code></a></li>
+<li><a class="reference internal" href="#core.types.ResponseUsage.output_tokens_details"><code class="docutils literal notranslate"><span class="pre">ResponseUsage.output_tokens_details</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#core.types.RetrieverOutput"><code class="docutils literal notranslate"><span class="pre">RetrieverOutput</span></code></a><ul>
@@ -1559,7 +1646,6 @@ record or history.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#core.types.FunctionDefinition"><code class="docutils literal notranslate"><span class="pre">FunctionDefinition</span></code></a><ul>
-<li><a class="reference internal" href="#core.types.FunctionDefinition.class_instance"><code class="docutils literal notranslate"><span class="pre">FunctionDefinition.class_instance</span></code></a></li>
 <li><a class="reference internal" href="#core.types.FunctionDefinition.func_name"><code class="docutils literal notranslate"><span class="pre">FunctionDefinition.func_name()</span></code></a></li>
 <li><a class="reference internal" href="#core.types.FunctionDefinition.func_desc"><code class="docutils literal notranslate"><span class="pre">FunctionDefinition.func_desc</span></code></a></li>
 <li><a class="reference internal" href="#core.types.FunctionDefinition.func_parameters"><code class="docutils literal notranslate"><span class="pre">FunctionDefinition.func_parameters</span></code></a></li>
@@ -1572,6 +1658,18 @@ record or history.</p>
 <li><a class="reference internal" href="#core.types.Function.args"><code class="docutils literal notranslate"><span class="pre">Function.args</span></code></a></li>
 <li><a class="reference internal" href="#core.types.Function.kwargs"><code class="docutils literal notranslate"><span class="pre">Function.kwargs</span></code></a></li>
 <li><a class="reference internal" href="#core.types.Function.from_function"><code class="docutils literal notranslate"><span class="pre">Function.from_function()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core.types.GeneratorOutput"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code></a><ul>
+<li><a class="reference internal" href="#core.types.GeneratorOutput.id"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.id</span></code></a></li>
+<li><a class="reference internal" href="#core.types.GeneratorOutput.data"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.data</span></code></a></li>
+<li><a class="reference internal" href="#core.types.GeneratorOutput.thinking"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.thinking</span></code></a></li>
+<li><a class="reference internal" href="#core.types.GeneratorOutput.tool_use"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.tool_use</span></code></a></li>
+<li><a class="reference internal" href="#core.types.GeneratorOutput.error"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.error</span></code></a></li>
+<li><a class="reference internal" href="#core.types.GeneratorOutput.usage"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.usage</span></code></a></li>
+<li><a class="reference internal" href="#core.types.GeneratorOutput.raw_response"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.raw_response</span></code></a></li>
+<li><a class="reference internal" href="#core.types.GeneratorOutput.api_response"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.api_response</span></code></a></li>
+<li><a class="reference internal" href="#core.types.GeneratorOutput.metadata"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.metadata</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#core.types.FunctionExpression"><code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code></a><ul>

@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -219,18 +219,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -441,231 +446,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-components.model_client.openai_client">
-<span id="openai-client"></span><span id="components-model-client-openai-client"></span><h1>openai_client<a class="headerlink" href="#module-components.model_client.openai_client" title="Link to this heading">¶</a></h1>
-<p>OpenAI ModelClient integration.</p>
-<p class="rubric">Functions</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.openai_client.estimate_token_count" title="components.model_client.openai_client.estimate_token_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_token_count</span></code></a>(text)</p></td>
-<td><p>Estimate the token count of a given text.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.openai_client.get_all_messages_content" title="components.model_client.openai_client.get_all_messages_content"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_messages_content</span></code></a>(completion)</p></td>
-<td><p>When the n &gt; 1, get all the messages content.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.openai_client.get_first_message_content" title="components.model_client.openai_client.get_first_message_content"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_first_message_content</span></code></a>(completion)</p></td>
-<td><p>When we only need the content of the first message.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.openai_client.get_probabilities" title="components.model_client.openai_client.get_probabilities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_probabilities</span></code></a>(completion)</p></td>
-<td><p>Get the probabilities of each token in the completion.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.openai_client.handle_streaming_response" title="components.model_client.openai_client.handle_streaming_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_streaming_response</span></code></a>(generator)</p></td>
-<td><p>Handle the streaming response.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.openai_client.parse_stream_response" title="components.model_client.openai_client.parse_stream_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_stream_response</span></code></a>(completion)</p></td>
-<td><p>Parse the response of the stream API.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Classes</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OpenAIClient</span></code></a>([api_key, ...])</p></td>
-<td><p>A component wrapper for the OpenAI API client.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py function">
-<dt class="sig sig-object py" id="components.model_client.openai_client.get_first_message_content">
-<span class="sig-name descname"><span class="pre">get_first_message_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ChatCompletion</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#get_first_message_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.get_first_message_content" title="Link to this definition">¶</a></dt>
-<dd><p>When we only need the content of the first message.
-It is the default parser for chat completion.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="components.model_client.openai_client.estimate_token_count">
-<span class="sig-name descname"><span class="pre">estimate_token_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#estimate_token_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.estimate_token_count" title="Link to this definition">¶</a></dt>
-<dd><p>Estimate the token count of a given text.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The text to estimate token count for.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Estimated token count.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="components.model_client.openai_client.parse_stream_response">
-<span class="sig-name descname"><span class="pre">parse_stream_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ChatCompletionChunk</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#parse_stream_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.parse_stream_response" title="Link to this definition">¶</a></dt>
-<dd><p>Parse the response of the stream API.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="components.model_client.openai_client.handle_streaming_response">
-<span class="sig-name descname"><span class="pre">handle_streaming_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Stream</span><span class="p"><span class="pre">[</span></span><span class="pre">ChatCompletionChunk</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#handle_streaming_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.handle_streaming_response" title="Link to this definition">¶</a></dt>
-<dd><p>Handle the streaming response.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="components.model_client.openai_client.get_all_messages_content">
-<span class="sig-name descname"><span class="pre">get_all_messages_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ChatCompletion</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#get_all_messages_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.get_all_messages_content" title="Link to this definition">¶</a></dt>
-<dd><p>When the n &gt; 1, get all the messages content.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="components.model_client.openai_client.get_probabilities">
-<span class="sig-name descname"><span class="pre">get_probabilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ChatCompletion</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">TokenLogProb</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#get_probabilities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.get_probabilities" title="Link to this definition">¶</a></dt>
-<dd><p>Get the probabilities of each token in the completion.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="components.model_client.openai_client.OpenAIClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">OpenAIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chat_completion_parser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Completion</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'text'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'messages'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://api.openai.com/v1/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_api_key_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'OPENAI_API_KEY'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#OpenAIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.OpenAIClient" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClient</span></code></p>
-<p>A component wrapper for the OpenAI API client.</p>
-<p>Supports both embedding and chat completion APIs, including multimodal capabilities.</p>
-<p>Users can:
-1. Simplify use of <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and <code class="docutils literal notranslate"><span class="pre">Generator</span></code> components by passing <cite>OpenAIClient()</cite> as the <cite>model_client</cite>.
-2. Use this as a reference to create their own API client or extend this class by copying and modifying the code.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>We recommend avoiding <cite>response_format</cite> to enforce output data type or <cite>tools</cite> and <cite>tool_choice</cite> in <cite>model_kwargs</cite> when calling the API.
-OpenAI’s internal formatting and added prompts are unknown. Instead:
-- Use <a class="reference internal" href="components.output_parsers.html#components-output-parsers"><span class="std std-ref">OutputParser</span></a> for response parsing and formatting.</p>
-<p>For multimodal inputs, provide images in <cite>model_kwargs[“images”]</cite> as a path, URL, or list of them.
-The model must support vision capabilities (e.g., <cite>gpt-4o</cite>, <cite>gpt-4o-mini</cite>, <cite>o1</cite>, <cite>o1-mini</cite>).</p>
-<p>For image generation, use <cite>model_type=ModelType.IMAGE_GENERATION</cite> and provide:
-- model: <cite>“dall-e-3”</cite> or <cite>“dall-e-2”</cite>
-- prompt: Text description of the image to generate
-- size: <cite>“1024x1024”</cite>, <cite>“1024x1792”</cite>, or <cite>“1792x1024”</cite> for DALL-E 3; <cite>“256x256”</cite>, <cite>“512x512”</cite>, or <cite>“1024x1024”</cite> for DALL-E 2
-- quality: <cite>“standard”</cite> or <cite>“hd”</cite> (DALL-E 3 only)
-- n: Number of images to generate (1 for DALL-E 3, 1-10 for DALL-E 2)
-- response_format: <cite>“url”</cite> or <cite>“b64_json”</cite></p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>api_key</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – OpenAI API key. Defaults to <cite>None</cite>.</p></li>
-<li><p><strong>chat_completion_parser</strong> (<em>Callable</em><em>[</em><em>[</em><em>Completion</em><em>]</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – A function to parse the chat completion into a <cite>str</cite>. Defaults to <cite>None</cite>.
-The default parser is <cite>get_first_message_content</cite>.</p></li>
-<li><p><strong>base_url</strong> (<em>str</em>) – The API base URL to use when initializing the client.
-Defaults to <cite>“https://api.openai.com”</cite>, but can be customized for third-party API providers or self-hosted models.</p></li>
-<li><p><strong>env_api_key_name</strong> (<em>str</em>) – The environment variable name for the API key. Defaults to <cite>“OPENAI_API_KEY”</cite>.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<ul class="simple">
-<li><p>OpenAI API Overview: <a class="reference external" href="https://platform.openai.com/docs/introduction">https://platform.openai.com/docs/introduction</a></p></li>
-<li><p>Embeddings Guide: <a class="reference external" href="https://platform.openai.com/docs/guides/embeddings">https://platform.openai.com/docs/guides/embeddings</a></p></li>
-<li><p>Chat Completion Models: <a class="reference external" href="https://platform.openai.com/docs/guides/text-generation">https://platform.openai.com/docs/guides/text-generation</a></p></li>
-<li><p>Vision Models: <a class="reference external" href="https://platform.openai.com/docs/guides/vision">https://platform.openai.com/docs/guides/vision</a></p></li>
-<li><p>Image Generation: <a class="reference external" href="https://platform.openai.com/docs/guides/images">https://platform.openai.com/docs/guides/images</a></p></li>
-</ul>
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.openai_client.OpenAIClient.init_sync_client">
-<span class="sig-name descname"><span class="pre">init_sync_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#OpenAIClient.init_sync_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.OpenAIClient.init_sync_client" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.openai_client.OpenAIClient.init_async_client">
-<span class="sig-name descname"><span class="pre">init_async_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#OpenAIClient.init_async_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.OpenAIClient.init_async_client" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.openai_client.OpenAIClient.parse_chat_completion">
-<span class="sig-name descname"><span class="pre">parse_chat_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ChatCompletion</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">ChatCompletionChunk</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#OpenAIClient.parse_chat_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.OpenAIClient.parse_chat_completion" title="Link to this definition">¶</a></dt>
-<dd><p>Parse the completion, and put it into the raw_response.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.openai_client.OpenAIClient.track_completion_usage">
-<span class="sig-name descname"><span class="pre">track_completion_usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ChatCompletion</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">ChatCompletionChunk</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">CompletionUsage</span></span></span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#OpenAIClient.track_completion_usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.OpenAIClient.track_completion_usage" title="Link to this definition">¶</a></dt>
-<dd><p>Track the chat completion usage. Use OpenAI standard API for tracking.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.openai_client.OpenAIClient.parse_embedding_response">
-<span class="sig-name descname"><span class="pre">parse_embedding_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CreateEmbeddingResponse</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EmbedderOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#OpenAIClient.parse_embedding_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.OpenAIClient.parse_embedding_response" title="Link to this definition">¶</a></dt>
-<dd><p>Parse the embedding response to a structure Adalflow components can understand.</p>
-<p>Should be called in <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs">
-<span class="sig-name descname"><span class="pre">convert_inputs_to_api_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#OpenAIClient.convert_inputs_to_api_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs" title="Link to this definition">¶</a></dt>
-<dd><p>Specify the API input type and output api_kwargs that will be used in _call and _acall methods.
-Convert the Component’s standard input, and system_input(chat model) and model_kwargs into API-specific format.
-For multimodal inputs, images can be provided in model_kwargs[“images”] as a string path, URL, or list of them.
-The model specified in model_kwargs[“model”] must support multimodal capabilities when using images.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>input</strong> – The input text or messages to process</p></li>
-<li><p><strong>model_kwargs</strong> – Additional parameters including:
-- images: Optional image source(s) as path, URL, or list of them
-- detail: Image detail level (‘auto’, ‘low’, or ‘high’), defaults to ‘auto’
-- model: The model to use (must support multimodal inputs if images are provided)</p></li>
-<li><p><strong>model_type</strong> – The type of model (EMBEDDER or LLM)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>API-specific kwargs for the model call</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.openai_client.OpenAIClient.parse_image_generation_response">
-<span class="sig-name descname"><span class="pre">parse_image_generation_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Image</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#OpenAIClient.parse_image_generation_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.OpenAIClient.parse_image_generation_response" title="Link to this definition">¶</a></dt>
-<dd><p>Parse the image generation response into a GeneratorOutput.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.openai_client.OpenAIClient.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#OpenAIClient.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.OpenAIClient.call" title="Link to this definition">¶</a></dt>
-<dd><p>kwargs is the combined input and model_kwargs.  Support streaming call.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.openai_client.OpenAIClient.acall">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#OpenAIClient.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.OpenAIClient.acall" title="Link to this definition">¶</a></dt>
-<dd><p>kwargs is the combined input and model_kwargs</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.openai_client.OpenAIClient.from_dict">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#OpenAIClient.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.OpenAIClient.from_dict" title="Link to this definition">¶</a></dt>
-<dd><p>Create an instance from previously serialized data
-using <a class="reference internal" href="#components.model_client.openai_client.OpenAIClient.to_dict" title="components.model_client.openai_client.OpenAIClient.to_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_dict()</span></code></a> method.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.openai_client.OpenAIClient.to_dict">
-<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/components/model_client/openai_client.html#OpenAIClient.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.openai_client.OpenAIClient.to_dict" title="Link to this definition">¶</a></dt>
-<dd><p>Convert the component to a dictionary.</p>
-</dd></dl>
-
-</dd></dl>
-
+          <section id="openai-client">
+<span id="components-model-client-openai-client"></span><h1>openai_client<a class="headerlink" href="#openai-client" title="Link to this heading">¶</a></h1>
 </section>
 
         </article>
@@ -710,46 +498,8 @@ using <a class="reference internal" href="#components.model_client.openai_client
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">openai_client</a><ul>
-<li><a class="reference internal" href="#components.model_client.openai_client.get_first_message_content"><code class="docutils literal notranslate"><span class="pre">get_first_message_content()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.estimate_token_count"><code class="docutils literal notranslate"><span class="pre">estimate_token_count()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.parse_stream_response"><code class="docutils literal notranslate"><span class="pre">parse_stream_response()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.handle_streaming_response"><code class="docutils literal notranslate"><span class="pre">handle_streaming_response()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.get_all_messages_content"><code class="docutils literal notranslate"><span class="pre">get_all_messages_content()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.get_probabilities"><code class="docutils literal notranslate"><span class="pre">get_probabilities()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.OpenAIClient"><code class="docutils literal notranslate"><span class="pre">OpenAIClient</span></code></a><ul>
-<li><a class="reference internal" href="#components.model_client.openai_client.OpenAIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.init_sync_client()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.OpenAIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.init_async_client()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.OpenAIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.parse_chat_completion()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.OpenAIClient.track_completion_usage"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.track_completion_usage()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.OpenAIClient.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.parse_embedding_response()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.OpenAIClient.parse_image_generation_response"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.parse_image_generation_response()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.OpenAIClient.call"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.call()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.OpenAIClient.acall"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.acall()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.OpenAIClient.from_dict"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.from_dict()</span></code></a></li>
-<li><a class="reference internal" href="#components.model_client.openai_client.OpenAIClient.to_dict"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.to_dict()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

@@ -218,18 +218,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -451,11 +456,12 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">iscoroutinefunction</span><span class="p">,</span> <span class="n">ismethod</span><span class="p">,</span> <span class="n">isfunction</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">ismethod</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">nest_asyncio</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 
 
 <span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
@@ -509,7 +515,23 @@
 
 
 
-<span class="n">FunctionType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span>
+<span class="c1"># Specific function types supported by FunctionTool:</span>
+<span class="c1"># - Regular functions (sync/async)</span>
+<span class="c1"># - Generator functions (sync/async) </span>
+<span class="c1"># - Bound methods (class methods)</span>
+<span class="c1"># - FunGradComponent instances (trainable components)</span>
+
+<div class="viewcode-block" id="FunctionType">
+<a class="viewcode-back" href="../../apis/core/core.func_tool.html#core.func_tool.FunctionType">[docs]</a>
+<span class="k">class</span> <span class="nc">FunctionType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enumeration of the 4 core function types supported by FunctionTool.&quot;&quot;&quot;</span>
+    
+    <span class="n">SYNC</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>              <span class="c1"># Regular sync function: def func(): return value</span>
+    <span class="n">ASYNC</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>             <span class="c1"># Async function: async def func(): return value  </span>
+    <span class="n">SYNC_GENERATOR</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>    <span class="c1"># Sync generator: def func(): yield value</span>
+    <span class="n">ASYNC_GENERATOR</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>   <span class="c1"># Async generator: async def func(): yield value</span></div>
+
+
 
 
 <span class="c1"># TODO: improve the support for async functions, similarly a component might be used as a tool</span>
@@ -518,7 +540,7 @@
 <span class="k">class</span> <span class="nc">FunctionTool</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Describing and Parsing(to LLM) and executing a function.</span>
 
-<span class="s2">    Supports both normal callable functions and methods(__call__) of a component.</span>
+<span class="s2">    Supports both normal callable functions and class methods.</span>
 <span class="s2">    When component is used, we support both the training and eval mode.</span>
 
 <span class="s2">    Note:</span>
@@ -527,7 +549,6 @@
 
 <span class="s2">    Args:</span>
 <span class="s2">        fn (Callable): The function to be executed.</span>
-<span class="s2">        component (Component, optional): The component that owns the function. Defaults to None.</span>
 <span class="s2">        definition (FunctionDefinition, optional): The definition of the function. Defaults to None.</span>
 
 
@@ -573,10 +594,18 @@
 <span class="s2">    A FunctionTool allows other GradComponent(as a tool) to pass through correctly.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># key attributes:</span>
+    <span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span>
+    <span class="n">definition</span><span class="p">:</span> <span class="n">FunctionDefinition</span>
+    <span class="n">function_type</span><span class="p">:</span> <span class="n">FunctionType</span>
+
+    <span class="c1"># not used in particular, but only for training control</span>
+    <span class="n">class_instance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span> 
+
+    <span class="c1"># it inherits the training attribute from Component</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">fn</span><span class="p">:</span> <span class="n">FunctionType</span><span class="p">,</span>
-        <span class="n">component</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Component</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">FunGradComponent</span><span class="p">],</span>
         <span class="n">definition</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FunctionDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -585,14 +614,14 @@
         <span class="n">nest_asyncio</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span>
         <span class="k">assert</span> <span class="n">fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;fn must be provided&quot;</span>
 
-        <span class="c1"># self.fn = fn  # it can be a function or component</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">component</span> <span class="o">=</span> <span class="n">component</span>  <span class="c1"># pass it here to control the training mode</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">Component</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="fm">__call__</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_is_async</span> <span class="o">=</span> <span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">Component</span><span class="p">):</span>
+        <span class="c1"># TODO: support FunGradComponent later.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">detect_function_type</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_async</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_type</span> <span class="ow">in</span> <span class="p">[</span><span class="n">FunctionType</span><span class="o">.</span><span class="n">ASYNC</span><span class="p">,</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">ASYNC_GENERATOR</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autodetect_class_instance</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">FunGradComponent</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FunctionTool: </span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s2"> is a component&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">definition</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">definition</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_fn_definition_for_grad_component</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
             <span class="p">)</span>
@@ -601,9 +630,72 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_async</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FunctionTool: </span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s2"> is async: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_async</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_async</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_async</span>
+
+
+
+<div class="viewcode-block" id="FunctionTool.detect_function_type">
+<a class="viewcode-back" href="../../apis/core/core.func_tool.html#core.func_tool.FunctionTool.detect_function_type">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">detect_function_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detect the function type of a given callable.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            fn: The callable to analyze</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            FunctionType: The detected function type</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the function type cannot be determined or is not supported</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">fn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Function cannot be None&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check for async generator functions</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isasyncgenfunction</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">ASYNC_GENERATOR</span>
+            
+        <span class="c1"># Check for sync generator functions</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isgeneratorfunction</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">SYNC_GENERATOR</span>
+            
+        <span class="c1"># Check for async functions (coroutines)</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">ASYNC</span>
+            
+        <span class="c1"># Check for regular functions</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isfunction</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span> <span class="ow">or</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">SYNC</span>
+            
+        <span class="c1"># Check for callable objects (like classes with __call__)</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+            <span class="c1"># For callable objects, we need to check their __call__ method</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
+                <span class="n">call_method</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="fm">__call__</span>
+                <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">(</span><span class="n">call_method</span><span class="p">):</span>
+                    <span class="c1"># It&#39;s a bound method, check the underlying function</span>
+                    <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isasyncgenfunction</span><span class="p">(</span><span class="n">call_method</span><span class="o">.</span><span class="vm">__func__</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">ASYNC_GENERATOR</span>
+                    <span class="k">elif</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isgeneratorfunction</span><span class="p">(</span><span class="n">call_method</span><span class="o">.</span><span class="vm">__func__</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">SYNC_GENERATOR</span>
+                    <span class="k">elif</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">call_method</span><span class="o">.</span><span class="vm">__func__</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">ASYNC</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">SYNC</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># It&#39;s a function, check directly</span>
+                    <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isasyncgenfunction</span><span class="p">(</span><span class="n">call_method</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">ASYNC_GENERATOR</span>
+                    <span class="k">elif</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isgeneratorfunction</span><span class="p">(</span><span class="n">call_method</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">SYNC_GENERATOR</span>
+                    <span class="k">elif</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">call_method</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">ASYNC</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">SYNC</span>
+        
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot determine function type for </span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_create_fn_definition_for_grad_component</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">:</span> <span class="n">FunGradComponent</span>
@@ -611,7 +703,11 @@
         <span class="n">name</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">fun_name</span>
         <span class="n">docstring</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">doc_string</span>
         <span class="n">signature_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">fun</span><span class="p">))</span>
-        <span class="n">instance</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">cls_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">ismethod</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">fun</span><span class="p">):</span>
+            <span class="n">cls_name</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="vm">__self__</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="n">cls_name</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="k">if</span> <span class="n">cls_name</span> <span class="k">else</span> <span class="n">name</span>
         <span class="k">return</span> <span class="n">FunctionDefinition</span><span class="p">(</span>
             <span class="n">func_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">func_desc</span><span class="o">=</span><span class="p">(</span>
@@ -620,8 +716,12 @@
                 <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">signature_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">Docstring:</span><span class="si">{</span><span class="n">docstring</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">),</span>
             <span class="n">func_parameters</span><span class="o">=</span><span class="n">get_fun_schema</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">fn</span><span class="o">.</span><span class="n">fun</span><span class="p">),</span>
-            <span class="n">class_instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
         <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_autodetect_class_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">ismethod</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__self__</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_create_fn_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionDefinition</span><span class="p">:</span>
 
@@ -631,17 +731,8 @@
 
         <span class="c1"># Get the class that owns the method, if applicable</span>
         <span class="n">cls_name</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">instance</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">ismethod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">):</span>  <span class="c1"># Check if it’s a bound method</span>
-            <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="o">.</span><span class="vm">__self__</span>
-            <span class="n">instance</span> <span class="o">=</span> <span class="n">find_instance_name_from_self</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;__call__&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">instance</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Please provide a name for the instance in the calling context&quot;</span>
-                <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ismethod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">):</span>  <span class="c1"># Check if it&#39;s a bound method</span>
             <span class="n">cls_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="o">.</span><span class="vm">__self__</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-        <span class="k">elif</span> <span class="n">isfunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">):</span>  <span class="c1"># Unbound method</span>
-            <span class="n">cls_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="o">.</span><span class="vm">__qualname__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="c1"># Build the description</span>
         <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">signature_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -653,11 +744,13 @@
         <span class="c1"># Get function parameters schema</span>
         <span class="n">fn_parameters</span> <span class="o">=</span> <span class="n">get_fun_schema</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
 
+        <span class="n">name</span> <span class="o">=</span> <span class="n">cls_name</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="k">if</span> <span class="n">cls_name</span> <span class="k">else</span> <span class="n">name</span>
+        <span class="c1"># create a unique identifier as the class method name </span>
+
         <span class="k">return</span> <span class="n">FunctionDefinition</span><span class="p">(</span>
             <span class="n">func_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">func_desc</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
             <span class="n">func_parameters</span><span class="o">=</span><span class="n">fn_parameters</span><span class="p">,</span>
-            <span class="n">class_instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="FunctionTool.forward">
@@ -667,58 +760,119 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bicall</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
+
+    <span class="k">def</span> <span class="nf">_call_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call a sync function.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_type</span> <span class="o">==</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">SYNC</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_type</span> <span class="o">==</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">ASYNC</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_running_in_event_loop</span><span class="p">():</span>
+                <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span>
+                <span class="n">task</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">loop</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_type</span> <span class="o">==</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">SYNC_GENERATOR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_type</span> <span class="o">==</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">ASYNC_GENERATOR</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_running_in_event_loop</span><span class="p">():</span>
+                <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span>
+                <span class="k">async</span> <span class="k">def</span> <span class="nf">collect_generator</span><span class="p">():</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">async</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">result</span>
+                <span class="n">task</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">collect_generator</span><span class="p">())</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">loop</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">output</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                 <span class="c1"># No event loop running, safe to create new one</span>
+                    <span class="k">async</span> <span class="k">def</span> <span class="nf">collect_generator</span><span class="p">():</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="k">async</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">result</span>
+                    <span class="n">output</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">collect_generator</span><span class="p">())</span>
+                    <span class="k">return</span> <span class="n">output</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported function type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">function_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="FunctionTool.call">
 <a class="viewcode-back" href="../../apis/core/core.func_tool.html#core.func_tool.FunctionTool.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute the function synchronously.</span>
-
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute the function synchronously, supporting all function types.</span>
+<span class="sd">        </span>
+<span class="sd">        This method provides a unified sync interface for all function types:</span>
+<span class="sd">        - SYNC: Calls the function directly</span>
+<span class="sd">        - ASYNC: Runs the coroutine in a new event loop (blocks until complete)</span>
+<span class="sd">        - SYNC_GENERATOR: Returns the generator object</span>
+<span class="sd">        - ASYNC_GENERATOR: Runs the async generator and collects all values into a list</span>
+<span class="sd">        </span>
+<span class="sd">        Warning: For async functions, this will block the current thread until completion.</span>
+<span class="sd">        For better performance with async functions, consider using acall() instead.</span>
+<span class="sd">        </span>
 <span class="sd">        Example:</span>
-
-<span class="sd">        .. code-block:: python</span>
-
-<span class="sd">            import time</span>
-<span class="sd">            def sync_function_1():</span>
-<span class="sd">                time.sleep(1)</span>
-<span class="sd">                return &quot;Function 1 completed&quot;</span>
-
-<span class="sd">            tool_1 = FunctionTool(sync_function_1)</span>
-<span class="sd">            output = tool_1.call()</span>
+<span class="sd">            import asyncio</span>
+<span class="sd">            </span>
+<span class="sd">            async def async_func():</span>
+<span class="sd">                await asyncio.sleep(1)</span>
+<span class="sd">                return &quot;async result&quot;</span>
+<span class="sd">                </span>
+<span class="sd">            def sync_func():</span>
+<span class="sd">                return &quot;sync result&quot;</span>
+<span class="sd">                </span>
+<span class="sd">            tool1 = FunctionTool(async_func)</span>
+<span class="sd">            tool2 = FunctionTool(sync_func)</span>
+<span class="sd">            </span>
+<span class="sd">            # Both work synchronously</span>
+<span class="sd">            result1 = tool1.call()  # Blocks for 1 second</span>
+<span class="sd">            result2 = tool2.call()  # Returns immediately</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bicall</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_sync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error at calling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error at calling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
 
-        <span class="c1"># if self._is_async:</span>
-        <span class="c1">#     raise ValueError(&quot;FunctionTool is asynchronous, use acall instead&quot;)</span>
-        <span class="c1"># output, error = None, None</span>
-        <span class="c1"># try:</span>
-        <span class="c1">#     output = self.fn(*args, **kwargs)</span>
-        <span class="c1"># except Exception as e:</span>
-        <span class="c1">#     log.error(f&quot;Error at calling {self.fn}: {e}&quot;)</span>
-        <span class="c1">#     # raise ValueError(f&quot;Error: {e}&quot;)</span>
-        <span class="c1">#     error = str(e)</span>
-        <span class="c1"># return FunctionOutput(</span>
-        <span class="c1">#     name=self.definition.func_name,</span>
-        <span class="c1">#     # raw_input={&quot;args&quot;: args, &quot;kwargs&quot;: kwargs},</span>
-        <span class="c1">#     input=Function(name=self.definition.func_name, args=args, kwargs=kwargs),</span>
-        <span class="c1">#     output=output,</span>
-        <span class="c1">#     error=error,</span>
-        <span class="c1"># )</span>
+        <span class="c1"># Handle Parameter output (training mode)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;FunctionTool </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="si">}</span><span class="s2"> is in eval mode, but the output is Parameter&quot;</span>
+                <span class="p">)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">FunctionOutput</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="p">,</span>
+                <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span>
+                <span class="p">),</span>
+                <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">output</span>
+
+        <span class="c1"># Create FunctionOutput</span>
+        <span class="n">function_output</span> <span class="o">=</span> <span class="n">FunctionOutput</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="p">,</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">),</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+            <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;call output: </span><span class="si">{</span><span class="n">function_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">function_output</span></div>
+
 
 <div class="viewcode-block" id="FunctionTool.bicall">
 <a class="viewcode-back" href="../../apis/core/core.func_tool.html#core.func_tool.FunctionTool.bicall">[docs]</a>
     <span class="k">def</span> <span class="nf">bicall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FunctionOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute the function synchronously.</span>
-
-<span class="sd">        Example:</span>
-
-<span class="sd">        .. code-block:: python</span>
-
-<span class="sd">            import time</span>
-<span class="sd">            def sync_function_1():</span>
-<span class="sd">                time.sleep(1)</span>
-<span class="sd">                return &quot;Function 1 completed&quot;</span>
-
-<span class="sd">            tool_1 = FunctionTool(sync_function_1)</span>
-<span class="sd">            output = tool_1.call()</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;This should only be used in training, where a fun is required to be a FunGradComponent</span>
+<span class="sd">        where the output from function execution is a Parameter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_async</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;FunctionTool is asynchronous, use acall instead&quot;</span><span class="p">)</span>
@@ -727,9 +881,11 @@
         <span class="c1"># NOTE: special case:</span>
         <span class="c1"># self.fn can have both train and eval mode or untrainable as a function.</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># printc(f&quot;args: {args}, kwargs: {kwargs}, fn: {self.fn}&quot;, color=&quot;yellow&quot;)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bicall args: </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">, kwargs: </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2">, fn: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># TODO: might to support more types of functions</span>
             <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="c1"># printc(f&quot;output 1: {output}&quot;, color=&quot;yellow&quot;)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;output 1: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;output 1: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error at calling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">error</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error at calling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -749,149 +905,175 @@
                 <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">output</span>
-        <span class="c1"># printc(f&quot;output: {output}&quot;, color=&quot;yellow&quot;)</span>
-        <span class="k">return</span> <span class="n">FunctionOutput</span><span class="p">(</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="n">FunctionOutput</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="p">,</span>
-            <span class="c1"># raw_input={&quot;args&quot;: args, &quot;kwargs&quot;: kwargs},</span>
             <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">),</span>
             <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
             <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;function output: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span></div>
 
 
 <div class="viewcode-block" id="FunctionTool.acall">
 <a class="viewcode-back" href="../../apis/core/core.func_tool.html#core.func_tool.FunctionTool.acall">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute the function asynchronously.</span>
-
-<span class="sd">        Need to be called in an async function or using asyncio.run.</span>
-
-<span class="sd">        Example:</span>
-
-<span class="sd">        .. code-block:: python</span>
-
-<span class="sd">            import asyncio</span>
-<span class="sd">            async def async_function_1():</span>
-<span class="sd">                await asyncio.sleep(1)  # Simulate async work</span>
-<span class="sd">                return &quot;Function 1 completed&quot;</span>
-
-<span class="sd">            async def call_async_function():</span>
-<span class="sd">                tool_1 = FunctionTool(async_function_1)</span>
-<span class="sd">                output = await tool_1.acall()</span>
-
-<span class="sd">            asyncio.run(call_async_function())</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FunctionOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Async call the function. Handles all function types appropriately.</span>
+<span class="sd">        </span>
+<span class="sd">        For different function types:</span>
+<span class="sd">        - SYNC: Returns FunctionOutput with the result</span>
+<span class="sd">        - ASYNC: Awaits the coroutine and returns FunctionOutput with the result</span>
+<span class="sd">        - SYNC_GENERATOR: Returns FunctionOutput with the generator object</span>
+<span class="sd">        - ASYNC_GENERATOR: Returns FunctionOutput with the async generator object</span>
+<span class="sd">        </span>
+<span class="sd">        Note: For generators, users need to iterate over the generator themselves.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_async</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;FunctionTool is not asynchronous, use call instead&quot;</span><span class="p">)</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_type</span> <span class="o">==</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">SYNC</span><span class="p">:</span>
+                <span class="c1"># Sync function - call directly</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_type</span> <span class="o">==</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">ASYNC</span><span class="p">:</span>
+                <span class="c1"># Async function - await the coroutine</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_type</span> <span class="o">==</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">SYNC_GENERATOR</span><span class="p">:</span>
+                <span class="c1"># Sync generator - return the generator object</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_type</span> <span class="o">==</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">ASYNC_GENERATOR</span><span class="p">:</span>
+                <span class="c1"># Async generator - return the async generator object</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported function type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">function_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error at calling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">error</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error at calling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
 
-        <span class="k">return</span> <span class="n">FunctionOutput</span><span class="p">(</span>
+        <span class="c1"># Handle Parameter output (training mode)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;FunctionTool </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="si">}</span><span class="s2"> is in eval mode, but the output is Parameter&quot;</span>
+                <span class="p">)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">FunctionOutput</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="p">,</span>
+                <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span>
+                <span class="p">),</span>
+                <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">output</span>
+
+        <span class="n">function_output</span> <span class="o">=</span> <span class="n">FunctionOutput</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="p">,</span>
             <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">),</span>
             <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
             <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">function_output</span></div>
 
 
-<div class="viewcode-block" id="FunctionTool.execute">
-<a class="viewcode-back" href="../../apis/core/core.func_tool.html#core.func_tool.FunctionTool.execute">[docs]</a>
-    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute the function synchronously or asynchronously based on the function type.</span>
+    <span class="c1"># def execute(self, *args, **kwargs) -&gt; FunctionOutput:</span>
+    <span class="c1">#     r&quot;&quot;&quot;Execute the function synchronously or asynchronously based on the function type.</span>
 
-<span class="sd">        No matter of the function type, you can run the function using both asyncio and without asyncio.</span>
+    <span class="c1">#     No matter of the function type, you can run the function using both asyncio and without asyncio.</span>
 
 
-<span class="sd">        Use it with caution as it might block the event loop.</span>
+    <span class="c1">#     Use it with caution as it might block the event loop.</span>
 
-<span class="sd">        Example:</span>
+    <span class="c1">#     Example:</span>
 
-<span class="sd">        .. code-block:: python</span>
+    <span class="c1">#     .. code-block:: python</span>
 
-<span class="sd">            import asyncio</span>
-<span class="sd">            import time</span>
+    <span class="c1">#         import asyncio</span>
+    <span class="c1">#         import time</span>
 
-<span class="sd">            async def async_function_1():</span>
-<span class="sd">                await asyncio.sleep(1)</span>
-<span class="sd">                return &quot;Function 1 completed&quot;</span>
+    <span class="c1">#         async def async_function_1():</span>
+    <span class="c1">#             await asyncio.sleep(1)</span>
+    <span class="c1">#             return &quot;Function 1 completed&quot;</span>
 
-<span class="sd">            def sync_function_1():</span>
-<span class="sd">                time.sleep(1)</span>
-<span class="sd">                return &quot;Function 1 completed&quot;</span>
+    <span class="c1">#         def sync_function_1():</span>
+    <span class="c1">#             time.sleep(1)</span>
+    <span class="c1">#             return &quot;Function 1 completed&quot;</span>
 
-<span class="sd">            async def async_function_2():</span>
-<span class="sd">                await asyncio.sleep(2)</span>
-<span class="sd">                return &quot;Function 2 completed&quot;</span>
+    <span class="c1">#         async def async_function_2():</span>
+    <span class="c1">#             await asyncio.sleep(2)</span>
+    <span class="c1">#             return &quot;Function 2 completed&quot;</span>
 
-<span class="sd">            def sync_function_2():</span>
-<span class="sd">                time.sleep(2)</span>
-<span class="sd">                return &quot;Function 2 completed&quot;</span>
+    <span class="c1">#         def sync_function_2():</span>
+    <span class="c1">#             time.sleep(2)</span>
+    <span class="c1">#             return &quot;Function 2 completed&quot;</span>
 
-<span class="sd">            async_tool_1 = FunctionTool(async_function_1)</span>
-<span class="sd">            sync_tool_1 = FunctionTool(sync_function_2)</span>
-<span class="sd">            async_tool_2 = FunctionTool(async_function_2)</span>
-<span class="sd">            sync_tool_2 = FunctionTool(sync_function_2)</span>
+    <span class="c1">#         async_tool_1 = FunctionTool(async_function_1)</span>
+    <span class="c1">#         sync_tool_1 = FunctionTool(sync_function_2)</span>
+    <span class="c1">#         async_tool_2 = FunctionTool(async_function_2)</span>
+    <span class="c1">#         sync_tool_2 = FunctionTool(sync_function_2)</span>
 
-<span class="sd">            def run_sync_and_async_mix_without_wait():</span>
-<span class="sd">                # both sync and async tool can use execute</span>
-<span class="sd">                # sync tool can also use call</span>
-<span class="sd">                # takes 5 seconds (1+1+2) + overhead</span>
-<span class="sd">                start_time = time.time()</span>
-<span class="sd">                results = [</span>
-<span class="sd">                    async_tool_1.execute(),</span>
-<span class="sd">                    sync_tool_1.execute(),</span>
-<span class="sd">                    sync_tool_2.call(),</span>
-<span class="sd">                ]</span>
-<span class="sd">                end_time = time.time()</span>
-<span class="sd">                print(f&quot;run_sync_and_async_mix_without_wait time: {end_time - start_time}&quot;)</span>
-<span class="sd">                return results</span>
+    <span class="c1">#         def run_sync_and_async_mix_without_wait():</span>
+    <span class="c1">#             # both sync and async tool can use execute</span>
+    <span class="c1">#             # sync tool can also use call</span>
+    <span class="c1">#             # takes 5 seconds (1+1+2) + overhead</span>
+    <span class="c1">#             start_time = time.time()</span>
+    <span class="c1">#             results = [</span>
+    <span class="c1">#                 async_tool_1.execute(),</span>
+    <span class="c1">#                 sync_tool_1.execute(),</span>
+    <span class="c1">#                 sync_tool_2.call(),</span>
+    <span class="c1">#             ]</span>
+    <span class="c1">#             end_time = time.time()</span>
+    <span class="c1">#             print(f&quot;run_sync_and_async_mix_without_wait time: {end_time - start_time}&quot;)</span>
+    <span class="c1">#             return results</span>
 
-<span class="sd">            async def run_sync_and_async_mix():</span>
-<span class="sd">                # both sync and async tool can use execute&amp;to_thread</span>
-<span class="sd">                # async tool can also use acall without to_thread</span>
-<span class="sd">                # takes a bit over 2 seconds max(2)</span>
-<span class="sd">                start_time = time.time()</span>
-<span class="sd">                results = await asyncio.gather(</span>
-<span class="sd">                    async_tool_1.execute(),</span>
-<span class="sd">                    sync_tool_1.execute(),</span>
-<span class="sd">                    async_tool_2.acall(),</span>
-<span class="sd">                )</span>
-<span class="sd">                end_time = time.time()</span>
-<span class="sd">                print(f&quot;run_sync_and_async_mix time: {end_time - start_time}&quot;)</span>
-<span class="sd">                return results</span>
+    <span class="c1">#         async def run_sync_and_async_mix():</span>
+    <span class="c1">#             # both sync and async tool can use execute&amp;to_thread</span>
+    <span class="c1">#             # async tool can also use acall without to_thread</span>
+    <span class="c1">#             # takes a bit over 2 seconds max(2)</span>
+    <span class="c1">#             start_time = time.time()</span>
+    <span class="c1">#             results = await asyncio.gather(</span>
+    <span class="c1">#                 async_tool_1.execute(),</span>
+    <span class="c1">#                 sync_tool_1.execute(),</span>
+    <span class="c1">#                 async_tool_2.acall(),</span>
+    <span class="c1">#             )</span>
+    <span class="c1">#             end_time = time.time()</span>
+    <span class="c1">#             print(f&quot;run_sync_and_async_mix time: {end_time - start_time}&quot;)</span>
+    <span class="c1">#             return results</span>
 
-<span class="sd">            run_sync_and_async_mix_without_wait()</span>
-<span class="sd">            asyncio.run(run_sync_and_async_mix())</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_async</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running async function: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">is_running_in_event_loop</span><span class="p">():</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="c1"># NOTE: in juptyer notebook, it is always running in event loop</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running sync function: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">is_running_in_event_loop</span><span class="p">():</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running sync function in event loop: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">to_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="c1">#         run_sync_and_async_mix_without_wait()</span>
+    <span class="c1">#         asyncio.run(run_sync_and_async_mix())</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     if self._is_async:</span>
+    <span class="c1">#         log.debug(f&quot;Running async function: {self.fn}&quot;)</span>
+    <span class="c1">#         if is_running_in_event_loop():</span>
+    <span class="c1">#             result = asyncio.create_task(self.acall(*args, **kwargs))</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             result = asyncio.run(self.acall(*args, **kwargs))</span>
+    <span class="c1">#     # NOTE: in juptyer notebook, it is always running in event loop</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         log.debug(f&quot;Running sync function: {self.fn}&quot;)</span>
+    <span class="c1">#         if is_running_in_event_loop():</span>
+    <span class="c1">#             log.debug(f&quot;Running sync function in event loop: {self.fn}&quot;)</span>
+    <span class="c1">#             result = asyncio.to_thread(self.call, *args, **kwargs)</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             result = self.call(*args, **kwargs)</span>
 
-        <span class="k">return</span> <span class="n">result</span></div>
-
+    <span class="c1">#     return result</span>
 
     <span class="c1"># def __call__(self, *args, **kwargs) -&gt; FunctionOutput:</span>
     <span class="c1">#     r&quot;&quot;&quot;Execute the function synchronously or asynchronously based on the function type.&quot;&quot;&quot;</span>
     <span class="c1">#     return self.execute(*args, **kwargs)</span>
 
     <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;fn: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="si">}</span><span class="s2">, async: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_async</span><span class="si">}</span><span class="s2">, definition: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;fn: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">function_type</span><span class="si">}</span><span class="s2">, definition: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, class_instance: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">class_instance</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">s</span></div>
 
 

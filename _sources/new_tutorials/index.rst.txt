@@ -8,10 +8,10 @@ Tutorials
 .. toctree::
    :maxdepth: 1
    :caption: Basics
-   :hidden:
 
-   introduction
+   Core Concepts <core_concepts>
    prompt
    parser
    generator
    embedder
+   tool

@@ -219,18 +219,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -468,8 +473,11 @@ This helps to standardize the tool interface and metadata to communicate with th
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.func_tool.FunctionTool" title="core.func_tool.FunctionTool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionTool</span></code></a>(fn[, component, definition])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.func_tool.FunctionTool" title="core.func_tool.FunctionTool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionTool</span></code></a>(fn[, definition])</p></td>
 <td><p>Describing and Parsing(to LLM) and executing a function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.func_tool.FunctionType" title="core.func_tool.FunctionType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionType</span></code></a>(value[, names, module, ...])</p></td>
+<td><p>Enumeration of the 4 core function types supported by FunctionTool.</p></td>
 </tr>
 </tbody>
 </table>
@@ -494,11 +502,38 @@ This helps to standardize the tool interface and metadata to communicate with th
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="core.func_tool.FunctionType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FunctionType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/func_tool.html#FunctionType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.func_tool.FunctionType" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Enumeration of the 4 core function types supported by FunctionTool.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.func_tool.FunctionType.SYNC">
+<span class="sig-name descname"><span class="pre">SYNC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#core.func_tool.FunctionType.SYNC" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.func_tool.FunctionType.ASYNC">
+<span class="sig-name descname"><span class="pre">ASYNC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#core.func_tool.FunctionType.ASYNC" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.func_tool.FunctionType.SYNC_GENERATOR">
+<span class="sig-name descname"><span class="pre">SYNC_GENERATOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#core.func_tool.FunctionType.SYNC_GENERATOR" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.func_tool.FunctionType.ASYNC_GENERATOR">
+<span class="sig-name descname"><span class="pre">ASYNC_GENERATOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#core.func_tool.FunctionType.ASYNC_GENERATOR" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="core.func_tool.FunctionTool">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FunctionTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FunctionDefinition</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/func_tool.html#FunctionTool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.func_tool.FunctionTool" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FunctionTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">FunGradComponent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FunctionDefinition</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/func_tool.html#FunctionTool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.func_tool.FunctionTool" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
 <p>Describing and Parsing(to LLM) and executing a function.</p>
-<p>Supports both normal callable functions and methods(__call__) of a component.
+<p>Supports both normal callable functions and class methods.
 When component is used, we support both the training and eval mode.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -508,7 +543,6 @@ When component is used, we support both the training and eval mode.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fn</strong> (<em>Callable</em>) – The function to be executed.</p></li>
-<li><p><strong>component</strong> (<a class="reference internal" href="core.component.html#core.component.Component" title="core.component.Component"><em>Component</em></a><em>, </em><em>optional</em>) – The component that owns the function. Defaults to None.</p></li>
 <li><p><strong>definition</strong> (<a class="reference internal" href="core.types.html#core.types.FunctionDefinition" title="core.types.FunctionDefinition"><em>FunctionDefinition</em></a><em>, </em><em>optional</em>) – The definition of the function. Defaults to None.</p></li>
 </ul>
 </dd>
@@ -559,10 +593,45 @@ When component is used, we support both the training and eval mode.</p>
 </li>
 </ul>
 <p>A FunctionTool allows other GradComponent(as a tool) to pass through correctly.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="core.func_tool.FunctionTool.is_async">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_async</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#core.func_tool.FunctionTool.is_async" title="Link to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.func_tool.FunctionTool.fn">
+<span class="sig-name descname"><span class="pre">fn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="headerlink" href="#core.func_tool.FunctionTool.fn" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.func_tool.FunctionTool.function_type">
+<span class="sig-name descname"><span class="pre">function_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#core.func_tool.FunctionType" title="core.func_tool.FunctionType"><span class="pre">FunctionType</span></a></em><a class="headerlink" href="#core.func_tool.FunctionTool.function_type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.func_tool.FunctionTool.class_instance">
+<span class="sig-name descname"><span class="pre">class_instance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.func_tool.FunctionTool.class_instance" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.func_tool.FunctionTool.definition">
+<span class="sig-name descname"><span class="pre">definition</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FunctionDefinition</span></em><a class="headerlink" href="#core.func_tool.FunctionTool.definition" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.func_tool.FunctionTool.detect_function_type">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detect_function_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.func_tool.FunctionType" title="core.func_tool.FunctionType"><span class="pre">FunctionType</span></a></span></span><a class="reference internal" href="../../_modules/core/func_tool.html#FunctionTool.detect_function_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.func_tool.FunctionTool.detect_function_type" title="Link to this definition">¶</a></dt>
+<dd><p>Detect the function type of a given callable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fn</strong> – The callable to analyze</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The detected function type</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#core.func_tool.FunctionType" title="core.func_tool.FunctionType">FunctionType</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the function type cannot be determined or is not supported</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.func_tool.FunctionTool.forward">
@@ -573,118 +642,47 @@ When component is used, we support both the training and eval mode.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="core.func_tool.FunctionTool.call">
 <span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FunctionOutput</span></span></span><a class="reference internal" href="../../_modules/core/func_tool.html#FunctionTool.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.func_tool.FunctionTool.call" title="Link to this definition">¶</a></dt>
-<dd><p>Execute the function synchronously.</p>
-<p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
-<span class="k">def</span> <span class="nf">sync_function_1</span><span class="p">():</span>
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;Function 1 completed&quot;</span>
-
-<span class="n">tool_1</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">sync_function_1</span><span class="p">)</span>
-<span class="n">output</span> <span class="o">=</span> <span class="n">tool_1</span><span class="o">.</span><span class="n">call</span><span class="p">()</span>
-</pre></div>
-</div>
+<dd><p>Execute the function synchronously, supporting all function types.</p>
+<p>This method provides a unified sync interface for all function types:
+- SYNC: Calls the function directly
+- ASYNC: Runs the coroutine in a new event loop (blocks until complete)
+- SYNC_GENERATOR: Returns the generator object
+- ASYNC_GENERATOR: Runs the async generator and collects all values into a list</p>
+<p>Warning: For async functions, this will block the current thread until completion.
+For better performance with async functions, consider using acall() instead.</p>
+<p class="rubric">Example</p>
+<p>import asyncio</p>
+<dl class="simple">
+<dt>async def async_func():</dt><dd><p>await asyncio.sleep(1)
+return “async result”</p>
+</dd>
+<dt>def sync_func():</dt><dd><p>return “sync result”</p>
+</dd>
+</dl>
+<p>tool1 = FunctionTool(async_func)
+tool2 = FunctionTool(sync_func)</p>
+<p># Both work synchronously
+result1 = tool1.call()  # Blocks for 1 second
+result2 = tool2.call()  # Returns immediately</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.func_tool.FunctionTool.bicall">
 <span class="sig-name descname"><span class="pre">bicall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FunctionOutput</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Parameter</span></span></span><a class="reference internal" href="../../_modules/core/func_tool.html#FunctionTool.bicall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.func_tool.FunctionTool.bicall" title="Link to this definition">¶</a></dt>
-<dd><p>Execute the function synchronously.</p>
-<p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
-<span class="k">def</span> <span class="nf">sync_function_1</span><span class="p">():</span>
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;Function 1 completed&quot;</span>
-
-<span class="n">tool_1</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">sync_function_1</span><span class="p">)</span>
-<span class="n">output</span> <span class="o">=</span> <span class="n">tool_1</span><span class="o">.</span><span class="n">call</span><span class="p">()</span>
-</pre></div>
-</div>
+<dd><p>This should only be used in training, where a fun is required to be a FunGradComponent
+where the output from function execution is a Parameter.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.func_tool.FunctionTool.acall">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FunctionOutput</span></span></span><a class="reference internal" href="../../_modules/core/func_tool.html#FunctionTool.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.func_tool.FunctionTool.acall" title="Link to this definition">¶</a></dt>
-<dd><p>Execute the function asynchronously.</p>
-<p>Need to be called in an async function or using asyncio.run.</p>
-<p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">async_function_1</span><span class="p">():</span>
-    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Simulate async work</span>
-    <span class="k">return</span> <span class="s2">&quot;Function 1 completed&quot;</span>
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">call_async_function</span><span class="p">():</span>
-    <span class="n">tool_1</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">async_function_1</span><span class="p">)</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="k">await</span> <span class="n">tool_1</span><span class="o">.</span><span class="n">acall</span><span class="p">()</span>
-
-<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">call_async_function</span><span class="p">())</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.func_tool.FunctionTool.execute">
-<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FunctionOutput</span></span></span><a class="reference internal" href="../../_modules/core/func_tool.html#FunctionTool.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.func_tool.FunctionTool.execute" title="Link to this definition">¶</a></dt>
-<dd><p>Execute the function synchronously or asynchronously based on the function type.</p>
-<p>No matter of the function type, you can run the function using both asyncio and without asyncio.</p>
-<p>Use it with caution as it might block the event loop.</p>
-<p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">time</span>
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">async_function_1</span><span class="p">():</span>
-    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;Function 1 completed&quot;</span>
-
-<span class="k">def</span> <span class="nf">sync_function_1</span><span class="p">():</span>
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;Function 1 completed&quot;</span>
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">async_function_2</span><span class="p">():</span>
-    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;Function 2 completed&quot;</span>
-
-<span class="k">def</span> <span class="nf">sync_function_2</span><span class="p">():</span>
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;Function 2 completed&quot;</span>
-
-<span class="n">async_tool_1</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">async_function_1</span><span class="p">)</span>
-<span class="n">sync_tool_1</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">sync_function_2</span><span class="p">)</span>
-<span class="n">async_tool_2</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">async_function_2</span><span class="p">)</span>
-<span class="n">sync_tool_2</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">sync_function_2</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">run_sync_and_async_mix_without_wait</span><span class="p">():</span>
-    <span class="c1"># both sync and async tool can use execute</span>
-    <span class="c1"># sync tool can also use call</span>
-    <span class="c1"># takes 5 seconds (1+1+2) + overhead</span>
-    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">async_tool_1</span><span class="o">.</span><span class="n">execute</span><span class="p">(),</span>
-        <span class="n">sync_tool_1</span><span class="o">.</span><span class="n">execute</span><span class="p">(),</span>
-        <span class="n">sync_tool_2</span><span class="o">.</span><span class="n">call</span><span class="p">(),</span>
-    <span class="p">]</span>
-    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run_sync_and_async_mix_without_wait time: </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">results</span>
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">run_sync_and_async_mix</span><span class="p">():</span>
-    <span class="c1"># both sync and async tool can use execute&amp;to_thread</span>
-    <span class="c1"># async tool can also use acall without to_thread</span>
-    <span class="c1"># takes a bit over 2 seconds max(2)</span>
-    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-        <span class="n">async_tool_1</span><span class="o">.</span><span class="n">execute</span><span class="p">(),</span>
-        <span class="n">sync_tool_1</span><span class="o">.</span><span class="n">execute</span><span class="p">(),</span>
-        <span class="n">async_tool_2</span><span class="o">.</span><span class="n">acall</span><span class="p">(),</span>
-    <span class="p">)</span>
-    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run_sync_and_async_mix time: </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">results</span>
-
-<span class="n">run_sync_and_async_mix_without_wait</span><span class="p">()</span>
-<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_sync_and_async_mix</span><span class="p">())</span>
-</pre></div>
-</div>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FunctionOutput</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Parameter</span></span></span><a class="reference internal" href="../../_modules/core/func_tool.html#FunctionTool.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.func_tool.FunctionTool.acall" title="Link to this definition">¶</a></dt>
+<dd><p>Async call the function. Handles all function types appropriately.</p>
+<p>For different function types:
+- SYNC: Returns FunctionOutput with the result
+- ASYNC: Awaits the coroutine and returns FunctionOutput with the result
+- SYNC_GENERATOR: Returns FunctionOutput with the generator object
+- ASYNC_GENERATOR: Returns FunctionOutput with the async generator object</p>
+<p>Note: For generators, users need to iterate over the generator themselves.</p>
 </dd></dl>
 
 </dd></dl>
@@ -748,13 +746,23 @@ When component is used, we support both the training and eval mode.</p>
 <li><a class="reference internal" href="#">func_tool</a><ul>
 <li><a class="reference internal" href="#core.func_tool.is_running_in_event_loop"><code class="docutils literal notranslate"><span class="pre">is_running_in_event_loop()</span></code></a></li>
 <li><a class="reference internal" href="#core.func_tool.find_instance_name_from_self"><code class="docutils literal notranslate"><span class="pre">find_instance_name_from_self()</span></code></a></li>
+<li><a class="reference internal" href="#core.func_tool.FunctionType"><code class="docutils literal notranslate"><span class="pre">FunctionType</span></code></a><ul>
+<li><a class="reference internal" href="#core.func_tool.FunctionType.SYNC"><code class="docutils literal notranslate"><span class="pre">FunctionType.SYNC</span></code></a></li>
+<li><a class="reference internal" href="#core.func_tool.FunctionType.ASYNC"><code class="docutils literal notranslate"><span class="pre">FunctionType.ASYNC</span></code></a></li>
+<li><a class="reference internal" href="#core.func_tool.FunctionType.SYNC_GENERATOR"><code class="docutils literal notranslate"><span class="pre">FunctionType.SYNC_GENERATOR</span></code></a></li>
+<li><a class="reference internal" href="#core.func_tool.FunctionType.ASYNC_GENERATOR"><code class="docutils literal notranslate"><span class="pre">FunctionType.ASYNC_GENERATOR</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#core.func_tool.FunctionTool"><code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code></a><ul>
-<li><a class="reference internal" href="#core.func_tool.FunctionTool.is_async"><code class="docutils literal notranslate"><span class="pre">FunctionTool.is_async</span></code></a></li>
+<li><a class="reference internal" href="#core.func_tool.FunctionTool.fn"><code class="docutils literal notranslate"><span class="pre">FunctionTool.fn</span></code></a></li>
+<li><a class="reference internal" href="#core.func_tool.FunctionTool.function_type"><code class="docutils literal notranslate"><span class="pre">FunctionTool.function_type</span></code></a></li>
+<li><a class="reference internal" href="#core.func_tool.FunctionTool.class_instance"><code class="docutils literal notranslate"><span class="pre">FunctionTool.class_instance</span></code></a></li>
+<li><a class="reference internal" href="#core.func_tool.FunctionTool.definition"><code class="docutils literal notranslate"><span class="pre">FunctionTool.definition</span></code></a></li>
+<li><a class="reference internal" href="#core.func_tool.FunctionTool.detect_function_type"><code class="docutils literal notranslate"><span class="pre">FunctionTool.detect_function_type()</span></code></a></li>
 <li><a class="reference internal" href="#core.func_tool.FunctionTool.forward"><code class="docutils literal notranslate"><span class="pre">FunctionTool.forward()</span></code></a></li>
 <li><a class="reference internal" href="#core.func_tool.FunctionTool.call"><code class="docutils literal notranslate"><span class="pre">FunctionTool.call()</span></code></a></li>
 <li><a class="reference internal" href="#core.func_tool.FunctionTool.bicall"><code class="docutils literal notranslate"><span class="pre">FunctionTool.bicall()</span></code></a></li>
 <li><a class="reference internal" href="#core.func_tool.FunctionTool.acall"><code class="docutils literal notranslate"><span class="pre">FunctionTool.acall()</span></code></a></li>
-<li><a class="reference internal" href="#core.func_tool.FunctionTool.execute"><code class="docutils literal notranslate"><span class="pre">FunctionTool.execute()</span></code></a></li>
 </ul>
 </li>
 </ul>

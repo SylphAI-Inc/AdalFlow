@@ -218,19 +218,24 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Getting Started</a></li>
+</ul>
+<ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -472,9 +477,10 @@
 With these functionalities, developers can program it to be any LLM applications, from chatbots(with or w.o memory), RAG, to agents.</p></li>
 <li><p>It is a <cite>GradComponnent</cite> that has both <cite>forward</cite> and <cite>backward</cite> methods. Developers can optimize the prompt when it is defined as a <cite>Parameter</cite> and being used together with <cite>Trainer</cite>.</p></li>
 </ol>
-<p>Generator has two desirable properties:</p>
+<p>Generator has three desirable properties:</p>
 <ol class="arabic simple">
 <li><p>Model Agnostic: The Generator levarages a standard interface–<cite>ModelClient</cite>–to interact with different LLM models. This makes it easy to switch between different models simply via configuration.</p></li>
+<li><p>Full Controllable and Transparent Prompt: Unlike many libraries where users can only customize an instruction, we allow users to define their own prompt template with Jinja2 that comes with customized parameters to fill in. These parameters in the prompt can be further optimized end to end.</p></li>
 <li><p>Unified Output: With <a class="reference internal" href="../apis/core/core.types.html#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeneratorOutput</span></code></a>, we ensure it can capture the final parsed output in <code class="docutils literal notranslate"><span class="pre">data</span></code>, any error message in <code class="docutils literal notranslate"><span class="pre">error</span></code>, and the raw response in <code class="docutils literal notranslate"><span class="pre">raw_response</span></code>. <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">usage</span></code> are also included for tracking purposes.</p></li>
 </ol>
 <div class="admonition note">

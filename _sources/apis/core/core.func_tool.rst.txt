@@ -21,4 +21,5 @@ func_tool
    .. autosummary::
 
       FunctionTool
+      FunctionType
 

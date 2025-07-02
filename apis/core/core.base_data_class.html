@@ -219,18 +219,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -498,33 +503,37 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The base data class for all data types that interact with LLMs.</p>
 <p>Please only exclude optional fields in the exclude dictionary.</p>
-<p>Designed to streamline the handling, serialization, and description of data within our applications, especially to LLM prompt.
+<p>Designed to streamline the handling, serialization, and description of data within our applications, especially for LLM prompts.
 We explicitly handle this instead of relying on 3rd party libraries such as pydantic or marshmallow to have better
-transparency and to keep the order of the fields when get serialized.</p>
+transparency and to keep the order of the fields when they’re serialized.</p>
 <p>How to create your own dataclass?</p>
 <ol class="arabic simple">
 <li><p>Subclass DataClass and define the fields with the <cite>field</cite> decorator.</p></li>
 <li><p>Use the <cite>medata</cite> argument and a <cite>desc</cite> key to describe the field.</p></li>
 <li><p>Keep the order of the fields as how you want them to be serialized and described to LLMs.</p></li>
-<li><p>field with default value is considered optional. Field without default value and field with default_factory=required_field is considered required.</p></li>
+<li><p>A field with a default value is considered optional. Fields without a default value and fields with default_factory=required_field is considered required.</p></li>
 </ol>
 <p>How to use it?</p>
 <p>Describing:</p>
-<p>We defined <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassFormatType</span></code> to categorize DataClass description formats
-as input or output in LLM prompt.</p>
-<ol class="arabic simple">
-<li><p>For describing the class (data structure):</p></li>
-</ol>
-<p><cite>Signature</cite> is more token effcient than schema, and schema as it is always a json string, when you want LLMs to output yaml, it can be misleading if you describe the data structure in json.</p>
+<p>We defined <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassFormatType</span></code> to categorize DataClass formats
+as LLM inputs or outputs. This can be broken down into:
+(1) schema (class description)
+(2) signatures (class description)
+(3) examples (instance description)</p>
+<p>(1) <cite>DataClassFormatType.SCHEMA</cite>
+- Standard JSON-based desription, via: <a class="reference internal" href="#core.base_data_class.DataClass.to_schema" title="core.base_data_class.DataClass.to_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_schema()</span></code></a> as string and <a class="reference internal" href="#core.base_data_class.DataClass.to_schema" title="core.base_data_class.DataClass.to_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_schema()</span></code></a> as dict.</p>
+<p>(2) <cite>DataClassFormatType.SIGNATURE_JSON</cite> / <cite>DataClassFormatType.SIGNATURE_YAML</cite>
+- More token-efficient than SCHEMA. Since SCHEMA is always represented as a JSON string, describing the data structure in JSON may be misleading when you want LLMS to output YAML.</p>
 <ul class="simple">
-<li><p>DataClassFormatType.SCHEMA: a more standard way to describe the data structure in Json string, <a class="reference internal" href="#core.base_data_class.DataClass.to_schema" title="core.base_data_class.DataClass.to_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_schema()</span></code></a> as string and <a class="reference internal" href="#core.base_data_class.DataClass.to_schema" title="core.base_data_class.DataClass.to_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_schema()</span></code></a> as dict.</p></li>
-<li><p>DataClassFormatType.SIGNATURE_JSON: emitating a json object with field name as key and description as value, <a class="reference internal" href="#core.base_data_class.DataClass.to_json_signature" title="core.base_data_class.DataClass.to_json_signature"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_json_signature()</span></code></a> as string.</p></li>
-<li><p>DataClassFormatType.SIGNATURE_YAML: emitating a yaml object with field name as key and description as value, <a class="reference internal" href="#core.base_data_class.DataClass.to_yaml_signature" title="core.base_data_class.DataClass.to_yaml_signature"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_yaml_signature()</span></code></a> as string.</p></li>
+<li><p>DataClassFormatType.SIGNATURE_JSON: imitating a json object with field name as key and description as value, <a class="reference internal" href="#core.base_data_class.DataClass.to_json_signature" title="core.base_data_class.DataClass.to_json_signature"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_json_signature()</span></code></a> as string.</p></li>
+<li><p>DataClassFormatType.SIGNATURE_YAML: imitating a yaml object with field name as key and description as value, <a class="reference internal" href="#core.base_data_class.DataClass.to_yaml_signature" title="core.base_data_class.DataClass.to_yaml_signature"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_yaml_signature()</span></code></a> as string.</p></li>
 </ul>
-<p>(2) For describing the class instance: this is helpful to do few-shot examples in LLM prompt.
-- DataClassFormatType.EXAMPLE_JSON: the json representation of the instance, <a class="reference internal" href="#core.base_data_class.DataClass.to_json" title="core.base_data_class.DataClass.to_json"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_json()</span></code></a> as string.
-- DataClassFormatType.EXAMPLE_YAML: the yaml representation of the instance, <a class="reference internal" href="#core.base_data_class.DataClass.to_yaml" title="core.base_data_class.DataClass.to_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_yaml()</span></code></a> as string.</p>
-<p>Overall, we have a unified class method <code class="xref py py-meth docutils literal notranslate"><span class="pre">format_str()</span></code> to generate formatted output based on the type of operation and class/instance context.</p>
+<p>(3) <cite>DataClassFormatType.EXAMPLE_JSON</cite> / <cite>DataClassFormatType.EXAMPLE_YAML</cite>
+- Helpful to do few-shot examples in LLM prompts.</p>
+<ul class="simple">
+<li><p>DataClassFormatType.EXAMPLE_JSON: the json representation of the instance, <a class="reference internal" href="#core.base_data_class.DataClass.to_json" title="core.base_data_class.DataClass.to_json"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_json()</span></code></a> as string.</p></li>
+<li><p>DataClassFormatType.EXAMPLE_YAML: the yaml representation of the instance, <a class="reference internal" href="#core.base_data_class.DataClass.to_yaml" title="core.base_data_class.DataClass.to_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_yaml()</span></code></a> as string.</p></li>
+</ul>
 <dl class="simple">
 <dt>note::</dt><dd><ol class="arabic simple">
 <li><p>Avoid using Optional[Type] for the type of fields, as dataclass already distingushes between optional and required fields using default value.</p></li>
@@ -753,6 +762,36 @@ This can be important to llm prompt.</p>
 </div></blockquote>
 <dl class="simple">
 <dt>label: 0’</dt><dd><p>trec_data = TrecData.from_yaml(yaml_str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.base_data_class.DataClass.to_pydantic">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_pydantic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><span class="pre">DataClass</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/base_data_class.html#DataClass.to_pydantic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.base_data_class.DataClass.to_pydantic" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the current dataclass instance into an equivalent Pydantic model instance.
+The returned Pydantic model class will have the same fields and types as the dataclass.</p>
+<p>Args:
+instance (DataClass): The dataclass instance to convert.</p>
+<p>Returns:
+A Pydantic model instance with the same field values as the dataclass instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.base_data_class.DataClass.pydantic_to_dataclass">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pydantic_to_dataclass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pydantic_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/base_data_class.html#DataClass.pydantic_to_dataclass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.base_data_class.DataClass.pydantic_to_dataclass" title="Link to this definition">¶</a></dt>
+<dd><p>Convert a Pydantic model instance into a corresponding DataClass instance.
+This is achieved by extracting the dictionary representation of the Pydantic model
+and then passing it to the existing from_dict method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pydantic_obj</strong> (<em>pydantic.BaseModel</em>) – A Pydantic model instance.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An instance of the DataClass converted from the Pydantic model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#core.base_data_class.DataClass" title="core.base_data_class.DataClass">DataClass</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1058,6 +1097,8 @@ The returned callable raises a TypeError when invoked, indicating a required fie
 <li><a class="reference internal" href="#core.base_data_class.DataClass.to_json_obj"><code class="docutils literal notranslate"><span class="pre">DataClass.to_json_obj()</span></code></a></li>
 <li><a class="reference internal" href="#core.base_data_class.DataClass.to_json"><code class="docutils literal notranslate"><span class="pre">DataClass.to_json()</span></code></a></li>
 <li><a class="reference internal" href="#core.base_data_class.DataClass.from_yaml"><code class="docutils literal notranslate"><span class="pre">DataClass.from_yaml()</span></code></a></li>
+<li><a class="reference internal" href="#core.base_data_class.DataClass.to_pydantic"><code class="docutils literal notranslate"><span class="pre">DataClass.to_pydantic()</span></code></a></li>
+<li><a class="reference internal" href="#core.base_data_class.DataClass.pydantic_to_dataclass"><code class="docutils literal notranslate"><span class="pre">DataClass.pydantic_to_dataclass()</span></code></a></li>
 <li><a class="reference internal" href="#core.base_data_class.DataClass.to_yaml_obj"><code class="docutils literal notranslate"><span class="pre">DataClass.to_yaml_obj()</span></code></a></li>
 <li><a class="reference internal" href="#core.base_data_class.DataClass.to_yaml"><code class="docutils literal notranslate"><span class="pre">DataClass.to_yaml()</span></code></a></li>
 <li><a class="reference internal" href="#core.base_data_class.DataClass.dict_to_yaml"><code class="docutils literal notranslate"><span class="pre">DataClass.dict_to_yaml()</span></code></a></li>

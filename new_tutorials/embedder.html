@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Integrations" href="../integrations/index.html" /><link rel="prev" title="Generator" href="generator.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Tool Use" href="tool.html" /><link rel="prev" title="Generator" href="generator.html" />
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Embedder - Build and Optimize LM Workflows</title>
@@ -218,19 +218,24 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Getting Started</a></li>
+</ul>
+<ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generator.html">Generator</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -648,7 +653,7 @@ Putting it all together, we can create a new embedder with the output processor.
 <li><p><a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.BatchEmbedder" title="core.embedder.BatchEmbedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.EmbedderOutput" title="core.types.EmbedderOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.EmbedderOutput</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.Embedding" title="core.types.Embedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Embedding</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformersClient</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.normalize_vector" title="core.functional.normalize_vector"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.functional.normalize_vector</span></code></a></p></li>
 </ul>
@@ -661,12 +666,12 @@ Putting it all together, we can create a new embedder with the output processor.
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../integrations/index.html">
+          <a class="next-page" href="tool.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Integrations</div>
+                <div class="title">Tool Use</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

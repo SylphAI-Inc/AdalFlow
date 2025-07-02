@@ -1,0 +1,18 @@
+.. _core-runner:
+
+runner
+==================
+
+.. automodule:: core.runner
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      RunResultStreaming
+      Runner
+

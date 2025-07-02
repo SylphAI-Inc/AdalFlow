@@ -219,18 +219,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -455,10 +460,7 @@ It handles states recursively, such as training, components, parameters recursiv
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.component.func_to_component" title="core.component.func_to_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">func_to_component</span></code></a>(fun)</p></td>
-<td><p>Helper function to convert a function into a Component class.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.component.func_to_data_component" title="core.component.func_to_data_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">func_to_data_component</span></code></a>(fun)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.component.func_to_data_component" title="core.component.func_to_data_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">func_to_data_component</span></code></a>(fun)</p></td>
 <td><p>Helper function to convert a function into a Parser class.</p></td>
 </tr>
 </tbody>
@@ -474,10 +476,7 @@ It handles states recursively, such as training, components, parameters recursiv
 <tr class="row-even"><td><p><a class="reference internal" href="#core.component.DataComponent" title="core.component.DataComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataComponent</span></code></a>([name])</p></td>
 <td><p>Base class for all components that are handling data pre- and post-processing.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.component.FuncComponent" title="core.component.FuncComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FuncComponent</span></code></a>([fun, afun])</p></td>
-<td><p>Component that wraps a function.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.component.FuncDataComponent" title="core.component.FuncDataComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FuncDataComponent</span></code></a>([fun, afun])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.component.FuncDataComponent" title="core.component.FuncDataComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FuncDataComponent</span></code></a>([fun, afun])</p></td>
 <td><p>Component that wraps a function.</p></td>
 </tr>
 </tbody>
@@ -848,29 +847,6 @@ Example: Prompt, Parser. TextSplitter, etc.</p>
 
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="core.component.FuncDataComponent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FuncDataComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">afun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#FuncDataComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.FuncDataComponent" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#core.component.DataComponent" title="core.component.DataComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataComponent</span></code></a></p>
-<p>Component that wraps a function.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fun</strong> (<em>Callable</em>) – The function to be wrapped.</p>
-</dd>
-</dl>
-<p>Examples:</p>
-<p>function = lambda x: x + 1
-fun_component = FuncDataComponent(function)
-print(fun_component(1))  # 2</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="core.component.FuncDataComponent.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#FuncDataComponent.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.FuncDataComponent.call" title="Link to this definition">¶</a></dt>
-<dd><p>User must override this for the inference scenario
-if bicall is not defined.</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="core.component.func_to_data_component">
 <span class="sig-name descname"><span class="pre">func_to_data_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.component.FuncDataComponent" title="core.component.FuncDataComponent"><span class="pre">FuncDataComponent</span></a></span></span><a class="reference internal" href="../../_modules/core/component.html#func_to_data_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.func_to_data_component" title="Link to this definition">¶</a></dt>
@@ -910,49 +886,10 @@ its own class name.</p>
 </ol>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="core.component.func_to_component">
-<span class="sig-name descname"><span class="pre">func_to_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.component.FuncComponent" title="core.component.FuncComponent"><span class="pre">FuncComponent</span></a></span></span><a class="reference internal" href="../../_modules/core/component.html#func_to_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.func_to_component" title="Link to this definition">¶</a></dt>
-<dd><p>Helper function to convert a function into a Component class.
-its own class name.</p>
-<p>Can be used as both a decorator and a function.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fun</strong> (<em>Callable</em>) – The function to be wrapped.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The component that wraps the function.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#core.component.FuncComponent" title="core.component.FuncComponent">FuncComponent</a></p>
-</dd>
-</dl>
-<p>Examples:
-1. As a decorator:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@func_to_component</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># is equivalent to</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyFunctionComponent</span><span class="p">(</span><span class="n">FuncComponent</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">my_function</span><span class="p">)</span>
-</pre></div>
-</div>
-<ol class="arabic" start="2">
-<li><dl>
-<dt>As a function:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_function_component</span> <span class="o">=</span> <span class="n">func_to_component</span><span class="p">(</span><span class="n">my_function</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</li>
-</ol>
-</dd></dl>
-
 <dl class="py class">
-<dt class="sig sig-object py" id="core.component.FuncComponent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FuncComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">afun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#FuncComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.FuncComponent" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
+<dt class="sig sig-object py" id="core.component.FuncDataComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FuncDataComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">afun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#FuncDataComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.FuncDataComponent" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#core.component.DataComponent" title="core.component.DataComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataComponent</span></code></a></p>
 <p>Component that wraps a function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -961,11 +898,11 @@ its own class name.</p>
 </dl>
 <p>Examples:</p>
 <p>function = lambda x: x + 1
-fun_component = FuncComponent(function)
+fun_component = FuncDataComponent(function)
 print(fun_component(1))  # 2</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="core.component.FuncComponent.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#FuncComponent.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.FuncComponent.call" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="core.component.FuncDataComponent.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#FuncDataComponent.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.FuncDataComponent.call" title="Link to this definition">¶</a></dt>
 <dd><p>User must override this for the inference scenario
 if bicall is not defined.</p>
 </dd></dl>
@@ -1067,14 +1004,9 @@ if bicall is not defined.</p>
 <li><a class="reference internal" href="#core.component.DataComponent.train"><code class="docutils literal notranslate"><span class="pre">DataComponent.train()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#core.component.func_to_data_component"><code class="docutils literal notranslate"><span class="pre">func_to_data_component()</span></code></a></li>
 <li><a class="reference internal" href="#core.component.FuncDataComponent"><code class="docutils literal notranslate"><span class="pre">FuncDataComponent</span></code></a><ul>
 <li><a class="reference internal" href="#core.component.FuncDataComponent.call"><code class="docutils literal notranslate"><span class="pre">FuncDataComponent.call()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#core.component.func_to_data_component"><code class="docutils literal notranslate"><span class="pre">func_to_data_component()</span></code></a></li>
-<li><a class="reference internal" href="#core.component.func_to_component"><code class="docutils literal notranslate"><span class="pre">func_to_component()</span></code></a></li>
-<li><a class="reference internal" href="#core.component.FuncComponent"><code class="docutils literal notranslate"><span class="pre">FuncComponent</span></code></a><ul>
-<li><a class="reference internal" href="#core.component.FuncComponent.call"><code class="docutils literal notranslate"><span class="pre">FuncComponent.call()</span></code></a></li>
 </ul>
 </li>
 </ul>

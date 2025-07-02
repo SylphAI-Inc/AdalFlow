@@ -218,18 +218,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -452,17 +457,11 @@
 <li><a href="components/model_client/anthropic_client.html">components.model_client.anthropic_client</a></li>
 <li><a href="components/model_client/azureai_client.html">components.model_client.azureai_client</a></li>
 <li><a href="components/model_client/cohere_client.html">components.model_client.cohere_client</a></li>
-<li><a href="components/model_client/deepseek_client.html">components.model_client.deepseek_client</a></li>
-<li><a href="components/model_client/fireworks_client.html">components.model_client.fireworks_client</a></li>
 <li><a href="components/model_client/google_client.html">components.model_client.google_client</a></li>
 <li><a href="components/model_client/groq_client.html">components.model_client.groq_client</a></li>
-<li><a href="components/model_client/mistral_client.html">components.model_client.mistral_client</a></li>
 <li><a href="components/model_client/ollama_client.html">components.model_client.ollama_client</a></li>
-<li><a href="components/model_client/openai_client.html">components.model_client.openai_client</a></li>
-<li><a href="components/model_client/sambanova_client.html">components.model_client.sambanova_client</a></li>
 <li><a href="components/model_client/transformers_client.html">components.model_client.transformers_client</a></li>
 <li><a href="components/model_client/utils.html">components.model_client.utils</a></li>
-<li><a href="components/model_client/xai_client.html">components.model_client.xai_client</a></li>
 <li><a href="components/output_parsers/dataclass_parser.html">components.output_parsers.dataclass_parser</a></li>
 <li><a href="components/output_parsers/outputs.html">components.output_parsers.outputs</a></li>
 <li><a href="components/retriever/bm25_retriever.html">components.retriever.bm25_retriever</a></li>
@@ -472,6 +471,7 @@
 <li><a href="components/retriever/postgres_retriever.html">components.retriever.postgres_retriever</a></li>
 <li><a href="components/retriever/qdrant_retriever.html">components.retriever.qdrant_retriever</a></li>
 <li><a href="components/retriever/reranker_retriever.html">components.retriever.reranker_retriever</a></li>
+<li><a href="core/agent.html">core.agent</a></li>
 <li><a href="core/base_data_class.html">core.base_data_class</a></li>
 <li><a href="core/component.html">core.component</a></li>
 <li><a href="core/container.html">core.container</a></li>
@@ -483,6 +483,7 @@
 <li><a href="core/model_client.html">core.model_client</a></li>
 <li><a href="core/prompt_builder.html">core.prompt_builder</a></li>
 <li><a href="core/retriever.html">core.retriever</a></li>
+<li><a href="core/runner.html">core.runner</a></li>
 <li><a href="core/string_parser.html">core.string_parser</a></li>
 <li><a href="core/tokenizer.html">core.tokenizer</a></li>
 <li><a href="core/tool_manager.html">core.tool_manager</a></li>

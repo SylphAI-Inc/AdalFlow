@@ -219,18 +219,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -534,6 +539,11 @@ if bicall is not defined.</p>
 <p>ToolManager is a task component that does not need its own backward function.</p>
 <p>yaml and json definitions are for quick access to the definitions of the tools.
 If you need more specification, such as using exclude field, you can use the function_definitions.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="core.tool_manager.ToolManager.context_variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">context_variables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#core.tool_manager.ToolManager.context_variables" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="core.tool_manager.ToolManager.get_context_index">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_context_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FunctionTool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/tool_manager.html#ToolManager.get_context_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tool_manager.ToolManager.get_context_index" title="Link to this definition">¶</a></dt>
@@ -586,8 +596,8 @@ if bicall is not defined.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.tool_manager.ToolManager.execute_func">
-<span class="sig-name descname"><span class="pre">execute_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func:</span> <span class="pre">~adalflow.core.types.Function</span> <span class="pre">|</span> <span class="pre">~adalflow.optim.parameter.Parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_fn:</span> <span class="pre">~typing.Callable</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ToolManager.&lt;lambda&gt;&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FunctionOutput</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Parameter</span></span></span><a class="reference internal" href="../../_modules/core/tool_manager.html#ToolManager.execute_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tool_manager.ToolManager.execute_func" title="Link to this definition">¶</a></dt>
-<dd><p>Execute the function. If the function is async, use asyncio.run to execute it.</p>
+<span class="sig-name descname"><span class="pre">execute_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func:</span> <span class="pre">~adalflow.core.types.Function</span> <span class="pre">|</span> <span class="pre">~adalflow.optim.parameter.Parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_fn:</span> <span class="pre">~typing.Callable</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ToolManager.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FunctionOutput</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Parameter</span></span></span><a class="reference internal" href="../../_modules/core/tool_manager.html#ToolManager.execute_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tool_manager.ToolManager.execute_func" title="Link to this definition">¶</a></dt>
+<dd><p>Execute the function synchronously</p>
 </dd></dl>
 
 <dl class="py method">
@@ -691,6 +701,7 @@ if bicall is not defined.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#core.tool_manager.ToolManager"><code class="docutils literal notranslate"><span class="pre">ToolManager</span></code></a><ul>
+<li><a class="reference internal" href="#core.tool_manager.ToolManager.context_variables"><code class="docutils literal notranslate"><span class="pre">ToolManager.context_variables</span></code></a></li>
 <li><a class="reference internal" href="#core.tool_manager.ToolManager.get_context_index"><code class="docutils literal notranslate"><span class="pre">ToolManager.get_context_index()</span></code></a></li>
 <li><a class="reference internal" href="#core.tool_manager.ToolManager.create_context_map_from_tools"><code class="docutils literal notranslate"><span class="pre">ToolManager.create_context_map_from_tools()</span></code></a></li>
 <li><a class="reference internal" href="#core.tool_manager.ToolManager.yaml_definitions"><code class="docutils literal notranslate"><span class="pre">ToolManager.yaml_definitions</span></code></a></li>

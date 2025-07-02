@@ -218,18 +218,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -460,6 +465,9 @@
     <span class="n">Literal</span><span class="p">,</span>
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Awaitable</span><span class="p">,</span>
+    <span class="n">Generator</span><span class="p">,</span>
+    <span class="n">AsyncGenerator</span><span class="p">,</span>
+    <span class="n">Coroutine</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="p">(</span>
@@ -489,7 +497,6 @@
     <span class="n">OllamaClient</span><span class="p">,</span>
 <span class="p">)</span>
 
-
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">T_co</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T_co&quot;</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -506,6 +513,7 @@
 <span class="s2">     It helps ModelClient identify the model type required to correctly call the model.&quot;&quot;&quot;</span>
     <span class="n">EMBEDDER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">LLM</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">LLM_REASONING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># use reasoning model compatible to openai.responses</span>
     <span class="n">RERANKER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># ranking model</span>
     <span class="n">IMAGE_GENERATION</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># image generation models like DALL-E</span>
     <span class="n">UNDEFINED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
@@ -693,47 +701,46 @@
 
 
 
-<div class="viewcode-block" id="GeneratorOutput">
-<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.GeneratorOutput">[docs]</a>
+<div class="viewcode-block" id="InputTokensDetails">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.InputTokensDetails">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">GeneratorOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T_co</span><span class="p">]):</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    The output data class for the Generator component.</span>
-<span class="s2">    We can not control its output 100%, so we use this to track the error_message and</span>
-<span class="s2">    allow the raw string output to be passed through.</span>
-
-<span class="s2">    (1) When model predict and output processors are both without error,</span>
-<span class="s2">    we have data as the final output, error as None.</span>
-<span class="s2">    (2) When either model predict or output processors have error,</span>
-<span class="s2">    we have data as None, error as the error message.</span>
-
-<span class="s2">    Raw_response will depends on the model predict.</span>
-<span class="s2">    &quot;&quot;&quot;</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique id of the output&quot;</span><span class="p">}</span>
-    <span class="p">)</span>
-
-    <span class="n">data</span><span class="p">:</span> <span class="n">T_co</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The final output data potentially after output parsers&quot;</span><span class="p">},</span>
-    <span class="p">)</span>
-    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Error message if any&quot;</span><span class="p">},</span>
-    <span class="p">)</span>
-    <span class="n">usage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CompletionUsage</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Usage tracking&quot;</span><span class="p">}</span>
-    <span class="p">)</span>
-    <span class="n">raw_response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Raw string response from the model&quot;</span><span class="p">}</span>
-    <span class="p">)</span>  <span class="c1"># parsed from model client response</span>
-    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Additional metadata&quot;</span><span class="p">}</span>
+<span class="k">class</span> <span class="nc">InputTokensDetails</span><span class="p">:</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;Details about input tokens used in a response&quot;</span>
+    <span class="n">cached_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of cached tokens used&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span>
     <span class="p">)</span></div>
 
 
 
-<span class="n">GeneratorOutputType</span> <span class="o">=</span> <span class="n">GeneratorOutput</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>
+<div class="viewcode-block" id="OutputTokensDetails">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.OutputTokensDetails">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">OutputTokensDetails</span><span class="p">:</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;Details about output tokens used in a response&quot;</span>
+    <span class="n">reasoning_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of tokens used for reasoning&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ResponseUsage">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ResponseUsage">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ResponseUsage</span><span class="p">:</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;Usage information for a response, including token counts, in sync with OpenAI response usage api spec at openai/types/response_usage.py&quot;</span>
+    <span class="n">input_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of input tokens used&quot;</span><span class="p">})</span>
+    <span class="n">output_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of output tokens used&quot;</span><span class="p">})</span>
+    <span class="n">total_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Total number of tokens used&quot;</span><span class="p">})</span>
+    <span class="n">input_tokens_details</span><span class="p">:</span> <span class="n">InputTokensDetails</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Details about input tokens&quot;</span><span class="p">},</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">InputTokensDetails</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">output_tokens_details</span><span class="p">:</span> <span class="n">OutputTokensDetails</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Details about output tokens&quot;</span><span class="p">},</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">OutputTokensDetails</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
 
 <span class="c1">#######################################################################################</span>
 <span class="c1"># Data modeling for Retriever component</span>
@@ -791,10 +798,11 @@
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">FunctionDefinition</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The data modeling of a function definition, including the name, description, and parameters.&quot;&quot;&quot;</span>
-    <span class="n">class_instance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The instance of the class this function belongs to&quot;</span><span class="p">},</span>
-    <span class="p">)</span>
+    <span class="c1"># class_instance: Optional[Any] = field(</span>
+    <span class="c1">#     default=None,</span>
+    <span class="c1">#     metadata={&quot;desc&quot;: &quot;The instance of the class this function belongs to&quot;},</span>
+    <span class="c1"># ) </span>
+    <span class="c1"># NOTE: for class method: cls_name + &quot;_&quot; + name</span>
     <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The name of the tool&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="n">required_field</span>
     <span class="p">)</span>
@@ -851,7 +859,7 @@
 <span class="s2">    &quot;&quot;&quot;</span>
     <span class="n">thought</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Why the function is called&quot;</span><span class="p">}</span>
-    <span class="p">)</span>
+    <span class="p">)</span>  <span class="c1"># if the model itself is a thinking model, disable thought field</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The name of the function&quot;</span><span class="p">})</span>
     <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
@@ -918,6 +926,60 @@
 <span class="s2">Example: &quot;FuncName(a=1, b=2)&quot; </span><span class="se">\</span>
 <span class="s2">Follow the data type specified in the function parameters.</span><span class="se">\</span>
 <span class="s2">e.g. for Type object with x,y properties, use &quot;ObjectType(x=1, y=2)&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="GeneratorOutput">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.GeneratorOutput">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">GeneratorOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T_co</span><span class="p">]):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    The output data class for the Generator component.</span>
+<span class="s2">    We can not control its output 100%, so we use this to track the error_message and</span>
+<span class="s2">    allow the raw string output to be passed through.</span>
+
+<span class="s2">    (1) When model predict and output processors are both without error,</span>
+<span class="s2">    we have data as the final output, error as None.</span>
+<span class="s2">    (2) When either model predict or output processors have error,</span>
+<span class="s2">    we have data as None, error as the error message.</span>
+
+<span class="s2">    Raw_response will depends on the model predict.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique id of the output&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="n">data</span><span class="p">:</span> <span class="n">T_co</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The final output data potentially after output parsers&quot;</span><span class="p">},</span>
+    <span class="p">)</span>  <span class="c1"># for reasoning model, this is only the text content/answer (raw_response)</span>
+    <span class="c1"># extend to support thinking and tool use</span>
+    <span class="n">thinking</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The thinking of the model&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">tool_use</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Function</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The tool use of the model&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Error message if any&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">usage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CompletionUsage</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Usage tracking&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">raw_response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Raw string response from the model&quot;</span><span class="p">}</span>
+    <span class="p">)</span>  <span class="c1"># parsed from model client response</span>
+
+    <span class="n">api_response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Raw response from the api/model client&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Additional metadata&quot;</span><span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="n">GeneratorOutputType</span> <span class="o">=</span> <span class="n">GeneratorOutput</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="FunctionExpression">
@@ -1016,6 +1078,12 @@
 </div>
 
 
+<span class="n">FunctionOutputValueType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="p">]</span>
 
 <div class="viewcode-block" id="FunctionOutput">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FunctionOutput">[docs]</a>
@@ -1036,8 +1104,10 @@
             <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The parsed Function object if the input is FunctionExpression&quot;</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The output of the function execution&quot;</span><span class="p">}</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">FunctionOutputValueType</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The output of the function execution - supports sync functions, sync generators, async functions, and async generators&quot;</span><span class="p">}</span>
     <span class="p">)</span>
     <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The error message if any&quot;</span><span class="p">}</span>

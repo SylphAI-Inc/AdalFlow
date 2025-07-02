@@ -218,18 +218,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -554,38 +559,41 @@
 
 <span class="s2">    Please only exclude optional fields in the exclude dictionary.</span>
 
-<span class="s2">    Designed to streamline the handling, serialization, and description of data within our applications, especially to LLM prompt.</span>
+<span class="s2">    Designed to streamline the handling, serialization, and description of data within our applications, especially for LLM prompts.</span>
 <span class="s2">    We explicitly handle this instead of relying on 3rd party libraries such as pydantic or marshmallow to have better</span>
-<span class="s2">    transparency and to keep the order of the fields when get serialized.</span>
+<span class="s2">    transparency and to keep the order of the fields when they&#39;re serialized.</span>
 
 <span class="s2">    How to create your own dataclass?</span>
 
 <span class="s2">    1. Subclass DataClass and define the fields with the `field` decorator.</span>
 <span class="s2">    2. Use the `medata` argument and a `desc` key to describe the field.</span>
 <span class="s2">    3. Keep the order of the fields as how you want them to be serialized and described to LLMs.</span>
-<span class="s2">    4. field with default value is considered optional. Field without default value and field with default_factory=required_field is considered required.</span>
+<span class="s2">    4. A field with a default value is considered optional. Fields without a default value and fields with default_factory=required_field is considered required.</span>
 
 <span class="s2">    How to use it?</span>
 
 <span class="s2">    Describing:</span>
 
-<span class="s2">    We defined :class:`DataClassFormatType&lt;core.types.DataClassFormatType&gt;` to categorize DataClass description formats</span>
-<span class="s2">    as input or output in LLM prompt.</span>
+<span class="s2">    We defined :class:`DataClassFormatType&lt;core.types.DataClassFormatType&gt;` to categorize DataClass formats</span>
+<span class="s2">    as LLM inputs or outputs. This can be broken down into:</span>
+<span class="s2">    (1) schema (class description)</span>
+<span class="s2">    (2) signatures (class description)</span>
+<span class="s2">    (3) examples (instance description)</span>
 
+<span class="s2">    (1) `DataClassFormatType.SCHEMA`</span>
+<span class="s2">    - Standard JSON-based desription, via: :meth:`to_schema` as string and :meth:`to_schema` as dict.</span>
 
-<span class="s2">    (1) For describing the class (data structure):</span>
+<span class="s2">    (2) `DataClassFormatType.SIGNATURE_JSON` / `DataClassFormatType.SIGNATURE_YAML`</span>
+<span class="s2">    - More token-efficient than SCHEMA. Since SCHEMA is always represented as a JSON string, describing the data structure in JSON may be misleading when you want LLMS to output YAML.</span>
 
-<span class="s2">    `Signature` is more token effcient than schema, and schema as it is always a json string, when you want LLMs to output yaml, it can be misleading if you describe the data structure in json.</span>
+<span class="s2">    - DataClassFormatType.SIGNATURE_JSON: imitating a json object with field name as key and description as value, :meth:`to_json_signature` as string.</span>
+<span class="s2">    - DataClassFormatType.SIGNATURE_YAML: imitating a yaml object with field name as key and description as value, :meth:`to_yaml_signature` as string.</span>
 
-<span class="s2">    - DataClassFormatType.SCHEMA: a more standard way to describe the data structure in Json string, :meth:`to_schema` as string and :meth:`to_schema` as dict.</span>
-<span class="s2">    - DataClassFormatType.SIGNATURE_JSON: emitating a json object with field name as key and description as value, :meth:`to_json_signature` as string.</span>
-<span class="s2">    - DataClassFormatType.SIGNATURE_YAML: emitating a yaml object with field name as key and description as value, :meth:`to_yaml_signature` as string.</span>
+<span class="s2">    (3) `DataClassFormatType.EXAMPLE_JSON` / `DataClassFormatType.EXAMPLE_YAML`</span>
+<span class="s2">    - Helpful to do few-shot examples in LLM prompts.</span>
 
-<span class="s2">    (2) For describing the class instance: this is helpful to do few-shot examples in LLM prompt.</span>
 <span class="s2">    - DataClassFormatType.EXAMPLE_JSON: the json representation of the instance, :meth:`to_json` as string.</span>
 <span class="s2">    - DataClassFormatType.EXAMPLE_YAML: the yaml representation of the instance, :meth:`to_yaml` as string.</span>
-
-<span class="s2">    Overall, we have a unified class method :meth:`format_str` to generate formatted output based on the type of operation and class/instance context.</span>
 
 <span class="s2">    note::</span>
 <span class="s2">        1. Avoid using Optional[Type] for the type of fields, as dataclass already distingushes between optional and required fields using default value.</span>
@@ -951,6 +959,69 @@
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to load YAML string: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataClass.to_pydantic">
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_pydantic">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_pydantic</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="s2">&quot;DataClass&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the current dataclass instance into an equivalent Pydantic model instance.</span>
+<span class="sd">        The returned Pydantic model class will have the same fields and types as the dataclass.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        instance (DataClass): The dataclass instance to convert.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        A Pydantic model instance with the same field values as the dataclass instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">MISSING</span><span class="p">,</span> <span class="n">fields</span> <span class="k">as</span> <span class="n">dc_fields</span>
+        <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">create_model</span>
+
+        <span class="n">field_definitions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">dc_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MISSING</span><span class="p">:</span>
+                <span class="n">field_definitions</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">default</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">f</span><span class="o">.</span><span class="n">default_factory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MISSING</span><span class="p">:</span>
+                <span class="c1"># Check if the default_factory is our required_field (which should raise when called)</span>
+                <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">default_factory</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;required_field&quot;</span><span class="p">:</span>
+                    <span class="n">field_definitions</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">field_definitions</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">default_factory</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">field_definitions</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+        <span class="n">pydantic_model</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">Pydantic&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">field_definitions</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">pydantic_model</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataClass.pydantic_to_dataclass">
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.pydantic_to_dataclass">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">pydantic_to_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pydantic_obj</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert a Pydantic model instance into a corresponding DataClass instance.</span>
+<span class="sd">        This is achieved by extracting the dictionary representation of the Pydantic model</span>
+<span class="sd">        and then passing it to the existing from_dict method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pydantic_obj (pydantic.BaseModel): A Pydantic model instance.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DataClass: An instance of the DataClass converted from the Pydantic model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pydantic_obj</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected a Pydantic model instance, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pydantic_obj</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead.&quot;</span>
+            <span class="p">)</span>
+        <span class="c1"># Convert the pydantic model instance to a dict and then create a DataClass instance.</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pydantic_obj</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert pydantic model to DataClass: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataClass.to_yaml_obj">

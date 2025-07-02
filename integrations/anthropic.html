@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Prompt" href="prompt.html" /><link rel="prev" title="Tutorials" href="index.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Use Cases" href="../use_cases/index.html" /><link rel="prev" title="All Providers" href="integrations.html" />
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>Introduction - Build and Optimize LM Workflows</title>
+        <title>Anthropic Integration - Build and Optimize LM Workflows</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -218,19 +218,24 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parser.html">Parser and Structured Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generator.html">Generator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="embedder.html">Embedder</a></li>
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Getting Started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../integrations/integrations.html">All Providers</a></li>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Integrations</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="integrations.html">All Providers</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -447,38 +452,230 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h1>
-<section id="llm-autodiff">
-<h2>LLM-AutoDiff<a class="headerlink" href="#llm-autodiff" title="Link to this heading">¶</a></h2>
-<p>AdalFlow mainly relys on <a class="reference external" href="https://arxiv.org/abs/2501.16673">LLM-AutoDiff</a> to do automatic prompt engineering(APE).</p>
-<p>Similar to Auto-differentiation in PyTorch, LLM-AutoDiff works by forming a runtime computation graph of prompts, hyperparameters, intermediate outputs, and losses in the <cite>forward</cite> pass.
-In the <cite>backward</cite> pass, the <cite>backward engine</cite> LLM we put at each node will work together to identify which prompts are the cause of errors, so that a <cite>feedback</cite>-driven LM optimizer can leverage it to propose new prompts.</p>
+          <section id="anthropic-integration">
+<span id="integrations-anthropic"></span><h1>Anthropic Integration<a class="headerlink" href="#anthropic-integration" title="Link to this heading">¶</a></h1>
+<div style="display: flex; justify-content: flex-start; align-items: center; margin-top: 20px;">
+   <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/models/anthropic_models.py" target="_blank" style="display: flex; align-items: center;">
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+      <span style="vertical-align: middle;"> Open Source Code</span>
+   </a>
+</div><section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>AdalFlow provides seamless integration with Anthropic’s Claude models through the <a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient" title="components.model_client.anthropic_client.AnthropicAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnthropicAPIClient</span></code></a>. This integration supports all Claude models including Claude 3.5 Sonnet, Claude 3.5 Haiku, Claude 3 Opus, and the latest Claude Sonnet 4 with advanced reasoning capabilities.</p>
 </section>
-<section id="components">
-<h2>Components<a class="headerlink" href="#components" title="Link to this heading">¶</a></h2>
-<p><a class="reference internal" href="../apis/core/core.component.html#module-core.component" title="core.component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> is to LM task pipelines what <cite>nn.Module</cite> is to PyTorch models.
-A component can recursively contain and register other components, allow easy control of (1) <cite>training</cite> and <cite>inference</cite> modes, (2) visualization of the workflow structure, and (3) serialization and deserialization of the component.</p>
-<p>We require a component to have (1) a <cite>call</cite> method, which will be called during the <cite>inference</cite> time,
-and (2) a <cite>forward</cite> method, which will be called during the <cite>training</cite> time and output a <cite>Parameter</cite> object which has the output of the component wrapped in the <cite>data</cite> field.</p>
-<p>There are four main types of components in AdalFlow:</p>
-<ol class="arabic simple">
-<li><p><cite>Component</cite>: the base class of all components. With <cite>forward</cite> and <cite>call</cite> method, or <a href="#id1"><span class="problematic" id="id2">`</span></a>bicall`(handles both in one method). You use it to put together an LM workflow.</p></li>
-<li><p><cite>GradComponent</cite>: a subclass of <cite>Component</cite> that has a <cite>backward</cite> method. It defines a unit of computation that are capabalbe of backpropagation. One example is <cite>Generator</cite> and <cite>Retriever</cite>.</p></li>
-<li><p><cite>DataComponent</cite>: a subclass of <cite>Component</cite> that only has <cite>call</cite> method and does not handle any <cite>Parameter</cite> object. Examples include <cite>Prompt</cite>, <cite>DataClassParser</cite> which only handles the data formatting but rather the transformation.</p></li>
-<li><p><cite>LossComponent</cite>: a subclass of <cite>Component</cite> that likely takes an evaluation metric function and has a <cite>backward</cite> method. When it is attached to your LM workflow’s output, the whole training pipeline is capable of backpropagation.</p></li>
-</ol>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Model Agnostic</strong>: Easy switching between different Claude models via configuration</p></li>
+<li><p><strong>Reasoning Support</strong>: Built-in support for Claude’s reasoning capabilities with interleaved thinking</p></li>
+<li><p><strong>Tool Usage</strong>: Support Anthropic’s native tool via the <cite>tools</cite> parameter in <cite>model_kwargs</cite> but more powerfully, you can use the <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code></a> to use tools even easier.</p></li>
+</ul>
 </section>
-<section id="parameters">
-<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
-<p><a class="reference internal" href="../apis/optim/optim.parameter.html#optim.parameter.Parameter" title="optim.parameter.Parameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code></a> are used to save (1) intermediate forward data and (2) gradients/feedback, and (3) graph information such as <cite>predecessors</cite>.
-It also has function like <cite>draw_graph</cite> to help you visualize the structure of your computation graph.</p>
+<section id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading">¶</a></h2>
+<section id="simple-text-generation">
+<h3>Simple Text Generation<a class="headerlink" href="#simple-text-generation" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">adalflow</span> <span class="k">as</span> <span class="nn">adal</span>
+
+<span class="c1"># Basic Claude 3.5 Sonnet usage</span>
+<span class="n">anthropic_llm</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">adal</span><span class="o">.</span><span class="n">AnthropicAPIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;claude-3-5-sonnet-20241022&quot;</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What is the meaning of life in one sentence?&quot;</span><span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">anthropic_llm</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Anthropic: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is the output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Anthropic: GeneratorOutput(id=None, data=&#39;The meaning of life is to find your own purpose while making a positive impact on others and growing through experiences, relationships, and personal discovery.&#39;, thinking=None, tool_use=None, error=None, usage=CompletionUsage(completion_tokens=31, prompt_tokens=70, total_tokens=101), raw_response=&#39;The meaning of life is to find your own purpose while making a positive impact on others and growing through experiences, relationships, and personal discovery.&#39;, api_response=Message(id=&#39;msg_01LxWtz8bjf4a9Q1GoXSMFDw&#39;, content=[TextBlock(citations=None, text=&#39;The meaning of life is to find your own purpose while making a positive impact on others and growing through experiences, relationships, and personal discovery.&#39;, type=&#39;text&#39;)], model=&#39;claude-3-5-sonnet-20241022&#39;, role=&#39;assistant&#39;, stop_reason=&#39;end_turn&#39;, stop_sequence=None, type=&#39;message&#39;, usage=Usage(cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=70, output_tokens=31, server_tool_use=None, service_tier=&#39;standard&#39;)), metadata=None)
+</pre></div>
+</div>
+<p>The text output is in the <cite>data</cite> field, and the <cite>api_response</cite> field is the raw response from the Anthropic API.
+The <cite>raw_response</cite> field is the text content of the api message.</p>
 </section>
-<section id="dataclass-and-structured-output">
-<h2>DataClass and Structured Output<a class="headerlink" href="#dataclass-and-structured-output" title="Link to this heading">¶</a></h2>
-<p><a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></a> is used for developers to define a data model.
-Similar to <cite>Pydantic</cite>, it has methods like <cite>to_yaml_signature</cite>, <cite>to_json_signature</cite>, <cite>to_yaml</cite>, <cite>to_json</cite> to help you generate the data model schema and to generate the json/yaml data representation as strings.
-It can be best used together with <a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code></a> for structured output.</p>
+<section id="advanced-reasoning">
+<h3>Advanced Reasoning<a class="headerlink" href="#advanced-reasoning" title="Link to this heading">¶</a></h3>
+<p>Claude 4+ models support advanced reasoning with interleaved thinking:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enable reasoning with Claude Sonnet 4</span>
+<span class="n">anthropic_llm</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">adal</span><span class="o">.</span><span class="n">AnthropicAPIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;claude-sonnet-4-20250514&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;thinking&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;enabled&quot;</span><span class="p">,</span> <span class="s2">&quot;budget_tokens&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">},</span>
+        <span class="s2">&quot;extra_headers&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;anthropic-beta&quot;</span><span class="p">:</span> <span class="s2">&quot;interleaved-thinking-2025-05-14&quot;</span><span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What is the meaning of life in one sentence?&quot;</span><span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">anthropic_llm</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Anthropic: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is the output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Anthropic: GeneratorOutput(id=None, data=&#39;The meaning of life is to find purpose through love, growth, and connection—creating significance in our brief existence by caring for others and contributing something meaningful to the world.&#39;, thinking=&#39;This is a classic philosophical question that has been pondered by humans for millennia. There are many different perspectives on this - religious, philosophical, existential, scientific, etc. Since the user is asking for just one sentence, I should try to give a thoughtful but concise answer that captures something meaningful without being overly specific to any one worldview.\n\nSome possible approaches:\n- Focus on creating meaning through relationships, love, and connection\n- Emphasize personal growth and self-actualization  \n- Highlight contributing to something larger than oneself\n- Suggest that meaning is something we create rather than discover\n- Acknowledge the subjectivity of meaning\n\nI think a good answer would acknowledge that meaning is personal while suggesting some universal human elements that tend to contribute to a sense of meaning.&#39;, tool_use=None, error=None, usage=CompletionUsage(completion_tokens=212, prompt_tokens=98, total_tokens=310), raw_response=&#39;The meaning of life is to find purpose through love, growth, and connection—creating significance in our brief existence by caring for others and contributing something meaningful to the world.&#39;, api_response=Message(id=&#39;msg_01AR4WhBmWkrqYuSgy1ynR1k&#39;, content=[ThinkingBlock(signature=&#39;EoQICkYIBBgCKkB+8g6NuzKqJ/7OfwGHx5wggceB4m3tycTBSQj1NgE612HJPTTdwp2ZdOGXh8ZbRLq9GOVSi8irlbYln5jVkTFoEgwKIMoutjG61ZgGUUgaDEGYCumWe5A192OgAiIw+F7VcmCuFwoXkyDIhXXzPWVvNy43SoBJSNGgTxrPRh1oy+qS9AltBnPZB0WODj+IKusGvmgF4jkBxqigysaazpKJwyp3NMCfXhvScshflMUxt+3lIm0C2h0kCs6Rzzp+HSXXiTBUN6RKtGMYtl0iw4a9HlJzU4IwjdN/eAWlavaWo6fqR6ebmoiPAIHYxwH1HM5iP5j8SFToY8qeGTJnIRlX81PWDydR+M8RRCENBT/byaaK2vzpsmnSZR3ZDQ9ug+n+j9ROEWjfcbPuD/wzV43m1NugykP58Y1VG2+VbydB3MTwo3dJQ3+SdlkWmqO09xf+zzBPvV5JBJ9redlF9Sj84Z/jr4iDGxYESoj3LpPJvbHuCklpVvJweNuh5psw6owmZsVluxg5UFBaGLygxAeZeERMfwzsa0mumue4YFHlmP04qUO0X7BLBu0Uu9gFK4BqhdAQDCUgW2zuwU/Te3ZYQJMEBoq92zI8A6ngKBM7sR2k45aKwmJJBWQMNGnUvyF2IpKsF6WKDefVGtLbNyCuBTxUEf3mDyi6aoTGAd74lqv0TIciGn+/DlVIrP2/u9/pJghR2mZ4wh3jFnPwbQ6Nkbe2VWeJ88pNkGgfWLu0UlQB4NEuHyUWdKj58RYaSKRqhM0S1giP+oZs0b8hGZtTpMKZKviCU9G/AHqsKWt8A9HtalbFVbKIIYWUkb+OKBzH5TufhSYU6/4TT/VSee6Vwg877sneeXpRzrzwwZlKRpjtAmTHXO8w15p0t8ICvvzWNXZ1ryS5i5Na+cUM3ruufw6907mkWcuMjo2N/afEDIJVDKEr0s1FM34pu20veOKFZxxfw1iplYaV1c5XdWooWfPAFH2U4J0MrNC2hfSfPhUCEDjZG3vmn1tnCH4DiDFD2zZU8+OUbmx50fNps29hV6NmxkivLyl1oxSga+K7eJrPP1B6cTqBfNegXz8JN24jIkaUTQ4qojduaq8zRY3hedYz8a4lOKjdAcJ6uMlbvr65s0x8PGm6PKKXgZxxvgXVxHk5s4NaYGNohE5cWHORpBT5kwEJWTPobrkZwSiJ1gdSwQU9HNbA06MxSXqaoYchm0F6hrG9evV9ATu2s7EkVvgyzKlFxK5rggdkNjb08dF+D8nabfvoSns+P2LvyhA8xgMYNC6gL8tJnDJW0adKHVBUB6Rkq8li8WWRIyz1tKcIsUedcDQIrSw6pWy+b6VJWxsYBxlyRxURwG8YAQ==&#39;, thinking=&#39;This is a classic philosophical question that has been pondered by humans for millennia. There are many different perspectives on this - religious, philosophical, existential, scientific, etc. Since the user is asking for just one sentence, I should try to give a thoughtful but concise answer that captures something meaningful without being overly specific to any one worldview.\n\nSome possible approaches:\n- Focus on creating meaning through relationships, love, and connection\n- Emphasize personal growth and self-actualization  \n- Highlight contributing to something larger than oneself\n- Suggest that meaning is something we create rather than discover\n- Acknowledge the subjectivity of meaning\n\nI think a good answer would acknowledge that meaning is personal while suggesting some universal human elements that tend to contribute to a sense of meaning.&#39;, type=&#39;thinking&#39;), TextBlock(citations=None, text=&#39;The meaning of life is to find purpose through love, growth, and connection—creating significance in our brief existence by caring for others and contributing something meaningful to the world.&#39;, type=&#39;text&#39;)], model=&#39;claude-sonnet-4-20250514&#39;, role=&#39;assistant&#39;, stop_reason=&#39;end_turn&#39;, stop_sequence=None, type=&#39;message&#39;, usage=Usage(cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=98, output_tokens=212, server_tool_use=None, service_tier=&#39;standard&#39;)), metadata=None)
+</pre></div>
+</div>
+<p>In this case, you will see the <cite>thinking</cite> field is not None, and the <cite>data</cite> field is the final answer.</p>
+</section>
+<section id="tool-usage-with-reasoning">
+<h3>Tool Usage with Reasoning<a class="headerlink" href="#tool-usage-with-reasoning" title="Link to this heading">¶</a></h3>
+<p>Claude models can use tools while leveraging reasoning capabilities.
+In this case, we showcase the native tool usage via the <cite>tools</cite> parameter in <cite>model_kwargs</cite>.
+And the <cite>tool_use</cite> field of the <cite>GeneratorOutput</cite> will show the final tool call.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define tools for function calling</span>
+<span class="n">calculator_tool</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;calculator&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Perform mathematical calculations&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;input_schema&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;expression&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Mathematical expression to evaluate&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;expression&quot;</span><span class="p">],</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="n">database_tool</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;database_query&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Query product database&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;input_schema&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;SQL query to execute&quot;</span><span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">],</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="c1"># Configure Claude with tools and reasoning</span>
+<span class="n">anthropic_llm</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">adal</span><span class="o">.</span><span class="n">AnthropicAPIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;claude-sonnet-4-20250514&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;thinking&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;enabled&quot;</span><span class="p">,</span> <span class="s2">&quot;budget_tokens&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">},</span>
+        <span class="s2">&quot;extra_headers&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;anthropic-beta&quot;</span><span class="p">:</span> <span class="s2">&quot;interleaved-thinking-2025-05-14&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;tools&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">calculator_tool</span><span class="p">,</span> <span class="n">database_tool</span><span class="p">],</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What&#39;s the total revenue if we sold 150 units of product A at $50 each, and how does this compare to our average monthly revenue from the database?&quot;</span>
+<span class="p">}</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">anthropic_llm</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Anthropic: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is the output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>GeneratorOutput(id=None, data=&quot;I&#39;ll help you calculate the total revenue and compare it to your average monthly revenue. Let me start by calculating the revenue from the product A sales, then query the database for comparison.&quot;, thinking=&quot;The user is asking for two things:\n1. Calculate the total revenue from selling 150 units of product A at $50 each\n2. Compare this to the average monthly revenue from the database\n\nFor the first part, I can use the calculator tool to compute 150 × $50.\n\nFor the second part, I need to query the database to get information about monthly revenue. I&#39;ll need to construct a SQL query to get the average monthly revenue.\n\nLet me start with the calculation first, then query the database.&quot;, tool_use=Function(thought=None, name=&#39;calculator&#39;, args=[], kwargs={&#39;expression&#39;: &#39;150 * 50&#39;}), error=None, usage=CompletionUsage(completion_tokens=213, prompt_tokens=704, total_tokens=917), raw_response=&quot;I&#39;ll help you calculate the total revenue and compare it to your average monthly revenue. Let me start by calculating the revenue from the product A sales, then query the database for comparison.&quot;, api_response=Message(id=&#39;msg_01QBwCzqGPLAwaxTDGChZsRN&#39;, content=[ThinkingBlock(signature=&#39;EowFCkYIBBgCKkAOLlygAYV+ek/V9AE3v7CpoG1GDak/cOxM4OrAKAwYP17ALABqh1v8TrHB4ztnCyEmTUGiS8Cxd6kYYdv+ZxrbEgzMQGltMsi2KNxD24kaDJ5D/0KuwSNkjxklUiIwNI1dR7riBX0gx8DNajHM2uW0uWy3zESb/Ow6JRpOFJyOToeWPeSEmp+MoZW7RFUIKvMDsXwGXb3yd0jjbvEEHlRhROLwPXYnMhSYtCnwu3MjshE8JnbbZibcRPz/XLCfNUv4pnorOqHumrJ7LVYcTUtzkUaVWQO4aNgbnUPbUDXTs6yFtms8DmOFHZUGGvOGm3VtfAtOW90D4l5jJ0d2i+x2tds/JeELCfEnHBdle6ftQv/7fHAafNzlbJbzpwYskqfw/IHEvA6pc17GlZRqZnFePLjD+EnrWPoUZcnfbdekQLBQCFhWOjpOqygGHl3qSe9v+Nww7wna+ZLW8PAne+wD0vnzT04K+lTVXCnucRpct4aB6cZF2h6wJTxN/lVavASAbqqXnlSLYGVQNQLuvKooHPO1Oh1a4e1y5CFQdIrBaQjipOhiKGzo7KwquFa90xD3XOkejfWrKf7yuHmqK0dZ/L24CSf9isNtI4BFEgDoPHUhl83RrXJ4xhFdoNRfTtCsWqAglQvwoCdFYvCoOoWoyc3QjIyPXEdfMcDJMrM4vVvVhNLZFhrsW+pjEqO1HCvI0plSVSqtuuT2E4xBPwjBYg3U1a6y7y4dSiDNC4CznZdpTv3JunCx4+sYGbAo8QfSU8IcWTjWRER7BYvNsKq6yGeKhwfKLDgclj7pQv4fUFutuzGhNrYxI4NFQDrYn6UP03WkYBLJPD8+aNwYYM6+W/BCiBgB&#39;, thinking=&quot;The user is asking for two things:\n1. Calculate the total revenue from selling 150 units of product A at $50 each\n2. Compare this to the average monthly revenue from the database\n\nFor the first part, I can use the calculator tool to compute 150 × $50.\n\nFor the second part, I need to query the database to get information about monthly revenue. I&#39;ll need to construct a SQL query to get the average monthly revenue.\n\nLet me start with the calculation first, then query the database.&quot;, type=&#39;thinking&#39;), TextBlock(citations=None, text=&quot;I&#39;ll help you calculate the total revenue and compare it to your average monthly revenue. Let me start by calculating the revenue from the product A sales, then query the database for comparison.&quot;, type=&#39;text&#39;), ToolUseBlock(id=&#39;toolu_01SwoVz9x4M24gceoybvUrqG&#39;, input={&#39;expression&#39;: &#39;150 * 50&#39;}, name=&#39;calculator&#39;, type=&#39;tool_use&#39;)], model=&#39;claude-sonnet-4-20250514&#39;, role=&#39;assistant&#39;, stop_reason=&#39;tool_use&#39;, stop_sequence=None, type=&#39;message&#39;, usage=Usage(cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=704, output_tokens=213, server_tool_use=None, service_tier=&#39;standard&#39;)), metadata=None)
+</pre></div>
+</div>
+<p>In particular, here is the <cite>tool_use</cite> field:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>tool_use=Function(thought=None, name=&#39;calculator&#39;, args=[], kwargs={&#39;expression&#39;: &#39;150 * 50&#39;})
+</pre></div>
+</div>
+<p>As you can see, we have parsed the tool use response into a <cite>Function</cite> object.</p>
+</section>
+<section id="react-agent-with-thinking-models">
+<h3>ReAct Agent with Thinking Models<a class="headerlink" href="#react-agent-with-thinking-models" title="Link to this heading">¶</a></h3>
+<p>Instead of using the native tools, you can use the <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code></a> to use tools even easier.
+The output is directly parsed into a <cite>ReActAgentOutput</cite> object where you can find both the <cite>answer</cite> and the <cite>steps</cite> of the agent.</p>
+<p>In this case, we are using a thinking model, so inside of <cite>ReActAgent</cite>, the manual CoT is disabled on the reasoning.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.agent.react</span> <span class="kn">import</span> <span class="n">ReActAgent</span>
+
+<span class="c1"># Define thinking model configuration</span>
+<span class="n">thinking_model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;claude-sonnet-4-20250514&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;thinking&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;enabled&quot;</span><span class="p">,</span> <span class="s2">&quot;budget_tokens&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">},</span>
+    <span class="s2">&quot;extra_headers&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;anthropic-beta&quot;</span><span class="p">:</span> <span class="s2">&quot;interleaved-thinking-2025-05-14&quot;</span><span class="p">},</span>
+<span class="p">}</span>
+
+<span class="c1"># Define tools as Python functions</span>
+<span class="k">def</span> <span class="nf">calculator</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform mathematical calculations&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;7500&quot;</span>
+
+<span class="k">def</span> <span class="nf">database_query</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Query product database&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;5200&quot;</span>
+
+<span class="c1"># Create ReAct Agent with Anthropic thinking model</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">ReActAgent</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">adal</span><span class="o">.</span><span class="n">AnthropicAPIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="n">thinking_model_kwargs</span><span class="p">,</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">calculator</span><span class="p">,</span> <span class="n">database_query</span><span class="p">],</span>
+    <span class="n">use_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">is_thinking_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Enable thinking model support</span>
+<span class="p">)</span>
+
+<span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What&#39;s the total revenue if we sold 150 units of product A at $50 each, and how does this compare to our average monthly revenue from the database?&quot;</span>
+<span class="p">}</span>
+
+<span class="n">agent_response</span> <span class="o">=</span> <span class="n">agent</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Agent: </span><span class="si">{</span><span class="n">agent_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The ReAct Agent with thinking models provides several advantages:</p>
+<ul class="simple">
+<li><p><strong>Enhanced Reasoning</strong>: The agent can use Claude’s interleaved thinking to break down complex problems</p></li>
+<li><p><strong>Tool Integration</strong>: Seamless integration with Python functions as tools</p></li>
+<li><p><strong>Multi-step Planning</strong>: The agent can plan and execute multi-step reasoning processes</p></li>
+<li><p><strong>Automatic Tool Calling</strong>: Tools are automatically called based on the agent’s reasoning</p></li>
+</ul>
+</section>
+</section>
+<section id="available-models">
+<h2>Available Models<a class="headerlink" href="#available-models" title="Link to this heading">¶</a></h2>
+<p>AdalFlow supports all current Anthropic Claude models.
+You can find the list of available models in the <a class="reference external" href="https://docs.anthropic.com/en/docs/about-claude/models/overview">Anthropic API documentation</a>.</p>
+</section>
+<section id="configuration-options">
+<h2>Configuration Options<a class="headerlink" href="#configuration-options" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient" title="components.model_client.anthropic_client.AnthropicAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnthropicAPIClient</span></code></a> supports various configuration options:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">anthropic_client</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">AnthropicAPIClient</span><span class="p">(</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">,</span>  <span class="c1"># Optional: uses ANTHROPIC_API_KEY env var</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://api.anthropic.com&quot;</span><span class="p">,</span>  <span class="c1"># Optional: custom base URL</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>  <span class="c1"># Optional: request timeout in seconds</span>
+    <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>  <span class="c1"># Optional: maximum retry attempts</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Model-specific parameters can be passed via <cite>model_kwargs</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;claude-sonnet-4-20250514&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">4096</span><span class="p">,</span>
+    <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+    <span class="s2">&quot;top_p&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="s2">&quot;thinking&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;enabled&quot;</span><span class="p">,</span> <span class="s2">&quot;budget_tokens&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">},</span>
+    <span class="s2">&quot;tools&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span>  <span class="c1"># Function definitions</span>
+    <span class="s2">&quot;extra_headers&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;anthropic-beta&quot;</span><span class="p">:</span> <span class="s2">&quot;interleaved-thinking-2025-05-14&quot;</span><span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight admonition">
+<p class="admonition-title">API Reference</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient" title="components.model_client.anthropic_client.AnthropicAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.anthropic_client.AnthropicAPIClient</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.generator.html#core.generator.Generator" title="core.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.generator.Generator</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.GeneratorOutput</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></a></p></li>
+</ul>
+</div>
+<div class="highlight admonition">
+<p class="admonition-title">Related Tutorials</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../tutorials/generator.html#generator"><span class="std std-ref">Generator</span></a></p></li>
+<li><p><a class="reference internal" href="../tutorials/model_client.html#tutorials-model-client"><span class="std std-ref">ModelClient</span></a></p></li>
+<li><p><span class="xref std std-ref">RAG</span></p></li>
+<li><p><a class="reference internal" href="../tutorials/agent.html#tutorials-agent"><span class="std std-ref">Agent</span></a></p></li>
+</ul>
+</div>
 </section>
 </section>
 
@@ -487,23 +684,23 @@ It can be best used together with <a class="reference internal" href="../apis/co
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="prompt.html">
+          <a class="next-page" href="../use_cases/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Prompt</div>
+                <div class="title">Use Cases</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="index.html">
+          <a class="prev-page" href="integrations.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Tutorials</div>
+                <div class="title">All Providers</div>
                 
               </div>
             </a>
@@ -536,11 +733,18 @@ It can be best used together with <a class="reference internal" href="../apis/co
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Introduction</a><ul>
-<li><a class="reference internal" href="#llm-autodiff">LLM-AutoDiff</a></li>
-<li><a class="reference internal" href="#components">Components</a></li>
-<li><a class="reference internal" href="#parameters">Parameters</a></li>
-<li><a class="reference internal" href="#dataclass-and-structured-output">DataClass and Structured Output</a></li>
+<li><a class="reference internal" href="#">Anthropic Integration</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#key-features">Key Features</a></li>
+<li><a class="reference internal" href="#basic-usage">Basic Usage</a><ul>
+<li><a class="reference internal" href="#simple-text-generation">Simple Text Generation</a></li>
+<li><a class="reference internal" href="#advanced-reasoning">Advanced Reasoning</a></li>
+<li><a class="reference internal" href="#tool-usage-with-reasoning">Tool Usage with Reasoning</a></li>
+<li><a class="reference internal" href="#react-agent-with-thinking-models">ReAct Agent with Thinking Models</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#available-models">Available Models</a></li>
+<li><a class="reference internal" href="#configuration-options">Configuration Options</a></li>
 </ul>
 </li>
 </ul>

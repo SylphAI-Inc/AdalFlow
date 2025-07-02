@@ -1,0 +1,9 @@
+.. _core-mcp_tool:
+
+mcp_tool
+=====================
+
+.. automodule:: core.mcp_tool
+   :members:
+   :undoc-members:
+   :show-inheritance:

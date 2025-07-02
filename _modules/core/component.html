@@ -218,18 +218,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -1591,81 +1596,6 @@
 
 
 
-<div class="viewcode-block" id="FuncComponent">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.FuncComponent">[docs]</a>
-<span class="k">class</span> <span class="nc">FuncComponent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Component that wraps a function.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        fun (Callable): The function to be wrapped.</span>
-
-<span class="sd">    Examples:</span>
-
-<span class="sd">    function = lambda x: x + 1</span>
-<span class="sd">    fun_component = FuncComponent(function)</span>
-<span class="sd">    print(fun_component(1))  # 2</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">afun</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span> <span class="o">=</span> <span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span>
-        <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="p">,</span> <span class="n">fun</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fun</span> <span class="o">=</span> <span class="n">fun</span>
-
-<div class="viewcode-block" id="FuncComponent.call">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.FuncComponent.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fun</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-
-
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;fun_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="si">}</span><span class="s2">&quot;</span></div>
-
-
-
-<div class="viewcode-block" id="func_to_component">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.func_to_component">[docs]</a>
-<span class="k">def</span> <span class="nf">func_to_component</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FuncComponent</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Helper function to convert a function into a Component class.</span>
-<span class="sd">    its own class name.</span>
-
-<span class="sd">    Can be used as both a decorator and a function.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        fun (Callable): The function to be wrapped.</span>
-<span class="sd">    Returns:</span>
-<span class="sd">        FuncComponent: The component that wraps the function.</span>
-
-<span class="sd">    Examples:</span>
-<span class="sd">    1. As a decorator:</span>
-<span class="sd">        &gt;&gt;&gt; @func_to_component</span>
-<span class="sd">        &gt;&gt;&gt; def my_function(x):</span>
-<span class="sd">        &gt;&gt;&gt;     return x + 1</span>
-<span class="sd">        &gt;&gt;&gt; # is equivalent to</span>
-<span class="sd">        &gt;&gt;&gt; class MyFunctionComponent(FuncComponent):</span>
-<span class="sd">        &gt;&gt;&gt;     def __init__(self):</span>
-<span class="sd">        &gt;&gt;&gt;         super().__init__(my_function)</span>
-
-<span class="sd">    2. As a function:</span>
-<span class="sd">        &gt;&gt;&gt; my_function_component = func_to_component(my_function)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">class_name</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;Component&quot;</span>
-    <span class="p">)</span>
-    <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">fun</span><span class="p">)</span>
-    <span class="n">parser_class</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span>
-        <span class="n">class_name</span><span class="p">,</span>
-        <span class="p">(</span><span class="n">FuncComponent</span><span class="p">,),</span>
-        <span class="p">{</span><span class="s2">&quot;__init__&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">FuncComponent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">)},</span>
-    <span class="p">)</span>
-    <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">parser_class</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">parser_class</span><span class="p">()</span></div>
-
-
-
 <span class="c1"># TODO: not used yet, will further investigate dict mode</span>
 <span class="c1"># class ComponentDict(Component):</span>
 <span class="c1">#     r&quot;&quot;&quot;</span>
@@ -1807,17 +1737,17 @@
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">FuncComponent</span>
+    <span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">FuncDataComponent</span>
 
     <span class="k">def</span> <span class="nf">add_one</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
 
-    <span class="n">fun_component</span> <span class="o">=</span> <span class="n">FuncComponent</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">fun_component</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fun_component</span><span class="p">))</span>
+    <span class="n">func_data_component</span> <span class="o">=</span> <span class="n">FuncDataComponent</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">func_data_component</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">func_data_component</span><span class="p">))</span>
 
-    <span class="n">fun_component</span> <span class="o">=</span> <span class="n">func_to_component</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">fun_component</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">func_data_component</span> <span class="o">=</span> <span class="n">func_to_data_component</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">func_data_component</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 </pre></div>
         </article>
       </div>

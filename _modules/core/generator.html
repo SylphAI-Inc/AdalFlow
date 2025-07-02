@@ -218,18 +218,23 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Getting Started</a></li>
+</ul>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/introduction.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -537,6 +542,7 @@
 <span class="s2">    Args:</span>
 <span class="s2">        model_client (ModelClient): The model client to use for the generator.</span>
 <span class="s2">        model_kwargs (Dict[str, Any], optional): The model kwargs to pass to the model client. Defaults to </span><span class="si">{}</span><span class="s2">. Please refer to :ref:`ModelClient&lt;components-model_client&gt;` for the details on how to set the model_kwargs for your specific model if it is from our library.</span>
+<span class="s2">        model_type (ModelType, optional): The type of the model. Defaults to ModelType.LLM. When using reasoning models which calls different api, you should set it to ModelType.LLM_REASONING.</span>
 <span class="s2">        template (Optional[str], optional): The template for the prompt.  Defaults to :ref:`DEFAULT_ADALFLOW_SYSTEM_PROMPT&lt;core-default_prompt_template&gt;`.</span>
 <span class="s2">        prompt_kwargs (Optional[Dict], optional): The preset prompt kwargs to fill in the variables in the prompt. Defaults to None.</span>
 <span class="s2">        output_processors (Optional[Component], optional):  The output processors after model call. It can be a single component or a chained component via ``Sequential``. Defaults to None.</span>
@@ -566,6 +572,7 @@
         <span class="c1"># args for the model</span>
         <span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span>  <span class="c1"># will be intialized in the main script</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">PromptArgType</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">model_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ModelType</span><span class="p">]</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>
         <span class="c1"># args for the prompt</span>
         <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
@@ -614,6 +621,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="c1"># init the model client</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span> <span class="o">=</span> <span class="n">model_client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">=</span> <span class="n">model_type</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span> <span class="o">=</span> <span class="n">output_processors</span>
 
@@ -812,6 +820,8 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get string completion and process it with the output_processors.&quot;&quot;&quot;</span>
         <span class="c1"># parse chat completion will only fill the raw_response</span>
         <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="o">.</span><span class="n">parse_chat_completion</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
+        <span class="c1"># save the api response</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">api_response</span> <span class="o">=</span> <span class="n">completion</span>
         <span class="c1"># Now adding the data field to the output</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">raw_response</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span><span class="p">:</span>
