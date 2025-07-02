@@ -1,7 +1,18 @@
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+
+   Getting Started <self>
 
 *"Say Goodbye to Manual Prompting"*
 
-Getting Started: Install AdalFlow and Run Your First Query
+Welcome to AdalFlow!
+====================
+
+AdalFlow is a PyTorch-like library to build and auto-optimize any Language Model (LM) workflows, from Chatbots and RAG Systems to Agents. The library is a community-driven project, and we welcome everyone to join us in building the future of LLM applications!
+
+
+Install AdalFlow and Run Your First Query
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
@@ -642,3 +653,4 @@ Community
    :hidden:
 
    apis/index
+
