@@ -99,38 +99,41 @@ class DataClass:
 
     Please only exclude optional fields in the exclude dictionary.
 
-    Designed to streamline the handling, serialization, and description of data within our applications, especially to LLM prompt.
+    Designed to streamline the handling, serialization, and description of data within our applications, especially for LLM prompts.
     We explicitly handle this instead of relying on 3rd party libraries such as pydantic or marshmallow to have better
-    transparency and to keep the order of the fields when get serialized.
+    transparency and to keep the order of the fields when they're serialized.
 
     How to create your own dataclass?
 
     1. Subclass DataClass and define the fields with the `field` decorator.
     2. Use the `medata` argument and a `desc` key to describe the field.
     3. Keep the order of the fields as how you want them to be serialized and described to LLMs.
-    4. field with default value is considered optional. Field without default value and field with default_factory=required_field is considered required.
+    4. A field with a default value is considered optional. Fields without a default value and fields with default_factory=required_field is considered required.
 
     How to use it?
 
     Describing:
 
-    We defined :class:`DataClassFormatType<core.types.DataClassFormatType>` to categorize DataClass description formats
-    as input or output in LLM prompt.
+    We defined :class:`DataClassFormatType<core.types.DataClassFormatType>` to categorize DataClass formats
+    as LLM inputs or outputs. This can be broken down into:
+    (1) schema (class description)
+    (2) signatures (class description)
+    (3) examples (instance description)
 
+    (1) `DataClassFormatType.SCHEMA`
+    - Standard JSON-based desription, via: :meth:`to_schema` as string and :meth:`to_schema` as dict.
 
-    (1) For describing the class (data structure):
+    (2) `DataClassFormatType.SIGNATURE_JSON` / `DataClassFormatType.SIGNATURE_YAML`
+    - More token-efficient than SCHEMA. Since SCHEMA is always represented as a JSON string, describing the data structure in JSON may be misleading when you want LLMS to output YAML.
 
-    `Signature` is more token effcient than schema, and schema as it is always a json string, when you want LLMs to output yaml, it can be misleading if you describe the data structure in json.
+    - DataClassFormatType.SIGNATURE_JSON: imitating a json object with field name as key and description as value, :meth:`to_json_signature` as string.
+    - DataClassFormatType.SIGNATURE_YAML: imitating a yaml object with field name as key and description as value, :meth:`to_yaml_signature` as string.
 
-    - DataClassFormatType.SCHEMA: a more standard way to describe the data structure in Json string, :meth:`to_schema` as string and :meth:`to_schema` as dict.
-    - DataClassFormatType.SIGNATURE_JSON: emitating a json object with field name as key and description as value, :meth:`to_json_signature` as string.
-    - DataClassFormatType.SIGNATURE_YAML: emitating a yaml object with field name as key and description as value, :meth:`to_yaml_signature` as string.
+    (3) `DataClassFormatType.EXAMPLE_JSON` / `DataClassFormatType.EXAMPLE_YAML`
+    - Helpful to do few-shot examples in LLM prompts.
 
-    (2) For describing the class instance: this is helpful to do few-shot examples in LLM prompt.
     - DataClassFormatType.EXAMPLE_JSON: the json representation of the instance, :meth:`to_json` as string.
     - DataClassFormatType.EXAMPLE_YAML: the yaml representation of the instance, :meth:`to_yaml` as string.
-
-    Overall, we have a unified class method :meth:`format_str` to generate formatted output based on the type of operation and class/instance context.
 
     note::
         1. Avoid using Optional[Type] for the type of fields, as dataclass already distingushes between optional and required fields using default value.
@@ -461,6 +464,63 @@ class DataClass:
             return cls.from_dict(data)
         except yaml.YAMLError as e:
             raise ValueError(f"Failed to load YAML string: {e}")
+
+    @classmethod
+    def to_pydantic(cls, instance: "DataClass"):
+        """
+        Convert the current dataclass instance into an equivalent Pydantic model instance.
+        The returned Pydantic model class will have the same fields and types as the dataclass.
+
+        Args:
+        instance (DataClass): The dataclass instance to convert.
+
+        Returns:
+        A Pydantic model instance with the same field values as the dataclass instance.
+        """
+        from dataclasses import MISSING, fields as dc_fields
+        from pydantic import create_model
+
+        field_definitions = {}
+        for f in dc_fields(cls):
+            if f.default is not MISSING:
+                field_definitions[f.name] = (f.type, f.default)
+            elif f.default_factory is not MISSING:
+                # Check if the default_factory is our required_field (which should raise when called)
+                if f.default_factory.__name__ == "required_field":
+                    field_definitions[f.name] = (f.type, ...)
+                else:
+                    field_definitions[f.name] = (f.type, f.default_factory())
+            else:
+                field_definitions[f.name] = (f.type, ...)
+        pydantic_model = create_model(f"{cls.__name__}Pydantic", **field_definitions)
+        data = instance.to_dict()
+        return pydantic_model(**data)
+
+    @classmethod
+    def pydantic_to_dataclass(cls, pydantic_obj):
+        """
+        Convert a Pydantic model instance into a corresponding DataClass instance.
+        This is achieved by extracting the dictionary representation of the Pydantic model
+        and then passing it to the existing from_dict method.
+
+        Args:
+            pydantic_obj (pydantic.BaseModel): A Pydantic model instance.
+
+        Returns:
+            DataClass: An instance of the DataClass converted from the Pydantic model.
+        """
+        from pydantic import BaseModel
+
+        if not isinstance(pydantic_obj, BaseModel):
+            raise TypeError(
+                f"Expected a Pydantic model instance, got {type(pydantic_obj)} instead."
+            )
+        # Convert the pydantic model instance to a dict and then create a DataClass instance.
+        data = pydantic_obj.model_dump()
+        try:
+            return cls.from_dict(data)
+        except Exception as e:
+            raise ValueError(f"Failed to convert pydantic model to DataClass: {e}")
 
     def to_yaml_obj(
         self,

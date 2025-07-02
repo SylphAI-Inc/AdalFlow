@@ -114,7 +114,7 @@ class Embedder(DataComponent):
                 self.model_client.parse_embedding_response(response)
             )
         except Exception as e:
-            log.error(f"Error parsing the embedding {response}: {e}")
+            log.error(f"Error parsing the embedding {e} : {response}")
             return EmbedderOutput(raw_response=str(response), error=str(e))
         output: EmbedderOutputType = EmbedderOutputType(raw_response=embedding_output)
         # data = embedding_output.data

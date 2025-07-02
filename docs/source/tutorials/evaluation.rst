@@ -471,7 +471,7 @@ Train/Align LLM Judge
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We should better align the LLM judge with a human preference dataset that contains (generated text, ground truth text, score) triplets.
-This process is the same as optimizinh the task pipeline, where you can create an ``AdalComponent`` and call our ``Trainer`` to do the in-context learning.
+This process is the same as optimizing the task pipeline, where you can create an ``AdalComponent`` and call our ``Trainer`` to do the in-context learning.
 From the printout, you can observe the two trainable_prompt_kwargs in the ``DefaultLLMJudge``.
 
 In this case, we may want to compute a correlation score between the human judge and the LLM judge.

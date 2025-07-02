@@ -31,6 +31,7 @@ All base/abstract classes, core components like generator, embedder, and basic f
    core.prompt_builder
    core.tokenizer
    core.func_tool
+   core.mcp_tool
    core.tool_manager
    core.types
    core.parameter

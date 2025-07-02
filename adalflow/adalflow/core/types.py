@@ -13,6 +13,9 @@ from typing import (
     Literal,
     Callable,
     Awaitable,
+    Generator,
+    AsyncGenerator,
+    Coroutine,
 )
 from collections import OrderedDict
 from dataclasses import (
@@ -42,7 +45,6 @@ from adalflow.components.model_client import (
     OllamaClient,
 )
 
-
 logger = logging.getLogger(__name__)
 
 T_co = TypeVar("T_co", covariant=True)
@@ -57,6 +59,7 @@ class ModelType(Enum):
      It helps ModelClient identify the model type required to correctly call the model."""
     EMBEDDER = auto()
     LLM = auto()
+    LLM_REASONING = auto()  # use reasoning model compatible to openai.responses
     RERANKER = auto()  # ranking model
     IMAGE_GENERATION = auto()  # image generation models like DALL-E
     UNDEFINED = auto()
@@ -223,43 +226,36 @@ class CompletionUsage:
 
 
 @dataclass
-class GeneratorOutput(DataClass, Generic[T_co]):
-    __doc__ = r"""
-    The output data class for the Generator component.
-    We can not control its output 100%, so we use this to track the error_message and
-    allow the raw string output to be passed through.
-
-    (1) When model predict and output processors are both without error,
-    we have data as the final output, error as None.
-    (2) When either model predict or output processors have error,
-    we have data as None, error as the error message.
-
-    Raw_response will depends on the model predict.
-    """
-    id: Optional[str] = field(
-        default=None, metadata={"desc": "The unique id of the output"}
-    )
-
-    data: T_co = field(
-        default=None,
-        metadata={"desc": "The final output data potentially after output parsers"},
-    )
-    error: Optional[str] = field(
-        default=None,
-        metadata={"desc": "Error message if any"},
-    )
-    usage: Optional[CompletionUsage] = field(
-        default=None, metadata={"desc": "Usage tracking"}
-    )
-    raw_response: Optional[str] = field(
-        default=None, metadata={"desc": "Raw string response from the model"}
-    )  # parsed from model client response
-    metadata: Optional[Dict[str, object]] = field(
-        default=None, metadata={"desc": "Additional metadata"}
+class InputTokensDetails:
+    __doc__ = r"Details about input tokens used in a response"
+    cached_tokens: Optional[int] = field(
+        metadata={"desc": "Number of cached tokens used"}, default=0
     )
 
 
-GeneratorOutputType = GeneratorOutput[object]
+@dataclass
+class OutputTokensDetails:
+    __doc__ = r"Details about output tokens used in a response"
+    reasoning_tokens: Optional[int] = field(
+        metadata={"desc": "Number of tokens used for reasoning"}, default=0
+    )
+
+
+@dataclass
+class ResponseUsage:
+    __doc__ = r"Usage information for a response, including token counts, in sync with OpenAI response usage api spec at openai/types/response_usage.py"
+    input_tokens: int = field(metadata={"desc": "Number of input tokens used"})
+    output_tokens: int = field(metadata={"desc": "Number of output tokens used"})
+    total_tokens: int = field(metadata={"desc": "Total number of tokens used"})
+    input_tokens_details: InputTokensDetails = field(
+        metadata={"desc": "Details about input tokens"},
+        default_factory=InputTokensDetails,
+    )
+    output_tokens_details: OutputTokensDetails = field(
+        metadata={"desc": "Details about output tokens"},
+        default_factory=OutputTokensDetails,
+    )
+
 
 #######################################################################################
 # Data modeling for Retriever component
@@ -312,10 +308,11 @@ AsyncCallable = Callable[..., Awaitable[Any]]
 @dataclass
 class FunctionDefinition(DataClass):
     __doc__ = r"""The data modeling of a function definition, including the name, description, and parameters."""
-    class_instance: Optional[Any] = field(
-        default=None,
-        metadata={"desc": "The instance of the class this function belongs to"},
-    )
+    # class_instance: Optional[Any] = field(
+    #     default=None,
+    #     metadata={"desc": "The instance of the class this function belongs to"},
+    # ) 
+    # NOTE: for class method: cls_name + "_" + name
     func_name: str = field(
         metadata={"desc": "The name of the tool"}, default=required_field
     )
@@ -366,7 +363,7 @@ class Function(DataClass):
     """
     thought: Optional[str] = field(
         default=None, metadata={"desc": "Why the function is called"}
-    )
+    )  # if the model itself is a thinking model, disable thought field
     name: str = field(default="", metadata={"desc": "The name of the function"})
     args: Optional[List[object]] = field(
         default_factory=list,
@@ -429,6 +426,57 @@ Valid function call expression. \
 Example: "FuncName(a=1, b=2)" \
 Follow the data type specified in the function parameters.\
 e.g. for Type object with x,y properties, use "ObjectType(x=1, y=2)"""
+
+
+@dataclass
+class GeneratorOutput(DataClass, Generic[T_co]):
+    __doc__ = r"""
+    The output data class for the Generator component.
+    We can not control its output 100%, so we use this to track the error_message and
+    allow the raw string output to be passed through.
+
+    (1) When model predict and output processors are both without error,
+    we have data as the final output, error as None.
+    (2) When either model predict or output processors have error,
+    we have data as None, error as the error message.
+
+    Raw_response will depends on the model predict.
+    """
+    id: Optional[str] = field(
+        default=None, metadata={"desc": "The unique id of the output"}
+    )
+
+    data: T_co = field(
+        default=None,
+        metadata={"desc": "The final output data potentially after output parsers"},
+    )  # for reasoning model, this is only the text content/answer (raw_response)
+    # extend to support thinking and tool use
+    thinking: Optional[str] = field(
+        default=None, metadata={"desc": "The thinking of the model"}
+    )
+    tool_use: Optional[Function] = field(
+        default=None, metadata={"desc": "The tool use of the model"}
+    )
+    error: Optional[str] = field(
+        default=None,
+        metadata={"desc": "Error message if any"},
+    )
+    usage: Optional[CompletionUsage] = field(
+        default=None, metadata={"desc": "Usage tracking"}
+    )
+    raw_response: Optional[str] = field(
+        default=None, metadata={"desc": "Raw string response from the model"}
+    )  # parsed from model client response
+
+    api_response: Optional[Any] = field(
+        default=None, metadata={"desc": "Raw response from the api/model client"}
+    )
+    metadata: Optional[Dict[str, object]] = field(
+        default=None, metadata={"desc": "Additional metadata"}
+    )
+
+
+GeneratorOutputType = GeneratorOutput[object]
 
 
 @dataclass
@@ -521,6 +569,12 @@ class FunctionExpression(DataClass):
             raise ValueError(f"Error generating function expression: {e}")
         return cls(action=action, thought=thought)
 
+FunctionOutputValueType = Union[
+    Any,
+    Generator[Any, Any, Any],
+    AsyncGenerator[Any, Any],
+    Coroutine[Any, Any, Any],
+]
 
 @dataclass
 class FunctionOutput(DataClass):
@@ -539,8 +593,10 @@ class FunctionOutput(DataClass):
             "desc": "The parsed Function object if the input is FunctionExpression"
         },
     )
-    output: Optional[object] = field(
-        default=None, metadata={"desc": "The output of the function execution"}
+    output: Optional[
+        FunctionOutputValueType
+    ] = field(
+        default=None, metadata={"desc": "The output of the function execution - supports sync functions, sync generators, async functions, and async generators"}
     )
     error: Optional[str] = field(
         default=None, metadata={"desc": "The error message if any"}

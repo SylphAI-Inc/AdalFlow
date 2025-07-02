@@ -1,4 +1,34 @@
 
+## [1.0.5] - Release Date TBD
+
+# Added
+
+-  `Runner` v1 runner to be able to do sync/async agent call.
+-  `Agent` v1 agent contains the planner, tools to collaborate with the Runner.
+
+### Fixed
+- `LocalDB` fixed with keyword arguments.
+
+### Improved
+- `React` agent:
+  - allow `answer` to be customized to any data type and even `DataClass` via `answer_data_type`.
+  - allow `role_desc` to be customized to any use case.
+  - allow `is_thinking_model` so that we can better support thinking model such as `claude-sonnet-4-20250514` for better performance.
+
+- `AnthropicAPIClient`, `SambaNovaClient`
+  - added `handle_streaming_response` to support streaming response.
+  - Enabled the parsing to `LLMResponse` and extract it to GeneratorOutput.
+
+- `Generator`
+  - added `model_type` to support `LLM_REASONING`.
+  - inside of `GeneratorOutput`, support `api_response` so that the whole api_response is saved besides of the `raw_response` which is mainly text message.
+  - inside of `GeneratorOutput`, support `thinking` and `tool_user`(`Function` type)
+- `ToolManager` and `FunctionTool`
+  - added `is_async_generator` property in `FunctionTool` to support streaming output
+
+### Deleted
+- `FuncComponent` and `func_to_component` decorator.
+
 ## [1.0.4] - 2025-02-13
 
 ### Modified

@@ -67,7 +67,9 @@ Here is an example of using a local embedding model (e.g., ``thenlper/gte-base``
 It really is just normal model inference code.
 
 
+.. note::
 
+    Integrating to different model providers such as DeepSeek, Mixtral etc has gotten easier as most providers are converging to just use OpenAI sdks and point to their own model endpoints.
 
 ModelClient Protocol
 -----------------------------------------------------------------------------------------------------------
@@ -1523,4 +1525,3 @@ This is the function call that triggers the execution of the custom model client
    - :class:`components.model_client.anthropic_client.AnthropicAPIClient`
    - :class:`components.model_client.google_client.GoogleGenAIClient`
    - :class:`components.model_client.cohere_client.CohereAPIClient`
-

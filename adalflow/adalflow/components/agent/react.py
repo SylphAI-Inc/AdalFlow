@@ -1,6 +1,6 @@
 """Implementation and optimization of React agent."""
 
-from typing import List, Union, Callable, Optional, Any, Dict
+from typing import List, Union, Callable, Optional, Any, Dict, TypeVar, Type
 from dataclasses import dataclass, field
 from adalflow.core.base_data_class import DataClass
 import logging
@@ -23,16 +23,21 @@ from adalflow.core.types import (
 from adalflow.optim.grad_component import fun_to_grad_component
 from adalflow.core.model_client import ModelClient
 from adalflow.utils.logger import printc
+from adalflow.core.prompt_builder import Prompt
 
 
 log = logging.getLogger(__name__)
+T = TypeVar("T")
 
 __all__ = ["DEFAULT_REACT_AGENT_SYSTEM_PROMPT", "ReActAgent"]
 
 
+default_role_desc = """You are an excellent task planner."""
+
 react_agent_task_desc = r"""
 <START_OF_TASK_SPEC>
-You are an excellent task planner.
+{{role_desc}}
+
 Answer the input query using the tools provided below with maximum accuracy.
 
 Each step you will read the previous thought, Action(name, kwargs), and Observation(execution result of the action) and then provide the next Thought and Action.
@@ -54,7 +59,7 @@ REMEMBER:
 # - Answer with only the exact answer phrase, not a full sentence or paragraph.
 
 DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
-{{react_agent_task_desc}}
+{{task_desc}}
 - You cant use more than {{max_steps}} steps. At the {{max_steps}}th current step, must finish with answer.
 
 {# Tools #}
@@ -106,7 +111,9 @@ Your previous steps:
 {% for history in step_history %}
 Step {{ loop.index }}.
 {% if history.action %}
+{% if history.action.thought %}
 "thought": "{{history.action.thought}}",
+{% endif %}
 "name": "{{history.action.name}},
 "kwargs": {{history.action.kwargs}}",
 {% endif %}
@@ -160,7 +167,7 @@ class ReActAgent(Component):
     Users need to set up:
     - tools: a list of tools to use to complete the task. Each tool is a function or a function tool.
     - max_steps: the maximum number of steps the agent can take to complete the task.
-    - use_llm_as_fallback: a boolean to decide whether to use an additional LLM model as a fallback tool to answer the query.
+    - add_llm_as_fallback: a boolean to decide whether to use an additional LLM model as a fallback tool to answer the query.
     - model_client: the model client to use to generate the response.
     - model_kwargs: the model kwargs to use to generate the response.
     - template: the template to use to generate the prompt. Default is DEFAULT_REACT_AGENT_SYSTEM_PROMPT.
@@ -213,16 +220,19 @@ class ReActAgent(Component):
         max_steps: int = 10,
         add_llm_as_fallback: bool = True,
         # TODO: the examples are just for specifying the output format, not end to end input-output examples, need further optimization
-        examples: Union[List[Function], List[str]] = [],
+        examples: Optional[Union[List[Function], List[str]]] = None,
         *,
         # the following arguments are mainly for the planner
         model_client: ModelClient,
         model_kwargs: Dict = {},
         # template for the planner
         template: Optional[str] = None,  # allow users to customize the template
+        role_desc: Optional[str] = default_role_desc,
         context_variables: Optional[Dict] = None,  # context variables
+        is_thinking_model: bool = False,
         use_cache: bool = True,
         debug: bool = False,
+        answer_data_type: Type[T] = str,
     ):
         super().__init__()
         template = template or DEFAULT_REACT_AGENT_SYSTEM_PROMPT
@@ -233,6 +243,7 @@ class ReActAgent(Component):
         self.context_variables = context_variables
         self.debug = debug
         self.use_cache = use_cache
+        self.answer_data_type = answer_data_type
 
         processed_tools = self._init_tools(tools, model_client, model_kwargs)
         self.tool_manager: ToolManager = ToolManager(
@@ -241,30 +252,30 @@ class ReActAgent(Component):
         )
 
         ouput_data_class = Function
-        example = Function(
-            thought="Based on all the subtasks, I am able to answer the question. Following the finish doc string, and ....",
-            name="finish",
-            kwargs={"answer": "final answer"},
-        )
-        self._examples = examples + [example]
+
+        self._examples = examples or []
+
+        self.is_thinking_model = is_thinking_model
+        include_fields = ["name", "kwargs"]  # thinking model already outputs thinking
+        if not is_thinking_model:
+            include_fields.append("thought")
 
         output_parser = JsonOutputParser(
             data_class=ouput_data_class,
             examples=self._examples,
             return_data_class=True,
-            include_fields=[
-                "thought",
-                "name",
-                "kwargs",
-            ],
+            include_fields=include_fields,
         )
+
+        task_desc = Prompt(
+            template=react_agent_task_desc, prompt_kwargs={"role_desc": role_desc}
+        ).call()
         prompt_kwargs = {
             "tools": self.tool_manager.yaml_definitions,
             "output_format_str": output_parser.format_instructions(),
-            "react_agent_task_desc": Parameter(
+            "task_desc": Parameter(
                 name="react_agent_task_desc",
-                data=react_agent_task_desc,
-                # data="You are an excellent task planner. Answer the input query using the tools provided below with maximum accuracy.\n\nEach step you will read the previous thought, Action(name, kwargs), and Observation(execution result of the action) and then provide the next Thought and Action.\n\n<START_OF_TASK_SPEC>\nFollow function docstring to best call the tool.\n- For simple queries: Directly call the 'finish' action and answer with a concise 'yes' or 'no' when it fits.\n- For complex queries:\n    - Step 1: Understand the main subject(s) and context of the user query accurately.\n    - Step 2: Break down the query into multisteps, starting with the first tool/subquery.\n    - Ensure each step accurately reflects the subjects under consideration.\n    - Continuously verify your extracted information and logic for factual accuracy using concise comparisons.\n    - At step 'finish', conclude with a precise final answer.\nREMEMBER:\n- Action MUST call one of the tools. It CANNOT be empty.\n- You will ALWAYS END WITH 'finish' tool to conclude the task directly with an answer or failure message.\n- When the tool is a class method and when class_instance exists, use <class_instance_value>.<func_name> to call instead (NOT the CLASS NAME).\n<END_OF_TASK_SPEC>",
+                data=task_desc,
                 role_desc="Task instruction for the agent to plan steps to solve a question in sequential and multi-steps to get the final answer. \
                 For optimizer: you need to adapt this to the current specific task.",
                 param_type=ParameterType.PROMPT,
@@ -333,7 +344,7 @@ class ReActAgent(Component):
                 name="doc_string",
             ),
         )
-        def finish(answer: str, **kwargs) -> str:
+        def finish(answer: self.answer_data_type, **kwargs) -> str:
             return answer
 
         self._finish = FunctionTool(fn=finish, component=finish)
@@ -373,6 +384,10 @@ class ReActAgent(Component):
             try:
 
                 step_output.action = response.data.data
+                # if thinking exists, then add it to the action.thought field
+                if response.data.thinking:
+                    step_output.action.thought = response.data.thinking
+
                 if self.debug:
                     printc(
                         f"Step test train:  {step}: {step_output.action}", color="blue"
@@ -448,9 +463,12 @@ class ReActAgent(Component):
             step_output.action = None
             log.error(error_msg)
             return step_output
+
         else:
             try:
                 fun_expr: Function = x.data
+                if x.thinking:
+                    fun_expr.thought = x.thinking
 
                 step_output.action = fun_expr
                 # # add id to the function
@@ -521,8 +539,8 @@ class ReActAgent(Component):
             response: Union[GeneratorOutput, Parameter] = self.planner(
                 prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs, id=id
             )
-            # prompt_str = self.planner.get_prompt(**prompt_kwargs)
-            # printc(f"Prompt: {prompt_str}", color="yellow")
+            prompt_str = self.planner.get_prompt(**prompt_kwargs)
+            printc(f"Prompt: {prompt_str}", color="yellow")
 
         except Exception as e:
             error_msg = f"Error happened in planner response at step {step}: {e}.\n"
@@ -640,9 +658,15 @@ class ReActAgent(Component):
                     "react_agent_task_desc"
                 ],
             )
+
             return answer
         else:
-            return last_step.observation
+            from dataclasses import is_dataclass
+
+            answer = last_step.observation
+            if is_dataclass(self.answer_data_type):
+                answer = self.answer_data_type.from_dict(answer)
+            return answer
 
     def call(self, *args, **kwargs) -> ReActOutput:
         output = self.bicall(*args, **kwargs)
@@ -668,7 +692,7 @@ class ReActAgent(Component):
 
     def bicall(
         self,
-        input: str,
+        input: str,  # open up to the external
         promt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
         id: Optional[str] = None,

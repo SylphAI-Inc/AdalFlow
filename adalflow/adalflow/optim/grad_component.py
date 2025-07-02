@@ -483,11 +483,12 @@ class FunGradComponent(GradComponent):
 
     def __init__(
         self,
-        fun: Optional[Callable] = None,
-        afun: Optional[Callable] = None,
+        fun: Callable,
+        # afun: Optional[Callable] = None,
         desc: str = "",
         doc_string=None,
     ):
+
         desc = desc or fun.__doc__ or f"Function: {fun.__name__}"
 
         super().__init__(desc=desc, name=fun.__name__)
@@ -562,7 +563,6 @@ def fun_to_grad_component(desc: str = "", doc_string=None) -> Callable:
             + "GradComponent"
         )
         # 2) define the new class
-        printc(f"fun doc 1: {doc_string}, desc: {desc}")
         component_class = type(
             class_name,
             (FunGradComponent,),
