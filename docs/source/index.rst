@@ -20,7 +20,7 @@ Install AdalFlow and Run Your First Query
 
    pip install -U adalflow
 
-LM apps often relys on other cloud or local model services and each of them often has their own Python SDKs.
+LM apps often rely on other cloud or local model services and each of them often has their own Python SDKs.
 AdalFlow handles all of them as optional packages, so that developers only need to install the ones they need.
 
 .. tabs::

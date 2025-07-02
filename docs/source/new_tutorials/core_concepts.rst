@@ -12,7 +12,7 @@ Core Concepts
 
 LLM-AutoDiff
 -----------------
-AdalFlow mainly relys on `LLM-AutoDiff <https://arxiv.org/abs/2501.16673>`__ to do automatic prompt engineering(APE).
+AdalFlow mainly relies on `LLM-AutoDiff <https://arxiv.org/abs/2501.16673>`__ to do automatic prompt engineering(APE).
 
 Similar to Auto-differentiation in PyTorch, LLM-AutoDiff works by forming a runtime computation graph of prompts, hyperparameters, intermediate outputs, and losses in the `forward` pass.
 In the `backward` pass, the `backward engine` LLM we put at each node will work together to identify which prompts are the cause of errors, so that a `feedback`-driven LM optimizer can leverage it to propose new prompts.
