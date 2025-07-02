@@ -3,9 +3,13 @@ from unittest.mock import patch, AsyncMock, Mock
 import os
 import base64
 
-from openai.types import CompletionUsage, Image
-from openai.types.chat import ChatCompletion
-from openai.types.chat import ChatCompletionChunk
+from openai.types import Image
+from openai.types.responses import (
+    Response,
+    ResponseCompletedEvent,
+    ResponseTextDeltaEvent,
+    ResponseUsage,
+)
 
 from adalflow.core.types import ModelType, GeneratorOutput
 from adalflow.components.model_client.openai_client import OpenAIClient
@@ -21,46 +25,35 @@ def getenv_side_effect(key):
 class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.client = OpenAIClient(api_key="fake_api_key")
-        self.mock_response = {
-            "id": "cmpl-3Q8Z5J9Z1Z5z5",
-            "created": 1635820005,
-            "object": "chat.completion",
-            "model": "gpt-4o",
-            "choices": [
-                {
-                    "message": {
-                        "content": "Hello, world!",
-                        "role": "assistant",
-                    },
-                    "index": 0,
-                    "finish_reason": "stop",
-                }
-            ],
-            "usage": CompletionUsage(
-                completion_tokens=10, prompt_tokens=20, total_tokens=30
-            ),
-        }
-        self.mock_response = ChatCompletion(**self.mock_response)
-        self.mock_vision_response = {
-            "id": "cmpl-4Q8Z5J9Z1Z5z5",
-            "created": 1635820005,
-            "object": "chat.completion",
-            "model": "gpt-4o",
-            "choices": [
-                {
-                    "message": {
-                        "content": "The image shows a beautiful sunset over mountains.",
-                        "role": "assistant",
-                    },
-                    "index": 0,
-                    "finish_reason": "stop",
-                }
-            ],
-            "usage": CompletionUsage(
-                completion_tokens=15, prompt_tokens=25, total_tokens=40
-            ),
-        }
-        self.mock_vision_response = ChatCompletion(**self.mock_vision_response)
+        # Create a mock Response object with the required fields
+        self.mock_response = Mock(spec=Response)
+        self.mock_response.id = "resp-3Q8Z5J9Z1Z5z5"
+        self.mock_response.created_at = 1635820005.0
+        self.mock_response.model = "gpt-4o"
+        self.mock_response.object = "response"
+        self.mock_response.output_text = "Hello, world!"
+        self.mock_response.usage = ResponseUsage(
+            input_tokens=20,
+            output_tokens=10,
+            total_tokens=30,
+            input_tokens_details={"cached_tokens": 0},
+            output_tokens_details={"reasoning_tokens": 0},
+        )
+        self.mock_vision_response = Mock(spec=Response)
+        self.mock_vision_response.id = "resp-4Q8Z5J9Z1Z5z5"
+        self.mock_vision_response.created_at = 1635820005.0
+        self.mock_vision_response.model = "gpt-4o"
+        self.mock_vision_response.object = "response"
+        self.mock_vision_response.output_text = (
+            "The image shows a beautiful sunset over mountains."
+        )
+        self.mock_vision_response.usage = ResponseUsage(
+            input_tokens=25,
+            output_tokens=15,
+            total_tokens=40,
+            input_tokens_details={"cached_tokens": 0},
+            output_tokens_details={"reasoning_tokens": 0},
+        )
         self.mock_image_response = [
             Image(
                 url="https://example.com/generated_image.jpg",
@@ -70,25 +63,11 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
             )
         ]
         self.api_kwargs = {
-            "messages": [{"role": "user", "content": "Hello"}],
+            "input": "Hello",
             "model": "gpt-4o",
         }
         self.vision_api_kwargs = {
-            "messages": [
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": "Describe this image"},
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": "https://example.com/image.jpg",
-                                "detail": "auto",
-                            },
-                        },
-                    ],
-                }
-            ],
+            "input": "Describe this image: https://example.com/image.jpg",
             "model": "gpt-4o",
         }
         self.image_generation_kwargs = {
@@ -99,47 +78,37 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
             "n": 1,
         }
 
-        # Add streaming test data
-        self.streaming_chunks = [
-            ChatCompletionChunk(
-                id="cmpl-123",
-                object="chat.completion.chunk",
-                created=1635820005,
-                model="gpt-4",
-                choices=[
-                    {
-                        "delta": {"content": "Once "},
-                        "index": 0,
-                        "finish_reason": None,
-                    }
-                ],
-            ),
-            ChatCompletionChunk(
-                id="cmpl-123",
-                object="chat.completion.chunk",
-                created=1635820005,
-                model="gpt-4",
-                choices=[
-                    {
-                        "delta": {"content": "upon "},
-                        "index": 0,
-                        "finish_reason": None,
-                    }
-                ],
-            ),
-            ChatCompletionChunk(
-                id="cmpl-123",
-                object="chat.completion.chunk",
-                created=1635820005,
-                model="gpt-4",
-                choices=[
-                    {
-                        "delta": {},
-                        "index": 0,
-                        "finish_reason": "stop",
-                    }
-                ],
-            ),
+        # Add streaming test data for response API using Mock objects
+        mock_delta_event1 = Mock(spec=ResponseTextDeltaEvent)
+        mock_delta_event1.type = "response.output_text.delta"
+        mock_delta_event1.delta = "Once "
+
+        mock_delta_event2 = Mock(spec=ResponseTextDeltaEvent)
+        mock_delta_event2.type = "response.output_text.delta"
+        mock_delta_event2.delta = "upon "
+
+        mock_response_obj = Mock(spec=Response)
+        mock_response_obj.id = "resp-123"
+        mock_response_obj.created_at = 1635820005.0
+        mock_response_obj.model = "gpt-4"
+        mock_response_obj.object = "response"
+        mock_response_obj.output_text = "Once upon "
+        mock_response_obj.usage = ResponseUsage(
+            input_tokens=10,
+            output_tokens=2,
+            total_tokens=12,
+            input_tokens_details={"cached_tokens": 0},
+            output_tokens_details={"reasoning_tokens": 0},
+        )
+
+        mock_completed_event = Mock(spec=ResponseCompletedEvent)
+        mock_completed_event.type = "response.completed"
+        mock_completed_event.response = mock_response_obj
+
+        self.streaming_events = [
+            mock_delta_event1,
+            mock_delta_event2,
+            mock_completed_event,
         ]
 
     def test_encode_image(self):
@@ -189,7 +158,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result, pre_formatted)
 
     def test_convert_inputs_to_api_kwargs_with_images(self):
-        # Test with single image URL
+        # Test with single image URL - Response API uses input as string
         model_kwargs = {
             "model": "gpt-4o",
             "images": "https://example.com/image.jpg",
@@ -199,16 +168,12 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
             model_kwargs=model_kwargs,
             model_type=ModelType.LLM,
         )
-        expected_content = [
-            {"type": "text", "text": "Describe this image"},
-            {
-                "type": "image_url",
-                "image_url": {"url": "https://example.com/image.jpg", "detail": "auto"},
-            },
-        ]
-        self.assertEqual(result["messages"][0]["content"], expected_content)
+        print(result)
+        # Response API expects input as string, not messages
+        self.assertEqual(result["input"], "Describe this image")
+        self.assertEqual(result["model"], "gpt-4o")
 
-        # Test with multiple images
+        # Test with multiple images - Response API uses input as string
         model_kwargs = {
             "model": "gpt-4o",
             "images": [
@@ -222,24 +187,9 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
             model_kwargs=model_kwargs,
             model_type=ModelType.LLM,
         )
-        expected_content = [
-            {"type": "text", "text": "Compare these images"},
-            {
-                "type": "image_url",
-                "image_url": {
-                    "url": "https://example.com/image1.jpg",
-                    "detail": "high",
-                },
-            },
-            {
-                "type": "image_url",
-                "image_url": {
-                    "url": "https://example.com/image2.jpg",
-                    "detail": "high",
-                },
-            },
-        ]
-        self.assertEqual(result["messages"][0]["content"], expected_content)
+        # Response API expects input as string, not messages
+        self.assertEqual(result["input"], "Compare these images")
+        self.assertEqual(result["model"], "gpt-4o")
 
     @patch("adalflow.components.model_client.openai_client.AsyncOpenAI")
     async def test_acall_llm(self, MockAsyncOpenAI):
@@ -248,9 +198,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
 
         # Mock the response
 
-        mock_async_client.chat.completions.create = AsyncMock(
-            return_value=self.mock_response
-        )
+        mock_async_client.responses.create = AsyncMock(return_value=self.mock_response)
 
         # Call the _acall method
 
@@ -260,9 +208,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
 
         # Assertions
         MockAsyncOpenAI.assert_called_once()
-        mock_async_client.chat.completions.create.assert_awaited_once_with(
-            **self.api_kwargs
-        )
+        mock_async_client.responses.create.assert_awaited_once_with(**self.api_kwargs)
         self.assertEqual(result, self.mock_response)
 
     @patch(
@@ -274,8 +220,8 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         MockSyncOpenAI.return_value = mock_sync_client
         mock_init_sync_client.return_value = mock_sync_client
 
-        # Mock the client's api: chat.completions.create
-        mock_sync_client.chat.completions.create = Mock(return_value=self.mock_response)
+        # Mock the client's api: responses.create
+        mock_sync_client.responses.create = Mock(return_value=self.mock_response)
 
         # Set the sync client
         self.client.sync_client = mock_sync_client
@@ -284,17 +230,15 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         result = self.client.call(api_kwargs=self.api_kwargs, model_type=ModelType.LLM)
 
         # Assertions
-        mock_sync_client.chat.completions.create.assert_called_once_with(
-            **self.api_kwargs
-        )
+        mock_sync_client.responses.create.assert_called_once_with(**self.api_kwargs)
         self.assertEqual(result, self.mock_response)
 
-        # test parse_chat_completion
+        # test parse_response
         output = self.client.parse_chat_completion(completion=self.mock_response)
         self.assertTrue(isinstance(output, GeneratorOutput))
         self.assertEqual(output.raw_response, "Hello, world!")
-        self.assertEqual(output.usage.completion_tokens, 10)
-        self.assertEqual(output.usage.prompt_tokens, 20)
+        self.assertEqual(output.usage.output_tokens, 10)
+        self.assertEqual(output.usage.input_tokens, 20)
         self.assertEqual(output.usage.total_tokens, 30)
 
     @patch("adalflow.components.model_client.openai_client.AsyncOpenAI")
@@ -303,7 +247,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         MockAsyncOpenAI.return_value = mock_async_client
 
         # Mock the vision model response
-        mock_async_client.chat.completions.create = AsyncMock(
+        mock_async_client.responses.create = AsyncMock(
             return_value=self.mock_vision_response
         )
 
@@ -314,7 +258,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
 
         # Assertions
         MockAsyncOpenAI.assert_called_once()
-        mock_async_client.chat.completions.create.assert_awaited_once_with(
+        mock_async_client.responses.create.assert_awaited_once_with(
             **self.vision_api_kwargs
         )
         self.assertEqual(result, self.mock_vision_response)
@@ -329,9 +273,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         mock_init_sync_client.return_value = mock_sync_client
 
         # Mock the vision model response
-        mock_sync_client.chat.completions.create = Mock(
-            return_value=self.mock_vision_response
-        )
+        mock_sync_client.responses.create = Mock(return_value=self.mock_vision_response)
 
         # Set the sync client
         self.client.sync_client = mock_sync_client
@@ -342,19 +284,19 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         )
 
         # Assertions
-        mock_sync_client.chat.completions.create.assert_called_once_with(
+        mock_sync_client.responses.create.assert_called_once_with(
             **self.vision_api_kwargs
         )
         self.assertEqual(result, self.mock_vision_response)
 
-        # Test parse_chat_completion for vision model
+        # Test parse_response for vision model
         output = self.client.parse_chat_completion(completion=self.mock_vision_response)
         self.assertTrue(isinstance(output, GeneratorOutput))
         self.assertEqual(
             output.raw_response, "The image shows a beautiful sunset over mountains."
         )
-        self.assertEqual(output.usage.completion_tokens, 15)
-        self.assertEqual(output.usage.prompt_tokens, 25)
+        self.assertEqual(output.usage.output_tokens, 15)
+        self.assertEqual(output.usage.input_tokens, 25)
         self.assertEqual(output.usage.total_tokens, 40)
 
     def test_convert_inputs_to_api_kwargs_for_image_generation(self):
@@ -538,15 +480,13 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         client.sync_client = mock_sync_client
 
         # Mock the API call
-        mock_sync_client.chat.completions.create = Mock(return_value=self.mock_response)
+        mock_sync_client.responses.create = Mock(return_value=self.mock_response)
 
         # Call the method
         result = client.call(api_kwargs=self.api_kwargs, model_type=ModelType.LLM)
 
         # Assertions
-        mock_sync_client.chat.completions.create.assert_called_once_with(
-            **self.api_kwargs
-        )
+        mock_sync_client.responses.create.assert_called_once_with(**self.api_kwargs)
         self.assertEqual(result, self.mock_response)
 
     @patch("adalflow.components.model_client.openai_client.AsyncOpenAI")
@@ -565,9 +505,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         client.async_client = mock_async_client
 
         # Mock the API call
-        mock_async_client.chat.completions.create = AsyncMock(
-            return_value=self.mock_response
-        )
+        mock_async_client.responses.create = AsyncMock(return_value=self.mock_response)
 
         # Call the method
         result = await client.acall(
@@ -575,9 +513,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         )
 
         # Assertions
-        mock_async_client.chat.completions.create.assert_awaited_once_with(
-            **self.api_kwargs
-        )
+        mock_async_client.responses.create.assert_awaited_once_with(**self.api_kwargs)
         self.assertEqual(result, self.mock_response)
 
     async def test_async_streaming(self):
@@ -587,20 +523,17 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
 
         # Create an async generator for the mock stream
         async def mock_stream():
-            for chunk in self.streaming_chunks:
-                yield chunk
+            for event in self.streaming_events:
+                yield event
                 await asyncio.sleep(0.01)
 
-        mock_async_client.chat.completions.create.return_value = mock_stream()
+        mock_async_client.responses.create.return_value = mock_stream()
         self.client.async_client = mock_async_client
 
-        # Test API kwargs for streaming
+        # Test API kwargs for streaming - Response API uses input as string
         api_kwargs = {
             "model": "gpt-4",
-            "messages": [
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": "Tell me a short story."},
-            ],
+            "input": "You are a helpful assistant. Tell me a short story.",
             "stream": True,
             "max_tokens": 200,
         }
@@ -610,56 +543,60 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
 
         # Verify the streaming parser is set
         self.assertEqual(
-            self.client.chat_completion_parser,
-            self.client.streaming_chat_completion_parser,
+            self.client.response_parser,
+            self.client.streaming_response_parser,
         )
 
         # Process the stream
         full_response = ""
-        async for chunk in stream:
-            if chunk.choices and chunk.choices[0].delta.content:
-                full_response += chunk.choices[0].delta.content
+        async for event in stream:
+            if hasattr(event, "delta"):  # Mock ResponseTextDeltaEvent
+                full_response += event.delta
+            elif hasattr(event, "response") and hasattr(
+                event.response, "output_text"
+            ):  # Mock ResponseCompletedEvent
+                full_response = event.response.output_text
 
         # Verify the response
         self.assertIn("Once upon", full_response)
 
         # Verify the API was called correctly
-        mock_async_client.chat.completions.create.assert_called_once_with(**api_kwargs)
+        mock_async_client.responses.create.assert_called_once_with(**api_kwargs)
 
     async def test_parser_switching(self):
         """Test that parser switching works correctly."""
         # Initially should be non-streaming parser
         self.assertEqual(
-            self.client.chat_completion_parser,
-            self.client.non_streaming_chat_completion_parser,
+            self.client.response_parser,
+            self.client.non_streaming_response_parser,
         )
 
         # Setup mock for streaming call
         mock_async_client = AsyncMock()
 
         async def mock_stream():
-            yield self.streaming_chunks[0]
+            yield self.streaming_events[0]
 
-        mock_async_client.chat.completions.create.return_value = mock_stream()
+        mock_async_client.responses.create.return_value = mock_stream()
         self.client.async_client = mock_async_client
 
         # Test streaming call - should switch to streaming parser
         await self.client.acall(
-            {"model": "gpt-4", "messages": [], "stream": True}, ModelType.LLM
+            {"model": "gpt-4", "input": "Hello", "stream": True}, ModelType.LLM
         )
         self.assertEqual(
-            self.client.chat_completion_parser,
-            self.client.streaming_chat_completion_parser,
+            self.client.response_parser,
+            self.client.streaming_response_parser,
         )
 
         # Test non-streaming call - should switch back to non-streaming parser
-        mock_async_client.chat.completions.create.return_value = self.mock_response
+        mock_async_client.responses.create.return_value = self.mock_response
         await self.client.acall(
-            {"model": "gpt-4", "messages": [], "stream": False}, ModelType.LLM
+            {"model": "gpt-4", "input": "Hello", "stream": False}, ModelType.LLM
         )
         self.assertEqual(
-            self.client.chat_completion_parser,
-            self.client.non_streaming_chat_completion_parser,
+            self.client.response_parser,
+            self.client.non_streaming_response_parser,
         )
 
 

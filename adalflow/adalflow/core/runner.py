@@ -34,11 +34,19 @@ from adalflow.core.base_data_class import DataClass
 import ast
 from adalflow.core.types import (
     StreamEvent,
+    RunItemStreamEvent,
+    ToolCallRunItem,
+    ToolOutputRunItem,
+    StepRunItem,
+    RawLLMResponseRunItem,
+    RunnerResponse,
+    FinalOutputItem,
 )
 from collections.abc import AsyncIterator
 
+from dataclasses import field
 
-__all__ = ["Runner"]
+__all__ = ["Runner", "RunnerStreamingResult"]
 
 log = logging.getLogger(__name__)
 
@@ -52,41 +60,66 @@ class QueueCompleteSentinel:
     pass
 
 
+@dataclass
 class RunnerStreamingResult:
-    """Result object for streaming Runner execution similar to OpenAI Agents API."""
+    """
+    Container for runner streaming results that provides access to the event queue
+    and allows users to consume streaming events.
+    """
 
-    def __init__(
-        self,
-        input: Dict[str, Any],
-        max_steps: int,
-        runner: "Runner",
-    ):
-        self.input = input
-        self.max_steps = max_steps
-        self.runner = runner
-        self._event_queue: asyncio.Queue[StreamEvent | QueueCompleteSentinel] = (
-            asyncio.Queue()
-        )
-        self._run_task: Optional[asyncio.Task] = None
-        self._exception: Optional[Exception] = None
-        self._final_result: Optional[Any] = None
-        self._step_history: List[StepOutput] = []
-        self.is_complete = False
+    _event_queue: asyncio.Queue = field(default_factory=asyncio.Queue)
+    _run_task: Optional[asyncio.Task] = field(default=None)
+    _exception: Optional[Exception] = field(default=None)
+    final_result: Optional[Any] = field(default=None)
+    step_history: List[Any] = field(default_factory=list)
+    _is_complete: bool = field(default=False)
+
+    @property
+    def is_complete(self) -> bool:
+        """Check if the workflow execution is complete."""
+        return self._is_complete
 
     async def stream_events(self) -> AsyncIterator[StreamEvent]:
-        """Stream events from the runner execution."""
+        """
+        Stream events from the runner execution.
+
+        Returns:
+            AsyncIterator[StreamEvent]: An async iterator that yields stream events
+
+        Example:
+            ```python
+            result = runner.astream(prompt_kwargs)
+            async for event in result.stream_events():
+                if isinstance(event, RawResponsesStreamEvent):
+                    print(f"Raw event: {event.data}")
+                elif isinstance(event, RunItemStreamEvent):
+                    print(f"Run item: {event.name} - {event.item}")
+            ```
+        """
         while True:
             if self._exception:
                 raise self._exception
 
             try:
-                item = await self._event_queue.get()
-                if isinstance(item, QueueCompleteSentinel):
+                # Wait for an event from the queue
+                event = await self._event_queue.get()
+
+                # Check for completion sentinel or special completion events
+                if isinstance(event, QueueCompleteSentinel):
+                    self._event_queue.task_done()
+                    break
+                elif (
+                    isinstance(event, RunItemStreamEvent)
+                    and event.name == "runner_finished"
+                ):
+                    # Yield the final event then break
+                    yield event
                     self._event_queue.task_done()
                     break
 
-                yield item
+                yield event
                 self._event_queue.task_done()
+
             except asyncio.CancelledError:
                 break
 
@@ -95,15 +128,10 @@ class RunnerStreamingResult:
         if self._run_task and not self._run_task.done():
             self._run_task.cancel()
 
-    @property
-    def final_result(self) -> Any:
-        """Get the final result after streaming is complete."""
-        return self._final_result
-
-    @property
-    def step_history(self) -> List[StepOutput]:
-        """Get the step history."""
-        return self._step_history
+    async def wait_for_completion(self):
+        """Wait for the runner task to complete."""
+        if self._run_task:
+            await self._run_task
 
 
 def _is_pydantic_dataclass(cls: Any) -> bool:
@@ -114,14 +142,6 @@ def _is_pydantic_dataclass(cls: Any) -> bool:
 def _is_adalflow_dataclass(cls: Any) -> bool:
     # check whether cls is a adalflow dataclass
     return isinstance(cls, type) and issubclass(cls, DataClass)
-
-
-@dataclass
-class RunResultStreaming:
-    step_history: List[StepOutput]
-    output: T
-    _run_impl_task: asyncio.Task
-    _event_queue: asyncio.Queue
 
 
 class Runner(Component):
@@ -287,7 +307,7 @@ class Runner(Component):
         ] = None,  # if some call use a different config
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
-    ) -> Tuple[List[StepOutput], T]:
+    ) -> Tuple[List[StepOutput], RunnerResponse]:
         """Execute the planner synchronously for multiple steps with function calling support.
 
         At the last step the action should be set to "finish" instead which terminates the sequence
@@ -345,7 +365,17 @@ class Runner(Component):
                 self.step_history.append(step_ouput)
 
                 if self._check_last_step(function):
-                    last_output = self._process_data(function_results.output)
+                    processed_data = self._process_data(function_results.output)
+                    # Wrap final output in RunnerResponse
+                    last_output = RunnerResponse(
+                        answer=str(processed_data) if processed_data else None,
+                        function_call_result=(
+                            str(function_results.output)
+                            if function_results.output
+                            else None
+                        ),
+                        function_call=function if function else None,
+                    )
                     break
 
                 log.debug(
@@ -397,7 +427,7 @@ class Runner(Component):
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
-    ) -> Tuple[List[GeneratorOutput], T]:
+    ) -> Tuple[List[StepOutput], RunnerResponse]:
         """Execute the planner asynchronously for multiple steps with function calling support.
 
         At the last step the action should be set to "finish" instead which terminates the sequence
@@ -455,7 +485,17 @@ class Runner(Component):
                 self.step_history.append(step_output)
 
                 if self._check_last_step(function):
-                    last_output = self._process_data(function_results.output)
+                    processed_data = self._process_data(function_results.output)
+                    # Wrap final output in RunnerResponse
+                    last_output = RunnerResponse(
+                        answer=str(processed_data) if processed_data else None,
+                        function_call_result=(
+                            str(function_results.output)
+                            if function_results.output
+                            else None
+                        ),
+                        function_call=function if function else None,
+                    )
                     break
 
                 # important to ensure the prompt at each step is correct
@@ -483,14 +523,18 @@ class Runner(Component):
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
-    ):
-        import asyncio
+    ) -> RunnerStreamingResult:
+        """
+        Execute the runner asynchronously with streaming support.
 
-        self._event_queue = asyncio.Queue()
-        self._run_impl_task = asyncio.create_task(
-            self.impl_astream(prompt_kwargs, model_kwargs, use_cache, id)
+        Returns:
+            RunnerStreamingResult: A streaming result object with stream_events() method
+        """
+        result = RunnerStreamingResult()
+        result._run_task = asyncio.create_task(
+            self.impl_astream(prompt_kwargs, model_kwargs, use_cache, id, result)
         )
-        return self._event_queue
+        return result
 
     async def impl_astream(
         self,
@@ -498,7 +542,8 @@ class Runner(Component):
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
-    ) -> Tuple[List[GeneratorOutput], T]:
+        streaming_result: Optional[RunnerStreamingResult] = None,
+    ) -> Tuple[List[StepOutput], RunnerResponse]:
         """Execute the planner asynchronously for multiple steps with function calling support.
 
         At the last step the action should be set to "finish" instead which terminates the sequence
@@ -545,8 +590,34 @@ class Runner(Component):
                     id=id,
                 )
 
+                # Emit raw LLM response event
+                raw_llm_item = RawLLMResponseRunItem(
+                    raw_response=(
+                        str(output.raw_response) if output.raw_response else None
+                    )
+                )
+                raw_llm_event = RunItemStreamEvent(
+                    name="reasoning_item_created", item=raw_llm_item
+                )
+                streaming_result._event_queue.put_nowait(raw_llm_event)
+
+                # Yield all events from the generator output using stream_events
+                # Events are already wrapped with RawResponsesStreamEvent in the generator's stream_events method
+                if hasattr(output, "stream_events") and callable(output.stream_events):
+                    async for wrapped_event in output.stream_events():
+                        # Events are already wrapped with RawResponsesStreamEvent containing TResponseStreamEvent data
+                        streaming_result._event_queue.put_nowait(wrapped_event)
+
                 function = self._get_planner_function(output)
                 printc(f"function: {function}", color="yellow")
+
+                # Emit tool call event
+                tool_call_item = ToolCallRunItem(function=function)
+                tool_call_event = RunItemStreamEvent(
+                    name="tool_called", item=tool_call_item
+                )
+                streaming_result._event_queue.put_nowait(tool_call_event)
+
                 function_result = await self._tool_execute_async(
                     function
                 )  # everything must be wrapped in FunctionOutput
@@ -566,15 +637,18 @@ class Runner(Component):
                     printc("async generator detected")
                     function_results = []
                     async for item in function_output:
-                        self._event_queue.put_nowait(item)
+                        streaming_result._event_queue.put_nowait(item)
                         function_results.append(item)
                     real_function_output = function_results[-1]
-                    # function_results = []
-                    # async for item in function_output:
-                    #     function_results.append(item)
-                    #     yield item
-                    # real_function_output = function_results[-1]
-                # function_results = await self._tool_execute_async(function)
+                else:
+                    real_function_output = function_output
+
+                # Emit tool output event
+                tool_output_item = ToolOutputRunItem(function_output=function_result)
+                tool_output_event = RunItemStreamEvent(
+                    name="tool_output", item=tool_output_item
+                )
+                streaming_result._event_queue.put_nowait(tool_output_event)
 
                 step_output: StepOutput = StepOutput(
                     step=step_count,
@@ -584,8 +658,36 @@ class Runner(Component):
                 )
                 self.step_history.append(step_output)
 
+                # Emit step completion event
+                step_item = StepRunItem(step_output=step_output)
+                step_event = RunItemStreamEvent(name="step_completed", item=step_item)
+                streaming_result._event_queue.put_nowait(step_event)
+
                 if self._check_last_step(function):
-                    last_output = self._process_data(real_function_output)
+                    processed_data = self._process_data(real_function_output)
+
+                    # Wrap final output in RunnerResponse
+                    # TODO refine and add more fields of RunnerResponse
+                    runner_response = RunnerResponse(
+                        answer=str(processed_data) if processed_data else None,
+                        function_call_result=(
+                            str(real_function_output) if real_function_output else None
+                        ),
+                        function_call=function if function else None,
+                    )
+                    last_output = runner_response
+
+                    # Store final result and completion status
+                    streaming_result.final_result = runner_response
+                    streaming_result.step_history = self.step_history.copy()
+                    streaming_result._is_complete = True
+
+                    # Emit final output as FinalOutputItem to queue
+                    final_output_item = FinalOutputItem(runner_response=runner_response)
+                    final_output_event = RunItemStreamEvent(
+                        name="runner_finished", item=final_output_item
+                    )
+                    streaming_result._event_queue.put_nowait(final_output_event)
                     break
 
                 step_count += 1
@@ -593,7 +695,27 @@ class Runner(Component):
             except Exception as e:
                 error_msg = f"Error in step {step_count}: {str(e)}"
                 log.error(error_msg)
-                return self.step_history, error_msg
+
+                # Wrap error in RunnerResponse
+                error_runner_response = RunnerResponse(error=error_msg)
+
+                # Store error result and completion status
+                streaming_result.final_result = error_runner_response
+                streaming_result.step_history = self.step_history.copy()
+                streaming_result._is_complete = True
+
+                # Emit error as FinalOutputItem to queue
+                error_final_item = FinalOutputItem(
+                    runner_response=error_runner_response
+                )
+                error_event = RunItemStreamEvent(
+                    name="runner_finished", item=error_final_item
+                )
+                streaming_result._event_queue.put_nowait(error_event)
+                return self.step_history, error_runner_response
+
+        # Signal completion of streaming
+        streaming_result._event_queue.put_nowait(QueueCompleteSentinel())
 
         return self.step_history, last_output
 

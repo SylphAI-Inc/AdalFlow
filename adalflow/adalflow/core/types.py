@@ -13,9 +13,9 @@ from typing import (
     Literal,
     Callable,
     Awaitable,
-    Iterator,
     Generator,
     AsyncGenerator,
+    AsyncIterator,
     Coroutine,
 )
 from typing_extensions import TypeAlias
@@ -30,6 +30,8 @@ from datetime import datetime
 import uuid
 import logging
 import json
+from collections.abc import AsyncIterable
+from pydantic import BaseModel, Field
 
 from adalflow.core.base_data_class import DataClass, required_field
 from adalflow.core.tokenizer import Tokenizer
@@ -46,6 +48,9 @@ from adalflow.components.model_client import (
     GoogleGenAIClient,
     OllamaClient,
 )
+
+# Import OpenAI's ResponseStreamEvent for type alias
+from openai.types.responses import ResponseStreamEvent
 
 logger = logging.getLogger(__name__)
 
@@ -431,6 +436,19 @@ e.g. for Type object with x,y properties, use "ObjectType(x=1, y=2)"""
 
 
 @dataclass
+class RawResponsesStreamEvent:
+    """Streaming event from the LLM. These are 'raw' events, i.e. they are directly passed through
+    from the LLM.
+    """
+
+    data: Any
+    """The raw responses streaming event from the LLM."""
+
+    type: Literal["raw_response_event"] = "raw_response_event"
+    """The type of the event."""
+
+
+@dataclass
 class GeneratorOutput(DataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
@@ -467,7 +485,7 @@ class GeneratorOutput(DataClass, Generic[T_co]):
         default=None, metadata={"desc": "Usage tracking"}
     )
     raw_response: Optional[str] = field(
-        default=None, metadata={"desc": "Raw string response from the model"}
+        default=None, metadata={"desc": "Raw string chunk generator from the model"}
     )  # parsed from model client response
 
     api_response: Optional[Any] = field(
@@ -477,9 +495,33 @@ class GeneratorOutput(DataClass, Generic[T_co]):
         default=None, metadata={"desc": "Additional metadata"}
     )
 
-    stream_events: Optional[Iterator[Any]] = field(
-        default=None, metadata={"desc": "Stream events from the model"}
-    )
+    async def stream_events(self) -> AsyncIterator[RawResponsesStreamEvent]:
+        """
+        Stream raw events from OpenAI Agent/Responses API wrapped in RawResponsesStreamEvent.
+        This method allows you to iterate over wrapped events while preserving the ability
+        to get the final response via collect_final_response_from_stream.
+
+        Returns:
+            AsyncIterator[RawResponsesStreamEvent]: An async iterator that yields wrapped events
+
+        Note:
+            This method should be called BEFORE calling collect_final_response_from_stream
+            on the raw_response, as both will consume the async iterable.
+        """
+        count = 0
+        if isinstance(self.api_response, AsyncIterable):
+            async for event in self.api_response:
+                # First set the type using the TResponseStreamEvent alias, then wrap with RawResponsesStreamEvent
+                # TODO follows OpenAI agent SDK of wrapping ResponseStreamEvent (multiple event union)
+                # as TResponseStreamEvent
+                count += 1
+                typed_event: TResponseStreamEvent = event
+                wrapped_event = RawResponsesStreamEvent(data=typed_event)
+                yield wrapped_event
+
+        # if the stream is already consumed and there is final data then just return the final data
+        if count == 0 and self.data:
+            yield self.data
 
 
 GeneratorOutputType = GeneratorOutput[object]
@@ -998,16 +1040,13 @@ class RawLLMResponseRunItem(RunItem):
 
 
 @dataclass
-class RawResponsesStreamEvent:
-    """Streaming event from the LLM. These are 'raw' events, i.e. they are directly passed through
-    from the LLM.
-    """
+class FinalOutputItem(RunItem):
+    """Run item for final output containing RunnerResponse."""
 
-    data: Any
-    """The raw responses streaming event from the LLM."""
-
-    type: Literal["raw_response_event"] = "raw_response_event"
-    """The type of the event."""
+    type: str = field(default="final_output", metadata={"desc": "Type of run item"})
+    runner_response: Optional["RunnerResponse"] = field(
+        default=None, metadata={"desc": "Final output wrapped in RunnerResponse"}
+    )
 
 
 @dataclass
@@ -1038,3 +1077,56 @@ class RunItemStreamEvent:
 
 
 StreamEvent: TypeAlias = Union[RawResponsesStreamEvent, RunItemStreamEvent]
+TResponseStreamEvent: TypeAlias = ResponseStreamEvent
+
+"""
+Used to wrap the final response from the runner of call or acall and astream
+"""
+
+
+class RunnerResponse(BaseModel):
+    think: Optional[str] = Field(description="The thinking of the agent", default=None)
+    code: Optional[str] = Field(description="The code to be executed", default=None)
+    execution_result: Optional[Any] = Field(
+        description="The result of code execution", default=None
+    )
+    answer: Optional[str] = Field(
+        description="The answer to the user's query", default=None
+    )
+    objective: Optional[str] = Field(description="The current objective", default=None)
+    citations: Optional[List[str]] = Field(
+        description="The citations used in the reasoning", default_factory=list
+    )
+    error: Optional[str] = Field(
+        description="The error message if the code execution failed",
+        default=None,
+    )
+    activity: Optional[List[str]] = Field(
+        description="The activities of the agent", default_factory=list
+    )
+    filename: Optional[str] = Field(
+        description="The filename to write the document to", default=None
+    )
+    document: Optional[str] = Field(
+        description="The document to write to the file", default=None
+    )
+    raw_response: Optional[str] = Field(
+        description="The raw response from the agent", default=None
+    )
+    function_call_result: Optional[str] = Field(
+        description="The observation/function call output from the agent",
+        default=None,
+    )
+    function_call: Optional[Function] = Field(
+        description="The function call to be executed", default=None
+    )
+
+    # TODO implement to_yaml
+    # def to_yaml(self):
+    #     # cast to ChatAgentResponse
+    #     model_dump = self.model_dump()
+    #     internal_chat = ChatAgentResponse.from_dict(model_dump)
+    #     yaml_str = internal_chat.to_yaml(
+    #         include=["raw_response", "answer", "function_call_result", "error"]
+    #     )
+    #     return yaml_str

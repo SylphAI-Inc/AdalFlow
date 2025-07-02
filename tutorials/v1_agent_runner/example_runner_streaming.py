@@ -8,7 +8,11 @@ from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from adalflow.core.runner import Runner
 from adalflow.core.agent import Agent
-from adalflow.core.types import RawResponsesStreamEvent, RunItemStreamEvent
+from adalflow.core.types import (
+    RawResponsesStreamEvent,
+    RunItemStreamEvent,
+    FinalOutputItem,
+)
 from adalflow.core.generator import Generator
 from adalflow.components.model_client.openai_client import OpenAIClient
 import logging
@@ -159,18 +163,33 @@ async def test_generator_streaming():
     print("-" * 60)
 
     # Use the new Generator.stream method
-    result = await generator.stream(
+    result = await generator.acall(
         prompt_kwargs={"task_desc_str": query},
         model_kwargs={"stream": True},
     )
 
     print("\n📊 Generator Result:")
     print(result)
+
+    print("\n Testing calling stream_events from result")
+    count = 0
+    async for event in result.stream_events():
+        print(count)
+        count += 1
+        print(event)
+
+    print("\n Finished streaming events")
+
+    print("\n The API response has been consumed")
+    print("checking that the final output is yielded")
+    async for event in result.stream_events():
+        print(event)
+
     return result
 
 
 async def test_runner_streaming():
-    """Test Runner's run_streamed functionality."""
+    """Test Runner's astream functionality."""
     print("\n🚀 Testing Runner Streaming")
     print("=" * 60)
 
@@ -187,7 +206,7 @@ async def test_runner_streaming():
         print("\n🔄 Streaming runner execution:")
         print("-" * 60)
 
-        streaming_result = runner.run_streamed(
+        streaming_result = runner.astream(
             prompt_kwargs={"input_str": query}, model_kwargs={"stream": True}
         )
 
@@ -199,25 +218,34 @@ async def test_runner_streaming():
 
             if isinstance(event, RawResponsesStreamEvent):
                 print(f"🔄 Raw Response Event #{event_count}:")
-                if hasattr(event.data, "choices") and event.data.choices:
-                    delta = event.data.choices[0].delta
-                    if hasattr(delta, "content") and delta.content:
-                        print(f"   Content: {delta.content}")
-                    if hasattr(event.data.choices[0], "finish_reason"):
-                        print(
-                            f"   Finish Reason: {event.data.choices[0].finish_reason}"
-                        )
-                else:
-                    print(f"   Data: {event.data}")
+                print(event.data)
 
             elif isinstance(event, RunItemStreamEvent):
                 print(f"⚡ Run Item Event: {event.name}")
                 if hasattr(event, "item") and event.item:
-                    print(f"   Item: {event.item}")
+                    if isinstance(event.item, FinalOutputItem):
+                        print(
+                            f"   Final Output - Answer: {event.item.runner_response.answer}"
+                        )
+                        print(
+                            f"   Final Output - Function Call: {event.item.runner_response.function_call}"
+                        )
+                        print(
+                            f"   Final Output - Function Result: {event.item.runner_response.function_call_result}"
+                        )
+                    else:
+                        print(f"   Item: {event.item}")
 
         print("-" * 60)
         print("📊 Final Results:")
-        print(f"   • Final result: {streaming_result.final_result}")
+        final_result = streaming_result.final_result
+        if final_result:
+            print(f"   • Answer: {final_result.answer}")
+            print(f"   • Function Call: {final_result.function_call}")
+            print(f"   • Function Result: {final_result.function_call_result}")
+            print(f"   • Error: {final_result.error}")
+        else:
+            print("   • Final result: None")
         print(f"   • Total steps: {len(streaming_result.step_history)}")
         print(f"   • Events processed: {event_count}")
         print(
@@ -235,7 +263,7 @@ async def test_runner_streaming():
 
 
 async def test_runner_streaming_nested():
-    """Test Runner's run_streamed functionality with nested structured output."""
+    """Test Runner's astream functionality with nested structured output."""
     print("\n🚀 Testing Runner Streaming with Nested Structures")
     print("=" * 60)
 
@@ -256,7 +284,7 @@ async def test_runner_streaming_nested():
         print("\n🔄 Streaming runner execution with nested structures:")
         print("-" * 60)
 
-        streaming_result = runner.run_streamed(
+        streaming_result = runner.astream(
             prompt_kwargs={"input_str": query}, model_kwargs={"stream": True}
         )
 
@@ -269,25 +297,33 @@ async def test_runner_streaming_nested():
 
             if isinstance(event, RawResponsesStreamEvent):
                 print(f"🔄 Raw Response Event #{event_count}")
-                if hasattr(event.data, "choices") and event.data.choices:
-                    delta = event.data.choices[0].delta
-                    if hasattr(delta, "content") and delta.content:
-                        content = delta.content
-                        content_chunks.append(content)
-                        # Show partial content (first 100 chars to avoid overwhelming output)
-                        if len(content) > 100:
-                            print(f"   Content: {content[:100]}...")
-                        else:
-                            print(f"   Content: {content}")
-
+                print(event.data)
             elif isinstance(event, RunItemStreamEvent):
                 print(f"⚡ Run Item Event: {event.name}")
                 if hasattr(event, "item") and event.item:
-                    print(f"   Item type: {type(event.item).__name__}")
+                    if isinstance(event.item, FinalOutputItem):
+                        print(
+                            f"   Final Output - Answer: {event.item.runner_response.answer}"
+                        )
+                        print(
+                            f"   Final Output - Function Call: {event.item.runner_response.function_call}"
+                        )
+                        print(
+                            f"   Final Output - Function Result: {event.item.runner_response.function_call_result}"
+                        )
+                    else:
+                        print(f"   Item type: {type(event.item).__name__}")
 
         print("-" * 60)
         print("📊 Final Results:")
-        print(f"   • Final result: {streaming_result.final_result}")
+        final_result = streaming_result.final_result
+        if final_result:
+            print(f"   • Answer: {final_result.answer}")
+            print(f"   • Function Call: {final_result.function_call}")
+            print(f"   • Function Result: {final_result.function_call_result}")
+            print(f"   • Error: {final_result.error}")
+        else:
+            print("   • Final result: None")
         print(f"   • Total steps: {len(streaming_result.step_history)}")
         print(f"   • Events processed: {event_count}")
         print(f"   • Content chunks collected: {len(content_chunks)}")
@@ -380,7 +416,7 @@ async def main():
     print("✅ API key found, proceeding with tests...\n")
 
     # Run streaming tests
-    # generator_result = await test_generator_streaming()
+    generator_result = await test_generator_streaming()
     runner_result = await test_runner_streaming()
     nested_runner_result = await test_runner_streaming_nested()
 
@@ -396,7 +432,7 @@ async def main():
 
     # Summary of results
     results = {
-        # "generator": "✅" if generator_result else "❌",
+        "generator": "✅" if generator_result else "❌",
         "runner_streaming": "✅" if runner_result else "❌",
         "nested_runner_streaming": "✅" if nested_runner_result else "❌",
     }

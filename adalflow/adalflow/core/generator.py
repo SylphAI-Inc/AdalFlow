@@ -6,7 +6,16 @@ import json
 import re
 from pathlib import Path
 
-from typing import Any, Dict, Optional, Union, Callable, Tuple, List
+from typing import (
+    Any,
+    Dict,
+    Optional,
+    Union,
+    Callable,
+    Tuple,
+    List,
+)
+from collections.abc import AsyncIterable
 import logging
 from dataclasses import dataclass, field
 
@@ -38,6 +47,11 @@ from adalflow.tracing.callback_manager import CallbackManager
 from adalflow.utils.global_config import get_adalflow_default_root_path
 from adalflow.core.string_parser import JsonParser
 
+from adalflow.components.model_client.openai_client import (
+    collect_final_response_from_stream,
+)
+
+from asyncstdlib import tee
 
 from adalflow.optim.text_grad.backend_engine_prompt import (
     FEEDBACK_ENGINE_TEMPLATE,
@@ -341,8 +355,60 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         output: GeneratorOutput = self.model_client.parse_chat_completion(completion)
         # save the api response
         output.api_response = completion
+
         # Now adding the data field to the output
         data = output.raw_response
+
+        # TODO implement sync iterator in the future
+        if self.output_processors:
+            if data:
+                try:
+                    data = self.output_processors(data)
+                    output.data = data
+                except Exception as e:
+                    log.error(f"Error processing the output processors: {e}")
+                    output.error = str(e)
+
+        else:
+            output.data = data
+
+        return output
+
+    async def _async_post_call(self, completion: Any) -> GeneratorOutput:
+        r"""Get string completion and process it with the output_processors."""
+        # parse chat completion will only fill the raw_response
+        output: GeneratorOutput = self.model_client.parse_chat_completion(completion)
+        # save the api response
+        output.api_response = completion
+
+        # Now adding the data field to the output
+        data = output.raw_response
+
+        # Handle async iterables from OpenAI Agent/Responses API streaming
+        # Tee the stream so both final response collection and stream_events can consume it
+        if isinstance(output.api_response, AsyncIterable):
+            try:
+                # TODO asyncstdlib tee essentially is a copy() method for async generators
+                stream_api_response_to_be_consumed, stream_api_response_copy = tee(
+                    output.api_response, 2
+                )
+
+                # Use one stream for collecting final response
+                data = await collect_final_response_from_stream(
+                    stream_api_response_to_be_consumed
+                )
+
+                # need to reset api_response for generator output's stream_for_events method as it would otherwise get consumed
+                output.api_response = stream_api_response_copy
+                pass
+            except Exception as e:
+                log.error(f"Error processing OpenAI Agent stream: {e}")
+                data = str(output.raw_response)
+
+        log.info(
+            f"Response from the Model Client Stream before being processed: {data}"
+        )
+
         if self.output_processors:
             if data:
                 try:
@@ -367,6 +433,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         # 3. convert app's inputs to api inputs
         api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
+            # rename from input since input is a builtin object
             input=prompt_str,
             model_kwargs=composed_model_kwargs,
             model_type=self.model_type,
@@ -1149,6 +1216,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # call the model client
         completion = None
 
+        log.info(f"api_kwargs: {api_kwargs}")
+
         try:
             completion = await self.model_client.acall(
                 api_kwargs=api_kwargs, model_type=self.model_type
@@ -1157,68 +1226,15 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             log.error(f"Error calling the model: {e}")
             output = GeneratorOutput(error=str(e))
 
-        output = GeneratorOutput(stream_events=completion)
+        if completion:
+            try:
+                output = await self._async_post_call(completion)
+            except Exception as e:
+                log.error(f"Error processing the output: {e}")
+                output = GeneratorOutput(raw_response=str(completion), error=str(e))
 
+        output.id = id
         log.info(f"output: {output}")
-        self._run_callbacks(
-            output,
-            input=api_kwargs,
-            prompt_kwargs=prompt_kwargs,
-            model_kwargs=model_kwargs,
-        )
-        self._trace_api_kwargs = api_kwargs  # tracing
-        return output
-
-    # TODO support training in stream
-    async def stream(
-        self,
-        prompt_kwargs: Optional[Dict] = {},
-        model_kwargs: Optional[Dict] = {},
-        use_cache: Optional[bool] = None,
-        id: Optional[str] = None,
-    ) -> GeneratorOutputType:
-        r"""Async call the model with streaming support.
-
-        Args:
-            prompt_kwargs: Dictionary of prompt arguments
-            model_kwargs: Dictionary of model arguments
-            use_cache: Whether to use cache
-            id: Optional request identifier
-            streaming_result: Optional RunnerStreamingResult to emit events to
-
-        Returns:
-            GeneratorOutput: The final processed output
-
-        Note:
-            If streaming_result is provided, raw response events will be emitted
-            to its event queue during streaming.
-        """
-        log.info(f"prompt_kwargs: {prompt_kwargs}")
-        log.info(f"model_kwargs: {model_kwargs}")
-
-        api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
-        api_kwargs["stream"] = True
-
-        # Ensure streaming is enabled if streaming_result is provided
-
-        output: GeneratorOutputType = None
-        completion = None
-
-        try:
-            # Call the streaming model client (acall with stream=True)
-            completion = await self.model_client.acall(
-                api_kwargs=api_kwargs, model_type=self.model_type
-            )
-
-        except Exception as e:
-            log.error(f"Error calling the model: {e}")
-            output = GeneratorOutput(error=str(e))
-
-        # don't do additional parsing on stream (current model client does not support parsing stream to get final output)
-
-        output = GeneratorOutput(stream_events=completion)
-        log.info(f"output: {output}")
-
         self._run_callbacks(
             output,
             input=api_kwargs,

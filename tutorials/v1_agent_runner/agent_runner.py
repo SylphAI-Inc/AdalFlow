@@ -21,11 +21,14 @@ from adalflow.components.model_client.openai_client import OpenAIClient
 from adalflow.core.base_data_class import DataClass
 from dataclasses import dataclass
 
-from adalflow.utils import setup_env, get_logger
+from adalflow.utils import get_logger
 
 import asyncio
 
-setup_env()
+
+from load_dotenv import load_dotenv
+
+load_dotenv()
 
 logger = get_logger(level="DEBUG", enable_file=False)
 
@@ -159,8 +162,11 @@ def run_react_agent_example():
         for i, step in enumerate(history):
             print(f"\nStep {i}:")
             print(step)
-        print("\nFINAL RESULT (Adalflow DataClass):")
-        print(result)
+        print("\nFINAL RESULT (RunnerResponse):")
+        print(f"Answer: {result.answer}")
+        print(f"Function Call: {result.function_call}")
+        print(f"Function Call Result: {result.function_call_result}")
+        print(f"Full Result: {result}")
 
         return history, result
 
@@ -202,7 +208,7 @@ def run_react_agent_primitive_type():
             name="ReActAgent",
             tools=tools,
             model_client=OpenAIClient(),
-            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.7},
+            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3},
             # answer_data_type=list,
             answer_data_type=dict,
         )
@@ -231,8 +237,11 @@ def run_react_agent_primitive_type():
         for i, step in enumerate(history):
             print(f"\nStep {i}:")
             print(step)
-        print("\nFINAL RESULT (Adalflow DataClass):")
-        print(result)
+        print("\nFINAL RESULT (RunnerResponse):")
+        print(f"Answer: {result.answer}")
+        print(f"Function Call: {result.function_call}")
+        print(f"Function Call Result: {result.function_call_result}")
+        print(f"Full Result: {result}")
 
         return history, result
 
@@ -310,8 +319,11 @@ async def arun_react_agent_example():
             print(f"\nStep {i}:")
             print(step)
 
-        print("\nASYNC FINAL RESULT:")
-        print(result)
+        print("\nASYNC FINAL RESULT (RunnerResponse):")
+        print(f"Answer: {result.answer}")
+        print(f"Function Call: {result.function_call}")
+        print(f"Function Call Result: {result.function_call_result}")
+        print(f"Full Result: {result}")
 
         return history, result
 
@@ -429,8 +441,11 @@ def run_advanced_react_agent():
     for step in history:
         print(step)
 
-    print("\nFINAL RESULT:")
-    print(result)
+    print("\nFINAL RESULT (RunnerResponse):")
+    print(f"Answer: {result.answer}")
+    print(f"Function Call: {result.function_call}")
+    print(f"Function Call Result: {result.function_call_result}")
+    print(f"Full Result: {result}")
 
     return history, result
 
@@ -471,8 +486,13 @@ async def arun_advanced_react_agent():
     for step in history:
         print(step)
 
-    print("\nFINAL RESULT")
     print(result)
+
+    print("\nFINAL RESULT (RunnerResponse):")
+    print(f"Answer: {result.answer}")
+    print(f"Function Call: {result.function_call}")
+    print(f"Function Call Result: {result.function_call_result}")
+    print(f"Full Result: {result}")
 
     return history, result
 
@@ -509,9 +529,12 @@ def no_structured_output_run_agent():
         history, result = runner.call(prompt_kwargs={"input_str": query})
 
         # Print results
-        print("\nFINAL RESULT (raw string):")
-        print(result)
+        print("\nFINAL RESULT (RunnerResponse):")
+        print(f"Answer: {result.answer}")
+        print(f"Function Call: {result.function_call}")
+        print(f"Function Call Result: {result.function_call_result}")
         print(f"Result type: {type(result).__name__}")
+        print(f"Full Result: {result}")
 
         return history, result
 
@@ -569,8 +592,11 @@ def pydantic_dataclass_run_agent():
         history, result = runner.call(prompt_kwargs={"input_str": query})
 
         # Print results
-        print("\nFINAL RESULT (Pydantic model):")
-        print(f"Final answer: {result}")
+        print("\nFINAL RESULT (RunnerResponse):")
+        print(f"Answer: {result.answer}")
+        print(f"Function Call: {result.function_call}")
+        print(f"Function Call Result: {result.function_call_result}")
+        print(f"Full Result: {result}")
 
         return history, result
 
@@ -635,8 +661,10 @@ def run_example(example_name: str, example_func, *args, **kwargs):
         print(f"\nSUCCESS: {example_name} completed in {elapsed:.2f} seconds")
         if result:
             history, output = result
-            print("\nOUTPUT:")
-            print(output)
+            print("\nOUTPUT (RunnerResponse):")
+            print(f"Answer: {output.answer}")
+            print(f"Function Call: {output.function_call}")
+            print(f"Function Call Result: {output.function_call_result}")
             outputs[example_name] = output
             print(f"\nOutput type: {type(output).__name__}")
         return True
@@ -653,16 +681,16 @@ if __name__ == "__main__":
 
     # Define all examples to run
     examples = [
-        ("Synchronous ReAct Agent", run_react_agent_example),
-        ("Primitive Type ReAct Agent", run_react_agent_primitive_type),
-        ("Async ReAct Agent", lambda: asyncio.run(arun_react_agent_example())),
-        ("Advanced ReAct Agent", run_advanced_react_agent),
+        # ("Synchronous ReAct Agent", run_react_agent_example),
+        # ("Primitive Type ReAct Agent", run_react_agent_primitive_type),
+        # ("Async ReAct Agent", lambda: asyncio.run(arun_react_agent_example())),
+        # ("Advanced ReAct Agent", run_advanced_react_agent),
         (
             "Advanced Async ReAct Agent",
             lambda: asyncio.run(arun_advanced_react_agent()),
         ),
-        ("No Structured Output Agent", no_structured_output_run_agent),
-        ("Pydantic Dataclass Agent", pydantic_dataclass_run_agent),
+        # ("No Structured Output Agent", no_structured_output_run_agent),
+        # ("Pydantic Dataclass Agent", pydantic_dataclass_run_agent),
     ]
 
     # Run all examples and track results
@@ -678,7 +706,10 @@ if __name__ == "__main__":
 
         if success:
             print(f"\n✅ SUCCESS: {name}")
-            print(outputs[name])
+            output = outputs[name]
+            print(f"Answer: {output.answer}")
+            print(f"Function Call: {output.function_call}")
+            print(f"Function Call Result: {output.function_call_result}")
         else:
             print(f"\n❌ FAILED: {name}")
 
