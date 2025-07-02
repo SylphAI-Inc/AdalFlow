@@ -26,7 +26,7 @@ from adalflow.utils import get_logger
 import asyncio
 
 
-from load_dotenv import load_dotenv
+from dotenv import load_dotenv
 
 load_dotenv()
 
