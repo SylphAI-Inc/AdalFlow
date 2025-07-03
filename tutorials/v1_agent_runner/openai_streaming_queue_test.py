@@ -221,12 +221,12 @@ async def queue_based_streaming():
 async def adalflow_streaming():
     """Stream responses using AdalFlow OpenAI client."""
     client = OpenAIClient()
-    start_time = time.time()
+    # start_time = time.time()
 
     print("\n--- AdalFlow Streaming ---")
 
     # Use the specified input format
-    stream1 = await client.acall(
+    stream_1 = await client.acall(
         api_kwargs={
             "model": "gpt-4o",
             "input": [
@@ -238,17 +238,26 @@ async def adalflow_streaming():
         model_type=ModelType.LLM,
     )
 
-    stream_1, stream_2 = aioitertools.tee(stream1, 2)
+    async for event in stream_1:
+        if type(event) == ResponseCompletedEvent:
+            print(event.response.output_text)
 
-    print("Chunks from handle_streaming_response:")
-    async for event in handle_streaming_response(stream_1):
+    print("stream")
+
+    async for event in stream_1:
         print(f"Chunk: {event}")
 
-    print("Final response from collect_final_response_from_stream:")
-    final_response = await collect_final_response_from_stream(stream_2)
-    print(f"Final response: {final_response}")
+    # stream_1, stream_2 = aioitertools.tee(stream1, 2)
 
-    print(f"AdalFlow streaming completed in {time.time() - start_time:.4f} seconds")
+    # print("Chunks from handle_streaming_response:")
+    # async for event in handle_streaming_response(stream_1):
+    #     print(f"Chunk: {event}")
+
+    # print("Final response from collect_final_response_from_stream:")
+    # final_response = await collect_final_response_from_stream(stream_2)
+    # print(f"Final response: {final_response}")
+
+    # print(f"AdalFlow streaming completed in {time.time() - start_time:.4f} seconds")
 
 
 async def main():
@@ -261,7 +270,7 @@ async def main():
     # Run AdalFlow streaming
     await adalflow_streaming()
 
-    await direct_streaming()
+    # await direct_streaming()
 
 
 if __name__ == "__main__":

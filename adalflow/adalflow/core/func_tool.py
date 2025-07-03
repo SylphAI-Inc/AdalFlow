@@ -136,9 +136,6 @@ class FunctionTool(Component):
     definition: FunctionDefinition
     function_type: FunctionType
 
-    # not used in particular, but only for training control
-    class_instance: Optional[object] = None
-
     # it inherits the training attribute from Component
     def __init__(
         self,

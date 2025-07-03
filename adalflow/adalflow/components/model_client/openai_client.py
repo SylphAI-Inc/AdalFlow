@@ -15,6 +15,7 @@ from typing import (
     Literal,
     Iterable,
     AsyncIterable,
+    AsyncGenerator,
 )
 import re
 
@@ -38,7 +39,12 @@ from openai import (
     UnprocessableEntityError,
     BadRequestError,
 )
-from openai.types import Completion, CreateEmbeddingResponse, Image
+from openai.types import (
+    Completion,
+    CreateEmbeddingResponse,
+    Image,
+    ResponseCompletedEvent,
+)
 
 # from openai.types.chat import ChatCompletionChunk, ChatCompletion  # COMMENTED OUT - USING RESPONSE API ONLY
 from openai.types.responses import Response, ResponseUsage
@@ -51,7 +57,7 @@ from adalflow.core.types import (
     OutputTokensDetails,
     GeneratorOutput,
 )
-from openai.types.responses import ResponseCompletedEvent, ResponseTextDeltaEvent
+
 from adalflow.components.model_client.utils import parse_embedding_response
 
 log = logging.getLogger(__name__)
@@ -113,28 +119,20 @@ def estimate_token_count(text: str) -> int:
 #         yield parsed_content
 
 
-def parse_stream_response(event) -> str:
+async def handle_streaming_response(
+    stream: AsyncIterable[Any],
+) -> AsyncGenerator[str, None]:
     """
-    Extract the text fragment from a single SSE event of the Responses API.
-    Returns the chunk if it's a delta or a done event, else an empty string.
-    """
-    # incremental text tokens
-    if isinstance(event, ResponseTextDeltaEvent):
-        return event.delta
+    Async generator that processes a stream of SSE events from client.responses.create(..., stream=True).
 
-    return ""
+    Args:
+        stream: An async iterable of SSE events from the OpenAI API
 
-
-async def handle_streaming_response(stream: AsyncIterable) -> GeneratorType:
+    Yields:
+        str: Non-empty text fragments parsed from the stream events
     """
-    Iterate over an async SSE stream from client.responses.create(..., stream=True),
-    logging each raw event and yielding non-empty text fragments.
-    """
-    async for event in stream:
-        log.debug(f"Raw event: {event!r}")
-        content = parse_stream_response(event)
-        if content:
-            yield content
+    for event in stream:
+        yield event
 
 
 def handle_streaming_response_sync(stream: Iterable) -> GeneratorType:
@@ -142,11 +140,9 @@ def handle_streaming_response_sync(stream: Iterable) -> GeneratorType:
     Synchronous version: Iterate over an SSE stream from client.responses.create(..., stream=True),
     logging each raw event and yielding non-empty text fragments.
     """
+    # already compatible as this is the OpenAI client
     for event in stream:
-        log.debug(f"Raw event: {event!r}")
-        content = parse_stream_response(event)
-        if content:
-            yield content
+        yield event
 
 
 async def collect_final_response_from_stream(stream: AsyncIterable) -> str:
@@ -155,7 +151,6 @@ async def collect_final_response_from_stream(stream: AsyncIterable) -> str:
     Consumes the entire stream and returns the concatenated result.
     """
 
-    final_text = ""
     async for event in stream:
         log.debug(f"Raw event: {event!r}")
 
@@ -167,13 +162,8 @@ async def collect_final_response_from_stream(stream: AsyncIterable) -> str:
             if getattr(resp, "output_text", None):
                 return resp.output_text
 
-        # --- intermediate delta event: accumulate via your parser ---
-        text = parse_stream_response(event)
-        if text:
-            final_text += text
-
-    # if we ran out of events without a ResponseCompletedEvent
-    return final_text
+    log.error("No ResponseCompletedEvent found in the stream")
+    raise ValueError("No ResponseCompletedEvent found in the stream")
 
 
 # OLD CHAT COMPLETION UTILITY FUNCTIONS (COMMENTED OUT)
@@ -401,34 +391,9 @@ class OpenAIClient(ModelClient):
         parser = self.response_parser
         log.debug(f"completion/response: {completion}, parser: {parser}")
 
-        # This is only for internal tracking, check if we're using a streaming parser
-        is_streaming_parser = (
-            parser == self.streaming_response_parser_async
-            or parser == self.streaming_response_parser_sync
-        )
-
-        try:
-            if is_streaming_parser:
-                # For streaming parsers, call the parser to get the async generator
-                # and set that as the raw_response so stream_events() can iterate over it
-                log.debug(
-                    "Using streaming parser - calling parser to get async generator"
-                )
-                async_generator = parser(completion)
-                usage = self.track_completion_usage(completion)
-                return GeneratorOutput(
-                    data=None, error=None, raw_response=async_generator, usage=usage
-                )
-            else:
-                # For non-streaming parsers, parse normally
-                data = parser(completion)
-                usage = self.track_completion_usage(completion)
-                return GeneratorOutput(
-                    data=None, error=None, raw_response=data, usage=usage
-                )
-        except Exception as e:
-            log.error(f"Error parsing the completion: {e}")
-            return GeneratorOutput(data=None, error=str(e), raw_response=completion)
+        data = parser(completion)
+        usage = self.track_completion_usage(completion)
+        return GeneratorOutput(data=None, error=None, raw_response=data, usage=usage)
 
     # OLD CHAT COMPLETIONS API FUNCTION (COMMENTED OUT)
     # # NOTE: this is adapted to parse both completion and response
@@ -486,58 +451,39 @@ class OpenAIClient(ModelClient):
         completion: Union[Response, AsyncIterable],
     ) -> ResponseUsage:
         """Track usage for Response API only."""
-        try:
-            if isinstance(completion, Response):
-                # Handle Response object with ResponseUsage structure
-                input_tokens_details = InputTokensDetails(
-                    cached_tokens=getattr(completion.usage, "cached_tokens", 0)
-                )
-
-                output_tokens_details = OutputTokensDetails(
-                    reasoning_tokens=getattr(completion.usage, "reasoning_tokens", 0)
-                )
-
-                usage = AdalFlowResponseUsage(
-                    input_tokens=completion.usage.input_tokens,
-                    input_tokens_details=input_tokens_details,
-                    output_tokens=completion.usage.output_tokens,
-                    output_tokens_details=output_tokens_details,
-                    total_tokens=completion.usage.total_tokens,
-                )
-            elif hasattr(completion, "__aiter__") or hasattr(completion, "__iter__"):
-                # Handle async generator or regular generator/iterator of response stream events
-                # For generators/iterators, we cannot consume them here as it would exhaust them
-                # The usage information will need to be tracked elsewhere when the stream is consumed
-                log.warning(
-                    "Cannot track usage for generator/iterator. Usage tracking should be handled when consuming the stream."
-                )
-                return AdalFlowResponseUsage(
-                    input_tokens=None,
-                    input_tokens_details=InputTokensDetails(cached_tokens=0),
-                    output_tokens=None,
-                    output_tokens_details=OutputTokensDetails(reasoning_tokens=0),
-                    total_tokens=None,
-                )
-            else:
-                # Default case for Response API
-                log.warning(f"Unknown completion type: {type(completion)}")
-                return AdalFlowResponseUsage(
-                    input_tokens=None,
-                    input_tokens_details=InputTokensDetails(cached_tokens=0),
-                    output_tokens=None,
-                    output_tokens_details=OutputTokensDetails(reasoning_tokens=0),
-                    total_tokens=None,
-                )
-            return usage
-        except Exception as e:
-            log.error(f"Error tracking the completion usage: {e}")
-            return AdalFlowResponseUsage(
-                input_tokens=None,
-                input_tokens_details=InputTokensDetails(cached_tokens=0),
-                output_tokens=None,
-                output_tokens_details=OutputTokensDetails(reasoning_tokens=0),
-                total_tokens=None,
+        if isinstance(completion, Response):
+            # Handle Response object with ResponseUsage structure
+            input_tokens_details = InputTokensDetails(
+                cached_tokens=getattr(completion.usage, "cached_tokens", 0)
             )
+
+            output_tokens_details = OutputTokensDetails(
+                reasoning_tokens=getattr(completion.usage, "reasoning_tokens", 0)
+            )
+
+            return AdalFlowResponseUsage(
+                input_tokens=completion.usage.input_tokens,
+                input_tokens_details=input_tokens_details,
+                output_tokens=completion.usage.output_tokens,
+                output_tokens_details=output_tokens_details,
+                total_tokens=completion.usage.total_tokens,
+            )
+
+        # otherwise return the AdalFlowResponseUsage with None values with log warnings
+        elif hasattr(completion, "__aiter__") or hasattr(completion, "__iter__"):
+            log.warning(
+                "Cannot track usage for generator/iterator. Usage tracking should be handled when consuming the stream."
+            )
+        else:
+            log.warning(f"Unknown completion type: {type(completion)}")
+
+        return AdalFlowResponseUsage(
+            input_tokens=None,
+            input_tokens_details=InputTokensDetails(cached_tokens=0),
+            output_tokens=None,
+            output_tokens_details=OutputTokensDetails(reasoning_tokens=0),
+            total_tokens=None,
+        )
 
     def parse_embedding_response(
         self, response: CreateEmbeddingResponse

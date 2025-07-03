@@ -38,7 +38,6 @@ from adalflow.core.types import (
     ToolCallRunItem,
     ToolOutputRunItem,
     StepRunItem,
-    RawLLMResponseRunItem,
     RunnerResponse,
     FinalOutputItem,
 )
@@ -81,7 +80,7 @@ class RunnerStreamingResult:
 
     async def stream_events(self) -> AsyncIterator[StreamEvent]:
         """
-        Stream events from the runner execution.
+        Stream events from the runner execution.w
 
         Returns:
             AsyncIterator[StreamEvent]: An async iterator that yields stream events
@@ -108,17 +107,17 @@ class RunnerStreamingResult:
                 if isinstance(event, QueueCompleteSentinel):
                     self._event_queue.task_done()
                     break
-                elif (
-                    isinstance(event, RunItemStreamEvent)
-                    and event.name == "runner_finished"
-                ):
-                    # Yield the final event then break
+                else:
+                    # always yield event
                     yield event
+                    # mark the task as done
                     self._event_queue.task_done()
-                    break
-
-                yield event
-                self._event_queue.task_done()
+                    # if the event is a RunItemStreamEvent and the name is agent.execution_complete then additionally break the loop
+                    if (
+                        isinstance(event, RunItemStreamEvent)
+                        and event.name == "agent.execution_complete"
+                    ):
+                        break
 
             except asyncio.CancelledError:
                 break
@@ -590,17 +589,6 @@ class Runner(Component):
                     id=id,
                 )
 
-                # Emit raw LLM response event
-                raw_llm_item = RawLLMResponseRunItem(
-                    raw_response=(
-                        str(output.raw_response) if output.raw_response else None
-                    )
-                )
-                raw_llm_event = RunItemStreamEvent(
-                    name="reasoning_item_created", item=raw_llm_item
-                )
-                streaming_result._event_queue.put_nowait(raw_llm_event)
-
                 # Yield all events from the generator output using stream_events
                 # Events are already wrapped with RawResponsesStreamEvent in the generator's stream_events method
                 if hasattr(output, "stream_events") and callable(output.stream_events):
@@ -614,7 +602,7 @@ class Runner(Component):
                 # Emit tool call event
                 tool_call_item = ToolCallRunItem(function=function)
                 tool_call_event = RunItemStreamEvent(
-                    name="tool_called", item=tool_call_item
+                    name="agent.tool_call_start", item=tool_call_item
                 )
                 streaming_result._event_queue.put_nowait(tool_call_event)
 
@@ -646,7 +634,7 @@ class Runner(Component):
                 # Emit tool output event
                 tool_output_item = ToolOutputRunItem(function_output=function_result)
                 tool_output_event = RunItemStreamEvent(
-                    name="tool_output", item=tool_output_item
+                    name="agent.tool_call_complete", item=tool_output_item
                 )
                 streaming_result._event_queue.put_nowait(tool_output_event)
 
@@ -660,11 +648,20 @@ class Runner(Component):
 
                 # Emit step completion event
                 step_item = StepRunItem(step_output=step_output)
-                step_event = RunItemStreamEvent(name="step_completed", item=step_item)
+                step_event = RunItemStreamEvent(
+                    name="agent.step_complete", item=step_item
+                )
                 streaming_result._event_queue.put_nowait(step_event)
 
                 if self._check_last_step(function):
                     processed_data = self._process_data(real_function_output)
+
+                    # Emit final output event with processed data
+                    final_data_item = FinalOutputItem(final_output=processed_data)
+                    final_data_event = RunItemStreamEvent(
+                        name="agent.final_output", item=final_data_item
+                    )
+                    streaming_result._event_queue.put_nowait(final_data_event)
 
                     # Wrap final output in RunnerResponse
                     # TODO refine and add more fields of RunnerResponse
@@ -682,10 +679,12 @@ class Runner(Component):
                     streaming_result.step_history = self.step_history.copy()
                     streaming_result._is_complete = True
 
-                    # Emit final output as FinalOutputItem to queue
-                    final_output_item = FinalOutputItem(runner_response=runner_response)
+                    # Emit execution complete event
+                    final_output_item = FinalOutputItem(
+                        runner_response=runner_response, final_output=processed_data
+                    )
                     final_output_event = RunItemStreamEvent(
-                        name="runner_finished", item=final_output_item
+                        name="agent.execution_complete", item=final_output_item
                     )
                     streaming_result._event_queue.put_nowait(final_output_event)
                     break
