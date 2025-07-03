@@ -10,6 +10,7 @@ The module enables dynamic discovery and invocation of MCP tools for agent-based
 
 import os
 import json
+import asyncio
 from datetime import timedelta
 from pathlib import Path
 from adalflow.core.func_tool import FunctionTool
@@ -361,11 +362,35 @@ class MCPFunctionTool(FunctionTool):
             "MCPFunctionTool does not support bicall. Use acall instead, which is designed for asynchronous execution."
         )
 
-    def call(self, *args, **kwargs):
-        """This function is not supported in MCPFunctionTool."""
-        raise ValueError(
-            "MCPFunctionTool does not support call. Use acall instead, which is designed for asynchronous execution."
-        )
+    def call(self, *args, **kwargs) -> FunctionOutput:
+        """Execute the function synchronously by running the async call method.
+        
+        This is a convenience method that wraps the async `acall` method using `asyncio.run()`.
+        It allows synchronous usage of MCP tools without requiring async/await syntax.
+        
+        Args:
+            *args: Positional arguments (not supported, raises assertion error)
+            **kwargs: Keyword arguments to pass to the MCP tool
+            
+        Returns:
+            FunctionOutput: The result of the MCP tool execution
+            
+        Example:
+            
+        .. code-block:: python
+        
+            server_params = StdioServerParameters(
+                command="python",
+                args=["mcp_server.py"]
+            )
+            # Get tools from the server
+            async with mcp_session_context(server_params) as session:
+                tools = await session.list_tools()
+            
+            tool_1 = MCPFunctionTool(server_params, tools[0])
+            output = tool_1.call(param1="value1")  # Synchronous call
+        """
+        return asyncio.run(self.acall(*args, **kwargs))
 
 
 class MCPToolManager(Component):
