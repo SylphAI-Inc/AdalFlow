@@ -36,7 +36,6 @@ from adalflow.core.types import (
     StreamEvent,
     RunItemStreamEvent,
     ToolCallRunItem,
-    ToolOutputRunItem,
     StepRunItem,
     RunnerResponse,
     FinalOutputItem,
@@ -341,6 +340,9 @@ class Runner(Component):
 
         while step_count < self.max_steps:
             try:
+                printc(
+                    f"agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}"
+                )
                 # Execute one step
                 output = self.agent.planner.call(
                     prompt_kwargs=prompt_kwargs,
@@ -455,6 +457,9 @@ class Runner(Component):
 
         while step_count < self.max_steps:
             try:
+                printc(
+                    f"agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}"
+                )
                 # Execute one step asynchronously
                 output = await self.agent.planner.acall(
                     prompt_kwargs=prompt_kwargs,
@@ -502,9 +507,6 @@ class Runner(Component):
                     "The prompt with the prompt template is {}".format(
                         self.agent.planner.get_prompt(**prompt_kwargs)
                     )
-                )
-                printc(
-                    f"agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}"
                 )
 
                 step_count += 1
@@ -616,6 +618,7 @@ class Runner(Component):
                     )
 
                 function_output = function_result.output
+                # TODO: function needs a stream_events
                 real_function_output = None
 
                 if inspect.iscoroutine(function_output):
@@ -630,13 +633,13 @@ class Runner(Component):
                     real_function_output = function_results[-1]
                 else:
                     real_function_output = function_output
-
-                # Emit tool output event
-                tool_output_item = ToolOutputRunItem(function_output=function_result)
-                tool_output_event = RunItemStreamEvent(
-                    name="agent.tool_call_complete", item=tool_output_item
-                )
-                streaming_result._event_queue.put_nowait(tool_output_event)
+                    self._event_queue.put_nowait(function_output)
+                    # function_results = []
+                    # async for item in function_output:
+                    #     function_results.append(item)
+                    #     yield item
+                    # real_function_output = function_results[-1]
+                # function_results = await self._tool_execute_async(function)
 
                 step_output: StepOutput = StepOutput(
                     step=step_count,

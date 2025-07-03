@@ -655,6 +655,25 @@ class FunctionOutput(DataClass):
 
 
 #######################################################################################
+# Data modeling for component tool
+######################################################################################
+@dataclass
+class ComponentToolOutput(DataClass):
+    output: Any = field(
+        default=None, metadata={"description": "The output of the tool"}
+    )
+    observation: Optional[str] = field(
+        default=None,
+        metadata={
+            "description": "The observation of the llm see of the output of the tool"
+        },
+    )
+    is_streaming: Optional[bool] = field(
+        default=False, metadata={"description": "Whether the tool output is streaming"}
+    )
+
+
+#######################################################################################
 # Data modeling for agent component
 ######################################################################################
 @dataclass

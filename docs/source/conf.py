@@ -26,6 +26,8 @@ extensions = [
     "sphinx_tabs.tabs",
     "sphinx_design",
     "sphinx_copybutton",
+    "myst_parser",  # Enable markdown support
+    "sphinxcontrib.mermaid",  # Enable Mermaid charts
     # "sphinx_sitemap",
 ]
 
@@ -157,6 +159,31 @@ autosummary_imported_members = False
 add_module_names = False
 autosectionlabel_prefix_document = True
 autodoc_docstring_signature = True
+
+# MyST parser configuration for markdown files
+myst_enable_extensions = [
+    "colon_fence",
+    "deflist",
+    "html_admonition",
+    "html_image",
+    "replacements",
+    "smartquotes",
+    "substitution",
+    "tasklist",
+]
+
+# Configure MyST to handle Mermaid code blocks
+myst_fence_as_directive = ["mermaid"]
+
+# Mermaid configuration
+mermaid_version = "latest"  # Use latest version of Mermaid
+mermaid_init_js = "mermaid.initialize({startOnLoad:true});"
+
+# Include markdown files in source parsing
+source_suffix = {
+    ".rst": None,
+    ".md": None,
+}
 
 autodoc_default_options = {
     "members": True,

@@ -15,6 +15,7 @@ adalflow = { path = "../adalflow", develop = true } # Follow latest adalflow ver
 pyvis = "^0.3.2"
 sphinx-tabs = "^3.4.7"
 furo = "^2024.8.6"
+sphinxcontrib-mermaid = "^1.0.0"
 
 [tool.poetry.group.doc.dependencies]
 # Sphinx documentation dependencies
@@ -47,6 +48,7 @@ torch = "^2.4.0"
 # Azure client dependencies
 azure-identity = "^1.18.0"
 azure-core = "^1.31.0"
+myst-parser = "^3.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
