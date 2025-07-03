@@ -434,10 +434,9 @@ class ToolManager(Component):
                 raise ValueError(error_msg)
 
             # it can only be coroutine or function output
-            printc(f"result: {result}", color="yellow") 
             if inspect.iscoroutine(result):
-                printc(f"result is coroutine", color="yellow")
                 result = await result
+                printc(f"result after await: {result}", color="yellow")
             else:
                 printc(f"result is not coroutine", color="yellow")
 
