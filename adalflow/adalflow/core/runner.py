@@ -29,7 +29,12 @@ from adalflow.utils import printc
 from adalflow.core.component import Component
 from adalflow.core.agent import Agent
 
-from adalflow.core.types import GeneratorOutput, FunctionOutput, StepOutput
+from adalflow.core.types import (
+    GeneratorOutput,
+    FunctionOutput,
+    StepOutput,
+    RawResponsesStreamEvent,
+)
 from adalflow.core.base_data_class import DataClass
 import ast
 from adalflow.core.types import (
@@ -350,8 +355,10 @@ class Runner(Component):
                     use_cache=use_cache,
                     id=id,
                 )
+                printc(f"planner output: {output}", color="yellow")
 
                 function = self._get_planner_function(output)
+                printc(f"function: {function}", color="yellow")
 
                 # execute the tool
                 function_results = self._tool_execute_sync(function)
@@ -370,12 +377,7 @@ class Runner(Component):
                     # Wrap final output in RunnerResponse
                     last_output = RunnerResponse(
                         answer=str(processed_data) if processed_data else None,
-                        function_call_result=(
-                            str(function_results.output)
-                            if function_results.output
-                            else None
-                        ),
-                        function_call=function if function else None,
+                        step_history=self.step_history.copy(),
                     )
                     break
 
@@ -390,7 +392,11 @@ class Runner(Component):
             except Exception as e:
                 error_msg = f"Error in step {step_count}: {str(e)}"
                 log.error(error_msg)
-                raise ValueError(error_msg)
+                error_response = RunnerResponse(
+                    error=error_msg,
+                    step_history=self.step_history.copy(),
+                )
+                return self.step_history, error_response
 
         return self.step_history, last_output
 
@@ -467,8 +473,10 @@ class Runner(Component):
                     use_cache=use_cache,
                     id=id,
                 )
+                printc(f"planner output: {output}", color="yellow")
 
                 function = self._get_planner_function(output)
+                printc(f"function: {function}", color="yellow")
 
                 function_results = await self._tool_execute_async(function)
 
@@ -493,12 +501,7 @@ class Runner(Component):
                     # Wrap final output in RunnerResponse
                     last_output = RunnerResponse(
                         answer=str(processed_data) if processed_data else None,
-                        function_call_result=(
-                            str(function_results.output)
-                            if function_results.output
-                            else None
-                        ),
-                        function_call=function if function else None,
+                        step_history=self.step_history.copy(),
                     )
                     break
 
@@ -514,7 +517,11 @@ class Runner(Component):
             except Exception as e:
                 error_msg = f"Error in step {step_count}: {str(e)}"
                 log.error(error_msg)
-                return self.step_history, error_msg
+                error_response = RunnerResponse(
+                    error=error_msg,
+                    step_history=self.step_history.copy(),
+                )
+                return self.step_history, error_response
 
         return self.step_history, last_output
 
@@ -595,8 +602,9 @@ class Runner(Component):
                 # Events are already wrapped with RawResponsesStreamEvent in the generator's stream_events method
                 if hasattr(output, "stream_events") and callable(output.stream_events):
                     async for wrapped_event in output.stream_events():
-                        # Events are already wrapped with RawResponsesStreamEvent containing TResponseStreamEvent data
-                        streaming_result._event_queue.put_nowait(wrapped_event)
+                        # wrap with RawResponsesStreamEvent and put to the queue
+                        run_item_event = RawResponsesStreamEvent(data=wrapped_event)
+                        streaming_result._event_queue.put_nowait(run_item_event)
 
                 function = self._get_planner_function(output)
                 printc(f"function: {function}", color="yellow")
@@ -624,8 +632,6 @@ class Runner(Component):
                 if inspect.iscoroutine(function_output):
                     real_function_output = await function_output
                 elif inspect.isasyncgen(function_output):
-                    # handle async generator
-                    printc("async generator detected")
                     function_results = []
                     async for item in function_output:
                         streaming_result._event_queue.put_nowait(item)
@@ -633,7 +639,7 @@ class Runner(Component):
                     real_function_output = function_results[-1]
                 else:
                     real_function_output = function_output
-                    self._event_queue.put_nowait(function_output)
+                    streaming_result._event_queue.put_nowait(function_output)
                     # function_results = []
                     # async for item in function_output:
                     #     function_results.append(item)
@@ -658,22 +664,12 @@ class Runner(Component):
 
                 if self._check_last_step(function):
                     processed_data = self._process_data(real_function_output)
-
-                    # Emit final output event with processed data
-                    final_data_item = FinalOutputItem(final_output=processed_data)
-                    final_data_event = RunItemStreamEvent(
-                        name="agent.final_output", item=final_data_item
-                    )
-                    streaming_result._event_queue.put_nowait(final_data_event)
+                    printc(f"processed_data: {processed_data}", color="yellow")
 
                     # Wrap final output in RunnerResponse
-                    # TODO refine and add more fields of RunnerResponse
                     runner_response = RunnerResponse(
                         answer=str(processed_data) if processed_data else None,
-                        function_call_result=(
-                            str(real_function_output) if real_function_output else None
-                        ),
-                        function_call=function if function else None,
+                        step_history=self.step_history.copy(),
                     )
                     last_output = runner_response
 
@@ -699,7 +695,10 @@ class Runner(Component):
                 log.error(error_msg)
 
                 # Wrap error in RunnerResponse
-                error_runner_response = RunnerResponse(error=error_msg)
+                error_runner_response = RunnerResponse(
+                    error=error_msg,
+                    step_history=self.step_history.copy(),
+                )
 
                 # Store error result and completion status
                 streaming_result.final_result = error_runner_response
@@ -714,6 +713,9 @@ class Runner(Component):
                     name="runner_finished", item=error_final_item
                 )
                 streaming_result._event_queue.put_nowait(error_event)
+
+                # end the streaming result's event queue
+                streaming_result._event_queue.put_nowait(QueueCompleteSentinel())
                 return self.step_history, error_runner_response
 
         # Signal completion of streaming

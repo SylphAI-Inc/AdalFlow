@@ -17,6 +17,7 @@ from typing import (
     AsyncGenerator,
     AsyncIterator,
     Coroutine,
+    Iterable,
 )
 from typing_extensions import TypeAlias
 from collections import OrderedDict
@@ -30,6 +31,7 @@ from datetime import datetime
 import uuid
 import logging
 import json
+import asyncio
 from collections.abc import AsyncIterable
 from pydantic import BaseModel, Field
 
@@ -50,7 +52,6 @@ from adalflow.components.model_client import (
 )
 
 # Import OpenAI's ResponseStreamEvent for type alias
-from openai.types.responses import ResponseStreamEvent
 
 logger = logging.getLogger(__name__)
 
@@ -436,8 +437,16 @@ e.g. for Type object with x,y properties, use "ObjectType(x=1, y=2)"""
 
 
 @dataclass
+class QueueSentinel:
+    """Special sentinel object to mark the end of a stream when using asyncio.Queue for stream processing."""
+
+    type: Literal["queue_sentinel"] = "queue_sentinel"
+    """Type discriminator for the sentinel."""
+
+
+@dataclass
 class RawResponsesStreamEvent:
-    """Streaming event from the LLM. These are 'raw' events, i.e. they are directly passed through
+    """Streaming event for storing the raw responses from the LLM. These are 'raw' events, i.e. they are directly passed through
     from the LLM.
     """
 
@@ -484,7 +493,9 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     usage: Optional[CompletionUsage] = field(
         default=None, metadata={"desc": "Usage tracking"}
     )
-    raw_response: Optional[str] = field(
+
+    # The caller expects the raw_response to follow the OpenAI API documentation for streams
+    raw_response: Optional[Union[str, AsyncIterable[T_co], Iterable[T_co]]] = field(
         default=None, metadata={"desc": "Raw string chunk generator from the model"}
     )  # parsed from model client response
 
@@ -494,30 +505,42 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     metadata: Optional[Dict[str, object]] = field(
         default=None, metadata={"desc": "Additional metadata"}
     )
+    event_queue: Optional[asyncio.Queue] = field(
+        default=None, metadata={"desc": "Event queue for streaming events"}
+    )
 
-    async def stream_events(self) -> AsyncIterator[RawResponsesStreamEvent]:
+    async def stream_events(self) -> AsyncIterator[T_co]:
         """
-        Stream raw events from OpenAI Agent/Responses API wrapped in RawResponsesStreamEvent.
-        This method allows you to iterate over wrapped events while preserving the ability
-        to get the final response via collect_final_response_from_stream.
+        Stream raw events from the Generator's raw response which has the processed version of api_response.
+
+        If the event_queue is not empty then it yields events stored in the event_queue and as a fallback, tries to
+        either iterate directly from raw_response or yield from the data field
 
         Returns:
-            AsyncIterator[RawResponsesStreamEvent]: An async iterator that yields wrapped events
-
-        Note:
-            This method should be called BEFORE calling collect_final_response_from_stream
-            on the raw_response, as both will consume the async iterable.
+            AsyncIterator[T_co]: An async iterator that yields events stored in raw_response
         """
         count = 0
-        if isinstance(self.api_response, AsyncIterable):
-            async for event in self.api_response:
-                # First set the type using the TResponseStreamEvent alias, then wrap with RawResponsesStreamEvent
-                # TODO follows OpenAI agent SDK of wrapping ResponseStreamEvent (multiple event union)
-                # as TResponseStreamEvent
+
+        # First try to read from event_queue if it exists, check that event_queue is not None and it is not empty
+        if self.event_queue is not None and not self.event_queue.empty():
+            while True:
+                try:
+                    event = await self.event_queue.get()
+
+                    # Check for sentinel to mark end of stream
+                    if isinstance(event, QueueSentinel):
+                        break
+
+                    count += 1
+                    yield event
+                except asyncio.CancelledError:
+                    break
+
+        # Fallback to raw_response if event_queue didn't yield anything
+        if count == 0 and isinstance(self.raw_response, AsyncIterable):
+            async for event in self.raw_response:
                 count += 1
-                typed_event: TResponseStreamEvent = event
-                wrapped_event = RawResponsesStreamEvent(data=typed_event)
-                yield wrapped_event
+                yield event
 
         # if the stream is already consumed and there is final data then just return the final data
         if count == 0 and self.data:
@@ -1004,11 +1027,6 @@ class RunItem(DataClass):
     the execution progress, allowing consumers to monitor and react to different
     phases of agent execution.
 
-    The RunItem hierarchy supports the streaming execution pattern where:
-    1. Events are generated during agent execution
-    2. Events are queued and streamed to consumers
-    3. Each event type carries specific information about execution state
-
     Attributes:
         id: Unique identifier for tracking this specific event instance
         type: String identifier for the event type (used for event filtering/routing)
@@ -1086,7 +1104,7 @@ class ToolOutputRunItem(RunItem):
 
     This event contains the complete execution result, including any outputs or errors
     from the function call. It's paired with ToolCallRunItem to provide before/after
-    visibility into function execution.
+    notification to the caller.
 
     Attributes:
         function_output: Complete FunctionOutput containing execution results, errors, etc.
@@ -1159,8 +1177,9 @@ class FinalOutputItem(RunItem):
     processed result. It's emitted regardless of whether execution completed
     successfully or with an error.
 
-    Attributes:
-        runner_response: The final RunnerResponse containing the complete execution result
+    There are two ways you can store the final output:
+    - runner_response: The final RunnerResponse containing the complete execution result
+    - final_output: The final processed output from the runner execution
 
     Event Flow Position:
         Final step → **FinalOutputItem** (execution complete)
@@ -1208,24 +1227,12 @@ class RunItemStreamEvent:
         type: Always "run_item_stream_event" for type discrimination
 
     Event Types:
-        - "agent.llm_response": Raw LLM response received (RawLLMResponseRunItem)
+        - "agent.final_output": Final output from the agent (FinalOutputItem)
         - "agent.tool_call_start": Agent is about to execute a tool (ToolCallRunItem)
         - "agent.tool_call_complete": Tool execution completed (ToolOutputRunItem)
         - "agent.step_complete": Full execution step finished (StepRunItem)
         - "agent.execution_complete": Entire execution completed (FinalOutputItem)
-        - Other events for specialized use cases (handoffs, MCP, etc.)
 
-    Usage:
-        ```python
-        # Stream all execution events
-        result = runner.astream(prompt_kwargs)
-        async for event in result.stream_events():
-            if isinstance(event, RunItemStreamEvent):
-                if event.name == "agent.tool_call_start":
-                    print(f"Calling tool: {event.item.function.name}")
-                elif event.name == "agent.execution_complete":
-                    print(f"Final result: {event.item.runner_response.answer}")
-        ```
     """
 
     name: Literal[
@@ -1246,56 +1253,20 @@ class RunItemStreamEvent:
 
 
 StreamEvent: TypeAlias = Union[RawResponsesStreamEvent, RunItemStreamEvent]
-TResponseStreamEvent: TypeAlias = ResponseStreamEvent
 
 """
-Used to wrap the final response from the runner of call or acall and astream
+Used to wrap the final response from the runner which holds key information about the execution such
+as the answer, step history, and error.
 """
 
 
 class RunnerResponse(BaseModel):
-    think: Optional[str] = Field(description="The thinking of the agent", default=None)
-    code: Optional[str] = Field(description="The code to be executed", default=None)
-    execution_result: Optional[Any] = Field(
-        description="The result of code execution", default=None
-    )
     answer: Optional[str] = Field(
         description="The answer to the user's query", default=None
     )
-    objective: Optional[str] = Field(description="The current objective", default=None)
-    citations: Optional[List[str]] = Field(
-        description="The citations used in the reasoning", default_factory=list
+    step_history: Optional[List[StepOutput]] = Field(
+        description="The step history of the execution", default=None
     )
     error: Optional[str] = Field(
-        description="The error message if the code execution failed",
-        default=None,
+        description="The error message if the code execution failed", default=None
     )
-    activity: Optional[List[str]] = Field(
-        description="The activities of the agent", default_factory=list
-    )
-    filename: Optional[str] = Field(
-        description="The filename to write the document to", default=None
-    )
-    document: Optional[str] = Field(
-        description="The document to write to the file", default=None
-    )
-    raw_response: Optional[str] = Field(
-        description="The raw response from the agent", default=None
-    )
-    function_call_result: Optional[str] = Field(
-        description="The observation/function call output from the agent",
-        default=None,
-    )
-    function_call: Optional[Function] = Field(
-        description="The function call to be executed", default=None
-    )
-
-    # TODO implement to_yaml
-    # def to_yaml(self):
-    #     # cast to ChatAgentResponse
-    #     model_dump = self.model_dump()
-    #     internal_chat = ChatAgentResponse.from_dict(model_dump)
-    #     yaml_str = internal_chat.to_yaml(
-    #         include=["raw_response", "answer", "function_call_result", "error"]
-    #     )
-    #     return yaml_str

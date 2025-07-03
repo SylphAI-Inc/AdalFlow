@@ -18,6 +18,7 @@ from typing import (
     AsyncGenerator,
 )
 import re
+import asyncio
 
 import logging
 import backoff
@@ -43,11 +44,10 @@ from openai.types import (
     Completion,
     CreateEmbeddingResponse,
     Image,
-    ResponseCompletedEvent,
 )
 
 # from openai.types.chat import ChatCompletionChunk, ChatCompletion  # COMMENTED OUT - USING RESPONSE API ONLY
-from openai.types.responses import Response, ResponseUsage
+from openai.types.responses import Response, ResponseUsage, ResponseCompletedEvent
 from adalflow.core.model_client import ModelClient
 from adalflow.core.types import (
     ModelType,
@@ -56,6 +56,7 @@ from adalflow.core.types import (
     InputTokensDetails,
     OutputTokensDetails,
     GeneratorOutput,
+    QueueSentinel,
 )
 
 from adalflow.components.model_client.utils import parse_embedding_response
@@ -131,7 +132,7 @@ async def handle_streaming_response(
     Yields:
         str: Non-empty text fragments parsed from the stream events
     """
-    for event in stream:
+    async for event in stream:
         yield event
 
 
@@ -143,27 +144,6 @@ def handle_streaming_response_sync(stream: Iterable) -> GeneratorType:
     # already compatible as this is the OpenAI client
     for event in stream:
         yield event
-
-
-async def collect_final_response_from_stream(stream: AsyncIterable) -> str:
-    """
-    Collect the final complete response text from a streaming Response API.
-    Consumes the entire stream and returns the concatenated result.
-    """
-
-    async for event in stream:
-        log.debug(f"Raw event: {event!r}")
-
-        # --- final completion event? ---
-        if isinstance(event, ResponseCompletedEvent):
-            resp = event.response
-            log.debug(f"Response completed: {event.response.output_text}")
-            # 1) old convenience property
-            if getattr(resp, "output_text", None):
-                return resp.output_text
-
-    log.error("No ResponseCompletedEvent found in the stream")
-    raise ValueError("No ResponseCompletedEvent found in the stream")
 
 
 # OLD CHAT COMPLETION UTILITY FUNCTIONS (COMMENTED OUT)
@@ -855,6 +835,40 @@ class OpenAIClient(ModelClient):
                     },
                 }
         return image_source
+
+    async def collect_final_response_from_stream(
+        self, stream: AsyncIterable, event_queue: Optional[asyncio.Queue] = None
+    ) -> str:
+        """
+        Collect the final complete response text from a streaming Response API.
+        Consumes the entire stream and returns the concatenated result.
+
+        Args:
+            stream: The async iterable stream to consume
+            event_queue: Optional queue to populate with stream events
+        """
+
+        async for event in stream:
+            log.debug(f"Raw event: {event!r}")
+
+            # Put event in queue if provided
+            if event_queue is not None:
+                await event_queue.put(event)
+
+            # --- final completion event? ---
+            if isinstance(event, ResponseCompletedEvent):
+                resp = event.response
+                log.debug(f"Response completed: {event.response.output_text}")
+                # 1) old convenience property
+                if getattr(resp, "output_text", None):
+                    # Signal end of stream in queue
+                    if event_queue is not None:
+                        await event_queue.put(QueueSentinel())
+                    return resp.output_text
+
+        # raise an error if no final completion event is found which should not happen according to OpenAI response API documentation
+        log.error("No ResponseCompletedEvent found in the stream")
+        raise ValueError("No ResponseCompletedEvent found in the stream")
 
 
 # Example usage:

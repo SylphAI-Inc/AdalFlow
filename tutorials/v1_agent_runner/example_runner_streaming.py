@@ -181,9 +181,10 @@ async def test_generator_streaming():
     print("\n Finished streaming events")
 
     print("\n The API response has been consumed")
-    print("checking that the final output is yielded")
     async for event in result.stream_events():
         print(event)
+
+    print("checking that the final output is yielded")
 
     return result
 
@@ -228,11 +229,21 @@ async def test_runner_streaming():
                             f"   Final Output - Answer: {event.item.runner_response.answer}"
                         )
                         print(
-                            f"   Final Output - Function Call: {event.item.runner_response.function_call}"
+                            f"   Final Output - Step History Length: {len(event.item.runner_response.step_history) if event.item.runner_response.step_history else 0}"
                         )
-                        print(
-                            f"   Final Output - Function Result: {event.item.runner_response.function_call_result}"
-                        )
+                        if (
+                            event.item.runner_response.step_history
+                            and len(event.item.runner_response.step_history) > 0
+                        ):
+                            last_step = event.item.runner_response.step_history[-1]
+                            print(
+                                f"   Final Output - Last Function: {last_step.function}"
+                            )
+                            print(
+                                f"   Final Output - Last Result: {last_step.observation}"
+                            )
+                        else:
+                            print("   Final Output - No function calls recorded")
                     else:
                         print(f"   Item: {event.item}")
 
@@ -241,8 +252,13 @@ async def test_runner_streaming():
         final_result = streaming_result.final_result
         if final_result:
             print(f"   • Answer: {final_result.answer}")
-            print(f"   • Function Call: {final_result.function_call}")
-            print(f"   • Function Result: {final_result.function_call_result}")
+            # Extract function call info from step history
+            if final_result.step_history and len(final_result.step_history) > 0:
+                last_step = final_result.step_history[-1]
+                print(f"   • Last Function: {last_step.function}")
+                print(f"   • Last Result: {last_step.observation}")
+            else:
+                print("   • No function calls recorded in step history")
             print(f"   • Error: {final_result.error}")
         else:
             print("   • Final result: None")
@@ -306,11 +322,21 @@ async def test_runner_streaming_nested():
                             f"   Final Output - Answer: {event.item.runner_response.answer}"
                         )
                         print(
-                            f"   Final Output - Function Call: {event.item.runner_response.function_call}"
+                            f"   Final Output - Step History Length: {len(event.item.runner_response.step_history) if event.item.runner_response.step_history else 0}"
                         )
-                        print(
-                            f"   Final Output - Function Result: {event.item.runner_response.function_call_result}"
-                        )
+                        if (
+                            event.item.runner_response.step_history
+                            and len(event.item.runner_response.step_history) > 0
+                        ):
+                            last_step = event.item.runner_response.step_history[-1]
+                            print(
+                                f"   Final Output - Last Function: {last_step.function}"
+                            )
+                            print(
+                                f"   Final Output - Last Result: {last_step.observation}"
+                            )
+                        else:
+                            print("   Final Output - No function calls recorded")
                     else:
                         print(f"   Item type: {type(event.item).__name__}")
 
@@ -319,8 +345,13 @@ async def test_runner_streaming_nested():
         final_result = streaming_result.final_result
         if final_result:
             print(f"   • Answer: {final_result.answer}")
-            print(f"   • Function Call: {final_result.function_call}")
-            print(f"   • Function Result: {final_result.function_call_result}")
+            # Extract function call info from step history
+            if final_result.step_history and len(final_result.step_history) > 0:
+                last_step = final_result.step_history[-1]
+                print(f"   • Last Function: {last_step.function}")
+                print(f"   • Last Result: {last_step.observation}")
+            else:
+                print("   • No function calls recorded in step history")
             print(f"   • Error: {final_result.error}")
         else:
             print("   • Final result: None")

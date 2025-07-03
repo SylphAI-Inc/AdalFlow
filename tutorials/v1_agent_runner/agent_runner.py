@@ -164,8 +164,13 @@ def run_react_agent_example():
             print(step)
         print("\nFINAL RESULT (RunnerResponse):")
         print(f"Answer: {result.answer}")
-        print(f"Function Call: {result.function_call}")
-        print(f"Function Call Result: {result.function_call_result}")
+        # Extract function call info from step history (last step contains the final function)
+        if result.step_history and len(result.step_history) > 0:
+            last_step = result.step_history[-1]
+            print(f"Last Function Call: {last_step.function}")
+            print(f"Last Function Result: {last_step.observation}")
+        else:
+            print("No function calls recorded in step history")
         print(f"Full Result: {result}")
 
         return history, result
@@ -239,8 +244,13 @@ def run_react_agent_primitive_type():
             print(step)
         print("\nFINAL RESULT (RunnerResponse):")
         print(f"Answer: {result.answer}")
-        print(f"Function Call: {result.function_call}")
-        print(f"Function Call Result: {result.function_call_result}")
+        # Extract function call info from step history (last step contains the final function)
+        if result.step_history and len(result.step_history) > 0:
+            last_step = result.step_history[-1]
+            print(f"Last Function Call: {last_step.function}")
+            print(f"Last Function Result: {last_step.observation}")
+        else:
+            print("No function calls recorded in step history")
         print(f"Full Result: {result}")
 
         return history, result
@@ -321,8 +331,13 @@ async def arun_react_agent_example():
 
         print("\nASYNC FINAL RESULT (RunnerResponse):")
         print(f"Answer: {result.answer}")
-        print(f"Function Call: {result.function_call}")
-        print(f"Function Call Result: {result.function_call_result}")
+        # Extract function call info from step history (last step contains the final function)
+        if result.step_history and len(result.step_history) > 0:
+            last_step = result.step_history[-1]
+            print(f"Last Function Call: {last_step.function}")
+            print(f"Last Function Result: {last_step.observation}")
+        else:
+            print("No function calls recorded in step history")
         print(f"Full Result: {result}")
 
         return history, result
@@ -443,8 +458,13 @@ def run_advanced_react_agent():
 
     print("\nFINAL RESULT (RunnerResponse):")
     print(f"Answer: {result.answer}")
-    print(f"Function Call: {result.function_call}")
-    print(f"Function Call Result: {result.function_call_result}")
+    # Extract function call info from step history (last step contains the final function)
+    if result.step_history and len(result.step_history) > 0:
+        last_step = result.step_history[-1]
+        print(f"Last Function Call: {last_step.function}")
+        print(f"Last Function Result: {last_step.observation}")
+    else:
+        print("No function calls recorded in step history")
     print(f"Full Result: {result}")
 
     return history, result
@@ -490,8 +510,13 @@ async def arun_advanced_react_agent():
 
     print("\nFINAL RESULT (RunnerResponse):")
     print(f"Answer: {result.answer}")
-    print(f"Function Call: {result.function_call}")
-    print(f"Function Call Result: {result.function_call_result}")
+    # Extract function call info from step history (last step contains the final function)
+    if result.step_history and len(result.step_history) > 0:
+        last_step = result.step_history[-1]
+        print(f"Last Function Call: {last_step.function}")
+        print(f"Last Function Result: {last_step.observation}")
+    else:
+        print("No function calls recorded in step history")
     print(f"Full Result: {result}")
 
     return history, result
@@ -531,8 +556,13 @@ def no_structured_output_run_agent():
         # Print results
         print("\nFINAL RESULT (RunnerResponse):")
         print(f"Answer: {result.answer}")
-        print(f"Function Call: {result.function_call}")
-        print(f"Function Call Result: {result.function_call_result}")
+        # Extract function call info from step history (last step contains the final function)
+        if result.step_history and len(result.step_history) > 0:
+            last_step = result.step_history[-1]
+            print(f"Last Function Call: {last_step.function}")
+            print(f"Last Function Result: {last_step.observation}")
+        else:
+            print("No function calls recorded in step history")
         print(f"Result type: {type(result).__name__}")
         print(f"Full Result: {result}")
 
@@ -594,8 +624,13 @@ def pydantic_dataclass_run_agent():
         # Print results
         print("\nFINAL RESULT (RunnerResponse):")
         print(f"Answer: {result.answer}")
-        print(f"Function Call: {result.function_call}")
-        print(f"Function Call Result: {result.function_call_result}")
+        # Extract function call info from step history (last step contains the final function)
+        if result.step_history and len(result.step_history) > 0:
+            last_step = result.step_history[-1]
+            print(f"Last Function Call: {last_step.function}")
+            print(f"Last Function Result: {last_step.observation}")
+        else:
+            print("No function calls recorded in step history")
         print(f"Full Result: {result}")
 
         return history, result
@@ -663,8 +698,13 @@ def run_example(example_name: str, example_func, *args, **kwargs):
             history, output = result
             print("\nOUTPUT (RunnerResponse):")
             print(f"Answer: {output.answer}")
-            print(f"Function Call: {output.function_call}")
-            print(f"Function Call Result: {output.function_call_result}")
+            # Extract function call info from step history (last step contains the final function)
+            if output.step_history and len(output.step_history) > 0:
+                last_step = output.step_history[-1]
+                print(f"Last Function Call: {last_step.function}")
+                print(f"Last Function Result: {last_step.observation}")
+            else:
+                print("No function calls recorded in step history")
             outputs[example_name] = output
             print(f"\nOutput type: {type(output).__name__}")
         return True
@@ -681,16 +721,16 @@ if __name__ == "__main__":
 
     # Define all examples to run
     examples = [
-        # ("Synchronous ReAct Agent", run_react_agent_example),
-        # ("Primitive Type ReAct Agent", run_react_agent_primitive_type),
-        # ("Async ReAct Agent", lambda: asyncio.run(arun_react_agent_example())),
+        ("Synchronous ReAct Agent", run_react_agent_example),
+        ("Primitive Type ReAct Agent", run_react_agent_primitive_type),
+        ("Async ReAct Agent", lambda: asyncio.run(arun_react_agent_example())),
         # ("Advanced ReAct Agent", run_advanced_react_agent),
         (
             "Advanced Async ReAct Agent",
             lambda: asyncio.run(arun_advanced_react_agent()),
         ),
-        # ("No Structured Output Agent", no_structured_output_run_agent),
-        # ("Pydantic Dataclass Agent", pydantic_dataclass_run_agent),
+        ("No Structured Output Agent", no_structured_output_run_agent),
+        ("Pydantic Dataclass Agent", pydantic_dataclass_run_agent),
     ]
 
     # Run all examples and track results
@@ -708,8 +748,13 @@ if __name__ == "__main__":
             print(f"\n✅ SUCCESS: {name}")
             output = outputs[name]
             print(f"Answer: {output.answer}")
-            print(f"Function Call: {output.function_call}")
-            print(f"Function Call Result: {output.function_call_result}")
+            # Extract function call info from step history (last step contains the final function)
+            if output.step_history and len(output.step_history) > 0:
+                last_step = output.step_history[-1]
+                print(f"Last Function Call: {last_step.function}")
+                print(f"Last Function Result: {last_step.observation}")
+            else:
+                print("No function calls recorded in step history")
         else:
             print(f"\n❌ FAILED: {name}")
 

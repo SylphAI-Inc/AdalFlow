@@ -6,11 +6,15 @@ from typing import List, Optional, Any, Dict
 
 from pydantic import BaseModel, Field
 from openai import OpenAI
-from agents import Agent, Runner, function_tool
+from adalflow.core.agent import Agent
+from adalflow.core.runner import Runner
 from dotenv import load_dotenv
 
 from openai.types.responses import ResponseTextDeltaEvent
-from agents import AgentOutputSchema
+from adalflow.core.agent import function_tool
+from adalflow.core.agent import AgentOutputSchema
+
+# from agents import AgentOutputSchema  # This might need to be defined locally or imported from appropriate module
 
 import json
 
