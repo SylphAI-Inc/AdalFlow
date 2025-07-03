@@ -1,6 +1,18 @@
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+
+   Getting Started <self>
+
 *"Say Goodbye to Manual Prompting"*
 
-Getting Started: Install AdalFlow and Run Your First Query
+Welcome to AdalFlow!
+====================
+
+AdalFlow is a PyTorch-like library to build and auto-optimize any Language Model (LM) workflows, from Chatbots and RAG Systems to Agents. The library is a community-driven project, and we welcome everyone to join us in building the future of LLM applications!
+
+
+Install AdalFlow and Run Your First Query
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
@@ -8,7 +20,7 @@ Getting Started: Install AdalFlow and Run Your First Query
 
    pip install -U adalflow
 
-LM apps often relys on other cloud or local model services and each of them often has their own Python SDKs.
+LM apps often rely on other cloud or local model services and each of them often has their own Python SDKs.
 AdalFlow handles all of them as optional packages, so that developers only need to install the ones they need.
 
 .. tabs::
@@ -646,3 +658,4 @@ Community
    :hidden:
 
    apis/index
+
