@@ -606,8 +606,6 @@ Community
 
 
 
-
-
 .. toctree::
    :glob:
    :maxdepth: 1
@@ -644,6 +642,13 @@ Community
    :hidden:
 
    tutorials/index
+   
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   design/index
 
 
 

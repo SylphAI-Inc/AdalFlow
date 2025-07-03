@@ -256,6 +256,7 @@ class Runner(Component):
 
         while step_count < self.max_steps:
             try:
+                printc(f'agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}')
                 # Execute one step
                 output = self.agent.planner.call(
                     prompt_kwargs=prompt_kwargs,
@@ -313,7 +314,6 @@ class Runner(Component):
         # Handle cases where result is not wrapped in FunctionOutput (e.g., in tests)
         if not isinstance(result, FunctionOutput):
             # If it's a direct result from mocks or other sources, wrap it in FunctionOutput
-            from adalflow.core.types import FunctionOutput
             if hasattr(result, 'output'):
                 # Already has output attribute, use it directly
                 wrapped_result = FunctionOutput(
@@ -367,6 +367,7 @@ class Runner(Component):
 
         while step_count < self.max_steps:
             try:
+                printc(f'agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}')
                 # Execute one step asynchronously
                 output = await self.agent.planner.acall(
                     prompt_kwargs=prompt_kwargs,
@@ -405,7 +406,7 @@ class Runner(Component):
                         self.agent.planner.get_prompt(**prompt_kwargs)
                     )
                 )
-                printc(f'agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}')
+                
 
                 step_count += 1
 
@@ -480,7 +481,8 @@ class Runner(Component):
                 if not isinstance(function_result, FunctionOutput):
                     raise ValueError(f"Result must be wrapped in FunctionOutput, got {type(function_result)}")
 
-                function_output = function_result.output 
+                function_output = function_result.output
+                # TODO: function needs a stream_events 
                 real_function_output = None
 
                 if inspect.iscoroutine(function_output):
@@ -493,6 +495,9 @@ class Runner(Component):
                         self._event_queue.put_nowait(item)
                         function_results.append(item)
                     real_function_output = function_results[-1]
+                else:
+                    real_function_output = function_output
+                    self._event_queue.put_nowait(function_output)
                     # function_results = []
                     # async for item in function_output:
                     #     function_results.append(item)
