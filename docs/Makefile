@@ -58,3 +58,14 @@ update_files:
 
 html: apidoc  update_files
 	@$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+# Convenience target to build docs with design documents
+build-with-design: apidoc html
+	@echo "Documentation built with design documents included!"
+
+# Quick build command
+quick:
+	@$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+# Clean and rebuild everything
+rebuild: clean build-with-design

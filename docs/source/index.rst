@@ -1,4 +1,3 @@
-
 *"Say Goodbye to Manual Prompting"*
 
 Getting Started: Install AdalFlow and Run Your First Query
@@ -595,8 +594,6 @@ Community
 
 
 
-
-
 .. toctree::
    :glob:
    :maxdepth: 1
@@ -633,6 +630,13 @@ Community
    :hidden:
 
    tutorials/index
+   
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   design/index
 
 
 
