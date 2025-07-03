@@ -18,7 +18,6 @@ from typing import (
     AsyncGenerator,
 )
 import re
-import asyncio
 
 import logging
 import backoff
@@ -47,7 +46,7 @@ from openai.types import (
 )
 
 # from openai.types.chat import ChatCompletionChunk, ChatCompletion  # COMMENTED OUT - USING RESPONSE API ONLY
-from openai.types.responses import Response, ResponseUsage, ResponseCompletedEvent
+from openai.types.responses import Response, ResponseUsage
 from adalflow.core.model_client import ModelClient
 from adalflow.core.types import (
     ModelType,
@@ -56,7 +55,6 @@ from adalflow.core.types import (
     InputTokensDetails,
     OutputTokensDetails,
     GeneratorOutput,
-    QueueSentinel,
 )
 
 from adalflow.components.model_client.utils import parse_embedding_response
@@ -584,9 +582,8 @@ class OpenAIClient(ModelClient):
             # else:
             #     # Convert structured input to string format if needed
             #     final_model_kwargs["input"] = self._convert_llm_inputs_to_messages(input)
-            final_model_kwargs["input"] = str(
-                input
-            )  # double check that this is cast to string
+            final_model_kwargs["input"] = input
+            # double check that this is cast to string
         elif model_type == ModelType.IMAGE_GENERATION:
             # For image generation, input is the prompt
             final_model_kwargs["prompt"] = input
@@ -835,40 +832,6 @@ class OpenAIClient(ModelClient):
                     },
                 }
         return image_source
-
-    async def collect_final_response_from_stream(
-        self, stream: AsyncIterable, event_queue: Optional[asyncio.Queue] = None
-    ) -> str:
-        """
-        Collect the final complete response text from a streaming Response API.
-        Consumes the entire stream and returns the concatenated result.
-
-        Args:
-            stream: The async iterable stream to consume
-            event_queue: Optional queue to populate with stream events
-        """
-
-        async for event in stream:
-            log.debug(f"Raw event: {event!r}")
-
-            # Put event in queue if provided
-            if event_queue is not None:
-                await event_queue.put(event)
-
-            # --- final completion event? ---
-            if isinstance(event, ResponseCompletedEvent):
-                resp = event.response
-                log.debug(f"Response completed: {event.response.output_text}")
-                # 1) old convenience property
-                if getattr(resp, "output_text", None):
-                    # Signal end of stream in queue
-                    if event_queue is not None:
-                        await event_queue.put(QueueSentinel())
-                    return resp.output_text
-
-        # raise an error if no final completion event is found which should not happen according to OpenAI response API documentation
-        log.error("No ResponseCompletedEvent found in the stream")
-        raise ValueError("No ResponseCompletedEvent found in the stream")
 
 
 # Example usage:

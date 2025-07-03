@@ -4,13 +4,14 @@ It is a pipeline that consists of three subcomponents."""
 
 import json
 import re
-import asyncio
 from pathlib import Path
 
 from typing import Any, Dict, Optional, Union, Callable, Tuple, List, AsyncGenerator
 from collections.abc import AsyncIterable
 import logging
 from dataclasses import dataclass, field
+
+from openai.types.responses import ResponseCompletedEvent
 
 
 from adalflow.core.types import (
@@ -360,10 +361,56 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         return output
 
-    async def _async_post_call(self, completion: Any) -> GeneratorOutput:
-        r"""Get completion and create a GeneratorOutput where the original completion is stored under the api_response header and
-        the processed completion is stored under the raw_response header. Then process it with the output_processors and store the final output
-        in the data field."""
+    async def _create_async_generator_and_applying_output_processors(
+        self, generator_output: GeneratorOutput
+    ) -> AsyncGenerator[Any, None]:
+        r"""Create an async generator from the generator output returned by model client and apply output processors. Consume the raw_response
+        and yield each event. At the end yield the final generator output which stores under its data field the final output after applying the output processors.
+        """
+
+        data = generator_output.raw_response
+
+        # the raw response of the generator output should be an async iterable
+        if not isinstance(data, AsyncIterable):
+            raise ValueError("The data is not an async iterable")
+
+        final_output_text = ""
+
+        # iterate over the events in the data and yield each event and store the final output text
+        # this assumes that the raw_response of the generator output stores a
+        # async iterable of events based on the OpenAI Responses API documentation for streaming
+        async for event in data:
+            log.debug(f"Raw event: {event!r}")
+            yield event
+
+            if ResponseCompletedEvent and isinstance(event, ResponseCompletedEvent):
+                resp = event.response
+                log.debug(f"Response completed: {event.response.output_text}")
+                if getattr(resp, "output_text", None):
+                    final_output_text = resp.output_text
+
+        if self.output_processors:
+            if final_output_text:
+                try:
+                    final_output_text = self.output_processors(final_output_text)
+                    generator_output.data = final_output_text
+                except Exception as e:
+                    log.error(f"Error processing the output processors: {e}")
+                    generator_output.error = str(e)
+        else:
+            generator_output.data = None
+
+        # at the very end yield the modified generator output
+        yield generator_output
+
+    async def _async_post_call(
+        self, completion: Any
+    ) -> Union[GeneratorOutput, AsyncGenerator[Any, None]]:
+        r"""Get completion and depending on whether the client is streaming from the model client, create a GeneratorOutput or an AsyncGenerator.
+        when the client is not streaming, the post call return a GeneratorOutput where the final output after applying the output processors is stored under the data field.
+        When the client is streaming, the post call returns an Async Generator which will yield the events under the raw response and then also
+        the final Generator Output. The final Generator Output will have under data the final output after applying the output processors.
+        """
         # parse chat completion will only fill the raw_response
         output: GeneratorOutput = self.model_client.parse_chat_completion(completion)
         # save the api response
@@ -377,36 +424,28 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         data = output.raw_response
 
         # Handle async iterables from OpenAI Agent/Responses API streaming
-        # Use Queue-based approach to avoid dual stream consumption
+        # return an async generator
         if isinstance(output.raw_response, AsyncIterable):
-            # the event_queue is set to be None by default, initialize a new asyncio Queue
-            output.event_queue = asyncio.Queue()
-            try:
-                # Use the model client to collect final response and write to the event queue of the output
-                data = await self.model_client.collect_final_response_from_stream(
-                    output.raw_response, output.event_queue
-                )
-
-            except Exception as e:
-                log.error(f"Error processing OpenAI Agent stream: {e}")
-                data = str(output.raw_response)
-
-        log.info(f"Response from the Model Client Stream after being processed: {data}")
-
-        # process the model client's final response with the output processors
-        if self.output_processors:
-            if data:
-                try:
-                    data = self.output_processors(data)
-                    output.data = data
-                except Exception as e:
-                    log.error(f"Error processing the output processors: {e}")
-                    output.error = str(e)
-
+            # return an Async Iterator
+            # create a
+            return self._create_async_generator_and_applying_output_processors(output)
         else:
-            output.data = data
+            # return a GeneratorOutput if the raw response is not an async iterable
+            # process the model client's final response with the output processors
+            log.info(f"Response from the Model Client before being processed: {data}")
+            if self.output_processors:
+                if data:
+                    try:
+                        data = self.output_processors(data)
+                        output.data = data
+                    except Exception as e:
+                        log.error(f"Error processing the output processors: {e}")
+                        output.error = str(e)
+            else:
+                output.data = data
+            log.info(f"Response from the Model Client after being processed: {data}")
 
-        return output
+            return output
 
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
@@ -1187,7 +1226,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         model_kwargs: Optional[Dict] = {},
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
-    ) -> AsyncGenerator[GeneratorOutputType, None]:
+    ) -> Union[GeneratorOutputType, AsyncGenerator[GeneratorOutputType, None]]:
         r"""Async call the model with the input and model_kwargs.
 
         :warning::
@@ -1213,19 +1252,24 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         if completion:
             try:
+                # set ouput id in async post call instead
                 output = await self._async_post_call(completion)
             except Exception as e:
                 log.error(f"Error processing the output: {e}")
                 output = GeneratorOutput(raw_response=str(completion), error=str(e))
 
-        output.id = id
         log.info(f"output: {output}")
-        self._run_callbacks(
-            output,
-            input=api_kwargs,
-            prompt_kwargs=prompt_kwargs,
-            model_kwargs=model_kwargs,
-        )
+        # if the output is not an async generator then set its id and run call backs
+        # TODO support when output is an Async Generator
+        if not isinstance(output, AsyncGenerator):
+            output.id = id
+            self._run_callbacks(
+                output,
+                input=api_kwargs,
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
+            )
+
         self._trace_api_kwargs = api_kwargs  # tracing
         return output
 

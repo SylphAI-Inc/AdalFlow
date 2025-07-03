@@ -31,7 +31,6 @@ from datetime import datetime
 import uuid
 import logging
 import json
-import asyncio
 from collections.abc import AsyncIterable
 from pydantic import BaseModel, Field
 
@@ -505,39 +504,19 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     metadata: Optional[Dict[str, object]] = field(
         default=None, metadata={"desc": "Additional metadata"}
     )
-    event_queue: Optional[asyncio.Queue] = field(
-        default=None, metadata={"desc": "Event queue for streaming events"}
-    )
 
     async def stream_events(self) -> AsyncIterator[T_co]:
         """
         Stream raw events from the Generator's raw response which has the processed version of api_response.
-
-        If the event_queue is not empty then it yields events stored in the event_queue and as a fallback, tries to
-        either iterate directly from raw_response or yield from the data field
+        If the raw_response has already been consumed, yield from the data field
 
         Returns:
             AsyncIterator[T_co]: An async iterator that yields events stored in raw_response
         """
         count = 0
 
-        # First try to read from event_queue if it exists, check that event_queue is not None and it is not empty
-        if self.event_queue is not None and not self.event_queue.empty():
-            while True:
-                try:
-                    event = await self.event_queue.get()
-
-                    # Check for sentinel to mark end of stream
-                    if isinstance(event, QueueSentinel):
-                        break
-
-                    count += 1
-                    yield event
-                except asyncio.CancelledError:
-                    break
-
         # Fallback to raw_response if event_queue didn't yield anything
-        if count == 0 and isinstance(self.raw_response, AsyncIterable):
+        if isinstance(self.raw_response, AsyncIterable):
             async for event in self.raw_response:
                 count += 1
                 yield event

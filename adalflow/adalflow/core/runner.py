@@ -9,10 +9,10 @@ from typing import (
     Dict,
     List,
     Optional,
-    Tuple,
     Type,
     TypeVar,
     Union,
+    AsyncGenerator,
 )
 from typing_extensions import TypeAlias
 
@@ -277,27 +277,22 @@ class Runner(Component):
             raise ValueError(f"Error processing output: {str(e)}")
 
     @classmethod
-    def _get_planner_function(
-        self, output: Union[GeneratorOutput, Function]
-    ) -> Function:
+    def _get_planner_function(self, output: GeneratorOutput) -> Function:
         """Check the planner output and return the function.
 
         Args:
             output: The planner output
         """
-        if isinstance(output, Function):
-            return output
-        elif isinstance(output, GeneratorOutput):
-            # assumes inference mode
-            function = output.data
-
-            if not isinstance(function, Function):
-                raise ValueError(
-                    f"Expected Function in the data field of the GeneratorOutput, but got {type(function)}, value: {function}"
-                )
-        else:
+        if not isinstance(output, GeneratorOutput):
             raise ValueError(
-                f"Expected Function or GeneratorOutput, but got {type(output)}, value: {output}"
+                f"Expected GeneratorOutput, but got {type(output)}, value: {output}"
+            )
+
+        function = output.data
+
+        if not isinstance(function, Function):
+            raise ValueError(
+                f"Expected Function in the data field of the GeneratorOutput, but got {type(function)}, value: {function}"
             )
 
         return function
@@ -310,7 +305,7 @@ class Runner(Component):
         ] = None,  # if some call use a different config
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
-    ) -> Tuple[List[StepOutput], RunnerResponse]:
+    ) -> RunnerResponse:
         """Execute the planner synchronously for multiple steps with function calling support.
 
         At the last step the action should be set to "finish" instead which terminates the sequence
@@ -322,9 +317,7 @@ class Runner(Component):
             id: Optional unique identifier for the request
 
         Returns:
-            Tuple containing:
-                - List of step history (StepOutput objects)
-                - Final processed output of type specified in self.answer_data_type
+            RunnerResponse containing step history and final processed output
         """
         # reset the step history
         self.step_history = []
@@ -396,9 +389,9 @@ class Runner(Component):
                     error=error_msg,
                     step_history=self.step_history.copy(),
                 )
-                return self.step_history, error_response
+                return error_response
 
-        return self.step_history, last_output
+        return last_output
 
     def _tool_execute_sync(
         self,
@@ -434,7 +427,7 @@ class Runner(Component):
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
-    ) -> Tuple[List[StepOutput], RunnerResponse]:
+    ) -> RunnerResponse:
         """Execute the planner asynchronously for multiple steps with function calling support.
 
         At the last step the action should be set to "finish" instead which terminates the sequence
@@ -446,9 +439,7 @@ class Runner(Component):
             id: Optional unique identifier for the request
 
         Returns:
-            Tuple containing:
-                - List of step history (GeneratorOutput objects)
-                - Final processed output
+            RunnerResponse containing step history and final processed output
         """
         self.step_history = []
         prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
@@ -521,9 +512,9 @@ class Runner(Component):
                     error=error_msg,
                     step_history=self.step_history.copy(),
                 )
-                return self.step_history, error_response
+                return error_response
 
-        return self.step_history, last_output
+        return last_output
 
     def astream(
         self,
@@ -551,7 +542,7 @@ class Runner(Component):
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
         streaming_result: Optional[RunnerStreamingResult] = None,
-    ) -> Tuple[List[StepOutput], RunnerResponse]:
+    ) -> RunnerResponse:
         """Execute the planner asynchronously for multiple steps with function calling support.
 
         At the last step the action should be set to "finish" instead which terminates the sequence
@@ -563,9 +554,7 @@ class Runner(Component):
             id: Optional unique identifier for the request
 
         Returns:
-            Tuple containing:
-                - List of step history (GeneratorOutput objects)
-                - Final processed output
+            RunnerResponse containing step history and final processed output
         """
         self.step_history = []
         prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
@@ -590,7 +579,7 @@ class Runner(Component):
                     f"agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}"
                 )
 
-                # Execute one step asynchronously
+                # when it's streaming, the output will be an async generator
                 output = await self.agent.planner.acall(
                     prompt_kwargs=prompt_kwargs,
                     model_kwargs=model_kwargs,
@@ -598,15 +587,24 @@ class Runner(Component):
                     id=id,
                 )
 
-                # Yield all events from the generator output using stream_events
-                # Events are already wrapped with RawResponsesStreamEvent in the generator's stream_events method
-                if hasattr(output, "stream_events") and callable(output.stream_events):
-                    async for wrapped_event in output.stream_events():
-                        # wrap with RawResponsesStreamEvent and put to the queue
-                        run_item_event = RawResponsesStreamEvent(data=wrapped_event)
-                        streaming_result._event_queue.put_nowait(run_item_event)
+                if not isinstance(output, AsyncGenerator):
+                    raise ValueError(
+                        f"Output must be an async generator, got {type(output)}"
+                    )
 
-                function = self._get_planner_function(output)
+                final_output = None
+
+                async for event in output:
+                    # if the event is not the final Generator Output wrap it with RawResponsesStreamEvent
+                    if not isinstance(event, GeneratorOutput):
+                        # yield from the raw responses
+                        wrapped_event = RawResponsesStreamEvent(data=event)
+                        streaming_result._event_queue.put_nowait(wrapped_event)
+                    else:
+                        # this is the final event that is streamed and save in final output
+                        final_output = event
+
+                function = self._get_planner_function(final_output)
                 printc(f"function: {function}", color="yellow")
 
                 # Emit tool call event
@@ -716,12 +714,12 @@ class Runner(Component):
 
                 # end the streaming result's event queue
                 streaming_result._event_queue.put_nowait(QueueCompleteSentinel())
-                return self.step_history, error_runner_response
+                return error_runner_response
 
         # Signal completion of streaming
         streaming_result._event_queue.put_nowait(QueueCompleteSentinel())
 
-        return self.step_history, last_output
+        return last_output
 
     async def _tool_execute_async(
         self,

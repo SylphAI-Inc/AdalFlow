@@ -151,7 +151,7 @@ def run_react_agent_example():
         print(f"{'='*80}")
 
         # Run the agent
-        history, result = runner.call(
+        result = runner.call(
             prompt_kwargs={
                 "input_str": query,
             },
@@ -159,7 +159,7 @@ def run_react_agent_example():
 
         # Print results
         print("\nSTEP HISTORY:")
-        for i, step in enumerate(history):
+        for i, step in enumerate(result.step_history):
             print(f"\nStep {i}:")
             print(step)
         print("\nFINAL RESULT (RunnerResponse):")
@@ -173,7 +173,7 @@ def run_react_agent_example():
             print("No function calls recorded in step history")
         print(f"Full Result: {result}")
 
-        return history, result
+        return result.step_history, result
 
     except Exception as e:
         logger.error(f"Error running ReAct agent example: {str(e)}")
@@ -231,7 +231,7 @@ def run_react_agent_primitive_type():
         print(f"{'='*80}")
 
         # Run the agent
-        history, result = runner.call(
+        result = runner.call(
             prompt_kwargs={
                 "input_str": query,
             },
@@ -239,7 +239,7 @@ def run_react_agent_primitive_type():
 
         # Print results
         print("\nSTEP HISTORY:")
-        for i, step in enumerate(history):
+        for i, step in enumerate(result.step_history):
             print(f"\nStep {i}:")
             print(step)
         print("\nFINAL RESULT (RunnerResponse):")
@@ -253,7 +253,7 @@ def run_react_agent_primitive_type():
             print("No function calls recorded in step history")
         print(f"Full Result: {result}")
 
-        return history, result
+        return result.step_history, result
 
     except Exception as e:
         logger.error(f"Error running ReAct agent example: {str(e)}")
@@ -317,7 +317,7 @@ async def arun_react_agent_example():
         print(f"{'='*80}")
 
         # Run the agent asynchronously
-        history, result = await runner.acall(
+        result = await runner.acall(
             prompt_kwargs={
                 "input_str": query,
             },
@@ -325,7 +325,7 @@ async def arun_react_agent_example():
 
         # Print results
         print("\nASYNC STEP HISTORY:")
-        for i, step in enumerate(history):
+        for i, step in enumerate(result.step_history):
             print(f"\nStep {i}:")
             print(step)
 
@@ -340,7 +340,7 @@ async def arun_react_agent_example():
             print("No function calls recorded in step history")
         print(f"Full Result: {result}")
 
-        return history, result
+        return result.step_history, result
 
     except Exception as e:
         logger.error(f"Error running async ReAct agent example: {str(e)}")
@@ -449,11 +449,11 @@ def run_advanced_react_agent():
     )
 
     print("RUNNING ADVANCED SYNCHRONOUS REACT AGENT EXAMPLE")
-    history, result = runner.call(prompt_kwargs={"input_str": query})
+    result = runner.call(prompt_kwargs={"input_str": query})
 
     # Display results
     print("\nSTEP HISTORY SUMMARY:")
-    for step in history:
+    for step in result.step_history:
         print(step)
 
     print("\nFINAL RESULT (RunnerResponse):")
@@ -467,7 +467,7 @@ def run_advanced_react_agent():
         print("No function calls recorded in step history")
     print(f"Full Result: {result}")
 
-    return history, result
+    return result.step_history, result
 
 
 # ---------------------------------------------------------------------------
@@ -500,10 +500,10 @@ async def arun_advanced_react_agent():
     query = "Find 7 * 6, search details for '42 meaning', then summarize how the number appears in popular culture."
 
     print("RUNNING ADVANCED ASYNC REACT AGENT EXAMPLE")
-    history, result = await runner.acall(prompt_kwargs={"input_str": query})
+    result = await runner.acall(prompt_kwargs={"input_str": query})
 
     print("\nASYNC STEP HISTORY SUMMARY:")
-    for step in history:
+    for step in result.step_history:
         print(step)
 
     print(result)
@@ -519,7 +519,7 @@ async def arun_advanced_react_agent():
         print("No function calls recorded in step history")
     print(f"Full Result: {result}")
 
-    return history, result
+    return result.step_history, result
 
 
 def no_structured_output_run_agent():
@@ -551,7 +551,7 @@ def no_structured_output_run_agent():
         print(f"{'='*80}")
 
         # Run the agent
-        history, result = runner.call(prompt_kwargs={"input_str": query})
+        result = runner.call(prompt_kwargs={"input_str": query})
 
         # Print results
         print("\nFINAL RESULT (RunnerResponse):")
@@ -566,7 +566,7 @@ def no_structured_output_run_agent():
         print(f"Result type: {type(result).__name__}")
         print(f"Full Result: {result}")
 
-        return history, result
+        return result.step_history, result
 
     except Exception as e:
         logger.error(f"Error in no_structured_output_run_agent: {str(e)}")
@@ -619,7 +619,7 @@ def pydantic_dataclass_run_agent():
         print(f"{'='*80}")
 
         # Run the agent
-        history, result = runner.call(prompt_kwargs={"input_str": query})
+        result = runner.call(prompt_kwargs={"input_str": query})
 
         # Print results
         print("\nFINAL RESULT (RunnerResponse):")
@@ -633,7 +633,7 @@ def pydantic_dataclass_run_agent():
             print("No function calls recorded in step history")
         print(f"Full Result: {result}")
 
-        return history, result
+        return result.step_history, result
 
     except Exception as e:
         logger.error(f"Error in pydantic_dataclass_run_agent: {str(e)}")
@@ -729,7 +729,7 @@ if __name__ == "__main__":
             "Advanced Async ReAct Agent",
             lambda: asyncio.run(arun_advanced_react_agent()),
         ),
-        ("No Structured Output Agent", no_structured_output_run_agent),
+        # ("No Structured Output Agent", no_structured_output_run_agent),
         ("Pydantic Dataclass Agent", pydantic_dataclass_run_agent),
     ]
 

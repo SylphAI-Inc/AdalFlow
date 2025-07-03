@@ -50,13 +50,79 @@ class FakePlanner:
         return ""
 
 
+class FakeStreamingPlanner:
+    """Planner stub that returns async generators for streaming."""
+
+    def __init__(self, outputs):
+        # Wrap outputs in GeneratorOutput if they're not already
+        self._outputs = [
+            out if isinstance(out, GeneratorOutput) else GeneratorOutput(data=out)
+            for out in outputs
+        ]
+        self._idx = 0
+
+    def call(self, *, prompt_kwargs, model_kwargs=None, use_cache=None, id=None):
+        if self._idx >= len(self._outputs):
+            raise IndexError("No more outputs")
+        out = self._outputs[self._idx]
+        self._idx += 1
+        return out
+
+    async def acall(self, *, prompt_kwargs, model_kwargs=None, use_cache=None, id=None):
+        # For streaming, return an async generator
+        async def async_generator():
+            # Yield some intermediate events (simulating streaming)
+            yield "intermediate_event_1"
+            yield "intermediate_event_2"
+            # Yield the final GeneratorOutput
+            if self._idx >= len(self._outputs):
+                raise IndexError("No more outputs")
+            out = self._outputs[self._idx]
+            self._idx += 1
+            yield out
+
+        return async_generator()
+
+    def get_prompt(self, **kwargs):
+        return ""
+
+
+class MockToolManager:
+    """Mock tool manager that mimics the real tool manager interface."""
+
+    def __init__(self, sync_callable=None):
+        self._sync_callable = sync_callable
+
+    def __call__(self, expr_or_fun, step):
+        """For backward compatibility with existing sync callable interface."""
+        if self._sync_callable:
+            return self._sync_callable(expr_or_fun, step)
+        return SimpleNamespace(output="mock_output")
+
+    async def execute_func_async(self, func):
+        """Async method for tool execution."""
+        from adalflow.core.types import FunctionOutput
+
+        if self._sync_callable:
+            result = self._sync_callable(func, "execute")
+            if hasattr(result, "output"):
+                return FunctionOutput(name=func.name, input=func, output=result.output)
+            else:
+                return FunctionOutput(name=func.name, input=func, output=result)
+        return FunctionOutput(name=func.name, input=func, output="mock_async_output")
+
+
 class DummyAgent:
     """Bare-bones Agent for Runner, including answer_data_type for Runner.__init__."""
 
     def __init__(self, planner, max_steps=10, tool_manager=None, answer_data_type=None):
         self.planner = planner
         self.max_steps = max_steps
-        self.tool_manager = tool_manager
+        if tool_manager and not hasattr(tool_manager, "execute_func_async"):
+            # Wrap simple callable in MockToolManager
+            self.tool_manager = MockToolManager(tool_manager)
+        else:
+            self.tool_manager = tool_manager or MockToolManager()
         self.answer_data_type = answer_data_type
 
 
@@ -93,9 +159,7 @@ class TestRunner(unittest.TestCase):
         )
         runner = Runner(agent=agent)
 
-        history, result = runner.call(prompt_kwargs={})
-        self.assertEqual(len(history), 1)
-        self.assertIs(history[0].function, fn)
+        result = runner.call(prompt_kwargs={})
 
         # Verify result is RunnerResponse
         self.assertIsInstance(result, RunnerResponse)
@@ -104,7 +168,8 @@ class TestRunner(unittest.TestCase):
         # Verify step history contains the execution details
         self.assertEqual(len(result.step_history), 1)
         self.assertEqual(result.step_history[0].function, fn)
-        self.assertEqual(runner.step_history, history)
+        self.assertEqual(len(runner.step_history), 1)
+        self.assertEqual(runner.step_history[0].function, fn)
 
     def test_acall_returns_runner_response(self):
         """Test that acall method returns RunnerResponse."""
@@ -123,7 +188,7 @@ class TestRunner(unittest.TestCase):
 
             runner._tool_execute_async = mock_tool_execute_async
 
-            history, result = await runner.acall(prompt_kwargs={})
+            result = await runner.acall(prompt_kwargs={})
 
             # Verify result is RunnerResponse
             self.assertIsInstance(result, RunnerResponse)
@@ -134,7 +199,7 @@ class TestRunner(unittest.TestCase):
             self.assertEqual(result.step_history[0].function, fn)
 
             # Verify step history
-            self.assertEqual(len(history), 1)
+            self.assertEqual(len(runner.step_history), 1)
 
         asyncio.run(async_test())
 
@@ -146,7 +211,8 @@ class TestRunner(unittest.TestCase):
 
             fn = DummyFunction(name="finish")
             agent = DummyAgent(
-                planner=FakePlanner([GeneratorOutput(data=fn)]), answer_data_type=None
+                planner=FakeStreamingPlanner([GeneratorOutput(data=fn)]),
+                answer_data_type=None,
             )
             runner = Runner(agent=agent)
 
@@ -200,8 +266,7 @@ class TestRunner(unittest.TestCase):
         )
         runner = Runner(agent=agent)
 
-        history, result = runner.call(prompt_kwargs={})
-        self.assertEqual(len(history), 2)
+        result = runner.call(prompt_kwargs={})
 
         # Verify result is RunnerResponse
         self.assertIsInstance(result, RunnerResponse)
@@ -212,6 +277,7 @@ class TestRunner(unittest.TestCase):
         self.assertEqual(
             result.step_history[-1].function, fn2
         )  # Last step should be fn2
+        self.assertEqual(len(runner.step_history), 2)
 
     def test_call_respects_max_steps_without_finish(self):
         """Test that Runner respects max_steps limit without finish function."""
@@ -229,16 +295,16 @@ class TestRunner(unittest.TestCase):
         )
         runner = Runner(agent=agent)
 
-        history, result = runner.call(prompt_kwargs={})
+        result = runner.call(prompt_kwargs={})
         # Should only execute 3 steps due to max_steps limit
-        self.assertEqual(len(history), 3)
+        self.assertEqual(len(runner.step_history), 3)
 
         # When max_steps is reached without finish, result should be None
         # This is the current behavior - no RunnerResponse is created without finish
         self.assertIsNone(result)
 
         # Check that the correct functions were executed
-        for i, step in enumerate(history):
+        for i, step in enumerate(runner.step_history):
             self.assertEqual(step.function.name, f"action_{i}")
             self.assertEqual(step.observation, f"output_action_{i}")
 
@@ -255,8 +321,7 @@ class TestRunner(unittest.TestCase):
         )
         runner = Runner(agent=agent)
 
-        history, result = runner.call(prompt_kwargs={})
-        self.assertEqual(len(history), 1)
+        result = runner.call(prompt_kwargs={})
 
         # Verify result is RunnerResponse wrapping the dict output
         self.assertIsInstance(result, RunnerResponse)
@@ -265,6 +330,7 @@ class TestRunner(unittest.TestCase):
         # Verify step history contains the execution details
         self.assertEqual(len(result.step_history), 1)
         self.assertEqual(result.step_history[0].function, fn)
+        self.assertEqual(len(runner.step_history), 1)
 
     def test_additional_acall_single_step(self):
         """Additional test for acall single step execution."""
@@ -283,8 +349,7 @@ class TestRunner(unittest.TestCase):
 
             runner._tool_execute_async = mock_tool_execute_async
 
-            history, result = await runner.acall(prompt_kwargs={})
-            self.assertEqual(len(history), 1)
+            result = await runner.acall(prompt_kwargs={})
 
             # Verify result is RunnerResponse
             self.assertIsInstance(result, RunnerResponse)
@@ -293,7 +358,7 @@ class TestRunner(unittest.TestCase):
             # Verify step history contains the execution details
             self.assertEqual(len(result.step_history), 1)
             self.assertEqual(result.step_history[0].function, fn)
-            self.assertEqual(runner.step_history, history)
+            self.assertEqual(len(runner.step_history), 1)
 
         asyncio.run(async_test())
 
@@ -304,14 +369,14 @@ class TestRunner(unittest.TestCase):
         runner._tool_execute = lambda func: SimpleNamespace(output="x")
 
         # The Runner should handle None gracefully and return an error in RunnerResponse
-        history, result = asyncio.run(runner.acall(prompt_kwargs={}))
+        result = asyncio.run(runner.acall(prompt_kwargs={}))
 
         # Should return a RunnerResponse with error field populated
         self.assertIsInstance(result, RunnerResponse)
         self.assertIsNotNone(result.error)
         self.assertIsNone(result.answer)
         self.assertTrue(result.error.startswith("Error in step 0:"))
-        self.assertEqual(history, [])
+        self.assertEqual(runner.step_history, [])
 
     def test_process_data_without_answer_data_type(self):
         """Test _process_data without answer_data_type."""
@@ -386,7 +451,8 @@ class TestRunner(unittest.TestCase):
             # Test 1: Single step with finish function
             fn = DummyFunction(name="finish")
             agent = DummyAgent(
-                planner=FakePlanner([GeneratorOutput(data=fn)]), answer_data_type=None
+                planner=FakeStreamingPlanner([GeneratorOutput(data=fn)]),
+                answer_data_type=None,
             )
             runner = Runner(agent=agent)
 
@@ -434,7 +500,7 @@ class TestRunner(unittest.TestCase):
             tool_manager=mock_tool_manager,
         )
         runner1 = Runner(agent=agent1)
-        history1, result1 = runner1.call(prompt_kwargs={})
+        result1 = runner1.call(prompt_kwargs={})
         self.assertIsInstance(result1, RunnerResponse)
         self.assertEqual(result1.answer, "consistent-output")
         # function_call_result and function_call fields removed from RunnerResponse
@@ -459,7 +525,7 @@ class TestRunner(unittest.TestCase):
                 )
 
             runner2._tool_execute_async = mock_tool_execute_async
-            history2, result2 = await runner2.acall(prompt_kwargs={})
+            result2 = await runner2.acall(prompt_kwargs={})
 
             self.assertIsInstance(result2, RunnerResponse)
             self.assertEqual(result2.answer, "consistent-output")

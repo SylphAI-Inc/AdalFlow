@@ -162,31 +162,47 @@ async def test_generator_streaming():
     print("\n🔄 Streaming response:")
     print("-" * 60)
 
-    # Use the new Generator.stream method
+    # Use the Generator.acall method with streaming enabled
     result = await generator.acall(
         prompt_kwargs={"task_desc_str": query},
         model_kwargs={"stream": True},
     )
 
-    print("\n📊 Generator Result:")
-    print(result)
+    # Check if result is an async generator
+    if hasattr(result, "__aiter__"):
+        print("🔄 Processing async generator stream:")
+        final_result = None
+        count = 0
+        async for output in result:
+            count += 1
+            print(f"Stream item #{count}: {output}")
+            final_result = output
 
-    print("\n Testing calling stream_events from result")
-    count = 0
-    async for event in result.stream_events():
-        print(count)
-        count += 1
-        print(event)
+        print(f"\n📊 Final Generator Result after {count} items:")
+        print(final_result)
 
-    print("\n Finished streaming events")
+        if hasattr(final_result, "stream_events"):
+            print("\n Testing calling stream_events from final result")
+            event_count = 0
+            async for event in final_result.stream_events():
+                event_count += 1
+                print(f"Event #{event_count}: {event}")
+            print(f"\n Finished streaming {event_count} events")
 
-    print("\n The API response has been consumed")
-    async for event in result.stream_events():
-        print(event)
+        return final_result
+    else:
+        print("\n📊 Generator Result (non-streaming):")
+        print(result)
 
-    print("checking that the final output is yielded")
+        if hasattr(result, "stream_events"):
+            print("\n Testing calling stream_events from result")
+            count = 0
+            async for event in result.stream_events():
+                count += 1
+                print(f"Event #{count}: {event}")
+            print(f"\n Finished streaming {count} events")
 
-    return result
+        return result
 
 
 async def test_runner_streaming():
