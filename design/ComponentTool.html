@@ -1,0 +1,1234 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Designing of AdalFlow FunctionTool" href="FunctionTool.html" /><link rel="prev" title="Blog" href="index.html" />
+
+    <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+        <title>Use Class method as a better function tool - Build and Optimize LM Workflows</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-primary: #FF6F00;
+  --color-brand-content: #1E2A38;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FF8F00;
+  --color-brand-content: #CFD8DC;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FF8F00;
+  --color-brand-content: #CFD8DC;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Build and Optimize LM Workflows</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/images/AdalFlow.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/images/AdalFlow_black_bg.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Build and Optimize LM Workflows</span>
+  
+</a><div class="sidebar-github-section">
+    <a href="https://github.com/SylphAI-Inc/AdalFlow" class="sidebar-github-link">
+        <i class="fa-brands fa-github"></i>
+        <span class="github-text">GitHub</span>
+    </a>
+</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Getting Started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../integrations/anthropic.html">Anthropic Integration</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../use_cases/index.html">Use Cases</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Use Cases</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/question_answering.html">Question Answering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/qa_computation_graph.html">Q&amp;A Computation Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/qa_text_grad_trace_graph.html">Q&amp;A Text Grad Trace Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/qa_demo_trace_graph.html">Q&amp;A Few Shot Demo Trace Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/classification.html">Classification Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/rag_opt.html">RAG optimization</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../contributor/index.html">Contributor Guide</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Contributor Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributor/contribution.html">Contributing Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributor/contribute_to_code.html">Development Essentials</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Developer Notes</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Developer Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/lightrag_design_philosophy.html">Design Philosophy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/class_hierarchy.html">Class Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/trace_graph.html">AdalFlow Trace Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/component.html">Component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/base_data_class.html">DataClass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/model_client.html">ModelClient</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/generator.html">Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/generator.html#basic-generator-tutorial">Basic Generator Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/output_parsers.html">Parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/retriever.html">Retriever</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/text_splitter.html">Text Splitter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/db.html">Data (Database/Pipeline)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/rag_playbook.html">RAG Playbook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/rag_with_memory.html">RAG with Memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/tool_helper.html">Function calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/evaluation.html">LLM Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/datasets.html">Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/logging.html">Logger Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/logging.html#design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/logging.html#use-logger-in-projects">Use Logger in Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/logging_tracing.html">Tracing</a></li>
+</ul>
+</li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Blog</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Blog</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Use Class method as a better function tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FunctionTool.html">Designing of AdalFlow FunctionTool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent-streaming.html">Agent Streaming Architecture in OpenAI Agents SDK</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../apis/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apis/core/index.html">Core</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.base_data_class.html">base_data_class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.component.html">component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.container.html">container</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.default_prompt_template.html">default_prompt_template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.embedder.html">embedder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.generator.html">generator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.model_client.html">model_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.prompt_builder.html">prompt_builder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.functional.html">functional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tokenizer.html">tokenizer</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apis/components/index.html">Components</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Components</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.model_client.html">model_client</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of model_client</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.azureai_client.html">azureai_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.deepseek_client.html">deepseek_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.fireworks_client.html">fireworks_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.google_client.html">google_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.groq_client.html">groq_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.mistral_client.html">mistral_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.ollama_client.html">ollama_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.openai_client.html">openai_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.sambanova_client.html">sambanova_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.together_client.html">together_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.transformers_client.html">transformers_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.utils.html">utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.xai_client.html">xai_client</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.retriever.html">retriever</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of retriever</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.retriever.bm25_retriever.html">bm25_retriever</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.retriever.lancedb_retriver.html">lancedb_retriver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html">llm_retriever</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.output_parsers.html">output_parsers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of output_parsers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html">dataclass_parser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html">outputs</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.react.html">react</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.data_process.data_components.html">data_components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.data_process.text_splitter.html">text_splitter</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.memory.html">memory</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of memory</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.memory.memory.html">memory</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apis/datasets/index.html">Datasets</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Datasets</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/datasets/datasets.big_bench_hard.html">big_bench_hard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/datasets/datasets.trec.html">trec</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/datasets/datasets.hotpot_qa.html">hotpot_qa</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/datasets/datasets.types.html">types</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apis/eval/index.html">Evaluation</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Evaluation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/eval/eval.base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/eval/eval.answer_match_acc.html">answer_match_acc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/eval/eval.retriever_recall.html">retriever_recall</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html">llm_as_judge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/eval/eval.g_eval.html">g_eval</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apis/optim/index.html">Optimization</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Optimization</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/optim/optim.parameter.html">parameter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/optim/optim.optimizer.html">optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/optim/optim.grad_component.html">grad_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/optim/optim.loss_component.html">loss_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/optim/optim.types.html">types</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apis/optim/optim.few_shot.html">few_shot</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of few_shot</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/optim/optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apis/optim/optim.text_grad.html">text_grad</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of text_grad</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/optim/optim.text_grad.backend_engine_prompt.html">backend_engine_prompt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/optim/optim.text_grad.ops.html">ops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/optim/optim.text_grad.tgd_optimizer.html">tgd_optimizer</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apis/optim/optim.trainer.html">trainer</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of trainer</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/optim/optim.trainer.adal.html">adal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/optim/optim.trainer.trainer.html">trainer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.decorators.html">decorators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/utils/utils.data.html">data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/utils/utils.logger.html">logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/utils/utils.file_io.html">file_io</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/utils/utils.config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/utils/utils.lazy_import.html">lazy_import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/utils/utils.registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/utils/utils.serialization.html">serialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/utils/utils.cache.html">cache</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="use-class-method-as-a-better-function-tool">
+<h1>Use Class method as a better function tool<a class="headerlink" href="#use-class-method-as-a-better-function-tool" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">ComponentTool</span></code> is a design pattern in AdalFlow that leverages <code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code> to wrap Component class methods as tools for LLM agents, providing enhanced context management and standardized output formatting compared to pure function tools.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>While <code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code> can wrap any callable function, <code class="docutils literal notranslate"><span class="pre">ComponentTool</span></code> specifically refers to the pattern of using <code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code> to wrap methods from <code class="docutils literal notranslate"><span class="pre">Component</span></code> subclasses. This pattern provides significant advantages for complex, stateful tools that need to maintain context across calls.</p>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Function Tool Pattern&quot;
+        FT[&quot;FunctionTool(fn)&quot;]
+        PF[&quot;Pure Function&quot;]
+        FT --&gt; PF
+        PF --&gt; |&quot;All context as parameters&quot;| LLM1[&quot;LLM sees all params&quot;]
+    end
+    
+    subgraph &quot;Component Tool Pattern&quot;
+        CT[&quot;FunctionTool(component.acall)&quot;]
+        C[&quot;Component&quot;]
+        CC[&quot;Hidden Context&lt;br/&gt;• Configuration&lt;br/&gt;• State&lt;br/&gt;• Credentials&quot;]
+        CT --&gt; C
+        C --&gt; CC
+        C --&gt; |&quot;Clean interface&quot;| LLM2[&quot;LLM sees only query&quot;]
+    end
+    
+    style CC fill:#e1f5fe
+    style LLM1 fill:#ffecb3
+    style LLM2 fill:#c8e6c9
+    </pre></section>
+<section id="key-advantages-over-pure-functions">
+<h2>Key Advantages Over Pure Functions<a class="headerlink" href="#key-advantages-over-pure-functions" title="Link to this heading">¶</a></h2>
+<section id="context-persistence">
+<h3>1. <strong>Context Persistence</strong><a class="headerlink" href="#context-persistence" title="Link to this heading">¶</a></h3>
+<p>Component tools can maintain persistent state and context that doesn’t need to be passed as function parameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ❌ Pure function approach - parameters exposed to LLM</span>
+<span class="k">def</span> <span class="nf">search_web</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">conversation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user_preferences</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="c1"># All context must be parameters</span>
+    <span class="k">pass</span>
+
+<span class="c1"># ✅ Component approach - context hidden from LLM</span>
+<span class="k">class</span> <span class="nc">SearchTool</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conversation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user_preferences</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conversation_id</span> <span class="o">=</span> <span class="n">conversation_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_preferences</span> <span class="o">=</span> <span class="n">user_preferences</span>  <span class="c1"># Persistent context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>  <span class="c1"># Hidden credentials</span>
+    
+    <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># Only query parameter visible to LLM</span>
+        <span class="c1"># Context available via self.*</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+</section>
+<section id="controlled-output-formatting">
+<h3>2. <strong>Controlled Output Formatting</strong><a class="headerlink" href="#controlled-output-formatting" title="Link to this heading">¶</a></h3>
+<p>Component tools use <code class="docutils literal notranslate"><span class="pre">ComponentToolOutput</span></code> to separate raw output from LLM-visible observation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ComponentToolOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The output of the tool&quot;</span><span class="p">})</span>
+    <span class="n">observation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The observation of the llm see of the output of the tool&quot;</span><span class="p">})</span>
+    <span class="n">is_streaming</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Whether the tool output is streaming&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="training-optimization-support">
+<h3>3. <strong>Training/Optimization Support</strong><a class="headerlink" href="#training-optimization-support" title="Link to this heading">¶</a></h3>
+<p>Components automatically support AdalFlow’s training and optimization pipeline when wrapped as tools.</p>
+</section>
+</section>
+<section id="componenttooloutput-pattern">
+<h2>ComponentToolOutput Pattern<a class="headerlink" href="#componenttooloutput-pattern" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ComponentToolOutput</span></code> class enables sophisticated output control:</p>
+<pre  class="mermaid">
+        flowchart LR
+    subgraph &quot;Component Processing&quot;
+        A[&quot;User Query&quot;] --&gt; B[&quot;Component.acall()&quot;]
+        B --&gt; C[&quot;Raw Processing&quot;]
+        C --&gt; D[&quot;Large Data Results&quot;]
+    end
+    
+    subgraph &quot;Output Transformation&quot;
+        D --&gt; E[&quot;ComponentToolOutput&quot;]
+        E --&gt; F[&quot;output: Full Data&quot;]
+        E --&gt; G[&quot;observation: LLM Summary&quot;]
+    end
+    
+    subgraph &quot;Usage&quot;
+        F --&gt; H[&quot;Internal Processing&lt;br/&gt;Downstream Components&quot;]
+        G --&gt; I[&quot;LLM Context&lt;br/&gt;Agent Decision Making&quot;]
+    end
+    
+    style E fill:#e8f5e8
+    style F fill:#fff3e0
+    style G fill:#e3f2fd
+    </pre><section id="raw-output-vs-observation">
+<h3>Raw Output vs Observation<a class="headerlink" href="#raw-output-vs-observation" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">output</span></code></strong>: The complete, potentially large raw data</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">observation</span></code></strong>: Concise, LLM-optimized summary of the output</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SearchTool</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">as_tool</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ComponentToolOutput</span><span class="p">,</span> <span class="n">SearchResults</span><span class="p">]:</span>
+        <span class="c1"># Perform search - returns large SearchResults object</span>
+        <span class="n">search_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_engine</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">as_tool</span><span class="p">:</span>
+            <span class="c1"># Create concise observation for LLM</span>
+            <span class="n">observation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_to_observation</span><span class="p">(</span><span class="n">search_results</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ComponentToolOutput</span><span class="p">(</span>
+                <span class="n">output</span><span class="o">=</span><span class="n">search_results</span><span class="p">,</span>  <span class="c1"># Full data for internal use</span>
+                <span class="n">observation</span><span class="o">=</span><span class="n">observation</span>  <span class="c1"># Concise summary for LLM</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">search_results</span>  <span class="c1"># Raw data for programmatic use</span>
+</pre></div>
+</div>
+</section>
+<section id="observation-template-example">
+<h3>Observation Template Example<a class="headerlink" href="#observation-template-example" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">output_to_observation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">SearchResults</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f output.answerBox %}</span>
+<span class="s2">    Answer: {{ output.answerBox }}</span>
+<span class="s2">    __________________________</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">    </span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f output.organic %}</span>
+<span class="s2">    Search Results:</span>
+
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or result in output.organic %}</span>
+<span class="s2">    {{loop.index}}.</span>
+<span class="s2">    Title: {{ result.title }} </span>
+<span class="s2">    Link: {{ result.link }}</span>
+<span class="s2">    Snippet: {{ result.snippet }}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f result.credibility_score %}</span>
+<span class="s2">    Credibility Score: {{ result.credibility_score }}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">observation</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">output</span><span class="p">,</span> <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">})()</span>
+    <span class="k">return</span> <span class="n">observation</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="real-world-examples">
+<h2>Real-World Examples<a class="headerlink" href="#real-world-examples" title="Link to this heading">¶</a></h2>
+<section id="search-tool-with-context-persistence">
+<h3>1. Search Tool with Context Persistence<a class="headerlink" href="#search-tool-with-context-persistence" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SearchTool</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search tool with persistent configuration and credibility checking.&quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># Persistent context - not exposed to LLM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span> <span class="o">=</span> <span class="n">model_client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_engine</span> <span class="o">=</span> <span class="n">SerpSearch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">credibility_checker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_credibility_checker</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_setup_credibility_checker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal setup - not a tool method&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Generator</span><span class="p">(</span>
+            <span class="n">model_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">CREDIBILITY_TEMPLATE</span><span class="p">,</span>
+            <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">num_sources</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">check_credibility</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentToolOutput</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search the web for information.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            query: The search query</span>
+<span class="sd">            num_sources: Number of sources to return</span>
+<span class="sd">            check_credibility: Whether to check source credibility</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Use persistent context</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_engine</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">num_sources</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">check_credibility</span><span class="p">:</span>
+            <span class="c1"># Use persistent credibility checker</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_by_credibility</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        
+        <span class="c1"># Format for LLM consumption</span>
+        <span class="n">observation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_to_observation</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">ComponentToolOutput</span><span class="p">(</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>  <span class="c1"># Full SearchResults object</span>
+            <span class="n">observation</span><span class="o">=</span><span class="n">observation</span>  <span class="c1"># Concise summary for LLM</span>
+        <span class="p">)</span>
+
+<span class="c1"># Usage as ComponentTool</span>
+<span class="n">search_tool</span> <span class="o">=</span> <span class="n">SearchTool</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">}</span>
+<span class="p">)</span>
+<span class="n">search_function_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">search_tool</span><span class="o">.</span><span class="n">acall</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="permission-tool-with-async-generators">
+<h3>2. Permission Tool with Async Generators<a class="headerlink" href="#permission-tool-with-async-generators" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PermissionTool</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tool that requests user permission before executing commands.&quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permission_state</span><span class="p">:</span> <span class="n">UserPermissionState</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># Persistent permission state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">permission_state</span> <span class="o">=</span> <span class="n">permission_state</span>
+    
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">ComponentToolOutput</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute a command with user permission.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            command: The command to execute</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">command_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+        
+        <span class="c1"># Request permission (non-blocking)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">permission_state</span><span class="o">.</span><span class="n">request_permission_or_response</span><span class="p">(</span><span class="n">command_id</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+        
+        <span class="c1"># First yield: thinking state</span>
+        <span class="k">yield</span> <span class="n">ComponentToolOutput</span><span class="p">(</span>
+            <span class="n">output</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;think&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;requesting permission for: </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">},</span>
+            <span class="n">is_streaming</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Wait for user response (blocking)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">permission_state</span><span class="o">.</span><span class="n">wait_for_permission_or_response</span><span class="p">(</span><span class="n">command_id</span><span class="p">)</span>
+        
+        <span class="c1"># Execute based on permission</span>
+        <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="n">PermissionStatus</span><span class="o">.</span><span class="n">ACCEPT</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="n">observation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Command executed: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">observation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Command denied: </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&quot;</span>
+        
+        <span class="c1"># Final yield: result</span>
+        <span class="k">yield</span> <span class="n">ComponentToolOutput</span><span class="p">(</span>
+            <span class="n">output</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">},</span>
+            <span class="n">observation</span><span class="o">=</span><span class="n">observation</span>
+        <span class="p">)</span>
+
+<span class="c1"># Usage with conversation context</span>
+<span class="n">permission_state</span> <span class="o">=</span> <span class="n">UserPermissionState</span><span class="p">(</span><span class="n">conversation_id</span><span class="o">=</span><span class="s2">&quot;session_123&quot;</span><span class="p">)</span>
+<span class="n">permission_tool_component</span> <span class="o">=</span> <span class="n">PermissionTool</span><span class="p">(</span><span class="n">permission_state</span><span class="o">=</span><span class="n">permission_state</span><span class="p">)</span>
+<span class="n">permission_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">permission_tool_component</span><span class="o">.</span><span class="n">acall</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="planning-agent-with-complex-state">
+<h3>3. Planning Agent with Complex State<a class="headerlink" href="#planning-agent-with-complex-state" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PlannerAgent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Agent that creates search plans with conversation context.&quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># Persistent planning context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span> <span class="o">=</span> <span class="n">model_client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_preferences</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="c1"># Internal LLM for planning</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">planner_llm</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+            <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">PLANNING_TEMPLATE</span><span class="p">,</span>
+            <span class="n">output_processors</span><span class="o">=</span><span class="n">DataClassParser</span><span class="p">(</span><span class="n">WebSearchPlan</span><span class="p">)</span>
+        <span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">instructions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">as_tool</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ComponentToolOutput</span><span class="p">,</span> <span class="n">WebSearchPlan</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a search plan for the given query.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            query: The user&#39;s query</span>
+<span class="sd">            instructions: Optional additional instructions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Use conversation context</span>
+        <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
+            <span class="s2">&quot;instructions&quot;</span><span class="p">:</span> <span class="n">instructions</span><span class="p">,</span>
+            <span class="s2">&quot;conversation_history&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span><span class="p">,</span>
+            <span class="s2">&quot;user_preferences&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_preferences</span>
+        <span class="p">}</span>
+        
+        <span class="n">plan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner_llm</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+        
+        <span class="c1"># Update conversation history</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span> <span class="s2">&quot;plan&quot;</span><span class="p">:</span> <span class="n">plan</span><span class="p">})</span>
+        
+        <span class="k">if</span> <span class="n">as_tool</span><span class="p">:</span>
+            <span class="n">observation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_to_observation</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ComponentToolOutput</span><span class="p">(</span>
+                <span class="n">output</span><span class="o">=</span><span class="n">plan</span><span class="p">,</span>  <span class="c1"># Full WebSearchPlan object</span>
+                <span class="n">observation</span><span class="o">=</span><span class="n">observation</span>  <span class="c1"># Summary for LLM</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">plan</span>
+
+<span class="c1"># Usage in agent</span>
+<span class="n">planner_agent</span> <span class="o">=</span> <span class="n">PlannerAgent</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+<span class="n">planner_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">planner_agent</span><span class="o">.</span><span class="n">call</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="integration-with-agent-framework">
+<h2>Integration with Agent Framework<a class="headerlink" href="#integration-with-agent-framework" title="Link to this heading">¶</a></h2>
+<pre  class="mermaid">
+        sequenceDiagram
+    participant U as User
+    participant R as Runner
+    participant A as Agent
+    participant CT as ComponentTool
+    participant C as Component
+    participant LLM as Language Model
+    
+    U-&gt;&gt;R: Query
+    R-&gt;&gt;A: Execute with tools
+    A-&gt;&gt;LLM: Plan with available tools
+    LLM-&gt;&gt;A: Tool call decision
+    A-&gt;&gt;CT: FunctionTool.call()
+    CT-&gt;&gt;C: component.acall(query)
+    
+    Note over C: Accesses persistent&lt;br/&gt;context &amp; state
+    
+    C-&gt;&gt;C: Process with full context
+    C-&gt;&gt;CT: ComponentToolOutput
+    
+    Note over CT: Separates output&lt;br/&gt;from observation
+    
+    CT-&gt;&gt;A: observation (for LLM)
+    A-&gt;&gt;LLM: Tool result
+    LLM-&gt;&gt;A: Next action/final answer
+    A-&gt;&gt;R: Result
+    R-&gt;&gt;U: Final response
+    
+    Note over C,A: Component maintains&lt;br/&gt;state across calls
+    </pre><section id="agent-setup">
+<h3>Agent Setup<a class="headerlink" href="#agent-setup" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">Runner</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span>
+
+<span class="c1"># Create component tools with persistent context</span>
+<span class="n">search_tool</span> <span class="o">=</span> <span class="n">SearchTool</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
+    <span class="n">conversation_id</span><span class="o">=</span><span class="s2">&quot;user_session_123&quot;</span><span class="p">,</span>
+    <span class="n">user_preferences</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;academic_sources&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">planner_tool</span> <span class="o">=</span> <span class="n">PlannerAgent</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1"># Wrap as FunctionTools</span>
+<span class="n">search_function_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">search_tool</span><span class="o">.</span><span class="n">acall</span><span class="p">)</span>
+<span class="n">planner_function_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">planner_tool</span><span class="o">.</span><span class="n">call</span><span class="p">)</span>
+
+<span class="c1"># Create agent with component tools</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ResearchAgent&quot;</span><span class="p">,</span>
+    <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;A research assistant with planning and search capabilities&quot;</span><span class="p">,</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">},</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">planner_function_tool</span><span class="p">,</span> <span class="n">search_function_tool</span><span class="p">],</span>
+    <span class="n">answer_data_type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span> <span class="n">max_steps</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="execution-example">
+<h3>Execution Example<a class="headerlink" href="#execution-example" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;What are the latest developments in quantum computing?&quot;</span>
+    
+    <span class="c1"># Agent automatically uses component tools with their persistent context</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">runner</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">})</span>
+    
+    <span class="c1"># Tools maintain state across calls within the conversation</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">answer</span><span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="component-tool-vs-function-tool-comparison">
+<h2>Component Tool vs Function Tool Comparison<a class="headerlink" href="#component-tool-vs-function-tool-comparison" title="Link to this heading">¶</a></h2>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Function Tool Architecture&quot;
+        direction TB
+        FT1[&quot;FunctionTool&quot;]
+        F1[&quot;Pure Function&quot;]
+        P1[&quot;fn(param1, param2, ..., paramN)&quot;]
+        R1[&quot;Direct Return&quot;]
+        
+        FT1 --&gt; F1
+        F1 --&gt; P1
+        P1 --&gt; R1
+        
+        P1 -.-&gt; |&quot;All visible to LLM&quot;| LLM1[&quot;LLM Context&quot;]
+    end
+    
+    subgraph &quot;Component Tool Architecture&quot;
+        direction TB
+        FT2[&quot;FunctionTool&quot;]
+        C2[&quot;Component&quot;]
+        M2[&quot;component.acall(query)&quot;]
+        
+        subgraph &quot;Hidden Context&quot;
+            direction LR
+            HC[&quot;• Configuration&lt;br/&gt;• Credentials&lt;br/&gt;• State&lt;br/&gt;• History&quot;]
+        end
+        
+        CTO[&quot;ComponentToolOutput&quot;]
+        O2[&quot;output: Full Data&quot;]
+        OB2[&quot;observation: Summary&quot;]
+        
+        FT2 --&gt; C2
+        C2 --&gt; M2
+        HC --&gt; C2
+        M2 --&gt; CTO
+        CTO --&gt; O2
+        CTO --&gt; OB2
+        
+        OB2 -.-&gt; |&quot;Clean interface&quot;| LLM2[&quot;LLM Context&quot;]
+        O2 -.-&gt; |&quot;Full data&quot;| DS[&quot;Downstream Systems&quot;]
+    end
+    
+    style HC fill:#ffe0e0
+    style CTO fill:#e0f0e0
+    style LLM1 fill:#fff3e0
+    style LLM2 fill:#e3f2fd
+    </pre><div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspect</p></th>
+<th class="head"><p>Function Tool</p></th>
+<th class="head"><p>Component Tool</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>State Management</strong></p></td>
+<td><p>Stateless, parameters only</p></td>
+<td><p>Persistent state across calls</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Context Hiding</strong></p></td>
+<td><p>All context via parameters</p></td>
+<td><p>Internal context hidden from LLM</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Output Control</strong></p></td>
+<td><p>Direct function return</p></td>
+<td><p>ComponentToolOutput with observation</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Training Support</strong></p></td>
+<td><p>Limited</p></td>
+<td><p>Full AdalFlow optimization support</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Complexity</strong></p></td>
+<td><p>Simple functions</p></td>
+<td><p>Complex, stateful operations</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Memory Usage</strong></p></td>
+<td><p>Minimal</p></td>
+<td><p>Higher due to persistent state</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Best For</strong></p></td>
+<td><p>Utility functions, calculations</p></td>
+<td><p>Search, planning, user interaction</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading">¶</a></h2>
+<section id="state-management">
+<h3>1. <strong>State Management</strong><a class="headerlink" href="#state-management" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyTool</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># ✅ Store configuration, not per-call data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;api_key&#39;</span><span class="p">])</span>
+        
+        <span class="c1"># ❌ Don&#39;t store call-specific data as instance variables</span>
+        <span class="c1"># self.last_query = None  # This would leak between calls</span>
+</pre></div>
+</div>
+</section>
+<section id="output-formatting">
+<h3>2. <strong>Output Formatting</strong><a class="headerlink" href="#output-formatting" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">format_observation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Always provide concise, relevant observations for LLM&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># Small data can be returned directly</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Large data needs summarization</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Retrieved </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2"> items. Key findings: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">summarize</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="async-support">
+<h3>3. <strong>Async Support</strong><a class="headerlink" href="#async-support" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">AsyncTool</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentToolOutput</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prefer async methods for I/O operations&quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_operation</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ComponentToolOutput</span><span class="p">(</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>
+            <span class="n">observation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">format_observation</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="error-handling">
+<h3>4. <strong>Error Handling</strong><a class="headerlink" href="#error-handling" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentToolOutput</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ComponentToolOutput</span><span class="p">(</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>
+            <span class="n">observation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">format_observation</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ComponentToolOutput</span><span class="p">(</span>
+            <span class="n">output</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)},</span>
+            <span class="n">observation</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Error occurred: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="related-components">
+<h2>Related Components<a class="headerlink" href="#related-components" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="FunctionTool.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code></span></a>: Base tool wrapper for all callables</p></li>
+<li><p><a class="reference internal" href="#./Component.md"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">Component</span></code></span></a>: Base class for trainable components</p></li>
+<li><p><a class="reference internal" href="#./Agent.md"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">Agent</span></code></span></a>: Uses tools for extended capabilities</p></li>
+<li><p><a class="reference internal" href="#./Runner.md"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">Runner</span></code></span></a>: Executes agents with tool support</p></li>
+</ul>
+</section>
+<section id="migration-from-function-tools">
+<h2>Migration from Function Tools<a class="headerlink" href="#migration-from-function-tools" title="Link to this heading">¶</a></h2>
+<pre  class="mermaid">
+        flowchart TD
+    subgraph &quot;Before: Function Tool&quot;
+        direction TB
+        FT1[&quot;FunctionTool(search_web)&quot;]
+        SF1[&quot;search_web()&quot;]
+        P1[&quot;Parameters:&lt;br/&gt;• query: str&lt;br/&gt;• api_key: str&lt;br/&gt;• user_id: str&lt;br/&gt;• preferences: dict&quot;]
+        R1[&quot;Raw Results&quot;]
+        
+        FT1 --&gt; SF1
+        SF1 --&gt; P1
+        P1 --&gt; R1
+        
+        P1 -.-&gt; |&quot;All exposed&quot;| LLM1[&quot;LLM sees all params&quot;]
+        R1 -.-&gt; |&quot;Direct output&quot;| LLM1
+    end
+    
+    subgraph &quot;After: Component Tool&quot;
+        direction TB
+        FT2[&quot;FunctionTool(component.acall)&quot;]
+        ST2[&quot;SearchTool Component&quot;]
+        
+        subgraph &quot;Hidden in __init__&quot;
+            HC2[&quot;• api_key&lt;br/&gt;• user_id&lt;br/&gt;• preferences&lt;br/&gt;• client&quot;]
+        end
+        
+        AC2[&quot;acall(query: str)&quot;]
+        CTO2[&quot;ComponentToolOutput&quot;]
+        OUT2[&quot;output: Full Results&quot;]
+        OBS2[&quot;observation: LLM Summary&quot;]
+        
+        FT2 --&gt; ST2
+        HC2 --&gt; ST2
+        ST2 --&gt; AC2
+        AC2 --&gt; CTO2
+        CTO2 --&gt; OUT2
+        CTO2 --&gt; OBS2
+        
+        AC2 -.-&gt; |&quot;Clean interface&quot;| LLM2[&quot;LLM sees only query&quot;]
+        OBS2 -.-&gt; |&quot;Optimized output&quot;| LLM2
+    end
+    
+    FT1 -.-&gt; |&quot;Migration&quot;| FT2
+    
+    style HC2 fill:#ffe0e0
+    style CTO2 fill:#e0f0e0
+    style LLM1 fill:#fff3e0  
+    style LLM2 fill:#e3f2fd
+    </pre><section id="before-function-tool">
+<h3>Before (Function Tool)<a class="headerlink" href="#before-function-tool" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">search_web</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">preferences</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># All context as parameters</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">SearchClient</span><span class="p">(</span><span class="n">api_key</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">preferences</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span>  <span class="c1"># Raw output to LLM</span>
+
+<span class="n">search_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">search_web</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="after-component-tool">
+<h3>After (Component Tool)<a class="headerlink" href="#after-component-tool" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SearchTool</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">preferences</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">SearchClient</span><span class="p">(</span><span class="n">api_key</span><span class="p">)</span>  <span class="c1"># Hidden context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preferences</span> <span class="o">=</span> <span class="n">preferences</span>
+    
+    <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentToolOutput</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preferences</span><span class="p">)</span>
+        <span class="n">observation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_for_llm</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>  <span class="c1"># LLM-optimized</span>
+        <span class="k">return</span> <span class="n">ComponentToolOutput</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">observation</span><span class="o">=</span><span class="n">observation</span><span class="p">)</span>
+
+<span class="n">search_tool_component</span> <span class="o">=</span> <span class="n">SearchTool</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="n">preferences</span><span class="o">=</span><span class="p">{})</span>
+<span class="n">search_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">search_tool_component</span><span class="o">.</span><span class="n">acall</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>ComponentTool provides a powerful pattern for building sophisticated, context-aware tools that maintain clean interfaces while hiding implementation complexity from LLMs.</p>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="FunctionTool.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Designing of AdalFlow FunctionTool</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Blog</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, SylphAI, Inc
+            </div>
+            Made with 
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Use Class method as a better function tool</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#key-advantages-over-pure-functions">Key Advantages Over Pure Functions</a><ul>
+<li><a class="reference internal" href="#context-persistence">1. <strong>Context Persistence</strong></a></li>
+<li><a class="reference internal" href="#controlled-output-formatting">2. <strong>Controlled Output Formatting</strong></a></li>
+<li><a class="reference internal" href="#training-optimization-support">3. <strong>Training/Optimization Support</strong></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#componenttooloutput-pattern">ComponentToolOutput Pattern</a><ul>
+<li><a class="reference internal" href="#raw-output-vs-observation">Raw Output vs Observation</a></li>
+<li><a class="reference internal" href="#observation-template-example">Observation Template Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#real-world-examples">Real-World Examples</a><ul>
+<li><a class="reference internal" href="#search-tool-with-context-persistence">1. Search Tool with Context Persistence</a></li>
+<li><a class="reference internal" href="#permission-tool-with-async-generators">2. Permission Tool with Async Generators</a></li>
+<li><a class="reference internal" href="#planning-agent-with-complex-state">3. Planning Agent with Complex State</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#integration-with-agent-framework">Integration with Agent Framework</a><ul>
+<li><a class="reference internal" href="#agent-setup">Agent Setup</a></li>
+<li><a class="reference internal" href="#execution-example">Execution Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#component-tool-vs-function-tool-comparison">Component Tool vs Function Tool Comparison</a></li>
+<li><a class="reference internal" href="#best-practices">Best Practices</a><ul>
+<li><a class="reference internal" href="#state-management">1. <strong>State Management</strong></a></li>
+<li><a class="reference internal" href="#output-formatting">2. <strong>Output Formatting</strong></a></li>
+<li><a class="reference internal" href="#async-support">3. <strong>Async Support</strong></a></li>
+<li><a class="reference internal" href="#error-handling">4. <strong>Error Handling</strong></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#related-components">Related Components</a></li>
+<li><a class="reference internal" href="#migration-from-function-tools">Migration from Function Tools</a><ul>
+<li><a class="reference internal" href="#before-function-tool">Before (Function Tool)</a></li>
+<li><a class="reference internal" href="#after-component-tool">After (Component Tool)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/rtd_search_config.js"></script>
+    <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">mermaid.initialize({startOnLoad:true});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+    </body>
+</html>

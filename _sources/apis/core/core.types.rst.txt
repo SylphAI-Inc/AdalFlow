@@ -21,6 +21,7 @@ types
 
       AssistantResponse
       CompletionUsage
+      ComponentToolOutput
       Conversation
       DialogTurn
       Document
