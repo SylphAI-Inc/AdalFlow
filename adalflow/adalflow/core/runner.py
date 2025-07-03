@@ -82,7 +82,6 @@ class Runner(Component):
     def __init__(
         self,
         agent: Agent,
-        ctx: Optional[Dict[str, Any]] = None,
         **kwargs,
     ) -> None:
         """Initialize runner with an agent and configuration.
@@ -101,8 +100,6 @@ class Runner(Component):
         self.answer_data_type = agent.answer_data_type
 
         self.step_history = []
-        # add the llm call to the executor as a tool
-        self.ctx = ctx
 
     def _check_last_step(self, step: Function) -> bool:
         """Check if the last step is the finish step.
