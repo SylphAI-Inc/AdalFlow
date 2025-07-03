@@ -28,14 +28,12 @@ runner = Runner(agent=agent, max_steps=12)
 
 async def main():
     joke_query = "call the how_many_jokes and dummy tool and tell me the result"
-    cmd_query = "ls -la"
     result = await runner.acall(prompt_kwargs={"input_str": joke_query})
     print(result)
 
 
 def main_sync():
     joke_query = "call the how_many_jokes tool and tell me the result"
-    cmd_query = "ls -la"
     result = runner.call(prompt_kwargs={"input_str": joke_query})
     print(result)
 

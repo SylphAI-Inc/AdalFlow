@@ -18,6 +18,8 @@ packages = [
 python = ">=3.11, <4.0"
 adalflow = { path = "adalflow", develop = true }
 black = { extras = ["jupyter"], version = "^24.10.0" }
+aioitertools = "^0.12.0"
+asyncstdlib = "^3.13.1"
 
 [tool.poetry.group.dev.dependencies]
 

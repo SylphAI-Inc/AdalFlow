@@ -1,8 +1,7 @@
 import unittest
 from unittest.mock import patch, Mock, AsyncMock
 
-from openai.types import CompletionUsage
-from openai.types.chat import ChatCompletion
+from openai.types.responses import Response
 
 from adalflow.components.model_client.sambanova_client import SambaNovaClient
 from adalflow.core import Generator
@@ -24,30 +23,21 @@ class TestSambaNovaClient(unittest.IsolatedAsyncioTestCase):
         self.log = get_logger(level="DEBUG")
         self.prompt_kwargs = {"input_str": "What is the meaning of life?"}
 
-        # Mock response for testing
-        self.mock_response = {
-            "id": "cmpl-sambanova-test-123",
-            "created": 1635820005,
-            "object": "chat.completion",
-            "model": "Meta-Llama-3.1-8B-Instruct",
-            "choices": [
-                {
-                    "message": {
-                        "content": "The meaning of life is to find purpose and meaning in our existence.",
-                        "role": "assistant",
-                    },
-                    "index": 0,
-                    "finish_reason": "stop",
-                }
-            ],
-            "usage": CompletionUsage(
-                completion_tokens=15, prompt_tokens=25, total_tokens=40
-            ),
-        }
-        self.mock_response = ChatCompletion(**self.mock_response)
+        # Mock response for testing using OpenAI Response API
+        self.mock_response = Mock(spec=Response)
+        self.mock_response.output_text = (
+            "The meaning of life is to find purpose and meaning in our existence."
+        )
+
+        # Create a mock usage object
+        mock_usage = Mock()
+        mock_usage.input_tokens = 25
+        mock_usage.output_tokens = 15
+        mock_usage.total_tokens = 40
+        self.mock_response.usage = mock_usage
 
         self.api_kwargs = {
-            "messages": [{"role": "user", "content": "What is the meaning of life?"}],
+            "input": "What is the meaning of life?",
             "model": "Meta-Llama-3.1-8B-Instruct",
         }
 
@@ -94,7 +84,7 @@ class TestSambaNovaClient(unittest.IsolatedAsyncioTestCase):
 
             mock_async_client = AsyncMock()
             MockAsyncOpenAI.return_value = mock_async_client
-            mock_async_client.chat.completions.create = AsyncMock(
+            mock_async_client.responses.create = AsyncMock(
                 return_value=self.mock_response
             )
 
@@ -105,7 +95,7 @@ class TestSambaNovaClient(unittest.IsolatedAsyncioTestCase):
 
             # Assertions
             MockAsyncOpenAI.assert_called_once()
-            mock_async_client.chat.completions.create.assert_awaited_once_with(
+            mock_async_client.responses.create.assert_awaited_once_with(
                 **self.api_kwargs
             )
             self.assertEqual(result, self.mock_response)
@@ -122,9 +112,7 @@ class TestSambaNovaClient(unittest.IsolatedAsyncioTestCase):
             mock_sync_client = Mock()
             MockOpenAI.return_value = mock_sync_client
             mock_init_sync_client.return_value = mock_sync_client
-            mock_sync_client.chat.completions.create = Mock(
-                return_value=self.mock_response
-            )
+            mock_sync_client.responses.create = Mock(return_value=self.mock_response)
 
             # Set the sync client
             client.sync_client = mock_sync_client
@@ -133,9 +121,7 @@ class TestSambaNovaClient(unittest.IsolatedAsyncioTestCase):
             result = client.call(api_kwargs=self.api_kwargs, model_type=ModelType.LLM)
 
             # Assertions
-            mock_sync_client.chat.completions.create.assert_called_once_with(
-                **self.api_kwargs
-            )
+            mock_sync_client.responses.create.assert_called_once_with(**self.api_kwargs)
             self.assertEqual(result, self.mock_response)
 
             # Test parse_chat_completion
@@ -145,8 +131,8 @@ class TestSambaNovaClient(unittest.IsolatedAsyncioTestCase):
                 output.raw_response,
                 "The meaning of life is to find purpose and meaning in our existence.",
             )
-            self.assertEqual(output.usage.completion_tokens, 15)
-            self.assertEqual(output.usage.prompt_tokens, 25)
+            self.assertEqual(output.usage.output_tokens, 15)
+            self.assertEqual(output.usage.input_tokens, 25)
             self.assertEqual(output.usage.total_tokens, 40)
 
     @patch(
@@ -161,9 +147,7 @@ class TestSambaNovaClient(unittest.IsolatedAsyncioTestCase):
             mock_sync_client = Mock()
             MockOpenAI.return_value = mock_sync_client
             mock_init_sync_client.return_value = mock_sync_client
-            mock_sync_client.chat.completions.create = Mock(
-                return_value=self.mock_response
-            )
+            mock_sync_client.responses.create = Mock(return_value=self.mock_response)
 
             # Set the sync client
             client.sync_client = mock_sync_client
@@ -186,7 +170,7 @@ class TestSambaNovaClient(unittest.IsolatedAsyncioTestCase):
             self.log.debug(f"Response: {response}")
 
             # Verify that the mock was called
-            mock_sync_client.chat.completions.create.assert_called()
+            mock_sync_client.responses.create.assert_called()
 
     def test_sambanova_convert_inputs_to_api_kwargs(self):
         """Test input conversion to API kwargs."""
@@ -203,17 +187,14 @@ class TestSambaNovaClient(unittest.IsolatedAsyncioTestCase):
                 model_type=ModelType.LLM,
             )
 
-            # Verify the structure
-            self.assertIn("messages", api_kwargs)
+            # Verify the structure for Response API
+            self.assertIn("input", api_kwargs)
             self.assertIn("model", api_kwargs)
             self.assertEqual(api_kwargs["model"], "Meta-Llama-3.1-8B-Instruct")
             self.assertEqual(api_kwargs["temperature"], 0.7)
 
-            # Verify messages structure
-            messages = api_kwargs["messages"]
-            self.assertEqual(len(messages), 1)
-            self.assertEqual(messages[0]["role"], "system")
-            self.assertEqual(messages[0]["content"], "Hello, world!")
+            # Verify input content
+            self.assertEqual(api_kwargs["input"], "Hello, world!")
 
     def test_sambanova_from_dict_to_dict(self):
         """Test serialization and deserialization."""

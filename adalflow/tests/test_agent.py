@@ -5,7 +5,6 @@ import types
 from unittest.mock import patch
 
 import adalflow.core.agent as agent_module
-from adalflow.core.types import FunctionOutput
 
 
 # --- Dummy stubs for dependencies ---
@@ -178,6 +177,101 @@ class TestAgent(unittest.TestCase):
         self.assertEqual(
             agent.tool_manager._additional_context["context_variables"], ctx
         )
+
+    def test_agent_answer_data_type_attribute(self):
+        """Test that Agent properly stores answer_data_type for Runner integration."""
+        mc = FallbackModelClient()
+
+        # Test with string type
+        agent_str = agent_module.Agent(
+            name="agent-str",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+            answer_data_type=str,
+        )
+        self.assertEqual(agent_str.answer_data_type, str)
+
+        # Test with dict type
+        agent_dict = agent_module.Agent(
+            name="agent-dict",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+            answer_data_type=dict,
+        )
+        self.assertEqual(agent_dict.answer_data_type, dict)
+
+    def test_agent_max_steps_attribute(self):
+        """Test that Agent properly stores max_steps for Runner integration."""
+        mc = FallbackModelClient()
+
+        # Test default max_steps
+        agent_default = agent_module.Agent(
+            name="agent-default",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+        )
+        self.assertEqual(agent_default.max_steps, 10)  # Default value
+
+        # Test custom max_steps
+        agent_custom = agent_module.Agent(
+            name="agent-custom",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+            max_steps=5,
+        )
+        self.assertEqual(agent_custom.max_steps, 5)
+
+    def test_agent_integration_with_runner_requirements(self):
+        """Test that Agent has all required attributes for Runner integration."""
+        mc = FallbackModelClient()
+        agent = agent_module.Agent(
+            name="agent-runner-ready",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+            answer_data_type=str,
+            max_steps=8,
+        )
+
+        # Verify all required attributes for Runner are present
+        self.assertTrue(hasattr(agent, "planner"))
+        self.assertTrue(hasattr(agent, "tool_manager"))
+        self.assertTrue(hasattr(agent, "max_steps"))
+        self.assertTrue(hasattr(agent, "answer_data_type"))
+
+        # Verify planner has required methods for Runner
+        # The DummyGenerator uses __call__ method (like real Generator)
+        self.assertTrue(hasattr(agent.planner, "__call__"))
+        self.assertTrue(callable(agent.planner))
+
+        # Verify tool_manager has required functionality for Runner
+        self.assertTrue(hasattr(agent.tool_manager, "__call__"))
+        self.assertTrue(callable(agent.tool_manager))
+
+    def test_agent_training_mode_propagation(self):
+        """Test that Agent's is_training method properly reflects planner training state."""
+        mc = FallbackModelClient()
+        agent = agent_module.Agent(
+            name="agent-training",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+        )
+
+        # Initially should not be in training mode
+        self.assertFalse(agent.is_training())
+
+        # Set planner to training mode
+        agent.planner.training = True
+        self.assertTrue(agent.is_training())
+
+        # Disable training mode
+        agent.planner.training = False
+        self.assertFalse(agent.is_training())
 
 
 if __name__ == "__main__":

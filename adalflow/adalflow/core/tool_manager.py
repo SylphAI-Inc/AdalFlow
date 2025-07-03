@@ -301,7 +301,6 @@ class ToolManager(Component):
         else:
             raise ValueError(f"expr_or_fun should be a Parameter. Got {expr_or_fun}")
 
-
     def execute_func(
         self,
         func: Union[Function, Parameter],
@@ -328,7 +327,7 @@ class ToolManager(Component):
                 printc(f"tool: {tool}", color="yellow")
 
                 output = None
-                
+
                 if stream:
                     # add stream = True to the kwargs
                     use_func_kwargs = deepcopy(func.kwargs)
@@ -425,11 +424,13 @@ class ToolManager(Component):
         try:
             printc(f"Executing async function: {func.name}", color="yellow")
             tool: FunctionTool = self.context[func.name]
-            # await the async call 
+            # await the async call
             try:
-                result =  tool.acall(*func.args, **func.kwargs) 
+                result = tool.acall(*func.args, **func.kwargs)
             except Exception as e:
-                error_msg = f"Error execute_func_async with Error {e} for function: {func}"
+                error_msg = (
+                    f"Error execute_func_async with Error {e} for function: {func}"
+                )
                 log.error(error_msg)
                 raise ValueError(error_msg)
 
@@ -438,7 +439,7 @@ class ToolManager(Component):
                 result = await result
                 printc(f"result after await: {result}", color="yellow")
             else:
-                printc(f"result is not coroutine", color="yellow")
+                printc("result is not coroutine", color="yellow")
 
             if not isinstance(result, FunctionOutput):
                 error_msg = f"Output should be FunctionOutput. Got {result}"

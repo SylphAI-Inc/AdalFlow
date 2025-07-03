@@ -54,6 +54,9 @@ class TestGenerator(IsolatedAsyncioTestCase):
         )
         self.assertIsInstance(output, GeneratorOutput)
         print(f"output: {output}")
+        # Verify GeneratorOutput has expected attributes
+        self.assertTrue(hasattr(output, "data"))
+        self.assertTrue(hasattr(output, "raw_response"))
         # self.assertEqual(output.data, "Generated text response")
 
     def test_cache_path(self):
@@ -188,7 +191,126 @@ class TestGeneratorWithGroqClient(unittest.TestCase):
 
         self.assertIsInstance(output, GeneratorOutput)
         print(f"output groq: {output}")
+        # Verify GeneratorOutput structure for Groq client
+        self.assertTrue(hasattr(output, "data"))
+        self.assertTrue(hasattr(output, "raw_response"))
         # self.assertEqual(output.data, "Generated text response")
+
+
+class TestGeneratorIntegration(unittest.TestCase):
+    """Test Generator integration with Agent and Runner workflows."""
+
+    def setUp(self):
+        # Mock ModelClient for integration tests
+        with patch(
+            "adalflow.core.model_client.ModelClient", spec=ModelClient
+        ) as MockAPI:
+            mock_api_client = Mock(ModelClient)
+            MockAPI.return_value = mock_api_client
+            mock_api_client.call.return_value = "Integration test response"
+            mock_api_client.parse_chat_completion.return_value = (
+                "Integration test response"
+            )
+            self.mock_api_client = mock_api_client
+
+    def test_generator_output_for_agent_planner(self):
+        """Test that Generator produces output suitable for Agent planner use."""
+        from adalflow.components.output_parsers import JsonOutputParser
+        from adalflow.core.types import Function
+
+        # Create a generator with Function output parser (like Agent planner)
+        output_parser = JsonOutputParser(
+            data_class=Function,
+            return_data_class=True,
+            include_fields=["thought", "name", "kwargs"],
+        )
+
+        generator = Generator(
+            model_client=self.mock_api_client, output_processors=output_parser
+        )
+
+        # Mock the model client to return a JSON-like response
+        self.mock_api_client.call.return_value = '{"thought": "I need to search", "name": "search", "kwargs": {"query": "test"}}'
+
+        output = generator.call(prompt_kwargs={"input_str": "test query"})
+
+        # Verify output is GeneratorOutput
+        self.assertIsInstance(output, GeneratorOutput)
+        # Verify it can be used by Agent/Runner workflow
+        self.assertTrue(hasattr(output, "data"))
+
+    def test_generator_template_integration(self):
+        """Test Generator with custom template like Agent uses."""
+        template = (
+            "System: You are a helpful assistant.\nUser: {{input_str}}\nAssistant:"
+        )
+
+        generator = Generator(model_client=self.mock_api_client, template=template)
+
+        # Test that generator accepts template and can generate prompt
+        prompt = generator.get_prompt(input_str="Hello world")
+        self.assertIn("Hello world", prompt)
+        self.assertIn("System: You are a helpful assistant", prompt)
+
+        # Test generation works with template
+        output = generator.call(prompt_kwargs={"input_str": "Hello world"})
+        self.assertIsInstance(output, GeneratorOutput)
+
+    def test_generator_async_capability(self):
+        """Test Generator async methods that Runner.acall uses."""
+
+        async def async_test():
+            # Mock async call
+            async def async_mock_call(*args, **kwargs):
+                return "Async response"
+
+            self.mock_api_client.acall = async_mock_call
+
+            generator = Generator(model_client=self.mock_api_client)
+
+            # Test async call
+            output = await generator.acall(prompt_kwargs={"input_str": "async test"})
+            self.assertIsInstance(output, GeneratorOutput)
+
+        import asyncio
+
+        asyncio.run(async_test())
+
+    def test_generator_training_mode(self):
+        """Test Generator training mode that Agent.is_training() uses."""
+        generator = Generator(model_client=self.mock_api_client)
+
+        # Initially not in training mode
+        self.assertFalse(generator.training)
+
+        # Set to training mode
+        generator.training = True
+        self.assertTrue(generator.training)
+
+        # Can switch back
+        generator.training = False
+        self.assertFalse(generator.training)
+
+    def test_generator_prompt_kwargs_persistence(self):
+        """Test Generator maintains prompt_kwargs like Agent planner needs."""
+        initial_prompt_kwargs = {
+            "tools": "[tool1, tool2]",
+            "output_format_str": "JSON format",
+            "task_desc": "Agent task",
+            "max_steps": 10,
+            "step_history": [],
+        }
+
+        generator = Generator(
+            model_client=self.mock_api_client, prompt_kwargs=initial_prompt_kwargs
+        )
+
+        # Verify prompt_kwargs are stored
+        self.assertEqual(generator.prompt_kwargs, initial_prompt_kwargs)
+
+        # Test that additional kwargs can be passed to call
+        output = generator.call(prompt_kwargs={"input_str": "test", "current_step": 1})
+        self.assertIsInstance(output, GeneratorOutput)
 
 
 if __name__ == "__main__":

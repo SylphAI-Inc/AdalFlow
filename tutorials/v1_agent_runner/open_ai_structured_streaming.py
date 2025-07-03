@@ -6,11 +6,15 @@ from typing import List, Optional, Any, Dict
 
 from pydantic import BaseModel, Field
 from openai import OpenAI
-from agents import Agent, Runner, function_tool
+from adalflow.core.agent import Agent
+from adalflow.core.runner import Runner
 from dotenv import load_dotenv
 
 from openai.types.responses import ResponseTextDeltaEvent
-from agents import AgentOutputSchema
+from adalflow.core.agent import function_tool
+from adalflow.core.agent import AgentOutputSchema
+
+# from agents import AgentOutputSchema  # This might need to be defined locally or imported from appropriate module
 
 import json
 
@@ -63,11 +67,13 @@ async def simple_nested_structure():
     final_response = ""
     async for responses in stream_res.stream_events():
         # you'll receive RawResponsesStreamEvent, RunItemStreamEvent, etc.
-        print(responses)
-        # if responses.type == "raw_response_event" and isinstance(responses.data, ResponseTextDeltaEvent):
-        #     iterations += 1
-        #     print(responses.data.delta)
-        #     final_response += str(responses.data.delta)
+        # print(responses)
+        if responses.type == "raw_response_event" and isinstance(
+            responses.data, ResponseTextDeltaEvent
+        ):
+            iterations += 1
+            print(responses.data.delta)
+            final_response += str(responses.data.delta)
 
     print(f"\nTotal iterations: {iterations}")
     print("=" * 80)
@@ -288,4 +294,4 @@ if __name__ == "__main__":
     # run simple output structure
     asyncio.run(simple_nested_structure())
     # asyncio.run(complicated_structure())
-    asyncio.run(complicated_structures())
+    # asyncio.run(complicated_structures())
