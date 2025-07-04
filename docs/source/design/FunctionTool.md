@@ -1,4 +1,4 @@
-# Designing of AdalFlow FunctionTool 
+# Designing of AdalFlow FunctionTool
 
 `FunctionTool` is a core component in AdalFlow that provides a standardized interface for wrapping functions as tools that can be used by LLMs and agents. It extends `Component` and supports both synchronous and asynchronous functions, generators, and trainable components.
 
@@ -27,7 +27,7 @@ The `FunctionType` enum defines four supported function types:
 ```python
 class FunctionType(Enum):
     SYNC = auto()              # Regular sync function: def func(): return value
-    ASYNC = auto()             # Async function: async def func(): return value  
+    ASYNC = auto()             # Async function: async def func(): return value
     SYNC_GENERATOR = auto()    # Sync generator: def func(): yield value
     ASYNC_GENERATOR = auto()   # Async generator: async def func(): yield value
 ```
@@ -112,7 +112,7 @@ print(numbers)  # [0, 1, 2]
 class Calculator:
     def __init__(self, multiplier: float = 1.0):
         self.multiplier = multiplier
-    
+
     def multiply(self, x: float) -> float:
         """Multiply input by the multiplier"""
         return x * self.multiplier
@@ -139,11 +139,11 @@ class AgenticRAG(Component):
         super().__init__()
         self.retriever = Retriever()  # Your retriever implementation
         self.llm = Generator()        # Your generator implementation
-        
+
         def retriever_as_tool(query: str) -> str:
             """Retrieve relevant documents"""
             return self.retriever(query)
-        
+
         # Create tools with component references for training
         self.tools = [
             FunctionTool(retriever_as_tool, component=self.retriever),
@@ -238,7 +238,7 @@ tool.eval()
 result = tool.call(args)
 assert isinstance(result, FunctionOutput)
 
-# In training mode  
+# In training mode
 tool.train()
 result = tool.call(args)
 assert isinstance(result, Parameter)  # Wrapped for gradient computation

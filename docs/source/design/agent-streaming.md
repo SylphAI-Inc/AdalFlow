@@ -20,7 +20,7 @@ TResponseStreamEvent = ResponseStreamEvent
 
 This type alias represents the standardized streaming event from OpenAI's Responses API, which includes events like:
 - `ResponseCreatedEvent`
-- `ResponseTextDeltaEvent` 
+- `ResponseTextDeltaEvent`
 - `ResponseContentPartAddedEvent`
 - `ResponseFunctionCallArgumentsDeltaEvent`
 - `ResponseCompletedEvent`
@@ -125,7 +125,7 @@ graph TD
 for tc_delta in delta.tool_calls:
     if tc_delta.index not in state.function_calls:
         state.function_calls[tc_delta.index] = ResponseFunctionToolCall(...)
-    
+
     # Accumulate name and arguments
     state.function_calls[tc_delta.index].name += tc_function.name or ""
     state.function_calls[tc_delta.index].arguments += tc_function.arguments or ""
@@ -140,18 +140,18 @@ graph TB
     subgraph "Agent Runtime"
         A[Runner.run_streamed] --> B[Model.stream_response]
     end
-    
+
     subgraph "Model Layer"
         B --> C{Model Type}
         C -->|Responses API| D[OpenAIResponsesModel]
         C -->|Chat Completions| E[OpenAIChatCompletionsModel]
     end
-    
+
     subgraph "OpenAI APIs"
         D --> F[Responses API Stream]
         E --> G[Chat Completions Stream]
     end
-    
+
     subgraph "Event Processing"
         F --> H[Direct Pass-through]
         G --> I[ChatCompletionStreamHandler]
@@ -159,7 +159,7 @@ graph TB
         H --> K[TResponseStreamEvent]
         J --> K
     end
-    
+
     subgraph "Agent Stream Events"
         K --> L[RawResponsesStreamEvent]
         L --> M[RunItemStreamEvent]
@@ -192,7 +192,7 @@ sequenceDiagram
     Client->>Runner: run_streamed()
     Runner->>Model: stream_response()
     Model->>OpenAI: Chat/Responses API call
-    
+
     loop For each chunk
         OpenAI->>Model: Stream chunk
         Model->>Model: Convert to TResponseStreamEvent
@@ -202,7 +202,7 @@ sequenceDiagram
         Runner->>EventQueue: Emit processed event
         EventQueue->>Client: Stream event to consumer
     end
-    
+
     Model->>EventQueue: Emit final ResponseCompletedEvent
     Runner->>EventQueue: Complete streaming
 ```
@@ -247,14 +247,14 @@ state = _StreamingState()
 # Process each chunk
 async for chunk in stream:
     delta = chunk.choices[0].delta
-    
+
     # Handle text content
     if delta.content:
         if not state.text_content_index_and_output:
             # Initialize new content part
             state.text_content_index_and_output = (index, ResponseOutputText(...))
             yield ResponseContentPartAddedEvent(...)
-        
+
         # Emit text delta
         yield ResponseTextDeltaEvent(delta=delta.content, ...)
         state.text_content_index_and_output[1].text += delta.content
@@ -309,7 +309,7 @@ streamed_result = RunResultStreaming(...)
 async for raw_event in model.stream_response(...):
     # Emit raw event
     queue.put_nowait(RawResponsesStreamEvent(data=raw_event))
-    
+
     # Process and emit semantic events
     if isinstance(raw_event, ResponseCompletedEvent):
         # Generate RunItemStreamEvent for new messages/tools
@@ -332,7 +332,7 @@ async for event in result.stream_events():
         llm_event = event.data
         if llm_event.type == "response.output_text.delta":
             print(llm_event.delta, end="")
-    
+
     elif event.type == "run_item_stream_event":
         # Processed agent event
         if event.name == "message_output_created":

@@ -14,7 +14,7 @@ graph TB
         FT --> PF
         PF --> |"All context as parameters"| LLM1["LLM sees all params"]
     end
-    
+
     subgraph "Component Tool Pattern"
         CT["FunctionTool(component.acall)"]
         C["Component"]
@@ -23,7 +23,7 @@ graph TB
         C --> CC
         C --> |"Clean interface"| LLM2["LLM sees only query"]
     end
-    
+
     style CC fill:#e1f5fe
     style LLM1 fill:#ffecb3
     style LLM2 fill:#c8e6c9
@@ -46,7 +46,7 @@ class SearchTool(Component):
         self.conversation_id = conversation_id
         self.user_preferences = user_preferences  # Persistent context
         self.api_key = api_key  # Hidden credentials
-    
+
     def acall(self, query: str):
         # Only query parameter visible to LLM
         # Context available via self.*
@@ -78,18 +78,18 @@ flowchart LR
         B --> C["Raw Processing"]
         C --> D["Large Data Results"]
     end
-    
+
     subgraph "Output Transformation"
         D --> E["ComponentToolOutput"]
         E --> F["output: Full Data"]
         E --> G["observation: LLM Summary"]
     end
-    
+
     subgraph "Usage"
         F --> H["Internal Processing<br/>Downstream Components"]
         G --> I["LLM Context<br/>Agent Decision Making"]
     end
-    
+
     style E fill:#e8f5e8
     style F fill:#fff3e0
     style G fill:#e3f2fd
@@ -104,7 +104,7 @@ class SearchTool(Component):
     def call(self, query: str, as_tool: bool = False) -> Union[ComponentToolOutput, SearchResults]:
         # Perform search - returns large SearchResults object
         search_results = self.search_engine.search(query)
-        
+
         if as_tool:
             # Create concise observation for LLM
             observation = self.output_to_observation(search_results, query)
@@ -124,13 +124,13 @@ def output_to_observation(self, output: SearchResults, query: str) -> str:
     Answer: {{ output.answerBox }}
     __________________________
     {% endif %}
-    
+
     {% if output.organic %}
     Search Results:
 
     {% for result in output.organic %}
     {{loop.index}}.
-    Title: {{ result.title }} 
+    Title: {{ result.title }}
     Link: {{ result.link }}
     Snippet: {{ result.snippet }}
     {% if result.credibility_score %}
@@ -155,40 +155,40 @@ graph TB
         F1["Pure Function"]
         P1["fn(param1, param2, ..., paramN)"]
         R1["Direct Return"]
-        
+
         FT1 --> F1
         F1 --> P1
         P1 --> R1
-        
+
         P1 -.-> |"All visible to LLM"| LLM1["LLM Context"]
     end
-    
+
     subgraph "Component Tool Architecture"
         direction TB
         FT2["FunctionTool"]
         C2["Component"]
         M2["component.acall(query)"]
-        
+
         subgraph "Hidden Context"
             direction LR
             HC["• Configuration<br/>• Credentials<br/>• State<br/>• History"]
         end
-        
+
         CTO["ComponentToolOutput"]
         O2["output: Full Data"]
         OB2["observation: Summary"]
-        
+
         FT2 --> C2
         C2 --> M2
         HC --> C2
         M2 --> CTO
         CTO --> O2
         CTO --> OB2
-        
+
         OB2 -.-> |"Clean interface"| LLM2["LLM Context"]
         O2 -.-> |"Full data"| DS["Downstream Systems"]
     end
-    
+
     style HC fill:#ffe0e0
     style CTO fill:#e0f0e0
     style LLM1 fill:#fff3e0
@@ -215,7 +215,7 @@ class MyTool(Component):
         # ✅ Store configuration, not per-call data
         self.config = config
         self.client = APIClient(config['api_key'])
-        
+
         # ❌ Don't store call-specific data as instance variables
         # self.last_query = None  # This would leak between calls
 ```

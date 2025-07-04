@@ -53,6 +53,7 @@ DEFAULT_ROLE_DESC = """You are an excellent task planner."""
 
 #   '
 
+
 # the context will wrap the whole component
 def create_default_tool_manager(
     # Tool manager parameters
@@ -108,7 +109,7 @@ def create_default_tool_manager(
                 data="""
                 Finish the task with the final answer passed as an argument.
                 These rules MUST BE FOLLOWED:
-                1. If the specified type of the answer is a Python built-in type, have the answer be an object of that type.
+                1. If the specified type of the answer is a Python built-in type, the answer MUST be an object of that specific builtin type.
                 2. If it is not, pass in the answer as a string but with these rules:
                     - This string will be directly parsed by the caller by using AST.literal_eval, so it must be deserializable using AST.literal_eval.
                     - Once the string is deserialized, it should be able to be parsed by the caller into the provided type.
@@ -266,7 +267,9 @@ class Agent(Component):
         # Generator parameters
         model_client: Optional[ModelClient] = None,
         model_kwargs: Optional[Dict[str, Any]] = {},
-        model_type: Optional[ModelType] = ModelType.LLM,
+        model_type: Optional[
+            ModelType
+        ] = ModelType.LLM,  # by default use LLM reasoning model
         template: Optional[
             str
         ] = None,  # allow users to update the template but cant delete any parameters

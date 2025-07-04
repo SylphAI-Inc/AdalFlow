@@ -23,4 +23,4 @@ This directory contains raw engineering design documents for the AdalFlow projec
 
 ## Related Documentation
 
-For user-facing documentation, see the main `source/` directory. 
+For user-facing documentation, see the main `source/` directory.

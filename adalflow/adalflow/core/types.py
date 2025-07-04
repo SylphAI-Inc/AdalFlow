@@ -15,8 +15,11 @@ from typing import (
     Awaitable,
     Generator,
     AsyncGenerator,
+    AsyncIterator,
     Coroutine,
+    Iterable,
 )
+from typing_extensions import TypeAlias
 from collections import OrderedDict
 from dataclasses import (
     dataclass,
@@ -28,6 +31,8 @@ from datetime import datetime
 import uuid
 import logging
 import json
+from collections.abc import AsyncIterable
+from pydantic import BaseModel, Field
 
 from adalflow.core.base_data_class import DataClass, required_field
 from adalflow.core.tokenizer import Tokenizer
@@ -44,6 +49,8 @@ from adalflow.components.model_client import (
     GoogleGenAIClient,
     OllamaClient,
 )
+
+# Import OpenAI's ResponseStreamEvent for type alias
 
 logger = logging.getLogger(__name__)
 
@@ -311,7 +318,7 @@ class FunctionDefinition(DataClass):
     # class_instance: Optional[Any] = field(
     #     default=None,
     #     metadata={"desc": "The instance of the class this function belongs to"},
-    # ) 
+    # )
     # NOTE: for class method: cls_name + "_" + name
     func_name: str = field(
         metadata={"desc": "The name of the tool"}, default=required_field
@@ -429,6 +436,27 @@ e.g. for Type object with x,y properties, use "ObjectType(x=1, y=2)"""
 
 
 @dataclass
+class QueueSentinel:
+    """Special sentinel object to mark the end of a stream when using asyncio.Queue for stream processing."""
+
+    type: Literal["queue_sentinel"] = "queue_sentinel"
+    """Type discriminator for the sentinel."""
+
+
+@dataclass
+class RawResponsesStreamEvent:
+    """Streaming event for storing the raw responses from the LLM. These are 'raw' events, i.e. they are directly passed through
+    from the LLM.
+    """
+
+    data: Any
+    """The raw responses streaming event from the LLM."""
+
+    type: Literal["raw_response_event"] = "raw_response_event"
+    """The type of the event."""
+
+
+@dataclass
 class GeneratorOutput(DataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
@@ -464,8 +492,10 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     usage: Optional[CompletionUsage] = field(
         default=None, metadata={"desc": "Usage tracking"}
     )
-    raw_response: Optional[str] = field(
-        default=None, metadata={"desc": "Raw string response from the model"}
+
+    # The caller expects the raw_response to follow the OpenAI API documentation for streams
+    raw_response: Optional[Union[str, AsyncIterable[T_co], Iterable[T_co]]] = field(
+        default=None, metadata={"desc": "Raw string chunk generator from the model"}
     )  # parsed from model client response
 
     api_response: Optional[Any] = field(
@@ -474,6 +504,26 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     metadata: Optional[Dict[str, object]] = field(
         default=None, metadata={"desc": "Additional metadata"}
     )
+
+    async def stream_events(self) -> AsyncIterator[T_co]:
+        """
+        Stream raw events from the Generator's raw response which has the processed version of api_response.
+        If the raw_response has already been consumed, yield from the data field
+
+        Returns:
+            AsyncIterator[T_co]: An async iterator that yields events stored in raw_response
+        """
+        count = 0
+
+        # Fallback to raw_response if event_queue didn't yield anything
+        if isinstance(self.raw_response, AsyncIterable):
+            async for event in self.raw_response:
+                count += 1
+                yield event
+
+        # if the stream is already consumed and there is final data then just return the final data
+        if count == 0 and self.data:
+            yield self.data
 
 
 GeneratorOutputType = GeneratorOutput[object]
@@ -569,12 +619,14 @@ class FunctionExpression(DataClass):
             raise ValueError(f"Error generating function expression: {e}")
         return cls(action=action, thought=thought)
 
+
 FunctionOutputValueType = Union[
     Any,
     Generator[Any, Any, Any],
     AsyncGenerator[Any, Any],
     Coroutine[Any, Any, Any],
 ]
+
 
 @dataclass
 class FunctionOutput(DataClass):
@@ -593,10 +645,11 @@ class FunctionOutput(DataClass):
             "desc": "The parsed Function object if the input is FunctionExpression"
         },
     )
-    output: Optional[
-        FunctionOutputValueType
-    ] = field(
-        default=None, metadata={"desc": "The output of the function execution - supports sync functions, sync generators, async functions, and async generators"}
+    output: Optional[FunctionOutputValueType] = field(
+        default=None,
+        metadata={
+            "desc": "The output of the function execution - supports sync functions, sync generators, async functions, and async generators"
+        },
     )
     error: Optional[str] = field(
         default=None, metadata={"desc": "The error message if any"}
@@ -608,9 +661,18 @@ class FunctionOutput(DataClass):
 ######################################################################################
 @dataclass
 class ComponentToolOutput(DataClass):
-    output: Any = field(default=None, metadata={"description": "The output of the tool"})
-    observation: Optional[str] = field(default=None, metadata={"description": "The observation of the llm see of the output of the tool"})
-    is_streaming: Optional[bool] = field(default=False, metadata={"description": "Whether the tool output is streaming"}) 
+    output: Any = field(
+        default=None, metadata={"description": "The output of the tool"}
+    )
+    observation: Optional[str] = field(
+        default=None,
+        metadata={
+            "description": "The observation of the llm see of the output of the tool"
+        },
+    )
+    is_streaming: Optional[bool] = field(
+        default=False, metadata={"description": "Whether the tool output is streaming"}
+    )
 
 
 #######################################################################################
@@ -932,3 +994,258 @@ class Conversation:
 
     def update_dialog_turn(self, order: int, dialog_turn: DialogTurn):
         self.dialog_turns[order] = dialog_turn
+
+
+@dataclass
+class RunItem(DataClass):
+    """
+    Base class for streaming execution events in the Runner system.
+
+    RunItems represent discrete events that occur during the execution of an Agent
+    through the Runner. These items are used for streaming real-time updates about
+    the execution progress, allowing consumers to monitor and react to different
+    phases of agent execution.
+
+    Attributes:
+        id: Unique identifier for tracking this specific event instance
+        type: String identifier for the event type (used for event filtering/routing)
+        data: Optional generic data payload (deprecated, prefer specific fields in subclasses)
+        timestamp: When this event was created (for debugging and monitoring)
+
+    Usage:
+        This is an abstract base class. Use specific subclasses for different event types.
+
+    Example:
+        ```python
+        # Don't instantiate directly - use subclasses
+        tool_call_event = ToolCallRunItem(function=my_function)
+        ```
+    """
+
+    id: str = field(
+        default_factory=lambda: str(uuid.uuid4()),
+        metadata={"desc": "Unique identifier for this run item"},
+    )
+    type: str = field(
+        default="base",
+        metadata={
+            "desc": "Type of run item - used for event identification and routing"
+        },
+    )
+    data: Optional[Any] = field(
+        default=None,
+        metadata={
+            "desc": "Generic data payload (deprecated - use specific fields in subclasses)"
+        },
+    )
+    timestamp: datetime = field(
+        default_factory=datetime.now,
+        metadata={"desc": "Timestamp when this event was created"},
+    )
+
+
+@dataclass
+class ToolCallRunItem(RunItem):
+    """
+    Event emitted when the Agent is about to execute a function/tool call.
+
+    This event is generated after the planner LLM has decided on a function to call
+    but before the function is actually executed. It allows consumers to monitor
+    what tools are being invoked and potentially intervene or log the calls.
+
+    Attributes:
+        function: The Function object containing the tool call details (name, args, kwargs)
+
+    Event Flow Position:
+        1. Planner generates Function → **ToolCallRunItem** → Function execution → ToolOutputRunItem
+
+    Usage:
+        ```python
+        # Listen for tool calls in streaming
+        async for event in runner.astream(prompt_kwargs).stream_events():
+            if isinstance(event, RunItemStreamEvent) and event.name == "tool_called":
+                tool_call_item = event.item
+                print(f"About to call: {tool_call_item.function.name}")
+        ```
+    """
+
+    type: str = field(default="tool_call", metadata={"desc": "Type of run item"})
+    function: Optional[Function] = field(
+        default=None,
+        metadata={"desc": "Function object containing the tool call to be executed"},
+    )
+
+
+@dataclass
+class ToolOutputRunItem(RunItem):
+    """
+    Event emitted after a function/tool call has been executed.
+
+    This event contains the complete execution result, including any outputs or errors
+    from the function call. It's paired with ToolCallRunItem to provide before/after
+    notification to the caller.
+
+    Attributes:
+        function_output: Complete FunctionOutput containing execution results, errors, etc.
+
+    Event Flow Position:
+        ToolCallRunItem → Function execution → **ToolOutputRunItem** → StepRunItem
+
+    Usage:
+        ```python
+        # Monitor function execution results
+        async for event in runner.astream(prompt_kwargs).stream_events():
+            if isinstance(event, RunItemStreamEvent) and event.name == "tool_output":
+                output_item = event.item
+                if output_item.function_output.error:
+                    print(f"Function failed: {output_item.function_output.error}")
+                else:
+                    print(f"Function result: {output_item.function_output.output}")
+        ```
+    """
+
+    type: str = field(default="tool_output", metadata={"desc": "Type of run item"})
+    function_output: Optional[FunctionOutput] = field(
+        default=None,
+        metadata={
+            "desc": "Complete function execution result including output and error status"
+        },
+    )
+
+
+@dataclass
+class StepRunItem(RunItem):
+    """
+    Event emitted when a complete execution step has finished.
+
+    A "step" represents one complete cycle of: planning → tool selection → tool execution.
+    This event marks the completion of that cycle and contains the full step information
+    including the action taken and the observation (result).
+
+    Attributes:
+        step_output: Complete StepOutput containing step number, action, and observation
+
+    Event Flow Position:
+        ToolOutputRunItem → **StepRunItem** → (next step or completion)
+
+    Usage:
+        ```python
+        # Track step completion
+        async for event in runner.astream(prompt_kwargs).stream_events():
+            if isinstance(event, RunItemStreamEvent) and event.name == "step_completed":
+                step_item = event.item
+                print(f"Completed step {step_item.step_output.step}")
+        ```
+    """
+
+    type: str = field(default="step", metadata={"desc": "Type of run item"})
+    step_output: Optional[StepOutput] = field(
+        default=None,
+        metadata={
+            "desc": "Complete step execution result including action and observation"
+        },
+    )
+
+
+@dataclass
+class FinalOutputItem(RunItem):
+    """
+    Event emitted when the entire Runner execution has completed.
+
+    This event signals the end of the execution sequence and contains the final
+    processed result. It's emitted regardless of whether execution completed
+    successfully or with an error.
+
+    There are two ways you can store the final output:
+    - runner_response: The final RunnerResponse containing the complete execution result
+    - final_output: The final processed output from the runner execution
+
+    Event Flow Position:
+        Final step → **FinalOutputItem** (execution complete)
+
+    Usage:
+        ```python
+        # Get final results
+        async for event in runner.astream(prompt_kwargs).stream_events():
+            if isinstance(event, RunItemStreamEvent) and event.name == "runner_finished":
+                final_item = event.item
+                if final_item.runner_response.error:
+                    print(f"Execution failed: {final_item.runner_response.error}")
+                else:
+                    print(f"Final answer: {final_item.runner_response.answer}")
+        ```
+    """
+
+    type: str = field(default="final_output", metadata={"desc": "Type of run item"})
+    runner_response: Optional["RunnerResponse"] = field(
+        default=None,
+        metadata={"desc": "Final execution result wrapped in RunnerResponse"},
+    )
+    final_output: Optional[Any] = field(
+        default=None,
+        metadata={"desc": "Final processed output from the runner execution"},
+    )
+
+
+@dataclass
+class RunItemStreamEvent:
+    """
+    Wrapper for streaming RunItem events during Runner execution.
+
+    This class wraps RunItem instances with event metadata to create a streaming
+    event system. Each event has a name that indicates what type of execution
+    event occurred, and contains the associated RunItem with the event data.
+
+    The streaming system allows consumers to react to different phases of agent
+    execution in real-time, such as when tools are called, when steps complete,
+    or when execution finishes.
+
+    Attributes:
+        name: The specific event type that occurred (see event name literals)
+        item: The RunItem containing the event-specific data
+        type: Always "run_item_stream_event" for type discrimination
+
+    Event Types:
+        - "agent.final_output": Final output from the agent (FinalOutputItem)
+        - "agent.tool_call_start": Agent is about to execute a tool (ToolCallRunItem)
+        - "agent.tool_call_complete": Tool execution completed (ToolOutputRunItem)
+        - "agent.step_complete": Full execution step finished (StepRunItem)
+        - "agent.execution_complete": Entire execution completed (FinalOutputItem)
+
+    """
+
+    name: Literal[
+        # Core agent execution events
+        "agent.tool_call_start",  # Function/tool about to be executed
+        "agent.tool_call_complete",  # Function/tool execution completed
+        "agent.step_complete",  # Complete execution step finished
+        "agent.final_output",  # Final processed output available
+        "agent.execution_complete",  # Entire Runner execution completed
+    ]
+    """The name identifying the specific type of execution event that occurred."""
+
+    item: RunItem
+    """The RunItem instance containing the event-specific data and context."""
+
+    type: Literal["run_item_stream_event"] = "run_item_stream_event"
+    """Type discriminator for the streaming event system."""
+
+
+StreamEvent: TypeAlias = Union[RawResponsesStreamEvent, RunItemStreamEvent]
+
+"""
+Used to wrap the final response from the runner which holds key information about the execution such
+as the answer, step history, and error.
+"""
+
+
+class RunnerResponse(BaseModel):
+    answer: Optional[str] = Field(
+        description="The answer to the user's query", default=None
+    )
+    step_history: Optional[List[StepOutput]] = Field(
+        description="The step history of the execution", default=None
+    )
+    error: Optional[str] = Field(
+        description="The error message if the code execution failed", default=None
+    )
