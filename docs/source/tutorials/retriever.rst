@@ -258,26 +258,17 @@ Before using more advanced retrieval methods, it is common to filter the documen
 Document filtering is dependent on your data storage, whether it is in memory, local disk, or cloud database.
 For the cloud database, it is highly dependent on the database's search and filter methods. And SQL-based search is common, scalable, and efficient.
 
-If you are using `LocalDB` and `Document` as the data item, you can use the `filter` method to filter the documents.
 
-Before you pass the documents or processed document chunks and embeddings to the retriever, you can filter the documents first.
+Before you pass the documents or processed document chunks and embeddings to the retriever, you can filter the documents first by yourself.
 
 .. code-block:: python
 
     from adalflow.core.db import LocalDB
     from adalflow.core.types import Document
 
-    db = LocalDB()
-    db.connect()
+    db = LocalDB(items=[Document(text=doc["content"], meta_data={"title": doc["title"]}) for doc in documents])
 
-    # Add the documents to the database
-    for doc in documents:
-        db.add_item(Document(**doc))
-
-    # Filter the documents
-    filtered_documents = db.filter(Document, title="Solar Panels")
-
-    print(filtered_documents)
+    print(db)
 
 
 Retriever in Action

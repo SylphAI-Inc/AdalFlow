@@ -1177,10 +1177,6 @@ class FinalOutputItem(RunItem):
     """
 
     type: str = field(default="final_output", metadata={"desc": "Type of run item"})
-    runner_response: Optional["RunnerResponse"] = field(
-        default=None,
-        metadata={"desc": "Final execution result wrapped in RunnerResponse"},
-    )
     final_output: Optional[Any] = field(
         default=None,
         metadata={"desc": "Final processed output from the runner execution"},

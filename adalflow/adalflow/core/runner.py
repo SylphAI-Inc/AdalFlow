@@ -184,7 +184,6 @@ class Runner(Component):
         self.answer_data_type = agent.answer_data_type
 
         self.step_history = []
-        # add the llm call to the executor as a tool
 
     def _check_last_step(self, step: Function) -> bool:
         """Check if the last step is the finish step.
@@ -354,6 +353,7 @@ class Runner(Component):
                 printc(f"function: {function}", color="yellow")
 
                 # execute the tool
+                # we can pass the context to the function kwargs potentially. 
                 function_results = self._tool_execute_sync(function)
 
                 # create a step output
@@ -542,7 +542,7 @@ class Runner(Component):
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
         streaming_result: Optional[RunnerStreamingResult] = None,
-    ) -> RunnerResponse:
+    ) -> None:
         """Execute the planner asynchronously for multiple steps with function calling support.
 
         At the last step the action should be set to "finish" instead which terminates the sequence
@@ -587,22 +587,22 @@ class Runner(Component):
                     id=id,
                 )
 
-                if not isinstance(output, AsyncGenerator):
-                    raise ValueError(
-                        f"Output must be an async generator, got {type(output)}"
-                    )
-
-                final_output = None
-
-                async for event in output:
-                    # if the event is not the final Generator Output wrap it with RawResponsesStreamEvent
-                    if not isinstance(event, GeneratorOutput):
-                        # yield from the raw responses
-                        wrapped_event = RawResponsesStreamEvent(data=event)
-                        streaming_result._event_queue.put_nowait(wrapped_event)
-                    else:
-                        # this is the final event that is streamed and save in final output
-                        final_output = event
+                # Handle both streaming and non-streaming outputs
+                if isinstance(output, GeneratorOutput):
+                    # Non-streaming case - use output directly
+                    final_output = output
+                else:
+                    # Streaming case - iterate through the async generator
+                    final_output = None
+                    async for event in output:
+                        # if the event is not the final Generator Output wrap it with RawResponsesStreamEvent
+                        if not isinstance(event, GeneratorOutput):
+                            # yield from the raw responses
+                            wrapped_event = RawResponsesStreamEvent(data=event)
+                            streaming_result._event_queue.put_nowait(wrapped_event)
+                        else:
+                            # this is the final event that is streamed and save in final output
+                            final_output = event
 
                 function = self._get_planner_function(final_output)
                 printc(f"function: {function}", color="yellow")
@@ -665,20 +665,20 @@ class Runner(Component):
                     printc(f"processed_data: {processed_data}", color="yellow")
 
                     # Wrap final output in RunnerResponse
-                    runner_response = RunnerResponse(
-                        answer=str(processed_data) if processed_data else None,
-                        step_history=self.step_history.copy(),
-                    )
-                    last_output = runner_response
+                    # runner_response = RunnerResponse(
+                    #     answer=str(processed_data) if processed_data else None,
+                    #     step_history=self.step_history.copy(),
+                    # )
+                    # last_output = runner_response
 
                     # Store final result and completion status
-                    streaming_result.final_result = runner_response
+                    streaming_result.final_result = str(processed_data) if processed_data else None
                     streaming_result.step_history = self.step_history.copy()
                     streaming_result._is_complete = True
 
                     # Emit execution complete event
                     final_output_item = FinalOutputItem(
-                        runner_response=runner_response, final_output=processed_data
+                        final_output=processed_data
                     )
                     final_output_event = RunItemStreamEvent(
                         name="agent.execution_complete", item=final_output_item
@@ -719,7 +719,7 @@ class Runner(Component):
         # Signal completion of streaming
         streaming_result._event_queue.put_nowait(QueueCompleteSentinel())
 
-        return last_output
+        # return last_output
 
     async def _tool_execute_async(
         self,

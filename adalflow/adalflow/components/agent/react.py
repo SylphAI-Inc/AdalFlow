@@ -347,7 +347,7 @@ class ReActAgent(Component):
         def finish(answer: self.answer_data_type, **kwargs) -> str:
             return answer
 
-        self._finish = FunctionTool(fn=finish, component=finish)
+        self._finish = FunctionTool(fn=finish)
         processed_tools = tools.copy()
         if self.add_llm_as_fallback:
             processed_tools.append(llm_tool)
@@ -476,9 +476,13 @@ class ReActAgent(Component):
 
                 if step_output and step_output.action:
 
-                    result: FunctionOutput = self.tool_manager(
-                        expr_or_fun=x.data,  # Function
-                        step="execute",
+                    # result: FunctionOutput = self.tool_manager(
+                    #     expr_or_fun=x.data,  # Function
+                    #     step="execute",
+                    # )
+
+                    result: FunctionOutput = self.tool_manager.execute_func(
+                        func=fun_expr
                     )
 
                     step_output.observation = result.output
@@ -762,7 +766,7 @@ if __name__ == "__main__":
                 return self.llm_tool(prompt_kwargs={"input_str": input}, id=id)
 
             self.react_agent = ReActAgent(
-                tools=[FunctionTool(llm_as_tool, component=self.llm_tool)],
+                tools=[FunctionTool(llm_as_tool)],
                 max_steps=2,
                 add_llm_as_fallback=False,
                 model_client=OpenAIClient(),
