@@ -542,7 +542,7 @@ class Runner(Component):
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
         streaming_result: Optional[RunnerStreamingResult] = None,
-    ) -> RunnerResponse:
+    ) -> None:
         """Execute the planner asynchronously for multiple steps with function calling support.
 
         At the last step the action should be set to "finish" instead which terminates the sequence
@@ -665,20 +665,20 @@ class Runner(Component):
                     printc(f"processed_data: {processed_data}", color="yellow")
 
                     # Wrap final output in RunnerResponse
-                    runner_response = RunnerResponse(
-                        answer=str(processed_data) if processed_data else None,
-                        step_history=self.step_history.copy(),
-                    )
-                    last_output = runner_response
+                    # runner_response = RunnerResponse(
+                    #     answer=str(processed_data) if processed_data else None,
+                    #     step_history=self.step_history.copy(),
+                    # )
+                    # last_output = runner_response
 
                     # Store final result and completion status
-                    streaming_result.final_result = runner_response
+                    streaming_result.final_result = str(processed_data) if processed_data else None
                     streaming_result.step_history = self.step_history.copy()
                     streaming_result._is_complete = True
 
                     # Emit execution complete event
                     final_output_item = FinalOutputItem(
-                        runner_response=runner_response, final_output=processed_data
+                        final_output=processed_data
                     )
                     final_output_event = RunItemStreamEvent(
                         name="agent.execution_complete", item=final_output_item
@@ -719,7 +719,7 @@ class Runner(Component):
         # Signal completion of streaming
         streaming_result._event_queue.put_nowait(QueueCompleteSentinel())
 
-        return last_output
+        # return last_output
 
     async def _tool_execute_async(
         self,
