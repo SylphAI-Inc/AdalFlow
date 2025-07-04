@@ -587,22 +587,22 @@ class Runner(Component):
                     id=id,
                 )
 
-                if not isinstance(output, AsyncGenerator):
-                    raise ValueError(
-                        f"Output must be an async generator, got {type(output)}"
-                    )
-
-                final_output = None
-
-                async for event in output:
-                    # if the event is not the final Generator Output wrap it with RawResponsesStreamEvent
-                    if not isinstance(event, GeneratorOutput):
-                        # yield from the raw responses
-                        wrapped_event = RawResponsesStreamEvent(data=event)
-                        streaming_result._event_queue.put_nowait(wrapped_event)
-                    else:
-                        # this is the final event that is streamed and save in final output
-                        final_output = event
+                # Handle both streaming and non-streaming outputs
+                if isinstance(output, GeneratorOutput):
+                    # Non-streaming case - use output directly
+                    final_output = output
+                else:
+                    # Streaming case - iterate through the async generator
+                    final_output = None
+                    async for event in output:
+                        # if the event is not the final Generator Output wrap it with RawResponsesStreamEvent
+                        if not isinstance(event, GeneratorOutput):
+                            # yield from the raw responses
+                            wrapped_event = RawResponsesStreamEvent(data=event)
+                            streaming_result._event_queue.put_nowait(wrapped_event)
+                        else:
+                            # this is the final event that is streamed and save in final output
+                            final_output = event
 
                 function = self._get_planner_function(final_output)
                 printc(f"function: {function}", color="yellow")
