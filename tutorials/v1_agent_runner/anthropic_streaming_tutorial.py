@@ -33,11 +33,13 @@ from adalflow.core.func_tool import FunctionTool
 from adalflow.core.base_data_class import DataClass
 from dataclasses import dataclass
 
+from adalflow.utils.lazy_import import setup_env
+
 # Direct Anthropic API imports
 import anthropic
 
 
-# setup_env()  # Comment out to prevent FileNotFoundError when .env doesn't exist
+setup_env()  # Comment out to prevent FileNotFoundError when .env doesn't exist
 
 
 def demonstrate_direct_anthropic_streaming():
