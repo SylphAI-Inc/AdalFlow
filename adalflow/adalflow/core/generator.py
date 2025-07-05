@@ -1199,6 +1199,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # process the completion
         if completion is not None:
             try:
+                log.debug(f"Entering _post_call with completion: {completion}")
                 output = self._post_call(completion)
             except Exception as e:
                 log.error(f"Error processing the output: {e}")

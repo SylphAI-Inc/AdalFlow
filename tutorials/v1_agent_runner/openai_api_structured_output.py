@@ -26,7 +26,20 @@ class MathReasoning(BaseModel):
 
 
 # Example usage
-response = client.responses.parse(
+# response = client.responses.parse(
+#     model="gpt-4o-2024-08-06",
+#     input=[
+#         {
+#             "role": "system",
+#             "content": "You are an advanced math tutor. Solve the equation step by step, providing detailed operations and validations.",
+#         },
+#         {"role": "user", "content": "Solve the equation: 2(3x - 5) + 4 = 3x + 7"},
+#     ],
+#     text_format=MathReasoning,
+# )
+
+
+response = client.responses.create(
     model="gpt-4o-2024-08-06",
     input=[
         {
@@ -35,7 +48,6 @@ response = client.responses.parse(
         },
         {"role": "user", "content": "Solve the equation: 2(3x - 5) + 4 = 3x + 7"},
     ],
-    text_format=MathReasoning,
 )
 
 print(response)
