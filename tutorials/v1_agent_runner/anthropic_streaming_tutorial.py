@@ -36,12 +36,8 @@ from dataclasses import dataclass
 # Direct Anthropic API imports
 import anthropic
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# import logging
-# logging.basicConfig(level=logging.DEBUG)
+from adalflow.utils import setup_env
+setup_env()
 
 
 def demonstrate_direct_anthropic_streaming():
@@ -159,10 +155,8 @@ async def demonstrate_anthropic_async_streaming():
 
     print("\n\n=== Anthropic Async Streaming Tutorial ===\n")
 
-    # Initialize Anthropic client
-    client = AnthropicAPIClient(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    client = AnthropicAPIClient()
 
-    # Create Generator with async streaming
     generator = Generator(
         model_client=client,
         model_kwargs={
@@ -179,7 +173,6 @@ async def demonstrate_anthropic_async_streaming():
     print("Async Streaming Response:")
     print("-" * 50)
 
-    # Async call
     result = await generator.acall(prompt_kwargs={"input_str": prompt})
 
     async for event in result:
@@ -230,14 +223,12 @@ def test_response_compatibility():
 
     print("\n\n=== Response API Compatibility Testing ===\n")
 
-    # Test both direct API and AdalFlow client responses
-    adalflow_client = AnthropicAPIClient(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    adalflow_client = AnthropicAPIClient()
 
     prompt = "What is 2+2?"
     print(f"Test Prompt: {prompt}\n")
 
     try:
-        # Direct API response
         print("1. AdalFlow Client Response Format:")
         generator = Generator(
             model_client=adalflow_client,
@@ -337,12 +328,6 @@ def test_generator_compatibility():
 
 def main():
     """Main tutorial function demonstrating all use cases."""
-
-    # Check for API key
-    if not os.getenv("ANTHROPIC_API_KEY"):
-        print("Error: Please set ANTHROPIC_API_KEY environment variable")
-        print("export ANTHROPIC_API_KEY='your-api-key-here'")
-        return
 
     try:
         # Run direct API streaming demo
@@ -1076,12 +1061,11 @@ def test_runner_async_streaming():
 
     print("\n=== Testing Runner Async Streaming ===\n")
 
-    # Test 1: astream vs acall comparison
     print("Test 1: astream vs acall comparison")
     try:
         tools = [FunctionTool(fn=add_numbers)]
 
-        client = AnthropicAPIClient(api_key=os.getenv("ANTHROPIC_API_KEY"))
+        client = AnthropicAPIClient()
 
         agent = Agent(
             name="AsyncCompareAgent",
@@ -1182,11 +1166,6 @@ async def run_all_tests():
     print("=" * 60)
     print("RUNNING ALL ANTHROPIC STREAMING TUTORIAL TESTS")
     print("=" * 60)
-
-    # Check for API key
-    if not os.getenv("ANTHROPIC_API_KEY"):
-        print("Error: Please set ANTHROPIC_API_KEY environment variable")
-        return
 
     try:
         # test_direct_anthropic_streaming()
