@@ -1054,7 +1054,7 @@ class ToolCallRunItem(RunItem):
     what tools are being invoked and potentially intervene or log the calls.
 
     Attributes:
-        function: The Function object containing the tool call details (name, args, kwargs)
+        data: The Function object containing the tool call details (name, args, kwargs)
 
     Event Flow Position:
         1. Planner generates Function → **ToolCallRunItem** → Function execution → ToolOutputRunItem
@@ -1065,12 +1065,12 @@ class ToolCallRunItem(RunItem):
         async for event in runner.astream(prompt_kwargs).stream_events():
             if isinstance(event, RunItemStreamEvent) and event.name == "tool_called":
                 tool_call_item = event.item
-                print(f"About to call: {tool_call_item.function.name}")
+                print(f"About to call: {tool_call_item.data.name}")
         ```
     """
 
     type: str = field(default="tool_call", metadata={"desc": "Type of run item"})
-    function: Optional[Function] = field(
+    data: Optional[Function] = field(
         default=None,
         metadata={"desc": "Function object containing the tool call to be executed"},
     )
@@ -1086,7 +1086,7 @@ class ToolOutputRunItem(RunItem):
     notification to the caller.
 
     Attributes:
-        function_output: Complete FunctionOutput containing execution results, errors, etc.
+        data: Complete FunctionOutput containing execution results, errors, etc.
 
     Event Flow Position:
         ToolCallRunItem → Function execution → **ToolOutputRunItem** → StepRunItem
@@ -1097,15 +1097,15 @@ class ToolOutputRunItem(RunItem):
         async for event in runner.astream(prompt_kwargs).stream_events():
             if isinstance(event, RunItemStreamEvent) and event.name == "tool_output":
                 output_item = event.item
-                if output_item.function_output.error:
-                    print(f"Function failed: {output_item.function_output.error}")
+                if output_item.data.error:
+                    print(f"Function failed: {output_item.data.error}")
                 else:
-                    print(f"Function result: {output_item.function_output.output}")
+                    print(f"Function result: {output_item.data.output}")
         ```
     """
 
     type: str = field(default="tool_output", metadata={"desc": "Type of run item"})
-    function_output: Optional[FunctionOutput] = field(
+    data: Optional[FunctionOutput] = field(
         default=None,
         metadata={
             "desc": "Complete function execution result including output and error status"
@@ -1123,7 +1123,7 @@ class StepRunItem(RunItem):
     including the action taken and the observation (result).
 
     Attributes:
-        step_output: Complete StepOutput containing step number, action, and observation
+        data: Complete StepOutput containing step number, action, and observation
 
     Event Flow Position:
         ToolOutputRunItem → **StepRunItem** → (next step or completion)
@@ -1134,12 +1134,12 @@ class StepRunItem(RunItem):
         async for event in runner.astream(prompt_kwargs).stream_events():
             if isinstance(event, RunItemStreamEvent) and event.name == "step_completed":
                 step_item = event.item
-                print(f"Completed step {step_item.step_output.step}")
+                print(f"Completed step {step_item.data.step}")
         ```
     """
 
     type: str = field(default="step", metadata={"desc": "Type of run item"})
-    step_output: Optional[StepOutput] = field(
+    data: Optional[StepOutput] = field(
         default=None,
         metadata={
             "desc": "Complete step execution result including action and observation"
@@ -1156,9 +1156,8 @@ class FinalOutputItem(RunItem):
     processed result. It's emitted regardless of whether execution completed
     successfully or with an error.
 
-    There are two ways you can store the final output:
-    - runner_response: The final RunnerResponse containing the complete execution result
-    - final_output: The final processed output from the runner execution
+    Attributes:
+        data: The final RunnerResponse containing the complete execution result
 
     Event Flow Position:
         Final step → **FinalOutputItem** (execution complete)
@@ -1169,21 +1168,17 @@ class FinalOutputItem(RunItem):
         async for event in runner.astream(prompt_kwargs).stream_events():
             if isinstance(event, RunItemStreamEvent) and event.name == "runner_finished":
                 final_item = event.item
-                if final_item.runner_response.error:
-                    print(f"Execution failed: {final_item.runner_response.error}")
+                if final_item.data.error:
+                    print(f"Execution failed: {final_item.data.error}")
                 else:
-                    print(f"Final answer: {final_item.runner_response.answer}")
+                    print(f"Final answer: {final_item.data.answer}")
         ```
     """
 
     type: str = field(default="final_output", metadata={"desc": "Type of run item"})
-    runner_response: Optional["RunnerResponse"] = field(
+    data: Optional["RunnerResponse"] = field(
         default=None,
         metadata={"desc": "Final execution result wrapped in RunnerResponse"},
-    )
-    final_output: Optional[Any] = field(
-        default=None,
-        metadata={"desc": "Final processed output from the runner execution"},
     )
 
 

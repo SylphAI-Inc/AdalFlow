@@ -36,8 +36,8 @@ from dataclasses import dataclass
 # Direct Anthropic API imports
 import anthropic
 
-from adalflow.utils import setup_env
-setup_env()
+
+# setup_env()  # Comment out to prevent FileNotFoundError when .env doesn't exist
 
 
 def demonstrate_direct_anthropic_streaming():
