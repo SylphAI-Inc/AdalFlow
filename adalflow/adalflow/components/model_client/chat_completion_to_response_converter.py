@@ -1,3 +1,8 @@
+"""
+Code from OpenAI Agents library src/agents/models/openai_chatcompletions.py
+
+Used to convert the OpenAI ChatCompletion stream to Response API format
+"""
 from __future__ import annotations
 
 from collections.abc import AsyncIterator, Iterator
@@ -57,6 +62,8 @@ class SequenceNumber:
 
 
 class ChatCompletionToResponseConverter:
+    """Converts OpenAI ChatCompletion streams to standardized Response API format events."""
+    
     @classmethod
     async def async_handle_stream(
         cls,
