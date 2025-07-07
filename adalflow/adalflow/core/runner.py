@@ -608,7 +608,7 @@ class Runner(Component):
                 printc(f"function: {function}", color="yellow")
 
                 # Emit tool call event
-                tool_call_item = ToolCallRunItem(function=function)
+                tool_call_item = ToolCallRunItem(data=function)
                 tool_call_event = RunItemStreamEvent(
                     name="agent.tool_call_start", item=tool_call_item
                 )
@@ -654,7 +654,7 @@ class Runner(Component):
                 self.step_history.append(step_output)
 
                 # Emit step completion event
-                step_item = StepRunItem(step_output=step_output)
+                step_item = StepRunItem(data=step_output)
                 step_event = RunItemStreamEvent(
                     name="agent.step_complete", item=step_item
                 )
@@ -677,9 +677,7 @@ class Runner(Component):
                     streaming_result._is_complete = True
 
                     # Emit execution complete event
-                    final_output_item = FinalOutputItem(
-                        runner_response=runner_response, final_output=processed_data
-                    )
+                    final_output_item = FinalOutputItem(data=runner_response)
                     final_output_event = RunItemStreamEvent(
                         name="agent.execution_complete", item=final_output_item
                     )
@@ -704,9 +702,7 @@ class Runner(Component):
                 streaming_result._is_complete = True
 
                 # Emit error as FinalOutputItem to queue
-                error_final_item = FinalOutputItem(
-                    runner_response=error_runner_response
-                )
+                error_final_item = FinalOutputItem(data=error_runner_response)
                 error_event = RunItemStreamEvent(
                     name="runner_finished", item=error_final_item
                 )

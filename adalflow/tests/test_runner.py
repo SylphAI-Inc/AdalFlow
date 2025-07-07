@@ -238,7 +238,7 @@ class TestRunner(unittest.TestCase):
 
             # Verify the event contains FinalOutputItem with RunnerResponse
             self.assertIsInstance(final_event.item, FinalOutputItem)
-            runner_response = final_event.item.runner_response
+            runner_response = final_event.item.data
             self.assertIsInstance(runner_response, RunnerResponse)
             self.assertEqual(runner_response.answer, "stream-done")
             # function_call field removed from RunnerResponse
@@ -481,8 +481,8 @@ class TestRunner(unittest.TestCase):
 
             final_event = final_events[0]
             self.assertIsInstance(final_event.item, FinalOutputItem)
-            self.assertIsInstance(final_event.item.runner_response, RunnerResponse)
-            self.assertEqual(final_event.item.runner_response.answer, "stream-test")
+            self.assertIsInstance(final_event.item.data, RunnerResponse)
+            self.assertEqual(final_event.item.data.answer, "stream-test")
 
         asyncio.run(async_test())
 
