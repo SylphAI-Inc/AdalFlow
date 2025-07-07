@@ -181,26 +181,16 @@ async def test_generator_streaming():
         print(f"\n📊 Final Generator Result after {count} items:")
         print(final_result)
 
-        if hasattr(final_result, "stream_events"):
-            print("\n Testing calling stream_events from final result")
-            event_count = 0
-            async for event in final_result.stream_events():
-                event_count += 1
-                print(f"Event #{event_count}: {event}")
-            print(f"\n Finished streaming {event_count} events")
+        # Note: stream_events() cannot be called after the generator has been consumed
+        # The async generator can only be iterated once, so we skip this test
 
         return final_result
     else:
         print("\n📊 Generator Result (non-streaming):")
         print(result)
 
-        if hasattr(result, "stream_events"):
-            print("\n Testing calling stream_events from result")
-            count = 0
-            async for event in result.stream_events():
-                count += 1
-                print(f"Event #{count}: {event}")
-            print(f"\n Finished streaming {count} events")
+        # Note: stream_events() cannot be called after the generator has been consumed
+        # The async generator can only be iterated once, so we skip this test
 
         return result
 
@@ -263,17 +253,17 @@ async def test_runner_streaming():
 
         print("-" * 60)
         print("📊 Final Results:")
-        final_result = streaming_result.final_result
-        if final_result:
-            print(f"   • Answer: {final_result.answer}")
+        answer = streaming_result.answer
+        if answer:
+            print(f"   • Answer: {answer}")
             # Extract function call info from step history
-            if final_result.step_history and len(final_result.step_history) > 0:
-                last_step = final_result.step_history[-1]
+            if streaming_result.step_history and len(streaming_result.step_history) > 0:
+                last_step = streaming_result.step_history[-1]
                 print(f"   • Last Function: {last_step.function}")
                 print(f"   • Last Result: {last_step.observation}")
             else:
                 print("   • No function calls recorded in step history")
-            print(f"   • Error: {final_result.error}")
+            print(f"   • Error: {streaming_result._exception}")
         else:
             print("   • Final result: None")
         print(f"   • Total steps: {len(streaming_result.step_history)}")
@@ -354,17 +344,17 @@ async def test_runner_streaming_nested():
 
         print("-" * 60)
         print("📊 Final Results:")
-        final_result = streaming_result.final_result
-        if final_result:
-            print(f"   • Answer: {final_result.answer}")
+        answer = streaming_result.answer
+        if answer:
+            print(f"   • Answer: {answer}")
             # Extract function call info from step history
-            if final_result.step_history and len(final_result.step_history) > 0:
-                last_step = final_result.step_history[-1]
+            if streaming_result.step_history and len(streaming_result.step_history) > 0:
+                last_step = streaming_result.step_history[-1]
                 print(f"   • Last Function: {last_step.function}")
                 print(f"   • Last Result: {last_step.observation}")
             else:
                 print("   • No function calls recorded in step history")
-            print(f"   • Error: {final_result.error}")
+            print(f"   • Error: {streaming_result._exception}")
         else:
             print("   • Final result: None")
         print(f"   • Total steps: {len(streaming_result.step_history)}")

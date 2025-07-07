@@ -364,21 +364,21 @@ class MCPFunctionTool(FunctionTool):
 
     def call(self, *args, **kwargs) -> FunctionOutput:
         """Execute the function synchronously by running the async call method.
-        
+
         This is a convenience method that wraps the async `acall` method using `asyncio.run()`.
         It allows synchronous usage of MCP tools without requiring async/await syntax.
-        
+
         Args:
             *args: Positional arguments (not supported, raises assertion error)
             **kwargs: Keyword arguments to pass to the MCP tool
-            
+
         Returns:
             FunctionOutput: The result of the MCP tool execution
-            
+
         Example:
-            
+
         .. code-block:: python
-        
+
             server_params = StdioServerParameters(
                 command="python",
                 args=["mcp_server.py"]
@@ -386,7 +386,7 @@ class MCPFunctionTool(FunctionTool):
             # Get tools from the server
             async with mcp_session_context(server_params) as session:
                 tools = await session.list_tools()
-            
+
             tool_1 = MCPFunctionTool(server_params, tools[0])
             output = tool_1.call(param1="value1")  # Synchronous call
         """

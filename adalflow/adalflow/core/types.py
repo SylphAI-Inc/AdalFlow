@@ -32,7 +32,6 @@ import uuid
 import logging
 import json
 from collections.abc import AsyncIterable
-from pydantic import BaseModel, Field
 
 from adalflow.core.base_data_class import DataClass, required_field
 from adalflow.core.tokenizer import Tokenizer
@@ -995,11 +994,14 @@ class Conversation:
     def update_dialog_turn(self, order: int, dialog_turn: DialogTurn):
         self.dialog_turns[order] = dialog_turn
 
+
 ##############################
 # Agent runner events
 ##############################
 
 import asyncio
+
+
 @dataclass
 class RunItem(DataClass):
     """
@@ -1245,14 +1247,16 @@ as the answer, step history, and error.
 @dataclass
 class RunnerResult:
     step_history: List[StepOutput] = field(
-        metadata={"description": "The step history of the execution"}, default_factory=list
+        metadata={"description": "The step history of the execution"},
+        default_factory=list,
     )
     answer: Optional[str] = field(
         metadata={"description": "The answer to the user's query"}, default=None
     )
 
     error: Optional[str] = field(
-        metadata={"description": "The error message if the code execution failed"}, default=None
+        metadata={"description": "The error message if the code execution failed"},
+        default=None,
     )
 
 
@@ -1335,5 +1339,3 @@ class RunnerStreamingResult:
         """Wait for the runner task to complete."""
         if self._run_task:
             await self._run_task
-
-

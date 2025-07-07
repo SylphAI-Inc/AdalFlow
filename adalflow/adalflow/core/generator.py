@@ -362,14 +362,13 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         return output
 
     async def _output_processing(
-        self, generator_output: GeneratorOutput
+        self, data: AsyncIterable, generator_output: GeneratorOutput
     ) -> AsyncGenerator[Any, None]:
-        r"""Create an async generator from the generator output returned by model client and apply output processors. 
-        Consume the raw_response and yield each event. 
+        r"""Create an async generator from the async_iterable returned by model client and yield from them
+        apply output processors and store in generator output.
+        Consume the raw_response and yield each event.
         Store the final output text in the generator output data field.
         """
-
-        data = generator_output.raw_response
 
         # the raw response of the generator output should be an async iterable
         if not isinstance(data, AsyncIterable):
@@ -389,22 +388,19 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 log.debug(f"Response completed: {event.response.output_text}")
                 if getattr(resp, "output_text", None):
                     final_output_text = resp.output_text
-                    generator_output.data = final_output_text
 
         if self.output_processors:
             if final_output_text:
                 try:
-                    final_output_text = self.output_processors(final_output_text)
-                    generator_output.data = final_output_text
+                    final_output = self.output_processors(final_output_text)
+                    generator_output.data = final_output
                 except Exception as e:
                     log.error(f"Error processing the output processors: {e}")
                     generator_output.error = str(e)
         else:
             generator_output.data = None
 
-    async def _async_post_call(
-        self, completion: Any
-    ) -> GeneratorOutput:
+    async def _async_post_call(self, completion: Any) -> GeneratorOutput:
         r"""Get completion and depending on whether the client is streaming from the model client, create a GeneratorOutput or an AsyncGenerator.
         when the client is not streaming, the post call return a GeneratorOutput where the final output after applying the output processors is stored under the data field.
         When the client is streaming, the post call returns an Async Generator which will yield the events under the raw response and then also
@@ -425,7 +421,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # Handle async iterables from OpenAI Agent/Responses API streaming
         # return an async generator
         if isinstance(output.raw_response, AsyncIterable):
-            output.raw_response = self._output_processing(output)
+            original_raw_response = (
+                output.raw_response
+            )  # pass in the raw response to the output processing to avoid circular dependency
+            output.raw_response = self._output_processing(original_raw_response, output)
         else:
             # return a GeneratorOutput if the raw response is not an async iterable
             # process the model client's final response with the output processors
@@ -442,7 +441,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 output.data = data
             log.info(f"Response from the Model Client after being processed: {data}")
 
-            return output
+        return output
 
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""

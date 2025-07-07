@@ -1312,4 +1312,9 @@ def _is_pydantic_dataclass(cls: Any) -> bool:
 
 def _is_adalflow_dataclass(cls: Any) -> bool:
     # check whether cls is a adalflow dataclass
-    return isinstance(cls, type) and issubclass(cls, DataClass)
+    try:
+        from adalflow.core.base_data_class import DataClass
+
+        return isinstance(cls, type) and issubclass(cls, DataClass)
+    except ImportError:
+        return False

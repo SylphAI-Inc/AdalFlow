@@ -19,7 +19,15 @@ from adalflow.core.types import FunctionDefinition
 
 metadata = FunctionDefinition(func_desc="A simple addition tool", func_name="add")
 
-mcp_server_path = "../tutorials/mcp_agent/mcp_calculator_server.py"
+# Get the absolute path to the mcp_calculator_server.py file
+# Navigate from the test file location to the tutorials directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(
+    os.path.dirname(current_dir)
+)  # Go up from adalflow/tests to project root
+mcp_server_path = os.path.join(
+    project_root, "tutorials", "mcp_agent", "mcp_calculator_server.py"
+)
 
 
 class TestMCPTool(unittest.IsolatedAsyncioTestCase):
@@ -101,8 +109,9 @@ class TestMCPTool(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(output.input.kwargs["a"], 3)
         self.assertEqual(output.input.kwargs["b"], 4)
 
-        # call with sync call with raise ValueError
-        with self.assertRaises(ValueError):
+        # call with sync call should now work (uses asyncio.run internally)
+        # Test that it properly rejects positional arguments
+        with self.assertRaises(AssertionError):
             mcp_func_tool.call(3, 4)
 
     async def test_mcp_client_manager(self):

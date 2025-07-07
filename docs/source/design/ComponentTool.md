@@ -265,5 +265,3 @@ async def acall(self, query: str) -> ComponentToolOutput:
 - [`Component`](./Component.md): Base class for trainable components
 - [`Agent`](./Agent.md): Uses tools for extended capabilities
 - [`Runner`](./Runner.md): Executes agents with tool support
-
-

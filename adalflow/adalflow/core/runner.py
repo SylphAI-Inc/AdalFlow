@@ -35,10 +35,9 @@ from adalflow.core.types import (
     FinalOutputItem,
     RunnerStreamingResult,
     RunnerResult,
+    QueueCompleteSentinel,
 )
 from adalflow.core.functional import _is_pydantic_dataclass, _is_adalflow_dataclass
-
-
 
 
 __all__ = ["Runner"]
@@ -52,6 +51,7 @@ PydanticDataClass: TypeAlias = Type[BaseModel]
 AdalflowDataClass: TypeAlias = Type[
     Any
 ]  # Replace with your actual Adalflow dataclass type if available
+
 
 class Runner(Component):
     """A runner class that executes an Agent instance with multi-step execution.
@@ -97,6 +97,7 @@ class Runner(Component):
             return True
 
         return False
+
     # TODO: improved after the finish function is refactored
     def _process_data(
         self,
@@ -258,7 +259,7 @@ class Runner(Component):
                     processed_data = self._process_data(function_results.output)
                     # Wrap final output in RunnerResponse
                     last_output = RunnerResult(
-                        answer=str(processed_data) if processed_data else None,
+                        answer=processed_data,
                         step_history=self.step_history.copy(),
                     )
                     break
@@ -295,7 +296,7 @@ class Runner(Component):
 
         if not isinstance(result, FunctionOutput):
             raise ValueError("Result is not a FunctionOutput")
-        
+
         return result
 
     async def acall(
@@ -326,7 +327,7 @@ class Runner(Component):
         )  # a reference to the step history
 
         model_kwargs = model_kwargs.copy() if model_kwargs else {}
-            
+
         step_count = 0
         last_output = None
 
@@ -361,7 +362,7 @@ class Runner(Component):
                     processed_data = self._process_data(function_results.output)
                     # Wrap final output in RunnerResult
                     last_output = RunnerResult(
-                        answer=str(processed_data) if processed_data else None,
+                        answer=processed_data,
                         step_history=self.step_history.copy(),
                     )
                     break
@@ -421,7 +422,7 @@ class Runner(Component):
             model_kwargs: Optional model parameters to override defaults
             use_cache: Whether to use cached results if available
             id: Optional unique identifier for the request
-       """
+        """
         self.step_history = []
         prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
 
@@ -456,14 +457,14 @@ class Runner(Component):
 
                 if isinstance(output.raw_response, AsyncIterable):
                     # Streaming llm call - iterate through the async generator
-                    final_output = None
                     async for event in output.raw_response:
                         wrapped_event = RawResponsesStreamEvent(data=event)
                         streaming_result._event_queue.put_nowait(wrapped_event)
-          
-                final_output = output.data
 
-                function = self._get_planner_function(final_output)
+                # asychronously consuming the raw response will
+                # update the data field of output with the result of the output processor
+
+                function = self._get_planner_function(output)
                 printc(f"function: {function}", color="yellow")
 
                 # Emit tool call event
@@ -497,7 +498,7 @@ class Runner(Component):
                 else:
                     real_function_output = function_output
                     streaming_result._event_queue.put_nowait(function_output)
-       
+
                 step_output: StepOutput = StepOutput(
                     step=step_count,
                     action=function,
@@ -517,19 +518,23 @@ class Runner(Component):
                     processed_data = self._process_data(real_function_output)
                     printc(f"processed_data: {processed_data}", color="yellow")
 
-                    # Store final result and completion status
-                    streaming_result.final_result = str(processed_data) if processed_data else None
-                    streaming_result.step_history = self.step_history.copy()
-                    streaming_result._is_complete = True
+                    # Create RunnerResult for the final output
+                    runner_result = RunnerResult(
+                        answer=processed_data,
+                        step_history=self.step_history.copy(),
+                    )
 
                     # Emit execution complete event
-                    final_output_item = FinalOutputItem(
-                        data=processed_data
-                    )
+                    final_output_item = FinalOutputItem(data=runner_result)
                     final_output_event = RunItemStreamEvent(
                         name="agent.execution_complete", item=final_output_item
                     )
                     streaming_result._event_queue.put_nowait(final_output_event)
+
+                    # Store final result and completion status
+                    streaming_result.answer = processed_data
+                    streaming_result.step_history = self.step_history.copy()
+                    streaming_result._is_complete = True
                     break
 
                 step_count += 1
@@ -540,6 +545,7 @@ class Runner(Component):
                 # Store error result and completion status
                 streaming_result.step_history = self.step_history.copy()
                 streaming_result._is_complete = True
+                streaming_result.exception = error_msg
 
                 # Emit error as FinalOutputItem to queue
                 error_final_item = FinalOutputItem(error=error_msg)
@@ -554,7 +560,6 @@ class Runner(Component):
 
         # Signal completion of streaming
         streaming_result._event_queue.put_nowait(QueueCompleteSentinel())
-
 
     async def _tool_execute_async(
         self,

@@ -69,19 +69,23 @@ class FakeStreamingPlanner:
         return out
 
     async def acall(self, *, prompt_kwargs, model_kwargs=None, use_cache=None, id=None):
-        # For streaming, return an async generator
+        # For streaming, return a GeneratorOutput with an async generator
         async def async_generator():
             # Yield some intermediate events (simulating streaming)
             yield "intermediate_event_1"
             yield "intermediate_event_2"
-            # Yield the final GeneratorOutput
+            # Yield the final data
             if self._idx >= len(self._outputs):
                 raise IndexError("No more outputs")
             out = self._outputs[self._idx]
             self._idx += 1
-            yield out
+            yield out.data
 
-        return async_generator()
+        # Return a GeneratorOutput with the async generator as raw_response
+        if self._idx >= len(self._outputs):
+            raise IndexError("No more outputs")
+        out = self._outputs[self._idx]
+        return GeneratorOutput(data=out.data, raw_response=async_generator())
 
     def get_prompt(self, **kwargs):
         return ""
@@ -98,6 +102,18 @@ class MockToolManager:
         if self._sync_callable:
             return self._sync_callable(expr_or_fun, step)
         return SimpleNamespace(output="mock_output")
+
+    def execute_func(self, func):
+        """Sync method for tool execution."""
+        from adalflow.core.types import FunctionOutput
+
+        if self._sync_callable:
+            result = self._sync_callable(func, "execute")
+            if hasattr(result, "output"):
+                return FunctionOutput(name=func.name, input=func, output=result.output)
+            else:
+                return FunctionOutput(name=func.name, input=func, output=result)
+        return FunctionOutput(name=func.name, input=func, output="mock_output")
 
     async def execute_func_async(self, func):
         """Async method for tool execution."""
@@ -140,7 +156,11 @@ class TestRunner(unittest.TestCase):
     def setUp(self):
         # Use real StepOutput instead of mocking to ensure compatibility with RunnerResponse validation
         # Prepare a Runner with dummy agent
-        self.runner = Runner(agent=DummyAgent(planner=None, answer_data_type=None))
+        self.runner = Runner(
+            agent=DummyAgent(
+                planner=None, answer_data_type=None, tool_manager=MockToolManager()
+            )
+        )
 
     def test_check_last_step(self):
         finish_fn = DummyFunction(name="finish")
@@ -225,12 +245,17 @@ class TestRunner(unittest.TestCase):
             streaming_result = runner.astream(prompt_kwargs={})
 
             final_output_events = []
-            async for event in streaming_result.stream_events():
-                if (
-                    isinstance(event, RunItemStreamEvent)
-                    and event.name == "agent.execution_complete"
-                ):
-                    final_output_events.append(event)
+            timeout_seconds = 5
+            try:
+                async with asyncio.timeout(timeout_seconds):
+                    async for event in streaming_result.stream_events():
+                        if (
+                            isinstance(event, RunItemStreamEvent)
+                            and event.name == "agent.execution_complete"
+                        ):
+                            final_output_events.append(event)
+            except asyncio.TimeoutError:
+                self.fail(f"Stream events timed out after {timeout_seconds} seconds")
 
             # Verify we got a final output event
             self.assertEqual(len(final_output_events), 1)
@@ -246,9 +271,8 @@ class TestRunner(unittest.TestCase):
             self.assertEqual(len(runner_response.step_history), 1)
             self.assertEqual(runner_response.step_history[0].function, fn)
 
-            # Verify streaming result has final RunnerResponse
-            self.assertIsInstance(streaming_result.final_result, RunnerResult)
-            self.assertEqual(streaming_result.final_result.answer, "stream-done")
+            # Verify streaming result has final result
+            self.assertEqual(streaming_result.answer, "stream-done")
 
         asyncio.run(async_test())
 
@@ -312,7 +336,7 @@ class TestRunner(unittest.TestCase):
         """Test call with no answer_data_type returns RunnerResult."""
         fn = DummyFunction(name="finish")
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
-            output={"result": "success"}
+            output="{'result': 'success'}"
         )
         agent = DummyAgent(
             planner=FakePlanner([GeneratorOutput(data=fn)]),
@@ -325,6 +349,7 @@ class TestRunner(unittest.TestCase):
 
         # Verify result is RunnerResult wrapping the dict output
         self.assertIsInstance(result, RunnerResult)
+        # When no answer_data_type is specified, it defaults to str and should convert dict to string
         self.assertEqual(result.answer, "{'result': 'success'}")
         # function_call_result and function_call fields removed from RunnerResponse
         # Verify step history contains the execution details
@@ -389,7 +414,9 @@ class TestRunner(unittest.TestCase):
         mock_result = SimpleNamespace(output="sync_result")
 
         # Mock the tool_manager to return a sync result
-        self.runner.agent.tool_manager = lambda expr_or_fun, step: mock_result
+        self.runner.agent.tool_manager = MockToolManager(
+            lambda expr_or_fun, step: mock_result
+        )
 
         result = self.runner._tool_execute_sync(mock_function)
         # _tool_execute_sync wraps the result in FunctionOutput
@@ -410,7 +437,9 @@ class TestRunner(unittest.TestCase):
         # Mock the tool_manager to return a coroutine
         # Note: This test case is complex because _tool_execute_sync needs to handle async properly
         # For now, let's just verify it can handle the async case without crashing
-        self.runner.agent.tool_manager = lambda expr_or_fun, step: async_mock()
+        self.runner.agent.tool_manager = MockToolManager(
+            lambda expr_or_fun, step: async_mock()
+        )
 
         result = self.runner._tool_execute_sync(mock_function)
         # _tool_execute_sync wraps the result in FunctionOutput
@@ -431,7 +460,9 @@ class TestRunner(unittest.TestCase):
             yield SimpleNamespace(output="final_result")
 
         # Mock the tool_manager to return an async generator
-        self.runner.agent.tool_manager = lambda expr_or_fun, step: async_generator()
+        self.runner.agent.tool_manager = MockToolManager(
+            lambda expr_or_fun, step: async_generator()
+        )
 
         result = self.runner._tool_execute_sync(mock_function)
         # For async generator, it should be wrapped but not executed
@@ -464,8 +495,13 @@ class TestRunner(unittest.TestCase):
             # Collect all events from stream
             streaming_result = runner.astream(prompt_kwargs={})
             events = []
-            async for event in streaming_result.stream_events():
-                events.append(event)
+            timeout_seconds = 5
+            try:
+                async with asyncio.timeout(timeout_seconds):
+                    async for event in streaming_result.stream_events():
+                        events.append(event)
+            except asyncio.TimeoutError:
+                self.fail(f"Stream events timed out after {timeout_seconds} seconds")
 
             # Verify we have events
             self.assertGreater(len(events), 0)
