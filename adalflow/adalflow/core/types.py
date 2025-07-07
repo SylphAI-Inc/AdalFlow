@@ -1250,7 +1250,7 @@ class RunnerResult:
     answer: Optional[str] = field(
         metadata={"description": "The answer to the user's query"}, default=None
     )
- 
+
     error: Optional[str] = field(
         metadata={"description": "The error message if the code execution failed"}, default=None
     )
@@ -1273,7 +1273,7 @@ class RunnerStreamingResult:
     _event_queue: asyncio.Queue = field(default_factory=asyncio.Queue)
     _run_task: Optional[asyncio.Task] = field(default=None)
     _exception: Optional[Exception] = field(default=None)
-    final_result: Optional[Any] = field(default=None)
+    answer: Optional[Any] = field(default=None)
     step_history: List[Any] = field(default_factory=list)
     _is_complete: bool = field(default=False)
 

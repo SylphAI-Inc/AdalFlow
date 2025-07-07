@@ -361,7 +361,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         return output
 
-    async def _create_async_generator_and_applying_output_processors(
+    async def _output_processing(
         self, generator_output: GeneratorOutput
     ) -> AsyncGenerator[Any, None]:
         r"""Create an async generator from the generator output returned by model client and apply output processors. 
@@ -389,6 +389,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 log.debug(f"Response completed: {event.response.output_text}")
                 if getattr(resp, "output_text", None):
                     final_output_text = resp.output_text
+                    generator_output.data = final_output_text
 
         if self.output_processors:
             if final_output_text:
@@ -424,7 +425,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # Handle async iterables from OpenAI Agent/Responses API streaming
         # return an async generator
         if isinstance(output.raw_response, AsyncIterable):
-            output.raw_response = self._create_async_generator_and_applying_output_processors(output)
+            output.raw_response = self._output_processing(output)
         else:
             # return a GeneratorOutput if the raw response is not an async iterable
             # process the model client's final response with the output processors
