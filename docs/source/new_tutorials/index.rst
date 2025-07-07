@@ -14,4 +14,5 @@ Tutorials
    parser
    generator
    embedder
+   retriever <../tutorials/retriever>
    tool

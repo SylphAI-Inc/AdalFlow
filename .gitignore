@@ -37,3 +37,5 @@ index.faiss
 .idea
 extend/
 logs/
+mlruns/
+mlartifacts/

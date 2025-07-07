@@ -32,7 +32,6 @@ import uuid
 import logging
 import json
 from collections.abc import AsyncIterable
-from pydantic import BaseModel, Field
 
 from adalflow.core.base_data_class import DataClass, required_field
 from adalflow.core.tokenizer import Tokenizer
@@ -996,6 +995,13 @@ class Conversation:
         self.dialog_turns[order] = dialog_turn
 
 
+##############################
+# Agent runner events
+##############################
+
+import asyncio
+
+
 @dataclass
 class RunItem(DataClass):
     """
@@ -1037,6 +1043,10 @@ class RunItem(DataClass):
         metadata={
             "desc": "Generic data payload (deprecated - use specific fields in subclasses)"
         },
+    )
+    error: Optional[str] = field(
+        default=None,
+        metadata={"desc": "Error message if an error occurred"},
     )
     timestamp: datetime = field(
         default_factory=datetime.now,
@@ -1176,9 +1186,9 @@ class FinalOutputItem(RunItem):
     """
 
     type: str = field(default="final_output", metadata={"desc": "Type of run item"})
-    data: Optional["RunnerResponse"] = field(
+    data: Optional[Any] = field(
         default=None,
-        metadata={"desc": "Final execution result wrapped in RunnerResponse"},
+        metadata={"desc": "Final processed output from the runner execution"},
     )
 
 
@@ -1234,13 +1244,98 @@ as the answer, step history, and error.
 """
 
 
-class RunnerResponse(BaseModel):
-    answer: Optional[str] = Field(
-        description="The answer to the user's query", default=None
+@dataclass
+class RunnerResult:
+    step_history: List[StepOutput] = field(
+        metadata={"description": "The step history of the execution"},
+        default_factory=list,
     )
-    step_history: Optional[List[StepOutput]] = Field(
-        description="The step history of the execution", default=None
+    answer: Optional[str] = field(
+        metadata={"description": "The answer to the user's query"}, default=None
     )
-    error: Optional[str] = Field(
-        description="The error message if the code execution failed", default=None
+
+    error: Optional[str] = field(
+        metadata={"description": "The error message if the code execution failed"},
+        default=None,
     )
+
+
+@dataclass
+class QueueCompleteSentinel:
+    """Sentinel to indicate queue completion."""
+
+    pass
+
+
+@dataclass
+class RunnerStreamingResult:
+    """
+    Container for runner streaming results that provides access to the event queue
+    and allows users to consume streaming events.
+    """
+
+    _event_queue: asyncio.Queue = field(default_factory=asyncio.Queue)
+    _run_task: Optional[asyncio.Task] = field(default=None)
+    _exception: Optional[Exception] = field(default=None)
+    answer: Optional[Any] = field(default=None)
+    step_history: List[Any] = field(default_factory=list)
+    _is_complete: bool = field(default=False)
+
+    @property
+    def is_complete(self) -> bool:
+        """Check if the workflow execution is complete."""
+        return self._is_complete
+
+    async def stream_events(self) -> AsyncIterator[StreamEvent]:
+        """
+        Stream events from the runner execution.w
+
+        Returns:
+            AsyncIterator[StreamEvent]: An async iterator that yields stream events
+
+        Example:
+            ```python
+            result = runner.astream(prompt_kwargs)
+            async for event in result.stream_events():
+                if isinstance(event, RawResponsesStreamEvent):
+                    print(f"Raw event: {event.data}")
+                elif isinstance(event, RunItemStreamEvent):
+                    print(f"Run item: {event.name} - {event.item}")
+            ```
+        """
+        while True:
+            if self._exception:
+                raise self._exception
+
+            try:
+                # Wait for an event from the queue
+                event = await self._event_queue.get()
+
+                # Check for completion sentinel or special completion events
+                if isinstance(event, QueueCompleteSentinel):
+                    self._event_queue.task_done()
+                    break
+                else:
+                    # always yield event
+                    yield event
+                    # mark the task as done
+                    self._event_queue.task_done()
+                    # if the event is a RunItemStreamEvent and the name is agent.execution_complete then additionally break the loop
+                    if (
+                        isinstance(event, RunItemStreamEvent)
+                        and event.name == "agent.execution_complete"
+                    ):
+                        break
+
+            except asyncio.CancelledError:
+                break
+
+    def cancel(self):
+        """Cancel the running task."""
+        if self._run_task and not self._run_task.done():
+            self._run_task.cancel()
+
+    async def wait_for_completion(self):
+        """Wait for the runner task to complete."""
+        if self._run_task:
+            await self._run_task
