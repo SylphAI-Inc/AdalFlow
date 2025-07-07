@@ -241,17 +241,15 @@ async def test_runner_streaming():
                 print(f"⚡ Run Item Event: {event.name}")
                 if hasattr(event, "item") and event.item:
                     if isinstance(event.item, FinalOutputItem):
+                        print(f"   Final Output - Answer: {event.item.data.answer}")
                         print(
-                            f"   Final Output - Answer: {event.item.runner_response.answer}"
-                        )
-                        print(
-                            f"   Final Output - Step History Length: {len(event.item.runner_response.step_history) if event.item.runner_response.step_history else 0}"
+                            f"   Final Output - Step History Length: {len(event.item.data.step_history) if event.item.data.step_history else 0}"
                         )
                         if (
-                            event.item.runner_response.step_history
-                            and len(event.item.runner_response.step_history) > 0
+                            event.item.data.step_history
+                            and len(event.item.data.step_history) > 0
                         ):
-                            last_step = event.item.runner_response.step_history[-1]
+                            last_step = event.item.data.step_history[-1]
                             print(
                                 f"   Final Output - Last Function: {last_step.function}"
                             )
@@ -334,17 +332,15 @@ async def test_runner_streaming_nested():
                 print(f"⚡ Run Item Event: {event.name}")
                 if hasattr(event, "item") and event.item:
                     if isinstance(event.item, FinalOutputItem):
+                        print(f"   Final Output - Answer: {event.item.data.answer}")
                         print(
-                            f"   Final Output - Answer: {event.item.runner_response.answer}"
-                        )
-                        print(
-                            f"   Final Output - Step History Length: {len(event.item.runner_response.step_history) if event.item.runner_response.step_history else 0}"
+                            f"   Final Output - Step History Length: {len(event.item.data.step_history) if event.item.data.step_history else 0}"
                         )
                         if (
-                            event.item.runner_response.step_history
-                            and len(event.item.runner_response.step_history) > 0
+                            event.item.data.step_history
+                            and len(event.item.data.step_history) > 0
                         ):
-                            last_step = event.item.runner_response.step_history[-1]
+                            last_step = event.item.data.step_history[-1]
                             print(
                                 f"   Final Output - Last Function: {last_step.function}"
                             )

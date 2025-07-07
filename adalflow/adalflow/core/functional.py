@@ -1303,3 +1303,13 @@ def random_sample(
     indices = np.random.choice(len(dataset), size=num_shots, replace=replace, p=weights)
 
     return [dataset[i] for i in indices]
+
+
+def _is_pydantic_dataclass(cls: Any) -> bool:
+    # check whether cls is a pydantic dataclass
+    return isinstance(cls, type) and issubclass(cls, BaseModel)
+
+
+def _is_adalflow_dataclass(cls: Any) -> bool:
+    # check whether cls is a adalflow dataclass
+    return isinstance(cls, type) and issubclass(cls, DataClass)

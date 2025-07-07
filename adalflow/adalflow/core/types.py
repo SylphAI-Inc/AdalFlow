@@ -995,7 +995,11 @@ class Conversation:
     def update_dialog_turn(self, order: int, dialog_turn: DialogTurn):
         self.dialog_turns[order] = dialog_turn
 
+##############################
+# Agent runner events
+##############################
 
+import asyncio
 @dataclass
 class RunItem(DataClass):
     """
@@ -1038,6 +1042,10 @@ class RunItem(DataClass):
             "desc": "Generic data payload (deprecated - use specific fields in subclasses)"
         },
     )
+    error: Optional[str] = field(
+        default=None,
+        metadata={"desc": "Error message if an error occurred"},
+    )
     timestamp: datetime = field(
         default_factory=datetime.now,
         metadata={"desc": "Timestamp when this event was created"},
@@ -1054,7 +1062,7 @@ class ToolCallRunItem(RunItem):
     what tools are being invoked and potentially intervene or log the calls.
 
     Attributes:
-        function: The Function object containing the tool call details (name, args, kwargs)
+        data: The Function object containing the tool call details (name, args, kwargs)
 
     Event Flow Position:
         1. Planner generates Function → **ToolCallRunItem** → Function execution → ToolOutputRunItem
@@ -1065,12 +1073,12 @@ class ToolCallRunItem(RunItem):
         async for event in runner.astream(prompt_kwargs).stream_events():
             if isinstance(event, RunItemStreamEvent) and event.name == "tool_called":
                 tool_call_item = event.item
-                print(f"About to call: {tool_call_item.function.name}")
+                print(f"About to call: {tool_call_item.data.name}")
         ```
     """
 
     type: str = field(default="tool_call", metadata={"desc": "Type of run item"})
-    function: Optional[Function] = field(
+    data: Optional[Function] = field(
         default=None,
         metadata={"desc": "Function object containing the tool call to be executed"},
     )
@@ -1086,7 +1094,7 @@ class ToolOutputRunItem(RunItem):
     notification to the caller.
 
     Attributes:
-        function_output: Complete FunctionOutput containing execution results, errors, etc.
+        data: Complete FunctionOutput containing execution results, errors, etc.
 
     Event Flow Position:
         ToolCallRunItem → Function execution → **ToolOutputRunItem** → StepRunItem
@@ -1097,15 +1105,15 @@ class ToolOutputRunItem(RunItem):
         async for event in runner.astream(prompt_kwargs).stream_events():
             if isinstance(event, RunItemStreamEvent) and event.name == "tool_output":
                 output_item = event.item
-                if output_item.function_output.error:
-                    print(f"Function failed: {output_item.function_output.error}")
+                if output_item.data.error:
+                    print(f"Function failed: {output_item.data.error}")
                 else:
-                    print(f"Function result: {output_item.function_output.output}")
+                    print(f"Function result: {output_item.data.output}")
         ```
     """
 
     type: str = field(default="tool_output", metadata={"desc": "Type of run item"})
-    function_output: Optional[FunctionOutput] = field(
+    data: Optional[FunctionOutput] = field(
         default=None,
         metadata={
             "desc": "Complete function execution result including output and error status"
@@ -1123,7 +1131,7 @@ class StepRunItem(RunItem):
     including the action taken and the observation (result).
 
     Attributes:
-        step_output: Complete StepOutput containing step number, action, and observation
+        data: Complete StepOutput containing step number, action, and observation
 
     Event Flow Position:
         ToolOutputRunItem → **StepRunItem** → (next step or completion)
@@ -1134,12 +1142,12 @@ class StepRunItem(RunItem):
         async for event in runner.astream(prompt_kwargs).stream_events():
             if isinstance(event, RunItemStreamEvent) and event.name == "step_completed":
                 step_item = event.item
-                print(f"Completed step {step_item.step_output.step}")
+                print(f"Completed step {step_item.data.step}")
         ```
     """
 
     type: str = field(default="step", metadata={"desc": "Type of run item"})
-    step_output: Optional[StepOutput] = field(
+    data: Optional[StepOutput] = field(
         default=None,
         metadata={
             "desc": "Complete step execution result including action and observation"
@@ -1156,9 +1164,8 @@ class FinalOutputItem(RunItem):
     processed result. It's emitted regardless of whether execution completed
     successfully or with an error.
 
-    There are two ways you can store the final output:
-    - runner_response: The final RunnerResponse containing the complete execution result
-    - final_output: The final processed output from the runner execution
+    Attributes:
+        data: The final RunnerResponse containing the complete execution result
 
     Event Flow Position:
         Final step → **FinalOutputItem** (execution complete)
@@ -1169,15 +1176,15 @@ class FinalOutputItem(RunItem):
         async for event in runner.astream(prompt_kwargs).stream_events():
             if isinstance(event, RunItemStreamEvent) and event.name == "runner_finished":
                 final_item = event.item
-                if final_item.runner_response.error:
-                    print(f"Execution failed: {final_item.runner_response.error}")
+                if final_item.data.error:
+                    print(f"Execution failed: {final_item.data.error}")
                 else:
-                    print(f"Final answer: {final_item.runner_response.answer}")
+                    print(f"Final answer: {final_item.data.answer}")
         ```
     """
 
     type: str = field(default="final_output", metadata={"desc": "Type of run item"})
-    final_output: Optional[Any] = field(
+    data: Optional[Any] = field(
         default=None,
         metadata={"desc": "Final processed output from the runner execution"},
     )
@@ -1235,13 +1242,98 @@ as the answer, step history, and error.
 """
 
 
-class RunnerResponse(BaseModel):
-    answer: Optional[str] = Field(
-        description="The answer to the user's query", default=None
+@dataclass
+class RunnerResult:
+    step_history: List[StepOutput] = field(
+        metadata={"description": "The step history of the execution"}, default_factory=list
     )
-    step_history: Optional[List[StepOutput]] = Field(
-        description="The step history of the execution", default=None
+    answer: Optional[str] = field(
+        metadata={"description": "The answer to the user's query"}, default=None
     )
-    error: Optional[str] = Field(
-        description="The error message if the code execution failed", default=None
+ 
+    error: Optional[str] = field(
+        metadata={"description": "The error message if the code execution failed"}, default=None
     )
+
+
+@dataclass
+class QueueCompleteSentinel:
+    """Sentinel to indicate queue completion."""
+
+    pass
+
+
+@dataclass
+class RunnerStreamingResult:
+    """
+    Container for runner streaming results that provides access to the event queue
+    and allows users to consume streaming events.
+    """
+
+    _event_queue: asyncio.Queue = field(default_factory=asyncio.Queue)
+    _run_task: Optional[asyncio.Task] = field(default=None)
+    _exception: Optional[Exception] = field(default=None)
+    final_result: Optional[Any] = field(default=None)
+    step_history: List[Any] = field(default_factory=list)
+    _is_complete: bool = field(default=False)
+
+    @property
+    def is_complete(self) -> bool:
+        """Check if the workflow execution is complete."""
+        return self._is_complete
+
+    async def stream_events(self) -> AsyncIterator[StreamEvent]:
+        """
+        Stream events from the runner execution.w
+
+        Returns:
+            AsyncIterator[StreamEvent]: An async iterator that yields stream events
+
+        Example:
+            ```python
+            result = runner.astream(prompt_kwargs)
+            async for event in result.stream_events():
+                if isinstance(event, RawResponsesStreamEvent):
+                    print(f"Raw event: {event.data}")
+                elif isinstance(event, RunItemStreamEvent):
+                    print(f"Run item: {event.name} - {event.item}")
+            ```
+        """
+        while True:
+            if self._exception:
+                raise self._exception
+
+            try:
+                # Wait for an event from the queue
+                event = await self._event_queue.get()
+
+                # Check for completion sentinel or special completion events
+                if isinstance(event, QueueCompleteSentinel):
+                    self._event_queue.task_done()
+                    break
+                else:
+                    # always yield event
+                    yield event
+                    # mark the task as done
+                    self._event_queue.task_done()
+                    # if the event is a RunItemStreamEvent and the name is agent.execution_complete then additionally break the loop
+                    if (
+                        isinstance(event, RunItemStreamEvent)
+                        and event.name == "agent.execution_complete"
+                    ):
+                        break
+
+            except asyncio.CancelledError:
+                break
+
+    def cancel(self):
+        """Cancel the running task."""
+        if self._run_task and not self._run_task.done():
+            self._run_task.cancel()
+
+    async def wait_for_completion(self):
+        """Wait for the runner task to complete."""
+        if self._run_task:
+            await self._run_task
+
+
