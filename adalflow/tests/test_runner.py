@@ -247,13 +247,16 @@ class TestRunner(unittest.TestCase):
             final_output_events = []
             timeout_seconds = 5
             try:
-                async with asyncio.timeout(timeout_seconds):
+
+                async def collect_events():
                     async for event in streaming_result.stream_events():
                         if (
                             isinstance(event, RunItemStreamEvent)
                             and event.name == "agent.execution_complete"
                         ):
                             final_output_events.append(event)
+
+                await asyncio.wait_for(collect_events(), timeout=timeout_seconds)
             except asyncio.TimeoutError:
                 self.fail(f"Stream events timed out after {timeout_seconds} seconds")
 
@@ -497,9 +500,12 @@ class TestRunner(unittest.TestCase):
             events = []
             timeout_seconds = 5
             try:
-                async with asyncio.timeout(timeout_seconds):
+
+                async def collect_events():
                     async for event in streaming_result.stream_events():
                         events.append(event)
+
+                await asyncio.wait_for(collect_events(), timeout=timeout_seconds)
             except asyncio.TimeoutError:
                 self.fail(f"Stream events timed out after {timeout_seconds} seconds")
 
