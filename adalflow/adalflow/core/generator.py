@@ -364,8 +364,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     async def _create_async_generator_and_applying_output_processors(
         self, generator_output: GeneratorOutput
     ) -> AsyncGenerator[Any, None]:
-        r"""Create an async generator from the generator output returned by model client and apply output processors. Consume the raw_response
-        and yield each event. At the end yield the final generator output which stores under its data field the final output after applying the output processors.
+        r"""Create an async generator from the generator output returned by model client and apply output processors. 
+        Consume the raw_response and yield each event. 
+        Store the final output text in the generator output data field.
         """
 
         data = generator_output.raw_response
@@ -400,12 +401,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         else:
             generator_output.data = None
 
-        # at the very end yield the modified generator output
-        yield generator_output
-
     async def _async_post_call(
         self, completion: Any
-    ) -> Union[GeneratorOutput, AsyncGenerator[Any, None]]:
+    ) -> GeneratorOutput:
         r"""Get completion and depending on whether the client is streaming from the model client, create a GeneratorOutput or an AsyncGenerator.
         when the client is not streaming, the post call return a GeneratorOutput where the final output after applying the output processors is stored under the data field.
         When the client is streaming, the post call returns an Async Generator which will yield the events under the raw response and then also
@@ -426,9 +424,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # Handle async iterables from OpenAI Agent/Responses API streaming
         # return an async generator
         if isinstance(output.raw_response, AsyncIterable):
-            # return an Async Iterator
-            # create a
-            return self._create_async_generator_and_applying_output_processors(output)
+            output.raw_response = self._create_async_generator_and_applying_output_processors(output)
         else:
             # return a GeneratorOutput if the raw response is not an async iterable
             # process the model client's final response with the output processors

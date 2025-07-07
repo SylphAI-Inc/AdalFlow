@@ -5,7 +5,7 @@ from types import SimpleNamespace
 from adalflow.core.types import (
     GeneratorOutput,
     Function,
-    RunnerResponse,
+    RunnerResult,
     FinalOutputItem,
     RunItemStreamEvent,
 )
@@ -162,7 +162,7 @@ class TestRunner(unittest.TestCase):
         result = runner.call(prompt_kwargs={})
 
         # Verify result is RunnerResponse
-        self.assertIsInstance(result, RunnerResponse)
+        self.assertIsInstance(result, RunnerResult)
         self.assertEqual(result.answer, "done")
         # function_call_result and function_call fields removed from RunnerResponse
         # Verify step history contains the execution details
@@ -191,7 +191,7 @@ class TestRunner(unittest.TestCase):
             result = await runner.acall(prompt_kwargs={})
 
             # Verify result is RunnerResponse
-            self.assertIsInstance(result, RunnerResponse)
+            self.assertIsInstance(result, RunnerResult)
             self.assertEqual(result.answer, "async-done")
             # function_call_result and function_call fields removed from RunnerResponse
             # Verify step history contains the execution details
@@ -239,7 +239,7 @@ class TestRunner(unittest.TestCase):
             # Verify the event contains FinalOutputItem with RunnerResponse
             self.assertIsInstance(final_event.item, FinalOutputItem)
             runner_response = final_event.item.data
-            self.assertIsInstance(runner_response, RunnerResponse)
+            self.assertIsInstance(runner_response, RunnerResult)
             self.assertEqual(runner_response.answer, "stream-done")
             # function_call field removed from RunnerResponse
             # Verify step history contains the execution details
@@ -247,7 +247,7 @@ class TestRunner(unittest.TestCase):
             self.assertEqual(runner_response.step_history[0].function, fn)
 
             # Verify streaming result has final RunnerResponse
-            self.assertIsInstance(streaming_result.final_result, RunnerResponse)
+            self.assertIsInstance(streaming_result.final_result, RunnerResult)
             self.assertEqual(streaming_result.final_result.answer, "stream-done")
 
         asyncio.run(async_test())
@@ -269,7 +269,7 @@ class TestRunner(unittest.TestCase):
         result = runner.call(prompt_kwargs={})
 
         # Verify result is RunnerResponse
-        self.assertIsInstance(result, RunnerResponse)
+        self.assertIsInstance(result, RunnerResult)
         self.assertEqual(result.answer, "test output")
         # function_call_result and function_call fields removed from RunnerResponse
         # Verify step history contains the execution details
@@ -309,7 +309,7 @@ class TestRunner(unittest.TestCase):
             self.assertEqual(step.observation, f"output_action_{i}")
 
     def test_call_no_answer_data_type(self):
-        """Test call with no answer_data_type returns RunnerResponse."""
+        """Test call with no answer_data_type returns RunnerResult."""
         fn = DummyFunction(name="finish")
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
             output={"result": "success"}
@@ -323,8 +323,8 @@ class TestRunner(unittest.TestCase):
 
         result = runner.call(prompt_kwargs={})
 
-        # Verify result is RunnerResponse wrapping the dict output
-        self.assertIsInstance(result, RunnerResponse)
+        # Verify result is RunnerResult wrapping the dict output
+        self.assertIsInstance(result, RunnerResult)
         self.assertEqual(result.answer, "{'result': 'success'}")
         # function_call_result and function_call fields removed from RunnerResponse
         # Verify step history contains the execution details
@@ -351,8 +351,8 @@ class TestRunner(unittest.TestCase):
 
             result = await runner.acall(prompt_kwargs={})
 
-            # Verify result is RunnerResponse
-            self.assertIsInstance(result, RunnerResponse)
+            # Verify result is RunnerResult
+            self.assertIsInstance(result, RunnerResult)
             self.assertEqual(result.answer, "async-done")
             # function_call_result and function_call fields removed from RunnerResponse
             # Verify step history contains the execution details
@@ -368,11 +368,11 @@ class TestRunner(unittest.TestCase):
         runner = Runner(agent=agent)
         runner._tool_execute = lambda func: SimpleNamespace(output="x")
 
-        # The Runner should handle None gracefully and return an error in RunnerResponse
+        # The Runner should handle None gracefully and return an error in RunnerResult
         result = asyncio.run(runner.acall(prompt_kwargs={}))
 
-        # Should return a RunnerResponse with error field populated
-        self.assertIsInstance(result, RunnerResponse)
+        # Should return a RunnerResult with error field populated
+        self.assertIsInstance(result, RunnerResult)
         self.assertIsNotNone(result.error)
         self.assertIsNone(result.answer)
         self.assertTrue(result.error.startswith("Error in step 0:"))
@@ -481,7 +481,7 @@ class TestRunner(unittest.TestCase):
 
             final_event = final_events[0]
             self.assertIsInstance(final_event.item, FinalOutputItem)
-            self.assertIsInstance(final_event.item.data, RunnerResponse)
+            self.assertIsInstance(final_event.item.data, RunnerResult)
             self.assertEqual(final_event.item.data.answer, "stream-test")
 
         asyncio.run(async_test())
@@ -501,7 +501,7 @@ class TestRunner(unittest.TestCase):
         )
         runner1 = Runner(agent=agent1)
         result1 = runner1.call(prompt_kwargs={})
-        self.assertIsInstance(result1, RunnerResponse)
+        self.assertIsInstance(result1, RunnerResult)
         self.assertEqual(result1.answer, "consistent-output")
         # function_call_result and function_call fields removed from RunnerResponse
         # Verify step history contains the execution details
@@ -527,7 +527,7 @@ class TestRunner(unittest.TestCase):
             runner2._tool_execute_async = mock_tool_execute_async
             result2 = await runner2.acall(prompt_kwargs={})
 
-            self.assertIsInstance(result2, RunnerResponse)
+            self.assertIsInstance(result2, RunnerResult)
             self.assertEqual(result2.answer, "consistent-output")
             # function_call_result and function_call fields removed from RunnerResponse
             # Verify step history contains the execution details

@@ -2,7 +2,8 @@ from pydantic import BaseModel
 import logging
 import inspect
 import asyncio
-from dataclasses import dataclass
+import ast
+
 
 from typing import (
     Any,
@@ -12,13 +13,12 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    AsyncGenerator,
+    AsyncIterable,
 )
 from typing_extensions import TypeAlias
 
 
 from adalflow.optim.parameter import Parameter
-from adalflow.core.types import Function
 from adalflow.utils import printc
 from adalflow.core.component import Component
 from adalflow.core.agent import Agent
@@ -26,31 +26,19 @@ from adalflow.core.agent import Agent
 from adalflow.core.types import (
     GeneratorOutput,
     FunctionOutput,
+    Function,
     StepOutput,
     RawResponsesStreamEvent,
-)
-from adalflow.core.base_data_class import DataClass
-import ast
-from adalflow.core.types import (
-    StreamEvent,
     RunItemStreamEvent,
     ToolCallRunItem,
     StepRunItem,
     FinalOutputItem,
-    RunItemStreamEvent,
     RunnerStreamingResult,
     RunnerResult,
-    
 )
-
 from adalflow.core.functional import _is_pydantic_dataclass, _is_adalflow_dataclass
 
-# Type aliases for better type hints
-BuiltInType: TypeAlias = Union[str, int, float, bool, list, dict, tuple, set, None]
-PydanticDataClass: TypeAlias = Type[BaseModel]
-AdalflowDataClass: TypeAlias = Type[
-    Any
-]  # Replace with your actual Adalflow dataclass type if available
+
 
 
 __all__ = ["Runner"]
@@ -59,6 +47,11 @@ log = logging.getLogger(__name__)
 
 T = TypeVar("T", bound=BaseModel)  # Changed to use Pydantic BaseModel
 
+BuiltInType: TypeAlias = Union[str, int, float, bool, list, dict, tuple, set, None]
+PydanticDataClass: TypeAlias = Type[BaseModel]
+AdalflowDataClass: TypeAlias = Type[
+    Any
+]  # Replace with your actual Adalflow dataclass type if available
 
 class Runner(Component):
     """A runner class that executes an Agent instance with multi-step execution.
@@ -94,26 +87,17 @@ class Runner(Component):
 
         # get agent requirements
         self.max_steps = agent.max_steps
-        self.answer_data_type = agent.answer_data_type
+        self.answer_data_type = agent.answer_data_type or str
 
-        self.step_history = []
+        self.step_history: List[StepOutput] = []
 
     def _check_last_step(self, step: Function) -> bool:
-        """Check if the last step is the finish step.
-
-        Args:
-            step_history: List of previous steps
-
-        Returns:
-            bool: True if the last step is a finish step
-        """
-
-        # Check if it's a finish step
+        """Check if the last step is the finish step."""
         if step.name == "finish":
             return True
 
         return False
-
+    # TODO: improved after the finish function is refactored
     def _process_data(
         self,
         data: Union[BuiltInType, PydanticDataClass, AdalflowDataClass],
@@ -128,11 +112,6 @@ class Runner(Component):
         Returns:
             str: The processed data as a string
         """
-        if not self.answer_data_type:
-            print(data)
-            log.info(f"answer_data_type: {self.answer_data_type}, data: {data}")
-            # by default when the answer data type is not provided return the data directly
-            return data
 
         try:
             model_output = None
@@ -178,7 +157,6 @@ class Runner(Component):
                     model_output = None
                     raise ValueError(f"Error processing output: {str(e)}")
 
-            # model_ouput is not pydantic or adalflow dataclass or a built in python type
             if not model_output:
                 raise ValueError(f"Failed to parse output: {data}")
 
@@ -253,7 +231,7 @@ class Runner(Component):
                 printc(
                     f"agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}"
                 )
-                # Execute one step
+                # call the planner
                 output = self.agent.planner.call(
                     prompt_kwargs=prompt_kwargs,
                     model_kwargs=model_kwargs,
@@ -265,8 +243,6 @@ class Runner(Component):
                 function = self._get_planner_function(output)
                 printc(f"function: {function}", color="yellow")
 
-                # execute the tool
-                # we can pass the context to the function kwargs potentially. 
                 function_results = self._tool_execute_sync(function)
 
                 # create a step output
@@ -315,23 +291,11 @@ class Runner(Component):
         Handles both sync and async functions by running async ones in event loop.
         """
 
-        result = self.agent.tool_manager(expr_or_fun=func, step="execute")
+        result = self.agent.tool_manager.execute_func(func=func)
 
-        # Handle cases where result is not wrapped in FunctionOutput (e.g., in tests)
         if not isinstance(result, FunctionOutput):
-            # If it's a direct result from mocks or other sources, wrap it in FunctionOutput
-            if hasattr(result, "output"):
-                # Already has output attribute, use it directly
-                wrapped_result = FunctionOutput(
-                    name=func.name, input=func, output=result.output
-                )
-            else:
-                # Treat the entire result as the output
-                wrapped_result = FunctionOutput(
-                    name=func.name, input=func, output=result
-                )
-            return wrapped_result
-
+            raise ValueError("Result is not a FunctionOutput")
+        
         return result
 
     async def acall(
@@ -362,6 +326,7 @@ class Runner(Component):
         )  # a reference to the step history
 
         model_kwargs = model_kwargs.copy() if model_kwargs else {}
+            
         step_count = 0
         last_output = None
 
@@ -384,14 +349,6 @@ class Runner(Component):
 
                 function_results = await self._tool_execute_async(function)
 
-                # if inspect.iscoroutine(result):
-                #     function_results = await result
-                # else:
-                #     function_results = None
-                #     async for item in result:
-                #         function_results = item
-                # function_results = await self._tool_execute_async(function)
-
                 step_output: StepOutput = StepOutput(
                     step=step_count,
                     action=function,
@@ -409,7 +366,6 @@ class Runner(Component):
                     )
                     break
 
-                # important to ensure the prompt at each step is correct
                 log.debug(
                     "The prompt with the prompt template is {}".format(
                         self.agent.planner.get_prompt(**prompt_kwargs)
@@ -495,22 +451,17 @@ class Runner(Component):
                     id=id,
                 )
 
-                # Handle both streaming and non-streaming outputs
-                if isinstance(output, GeneratorOutput):
-                    # Non-streaming case - use output directly
-                    final_output = output
-                else:
-                    # Streaming case - iterate through the async generator
+                if not isinstance(output, GeneratorOutput):
+                    raise ValueError("The output is not a GeneratorOutput")
+
+                if isinstance(output.raw_response, AsyncIterable):
+                    # Streaming llm call - iterate through the async generator
                     final_output = None
-                    async for event in output:
-                        # if the event is not the final Generator Output wrap it with RawResponsesStreamEvent
-                        if not isinstance(event, GeneratorOutput):
-                            # yield from the raw responses
-                            wrapped_event = RawResponsesStreamEvent(data=event)
-                            streaming_result._event_queue.put_nowait(wrapped_event)
-                        else:
-                            # this is the final event that is streamed and save in final output
-                            final_output = event
+                    async for event in output.raw_response:
+                        wrapped_event = RawResponsesStreamEvent(data=event)
+                        streaming_result._event_queue.put_nowait(wrapped_event)
+          
+                final_output = output.data
 
                 function = self._get_planner_function(final_output)
                 printc(f"function: {function}", color="yellow")
@@ -546,13 +497,7 @@ class Runner(Component):
                 else:
                     real_function_output = function_output
                     streaming_result._event_queue.put_nowait(function_output)
-                    # function_results = []
-                    # async for item in function_output:
-                    #     function_results.append(item)
-                    #     yield item
-                    # real_function_output = function_results[-1]
-                # function_results = await self._tool_execute_async(function)
-
+       
                 step_output: StepOutput = StepOutput(
                     step=step_count,
                     action=function,
@@ -571,13 +516,6 @@ class Runner(Component):
                 if self._check_last_step(function):
                     processed_data = self._process_data(real_function_output)
                     printc(f"processed_data: {processed_data}", color="yellow")
-
-                    # Wrap final output in RunnerResponse
-                    # runner_response = RunnerResponse(
-                    #     answer=str(processed_data) if processed_data else None,
-                    #     step_history=self.step_history.copy(),
-                    # )
-                    # last_output = runner_response
 
                     # Store final result and completion status
                     streaming_result.final_result = str(processed_data) if processed_data else None
