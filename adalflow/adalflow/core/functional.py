@@ -32,6 +32,7 @@ from dataclasses import fields, is_dataclass, MISSING, Field
 
 from pydantic import BaseModel
 from pydantic.dataclasses import is_pydantic_dataclass
+from adalflow.core.base_data_class import DataClass
 
 log = logging.getLogger(__name__)
 
@@ -1312,9 +1313,4 @@ def _is_pydantic_dataclass(cls: Any) -> bool:
 
 def _is_adalflow_dataclass(cls: Any) -> bool:
     # check whether cls is a adalflow dataclass
-    try:
-        from adalflow.core.base_data_class import DataClass
-
-        return isinstance(cls, type) and issubclass(cls, DataClass)
-    except ImportError:
-        return False
+    return isinstance(cls, type) and issubclass(cls, DataClass)
