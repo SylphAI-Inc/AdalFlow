@@ -499,6 +499,19 @@ class Runner(Component):
                     real_function_output = function_output
                     streaming_result._event_queue.put_nowait(function_output)
 
+                # create call complete 
+                call_complete_event = RunItemStreamEvent(
+                    name="agent.tool_call_complete",
+                    item=ToolCallRunItem(
+                        data=FunctionOutput(
+                            name=function.name,
+                            args=function.args,
+                            output=real_function_output,
+                        )
+                    ),
+                )
+                streaming_result._event_queue.put_nowait(call_complete_event)
+
                 step_output: StepOutput = StepOutput(
                     step=step_count,
                     action=function,
