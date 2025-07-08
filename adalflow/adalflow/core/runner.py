@@ -31,6 +31,7 @@ from adalflow.core.types import (
     RawResponsesStreamEvent,
     RunItemStreamEvent,
     ToolCallRunItem,
+    ToolOutputRunItem,
     StepRunItem,
     FinalOutputItem,
     RunnerStreamingResult,
@@ -461,6 +462,11 @@ class Runner(Component):
                         wrapped_event = RawResponsesStreamEvent(data=event)
                         streaming_result._event_queue.put_nowait(wrapped_event)
 
+                else:
+                    # yield the final planner response
+                    wrapped_event = RawResponsesStreamEvent(data=output.data)
+                    streaming_result._event_queue.put_nowait(wrapped_event)
+
                 # asychronously consuming the raw response will
                 # update the data field of output with the result of the output processor
 
@@ -487,6 +493,9 @@ class Runner(Component):
                 # TODO: function needs a stream_events
                 real_function_output = None
 
+
+                # TODO: validate when the function is a generator
+
                 if inspect.iscoroutine(function_output):
                     real_function_output = await function_output
                 elif inspect.isasyncgen(function_output):
@@ -502,10 +511,10 @@ class Runner(Component):
                 # create call complete 
                 call_complete_event = RunItemStreamEvent(
                     name="agent.tool_call_complete",
-                    item=ToolCallRunItem(
+                    item=ToolOutputRunItem(
                         data=FunctionOutput(
                             name=function.name,
-                            args=function.args,
+                            input=function,
                             output=real_function_output,
                         )
                     ),
