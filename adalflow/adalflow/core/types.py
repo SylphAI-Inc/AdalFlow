@@ -443,12 +443,12 @@ class QueueSentinel:
 
 
 @dataclass
-class RawResponsesStreamEvent:
+class RawResponsesStreamEvent(DataClass):
     """Streaming event for storing the raw responses from the LLM. These are 'raw' events, i.e. they are directly passed through
     from the LLM.
     """
 
-    data: Any
+    data: Any | None = None
     """The raw responses streaming event from the LLM."""
 
     type: Literal["raw_response_event"] = "raw_response_event"
@@ -1193,7 +1193,7 @@ class FinalOutputItem(RunItem):
 
 
 @dataclass
-class RunItemStreamEvent:
+class RunItemStreamEvent(DataClass):
     """
     Wrapper for streaming RunItem events during Runner execution.
 
@@ -1228,7 +1228,7 @@ class RunItemStreamEvent:
         "agent.execution_complete",  # Entire Runner execution completed
     ]
     """The name identifying the specific type of execution event that occurred."""
-
+    # TODO: convert this to data to be consistent with other events
     item: RunItem
     """The RunItem instance containing the event-specific data and context."""
 
