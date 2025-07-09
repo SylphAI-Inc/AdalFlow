@@ -505,6 +505,7 @@ class Runner(Component):
 
                 # Emit tool call event
                 tool_call_item = ToolCallRunItem(data=function)
+                tool_call_id  = tool_call_item.id
                 tool_call_event = RunItemStreamEvent(
                     name="agent.tool_call_start", item=tool_call_item
                 )
@@ -534,14 +535,12 @@ class Runner(Component):
                         streaming_result._event_queue.put_nowait(item)
                         function_results.append(item)
                     real_function_output = function_results[-1]
-                else:
-                    real_function_output = function_output
-                    streaming_result._event_queue.put_nowait(function_output)
 
                 # create call complete 
                 call_complete_event = RunItemStreamEvent(
                     name="agent.tool_call_complete",
                     item=ToolOutputRunItem(
+                        id=tool_call_id,
                         data=FunctionOutput(
                             name=function.name,
                             input=function,
