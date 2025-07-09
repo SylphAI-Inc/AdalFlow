@@ -18,6 +18,7 @@ from adalflow.core.prompt_builder import Prompt
 from adalflow.core.types import GeneratorOutput, ModelType, Function
 from adalflow.optim.parameter import Parameter, ParameterType
 from adalflow.components.output_parsers import JsonOutputParser
+from adalflow.utils import printc
 
 
 import logging
@@ -236,6 +237,9 @@ def create_default_planner(
         use_cache=use_cache,
     )
 
+    printc(f"planner use cache: {planner.use_cache}")
+    printc(f"planner cache path: {planner.cache_path}")
+
     return planner
 
 
@@ -275,7 +279,7 @@ class Agent(Component):
         ] = None,  # allow users to update the template but cant delete any parameters
         role_desc: Optional[str] = None,
         cache_path: Optional[str] = None,
-        use_cache: Optional[bool] = False,
+        use_cache: Optional[bool] = True,
         # default agent parameters
         answer_data_type: Optional[Type[T]] = str,  # the data type of the final answer
         max_steps: Optional[int] = 10,

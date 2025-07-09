@@ -37,6 +37,7 @@ from adalflow.core.types import (
     RunnerStreamingResult,
     RunnerResult,
     QueueCompleteSentinel,
+    ToolOutput,
 )
 from adalflow.core.functional import _is_pydantic_dataclass, _is_adalflow_dataclass
 
@@ -73,6 +74,8 @@ class Runner(Component):
     def __init__(
         self,
         agent: Agent,
+        ctx: Optional[Dict] = None,
+        max_steps: Optional[int] = None,
         **kwargs,
     ) -> None:
         """Initialize runner with an agent and configuration.
@@ -87,7 +90,12 @@ class Runner(Component):
         self.agent = agent
 
         # get agent requirements
-        self.max_steps = agent.max_steps
+        self.max_steps = max_steps 
+        if max_steps is None:
+            self.max_steps = agent.max_steps
+        else:
+            # overwrite the agent's max_steps
+            self.agent.max_steps = max_steps
         self.answer_data_type = agent.answer_data_type or str
 
         self.step_history: List[StepOutput] = []
@@ -219,14 +227,15 @@ class Runner(Component):
         prompt_kwargs["step_history"] = (
             self.step_history
         )  # a reference to the step history
+        # set maximum number of steps for the planner into the prompt
+        prompt_kwargs["max_steps"] = self.max_steps
 
         model_kwargs = model_kwargs.copy() if model_kwargs else {}
 
         step_count = 0
         last_output = None
 
-        # set maximum number of steps for the planner into the prompt
-        # prompt_kwargs["max_steps"] = self.max_steps
+
 
         while step_count < self.max_steps:
             try:
@@ -247,17 +256,25 @@ class Runner(Component):
 
                 function_results = self._tool_execute_sync(function)
 
+                # observation is what llm see about the output, and user can control it using ToolOutput
+                # output is the real output data 
+
+                function_output = function_results.output
+                function_output_observation = function_output
+                if isinstance(function_output, ToolOutput) and hasattr(function_output, "observation"):
+                    function_output_observation = function_output.observation
+
                 # create a step output
                 step_ouput: StepOutput = StepOutput(
                     step=step_count,
                     action=function,
                     function=function,
-                    observation=function_results.output,
+                    observation=function_output_observation,
                 )
                 self.step_history.append(step_ouput)
 
                 if self._check_last_step(function):
-                    processed_data = self._process_data(function_results.output)
+                    processed_data = self._process_data(function_output)
                     # Wrap final output in RunnerResponse
                     last_output = RunnerResult(
                         answer=processed_data,
@@ -326,6 +343,8 @@ class Runner(Component):
         prompt_kwargs["step_history"] = (
             self.step_history
         )  # a reference to the step history
+        # set maximum number of steps for the planner into the prompt
+        prompt_kwargs["max_steps"] = self.max_steps
 
         model_kwargs = model_kwargs.copy() if model_kwargs else {}
 
@@ -351,16 +370,22 @@ class Runner(Component):
 
                 function_results = await self._tool_execute_async(function)
 
+                function_output = function_results.output
+                function_output_observation = function_output
+
+                if isinstance(function_output, ToolOutput) and hasattr(function_output, "observation"):
+                    function_output_observation = function_output.observation
+
                 step_output: StepOutput = StepOutput(
                     step=step_count,
                     action=function,
                     function=function,
-                    observation=function_results.output,
+                    observation=function_output_observation,
                 )
                 self.step_history.append(step_output)
 
                 if self._check_last_step(function):
-                    processed_data = self._process_data(function_results.output)
+                    processed_data = self._process_data(function_output)
                     # Wrap final output in RunnerResult
                     last_output = RunnerResult(
                         answer=processed_data,
@@ -429,6 +454,8 @@ class Runner(Component):
 
         prompt_kwargs["step_history"] = self.step_history
         # a reference to the step history
+        # set maximum number of steps for the planner into the prompt
+        prompt_kwargs["max_steps"] = self.max_steps
 
         model_kwargs = model_kwargs.copy() if model_kwargs else {}
         step_count = 0
@@ -459,12 +486,15 @@ class Runner(Component):
                 if isinstance(output.raw_response, AsyncIterable):
                     # Streaming llm call - iterate through the async generator
                     async for event in output.raw_response:
-                        wrapped_event = RawResponsesStreamEvent(data=event)
+                        wrapped_event = RawResponsesStreamEvent(data=event) # raw response wrapper 
                         streaming_result._event_queue.put_nowait(wrapped_event)
 
                 else:
                     # yield the final planner response
-                    wrapped_event = RawResponsesStreamEvent(data=output.data)
+                    if output.error is not None:
+                        wrapped_event = RawResponsesStreamEvent(error=output.error)
+                    else:
+                        wrapped_event = RawResponsesStreamEvent(data=output.data) # wrap on the data field to be the final output, the data might be null
                     streaming_result._event_queue.put_nowait(wrapped_event)
 
                 # asychronously consuming the raw response will
@@ -521,11 +551,17 @@ class Runner(Component):
                 )
                 streaming_result._event_queue.put_nowait(call_complete_event)
 
+                function_output = real_function_output
+                function_output_observation = function_output
+
+                if isinstance(function_output, ToolOutput) and hasattr(function_output, "observation"):
+                    function_output_observation = function_output.observation
+
                 step_output: StepOutput = StepOutput(
                     step=step_count,
                     action=function,
                     function=function,
-                    observation=real_function_output,
+                    observation=function_output_observation,
                 )
                 self.step_history.append(step_output)
 
