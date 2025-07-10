@@ -1,4 +1,13 @@
-"""A simple callback manager for tracing Geneator calls"""
+"""
+A simple callback manager for tracing Generator calls.
+
+This is part of AdalFlow's legacy tracing system that works alongside the
+OpenAI Agents SDK compatible tracing interface.
+
+References:
+- OpenAI Agents SDK: https://github.com/openai/openai-python/tree/main/src/openai/agents
+- OpenAI Tracing Interface: https://platform.openai.com/docs/guides/agents/tracing
+"""
 
 from typing import Callable, Literal
 
