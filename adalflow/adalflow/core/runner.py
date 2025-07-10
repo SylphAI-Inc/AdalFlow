@@ -38,6 +38,7 @@ from adalflow.core.types import (
     RunnerResult,
     QueueCompleteSentinel,
     ToolOutput,
+    ToolCallActivityRunItem,
 )
 from adalflow.core.functional import _is_pydantic_dataclass, _is_adalflow_dataclass
 
@@ -530,11 +531,15 @@ class Runner(Component):
                 if inspect.iscoroutine(function_output):
                     real_function_output = await function_output
                 elif inspect.isasyncgen(function_output):
-                    function_results = []
+                    real_function_output = None
                     async for item in function_output:
-                        streaming_result.put_nowait(item)
-                        function_results.append(item)
-                    real_function_output = function_results[-1]
+                        if isinstance(item, ToolCallActivityRunItem):
+                            tool_call_event = RunItemStreamEvent(
+                                name="agent.tool_call_activity", item=item
+                            )
+                            streaming_result.put_nowait(tool_call_event)
+                        else:
+                            real_function_output = item
                 else:
                     real_function_output = function_output
 
