@@ -80,7 +80,7 @@ class Span(abc.ABC, Generic[TSpanData]):
 
     @property
     @abc.abstractmethod
-    def parent_id(self) -> str | None:
+    def parent_id(self) -> Optional[str]:
         pass
 
     @abc.abstractmethod
@@ -89,7 +89,7 @@ class Span(abc.ABC, Generic[TSpanData]):
 
     @property
     @abc.abstractmethod
-    def error(self) -> SpanError | None:
+    def error(self) -> Optional[SpanError]:
         pass
 
     @abc.abstractmethod
@@ -98,12 +98,12 @@ class Span(abc.ABC, Generic[TSpanData]):
 
     @property
     @abc.abstractmethod
-    def started_at(self) -> str | None:
+    def started_at(self) -> Optional[str]:
         pass
 
     @property
     @abc.abstractmethod
-    def ended_at(self) -> str | None:
+    def ended_at(self) -> Optional[str]:
         pass
 
 
@@ -112,7 +112,9 @@ class NoOpSpan(Span[TSpanData]):
 
     def __init__(self, span_data: TSpanData):
         self._span_data = span_data
-        self._prev_span_token: contextvars.Token[Span[TSpanData] | None] | None = None
+        self._prev_span_token: Optional[
+            contextvars.Token[Optional[Span[TSpanData]]]
+        ] = None
 
     @property
     def trace_id(self) -> str:
@@ -127,7 +129,7 @@ class NoOpSpan(Span[TSpanData]):
         return self._span_data
 
     @property
-    def parent_id(self) -> str | None:
+    def parent_id(self) -> Optional[str]:
         return None
 
     def start(self, mark_as_current: bool = False):
@@ -155,18 +157,18 @@ class NoOpSpan(Span[TSpanData]):
         pass
 
     @property
-    def error(self) -> SpanError | None:
+    def error(self) -> Optional[SpanError]:
         return None
 
     def export(self) -> Optional[Dict[str, Any]]:
         return None
 
     @property
-    def started_at(self) -> str | None:
+    def started_at(self) -> Optional[str]:
         return None
 
     @property
-    def ended_at(self) -> str | None:
+    def ended_at(self) -> Optional[str]:
         return None
 
 
@@ -186,19 +188,21 @@ class SpanImpl(Span[TSpanData]):
     def __init__(
         self,
         trace_id: str,
-        span_id: str | None,
-        parent_id: str | None,
+        span_id: Optional[str],
+        parent_id: Optional[str],
         processor: TracingProcessor,
         span_data: TSpanData,
     ):
         self._trace_id = trace_id
         self._span_id = span_id or util.gen_span_id()
         self._parent_id = parent_id
-        self._started_at: str | None = None
-        self._ended_at: str | None = None
+        self._started_at: Optional[str] = None
+        self._ended_at: Optional[str] = None
         self._processor = processor
-        self._error: SpanError | None = None
-        self._prev_span_token: contextvars.Token[Span[TSpanData] | None] | None = None
+        self._error: Optional[SpanError] = None
+        self._prev_span_token: Optional[
+            contextvars.Token[Optional[Span[TSpanData]]]
+        ] = None
         self._span_data = span_data
 
     @property
@@ -214,7 +218,7 @@ class SpanImpl(Span[TSpanData]):
         return self._span_data
 
     @property
-    def parent_id(self) -> str | None:
+    def parent_id(self) -> Optional[str]:
         return self._parent_id
 
     def start(self, mark_as_current: bool = False):
@@ -254,15 +258,15 @@ class SpanImpl(Span[TSpanData]):
         self._error = error
 
     @property
-    def error(self) -> SpanError | None:
+    def error(self) -> Optional[SpanError]:
         return self._error
 
     @property
-    def started_at(self) -> str | None:
+    def started_at(self) -> Optional[str]:
         return self._started_at
 
     @property
-    def ended_at(self) -> str | None:
+    def ended_at(self) -> Optional[str]:
         return self._ended_at
 
     def export(self) -> Optional[Dict[str, Any]]:

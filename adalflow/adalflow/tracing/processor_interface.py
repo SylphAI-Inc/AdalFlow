@@ -10,7 +10,7 @@ References:
 """
 
 import abc
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Union
 
 if TYPE_CHECKING:
     from .spans import Span
@@ -71,7 +71,7 @@ class TracingExporter(abc.ABC):
     """Exports traces and spans. For example, could log them or send them to a backend."""
 
     @abc.abstractmethod
-    def export(self, items: list["Trace | Span[Any]"]) -> None:
+    def export(self, items: list[Union["Trace", "Span[Any]"]]) -> None:
         """Exports a list of traces and spans.
 
         Args:

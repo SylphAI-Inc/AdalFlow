@@ -22,7 +22,7 @@ class SpanData(abc.ABC):
     """
 
     @abc.abstractmethod
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         """Export the span data as a dictionary."""
         pass
 
@@ -57,7 +57,7 @@ class AgentSpanData(SpanData):
     def type(self) -> str:
         return "agent"
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         return {
             "type": self.type,
             "name": self.name,
@@ -91,7 +91,7 @@ class FunctionSpanData(SpanData):
     def type(self) -> str:
         return "function"
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         return {
             "type": self.type,
             "name": self.name,
@@ -117,8 +117,8 @@ class GenerationSpanData(SpanData):
 
     def __init__(
         self,
-        input: Sequence[Mapping[str, Any]] | None = None,
-        output: Sequence[Mapping[str, Any]] | None = None,
+        input: Optional[Sequence[Mapping[str, Any]]] = None,
+        output: Optional[Sequence[Mapping[str, Any]]] = None,
         model: Optional[str] = None,
         model_config: Optional[Mapping[str, Any]] = None,
         usage: Optional[Dict[str, Any]] = None,
@@ -133,7 +133,7 @@ class GenerationSpanData(SpanData):
     def type(self) -> str:
         return "generation"
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         return {
             "type": self.type,
             "input": self.input,
@@ -166,7 +166,7 @@ class ResponseSpanData(SpanData):
     def type(self) -> str:
         return "response"
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         return {
             "type": self.type,
             "response_id": self.response.id if self.response else None,
@@ -189,7 +189,7 @@ class HandoffSpanData(SpanData):
     def type(self) -> str:
         return "handoff"
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         return {
             "type": self.type,
             "from_agent": self.from_agent,
@@ -205,7 +205,7 @@ class CustomSpanData(SpanData):
 
     __slots__ = ("name", "data")
 
-    def __init__(self, name: str, data: dict[str, Any]):
+    def __init__(self, name: str, data: Dict[str, Any]):
         self.name = name
         self.data = data
 
@@ -213,7 +213,7 @@ class CustomSpanData(SpanData):
     def type(self) -> str:
         return "custom"
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         return {
             "type": self.type,
             "name": self.name,
@@ -237,7 +237,7 @@ class GuardrailSpanData(SpanData):
     def type(self) -> str:
         return "guardrail"
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         return {
             "type": self.type,
             "name": self.name,
@@ -277,7 +277,7 @@ class TranscriptionSpanData(SpanData):
     def type(self) -> str:
         return "transcription"
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         return {
             "type": self.type,
             "input": {
@@ -325,7 +325,7 @@ class SpeechSpanData(SpanData):
     def type(self) -> str:
         return "speech"
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         return {
             "type": self.type,
             "input": self.input,
@@ -356,7 +356,7 @@ class SpeechGroupSpanData(SpanData):
     def type(self) -> str:
         return "speech_group"
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         return {
             "type": self.type,
             "input": self.input,
@@ -384,7 +384,7 @@ class MCPListToolsSpanData(SpanData):
     def type(self) -> str:
         return "mcp_tools"
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         return {
             "type": self.type,
             "server": self.server,
@@ -455,11 +455,11 @@ class AdalFlowRunnerSpanData(CustomSpanData):
         self.workflow_status = workflow_status
         self.execution_time = execution_time
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         base_export = super().export()
         return base_export
 
-    def update_attributes(self, attributes: dict[str, Any]) -> None:
+    def update_attributes(self, attributes: Dict[str, Any]) -> None:
         """
         Update span attributes directly for MLflow compatibility.
         Note: MLflow's OpenAI Trace processor reads attributes directly from the data attribute
@@ -499,13 +499,13 @@ class AdalFlowGeneratorSpanData(CustomSpanData):
     def __init__(
         self,
         generator_id: Optional[str] = None,
-        model_kwargs: Optional[dict[str, Any]] = None,
+        model_kwargs: Optional[Dict[str, Any]] = None,
         generator_state_logger: Optional[Any] = None,
-        prompt_kwargs: Optional[dict[str, Any]] = None,
+        prompt_kwargs: Optional[Dict[str, Any]] = None,
         raw_response: Optional[str] = None,
         api_response: Optional[Any] = None,
         generation_time: Optional[float] = None,
-        token_usage: Optional[dict[str, int]] = None,
+        token_usage: Optional[Dict[str, int]] = None,
         final_response: Optional[Any] = None,
     ):
         # Initialize with data that will be used by MLflow
@@ -539,7 +539,7 @@ class AdalFlowGeneratorSpanData(CustomSpanData):
         self.token_usage = token_usage
         self.final_response = final_response
 
-    def update_attributes(self, attributes: dict[str, Any]) -> None:
+    def update_attributes(self, attributes: Dict[str, Any]) -> None:
         """
         Update span attributes directly for MLflow compatibility.
         Note: MLflow's OpenAI Trace processor reads attributes directly from the data attribute
@@ -553,7 +553,7 @@ class AdalFlowGeneratorSpanData(CustomSpanData):
             # Update the custom span's data attribute which is exported
             self.data[key] = value
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         base_export = super().export()
         return base_export
 
@@ -580,7 +580,7 @@ class AdalFlowResponseSpanData(CustomSpanData):
         self,
         answer: Optional[Any] = None,
         result_type: Optional[str] = None,
-        execution_metadata: Optional[dict[str, Any]] = None,
+        execution_metadata: Optional[Dict[str, Any]] = None,
         response: Optional[Any] = None,
         input: Optional[str] = None,
     ):
@@ -600,7 +600,7 @@ class AdalFlowResponseSpanData(CustomSpanData):
         self.response = response
         self.input = input
 
-    def update_attributes(self, attributes: dict[str, Any]) -> None:
+    def update_attributes(self, attributes: Dict[str, Any]) -> None:
         """
         Update span attributes directly for MLflow compatibility.
         Note: MLflow's OpenAI Trace processor reads attributes directly from the data attribute
@@ -614,7 +614,7 @@ class AdalFlowResponseSpanData(CustomSpanData):
             # Update the custom span's data attribute which is exported
             self.data[key] = value
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         base_export = super().export()
         return base_export
 
@@ -646,9 +646,9 @@ class AdalFlowStepSpanData(CustomSpanData):
         observation: Optional[Any] = None,
         is_final: bool = False,
         function_name: Optional[str] = None,
-        function_args: Optional[dict[str, Any]] = None,
+        function_args: Optional[Dict[str, Any]] = None,
         execution_time: Optional[float] = None,
-        error_info: Optional[dict[str, Any]] = None,
+        error_info: Optional[Dict[str, Any]] = None,
     ):
         # Create data dictionary for CustomSpanData
         data = {
@@ -682,7 +682,7 @@ class AdalFlowStepSpanData(CustomSpanData):
     def type(self) -> str:
         return "step"
 
-    def update_attributes(self, attributes: dict[str, Any]) -> None:
+    def update_attributes(self, attributes: Dict[str, Any]) -> None:
         """
         Update span attributes directly for MLflow compatibility.
         Note: MLflow's OpenAI Trace processor reads attributes directly from the data attribute
@@ -696,7 +696,7 @@ class AdalFlowStepSpanData(CustomSpanData):
             # Update the custom span's data attribute which is exported
             self.data[key] = value
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         base_export = super().export()
         return base_export
 
@@ -724,10 +724,10 @@ class AdalFlowToolSpanData(CustomSpanData):
         self,
         tool_name: Optional[str] = None,
         function_name: Optional[str] = None,
-        input_params: Optional[dict[str, Any]] = None,
+        input_params: Optional[Dict[str, Any]] = None,
         output_result: Optional[Any] = None,
         execution_time: Optional[float] = None,
-        error_info: Optional[dict[str, Any]] = None,
+        error_info: Optional[Dict[str, Any]] = None,
     ):
         # Map to OpenAI function format
         function_display_name = (
@@ -757,7 +757,7 @@ class AdalFlowToolSpanData(CustomSpanData):
         self.execution_time = execution_time
         self.error_info = error_info
 
-    def update_attributes(self, attributes: dict[str, Any]) -> None:
+    def update_attributes(self, attributes: Dict[str, Any]) -> None:
         """
         Update span attributes directly for MLflow compatibility.
         Note: MLflow's OpenAI Trace processor reads attributes directly from the data attribute
@@ -771,6 +771,6 @@ class AdalFlowToolSpanData(CustomSpanData):
             # Update the custom span's data attribute which is exported
             self.data[key] = value
 
-    def export(self) -> dict[str, Any]:
+    def export(self) -> Dict[str, Any]:
         base_export = super().export()
         return base_export

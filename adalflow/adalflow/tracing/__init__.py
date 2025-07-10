@@ -10,6 +10,8 @@ References:
 - OpenAI Tracing Interface: https://platform.openai.com/docs/guides/agents/tracing
 """
 
+from typing import Optional
+
 # Legacy generator tracing (existing)
 from .generator_state_logger import GeneratorStateLogger
 from .generator_call_logger import GeneratorCallLogger
@@ -79,7 +81,7 @@ def is_tracing_disabled() -> bool:
     return GLOBAL_TRACE_PROVIDER._disabled
 
 
-def set_tracing_export_api_key(api_key: str | None) -> None:
+def set_tracing_export_api_key(api_key: Optional[str]) -> None:
     """Set the API key for tracing export."""
     import os
 
