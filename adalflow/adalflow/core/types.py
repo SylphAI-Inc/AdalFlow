@@ -1333,6 +1333,13 @@ class RunnerStreamingResult:
         """Check if the workflow execution is complete."""
         return self._is_complete
 
+    def put_nowait(self, item: StreamEvent):
+        # only RawResponsesStreamEvent and RunItemStreamEvent can be put into the queue
+        if not isinstance(item, (RawResponsesStreamEvent, RunItemStreamEvent, QueueCompleteSentinel)):
+            raise ValueError("Only RawResponsesStreamEvent and RunItemStreamEvent can be put into the queue")
+        
+        self._event_queue.put_nowait(item)
+
     async def stream_events(self) -> AsyncIterator[StreamEvent]:
         """
         Stream events from the runner execution.w

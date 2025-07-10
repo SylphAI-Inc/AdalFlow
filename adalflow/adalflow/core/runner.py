@@ -487,7 +487,7 @@ class Runner(Component):
                     # Streaming llm call - iterate through the async generator
                     async for event in output.raw_response:
                         wrapped_event = RawResponsesStreamEvent(data=event) # raw response wrapper 
-                        streaming_result._event_queue.put_nowait(wrapped_event)
+                        streaming_result.put_nowait(wrapped_event)
 
                 else:
                     # yield the final planner response
@@ -495,7 +495,7 @@ class Runner(Component):
                         wrapped_event = RawResponsesStreamEvent(error=output.error)
                     else:
                         wrapped_event = RawResponsesStreamEvent(data=output.data) # wrap on the data field to be the final output, the data might be null
-                    streaming_result._event_queue.put_nowait(wrapped_event)
+                    streaming_result.put_nowait(wrapped_event)
 
                 # asychronously consuming the raw response will
                 # update the data field of output with the result of the output processor
@@ -509,7 +509,7 @@ class Runner(Component):
                 tool_call_event = RunItemStreamEvent(
                     name="agent.tool_call_start", item=tool_call_item
                 )
-                streaming_result._event_queue.put_nowait(tool_call_event)
+                streaming_result.put_nowait(tool_call_event)
 
                 function_result = await self._tool_execute_async(
                     function
@@ -532,9 +532,11 @@ class Runner(Component):
                 elif inspect.isasyncgen(function_output):
                     function_results = []
                     async for item in function_output:
-                        streaming_result._event_queue.put_nowait(item)
+                        streaming_result.put_nowait(item)
                         function_results.append(item)
                     real_function_output = function_results[-1]
+                else:
+                    real_function_output = function_output
 
                 # create call complete 
                 call_complete_event = RunItemStreamEvent(
@@ -548,7 +550,7 @@ class Runner(Component):
                         )
                     ),
                 )
-                streaming_result._event_queue.put_nowait(call_complete_event)
+                streaming_result.put_nowait(call_complete_event)
 
                 function_output = real_function_output
                 function_output_observation = function_output
@@ -569,7 +571,7 @@ class Runner(Component):
                 step_event = RunItemStreamEvent(
                     name="agent.step_complete", item=step_item
                 )
-                streaming_result._event_queue.put_nowait(step_event)
+                streaming_result.put_nowait(step_event)
 
                 if self._check_last_step(function):
                     processed_data = self._process_data(real_function_output)
@@ -586,7 +588,7 @@ class Runner(Component):
                     final_output_event = RunItemStreamEvent(
                         name="agent.execution_complete", item=final_output_item
                     )
-                    streaming_result._event_queue.put_nowait(final_output_event)
+                    streaming_result.put_nowait(final_output_event)
 
                     # Store final result and completion status
                     streaming_result.answer = processed_data
@@ -609,14 +611,14 @@ class Runner(Component):
                 error_event = RunItemStreamEvent(
                     name="runner_finished", item=error_final_item
                 )
-                streaming_result._event_queue.put_nowait(error_event)
+                streaming_result.put_nowait(error_event)
 
                 # end the streaming result's event queue
-                streaming_result._event_queue.put_nowait(QueueCompleteSentinel())
+                streaming_result.put_nowait(QueueCompleteSentinel())
                 return error_msg
 
         # Signal completion of streaming
-        streaming_result._event_queue.put_nowait(QueueCompleteSentinel())
+        streaming_result.put_nowait(QueueCompleteSentinel())
 
     async def _tool_execute_async(
         self,
