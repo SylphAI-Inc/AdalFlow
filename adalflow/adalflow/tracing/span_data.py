@@ -619,7 +619,7 @@ class AdalFlowResponseSpanData(CustomSpanData):
         return base_export
 
 
-class AdalFlowStepSpanData(CustomSpanData):
+class AdalFlowStepSpanData(SpanData):
     """
     Represents a Step Span in AdalFlow workflow execution.
     Tracks individual steps within a multi-step agent workflow.
@@ -662,9 +662,7 @@ class AdalFlowStepSpanData(CustomSpanData):
             "error_info": error_info,
         }
 
-        super().__init__(
-            name=f"step-{step_number}" if step_number is not None else "step", data=data
-        )
+        self.name = f"step-{step_number}" if step_number is not None else "step"
 
         self.data = data
 
@@ -692,9 +690,16 @@ class AdalFlowStepSpanData(CustomSpanData):
             # Update the custom span's data attribute which is exported
             self.data[key] = value
 
+    @property
+    def type(self) -> str:
+        return "step"
+
     def export(self) -> Dict[str, Any]:
-        base_export = super().export()
-        return base_export
+        return {
+            "type": self.type,
+            "name": self.name,
+            "data": self.data,
+        }
 
 
 class AdalFlowToolSpanData(CustomSpanData):
@@ -736,8 +741,8 @@ class AdalFlowToolSpanData(CustomSpanData):
         self.data = {
             "tool_name": tool_name,
             "function_name": function_name,
-            "input_params": input_params,
-            "output_result": output_result,
+            "input": str(input_params) if input_params else None,
+            "output": str(output_result) if output_result else None,
             "execution_time": execution_time,
             "error_info": error_info,
         }
