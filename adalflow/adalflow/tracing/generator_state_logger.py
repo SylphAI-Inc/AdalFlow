@@ -1,3 +1,14 @@
+"""
+AdalFlow generator state logger module.
+
+This module provides logging functionality for generator states that works
+alongside the OpenAI Agents SDK compatible tracing interface.
+
+References:
+- OpenAI Agents SDK: https://github.com/openai/openai-python/tree/main/src/openai/agents
+- OpenAI Tracing Interface: https://platform.openai.com/docs/guides/agents/tracing
+"""
+
 from typing import Dict, Any, List, Optional, TYPE_CHECKING
 import os
 import logging
