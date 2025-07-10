@@ -12,7 +12,7 @@ References:
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional, Dict, Union
 
 logger = logging.getLogger(__name__)
 from .setup import GLOBAL_TRACE_PROVIDER
@@ -33,9 +33,9 @@ if TYPE_CHECKING:
 
 def trace(
     workflow_name: str,
-    trace_id: str | None = None,
-    group_id: str | None = None,
-    metadata: dict[str, Any] | None = None,
+    trace_id: Optional[str] = None,
+    group_id: Optional[str] = None,
+    metadata: Optional[Dict[str, Any]] = None,
     disabled: bool = False,
 ) -> Trace:
     """
@@ -77,12 +77,12 @@ def trace(
     )
 
 
-def get_current_trace() -> Trace | None:
+def get_current_trace() -> Optional[Trace]:
     """Returns the currently active trace, if present."""
     return GLOBAL_TRACE_PROVIDER.get_current_trace()
 
 
-def get_current_span() -> Span[Any] | None:
+def get_current_span() -> Optional[Span[Any]]:
     """Returns the currently active span, if present."""
     return GLOBAL_TRACE_PROVIDER.get_current_span()
 
@@ -94,9 +94,9 @@ def get_current_span() -> Span[Any] | None:
 
 def custom_span(
     name: str,
-    data: dict[str, Any] | None = None,
-    span_id: str | None = None,
-    parent: Trace | Span[Any] | None = None,
+    data: Optional[Dict[str, Any]] = None,
+    span_id: Optional[str] = None,
+    parent: Optional[Union[Trace, Span[Any]]] = None,
     disabled: bool = False,
 ) -> Span[CustomSpanData]:
     """Create a new custom span for general-purpose tracing.
@@ -133,14 +133,14 @@ def custom_span(
 
 
 def runner_span(
-    runner_id: str | None = None,
-    max_steps: int | None = None,
-    steps_executed: int | None = None,
-    final_answer: str | None = None,
-    workflow_status: str | None = None,
-    execution_time: float | None = None,
-    span_id: str | None = None,
-    parent: Trace | Span[Any] | None = None,
+    runner_id: Optional[str] = None,
+    max_steps: Optional[int] = None,
+    steps_executed: Optional[int] = None,
+    final_answer: Optional[str] = None,
+    workflow_status: Optional[str] = None,
+    execution_time: Optional[float] = None,
+    span_id: Optional[str] = None,
+    parent: Optional[Union[Trace, Span[Any]]] = None,
     disabled: bool = False,
 ) -> Span[AdalFlowRunnerSpanData]:
     """Create a new AdalFlow runner span for tracing workflow execution.
@@ -180,17 +180,17 @@ def runner_span(
 
 
 def generator_span(
-    generator_id: str | None = None,
-    model_kwargs: dict[str, Any] | None = None,
-    generator_state_logger: Any | None = None,
-    prompt_kwargs: dict[str, Any] | None = None,
-    raw_response: str | None = None,
-    api_response: Any | None = None,
-    generation_time: float | None = None,
-    token_usage: dict[str, int] | None = None,
-    final_response: Any | None = None,
-    span_id: str | None = None,
-    parent: Trace | Span[Any] | None = None,
+    generator_id: Optional[str] = None,
+    model_kwargs: Optional[Dict[str, Any]] = None,
+    generator_state_logger: Optional[Any] = None,
+    prompt_kwargs: Optional[Dict[str, Any]] = None,
+    raw_response: Optional[str] = None,
+    api_response: Optional[Any] = None,
+    generation_time: Optional[float] = None,
+    token_usage: Optional[Dict[str, int]] = None,
+    final_response: Optional[Any] = None,
+    span_id: Optional[str] = None,
+    parent: Optional[Union[Trace, Span[Any]]] = None,
     disabled: bool = False,
 ) -> Span[AdalFlowGeneratorSpanData]:
     """Create a new AdalFlow generator span for tracing LLM or model generation.
@@ -235,14 +235,14 @@ def generator_span(
 
 
 def tool_span(
-    tool_name: str | None = None,
-    function_name: str | None = None,
-    input_params: dict[str, Any] | None = None,
-    output_result: Any | None = None,
-    execution_time: float | None = None,
-    error_info: dict[str, Any] | None = None,
-    span_id: str | None = None,
-    parent: Trace | Span[Any] | None = None,
+    tool_name: Optional[str] = None,
+    function_name: Optional[str] = None,
+    input_params: Optional[Dict[str, Any]] = None,
+    output_result: Optional[Any] = None,
+    execution_time: Optional[float] = None,
+    error_info: Optional[Dict[str, Any]] = None,
+    span_id: Optional[str] = None,
+    parent: Optional[Union[Trace, Span[Any]]] = None,
     disabled: bool = False,
 ) -> Span[AdalFlowToolSpanData]:
     """Create a new AdalFlow tool span for tracing tool/function execution.
@@ -282,13 +282,13 @@ def tool_span(
 
 
 def response_span(
-    result_type: str | None = None,
-    execution_metadata: dict[str, Any] | None = None,
-    response: Any | None = None,
-    input: str | None = None,
-    answer: Any | None = None,
-    span_id: str | None = None,
-    parent: Trace | Span[Any] | None = None,
+    result_type: Optional[str] = None,
+    execution_metadata: Optional[Dict[str, Any]] = None,
+    response: Optional[Any] = None,
+    input: Optional[str] = None,
+    answer: Optional[Any] = None,
+    span_id: Optional[str] = None,
+    parent: Optional[Union[Trace, Span[Any]]] = None,
     disabled: bool = False,
 ) -> Span[AdalFlowResponseSpanData]:
     """Create a new AdalFlow response span for tracking final workflow results.
@@ -327,16 +327,16 @@ def response_span(
 
 
 def step_span(
-    step_number: int | None = None,
-    action_type: str | None = None,
-    observation: str | None = None,
+    step_number: Optional[int] = None,
+    action_type: Optional[str] = None,
+    observation: Optional[str] = None,
     is_final: bool = False,
-    function_name: str | None = None,
-    function_args: dict[str, Any] | None = None,
-    execution_time: float | None = None,
-    error_info: dict[str, Any] | None = None,
-    span_id: str | None = None,
-    parent: Trace | Span[Any] | None = None,
+    function_name: Optional[str] = None,
+    function_args: Optional[Dict[str, Any]] = None,
+    execution_time: Optional[float] = None,
+    error_info: Optional[Dict[str, Any]] = None,
+    span_id: Optional[str] = None,
+    parent: Optional[Union[Trace, Span[Any]]] = None,
     disabled: bool = False,
 ) -> Span[AdalFlowStepSpanData]:
     """Create a new AdalFlow step span for tracking individual workflow steps.

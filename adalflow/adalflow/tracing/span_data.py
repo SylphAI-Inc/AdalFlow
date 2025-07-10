@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import abc
 from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, Dict, List, Union
 
 if TYPE_CHECKING:
     from openai.types.responses import Response, ResponseInputItemParam
@@ -44,14 +44,14 @@ class AgentSpanData(SpanData):
     def __init__(
         self,
         name: str,
-        handoffs: list[str] | None = None,
-        tools: list[str] | None = None,
-        output_type: str | None = None,
+        handoffs: Optional[List[str]] = None,
+        tools: Optional[List[str]] = None,
+        output_type: Optional[str] = None,
     ):
         self.name = name
-        self.handoffs: list[str] | None = handoffs
-        self.tools: list[str] | None = tools
-        self.output_type: str | None = output_type
+        self.handoffs: Optional[List[str]] = handoffs
+        self.tools: Optional[List[str]] = tools
+        self.output_type: Optional[str] = output_type
 
     @property
     def type(self) -> str:
@@ -78,9 +78,9 @@ class FunctionSpanData(SpanData):
     def __init__(
         self,
         name: str,
-        input: str | None,
-        output: Any | None,
-        mcp_data: dict[str, Any] | None = None,
+        input: Optional[str],
+        output: Optional[Any],
+        mcp_data: Optional[Dict[str, Any]] = None,
     ):
         self.name = name
         self.input = input
@@ -119,9 +119,9 @@ class GenerationSpanData(SpanData):
         self,
         input: Sequence[Mapping[str, Any]] | None = None,
         output: Sequence[Mapping[str, Any]] | None = None,
-        model: str | None = None,
-        model_config: Mapping[str, Any] | None = None,
-        usage: dict[str, Any] | None = None,
+        model: Optional[str] = None,
+        model_config: Optional[Mapping[str, Any]] = None,
+        usage: Optional[Dict[str, Any]] = None,
     ):
         self.input = input
         self.output = output
@@ -154,8 +154,8 @@ class ResponseSpanData(SpanData):
 
     def __init__(
         self,
-        response: Response | None = None,
-        input: str | list[ResponseInputItemParam] | None = None,
+        response: Optional[Response] = None,
+        input: Optional[Union[str, List[ResponseInputItemParam]]] = None,
     ) -> None:
         self.response = response
         # This is not used by the OpenAI trace processors, but is useful for other tracing
@@ -181,7 +181,7 @@ class HandoffSpanData(SpanData):
 
     __slots__ = ("from_agent", "to_agent")
 
-    def __init__(self, from_agent: str | None, to_agent: str | None):
+    def __init__(self, from_agent: Optional[str], to_agent: Optional[str]):
         self.from_agent = from_agent
         self.to_agent = to_agent
 
@@ -261,11 +261,11 @@ class TranscriptionSpanData(SpanData):
 
     def __init__(
         self,
-        input: str | None = None,
-        input_format: str | None = "pcm",
-        output: str | None = None,
-        model: str | None = None,
-        model_config: Mapping[str, Any] | None = None,
+        input: Optional[str] = None,
+        input_format: Optional[str] = "pcm",
+        output: Optional[str] = None,
+        model: Optional[str] = None,
+        model_config: Optional[Mapping[str, Any]] = None,
     ):
         self.input = input
         self.input_format = input_format
@@ -307,12 +307,12 @@ class SpeechSpanData(SpanData):
 
     def __init__(
         self,
-        input: str | None = None,
-        output: str | None = None,
-        output_format: str | None = "pcm",
-        model: str | None = None,
-        model_config: Mapping[str, Any] | None = None,
-        first_content_at: str | None = None,
+        input: Optional[str] = None,
+        output: Optional[str] = None,
+        output_format: Optional[str] = "pcm",
+        model: Optional[str] = None,
+        model_config: Optional[Mapping[str, Any]] = None,
+        first_content_at: Optional[str] = None,
     ):
         self.input = input
         self.output = output
@@ -348,7 +348,7 @@ class SpeechGroupSpanData(SpanData):
 
     def __init__(
         self,
-        input: str | None = None,
+        input: Optional[str] = None,
     ):
         self.input = input
 
@@ -374,7 +374,9 @@ class MCPListToolsSpanData(SpanData):
         "result",
     )
 
-    def __init__(self, server: str | None = None, result: list[str] | None = None):
+    def __init__(
+        self, server: Optional[str] = None, result: Optional[List[str]] = None
+    ):
         self.server = server
         self.result = result
 
@@ -425,12 +427,12 @@ class AdalFlowRunnerSpanData(CustomSpanData):
 
     def __init__(
         self,
-        runner_id: str | None = None,
-        max_steps: int | None = None,
-        steps_executed: int | None = None,
-        final_answer: str | None = None,
-        workflow_status: str | None = None,
-        execution_time: float | None = None,
+        runner_id: Optional[str] = None,
+        max_steps: Optional[int] = None,
+        steps_executed: Optional[int] = None,
+        final_answer: Optional[str] = None,
+        workflow_status: Optional[str] = None,
+        execution_time: Optional[float] = None,
     ):
         # Initialize with data that will be used by MLflow
         self.data = {

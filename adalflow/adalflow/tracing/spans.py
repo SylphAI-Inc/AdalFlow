@@ -15,7 +15,7 @@ from __future__ import annotations
 import abc
 import contextvars
 import logging
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, Optional, Dict
 
 from typing_extensions import TypedDict
 
@@ -31,7 +31,7 @@ TSpanData = TypeVar("TSpanData", bound=SpanData)
 
 class SpanError(TypedDict):
     message: str
-    data: dict[str, Any] | None
+    data: Optional[Dict[str, Any]]
 
 
 class Span(abc.ABC, Generic[TSpanData]):
@@ -93,7 +93,7 @@ class Span(abc.ABC, Generic[TSpanData]):
         pass
 
     @abc.abstractmethod
-    def export(self) -> dict[str, Any] | None:
+    def export(self) -> Optional[Dict[str, Any]]:
         pass
 
     @property
@@ -158,7 +158,7 @@ class NoOpSpan(Span[TSpanData]):
     def error(self) -> SpanError | None:
         return None
 
-    def export(self) -> dict[str, Any] | None:
+    def export(self) -> Optional[Dict[str, Any]]:
         return None
 
     @property
@@ -265,7 +265,7 @@ class SpanImpl(Span[TSpanData]):
     def ended_at(self) -> str | None:
         return self._ended_at
 
-    def export(self) -> dict[str, Any] | None:
+    def export(self) -> Optional[Dict[str, Any]]:
         return {
             "object": "trace.span",
             "id": self.span_id,

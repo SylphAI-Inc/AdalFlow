@@ -15,7 +15,7 @@ from __future__ import annotations
 import abc
 import contextvars
 import logging
-from typing import Any
+from typing import Any, Optional, Dict
 
 logger = logging.getLogger(__name__)
 from . import util
@@ -73,7 +73,7 @@ class Trace:
         pass
 
     @abc.abstractmethod
-    def export(self) -> dict[str, Any] | None:
+    def export(self) -> Optional[Dict[str, Any]]:
         """
         Export the trace as a dictionary.
         """
@@ -87,7 +87,7 @@ class NoOpTrace(Trace):
 
     def __init__(self):
         self._started = False
-        self._prev_context_token: contextvars.Token[Trace | None] | None = None
+        self._prev_context_token: Optional[contextvars.Token[Optional[Trace]]] = None
 
     def __enter__(self) -> Trace:
         if self._started:
@@ -120,7 +120,7 @@ class NoOpTrace(Trace):
     def name(self) -> str:
         return "no-op"
 
-    def export(self) -> dict[str, Any] | None:
+    def export(self) -> Optional[Dict[str, Any]]:
         return None
 
 
@@ -145,16 +145,16 @@ class TraceImpl(Trace):
     def __init__(
         self,
         name: str,
-        trace_id: str | None,
-        group_id: str | None,
-        metadata: dict[str, Any] | None,
+        trace_id: Optional[str],
+        group_id: Optional[str],
+        metadata: Optional[Dict[str, Any]],
         processor: TracingProcessor,
     ):
         self._name = name
         self._trace_id = trace_id or util.gen_trace_id()
         self.group_id = group_id
         self.metadata = metadata
-        self._prev_context_token: contextvars.Token[Trace | None] | None = None
+        self._prev_context_token: Optional[contextvars.Token[Optional[Trace]]] = None
         self._processor = processor
         self._started = False
 
@@ -198,7 +198,7 @@ class TraceImpl(Trace):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.finish(reset_current=exc_type is not GeneratorExit)
 
-    def export(self) -> dict[str, Any] | None:
+    def export(self) -> Optional[Dict[str, Any]]:
         return {
             "object": "trace",
             "id": self.trace_id,

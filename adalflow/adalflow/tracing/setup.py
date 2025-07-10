@@ -14,7 +14,7 @@ from __future__ import annotations
 import logging
 import os
 import threading
-from typing import Any
+from typing import Any, Optional, Dict, Union
 
 logger = logging.getLogger(__name__)
 from . import util
@@ -114,13 +114,13 @@ class TraceProvider:
         """
         self._multi_processor.set_processors(processors)
 
-    def get_current_trace(self) -> Trace | None:
+    def get_current_trace(self) -> Optional[Trace]:
         """
         Returns the currently active trace, if any.
         """
         return Scope.get_current_trace()
 
-    def get_current_span(self) -> Span[Any] | None:
+    def get_current_span(self) -> Optional[Span[Any]]:
         """
         Returns the currently active span, if any.
         """
@@ -135,9 +135,9 @@ class TraceProvider:
     def create_trace(
         self,
         name: str,
-        trace_id: str | None = None,
-        group_id: str | None = None,
-        metadata: dict[str, Any] | None = None,
+        trace_id: Optional[str] = None,
+        group_id: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
         disabled: bool = False,
     ) -> Trace:
         """
@@ -162,8 +162,8 @@ class TraceProvider:
     def create_span(
         self,
         span_data: TSpanData,
-        span_id: str | None = None,
-        parent: Trace | Span[Any] | None = None,
+        span_id: Optional[str] = None,
+        parent: Optional[Union[Trace, Span[Any]]] = None,
         disabled: bool = False,
     ) -> Span[TSpanData]:
         """

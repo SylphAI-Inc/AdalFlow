@@ -13,7 +13,7 @@ References:
 import contextvars
 import logging
 import uuid
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -21,11 +21,11 @@ if TYPE_CHECKING:
     from .spans import Span
     from .traces import Trace
 
-_current_span: contextvars.ContextVar["Span[Any] | None"] = contextvars.ContextVar(
+_current_span: contextvars.ContextVar[Optional["Span[Any]"]] = contextvars.ContextVar(
     "current_span", default=None
 )
 
-_current_trace: contextvars.ContextVar["Trace | None"] = contextvars.ContextVar(
+_current_trace: contextvars.ContextVar[Optional["Trace"]] = contextvars.ContextVar(
     "current_trace", default=None
 )
 
@@ -36,53 +36,57 @@ class Scope:
     """
 
     @classmethod
-    def get_current_span(cls) -> "Span[Any] | None":
+    def get_current_span(cls) -> Optional["Span[Any]"]:
         return _current_span.get()
 
     @classmethod
     def set_current_span(
-        cls, span: "Span[Any] | None"
-    ) -> "contextvars.Token[Span[Any] | None]":
+        cls, span: Optional["Span[Any]"]
+    ) -> "contextvars.Token[Optional[Span[Any]]]":
         return _current_span.set(span)
 
     @classmethod
-    def reset_current_span(cls, token: "contextvars.Token[Span[Any] | None]") -> None:
+    def reset_current_span(
+        cls, token: "contextvars.Token[Optional[Span[Any]]]"
+    ) -> None:
         _current_span.reset(token)
 
     @classmethod
-    def get_current_trace(cls) -> "Trace | None":
+    def get_current_trace(cls) -> Optional["Trace"]:
         return _current_trace.get()
 
     @classmethod
     def set_current_trace(
-        cls, trace: "Trace | None"
-    ) -> "contextvars.Token[Trace | None]":
+        cls, trace: Optional["Trace"]
+    ) -> "contextvars.Token[Optional[Trace]]":
         logger.debug(f"Setting current trace: {trace.trace_id if trace else None}")
         return _current_trace.set(trace)
 
     @classmethod
-    def reset_current_trace(cls, token: "contextvars.Token[Trace | None]") -> None:
+    def reset_current_trace(cls, token: "contextvars.Token[Optional[Trace]]") -> None:
         logger.debug("Resetting current trace")
         _current_trace.reset(token)
 
 
 # Utility functions for standalone use
-def get_current_span() -> "Span[Any] | None":
+def get_current_span() -> Optional["Span[Any]"]:
     """Get the current span from context."""
     return Scope.get_current_span()
 
 
-def set_current_span(span: "Span[Any] | None") -> "contextvars.Token[Span[Any] | None]":
+def set_current_span(
+    span: Optional["Span[Any]"],
+) -> "contextvars.Token[Optional[Span[Any]]]":
     """Set the current span in context."""
     return Scope.set_current_span(span)
 
 
-def get_current_trace() -> "Trace | None":
+def get_current_trace() -> Optional["Trace"]:
     """Get the current trace from context."""
     return Scope.get_current_trace()
 
 
-def set_current_trace(trace: "Trace | None") -> "contextvars.Token[Trace | None]":
+def set_current_trace(trace: Optional["Trace"]) -> "contextvars.Token[Optional[Trace]]":
     """Set the current trace in context."""
     return Scope.set_current_trace(trace)
 
