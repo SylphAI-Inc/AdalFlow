@@ -329,7 +329,7 @@ def response_span(
 def step_span(
     step_number: Optional[int] = None,
     action_type: Optional[str] = None,
-    observation: Optional[str] = None,
+    observation: Optional[Any] = None,
     is_final: bool = False,
     function_name: Optional[str] = None,
     function_args: Optional[Dict[str, Any]] = None,

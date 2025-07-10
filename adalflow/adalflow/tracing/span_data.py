@@ -666,9 +666,9 @@ class AdalFlowStepSpanData(CustomSpanData):
             name=f"step-{step_number}" if step_number is not None else "step", data=data
         )
 
-        # Store the data reference for update_attributes
         self.data = data
 
+        # Set individual attributes
         self.step_number = step_number
         self.action_type = action_type
         self.observation = observation
@@ -677,10 +677,6 @@ class AdalFlowStepSpanData(CustomSpanData):
         self.function_args = function_args
         self.execution_time = execution_time
         self.error_info = error_info
-
-    @property
-    def type(self) -> str:
-        return "step"
 
     def update_attributes(self, attributes: Dict[str, Any]) -> None:
         """
@@ -705,7 +701,7 @@ class AdalFlowToolSpanData(CustomSpanData):
     """
     Represents Tool execution spans in AdalFlow.
     Tracks function calls, tool usage, and external integrations.
-    Maps to OpenAI's CustomSpanData format.
+    Inherits OpenAI's CustomSpanData format.
 
     The caller should update span attributes by using update_attributes() method.
     """
@@ -744,8 +740,6 @@ class AdalFlowToolSpanData(CustomSpanData):
             "output_result": output_result,
             "execution_time": execution_time,
             "error_info": error_info,
-            "input": str(input_params) if input_params else None,
-            "output": str(output_result) if output_result is not None else None,
         }
 
         super().__init__(name=function_display_name, data=self.data)

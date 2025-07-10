@@ -321,6 +321,198 @@ class TestRunnerTracing(unittest.TestCase):
 
         asyncio.run(async_test())
 
+    def test_runner_astream_creates_spans(self):
+        """Test that Runner.astream creates proper spans for streaming execution."""
+
+        async def async_test():
+            fn = DummyFunction(name="finish")
+            mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
+                output="stream_done"
+            )
+            agent = DummyAgent(
+                planner=FakePlanner([GeneratorOutput(data=fn)]),
+                answer_data_type=None,
+                tool_manager=mock_tool_manager,
+            )
+            runner = Runner(agent=agent)
+
+            with trace("test_stream_workflow"):
+                stream_result = runner.astream(prompt_kwargs={"query": "test"})
+
+                # Wait for streaming to complete
+                await stream_result.wait_for_completion()
+
+            # Should have valid result in stream_result properties
+            self.assertEqual(stream_result.answer, "stream_done")
+            self.assertIsNotNone(stream_result.step_history)
+
+            # Should have created multiple spans
+            self.assertGreater(len(self.processor.span_starts), 0)
+
+            # Check for runner span with streaming workflow status
+            runner_spans = [
+                span
+                for span in self.processor.span_starts
+                if isinstance(span.span_data, AdalFlowRunnerSpanData)
+            ]
+            self.assertEqual(len(runner_spans), 1)
+            runner_span = runner_spans[0]
+            self.assertEqual(runner_span.span_data.workflow_status, "stream_completed")
+
+            # Check for generator span with stream planner
+            generator_spans = [
+                span
+                for span in self.processor.span_starts
+                if isinstance(span.span_data, AdalFlowGeneratorSpanData)
+            ]
+            self.assertEqual(len(generator_spans), 1)
+            generator_span = generator_spans[0]
+            self.assertEqual(generator_span.span_data.generator_id, "stream_planner")
+
+            # Check for step span with streaming action type
+            step_spans = [
+                span
+                for span in self.processor.span_starts
+                if isinstance(span.span_data, AdalFlowStepSpanData)
+            ]
+            self.assertEqual(len(step_spans), 1)
+            step_span = step_spans[0]
+            self.assertEqual(step_span.span_data.action_type, "stream_planning")
+            self.assertTrue(step_span.span_data.is_final)
+
+            # Check for response span with streaming metadata
+            response_spans = [
+                span
+                for span in self.processor.span_starts
+                if isinstance(span.span_data, AdalFlowResponseSpanData)
+            ]
+            self.assertEqual(len(response_spans), 1)
+            response_span = response_spans[0]
+            self.assertEqual(response_span.span_data.answer, "stream_done")
+            self.assertTrue(response_span.span_data.execution_metadata.get("streaming"))
+
+        asyncio.run(async_test())
+
+    def test_runner_astream_multi_step_spans(self):
+        """Test Runner.astream with multiple steps creates proper spans."""
+
+        async def async_test():
+            fn1 = DummyFunction(name="search")
+            fn2 = DummyFunction(name="finish")
+            mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
+                output=(
+                    "search_result"
+                    if expr_or_fun.name == "search"
+                    else "final_stream_result"
+                )
+            )
+            agent = DummyAgent(
+                planner=FakePlanner(
+                    [GeneratorOutput(data=fn1), GeneratorOutput(data=fn2)]
+                ),
+                answer_data_type=None,
+                tool_manager=mock_tool_manager,
+            )
+            runner = Runner(agent=agent)
+
+            with trace("test_stream_workflow"):
+                stream_result = runner.astream(prompt_kwargs={"query": "test"})
+
+                # Wait for streaming to complete
+                await stream_result.wait_for_completion()
+
+            # Should have valid result in stream_result properties
+            self.assertEqual(stream_result.answer, "final_stream_result")
+            self.assertIsNotNone(stream_result.step_history)
+
+            # Should have created spans for both steps
+            step_spans = [
+                span
+                for span in self.processor.span_starts
+                if isinstance(span.span_data, AdalFlowStepSpanData)
+            ]
+            self.assertEqual(len(step_spans), 2)
+
+            # Check first step
+            first_step = step_spans[0]
+            self.assertEqual(first_step.span_data.step_number, 0)
+            self.assertEqual(first_step.span_data.function_name, "search")
+            self.assertEqual(first_step.span_data.action_type, "stream_planning")
+            self.assertFalse(first_step.span_data.is_final)
+
+            # Check second step
+            second_step = step_spans[1]
+            self.assertEqual(second_step.span_data.step_number, 1)
+            self.assertEqual(second_step.span_data.function_name, "finish")
+            self.assertEqual(second_step.span_data.action_type, "stream_planning")
+            self.assertTrue(second_step.span_data.is_final)
+
+            # Check runner span shows correct final state for streaming
+            runner_spans = [
+                span
+                for span in self.processor.span_starts
+                if isinstance(span.span_data, AdalFlowRunnerSpanData)
+            ]
+            self.assertEqual(len(runner_spans), 1)
+            runner_span = runner_spans[0]
+            self.assertEqual(runner_span.span_data.steps_executed, 2)
+            self.assertEqual(runner_span.span_data.final_answer, "final_stream_result")
+            self.assertEqual(runner_span.span_data.workflow_status, "stream_completed")
+
+        asyncio.run(async_test())
+
+    def test_runner_astream_error_handling_spans(self):
+        """Test Runner.astream error handling creates proper spans."""
+
+        async def async_test():
+            fn = DummyFunction(name="error_function")
+
+            def error_tool_manager(expr_or_fun, step):
+                _ = expr_or_fun, step  # Suppress unused variable warnings
+                raise ValueError("Stream test error")
+
+            agent = DummyAgent(
+                planner=FakePlanner([GeneratorOutput(data=fn)]),
+                answer_data_type=None,
+                tool_manager=error_tool_manager,
+            )
+            runner = Runner(agent=agent)
+
+            with trace("test_stream_workflow"):
+                stream_result = runner.astream(prompt_kwargs={"query": "test"})
+
+                # Wait for streaming to complete (with error)
+                await stream_result.wait_for_completion()
+
+            # Should have error in streaming result
+            self.assertIsNotNone(stream_result.exception)
+            self.assertTrue(stream_result.exception.startswith("Error in step 0:"))
+
+            # Should have created spans despite error
+            runner_spans = [
+                span
+                for span in self.processor.span_starts
+                if isinstance(span.span_data, AdalFlowRunnerSpanData)
+            ]
+            self.assertEqual(len(runner_spans), 1)
+            runner_span = runner_spans[0]
+            self.assertEqual(runner_span.span_data.workflow_status, "stream_failed")
+            self.assertIn("Error in step 0:", runner_span.span_data.final_answer)
+
+            # Should have error response span with streaming metadata
+            response_spans = [
+                span
+                for span in self.processor.span_starts
+                if isinstance(span.span_data, AdalFlowResponseSpanData)
+            ]
+            self.assertEqual(len(response_spans), 1)
+            response_span = response_spans[0]
+            self.assertEqual(response_span.span_data.result_type, "error")
+            self.assertTrue(response_span.span_data.execution_metadata.get("streaming"))
+            self.assertIn("Error in step 0:", response_span.span_data.answer)
+
+        asyncio.run(async_test())
+
     def test_runner_multi_step_spans(self):
         """Test Runner with multiple steps creates proper spans."""
         fn1 = DummyFunction(name="search")
@@ -395,6 +587,7 @@ class TestRunnerTracing(unittest.TestCase):
         fn = DummyFunction(name="error_function")
 
         def error_tool_manager(expr_or_fun, step):
+            _ = expr_or_fun, step  # Suppress unused variable warnings
             raise ValueError("Test error")
 
         agent = DummyAgent(
