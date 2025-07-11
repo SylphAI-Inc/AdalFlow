@@ -507,10 +507,15 @@ class Runner(Component):
                 # Emit tool call event
                 tool_call_item = ToolCallRunItem(data=function)
                 tool_call_id  = tool_call_item.id
+                tool_call_name = tool_call_item.data.name
                 tool_call_event = RunItemStreamEvent(
                     name="agent.tool_call_start", item=tool_call_item
                 )
                 streaming_result.put_nowait(tool_call_event)
+
+                # TODO: inside of FunctionTool execution, it should ensure the types of async generator item 
+                # to be either ToolCallActivityRunItem or ToolOutput(maybe) 
+                # Call activity might be better designed
 
                 function_result = await self._tool_execute_async(
                     function
@@ -522,7 +527,6 @@ class Runner(Component):
                     )
 
                 function_output = function_result.output
-                # TODO: function needs a stream_events
                 real_function_output = None
 
 
@@ -534,6 +538,8 @@ class Runner(Component):
                     real_function_output = None
                     async for item in function_output:
                         if isinstance(item, ToolCallActivityRunItem):
+                            # add the tool_call_id to the item
+                            item.id = tool_call_id
                             tool_call_event = RunItemStreamEvent(
                                 name="agent.tool_call_activity", item=item
                             )

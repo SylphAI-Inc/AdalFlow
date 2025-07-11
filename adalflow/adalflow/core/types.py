@@ -379,6 +379,10 @@ class Function(DataClass):
         default_factory=dict,
         metadata={"desc": "The keyword arguments of the function"},
     )
+    _is_final_step: bool = field(
+        default=False,
+        metadata={"desc": "Whether this is the final step in side of the agent call"},
+    )
 
     @classmethod
     def from_function(
@@ -1250,6 +1254,7 @@ class RunItemStreamEvent(DataClass):
     Event Types:
         - "agent.final_output": Final output from the agent (FinalOutputItem)
         - "agent.tool_call_start": Agent is about to execute a tool (ToolCallRunItem)
+        - "agent.tool_call_activity": Agent is about to execute a tool (ToolCallActivityRunItem)
         - "agent.tool_call_complete": Tool execution completed (ToolOutputRunItem)
         - "agent.step_complete": Full execution step finished (StepRunItem)
         - "agent.execution_complete": Entire execution completed (FinalOutputItem)
