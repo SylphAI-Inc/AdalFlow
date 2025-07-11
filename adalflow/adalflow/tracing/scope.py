@@ -13,13 +13,12 @@ References:
 import contextvars
 import logging
 import uuid
-from typing import TYPE_CHECKING, Any, Optional
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
-if TYPE_CHECKING:
-    from .spans import Span
-    from .traces import Trace
+from .spans import Span
+from .traces import Trace
 
 _current_span: contextvars.ContextVar[Optional["Span[Any]"]] = contextvars.ContextVar(
     "current_span", default=None

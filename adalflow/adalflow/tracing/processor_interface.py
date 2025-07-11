@@ -5,8 +5,7 @@ This module defines the interface for processing traces and spans in AdalFlow,
 following OpenAI Agents SDK patterns for maximum compatibility.
 
 References:
-- OpenAI Agents SDK: https://github.com/openai/openai-python/tree/main/src/openai/agents
-- OpenAI Tracing Interface: https://platform.openai.com/docs/guides/agents/tracing
+- OpenAI Agents SDK: https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/processor_interface.py
 """
 
 import abc

@@ -1,21 +1,9 @@
-"""
-AdalFlow legacy tracing decorators module.
-
-This module provides decorator functions for tracing generators that work
-alongside the OpenAI Agents SDK compatible tracing interface.
-
-References:
-- OpenAI Agents SDK: https://github.com/openai/openai-python/tree/main/src/openai/agents
-- OpenAI Tracing Interface: https://platform.openai.com/docs/guides/agents/tracing
-"""
-
 import functools
 import warnings
-from typing import List, Optional, Dict, TYPE_CHECKING
+from typing import List, Optional, Dict
 import logging
 
-if TYPE_CHECKING:
-    from adalflow.core.generator import Generator
+from adalflow.core.generator import Generator
 from adalflow.tracing import GeneratorStateLogger, GeneratorCallLogger
 
 log = logging.getLogger(__name__)
