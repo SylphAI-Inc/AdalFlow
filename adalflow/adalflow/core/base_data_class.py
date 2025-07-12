@@ -496,6 +496,9 @@ class DataClass:
         data = instance.to_dict()
         return pydantic_model(**data)
 
+    def pydantic(self):
+        return self.to_pydantic(self)
+
     @classmethod
     def pydantic_to_dataclass(cls, pydantic_obj):
         """

@@ -276,44 +276,26 @@ class MCPFunctionTool(FunctionTool):
         Initialize the MCPFunctionTool with the specified server parameters and MCP tool.
         """
         # set params before calling super().__init__ such that _create_fn_definition can use these info.
+        if not isinstance(mcp_tool, types.Tool):
+            raise ValueError("mcp_tool must be an instance of mcp.types.Tool")
         self.server_params = server_params
         self.mcp_tool = mcp_tool
         super().__init__(fn=execute_mcp_op, definition=self._create_fn_definition())
-
+    
+    # NOTE: dont support optional in the data class
     def _create_fn_definition(self) -> FunctionDefinition:
         """
         Create a FunctionDefinition for the MCP tool.
         This overrides the base class method to customize the function signature and description based on the MCP tool's schema.
         """
-        # remove 'title' from function parameters
-        func_parameters = {
-            k: v for k, v in self.mcp_tool.inputSchema.items() if k != "title"
-        }
-        func_parameters["properties"] = {
-            arg_name: {k: v for k, v in props.items() if k != "title"}
-            for arg_name, props in func_parameters["properties"].items()
-        }
-
-        # Build the description
-        arg_list = [
-            f'{arg_name}: {props["type"]}'
-            for arg_name, props in func_parameters["properties"].items()
-        ]
-        signature_str = f"({', '.join(arg_list)})"
-        description = f"{self.mcp_tool.name}{signature_str}\n"
-        # signature_str: add(a: int, b: int, id=None) -> int
-
-        cls_name = self.mcp_tool.name
-        if cls_name:
-            description += f"Belongs to class: {cls_name}\n"
-
-        if self.mcp_tool.description:
-            description += f"Docstring: {self.mcp_tool.description}\n"
-
+        name = self.mcp_tool.name
+        description = self.mcp_tool.description
+        schema = f"input schema: {self.mcp_tool.inputSchema}\noutput schema: {self.mcp_tool.outputSchema}"
+        
         return FunctionDefinition(
-            func_name=self.mcp_tool.name,
+            func_name=name,
             func_desc=description,
-            func_parameters=func_parameters,
+            func_parameters=schema,
         )
 
     async def acall(self, *args: Any, **kwargs: Any) -> FunctionOutput:
@@ -550,6 +532,7 @@ class MCPToolManager(Component):
             server_names (List[str], optional): A list of server names to filter the tools.
                 If None, all servers are listed.
         """
+        # TODO: this is not good implementation, it establishes two times of connections each time.
         for name, params in self.server_params.items():
             if server_names and name not in server_names:
                 continue
@@ -559,7 +542,11 @@ class MCPToolManager(Component):
 
             print(f"\n🔧 Getting Tools from server {name}:")
             # get all tools from the server
-            self._tools_list.extend(await self._get_all_server_tools(params))
+            try:
+                self._tools_list.extend(await self._get_all_server_tools(params))
+            except Exception as e:
+                print(f"Error getting tools from server {name}: {e}")
+                continue
             self._cached_servers.append(name)
         return self._tools_list
 
@@ -575,4 +562,8 @@ class MCPToolManager(Component):
                 print(f"  • {tool.name}: {tool.description}")
                 tools.append(tool)
 
-        return [MCPFunctionTool(server_params, t) for t in tools]
+        try:
+            return [MCPFunctionTool(server_params, t) for t in tools]
+        except Exception as e:
+            print(f"Error getting tools from server: {e}")
+            return []

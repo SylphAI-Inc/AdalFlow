@@ -3,7 +3,7 @@ import logging
 import inspect
 import asyncio
 import ast
-
+import copy
 
 from typing import (
     Any,
@@ -31,11 +31,14 @@ from adalflow.core.types import (
     RawResponsesStreamEvent,
     RunItemStreamEvent,
     ToolCallRunItem,
+    ToolOutputRunItem,
     StepRunItem,
     FinalOutputItem,
     RunnerStreamingResult,
     RunnerResult,
     QueueCompleteSentinel,
+    ToolOutput,
+    ToolCallActivityRunItem,
 )
 from adalflow.core.functional import _is_pydantic_dataclass, _is_adalflow_dataclass
 
@@ -72,6 +75,8 @@ class Runner(Component):
     def __init__(
         self,
         agent: Agent,
+        ctx: Optional[Dict] = None,
+        max_steps: Optional[int] = None,
         **kwargs,
     ) -> None:
         """Initialize runner with an agent and configuration.
@@ -86,10 +91,19 @@ class Runner(Component):
         self.agent = agent
 
         # get agent requirements
-        self.max_steps = agent.max_steps
+        self.max_steps = max_steps 
+        if max_steps is None:
+            self.max_steps = agent.max_steps
+        else:
+            # overwrite the agent's max_steps
+            self.agent.max_steps = max_steps
         self.answer_data_type = agent.answer_data_type or str
 
         self.step_history: List[StepOutput] = []
+
+        # add ctx (it is just a reference, and only get added to the final response)
+        # assume intermediate tool is gonna modify the ctx
+        self.ctx = ctx
 
     def _check_last_step(self, step: Function) -> bool:
         """Check if the last step is the finish step."""
@@ -218,14 +232,15 @@ class Runner(Component):
         prompt_kwargs["step_history"] = (
             self.step_history
         )  # a reference to the step history
+        # set maximum number of steps for the planner into the prompt
+        prompt_kwargs["max_steps"] = self.max_steps
 
         model_kwargs = model_kwargs.copy() if model_kwargs else {}
 
         step_count = 0
         last_output = None
 
-        # set maximum number of steps for the planner into the prompt
-        # prompt_kwargs["max_steps"] = self.max_steps
+
 
         while step_count < self.max_steps:
             try:
@@ -246,17 +261,25 @@ class Runner(Component):
 
                 function_results = self._tool_execute_sync(function)
 
+                # observation is what llm see about the output, and user can control it using ToolOutput
+                # output is the real output data 
+
+                function_output = function_results.output
+                function_output_observation = function_output
+                if isinstance(function_output, ToolOutput) and hasattr(function_output, "observation"):
+                    function_output_observation = function_output.observation
+
                 # create a step output
                 step_ouput: StepOutput = StepOutput(
                     step=step_count,
                     action=function,
                     function=function,
-                    observation=function_results.output,
+                    observation=function_output_observation,
                 )
                 self.step_history.append(step_ouput)
 
                 if self._check_last_step(function):
-                    processed_data = self._process_data(function_results.output)
+                    processed_data = self._process_data(function_output)
                     # Wrap final output in RunnerResponse
                     last_output = RunnerResult(
                         answer=processed_data,
@@ -325,6 +348,8 @@ class Runner(Component):
         prompt_kwargs["step_history"] = (
             self.step_history
         )  # a reference to the step history
+        # set maximum number of steps for the planner into the prompt
+        prompt_kwargs["max_steps"] = self.max_steps
 
         model_kwargs = model_kwargs.copy() if model_kwargs else {}
 
@@ -350,20 +375,27 @@ class Runner(Component):
 
                 function_results = await self._tool_execute_async(function)
 
+                function_output = function_results.output
+                function_output_observation = function_output
+
+                if isinstance(function_output, ToolOutput) and hasattr(function_output, "observation"):
+                    function_output_observation = function_output.observation
+
                 step_output: StepOutput = StepOutput(
                     step=step_count,
                     action=function,
                     function=function,
-                    observation=function_results.output,
+                    observation=function_output_observation,
                 )
                 self.step_history.append(step_output)
 
                 if self._check_last_step(function):
-                    processed_data = self._process_data(function_results.output)
+                    processed_data = self._process_data(function_output)
                     # Wrap final output in RunnerResult
                     last_output = RunnerResult(
                         answer=processed_data,
                         step_history=self.step_history.copy(),
+                        # ctx=self.ctx,
                     )
                     break
 
@@ -381,6 +413,7 @@ class Runner(Component):
                 error_response = RunnerResult(
                     error=error_msg,
                     step_history=self.step_history.copy(),
+                    # ctx=self.ctx,
                 )
                 return error_response
 
@@ -428,6 +461,8 @@ class Runner(Component):
 
         prompt_kwargs["step_history"] = self.step_history
         # a reference to the step history
+        # set maximum number of steps for the planner into the prompt
+        prompt_kwargs["max_steps"] = self.max_steps
 
         model_kwargs = model_kwargs.copy() if model_kwargs else {}
         step_count = 0
@@ -458,8 +493,16 @@ class Runner(Component):
                 if isinstance(output.raw_response, AsyncIterable):
                     # Streaming llm call - iterate through the async generator
                     async for event in output.raw_response:
-                        wrapped_event = RawResponsesStreamEvent(data=event)
-                        streaming_result._event_queue.put_nowait(wrapped_event)
+                        wrapped_event = RawResponsesStreamEvent(data=event) # raw response wrapper 
+                        streaming_result.put_nowait(wrapped_event)
+
+                else:
+                    # yield the final planner response
+                    if output.error is not None:
+                        wrapped_event = RawResponsesStreamEvent(error=output.error)
+                    else:
+                        wrapped_event = RawResponsesStreamEvent(data=output.data) # wrap on the data field to be the final output, the data might be null
+                    streaming_result.put_nowait(wrapped_event)
 
                 # asychronously consuming the raw response will
                 # update the data field of output with the result of the output processor
@@ -469,10 +512,16 @@ class Runner(Component):
 
                 # Emit tool call event
                 tool_call_item = ToolCallRunItem(data=function)
+                tool_call_id  = tool_call_item.id
+                tool_call_name = tool_call_item.data.name
                 tool_call_event = RunItemStreamEvent(
                     name="agent.tool_call_start", item=tool_call_item
                 )
-                streaming_result._event_queue.put_nowait(tool_call_event)
+                streaming_result.put_nowait(tool_call_event)
+
+                # TODO: inside of FunctionTool execution, it should ensure the types of async generator item 
+                # to be either ToolCallActivityRunItem or ToolOutput(maybe) 
+                # Call activity might be better designed
 
                 function_result = await self._tool_execute_async(
                     function
@@ -484,26 +533,54 @@ class Runner(Component):
                     )
 
                 function_output = function_result.output
-                # TODO: function needs a stream_events
                 real_function_output = None
+
+
+                # TODO: validate when the function is a generator
 
                 if inspect.iscoroutine(function_output):
                     real_function_output = await function_output
                 elif inspect.isasyncgen(function_output):
-                    function_results = []
+                    real_function_output = None
                     async for item in function_output:
-                        streaming_result._event_queue.put_nowait(item)
-                        function_results.append(item)
-                    real_function_output = function_results[-1]
+                        if isinstance(item, ToolCallActivityRunItem):
+                            # add the tool_call_id to the item
+                            item.id = tool_call_id
+                            tool_call_event = RunItemStreamEvent(
+                                name="agent.tool_call_activity", item=item
+                            )
+                            streaming_result.put_nowait(tool_call_event)
+                        else:
+                            real_function_output = item
                 else:
                     real_function_output = function_output
-                    streaming_result._event_queue.put_nowait(function_output)
+
+                # create call complete 
+                call_complete_event = RunItemStreamEvent(
+                    name="agent.tool_call_complete",
+                    item=ToolOutputRunItem(
+                        id=tool_call_id,
+                        data=FunctionOutput(
+                            name=function.name,
+                            input=function,
+                            output=real_function_output,
+                        )
+                    ),
+                )
+                streaming_result.put_nowait(call_complete_event)
+
+                function_output = real_function_output
+                function_output_observation = function_output
+
+                if isinstance(function_output, ToolOutput) and hasattr(function_output, "observation"):
+                    function_output_observation = function_output.observation
 
                 step_output: StepOutput = StepOutput(
                     step=step_count,
                     action=function,
                     function=function,
-                    observation=real_function_output,
+                    observation=function_output_observation,
+                    # ctx=copy.deepcopy(self.ctx),
                 )
                 self.step_history.append(step_output)
 
@@ -512,16 +589,19 @@ class Runner(Component):
                 step_event = RunItemStreamEvent(
                     name="agent.step_complete", item=step_item
                 )
-                streaming_result._event_queue.put_nowait(step_event)
+                streaming_result.put_nowait(step_event)
 
                 if self._check_last_step(function):
                     processed_data = self._process_data(real_function_output)
                     printc(f"processed_data: {processed_data}", color="yellow")
 
                     # Create RunnerResult for the final output
+                    # TODO: this is over complicated!
+                    # Need to make the relation between runner result and runnerstreaming result more clear
                     runner_result = RunnerResult(
                         answer=processed_data,
                         step_history=self.step_history.copy(),
+                        # ctx=self.ctx,
                     )
 
                     # Emit execution complete event
@@ -529,7 +609,7 @@ class Runner(Component):
                     final_output_event = RunItemStreamEvent(
                         name="agent.execution_complete", item=final_output_item
                     )
-                    streaming_result._event_queue.put_nowait(final_output_event)
+                    streaming_result.put_nowait(final_output_event)
 
                     # Store final result and completion status
                     streaming_result.answer = processed_data
@@ -544,6 +624,7 @@ class Runner(Component):
                 log.error(error_msg)
                 # Store error result and completion status
                 streaming_result.step_history = self.step_history.copy()
+                # streaming_result.ctx = self.ctx
                 streaming_result._is_complete = True
                 streaming_result.exception = error_msg
 
@@ -552,14 +633,14 @@ class Runner(Component):
                 error_event = RunItemStreamEvent(
                     name="runner_finished", item=error_final_item
                 )
-                streaming_result._event_queue.put_nowait(error_event)
+                streaming_result.put_nowait(error_event)
 
                 # end the streaming result's event queue
-                streaming_result._event_queue.put_nowait(QueueCompleteSentinel())
+                streaming_result.put_nowait(QueueCompleteSentinel())
                 return error_msg
 
         # Signal completion of streaming
-        streaming_result._event_queue.put_nowait(QueueCompleteSentinel())
+        streaming_result.put_nowait(QueueCompleteSentinel())
 
     async def _tool_execute_async(
         self,
