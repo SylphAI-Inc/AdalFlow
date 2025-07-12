@@ -3,7 +3,7 @@ import logging
 import inspect
 import asyncio
 import ast
-
+import copy
 
 from typing import (
     Any,
@@ -100,6 +100,10 @@ class Runner(Component):
         self.answer_data_type = agent.answer_data_type or str
 
         self.step_history: List[StepOutput] = []
+
+        # add ctx (it is just a reference, and only get added to the final response)
+        # assume intermediate tool is gonna modify the ctx
+        self.ctx = ctx
 
     def _check_last_step(self, step: Function) -> bool:
         """Check if the last step is the finish step."""
@@ -391,6 +395,7 @@ class Runner(Component):
                     last_output = RunnerResult(
                         answer=processed_data,
                         step_history=self.step_history.copy(),
+                        # ctx=self.ctx,
                     )
                     break
 
@@ -408,6 +413,7 @@ class Runner(Component):
                 error_response = RunnerResult(
                     error=error_msg,
                     step_history=self.step_history.copy(),
+                    # ctx=self.ctx,
                 )
                 return error_response
 
@@ -574,6 +580,7 @@ class Runner(Component):
                     action=function,
                     function=function,
                     observation=function_output_observation,
+                    # ctx=copy.deepcopy(self.ctx),
                 )
                 self.step_history.append(step_output)
 
@@ -589,9 +596,12 @@ class Runner(Component):
                     printc(f"processed_data: {processed_data}", color="yellow")
 
                     # Create RunnerResult for the final output
+                    # TODO: this is over complicated!
+                    # Need to make the relation between runner result and runnerstreaming result more clear
                     runner_result = RunnerResult(
                         answer=processed_data,
                         step_history=self.step_history.copy(),
+                        # ctx=self.ctx,
                     )
 
                     # Emit execution complete event
@@ -614,6 +624,7 @@ class Runner(Component):
                 log.error(error_msg)
                 # Store error result and completion status
                 streaming_result.step_history = self.step_history.copy()
+                # streaming_result.ctx = self.ctx
                 streaming_result._is_complete = True
                 streaming_result.exception = error_msg
 

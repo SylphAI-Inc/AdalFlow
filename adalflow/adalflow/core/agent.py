@@ -108,7 +108,7 @@ def create_default_tool_manager(
             desc="Finish",
             doc_string=Parameter(
                 data="""
-                Finish the task with the final answer passed as an argument.
+                Finish the task with the final conclusion in the answer.
                 These rules MUST BE FOLLOWED:
                 1. If the specified type of the answer is a Python built-in type, the answer MUST be an object of that specific builtin type.
                 2. If it is not, pass in the answer as a string but with these rules:

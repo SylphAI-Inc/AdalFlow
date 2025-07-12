@@ -47,11 +47,10 @@ Follow function docstring to best call the tool.
 - For complex queries:
     - Step 1: Read the user query and divide it into multisteps. Start with the first tool/subquery.
     - Call one tool at a time to solve each subquery/subquestion. \
-    - At step 'finish', give the final answer based on all previous steps.
+    - At step 'finish', do a concise conclusion without repeat previous observation/output.
 REMEMBER:
 - Action MUST call one of the tools. It CANNOT be empty.
 - You will ALWAYS END WITH 'finish' tool to finish the task directly with answer or failure message.
-- When the tool is a class method and when class_instance exists, use <class_instance_value>.<func_name> to call instead (NOT the CLASS NAME)
 <END_OF_TASK_SPEC>
 """
 

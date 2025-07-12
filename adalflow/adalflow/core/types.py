@@ -379,11 +379,6 @@ class Function(DataClass):
         default_factory=dict,
         metadata={"desc": "The keyword arguments of the function"},
     )
-    _is_final_step: bool = field(
-        default=False,
-        metadata={"desc": "Whether this is the final step in side of the agent call"},
-    )
-
     @classmethod
     def from_function(
         cls,
@@ -675,9 +670,18 @@ class ToolOutput(DataClass):
         metadata={
             "description": "The observation of the llm see of the output of the tool"
         },
-    )
+    ) # for llm 
+    display: Optional[str] = field(
+        default=None,
+        metadata={
+            "description": "The display of the tool output for user"
+        }
+    ) # for user
     is_streaming: Optional[bool] = field(
         default=False, metadata={"description": "Whether the tool output is streaming"}
+    )
+    metadata: Optional[Dict[str, Any]] = field(
+        default=None, metadata={"description": "Additional metadata"}
     )
 
 
@@ -704,6 +708,9 @@ class StepOutput(DataClass, Generic[T]):
 
     observation: Optional[str] = field(
         default=None, metadata={"desc": "The execution result shown for this action"}
+    )
+    ctx: Optional[Dict[str, Any]] = field(
+        default=None, metadata={"desc": "The context of the step"}
     )
 
     def to_prompt_str(self) -> str:
@@ -1299,6 +1306,10 @@ class RunnerResult:
 
     error: Optional[str] = field(
         metadata={"description": "The error message if the code execution failed"},
+        default=None,
+    )
+    ctx: Optional[Dict] = field(
+        metadata={"description": "The context of the execution"},
         default=None,
     )
 

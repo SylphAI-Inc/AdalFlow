@@ -12,6 +12,8 @@ import logging
 from dataclasses import dataclass, field
 
 from openai.types.responses import ResponseCompletedEvent
+from adalflow.core.tokenizer import Tokenizer
+
 
 
 from adalflow.core.types import (
@@ -203,6 +205,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self._trace_api_kwargs: Dict[str, Any] = (
             {}
         )  # used by dynamic computation graph and backpropagation
+
+        self._tokenizer: Tokenizer = Tokenizer()
     
     @property
     def use_cache(self):
@@ -455,10 +459,22 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # 2. combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self._compose_model_kwargs(**model_kwargs)
 
+        max_tokens = composed_model_kwargs.get("max_tokens", None)
+        use_prompt_str = prompt_str
+        if max_tokens is not None:
+            prompt_tokens = self._tokenizer.count_tokens(prompt_str)
+            if prompt_tokens > max_tokens:
+                use_prompt_str = prompt_str[:max_tokens]
+                log.warning(
+                    f"Prompt is too long: {prompt_tokens} tokens, max tokens: {max_tokens}. Truncated prompt to: {use_prompt_str}"
+                )
+            # delete max_tokens from the model_kwargs
+            del composed_model_kwargs["max_tokens"]
+
         # 3. convert app's inputs to api inputs
         api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
             # rename from input since input is a builtin object
-            input=prompt_str,
+            input=use_prompt_str,
             model_kwargs=composed_model_kwargs,
             model_type=self.model_type,
         )
