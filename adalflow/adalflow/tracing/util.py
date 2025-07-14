@@ -5,8 +5,7 @@ This module provides utility functions for tracing such as ID generation and
 time formatting following OpenAI Agents SDK patterns.
 
 References:
-- OpenAI Agents SDK: https://github.com/openai/openai-python/tree/main/src/openai/agents
-- OpenAI Tracing Interface: https://platform.openai.com/docs/guides/agents/tracing
+- OpenAI Tracing Interface: https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/util.py
 """
 
 import uuid

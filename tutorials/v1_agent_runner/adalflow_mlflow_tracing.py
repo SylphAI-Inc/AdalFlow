@@ -36,25 +36,20 @@ def setup_mlflow_tracing():
         log.warning("MLflow not available - traces will only be logged to console")
         return
 
-    try:
-        # Point MLflow to the tracking server
-        mlflow.set_tracking_uri("http://localhost:8080")  # Match your server port
+    # Point MLflow to the tracking server
+    mlflow.set_tracking_uri("http://localhost:8080")  # Match your server port
 
-        # Create or set an experiment to log traces under
-        mlflow.set_experiment("AdalFlow-Agent-Tracing-Experiment")
+    # Create or set an experiment to log traces under
+    mlflow.set_experiment("AdalFlow-Agent-Tracing-Experiment")
 
-        # Instantiate MLflow's OpenAI Agents tracing processor
-        mlflow_processor = MlflowOpenAgentTracingProcessor(
-            project_name="AdalFlow-Agent-Project"
-        )
+    # Instantiate MLflow's OpenAI Agents tracing processor
+    mlflow_processor = MlflowOpenAgentTracingProcessor(
+        project_name="AdalFlow-Agent-Project"
+    )
 
-        # Replace default trace processors with MLflow's
-        set_trace_processors([mlflow_processor])
-        log.info("✅ MLflow tracing configured successfully")
-
-    except Exception as e:
-        log.error(f"Failed to setup MLflow tracing: {e}")
-        log.info("Continuing with default tracing...")
+    # Replace default trace processors with MLflow's
+    set_trace_processors([mlflow_processor])
+    log.info("✅ MLflow tracing configured successfully")
 
 
 # ───────────────────────────────────────────────────────────
@@ -288,10 +283,10 @@ if __name__ == "__main__":
     print("⚠️  Running streaming error handling demo...")
     asyncio.run(demo_astream_error_handling())
 
-    # # Run extended demo
-    # print("\n" + "="*60)
-    # print("🌍 Running multi-language demo...")
-    # asyncio.run(demo_multiple_languages())
+    # Run extended demo
+    print("\n" + "=" * 60)
+    print("🌍 Running multi-language demo...")
+    asyncio.run(demo_multiple_languages())
 
     print("\n" + "=" * 60)
     print("✅ Demo complete!")

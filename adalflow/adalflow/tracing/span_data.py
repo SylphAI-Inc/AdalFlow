@@ -11,8 +11,7 @@ if TYPE_CHECKING:
 Classes directly from OpenAI Agent Library SpanData
 
 References:
-- OpenAI Agents SDK Span Data: https://github.com/openai/openai-python/blob/main/src/openai/agents/spans.py
-- OpenAI Tracing Documentation: https://platform.openai.com/docs/guides/agents/tracing
+- OpenAI Agents SDK: https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/span_data.py
 """
 
 
@@ -485,12 +484,14 @@ class AdalFlowGeneratorSpanData(CustomSpanData):
 
     __slots__ = (
         "generator_id",
-        "model_kwargs",
         "generator_state_logger",
+        "model_kwargs",
+        "api_kwargs",
         "prompt_kwargs",
+        "prompt_template_with_keywords",
         "raw_response",
         "api_response",
-        "generation_time",
+        "generation_time_in_seconds",
         "token_usage",
         "final_response",  # renamed data as there the custom span data already has a data in __slots__
         "data",
@@ -502,20 +503,24 @@ class AdalFlowGeneratorSpanData(CustomSpanData):
         model_kwargs: Optional[Dict[str, Any]] = None,
         generator_state_logger: Optional[Any] = None,
         prompt_kwargs: Optional[Dict[str, Any]] = None,
+        prompt_template_with_keywords: Optional[str] = None,
         raw_response: Optional[str] = None,
         api_response: Optional[Any] = None,
-        generation_time: Optional[float] = None,
+        generation_time_in_seconds: Optional[float] = None,
         token_usage: Optional[Dict[str, int]] = None,
         final_response: Optional[Any] = None,
+        api_kwargs: Optional[Dict[str, Any]] = None,
     ):
         # Initialize with data that will be used by MLflow
         self.data = {
             "generator_id": generator_id,
             "model_kwargs": model_kwargs,
             "prompt_kwargs": prompt_kwargs,
+            "api_kwargs": api_kwargs,
+            "prompt_template_with_keywords": prompt_template_with_keywords,
             "raw_response": raw_response,
             "api_response": api_response,
-            "generation_time": generation_time,
+            "generation_time_in_seconds": generation_time_in_seconds,
             "token_usage": token_usage,
             "final_response": final_response,
         }
@@ -533,11 +538,13 @@ class AdalFlowGeneratorSpanData(CustomSpanData):
         self.model_kwargs = model_kwargs
         self.generator_state_logger = generator_state_logger
         self.prompt_kwargs = prompt_kwargs
+        self.prompt_template_with_keywords = prompt_template_with_keywords
         self.raw_response = raw_response
         self.api_response = api_response
-        self.generation_time = generation_time
+        self.generation_time_in_seconds = generation_time_in_seconds
         self.token_usage = token_usage
         self.final_response = final_response
+        self.api_kwargs = api_kwargs
 
     def update_attributes(self, attributes: Dict[str, Any]) -> None:
         """
@@ -572,7 +579,6 @@ class AdalFlowResponseSpanData(CustomSpanData):
         "result_type",
         "execution_metadata",
         "response",
-        "input",
         "data",
     )
 
@@ -582,7 +588,6 @@ class AdalFlowResponseSpanData(CustomSpanData):
         result_type: Optional[str] = None,
         execution_metadata: Optional[Dict[str, Any]] = None,
         response: Optional[Any] = None,
-        input: Optional[str] = None,
     ):
         # Create data dict for CustomSpanData
         self.data = {
@@ -590,7 +595,6 @@ class AdalFlowResponseSpanData(CustomSpanData):
             "result_type": result_type,
             "execution_metadata": execution_metadata,
             "response": response,
-            "input": input,
         }
         super().__init__(name="response", data=self.data)
 
@@ -598,7 +602,6 @@ class AdalFlowResponseSpanData(CustomSpanData):
         self.result_type = result_type
         self.execution_metadata = execution_metadata
         self.response = response
-        self.input = input
 
     def update_attributes(self, attributes: Dict[str, Any]) -> None:
         """
@@ -619,7 +622,7 @@ class AdalFlowResponseSpanData(CustomSpanData):
         return base_export
 
 
-class AdalFlowStepSpanData(SpanData):
+class AdalFlowStepSpanData(CustomSpanData):
     """
     Represents a Step Span in AdalFlow workflow execution.
     Tracks individual steps within a multi-step agent workflow.
@@ -633,7 +636,7 @@ class AdalFlowStepSpanData(SpanData):
         "observation",
         "is_final",
         "function_name",
-        "function_args",
+        "function_results",
         "execution_time",
         "error_info",
         "data",
@@ -646,25 +649,24 @@ class AdalFlowStepSpanData(SpanData):
         observation: Optional[Any] = None,
         is_final: bool = False,
         function_name: Optional[str] = None,
-        function_args: Optional[Dict[str, Any]] = None,
+        function_results: Optional[Any] = None,
         execution_time: Optional[float] = None,
         error_info: Optional[Dict[str, Any]] = None,
     ):
         # Create data dictionary for CustomSpanData
-        data = {
+        self.data = {
             "step_number": step_number,
             "action_type": action_type,
             "observation": observation,
             "is_final": is_final,
             "function_name": function_name,
-            "function_args": function_args,
+            "function_results": function_results,
             "execution_time": execution_time,
             "error_info": error_info,
         }
 
-        self.name = f"step-{step_number}" if step_number is not None else "step"
-
-        self.data = data
+        step_name = f"step-{step_number}" if step_number is not None else "step"
+        super().__init__(name=step_name, data=self.data)
 
         # Set individual attributes
         self.step_number = step_number
@@ -672,7 +674,7 @@ class AdalFlowStepSpanData(SpanData):
         self.observation = observation
         self.is_final = is_final
         self.function_name = function_name
-        self.function_args = function_args
+        self.function_results = function_results
         self.execution_time = execution_time
         self.error_info = error_info
 
@@ -690,16 +692,9 @@ class AdalFlowStepSpanData(SpanData):
             # Update the custom span's data attribute which is exported
             self.data[key] = value
 
-    @property
-    def type(self) -> str:
-        return "step"
-
     def export(self) -> Dict[str, Any]:
-        return {
-            "type": self.type,
-            "name": self.name,
-            "data": self.data,
-        }
+        base_export = super().export()
+        return base_export
 
 
 class AdalFlowToolSpanData(CustomSpanData):
@@ -715,6 +710,8 @@ class AdalFlowToolSpanData(CustomSpanData):
         "tool_name",
         "function_name",
         "input_params",
+        "function_args",
+        "function_kwargs",
         "output_result",
         "execution_time",
         "error_info",
@@ -726,6 +723,8 @@ class AdalFlowToolSpanData(CustomSpanData):
         tool_name: Optional[str] = None,
         function_name: Optional[str] = None,
         input_params: Optional[Dict[str, Any]] = None,
+        function_args: Optional[Dict[str, Any]] = None,
+        function_kwargs: Optional[Dict[str, Any]] = None,
         output_result: Optional[Any] = None,
         execution_time: Optional[float] = None,
         error_info: Optional[Dict[str, Any]] = None,
@@ -741,9 +740,11 @@ class AdalFlowToolSpanData(CustomSpanData):
         self.data = {
             "tool_name": tool_name,
             "function_name": function_name,
-            "input": str(input_params) if input_params else None,
-            "output": str(output_result) if output_result else None,
-            "execution_time": execution_time,
+            "input_params": str(input_params) if input_params else None,
+            "function_args": str(function_args) if function_args else None,
+            "function_kwargs": str(function_kwargs) if function_kwargs else None,
+            "output_result": str(output_result) if output_result else None,
+            # "execution_time": execution_time,
             "error_info": error_info,
         }
 
@@ -752,6 +753,8 @@ class AdalFlowToolSpanData(CustomSpanData):
         self.tool_name = tool_name
         self.function_name = function_name
         self.input_params = input_params
+        self.function_args = function_args
+        self.function_kwargs = function_kwargs
         self.output_result = output_result
         self.execution_time = execution_time
         self.error_info = error_info

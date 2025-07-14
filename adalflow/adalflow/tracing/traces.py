@@ -6,8 +6,7 @@ the OpenAI Agents SDK patterns for maximum compatibility with existing
 observability backends.
 
 References:
-- OpenAI Agents SDK: https://github.com/openai/openai-python/tree/main/src/openai/agents
-- OpenAI Tracing Interface: https://platform.openai.com/docs/guides/agents/tracing
+- OpenAI Agents SDK: https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/traces.py
 """
 
 from __future__ import annotations
@@ -20,7 +19,6 @@ from typing import Any, Optional, Dict
 logger = logging.getLogger(__name__)
 from . import util
 from .processor_interface import TracingProcessor
-from .scope import Scope
 
 
 class Trace:
@@ -104,10 +102,14 @@ class NoOpTrace(Trace):
         self.finish(reset_current=True)
 
     def start(self, mark_as_current: bool = False):
+        from .scope import Scope
+
         if mark_as_current:
             self._prev_context_token = Scope.set_current_trace(self)
 
     def finish(self, reset_current: bool = False):
+        from .scope import Scope
+
         if reset_current and self._prev_context_token is not None:
             Scope.reset_current_trace(self._prev_context_token)
             self._prev_context_token = None
@@ -167,6 +169,8 @@ class TraceImpl(Trace):
         return self._name
 
     def start(self, mark_as_current: bool = False):
+        from .scope import Scope
+
         if self._started:
             return
 
@@ -177,6 +181,8 @@ class TraceImpl(Trace):
             self._prev_context_token = Scope.set_current_trace(self)
 
     def finish(self, reset_current: bool = False):
+        from .scope import Scope
+
         if not self._started:
             return
 

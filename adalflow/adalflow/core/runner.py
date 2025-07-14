@@ -40,7 +40,6 @@ from adalflow.core.types import (
 from adalflow.core.functional import _is_pydantic_dataclass, _is_adalflow_dataclass
 from adalflow.tracing import (
     runner_span,
-    generator_span,
     tool_span,
     response_span,
     step_span,
@@ -243,6 +242,10 @@ class Runner(Component):
 
                 while step_count < self.max_steps:
                     try:
+                        function_results = (
+                            None  # Initialize to prevent UnboundLocalError
+                        )
+
                         # Create step span for each iteration
                         with step_span(
                             step_number=step_count, action_type="planning"
@@ -259,18 +262,6 @@ class Runner(Component):
                                 id=id,
                             )
 
-                            # Create generator span for planner call with the output data
-                            with generator_span(
-                                generator_id="planner",
-                                model_kwargs=model_kwargs,
-                                prompt_kwargs=prompt_kwargs,
-                                raw_response=getattr(output, "raw_response", None),
-                                api_response=getattr(output, "api_response", None),
-                                final_response=getattr(output, "data", None),
-                            ):
-                                # Update span attributes using update_attributes for MLflow compatibility
-                                pass
-
                             printc(f"planner output: {output}", color="yellow")
 
                             function = self._get_planner_function(output)
@@ -280,7 +271,8 @@ class Runner(Component):
                             with tool_span(
                                 tool_name=function.name,
                                 function_name=function.name,
-                                input_params=function.args,
+                                function_args=function.args,
+                                function_kwargs=function.kwargs,
                             ) as tool_span_instance:
                                 function_results = self._tool_execute_sync(function)
                                 # Update span attributes using update_attributes for MLflow compatibility
@@ -301,7 +293,7 @@ class Runner(Component):
                             step_span_instance.span_data.update_attributes(
                                 {
                                     "function_name": function.name,
-                                    "function_args": function.args,
+                                    "function_results": function_results,
                                     "is_final": self._check_last_step(function),
                                     "observation": function_results.output,
                                 }
@@ -351,7 +343,6 @@ class Runner(Component):
                                 "max_steps": self.max_steps,
                                 "workflow_status": "failed",
                             },
-                            input=prompt_kwargs,
                             response=None,
                         ):
                             pass
@@ -385,7 +376,6 @@ class Runner(Component):
                         "max_steps": self.max_steps,
                         "workflow_status": "completed" if last_output else "incomplete",
                     },
-                    input=prompt_kwargs,
                     response=last_output,  # can be None if Runner has not finished in the max steps
                 ):
                     pass
@@ -456,6 +446,10 @@ class Runner(Component):
 
                 while step_count < self.max_steps:
                     try:
+                        function_results = (
+                            None  # Initialize to prevent UnboundLocalError
+                        )
+
                         # Create step span for each iteration
                         with step_span(
                             step_number=step_count, action_type="async_planning"
@@ -473,18 +467,6 @@ class Runner(Component):
                             )
                             print("check", output)
 
-                            # Create generator span for planner call with the output data
-                            with generator_span(
-                                generator_id="async_planner",
-                                model_kwargs=model_kwargs,
-                                prompt_kwargs=prompt_kwargs,
-                                raw_response=getattr(output, "raw_response", None),
-                                api_response=getattr(output, "api_response", None),
-                                final_response=getattr(output, "data", None),
-                            ):
-                                # Update span attributes using update_attributes for MLflow compatibility
-                                pass
-
                             printc(f"planner output: {output}", color="yellow")
 
                             function = self._get_planner_function(output)
@@ -494,7 +476,8 @@ class Runner(Component):
                             with tool_span(
                                 tool_name=function.name,
                                 function_name=function.name,
-                                input_params=function.args,
+                                function_args=function.args,
+                                function_kwargs=function.kwargs,
                             ) as tool_span_instance:
                                 function_results = await self._tool_execute_async(
                                     function
@@ -515,10 +498,10 @@ class Runner(Component):
                             # Update step span with results
                             step_span_instance.span_data.update_attributes(
                                 {
-                                    "observation": function_results.output,
-                                    "is_final": self._check_last_step(function),
                                     "function_name": function.name,
-                                    "function_args": function.args,
+                                    "function_results": function_results,
+                                    "is_final": self._check_last_step(function),
+                                    "observation": function_results.output,
                                 }
                             )
                             step_count += 1
@@ -561,7 +544,6 @@ class Runner(Component):
                                 "max_steps": self.max_steps,
                                 "workflow_status": "failed",
                             },
-                            input=prompt_kwargs,
                             response=None,
                         ):
                             pass
@@ -595,7 +577,6 @@ class Runner(Component):
                         "max_steps": self.max_steps,
                         "workflow_status": "completed" if last_output else "incomplete",
                     },
-                    input=prompt_kwargs,
                     response=last_output,  # can be None if Runner has not finished in the max steps
                 ):
                     pass
@@ -664,6 +645,10 @@ class Runner(Component):
 
                 while step_count < self.max_steps:
                     try:
+                        function_results = (
+                            None  # Initialize to prevent UnboundLocalError
+                        )
+
                         # Create step span for each streaming iteration
                         with step_span(
                             step_number=step_count, action_type="stream_planning"
@@ -685,18 +670,6 @@ class Runner(Component):
                                 use_cache=use_cache,
                                 id=id,
                             )
-
-                            # Create generator span for streaming planner call
-                            with generator_span(
-                                generator_id="stream_planner",
-                                model_kwargs=model_kwargs,
-                                prompt_kwargs=prompt_kwargs,
-                                raw_response=getattr(output, "raw_response", None),
-                                api_response=getattr(output, "api_response", None),
-                                final_response=getattr(output, "data", None),
-                            ):
-                                # Update span attributes using update_attributes for MLflow compatibility
-                                pass
 
                             if not isinstance(output, GeneratorOutput):
                                 raise ValueError("The output is not a GeneratorOutput")
@@ -726,7 +699,8 @@ class Runner(Component):
                             with tool_span(
                                 tool_name=function.name,
                                 function_name=function.name,
-                                input_params=function.args,
+                                function_args=function.args,
+                                function_kwargs=function.kwargs,
                             ) as tool_span_instance:
                                 function_result = await self._tool_execute_async(
                                     function
@@ -743,6 +717,7 @@ class Runner(Component):
 
                                 if inspect.iscoroutine(function_output):
                                     real_function_output = await function_output
+                                    function_results = [real_function_output]
                                 elif inspect.isasyncgen(function_output):
                                     function_results = []
                                     async for item in function_output:
@@ -751,6 +726,7 @@ class Runner(Component):
                                     real_function_output = function_results[-1]
                                 else:
                                     real_function_output = function_output
+                                    function_results = [real_function_output]
                                     streaming_result._event_queue.put_nowait(
                                         function_output
                                     )
@@ -772,7 +748,7 @@ class Runner(Component):
                             step_span_instance.span_data.update_attributes(
                                 {
                                     "function_name": function.name,
-                                    "function_args": function.args,
+                                    "function_results": function_results,
                                     "is_final": self._check_last_step(function),
                                     "observation": real_function_output,
                                 }
@@ -818,7 +794,6 @@ class Runner(Component):
                                         "workflow_status": "stream_completed",
                                         "streaming": True,
                                     },
-                                    input=prompt_kwargs,
                                     response=runner_result,
                                 ):
                                     pass
@@ -863,7 +838,6 @@ class Runner(Component):
                                 "workflow_status": "stream_failed",
                                 "streaming": True,
                             },
-                            input=prompt_kwargs,
                             response=None,
                         ):
                             pass

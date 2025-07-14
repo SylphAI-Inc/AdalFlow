@@ -5,8 +5,7 @@ This module provides context management for traces and spans, maintaining curren
 execution context following OpenAI Agents SDK patterns.
 
 References:
-- OpenAI Agents SDK: https://github.com/openai/openai-python/tree/main/src/openai/agents
-- OpenAI Tracing Interface: https://platform.openai.com/docs/guides/agents/tracing
+- OpenAI Agents SDK: https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/scope.py
 """
 
 # Holds the current active span
@@ -14,11 +13,10 @@ import contextvars
 import logging
 import uuid
 from typing import Any, Optional
+from .traces import Trace
+from .spans import Span
 
 logger = logging.getLogger(__name__)
-
-from .spans import Span
-from .traces import Trace
 
 _current_span: contextvars.ContextVar[Optional["Span[Any]"]] = contextvars.ContextVar(
     "current_span", default=None

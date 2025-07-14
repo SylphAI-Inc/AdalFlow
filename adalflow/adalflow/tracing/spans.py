@@ -6,8 +6,7 @@ the OpenAI Agents SDK patterns for maximum compatibility with existing
 observability backends.
 
 References:
-- OpenAI Agents SDK: https://github.com/openai/openai-python/tree/main/src/openai/agents
-- OpenAI Tracing Interface: https://platform.openai.com/docs/guides/agents/tracing
+- OpenAI Agents SDK: https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/spans.py
 """
 
 from __future__ import annotations
@@ -23,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 from . import util
 from .processor_interface import TracingProcessor
-from .scope import Scope
 from .span_data import SpanData
 
 TSpanData = TypeVar("TSpanData", bound=SpanData)
@@ -133,10 +131,14 @@ class NoOpSpan(Span[TSpanData]):
         return None
 
     def start(self, mark_as_current: bool = False):
+        from .scope import Scope
+
         if mark_as_current:
             self._prev_span_token = Scope.set_current_span(self)
 
     def finish(self, reset_current: bool = False) -> None:
+        from .scope import Scope
+
         if reset_current and self._prev_span_token is not None:
             Scope.reset_current_span(self._prev_span_token)
             self._prev_span_token = None
@@ -222,6 +224,8 @@ class SpanImpl(Span[TSpanData]):
         return self._parent_id
 
     def start(self, mark_as_current: bool = False):
+        from .scope import Scope
+
         if self.started_at is not None:
             logger.warning("Span already started")
             return
@@ -232,6 +236,8 @@ class SpanImpl(Span[TSpanData]):
             self._prev_span_token = Scope.set_current_span(self)
 
     def finish(self, reset_current: bool = False) -> None:
+        from .scope import Scope
+
         if self.ended_at is not None:
             logger.warning("Span already finished")
             return

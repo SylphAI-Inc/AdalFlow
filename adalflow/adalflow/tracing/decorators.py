@@ -3,7 +3,6 @@ import warnings
 from typing import List, Optional, Dict
 import logging
 
-from adalflow.core.generator import Generator
 from adalflow.tracing import GeneratorStateLogger, GeneratorCallLogger
 
 log = logging.getLogger(__name__)

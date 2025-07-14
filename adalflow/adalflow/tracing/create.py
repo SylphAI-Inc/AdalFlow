@@ -183,11 +183,13 @@ def generator_span(
     model_kwargs: Optional[Dict[str, Any]] = None,
     generator_state_logger: Optional[Any] = None,
     prompt_kwargs: Optional[Dict[str, Any]] = None,
+    prompt_template_with_keywords: Optional[str] = None,
     raw_response: Optional[str] = None,
     api_response: Optional[Any] = None,
-    generation_time: Optional[float] = None,
+    generation_time_in_seconds: Optional[float] = None,
     token_usage: Optional[Dict[str, int]] = None,
     final_response: Optional[Any] = None,
+    api_kwargs: Optional[Dict[str, Any]] = None,
     span_id: Optional[str] = None,
     parent: Optional[Union[Trace, Span[Any]]] = None,
     disabled: bool = False,
@@ -202,11 +204,13 @@ def generator_span(
         model_kwargs: Parameters used to configure the model.
         generator_state_logger: Optional logger for generator state changes.
         prompt_kwargs: Input parameters and context for the generation.
+        prompt_template_with_keywords: The rendered prompt template with keywords filled in.
         raw_response: The raw response from the generator.
         api_response: The processed response from the API.
         generation_time: Time taken for generation in seconds.
         token_usage: Dictionary tracking token usage statistics.
         final_response: The final response data after any post-processing.
+        api_kwargs: The API kwargs used for the model call.
         span_id: Optional custom span ID. If not provided, one will be generated.
         parent: The parent span or trace. If not provided, we will automatically use the current
             trace/span as the parent.
@@ -221,11 +225,13 @@ def generator_span(
             model_kwargs=model_kwargs,
             generator_state_logger=generator_state_logger,
             prompt_kwargs=prompt_kwargs,
+            prompt_template_with_keywords=prompt_template_with_keywords,
             raw_response=raw_response,
             api_response=api_response,
-            generation_time=generation_time,
+            generation_time_in_seconds=generation_time_in_seconds,
             token_usage=token_usage,
             final_response=final_response,
+            api_kwargs=api_kwargs,
         ),
         span_id=span_id,
         parent=parent,
@@ -237,6 +243,8 @@ def tool_span(
     tool_name: Optional[str] = None,
     function_name: Optional[str] = None,
     input_params: Optional[Dict[str, Any]] = None,
+    function_args: Optional[Dict[str, Any]] = None,
+    function_kwargs: Optional[Dict[str, Any]] = None,
     output_result: Optional[Any] = None,
     execution_time: Optional[float] = None,
     error_info: Optional[Dict[str, Any]] = None,
@@ -253,7 +261,9 @@ def tool_span(
     Args:
         tool_name: The name of the tool being executed.
         function_name: The specific function name being called.
-        input_params: The input parameters passed to the tool/function.
+        input_params: The input parameters passed to the tool/function (deprecated, use function_args/function_kwargs).
+        function_args: The positional arguments passed to the function.
+        function_kwargs: The keyword arguments passed to the function.
         output_result: The result returned by the tool/function.
         execution_time: The time taken for execution in seconds.
         error_info: Any error information if the tool execution failed.
@@ -270,6 +280,8 @@ def tool_span(
             tool_name=tool_name,
             function_name=function_name,
             input_params=input_params,
+            function_args=function_args,
+            function_kwargs=function_kwargs,
             output_result=output_result,
             execution_time=execution_time,
             error_info=error_info,
@@ -284,7 +296,6 @@ def response_span(
     result_type: Optional[str] = None,
     execution_metadata: Optional[Dict[str, Any]] = None,
     response: Optional[Any] = None,
-    input: Optional[str] = None,
     answer: Optional[Any] = None,
     span_id: Optional[str] = None,
     parent: Optional[Union[Trace, Span[Any]]] = None,
@@ -302,7 +313,6 @@ def response_span(
         result_type: The type of the result (e.g., "string", "object", "error").
         execution_metadata: Additional metadata about the execution.
         response: The response object (for OpenAI SDK compatibility).
-        input: The input that produced this response.
         span_id: The ID of the span. Optional. If not provided, we will generate an ID.
         parent: The parent span or trace. If not provided, we will automatically use the current
             trace/span as the parent.
@@ -316,7 +326,6 @@ def response_span(
             result_type=result_type,
             execution_metadata=execution_metadata,
             response=response,
-            input=input,
             answer=answer,
         ),
         span_id=span_id,
@@ -331,7 +340,7 @@ def step_span(
     observation: Optional[Any] = None,
     is_final: bool = False,
     function_name: Optional[str] = None,
-    function_args: Optional[Dict[str, Any]] = None,
+    function_results: Optional[Any] = None,
     execution_time: Optional[float] = None,
     error_info: Optional[Dict[str, Any]] = None,
     span_id: Optional[str] = None,
@@ -350,7 +359,7 @@ def step_span(
         observation: The result or observation from this step.
         is_final: Whether this is the final step in the workflow.
         function_name: The name of the function being executed in this step.
-        function_args: The arguments passed to the function in this step.
+        function_results: The results from executing the function in this step.
         execution_time: The time taken to execute this step in seconds.
         error_info: Any error information if the step failed.
         span_id: The ID of the span. Optional. If not provided, we will generate an ID.
@@ -368,7 +377,7 @@ def step_span(
             observation=observation,
             is_final=is_final,
             function_name=function_name,
-            function_args=function_args,
+            function_results=function_results,
             execution_time=execution_time,
             error_info=error_info,
         ),

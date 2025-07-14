@@ -18,6 +18,7 @@ from adalflow.tracing import (
     add_trace_processor,
     set_trace_processors,
     GLOBAL_TRACE_PROVIDER,
+    generator_span,
 )
 from adalflow.tracing.span_data import (
     AdalFlowRunnerSpanData,
@@ -85,20 +86,50 @@ class FakePlanner:
         self._idx = 0
 
     def call(self, *, prompt_kwargs, model_kwargs=None, use_cache=None, id=None):
-        if self._idx >= len(self._outputs):
-            # Return a finish function if we run out of outputs
-            return GeneratorOutput(data=DummyFunction(name="finish"))
-        out = self._outputs[self._idx]
-        self._idx += 1
-        return out
+        with generator_span(
+            generator_id="fake_planner" + (id if id else ""),
+            model_kwargs=model_kwargs or {},
+            prompt_kwargs=prompt_kwargs or {},
+            prompt_template_with_keywords="fake template",
+        ) as generator_span_data:
+            if self._idx >= len(self._outputs):
+                # Return a finish function if we run out of outputs
+                output = GeneratorOutput(data=DummyFunction(name="finish"))
+            else:
+                output = self._outputs[self._idx]
+                self._idx += 1
+
+            # Update span with fake response data
+            generator_span_data.span_data.update_attributes(
+                {
+                    "raw_response": str(output.data),
+                    "final_response": output,
+                }
+            )
+            return output
 
     async def acall(self, *, prompt_kwargs, model_kwargs=None, use_cache=None, id=None):
-        return self.call(
-            prompt_kwargs=prompt_kwargs,
-            model_kwargs=model_kwargs,
-            use_cache=use_cache,
-            id=id,
-        )
+        with generator_span(
+            generator_id="async_planner" + (id if id else ""),
+            model_kwargs=model_kwargs or {},
+            prompt_kwargs=prompt_kwargs or {},
+            prompt_template_with_keywords="fake async template",
+        ) as generator_span_data:
+            if self._idx >= len(self._outputs):
+                # Return a finish function if we run out of outputs
+                output = GeneratorOutput(data=DummyFunction(name="finish"))
+            else:
+                output = self._outputs[self._idx]
+                self._idx += 1
+
+            # Update span with fake response data
+            generator_span_data.span_data.update_attributes(
+                {
+                    "raw_response": str(output.data),
+                    "final_response": output,
+                }
+            )
+            return output
 
     def get_prompt(self, **kwargs):
         return "test prompt"
@@ -237,7 +268,7 @@ class TestRunnerTracing(unittest.TestCase):
         ]
         self.assertEqual(len(generator_spans), 1)
         generator_span = generator_spans[0]
-        self.assertEqual(generator_span.span_data.generator_id, "planner")
+        self.assertEqual(generator_span.span_data.generator_id, "fake_planner")
 
         # Check for tool span
         tool_spans = [
@@ -367,7 +398,7 @@ class TestRunnerTracing(unittest.TestCase):
             ]
             self.assertEqual(len(generator_spans), 1)
             generator_span = generator_spans[0]
-            self.assertEqual(generator_span.span_data.generator_id, "stream_planner")
+            self.assertEqual(generator_span.span_data.generator_id, "async_planner")
 
             # Check for step span with streaming action type
             step_spans = [

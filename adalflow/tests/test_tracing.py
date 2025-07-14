@@ -429,7 +429,7 @@ class TestSpanData(unittest.TestCase):
             model_kwargs={"model": "gpt-4"},
             prompt_kwargs={"input": "test input"},
             raw_response="test response",
-            generation_time=1.5,
+            generation_time_in_seconds=1.5,
             token_usage={"prompt_tokens": 10, "completion_tokens": 20},
         )
 
@@ -437,7 +437,7 @@ class TestSpanData(unittest.TestCase):
         self.assertEqual(span_data.model_kwargs, {"model": "gpt-4"})
         self.assertEqual(span_data.prompt_kwargs, {"input": "test input"})
         self.assertEqual(span_data.raw_response, "test response")
-        self.assertEqual(span_data.generation_time, 1.5)
+        self.assertEqual(span_data.generation_time_in_seconds, 1.5)
         self.assertEqual(
             span_data.token_usage, {"prompt_tokens": 10, "completion_tokens": 20}
         )
@@ -471,8 +471,8 @@ class TestSpanData(unittest.TestCase):
         self.assertEqual(exported["name"], "test_tool.test_function")
         self.assertIn("tool_name", exported["data"])
         self.assertEqual(exported["data"]["tool_name"], "test_tool")
-        self.assertEqual(exported["data"]["input"], "{'arg1': 'value1'}")
-        self.assertEqual(exported["data"]["output"], "test result")
+        self.assertEqual(exported["data"]["input_params"], "{'arg1': 'value1'}")
+        self.assertEqual(exported["data"]["output_result"], "test result")
 
     def test_adalflow_response_span_data(self):
         """Test AdalFlowResponseSpanData."""
@@ -481,14 +481,12 @@ class TestSpanData(unittest.TestCase):
             result_type="string",
             execution_metadata={"steps": 5},
             response={"result": "success"},
-            input="test input",
         )
 
         self.assertEqual(span_data.answer, "test answer")
         self.assertEqual(span_data.result_type, "string")
         self.assertEqual(span_data.execution_metadata, {"steps": 5})
         self.assertEqual(span_data.response, {"result": "success"})
-        self.assertEqual(span_data.input, "test input")
 
         # Test export
         exported = span_data.export()
@@ -505,7 +503,7 @@ class TestSpanData(unittest.TestCase):
             observation="test observation",
             is_final=False,
             function_name="test_function",
-            function_args={"arg1": "value1"},
+            function_results={"arg1": "value1"},
             execution_time=1.0,
         )
 
@@ -514,12 +512,12 @@ class TestSpanData(unittest.TestCase):
         self.assertEqual(span_data.observation, "test observation")
         self.assertEqual(span_data.is_final, False)
         self.assertEqual(span_data.function_name, "test_function")
-        self.assertEqual(span_data.function_args, {"arg1": "value1"})
+        self.assertEqual(span_data.function_results, {"arg1": "value1"})
         self.assertEqual(span_data.execution_time, 1.0)
 
         # Test export
         exported = span_data.export()
-        self.assertEqual(exported["type"], "step")
+        self.assertEqual(exported["type"], "custom")
         self.assertEqual(exported["name"], "step-1")
         self.assertIn("step_number", exported["data"])
         self.assertEqual(exported["data"]["step_number"], 1)
