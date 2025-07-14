@@ -242,9 +242,7 @@ class Runner(Component):
 
                 while step_count < self.max_steps:
                     try:
-                        function_results = (
-                            None  # Initialize to prevent UnboundLocalError
-                        )
+                        function_results = None
 
                         # Create step span for each iteration
                         with step_span(
@@ -446,9 +444,7 @@ class Runner(Component):
 
                 while step_count < self.max_steps:
                     try:
-                        function_results = (
-                            None  # Initialize to prevent UnboundLocalError
-                        )
+                        function_results = None
 
                         # Create step span for each iteration
                         with step_span(
@@ -645,9 +641,7 @@ class Runner(Component):
 
                 while step_count < self.max_steps:
                     try:
-                        function_results = (
-                            None  # Initialize to prevent UnboundLocalError
-                        )
+                        function_results = None
 
                         # Create step span for each streaming iteration
                         with step_span(
