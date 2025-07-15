@@ -722,8 +722,8 @@ if __name__ == "__main__":
     # Define all examples to run
     examples = [
         ("Synchronous ReAct Agent", run_react_agent_example),
-        ("Primitive Type ReAct Agent", run_react_agent_primitive_type),
-        ("Async ReAct Agent", lambda: asyncio.run(arun_react_agent_example())),
+        # ("Primitive Type ReAct Agent", run_react_agent_primitive_type),
+        # ("Async ReAct Agent", lambda: asyncio.run(arun_react_agent_example())),
         # ("Advanced ReAct Agent", run_advanced_react_agent),
         (
             "Advanced Async ReAct Agent",

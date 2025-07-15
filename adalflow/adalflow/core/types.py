@@ -379,6 +379,7 @@ class Function(DataClass):
         default_factory=dict,
         metadata={"desc": "The keyword arguments of the function"},
     )
+
     @classmethod
     def from_function(
         cls,
@@ -670,13 +671,11 @@ class ToolOutput(DataClass):
         metadata={
             "description": "The observation of the llm see of the output of the tool"
         },
-    ) # for llm 
+    )  # for llm
     display: Optional[str] = field(
         default=None,
-        metadata={
-            "description": "The display of the tool output for user"
-        }
-    ) # for user
+        metadata={"description": "The display of the tool output for user"},
+    )  # for user
     is_streaming: Optional[bool] = field(
         default=False, metadata={"description": "Whether the tool output is streaming"}
     )
@@ -1125,12 +1124,12 @@ class ToolCallActivityRunItem(RunItem):
         ```
     """
 
-    type: str = field(default="tool_call_activity", metadata={"desc": "Type of run item"})
+    type: str = field(
+        default="tool_call_activity", metadata={"desc": "Type of run item"}
+    )
     data: Optional[Any] = field(
         default=None,
-        metadata={
-            "desc": "Any data containing the progress of the tool call"
-        },
+        metadata={"desc": "Any data containing the progress of the tool call"},
     )
 
 
@@ -1320,16 +1319,19 @@ class QueueCompleteSentinel:
 
     pass
 
+
 class EventEncoder(json.JSONEncoder):
-        def default(self, obj):
-            if isinstance(obj, datetime):
-                return obj.isoformat()
-            elif hasattr(obj, '__dict__'):
-                return obj.__dict__
-            elif hasattr(obj, '__str__'):
-                return str(obj)
-            else:
-                return super().default(obj)
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        elif hasattr(obj, "__dict__"):
+            return obj.__dict__
+        elif hasattr(obj, "__str__"):
+            return str(obj)
+        else:
+            return super().default(obj)
+
+
 @dataclass
 class RunnerStreamingResult:
     """
@@ -1351,9 +1353,13 @@ class RunnerStreamingResult:
 
     def put_nowait(self, item: StreamEvent):
         # only RawResponsesStreamEvent and RunItemStreamEvent can be put into the queue
-        if not isinstance(item, (RawResponsesStreamEvent, RunItemStreamEvent, QueueCompleteSentinel)):
-            raise ValueError("Only RawResponsesStreamEvent and RunItemStreamEvent can be put into the queue")
-        
+        if not isinstance(
+            item, (RawResponsesStreamEvent, RunItemStreamEvent, QueueCompleteSentinel)
+        ):
+            raise ValueError(
+                "Only RawResponsesStreamEvent and RunItemStreamEvent can be put into the queue"
+            )
+
         self._event_queue.put_nowait(item)
 
     async def stream_events(self) -> AsyncIterator[StreamEvent]:
@@ -1400,20 +1406,21 @@ class RunnerStreamingResult:
             except asyncio.CancelledError:
                 break
 
-
-    async def stream_to_json(self, file_name: str = "agent_events_stream.json") -> AsyncIterator[StreamEvent]:
+    async def stream_to_json(
+        self, file_name: str = "agent_events_stream.json"
+    ) -> AsyncIterator[StreamEvent]:
         """
         Stream events to a JSON file in real-time while also yielding them.
-        
+
         This method writes events to a JSON file as they arrive, giving a live
         streaming effect. The JSON file is updated incrementally.
-        
+
         Args:
             file_name: The output file name for saving events
-            
+
         Yields:
             StreamEvent: Each event as it arrives
-            
+
         Example:
             ```python
             result = runner.astream(prompt_kwargs)
@@ -1423,34 +1430,34 @@ class RunnerStreamingResult:
             ```
         """
         event_count = 0
-        
+
         # Open file and write the opening bracket
         with open(file_name, "w") as f:
             f.write("[\n")
-        
+
         first_event = True
-        
+
         async for event in self.stream_events():
             event_count += 1
-            
+
             # Prepare event data
             if hasattr(event, "to_dict"):
                 event_data = event.to_dict()
             else:
                 event_data = str(event)
-            
+
             event_dict = {
                 "event_number": event_count,
                 "timestamp": datetime.now().isoformat(),
                 "event_type": type(event).__name__,
-                "event_data": event_data
+                "event_data": event_data,
             }
-            
+
             # Append to file in streaming fashion
             with open(file_name, "r+") as f:
                 # Seek to end of file
                 f.seek(0, 2)
-                
+
                 if first_event:
                     # For first event, we're right after "[\n"
                     first_event = False
@@ -1458,30 +1465,30 @@ class RunnerStreamingResult:
                     # For subsequent events, go back to overwrite the previous "\n]"
                     f.seek(f.tell() - 2)
                     f.write(",\n")
-                
+
                 # Write the event
                 json.dump(event_dict, f, indent=2, cls=EventEncoder)
-                
+
                 # Write closing bracket
                 f.write("\n]")
-            
+
             # Yield the event so caller can process it
             yield event
-        
+
         print(f"\nStreamed {event_count} events to {file_name}")
 
     def stream_to_json_sync(self, file_name: str = "agent_events_stream.json"):
         """
         Synchronous wrapper for stream_to_json that returns an iterator.
-        
+
         This allows users to use the streaming JSON functionality in a sync context.
-        
+
         Args:
             file_name: The output file name for saving events
-            
+
         Returns:
             Iterator of events
-            
+
         Example:
             ```python
             result = runner.astream(prompt_kwargs)
@@ -1490,26 +1497,25 @@ class RunnerStreamingResult:
             ```
         """
         import asyncio
-        
+
         async def _collect_events():
             events = []
             async for event in self.stream_to_json(file_name):
                 events.append(event)
             return events
-        
+
         try:
             # Get the current event loop if running
-            loop = asyncio.get_running_loop()
+            # loop = asyncio.get_running_loop()
             # If we're already in an async context, we need to run in a thread
             import concurrent.futures
+
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(asyncio.run, _collect_events())
                 return future.result()
         except RuntimeError:
             # No event loop running, we can use asyncio.run directly
             return asyncio.run(_collect_events())
-
-
 
     def cancel(self):
         """Cancel the running task."""

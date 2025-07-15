@@ -1,5 +1,3 @@
-"""A simple callback manager for tracing Geneator calls"""
-
 from typing import Callable, Literal
 
 

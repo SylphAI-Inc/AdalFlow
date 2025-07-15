@@ -13,6 +13,7 @@ import json
 import asyncio
 from datetime import timedelta
 from pathlib import Path
+from typing import Optional, Union
 from adalflow.core.func_tool import FunctionTool
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
@@ -20,7 +21,7 @@ from mcp.client.sse import sse_client
 from mcp.client.streamable_http import streamablehttp_client
 from contextlib import asynccontextmanager
 import logging
-from typing import Union, List, Any, Optional, Literal
+from typing import List, Any, Literal
 from dataclasses import dataclass, field
 
 from adalflow.core.component import Component
@@ -49,7 +50,7 @@ class MCPServerStdioParams:
         default=None,
         metadata={"desc": "The environment variables to set for the server."},
     )
-    cwd: Optional[str | Path] = field(
+    cwd: Optional[Union[str, Path]] = field(
         default=None,
         metadata={"desc": "The working directory to use when spawning the process."},
     )
@@ -281,7 +282,7 @@ class MCPFunctionTool(FunctionTool):
         self.server_params = server_params
         self.mcp_tool = mcp_tool
         super().__init__(fn=execute_mcp_op, definition=self._create_fn_definition())
-    
+
     # NOTE: dont support optional in the data class
     def _create_fn_definition(self) -> FunctionDefinition:
         """
@@ -290,8 +291,15 @@ class MCPFunctionTool(FunctionTool):
         """
         name = self.mcp_tool.name
         description = self.mcp_tool.description
-        schema = f"input schema: {self.mcp_tool.inputSchema}\noutput schema: {self.mcp_tool.outputSchema}"
-        
+        schema = f"input schema: {self.mcp_tool.inputSchema}"
+
+        # the outputSchema may not be available https://modelcontextprotocol.io/specification/draft/server/tools#output-schema
+        if (
+            hasattr(self.mcp_tool, "outputSchema")
+            and self.mcp_tool.outputSchema is not None
+        ):
+            schema += f"\noutput schema: {self.mcp_tool.outputSchema}"
+
         return FunctionDefinition(
             func_name=name,
             func_desc=description,
@@ -410,7 +418,7 @@ class MCPToolManager(Component):
     def __init__(
         self,
         cache_tools_list: bool = True,
-        client_session_timeout_seconds: float | None = None,
+        client_session_timeout_seconds: Optional[float] = None,
     ):
         self.server_params = {}
         self.cache_tools_list = cache_tools_list
@@ -418,7 +426,7 @@ class MCPToolManager(Component):
         self.client_session_timeout_seconds = client_session_timeout_seconds
 
         # The cache is always dirty at startup, so that we fetch tools at least once
-        self._tools_list: list[MCPFunctionTool] | None = []
+        self._tools_list: Optional[list[MCPFunctionTool]] = []
         self._cached_servers: list[str] = []
 
     def add_servers_from_json_file(self, json_path: str):
