@@ -7,10 +7,11 @@ from dataclasses import dataclass, field
 from datetime import datetime
 import json
 
-if TYPE_CHECKING:
-    from adalflow.core.generator import Generator
 from adalflow.core.base_data_class import DataClass
 from adalflow.utils import serialize
+
+if TYPE_CHECKING:
+    from adalflow.core.generator import Generator
 
 
 log = logging.getLogger(__name__)
