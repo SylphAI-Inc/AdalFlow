@@ -502,8 +502,8 @@ class TestSpanData(unittest.TestCase):
             action_type="planning",
             observation="test observation",
             is_final=False,
-            function_name="test_function",
-            function_results={"arg1": "value1"},
+            tool_name="test_function",
+            tool_output={"arg1": "value1"},
             execution_time=1.0,
         )
 
@@ -511,8 +511,8 @@ class TestSpanData(unittest.TestCase):
         self.assertEqual(span_data.action_type, "planning")
         self.assertEqual(span_data.observation, "test observation")
         self.assertEqual(span_data.is_final, False)
-        self.assertEqual(span_data.function_name, "test_function")
-        self.assertEqual(span_data.function_results, {"arg1": "value1"})
+        self.assertEqual(span_data.tool_name, "test_function")
+        self.assertEqual(span_data.tool_output, {"arg1": "value1"})
         self.assertEqual(span_data.execution_time, 1.0)
 
         # Test export

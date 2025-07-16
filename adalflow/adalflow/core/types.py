@@ -443,16 +443,19 @@ class QueueSentinel:
 
 
 @dataclass
-class RawResponsesStreamEvent:
+class RawResponsesStreamEvent(DataClass):
     """Streaming event for storing the raw responses from the LLM. These are 'raw' events, i.e. they are directly passed through
     from the LLM.
     """
 
-    data: Any
+    data: Union[Any, None] = None
     """The raw responses streaming event from the LLM."""
 
     type: Literal["raw_response_event"] = "raw_response_event"
     """The type of the event."""
+
+    error: Optional[str] = None
+    """The error message if any."""
 
 
 @dataclass
@@ -659,7 +662,7 @@ class FunctionOutput(DataClass):
 # Data modeling for component tool
 ######################################################################################
 @dataclass
-class ComponentToolOutput(DataClass):
+class ToolOutput(DataClass):
     output: Any = field(
         default=None, metadata={"description": "The output of the tool"}
     )
@@ -668,9 +671,16 @@ class ComponentToolOutput(DataClass):
         metadata={
             "description": "The observation of the llm see of the output of the tool"
         },
-    )
+    )  # for llm
+    display: Optional[str] = field(
+        default=None,
+        metadata={"description": "The display of the tool output for user"},
+    )  # for user
     is_streaming: Optional[bool] = field(
         default=False, metadata={"description": "Whether the tool output is streaming"}
+    )
+    metadata: Optional[Dict[str, Any]] = field(
+        default=None, metadata={"description": "Additional metadata"}
     )
 
 
@@ -697,6 +707,9 @@ class StepOutput(DataClass, Generic[T]):
 
     observation: Optional[str] = field(
         default=None, metadata={"desc": "The execution result shown for this action"}
+    )
+    ctx: Optional[Dict[str, Any]] = field(
+        default=None, metadata={"desc": "The context of the step"}
     )
 
     def to_prompt_str(self) -> str:
@@ -1087,6 +1100,40 @@ class ToolCallRunItem(RunItem):
 
 
 @dataclass
+class ToolCallActivityRunItem(RunItem):
+    """
+    Event emitted during the execution of a function/tool call.
+
+    This event provides intermediate updates on the progress of a function/tool call,
+    such as when it starts, completes, or fails. It's paired with ToolCallRunItem to
+    provide before/after notification to the caller.
+
+    Attributes:
+        data: Any data containing the progress of the tool call
+
+    Event Flow Position:
+        ToolCallRunItem → **ToolCallActivityRunItem** → ToolOutputRunItem
+
+    Usage:
+        ```python
+        # Monitor function execution progress
+        async for event in runner.astream(prompt_kwargs).stream_events():
+            if isinstance(event, RunItemStreamEvent) and event.name == "tool_call_activity":
+                activity_item = event.item
+                print(f"Function progress: {activity_item.data}")
+        ```
+    """
+
+    type: str = field(
+        default="tool_call_activity", metadata={"desc": "Type of run item"}
+    )
+    data: Optional[Any] = field(
+        default=None,
+        metadata={"desc": "Any data containing the progress of the tool call"},
+    )
+
+
+@dataclass
 class ToolOutputRunItem(RunItem):
     """
     Event emitted after a function/tool call has been executed.
@@ -1193,7 +1240,7 @@ class FinalOutputItem(RunItem):
 
 
 @dataclass
-class RunItemStreamEvent:
+class RunItemStreamEvent(DataClass):
     """
     Wrapper for streaming RunItem events during Runner execution.
 
@@ -1213,6 +1260,7 @@ class RunItemStreamEvent:
     Event Types:
         - "agent.final_output": Final output from the agent (FinalOutputItem)
         - "agent.tool_call_start": Agent is about to execute a tool (ToolCallRunItem)
+        - "agent.tool_call_activity": Agent is about to execute a tool (ToolCallActivityRunItem)
         - "agent.tool_call_complete": Tool execution completed (ToolOutputRunItem)
         - "agent.step_complete": Full execution step finished (StepRunItem)
         - "agent.execution_complete": Entire execution completed (FinalOutputItem)
@@ -1222,13 +1270,14 @@ class RunItemStreamEvent:
     name: Literal[
         # Core agent execution events
         "agent.tool_call_start",  # Function/tool about to be executed
+        "agent.tool_call_activity",  # Function/tool intermediate activity and progress updates
         "agent.tool_call_complete",  # Function/tool execution completed
         "agent.step_complete",  # Complete execution step finished
         "agent.final_output",  # Final processed output available
         "agent.execution_complete",  # Entire Runner execution completed
     ]
     """The name identifying the specific type of execution event that occurred."""
-
+    # TODO: convert this to data to be consistent with other events
     item: RunItem
     """The RunItem instance containing the event-specific data and context."""
 
@@ -1258,6 +1307,10 @@ class RunnerResult:
         metadata={"description": "The error message if the code execution failed"},
         default=None,
     )
+    ctx: Optional[Dict] = field(
+        metadata={"description": "The context of the execution"},
+        default=None,
+    )
 
 
 @dataclass
@@ -1265,6 +1318,18 @@ class QueueCompleteSentinel:
     """Sentinel to indicate queue completion."""
 
     pass
+
+
+class EventEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        elif hasattr(obj, "__dict__"):
+            return obj.__dict__
+        elif hasattr(obj, "__str__"):
+            return str(obj)
+        else:
+            return super().default(obj)
 
 
 @dataclass
@@ -1285,6 +1350,17 @@ class RunnerStreamingResult:
     def is_complete(self) -> bool:
         """Check if the workflow execution is complete."""
         return self._is_complete
+
+    def put_nowait(self, item: StreamEvent):
+        # only RawResponsesStreamEvent and RunItemStreamEvent can be put into the queue
+        if not isinstance(
+            item, (RawResponsesStreamEvent, RunItemStreamEvent, QueueCompleteSentinel)
+        ):
+            raise ValueError(
+                "Only RawResponsesStreamEvent and RunItemStreamEvent can be put into the queue"
+            )
+
+        self._event_queue.put_nowait(item)
 
     async def stream_events(self) -> AsyncIterator[StreamEvent]:
         """
@@ -1329,6 +1405,117 @@ class RunnerStreamingResult:
 
             except asyncio.CancelledError:
                 break
+
+    async def stream_to_json(
+        self, file_name: str = "agent_events_stream.json"
+    ) -> AsyncIterator[StreamEvent]:
+        """
+        Stream events to a JSON file in real-time while also yielding them.
+
+        This method writes events to a JSON file as they arrive, giving a live
+        streaming effect. The JSON file is updated incrementally.
+
+        Args:
+            file_name: The output file name for saving events
+
+        Yields:
+            StreamEvent: Each event as it arrives
+
+        Example:
+            ```python
+            result = runner.astream(prompt_kwargs)
+            async for event in result.stream_to_json("live_events.json"):
+                # Process event while it's also being written to file
+                print(f"Event: {event}")
+            ```
+        """
+        event_count = 0
+
+        # Open file and write the opening bracket
+        with open(file_name, "w") as f:
+            f.write("[\n")
+
+        first_event = True
+
+        async for event in self.stream_events():
+            event_count += 1
+
+            # Prepare event data
+            if hasattr(event, "to_dict"):
+                event_data = event.to_dict()
+            else:
+                event_data = str(event)
+
+            event_dict = {
+                "event_number": event_count,
+                "timestamp": datetime.now().isoformat(),
+                "event_type": type(event).__name__,
+                "event_data": event_data,
+            }
+
+            # Append to file in streaming fashion
+            with open(file_name, "r+") as f:
+                # Seek to end of file
+                f.seek(0, 2)
+
+                if first_event:
+                    # For first event, we're right after "[\n"
+                    first_event = False
+                else:
+                    # For subsequent events, go back to overwrite the previous "\n]"
+                    f.seek(f.tell() - 2)
+                    f.write(",\n")
+
+                # Write the event
+                json.dump(event_dict, f, indent=2, cls=EventEncoder)
+
+                # Write closing bracket
+                f.write("\n]")
+
+            # Yield the event so caller can process it
+            yield event
+
+        print(f"\nStreamed {event_count} events to {file_name}")
+
+    def stream_to_json_sync(self, file_name: str = "agent_events_stream.json"):
+        """
+        Synchronous wrapper for stream_to_json that returns an iterator.
+
+        This allows users to use the streaming JSON functionality in a sync context.
+
+        Args:
+            file_name: The output file name for saving events
+
+        Returns:
+            Iterator of events
+
+        Example:
+            ```python
+            result = runner.astream(prompt_kwargs)
+            for event in result.stream_to_json_sync("live_events.json"):
+                print(f"Event: {event}")
+            ```
+        """
+        import asyncio
+
+        async def _collect_events():
+            events = []
+            async for event in self.stream_to_json(file_name):
+                events.append(event)
+            return events
+
+        try:
+            # Get the current event loop if running
+            # loop = asyncio.get_running_loop()
+            # If we're already in an async context, we need to run in a thread
+            import concurrent.futures
+
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(asyncio.run, _collect_events())
+                return future.result()
+        except RuntimeError:
+            # No event loop running, we can use asyncio.run directly
+            return asyncio.run(_collect_events())
 
     def cancel(self):
         """Cancel the running task."""

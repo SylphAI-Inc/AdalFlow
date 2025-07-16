@@ -635,8 +635,8 @@ class AdalFlowStepSpanData(CustomSpanData):
         "action_type",
         "observation",
         "is_final",
-        "function_name",
-        "function_results",
+        "tool_name",
+        "tool_output",
         "execution_time",
         "error_info",
         "data",
@@ -648,8 +648,8 @@ class AdalFlowStepSpanData(CustomSpanData):
         action_type: Optional[str] = None,
         observation: Optional[Any] = None,
         is_final: bool = False,
-        function_name: Optional[str] = None,
-        function_results: Optional[Any] = None,
+        tool_name: Optional[str] = None,
+        tool_output: Optional[Any] = None,
         execution_time: Optional[float] = None,
         error_info: Optional[Dict[str, Any]] = None,
     ):
@@ -659,8 +659,8 @@ class AdalFlowStepSpanData(CustomSpanData):
             "action_type": action_type,
             "observation": observation,
             "is_final": is_final,
-            "function_name": function_name,
-            "function_results": function_results,
+            "tool_name": tool_name,
+            "tool_output": tool_output,
             "execution_time": execution_time,
             "error_info": error_info,
         }
@@ -673,8 +673,8 @@ class AdalFlowStepSpanData(CustomSpanData):
         self.action_type = action_type
         self.observation = observation
         self.is_final = is_final
-        self.function_name = function_name
-        self.function_results = function_results
+        self.tool_name = tool_name
+        self.tool_output = tool_output
         self.execution_time = execution_time
         self.error_info = error_info
 

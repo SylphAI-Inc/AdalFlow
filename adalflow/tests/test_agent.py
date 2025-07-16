@@ -24,6 +24,8 @@ class DummyGenerator:
         prompt_kwargs=None,
         output_processors=None,
         name=None,
+        cache_path=None,
+        use_cache=True,
         **kwargs,
     ):
         self.training = False
@@ -34,6 +36,8 @@ class DummyGenerator:
         self.prompt_kwargs = prompt_kwargs
         self.output_processors = output_processors
         self.name = name
+        self.cache_path = cache_path
+        self.use_cache = use_cache
 
     def get_prompt(self, **kwargs):
         return f"dummy-prompt({kwargs})"

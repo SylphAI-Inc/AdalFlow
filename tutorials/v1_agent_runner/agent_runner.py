@@ -23,6 +23,8 @@ from dataclasses import dataclass
 
 from adalflow.utils import get_logger
 
+import asyncio
+
 
 from dotenv import load_dotenv
 
@@ -723,12 +725,12 @@ if __name__ == "__main__":
         # ("Primitive Type ReAct Agent", run_react_agent_primitive_type),
         # ("Async ReAct Agent", lambda: asyncio.run(arun_react_agent_example())),
         # ("Advanced ReAct Agent", run_advanced_react_agent),
-        # (
-        #     "Advanced Async ReAct Agent",
-        #     lambda: asyncio.run(arun_advanced_react_agent()),
-        # ),
+        (
+            "Advanced Async ReAct Agent",
+            lambda: asyncio.run(arun_advanced_react_agent()),
+        ),
         # ("No Structured Output Agent", no_structured_output_run_agent),
-        # ("Pydantic Dataclass Agent", pydantic_dataclass_run_agent),
+        ("Pydantic Dataclass Agent", pydantic_dataclass_run_agent),
     ]
 
     # Run all examples and track results

@@ -291,7 +291,7 @@ class TestRunnerTracing(unittest.TestCase):
         step_span = step_spans[0]
         self.assertEqual(step_span.span_data.step_number, 0)
         self.assertEqual(step_span.span_data.action_type, "planning")
-        self.assertEqual(step_span.span_data.function_name, "finish")
+        self.assertEqual(step_span.span_data.tool_name, "finish")
         self.assertTrue(step_span.span_data.is_final)
 
         # Check for response span
@@ -467,14 +467,14 @@ class TestRunnerTracing(unittest.TestCase):
             # Check first step
             first_step = step_spans[0]
             self.assertEqual(first_step.span_data.step_number, 0)
-            self.assertEqual(first_step.span_data.function_name, "search")
+            self.assertEqual(first_step.span_data.tool_name, "search")
             self.assertEqual(first_step.span_data.action_type, "stream_planning")
             self.assertFalse(first_step.span_data.is_final)
 
             # Check second step
             second_step = step_spans[1]
             self.assertEqual(second_step.span_data.step_number, 1)
-            self.assertEqual(second_step.span_data.function_name, "finish")
+            self.assertEqual(second_step.span_data.tool_name, "finish")
             self.assertEqual(second_step.span_data.action_type, "stream_planning")
             self.assertTrue(second_step.span_data.is_final)
 
@@ -576,13 +576,13 @@ class TestRunnerTracing(unittest.TestCase):
         # Check first step
         first_step = step_spans[0]
         self.assertEqual(first_step.span_data.step_number, 0)
-        self.assertEqual(first_step.span_data.function_name, "search")
+        self.assertEqual(first_step.span_data.tool_name, "search")
         self.assertFalse(first_step.span_data.is_final)
 
         # Check second step
         second_step = step_spans[1]
         self.assertEqual(second_step.span_data.step_number, 1)
-        self.assertEqual(second_step.span_data.function_name, "finish")
+        self.assertEqual(second_step.span_data.tool_name, "finish")
         self.assertTrue(second_step.span_data.is_final)
 
         # Should have multiple generator spans (one per step)

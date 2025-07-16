@@ -339,8 +339,8 @@ def step_span(
     action_type: Optional[str] = None,
     observation: Optional[Any] = None,
     is_final: bool = False,
-    function_name: Optional[str] = None,
-    function_results: Optional[Any] = None,
+    tool_name: Optional[str] = None,
+    tool_output: Optional[Any] = None,
     execution_time: Optional[float] = None,
     error_info: Optional[Dict[str, Any]] = None,
     span_id: Optional[str] = None,
@@ -358,8 +358,8 @@ def step_span(
         action_type: The type of action being performed (e.g., "planning", "tool_execution").
         observation: The result or observation from this step.
         is_final: Whether this is the final step in the workflow.
-        function_name: The name of the function being executed in this step.
-        function_results: The results from executing the function in this step.
+        tool_name: The name of the tool being executed in this step.
+        tool_output: The output from executing the tool in this step.
         execution_time: The time taken to execute this step in seconds.
         error_info: Any error information if the step failed.
         span_id: The ID of the span. Optional. If not provided, we will generate an ID.
@@ -376,8 +376,8 @@ def step_span(
             action_type=action_type,
             observation=observation,
             is_final=is_final,
-            function_name=function_name,
-            function_results=function_results,
+            tool_name=tool_name,
+            tool_output=tool_output,
             execution_time=execution_time,
             error_info=error_info,
         ),

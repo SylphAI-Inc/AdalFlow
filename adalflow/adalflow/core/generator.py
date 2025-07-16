@@ -13,6 +13,7 @@ import logging
 from dataclasses import dataclass, field
 
 from openai.types.responses import ResponseCompletedEvent
+from adalflow.core.tokenizer import Tokenizer
 
 
 from adalflow.core.types import (
@@ -131,7 +132,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         name: Optional[str] = None,
         # args for the cache
         cache_path: Optional[str] = None,
-        use_cache: bool = False,
+        use_cache: bool = True,
     ) -> None:
         r"""The default prompt is set to the DEFAULT_ADALFLOW_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
@@ -205,6 +206,12 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self._trace_api_kwargs: Dict[str, Any] = (
             {}
         )  # used by dynamic computation graph and backpropagation
+
+        self._tokenizer: Tokenizer = Tokenizer()
+
+    @property
+    def use_cache(self):
+        return self._use_cache
 
     def update_default_backward_pass_setup(self, setup: BackwardPassSetup):
         self.backward_pass_setup = setup
@@ -453,10 +460,22 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # 2. combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self._compose_model_kwargs(**model_kwargs)
 
+        max_tokens = composed_model_kwargs.get("max_tokens", None)
+        use_prompt_str = prompt_str
+        if max_tokens is not None:
+            prompt_tokens = self._tokenizer.count_tokens(prompt_str)
+            if prompt_tokens > max_tokens:
+                use_prompt_str = prompt_str[:max_tokens]
+                log.warning(
+                    f"Prompt is too long: {prompt_tokens} tokens, max tokens: {max_tokens}. Truncated prompt to: {use_prompt_str}"
+                )
+            # delete max_tokens from the model_kwargs
+            del composed_model_kwargs["max_tokens"]
+
         # 3. convert app's inputs to api inputs
         api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
             # rename from input since input is a builtin object
-            input=prompt_str,
+            input=use_prompt_str,
             model_kwargs=composed_model_kwargs,
             model_type=self.model_type,
         )
@@ -478,6 +497,31 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 api_kwargs=api_kwargs, model_type=self.model_type
             )
             # prepare cache
+            if use_cache:
+                self._save_cache(index_content, completion)
+            return completion
+        except Exception as e:
+            log.error(f"Error calling the model: {e}")
+            raise e
+
+    async def _async_model_client_call(
+        self, api_kwargs: Dict, use_cache: bool = False
+    ) -> Any:
+        # async call the model client with caching support
+        try:
+            # check the cache
+            index_content = json.dumps(api_kwargs)  # + f"training: {self.training}"
+            if use_cache:
+                # Check cache first - cache operations are sync
+                cached_completion = self._check_cache(index_content)
+                if cached_completion is not None:
+                    log.debug("Cache hit for async call")
+                    return cached_completion
+
+            completion = await self.model_client.acall(
+                api_kwargs=api_kwargs, model_type=self.model_type
+            )
+            # save to cache
             if use_cache:
                 self._save_cache(index_content, completion)
             return completion
@@ -1256,12 +1300,20 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         :warning::
             Training is not supported in async call yet.
         """
+
         with generator_span(
             generator_id="generator" + (id if id else ""),
             model_kwargs=self._compose_model_kwargs(**model_kwargs),
             prompt_kwargs=prompt_kwargs,
             prompt_template_with_keywords=self.prompt.call(**prompt_kwargs).strip(),
         ) as generator_span_data:
+
+            if self.mock_output:
+                generator_span_data.span_data.update_attributes(
+                    {"final_response": self.mock_output_data}
+                )
+                return GeneratorOutput(data=self.mock_output_data, id=id)
+
             generation_time = time.time()
             log.info(f"prompt_kwargs: {prompt_kwargs}")
             log.info(f"model_kwargs: {model_kwargs}")
@@ -1270,38 +1322,41 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             output: GeneratorOutputType = None
             # call the model client
             completion = None
+            use_cache = use_cache if use_cache is not None else self._use_cache
 
             log.info(f"api_kwargs: {api_kwargs}")
 
             try:
-                completion = await self.model_client.acall(
-                    api_kwargs=api_kwargs, model_type=self.model_type
+                completion = await self._async_model_client_call(
+                    api_kwargs=api_kwargs, use_cache=use_cache
                 )
             except Exception as e:
                 log.error(f"Error calling the model: {e}")
-                output = GeneratorOutput(error=str(e))
+                output = GeneratorOutput(error=str(e), id=id)
 
-            if completion:
+            if completion is not None:
                 try:
                     # set ouput id in async post call instead
                     output = await self._async_post_call(completion)
                 except Exception as e:
                     log.error(f"Error processing the output: {e}")
-                    output = GeneratorOutput(raw_response=str(completion), error=str(e))
+                    output = GeneratorOutput(
+                        raw_response=str(completion), error=str(e), id=id
+                    )
 
+            # User only need to use one of them, no need to use them all.
+            output.id = id
             log.info(f"output: {output}")
             # if the output is not an async generator then set its id and run call backs
             # TODO support when output is an Async Generator
             if not isinstance(output, AsyncGenerator):
-                output.id = id
                 self._run_callbacks(
                     output,
                     input=api_kwargs,
                     prompt_kwargs=prompt_kwargs,
                     model_kwargs=model_kwargs,
                 )
-
-            self._trace_api_kwargs = api_kwargs  # tracing
+                self._trace_api_kwargs = api_kwargs  # tracing
 
             # Update generator span attributes similar to call method
             generator_span_data.span_data.update_attributes(

@@ -4,7 +4,6 @@ import inspect
 import asyncio
 import ast
 
-
 from typing import (
     Any,
     Dict,
@@ -31,11 +30,14 @@ from adalflow.core.types import (
     RawResponsesStreamEvent,
     RunItemStreamEvent,
     ToolCallRunItem,
+    ToolOutputRunItem,
     StepRunItem,
     FinalOutputItem,
     RunnerStreamingResult,
     RunnerResult,
     QueueCompleteSentinel,
+    ToolOutput,
+    ToolCallActivityRunItem,
 )
 from adalflow.core.functional import _is_pydantic_dataclass, _is_adalflow_dataclass
 from adalflow.tracing import (
@@ -78,6 +80,8 @@ class Runner(Component):
     def __init__(
         self,
         agent: Agent,
+        ctx: Optional[Dict] = None,
+        max_steps: Optional[int] = None,
         **kwargs,
     ) -> None:
         """Initialize runner with an agent and configuration.
@@ -92,10 +96,19 @@ class Runner(Component):
         self.agent = agent
 
         # get agent requirements
-        self.max_steps = agent.max_steps
+        self.max_steps = max_steps
+        if max_steps is None:
+            self.max_steps = agent.max_steps
+        else:
+            # overwrite the agent's max_steps
+            self.agent.max_steps = max_steps
         self.answer_data_type = agent.answer_data_type or str
 
         self.step_history: List[StepOutput] = []
+
+        # add ctx (it is just a reference, and only get added to the final response)
+        # assume intermediate tool is gonna modify the ctx
+        self.ctx = ctx
 
     def _check_last_step(self, step: Function) -> bool:
         """Check if the last step is the finish step."""
@@ -232,18 +245,16 @@ class Runner(Component):
                     self.step_history
                 )  # a reference to the step history
 
+                # set maximum number of steps for the planner into the prompt
+                prompt_kwargs["max_steps"] = self.max_steps
+
                 model_kwargs = model_kwargs.copy() if model_kwargs else {}
 
                 step_count = 0
                 last_output = None
 
-                # set maximum number of steps for the planner into the prompt
-                # prompt_kwargs["max_steps"] = self.max_steps
-
                 while step_count < self.max_steps:
                     try:
-                        function_results = None
-
                         # Create step span for each iteration
                         with step_span(
                             step_number=step_count, action_type="planning"
@@ -278,40 +289,42 @@ class Runner(Component):
                                     {"output_result": function_results.output}
                                 )
 
+                            function_output = function_results.output
+                            function_output_observation = function_output
+                            if isinstance(function_output, ToolOutput) and hasattr(
+                                function_output, "observation"
+                            ):
+                                function_output_observation = (
+                                    function_output.observation
+                                )
+
                             # create a step output
                             step_ouput: StepOutput = StepOutput(
                                 step=step_count,
                                 action=function,
                                 function=function,
-                                observation=function_results.output,
+                                observation=function_output_observation,
                             )
                             self.step_history.append(step_ouput)
 
                             # Update step span with results
                             step_span_instance.span_data.update_attributes(
                                 {
-                                    "function_name": function.name,
-                                    "function_results": function_results,
+                                    "tool_name": function.name,
+                                    "tool_output": function_results,
                                     "is_final": self._check_last_step(function),
-                                    "observation": function_results.output,
+                                    "observation": function_output_observation,
                                 }
                             )
-                            print(
-                                "updated step span data",
-                                step_span_instance.span_data.data,
-                            )
-
-                            step_count += 1
 
                             if self._check_last_step(function):
-                                processed_data = self._process_data(
-                                    function_results.output
-                                )
+                                processed_data = self._process_data(function_output)
                                 # Wrap final output in RunnerResponse
                                 last_output = RunnerResult(
                                     answer=processed_data,
                                     step_history=self.step_history.copy(),
                                 )
+                                step_count += 1  # Increment step count before breaking
                                 break
 
                             log.debug(
@@ -319,6 +332,8 @@ class Runner(Component):
                                     self.agent.planner.get_prompt(**prompt_kwargs)
                                 )
                             )
+
+                            step_count += 1
 
                     except Exception as e:
                         error_msg = f"Error in step {step_count}: {str(e)}"
@@ -423,6 +438,7 @@ class Runner(Component):
         Returns:
             RunnerResponse containing step history and final processed output
         """
+
         # Create runner span for tracing
         with runner_span(
             runner_id=id or f"async_runner_{hash(str(prompt_kwargs))}",
@@ -436,6 +452,8 @@ class Runner(Component):
                 prompt_kwargs["step_history"] = (
                     self.step_history
                 )  # a reference to the step history
+                # set maximum number of steps for the planner into the prompt
+                prompt_kwargs["max_steps"] = self.max_steps
 
                 model_kwargs = model_kwargs.copy() if model_kwargs else {}
 
@@ -444,7 +462,6 @@ class Runner(Component):
 
                 while step_count < self.max_steps:
                     try:
-                        function_results = None
 
                         # Create step span for each iteration
                         with step_span(
@@ -461,7 +478,6 @@ class Runner(Component):
                                 use_cache=use_cache,
                                 id=id,
                             )
-                            print("check", output)
 
                             printc(f"planner output: {output}", color="yellow")
 
@@ -478,39 +494,48 @@ class Runner(Component):
                                 function_results = await self._tool_execute_async(
                                     function
                                 )
+                                function_output = function_results.output
+                                function_output_observation = function_output
+
+                                if isinstance(function_output, ToolOutput) and hasattr(
+                                    function_output, "observation"
+                                ):
+                                    function_output_observation = (
+                                        function_output.observation
+                                    )
+
                                 # Update tool span attributes using update_attributes for MLflow compatibility
                                 tool_span_instance.span_data.update_attributes(
-                                    {"output_result": function_results.output}
+                                    {"output_result": function_output}
                                 )
 
                             step_output: StepOutput = StepOutput(
                                 step=step_count,
                                 action=function,
                                 function=function,
-                                observation=function_results.output,
+                                observation=function_output_observation,
                             )
                             self.step_history.append(step_output)
 
                             # Update step span with results
                             step_span_instance.span_data.update_attributes(
                                 {
-                                    "function_name": function.name,
-                                    "function_results": function_results,
+                                    "tool_name": function.name,
+                                    "tool_output": function_results,
                                     "is_final": self._check_last_step(function),
-                                    "observation": function_results.output,
+                                    "observation": function_output_observation,
                                 }
                             )
-                            step_count += 1
 
                             if self._check_last_step(function):
-                                processed_data = self._process_data(
-                                    function_results.output
-                                )
+                                processed_data = self._process_data(function_output)
                                 # Wrap final output in RunnerResult
                                 last_output = RunnerResult(
                                     answer=processed_data,
                                     step_history=self.step_history.copy(),
+                                    # ctx=self.ctx
                                 )
+                                step_count += 1  # Increment step count before breaking
                                 break
 
                             log.debug(
@@ -518,6 +543,8 @@ class Runner(Component):
                                     self.agent.planner.get_prompt(**prompt_kwargs)
                                 )
                             )
+
+                            step_count += 1
 
                     except Exception as e:
                         error_msg = f"Error in step {step_count}: {str(e)}"
@@ -580,9 +607,16 @@ class Runner(Component):
                 return last_output
 
             except Exception as e:
+                error_msg = f"Error in step {step_count}: {str(e)}"
+                log.error(error_msg)
+                error_response = RunnerResult(
+                    error=error_msg,
+                    step_history=self.step_history.copy(),
+                    # ctx=self.ctx,
+                )
                 # Update runner span with error info using update_attributes
                 runner_span_instance.span_data.update_attributes(
-                    {"final_answer": f"Error: {str(e)}", "workflow_status": "failed"}
+                    {"final_answer": error_msg, "workflow_status": "failed"}
                 )
                 raise
 
@@ -629,243 +663,271 @@ class Runner(Component):
             max_steps=self.max_steps,
             workflow_status="streaming",
         ) as runner_span_instance:
-            try:
-                self.step_history = []
-                prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
+            self.step_history = []
+            prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
 
-                prompt_kwargs["step_history"] = self.step_history
-                # a reference to the step history
+            prompt_kwargs["step_history"] = self.step_history
+            # a reference to the step history
+            # set maximum number of steps for the planner into the prompt
+            prompt_kwargs["max_steps"] = self.max_steps
 
-                model_kwargs = model_kwargs.copy() if model_kwargs else {}
-                step_count = 0
+            model_kwargs = model_kwargs.copy() if model_kwargs else {}
+            step_count = 0
 
-                while step_count < self.max_steps:
-                    try:
-                        function_results = None
+            while step_count < self.max_steps:
+                try:
+                    # Create step span for each streaming iteration
+                    with step_span(
+                        step_number=step_count, action_type="stream_planning"
+                    ) as step_span_instance:
+                        # important to ensure the prompt at each step is correct
+                        log.debug(
+                            "The prompt with the prompt template is {}".format(
+                                self.agent.planner.get_prompt(**prompt_kwargs)
+                            )
+                        )
+                        printc(
+                            f"agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}"
+                        )
 
-                        # Create step span for each streaming iteration
-                        with step_span(
-                            step_number=step_count, action_type="stream_planning"
-                        ) as step_span_instance:
-                            # important to ensure the prompt at each step is correct
-                            log.debug(
-                                "The prompt with the prompt template is {}".format(
-                                    self.agent.planner.get_prompt(**prompt_kwargs)
+                        # when it's streaming, the output will be an async generator
+                        output = await self.agent.planner.acall(
+                            prompt_kwargs=prompt_kwargs,
+                            model_kwargs=model_kwargs,
+                            use_cache=use_cache,
+                            id=id,
+                        )
+
+                        if not isinstance(output, GeneratorOutput):
+                            raise ValueError("The output is not a GeneratorOutput")
+
+                        if isinstance(output.raw_response, AsyncIterable):
+                            # Streaming llm call - iterate through the async generator
+                            async for event in output.raw_response:
+                                wrapped_event = RawResponsesStreamEvent(data=event)
+                                streaming_result.put_nowait(wrapped_event)
+
+                        else:
+                            # yield the final planner response
+                            if output.error is not None:
+                                wrapped_event = RawResponsesStreamEvent(
+                                    error=output.error
                                 )
-                            )
-                            printc(
-                                f"agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}"
-                            )
+                            else:
+                                wrapped_event = RawResponsesStreamEvent(
+                                    data=output.data
+                                )  # wrap on the data field to be the final output, the data might be null
+                            streaming_result.put_nowait(wrapped_event)
 
-                            # when it's streaming, the output will be an async generator
-                            output = await self.agent.planner.acall(
-                                prompt_kwargs=prompt_kwargs,
-                                model_kwargs=model_kwargs,
-                                use_cache=use_cache,
-                                id=id,
-                            )
+                        # asychronously consuming the raw response will
+                        # update the data field of output with the result of the output processor
 
-                            if not isinstance(output, GeneratorOutput):
-                                raise ValueError("The output is not a GeneratorOutput")
+                        function = self._get_planner_function(output)
+                        printc(f"function: {function}", color="yellow")
 
-                            if isinstance(output.raw_response, AsyncIterable):
-                                # Streaming llm call - iterate through the async generator
-                                async for event in output.raw_response:
-                                    wrapped_event = RawResponsesStreamEvent(data=event)
-                                    streaming_result._event_queue.put_nowait(
-                                        wrapped_event
-                                    )
+                        # Emit tool call event
+                        tool_call_item = ToolCallRunItem(data=function)
+                        tool_call_id = tool_call_item.id
+                        tool_call_name = tool_call_item.data.name
+                        tool_call_event = RunItemStreamEvent(
+                            name="agent.tool_call_start", item=tool_call_item
+                        )
+                        streaming_result.put_nowait(tool_call_event)
 
-                            # asychronously consuming the raw response will
-                            # update the data field of output with the result of the output processor
+                        # Create tool span for streaming function execution
+                        with tool_span(
+                            tool_name=tool_call_name,
+                            function_name=function.name,  # TODO fix attributes
+                            function_args=function.args,
+                            function_kwargs=function.kwargs,
+                        ) as tool_span_instance:
 
-                            function = self._get_planner_function(output)
-                            printc(f"function: {function}", color="yellow")
+                            # TODO: inside of FunctionTool execution, it should ensure the types of async generator item
+                            # to be either ToolCallActivityRunItem or ToolOutput(maybe)
+                            # Call activity might be better designed
 
-                            # Emit tool call event
-                            tool_call_item = ToolCallRunItem(data=function)
-                            tool_call_event = RunItemStreamEvent(
-                                name="agent.tool_call_start", item=tool_call_item
-                            )
-                            streaming_result._event_queue.put_nowait(tool_call_event)
+                            function_result = await self._tool_execute_async(
+                                function
+                            )  # everything must be wrapped in FunctionOutput
 
-                            # Create tool span for streaming function execution
-                            with tool_span(
-                                tool_name=function.name,
-                                function_name=function.name,
-                                function_args=function.args,
-                                function_kwargs=function.kwargs,
-                            ) as tool_span_instance:
-                                function_result = await self._tool_execute_async(
-                                    function
-                                )  # everything must be wrapped in FunctionOutput
+                            if not isinstance(function_result, FunctionOutput):
+                                raise ValueError(
+                                    f"Result must be wrapped in FunctionOutput, got {type(function_result)}"
+                                )
 
-                                if not isinstance(function_result, FunctionOutput):
-                                    raise ValueError(
-                                        f"Result must be wrapped in FunctionOutput, got {type(function_result)}"
-                                    )
+                            function_output = function_result.output
+                            real_function_output = None
 
-                                function_output = function_result.output
-                                # TODO: function needs a stream_events
+                            # TODO: validate when the function is a generator
+
+                            if inspect.iscoroutine(function_output):
+                                real_function_output = await function_output
+                            elif inspect.isasyncgen(function_output):
                                 real_function_output = None
+                                async for item in function_output:
+                                    if isinstance(item, ToolCallActivityRunItem):
+                                        # add the tool_call_id to the item
+                                        item.id = tool_call_id
+                                        tool_call_event = RunItemStreamEvent(
+                                            name="agent.tool_call_activity", item=item
+                                        )
+                                        streaming_result.put_nowait(tool_call_event)
+                                    else:
+                                        real_function_output = item
+                            else:
+                                real_function_output = function_output
 
-                                if inspect.iscoroutine(function_output):
-                                    real_function_output = await function_output
-                                    function_results = [real_function_output]
-                                elif inspect.isasyncgen(function_output):
-                                    function_results = []
-                                    async for item in function_output:
-                                        streaming_result._event_queue.put_nowait(item)
-                                        function_results.append(item)
-                                    real_function_output = function_results[-1]
-                                else:
-                                    real_function_output = function_output
-                                    function_results = [real_function_output]
-                                    streaming_result._event_queue.put_nowait(
-                                        function_output
-                                    )
-
-                                # Update tool span attributes using update_attributes for MLflow compatibility
-                                tool_span_instance.span_data.update_attributes(
-                                    {"output_result": real_function_output}
-                                )
-
-                            step_output: StepOutput = StepOutput(
-                                step=step_count,
-                                action=function,
-                                function=function,
-                                observation=real_function_output,
+                            # create call complete
+                            call_complete_event = RunItemStreamEvent(
+                                name="agent.tool_call_complete",
+                                item=ToolOutputRunItem(
+                                    id=tool_call_id,
+                                    data=FunctionOutput(
+                                        name=function.name,
+                                        input=function,
+                                        output=real_function_output,
+                                    ),
+                                ),
                             )
-                            self.step_history.append(step_output)
+                            streaming_result.put_nowait(call_complete_event)
 
-                            # Update step span with results
-                            step_span_instance.span_data.update_attributes(
-                                {
-                                    "function_name": function.name,
-                                    "function_results": function_results,
-                                    "is_final": self._check_last_step(function),
-                                    "observation": real_function_output,
-                                }
+                            function_output = real_function_output
+                            function_output_observation = function_output
+
+                            if isinstance(function_output, ToolOutput) and hasattr(
+                                function_output, "observation"
+                            ):
+                                function_output_observation = (
+                                    function_output.observation
+                                )
+                            # Update tool span attributes using update_attributes for MLflow compatibility
+
+                            tool_span_instance.span_data.update_attributes(
+                                {"output_result": real_function_output}
                             )
 
-                            # Emit step completion event
-                            step_item = StepRunItem(data=step_output)
-                            step_event = RunItemStreamEvent(
-                                name="agent.step_complete", item=step_item
-                            )
-                            streaming_result._event_queue.put_nowait(step_event)
+                        step_output: StepOutput = StepOutput(
+                            step=step_count,
+                            action=function,
+                            function=function,
+                            observation=function_output_observation,
+                            # ctx=copy.deepcopy(self.ctx),
+                        )
+                        self.step_history.append(step_output)
 
-                            if self._check_last_step(function):
-                                processed_data = self._process_data(
-                                    real_function_output
-                                )
-                                printc(
-                                    f"processed_data: {processed_data}", color="yellow"
-                                )
-
-                                # Create RunnerResult for the final output
-                                runner_result = RunnerResult(
-                                    answer=processed_data,
-                                    step_history=self.step_history.copy(),
-                                )
-
-                                # Update runner span with final results
-                                runner_span_instance.span_data.update_attributes(
-                                    {
-                                        "steps_executed": step_count + 1,
-                                        "final_answer": processed_data,
-                                        "workflow_status": "stream_completed",
-                                    }
-                                )
-
-                                # Create response span for tracking final streaming result
-                                with response_span(
-                                    answer=processed_data,
-                                    result_type=type(processed_data).__name__,
-                                    execution_metadata={
-                                        "steps_executed": step_count + 1,
-                                        "max_steps": self.max_steps,
-                                        "workflow_status": "stream_completed",
-                                        "streaming": True,
-                                    },
-                                    response=runner_result,
-                                ):
-                                    pass
-
-                                # Emit execution complete event
-                                final_output_item = FinalOutputItem(data=runner_result)
-                                final_output_event = RunItemStreamEvent(
-                                    name="agent.execution_complete",
-                                    item=final_output_item,
-                                )
-                                streaming_result._event_queue.put_nowait(
-                                    final_output_event
-                                )
-
-                                # Store final result and completion status
-                                streaming_result.answer = processed_data
-                                streaming_result.step_history = self.step_history.copy()
-                                streaming_result._is_complete = True
-                                break
-
-                            step_count += 1
-
-                    except Exception as e:
-                        error_msg = f"Error in step {step_count}: {str(e)}"
-                        log.error(error_msg)
-
-                        # Update runner span with error info
-                        runner_span_instance.span_data.update_attributes(
+                        # Update step span with results
+                        step_span_instance.span_data.update_attributes(
                             {
-                                "final_answer": error_msg,
-                                "workflow_status": "stream_failed",
+                                "tool_name": function.name,
+                                "tool_output": function_result,
+                                "is_final": self._check_last_step(function),
+                                "observation": function_output_observation,
                             }
                         )
 
-                        # Create response span for error tracking in streaming
-                        with response_span(
-                            answer=error_msg,
-                            result_type="error",
-                            execution_metadata={
-                                "steps_executed": step_count,
-                                "max_steps": self.max_steps,
-                                "workflow_status": "stream_failed",
-                                "streaming": True,
-                            },
-                            response=None,
-                        ):
-                            pass
-
-                        # Store error result and completion status
-                        streaming_result.step_history = self.step_history.copy()
-                        streaming_result._is_complete = True
-                        streaming_result.exception = error_msg
-
-                        # Emit error as FinalOutputItem to queue
-                        error_final_item = FinalOutputItem(error=error_msg)
-                        error_event = RunItemStreamEvent(
-                            name="runner_finished", item=error_final_item
+                        # Emit step completion event
+                        step_item = StepRunItem(data=step_output)
+                        step_event = RunItemStreamEvent(
+                            name="agent.step_complete", item=step_item
                         )
-                        streaming_result._event_queue.put_nowait(error_event)
+                        streaming_result.put_nowait(step_event)
 
-                        # end the streaming result's event queue
-                        streaming_result._event_queue.put_nowait(
-                            QueueCompleteSentinel()
-                        )
-                        return error_msg
+                        if self._check_last_step(function):
+                            processed_data = self._process_data(real_function_output)
+                            printc(f"processed_data: {processed_data}", color="yellow")
 
-                # Signal completion of streaming
-                streaming_result._event_queue.put_nowait(QueueCompleteSentinel())
+                            # Create RunnerResult for the final output
+                            # TODO: this is over complicated!
+                            # Need to make the relation between runner result and runner streaming result more clear
+                            runner_result = RunnerResult(
+                                answer=processed_data,
+                                step_history=self.step_history.copy(),
+                                # ctx = self.ctx
+                            )
 
-            except Exception as e:
-                # Update runner span with error info using update_attributes
-                runner_span_instance.span_data.update_attributes(
-                    {
-                        "final_answer": f"Error: {str(e)}",
-                        "workflow_status": "stream_failed",
-                    }
-                )
-                raise
+                            # Update runner span with final results
+                            runner_span_instance.span_data.update_attributes(
+                                {
+                                    "steps_executed": step_count + 1,
+                                    "final_answer": processed_data,
+                                    "workflow_status": "stream_completed",
+                                }
+                            )
+
+                            # Create response span for tracking final streaming result
+                            with response_span(
+                                answer=processed_data,
+                                result_type=type(processed_data).__name__,
+                                execution_metadata={
+                                    "steps_executed": step_count + 1,
+                                    "max_steps": self.max_steps,
+                                    "workflow_status": "stream_completed",
+                                    "streaming": True,
+                                },
+                                response=runner_result,
+                            ):
+                                pass
+
+                            # Emit execution complete event
+                            final_output_item = FinalOutputItem(data=runner_result)
+                            final_output_event = RunItemStreamEvent(
+                                name="agent.execution_complete",
+                                item=final_output_item,
+                            )
+                            streaming_result.put_nowait(final_output_event)
+
+                            # Store final result and completion status
+                            streaming_result.answer = processed_data
+                            streaming_result.step_history = self.step_history.copy()
+                            streaming_result._is_complete = True
+                            break
+
+                        step_count += 1
+
+                except Exception as e:
+                    error_msg = f"Error in step {step_count}: {str(e)}"
+                    log.error(error_msg)
+
+                    # Update runner span with error info
+                    runner_span_instance.span_data.update_attributes(
+                        {
+                            "final_answer": error_msg,
+                            "workflow_status": "stream_failed",
+                        }
+                    )
+
+                    # Create response span for error tracking in streaming
+                    with response_span(
+                        answer=error_msg,
+                        result_type="error",
+                        execution_metadata={
+                            "steps_executed": step_count,
+                            "max_steps": self.max_steps,
+                            "workflow_status": "stream_failed",
+                            "streaming": True,
+                        },
+                        response=None,
+                    ):
+                        pass
+
+                    # Store error result and completion status
+                    streaming_result.step_history = self.step_history.copy()
+                    streaming_result._is_complete = True
+                    streaming_result.exception = error_msg
+
+                    # Emit error as FinalOutputItem to queue
+                    error_final_item = FinalOutputItem(error=error_msg)
+                    error_event = RunItemStreamEvent(
+                        name="runner_finished", item=error_final_item
+                    )
+                    streaming_result.put_nowait(error_event)
+
+                    # end the streaming result's event queue
+                    streaming_result.put_nowait(QueueCompleteSentinel())
+                    return error_msg
+
+            # Signal completion of streaming
+            streaming_result.put_nowait(QueueCompleteSentinel())
 
     async def _tool_execute_async(
         self,
