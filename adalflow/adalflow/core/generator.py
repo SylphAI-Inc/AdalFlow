@@ -166,8 +166,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         CallbackManager.__init__(self)
 
         self.name = name or self.__class__.__name__
+        self.template = template
+        self.prompt_kwargs = prompt_kwargs
 
-        self._init_prompt(template, prompt_kwargs)
+        # self._init_prompt(template, prompt_kwargs)
 
         self.model_kwargs = model_kwargs.copy()
         # init the model client
@@ -296,7 +298,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self.template = template
         self.prompt_kwargs = prompt_kwargs
         # NOTE: Prompt can handle parameters
-        self.prompt = Prompt(template=template, prompt_kwargs=self.prompt_kwargs)
+        # not initiatize as sometimes we have a nested prompt
+        # self.prompt = Prompt(template=template, prompt_kwargs=self.prompt_kwargs)
 
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "Generator":
@@ -337,13 +340,16 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
     # TODO: use prompt_kwargs as users are already familiar with it
     def print_prompt(self, **kwargs) -> str:
-        return self.prompt.print_prompt(**kwargs)
+        prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
+        return prompt.print_prompt(**kwargs)
 
     def get_prompt(self, **kwargs) -> str:
-        return self.prompt.call(**kwargs)
+        prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
+        return prompt.call(**kwargs)
 
     def _extra_repr(self) -> str:
-        s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}, prompt={self.prompt}"
+        prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
+        s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}, prompt={prompt}"
         return s
 
     def _post_call(self, completion: Any) -> GeneratorOutput:
@@ -455,7 +461,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
         # 1. render the prompt from the template
-        prompt_str = self.prompt.call(**prompt_kwargs).strip()
+        prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
+
+        prompt_str = prompt.call(**prompt_kwargs).strip()
 
         # 2. combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self._compose_model_kwargs(**model_kwargs)
