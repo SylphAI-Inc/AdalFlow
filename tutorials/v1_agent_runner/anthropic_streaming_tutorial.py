@@ -33,11 +33,14 @@ from adalflow.core.func_tool import FunctionTool
 from adalflow.core.base_data_class import DataClass
 from dataclasses import dataclass
 
-from adalflow.utils.lazy_import import setup_env
+from adalflow.utils import setup_env
 
 # Direct Anthropic API imports
 import anthropic
 
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 setup_env()  # Comment out to prevent FileNotFoundError when .env doesn't exist
 
@@ -812,9 +815,8 @@ def test_runner_with_streaming():
                 print(f"   Event: {type(event).__name__}")
                 print(f"   Event content: {event}")
 
-            await streaming_result.wait_for_completion()
             print(f"   ✓ Final completion status: {streaming_result.is_complete}")
-            print(f"   ✓ Final result type: {type(streaming_result.final_result)}")
+            print(f"   ✓ Final answer type: {type(streaming_result.answer)}")
 
         asyncio.run(test_streaming())
 
@@ -851,11 +853,12 @@ def test_runner_with_streaming():
         )
 
         async def test_data_class_streaming():
-            # Wait for completion
-            await streaming_result.wait_for_completion()
+            # Consume stream events to completion
+            async for event in streaming_result.stream_events():
+                pass  # Process events if needed
 
             assert streaming_result.is_complete, "Should be complete"
-            assert streaming_result.final_result is not None, "Should have final result"
+            assert streaming_result.answer is not None, "Should have final answer"
 
             print("   ✓ Streaming completed")
             print("   ✓ Final result available")
@@ -1003,14 +1006,14 @@ def test_runner_agent_integration_streaming():
                 print(f"   Event: {type(event).__name__}")
                 print(f"   Event content: {event}")
 
-            # Verify completion
+            # Verify completion - stream_events() automatically handles completion
             assert streaming_result.is_complete, "Workflow should be complete"
-            assert streaming_result.final_result is not None, "Should have final result"
+            assert streaming_result.answer is not None, "Should have final answer"
             assert len(events_received) > 0, "Should receive events"
 
             print(f"   ✓ Received {len(events_received)} events")
             print("   ✓ Workflow completed successfully")
-            print(f"   ✓ Final answer: {streaming_result.final_result.answer}")
+            print(f"   ✓ Final answer: {streaming_result.answer}")
 
         asyncio.run(test_complete_workflow())
 
@@ -1042,11 +1045,16 @@ def test_runner_agent_integration_streaming():
             try:
                 async for event in streaming_result.stream_events():
                     pass
-                # If we get here, check if error was captured
-                if streaming_result.final_result and hasattr(
-                    streaming_result.final_result, "error"
+                # Check if error was captured - stream_events() handles completion
+                if (
+                    hasattr(streaming_result, "_exception")
+                    and streaming_result._exception
                 ):
-                    print("   ✓ Error properly captured in final result")
+                    print(
+                        f"   ✓ Error captured in streaming result: {streaming_result._exception}"
+                    )
+                elif streaming_result.answer is None:
+                    print("   ✓ No answer found, likely failed as expected")
                 else:
                     print("   ⚠ No error found, might have succeeded unexpectedly")
             except Exception as e:
@@ -1096,20 +1104,21 @@ def test_runner_async_streaming():
 
             astream_result = runner.astream(prompt_kwargs={"input_str": "Add 2 and 3"})
 
-            await astream_result.wait_for_completion()
+            # Consume stream events to completion
+            async for event in astream_result.stream_events():
+                print("THIS IS THE EVENT", event)
+                pass  # Process events if needed
 
             print("\nAsync Compare Agent Final Results:\n")
             print(f"acall result: {acall_result}")
-            print(f"astream result: {astream_result.final_result}")
+            print(f"astream result: {astream_result.answer}")
 
             # Both should complete successfully
             assert hasattr(acall_result, "answer"), "acall should have answer"
-            assert (
-                astream_result.final_result is not None
-            ), "astream should have final result"
+            assert astream_result.answer is not None, "astream should have final answer"
 
             print(f"   ✓ acall result type: {type(acall_result)}")
-            print(f"   ✓ astream result type: {type(astream_result.final_result)}")
+            print(f"   ✓ astream result answer type: {type(astream_result.answer)}")
 
         asyncio.run(compare_async_methods())
 

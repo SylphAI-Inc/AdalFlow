@@ -244,21 +244,29 @@ def create_default_planner(
 
 
 class Agent(Component):
-    """
-    An agent is a high-level component that holds (1) a generator as task plannaer (calling tools) and (2) a tool manager to manage tools.
+    """A high-level agentic component that orchestrates AI planning and tool execution.
 
-    It comes with default prompt template that instructs LLM (1) agentic task description (2) template on adding definitions of tools
-    (3) arguments to fill in history.
+    The Agent combines a Generator-based planner for task decomposition with a ToolManager
+    for function calling. It uses a ReAct (Reasoning and Acting) architecture to iteratively
+    plan steps and execute tools to solve complex tasks.
 
-    Additionally, it comes with two helper tools:
-    1. finish: to finish the task
-    2. additional_llm_tool: to answer any input query with llm's world knowledge. Use me as a fallback tool or when the query is simple.
+    The Agent comes with default prompt templates for agentic reasoning, automatic tool
+    definition integration, and step history tracking. It includes built-in helper tools:
+    - finish: Terminates execution with the final answer
+    - llm_tool: Fallback tool using LLM world knowledge for simple queries
+
+    Architecture:
+        Agent contains two main components:
+        1. Planner (Generator): Plans and reasons about next actions using an LLM
+        2. ToolManager: Manages and executes available tools/functions
 
     Attributes:
-        name (str): Name of the agent
-        tool_manager (ToolManager): Stores and manages tools
-        generator (Generator): Handles text generation with a language model
-        the output_processors must return the type StepOutput
+        name (str): Unique identifier for the agent instance
+        tool_manager (ToolManager): Manages available tools and their execution
+        planner (Generator): LLM-based planner for task decomposition and reasoning
+        answer_data_type (Type): Expected type for the final answer output
+        max_steps (int): Maximum number of planning steps allowed
+        is_thinking_model (bool): Whether the underlying model supports chain-of-thought
     """
 
     def __init__(
