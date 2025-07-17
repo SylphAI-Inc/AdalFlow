@@ -169,8 +169,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self.template = template
         self.prompt_kwargs = prompt_kwargs
 
-        # self._init_prompt(template, prompt_kwargs)
-
         self.model_kwargs = model_kwargs.copy()
         # init the model client
         self.model_client = model_client
@@ -292,14 +290,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 ]
                 p.set_peers(peers)
                 setattr(self, key, p)
-
-    def _init_prompt(self, template: str, prompt_kwargs: Dict):
-        r"""Initialize the prompt with the template and prompt_kwargs."""
-        self.template = template
-        self.prompt_kwargs = prompt_kwargs
-        # NOTE: Prompt can handle parameters
-        # not initiatize as sometimes we have a nested prompt
-        # self.prompt = Prompt(template=template, prompt_kwargs=self.prompt_kwargs)
 
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "Generator":
@@ -461,9 +451,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
         # 1. render the prompt from the template
-        prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
+        prompt_str = self.get_prompt(**prompt_kwargs)
+        # prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
 
-        prompt_str = prompt.call(**prompt_kwargs).strip()
+        # prompt_str = prompt.call(**prompt_kwargs).strip()
 
         # 2. combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self._compose_model_kwargs(**model_kwargs)
@@ -1225,11 +1216,12 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         Call the model_client by formatting prompt from the prompt_kwargs,
         and passing the combined model_kwargs to the model client.
         """
+        prompt_str = self.get_prompt(**prompt_kwargs)
         with generator_span(
             generator_id="generator" + (id if id else ""),
             model_kwargs=self._compose_model_kwargs(**model_kwargs),
             prompt_kwargs=prompt_kwargs,
-            prompt_template_with_keywords=self.prompt.call(**prompt_kwargs).strip(),
+            prompt_template_with_keywords=prompt_str
         ) as generator_span_data:
             generation_time = time.time()
             if self.mock_output:
@@ -1308,12 +1300,13 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         :warning::
             Training is not supported in async call yet.
         """
+        prompt_str = self.get_prompt(**prompt_kwargs)
 
         with generator_span(
             generator_id="generator" + (id if id else ""),
             model_kwargs=self._compose_model_kwargs(**model_kwargs),
             prompt_kwargs=prompt_kwargs,
-            prompt_template_with_keywords=self.prompt.call(**prompt_kwargs).strip(),
+            prompt_template_with_keywords=prompt_str,
         ) as generator_span_data:
 
             if self.mock_output:
