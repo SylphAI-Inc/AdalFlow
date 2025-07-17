@@ -62,19 +62,32 @@ AdalflowDataClass: TypeAlias = Type[
 
 
 class Runner(Component):
-    """A runner class that executes an Agent instance with multi-step execution.
+    """Executes Agent instances with multi-step iterative planning and tool execution.
 
-    It internally maintains a planner LLM and an executor and adds a LLM call to the executor as a tool for the planner.
+    The Runner orchestrates the execution of an Agent through multiple reasoning and action
+    cycles. It manages the step-by-step execution loop where the Agent's planner generates
+    Function calls that get executed by the ToolManager, with results fed back into the
+    planning context for the next iteration.
 
-    The output to the planner agent  call is expected to be a Function object. The planner iterates through at most
-    max_steps unless the planner sets the action to "finish" then the planner returns the final response.
+    Execution Flow:
+        1. Initialize step history and prompt context
+        2. For each step (up to max_steps):
+           a. Call Agent's planner to get next Function
+           b. Execute the Function using ToolManager
+           c. Add step result to history
+           d. Check if Function is "finish" to terminate
+        3. Process final answer to expected output type
 
-    If the user optionally specifies the output_type then the Runner parses the Function object to the output_type.
+    The Runner supports both synchronous and asynchronous execution modes, as well as
+    streaming execution with real-time event emission. It includes comprehensive tracing
+    and error handling throughout the execution pipeline.
 
     Attributes:
-        planner (Agent): The agent instance to execute
-        config (RunnerConfig): Configuration for the runner
-        max_steps (int): Maximum number of steps to execute
+        agent (Agent): The Agent instance to execute
+        max_steps (int): Maximum number of execution steps allowed
+        answer_data_type (Type): Expected type for final answer processing
+        step_history (List[StepOutput]): History of all execution steps
+        ctx (Optional[Dict]): Additional context passed to tools
     """
 
     def __init__(
