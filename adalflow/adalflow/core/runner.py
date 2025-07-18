@@ -425,7 +425,7 @@ class Runner(Component):
         Includes permission checking if permission_manager is configured.
         """
         
-        # Check permission before execution
+        # execute permission and blocking mechanism in check_permission
         if self.permission_manager:
             allowed, modified_func = asyncio.run(
                 self.permission_manager.check_permission(func)

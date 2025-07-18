@@ -17,15 +17,37 @@ class ApprovalOutcome(Enum):
     PROCEED_ONCE = "proceed_once"
     PROCEED_ALWAYS = "proceed_always"
     CANCEL = "cancel"
-    MODIFY = "modify"
 
 
 class PermissionManager:
-    """
-    Manages tool execution permissions and approval flow.
+    __doc__ = """Manages tool execution permissions and approval flow.
     
     This manager can be configured with different approval callbacks
     to support various UI patterns (CLI, WebSocket, REST, etc).
+
+    Users will register tools into three categories:
+    - always_allowed_tools: Tools that are always allowed to execute.
+    - blocked_tools: Tools that are blocked and cannot execute.
+    - tool_require_approval: Tools that require explicit approval before execution.
+     (e.g. delete_file, send_email)
+
+    If tool is not registered, it will default to False (no approval required).
+
+    The approval_mode parameter controls how tool permissions are handled:
+    
+    - "default": respects all three categories.
+    
+    - "auto_approve": approves tool_require_approval tools automatically.
+    Still respects the blocked_tools list. Useful for trusted environments.
+    
+    - "yolo" (Yes, Only Live Once): Bypasses all categories entirely.
+    Maximum performance but no safety checks. Use only in development or
+    fully trusted environments.
+
+    For the PermissionManager to be function, see exampels in /apps
+    * cli_permission_handler.py
+    * fastapi_permission_handler.py
+    Where the approval_callback is implemented.
     """
     
     def __init__(
@@ -54,20 +76,25 @@ class PermissionManager:
         
     def is_approval_required(self, tool_name: str) -> bool:
         """Check if a tool requires approval."""
-        # Check approval mode first
-        if self.approval_mode == "yolo" or self.approval_mode == "auto_approve":
+        # Yolo mode bypasses all checks
+        if self.approval_mode == "yolo":
             return False
-            
-        # Check if tool is in always allowed list
-        if tool_name in self.always_allowed_tools:
-            return False
-            
-        # Check if tool is blocked
+        
+        # Always check blocked tools first (in all modes)
         if tool_name in self.blocked_tools:
             return True
-            
-        # Check tool-specific setting (default to True if not registered)
-        return self.tool_require_approval.get(tool_name, True)
+        
+        # Always check always_allowed tools (in all modes)
+        if tool_name in self.always_allowed_tools:
+            return False
+        
+        # Mode-specific logic for remaining tools
+        if self.approval_mode == "auto_approve":
+            return False  # Auto-approve everything not blocked/always-allowed
+        
+        # Default mode: check tool-specific setting
+        # Default to False (no approval required) for unregistered tools
+        return self.tool_require_approval.get(tool_name, False)
         
     async def check_permission(self, func: Function) -> tuple[bool, Optional[Function]]:
         """
@@ -81,30 +108,27 @@ class PermissionManager:
         """
         tool_name = func.name
         
-        # Quick checks that don't require approval
+        # Check if approval is required using our centralized logic
         if not self.is_approval_required(tool_name):
             return True, func
             
-        if tool_name in self.blocked_tools:
-            log.info(f"Tool '{tool_name}' is blocked")
-            return False, None
-            
-        # No callback means default allow
+        # If approval is required but no callback is set, default to allow with warning
         if not self.approval_callback:
             log.warning(f"No approval callback set, allowing tool '{tool_name}' by default")
             return True, func
-            
-        # Create function request using the types from types.py
+
+        # Ensure to use the same id as the func   
         request = FunctionRequest(
+            id = func.id,
             tool_name=tool_name,
             tool=func
         )
         
-        # Store pending request
         self.pending_approvals[request.id] = request
         
         try:
-            # Call approval callback
+            # Interacts with user to get approval
+            # the frontend need to display the request and wait for the user to respond
             outcome = await self.approval_callback(request)
             
             # Handle outcome
@@ -115,17 +139,15 @@ class PermissionManager:
             elif outcome == ApprovalOutcome.PROCEED_ONCE:
                 log.info(f"Tool '{tool_name}' approved for single execution")
                 return True, func
-            elif outcome == ApprovalOutcome.MODIFY:
-                # In a real implementation, this would involve editing the function
-                # For now, just proceed with original
-                log.info(f"Tool '{tool_name}' modification requested (not implemented)")
-                return True, func
             else:  # CANCEL
                 log.info(f"Tool '{tool_name}' execution cancelled by user")
                 return False, None
                 
+        except Exception as e:
+            log.error(f"Error during approval callback for tool '{tool_name}': {e}")
+            # Default to deny on error for safety
+            return False, None
         finally:
-            # Clean up pending request
             self.pending_approvals.pop(request.id, None)
             
     def add_to_always_allowed(self, tool_name: str):
@@ -151,6 +173,7 @@ class PermissionManager:
     def create_permission_event(self, func: Function) -> ToolCallPermissionRequest:
         """Create a permission request event for streaming."""
         request = FunctionRequest(
+            id = func.id,
             tool_name=func.name,
             tool=func
         )
