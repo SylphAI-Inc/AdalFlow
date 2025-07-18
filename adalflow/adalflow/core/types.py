@@ -1133,6 +1133,46 @@ class ToolCallActivityRunItem(RunItem):
         metadata={"desc": "Any data containing the progress of the tool call"},
     )
 
+@dataclass 
+class FunctionRequest(DataClass):
+    """
+    Event emitted when the Agent is about to execute a function/tool call.
+    """
+    id: str = field(default_factory=lambda: str(uuid.uuid4())) # tool call id for this request 
+    tool_name: str = field(default=None, metadata={"desc": "Name of the tool to be called"})
+    tool: Optional[Function] = field(default=None, metadata={"desc": "Function object containing the tool call to be executed"})
+    
+@dataclass 
+class ToolCallPermissionRequest(RunItem):
+    """
+    Event emitted when the Agent is about to execute a function/tool call.
+
+    This event is generated after the planner LLM has decided on a function to call
+    but before the function is actually executed. It allows consumers to monitor
+    what tools are being invoked and potentially intervene or log the calls.
+
+    Attributes:
+        data: The Function object containing the tool call details (name, args, kwargs)
+
+    Event Flow Position:
+        1. Planner generates Function → **ToolCallRunItem** → Function execution → ToolOutputRunItem
+
+    Usage:
+        ```python
+        # Listen for tool calls in streaming
+        async for event in runner.astream(prompt_kwargs).stream_events():
+            if isinstance(event, RunItemStreamEvent) and event.name == "tool_called":
+                tool_call_item = event.item
+                print(f"About to call: {tool_call_item.data.name}")
+        ```
+    """
+
+    type: str = field(default="tool_call_permission_request", metadata={"desc": "Type of run item"})
+    data: Optional[FunctionRequest] = field(
+        default=None,
+        metadata={"desc": "Function request to be executed"}
+    )
+
 
 @dataclass
 class ToolOutputRunItem(RunItem):
@@ -1276,6 +1316,7 @@ class RunItemStreamEvent(DataClass):
         "agent.step_complete",  # Complete execution step finished
         "agent.final_output",  # Final processed output available
         "agent.execution_complete",  # Entire Runner execution completed
+        "agent.tool_permission_request",  # Tool permission request before execution
     ]
     """The name identifying the specific type of execution event that occurred."""
     # TODO: convert this to data to be consistent with other events

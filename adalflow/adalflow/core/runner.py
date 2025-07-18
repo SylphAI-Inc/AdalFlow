@@ -39,6 +39,7 @@ from adalflow.core.types import (
     ToolOutput,
     ToolCallActivityRunItem,
 )
+from adalflow.core.permission_manager import PermissionManager
 from adalflow.core.functional import _is_pydantic_dataclass, _is_adalflow_dataclass
 from adalflow.tracing import (
     runner_span,
@@ -60,7 +61,8 @@ AdalflowDataClass: TypeAlias = Type[
     Any
 ]  # Replace with your actual Adalflow dataclass type if available
 
-
+# The runner will create tool call request, add a unique call id.
+# TODO: move this to repo adalflow/agent 
 class Runner(Component):
     """A runner class that executes an Agent instance with multi-step execution.
 
@@ -82,6 +84,7 @@ class Runner(Component):
         agent: Agent,
         ctx: Optional[Dict] = None,
         max_steps: Optional[int] = None,
+        permission_manager: Optional[PermissionManager] = None,
         **kwargs,
     ) -> None:
         """Initialize runner with an agent and configuration.
@@ -91,9 +94,11 @@ class Runner(Component):
             stream_parser: Optional stream parser
             output_type: Optional Pydantic data class type
             max_steps: Maximum number of steps to execute
+            permission_manager: Optional permission manager for tool approval
         """
         super().__init__(**kwargs)
         self.agent = agent
+        self.permission_manager = permission_manager
 
         # get agent requirements
         self.max_steps = max_steps
@@ -109,6 +114,14 @@ class Runner(Component):
         # add ctx (it is just a reference, and only get added to the final response)
         # assume intermediate tool is gonna modify the ctx
         self.ctx = ctx
+        
+        # Register tools with permission manager if provided
+        if self.permission_manager and hasattr(self.agent, 'tool_manager'):
+            # Iterate through tools in the ComponentList
+            for tool in self.agent.tool_manager.tools:
+                if hasattr(tool, 'definition') and hasattr(tool, 'require_approval'):
+                    tool_name = tool.definition.func_name
+                    self.permission_manager.register_tool(tool_name, tool.require_approval)
 
     def _check_last_step(self, step: Function) -> bool:
         """Check if the last step is the finish step."""
@@ -409,7 +422,27 @@ class Runner(Component):
         """
         Call this in the call method.
         Handles both sync and async functions by running async ones in event loop.
+        Includes permission checking if permission_manager is configured.
         """
+        
+        # Check permission before execution
+        if self.permission_manager:
+            allowed, modified_func = asyncio.run(
+                self.permission_manager.check_permission(func)
+            )
+            
+            if not allowed:
+                return FunctionOutput(
+                    name=func.name,
+                    input=func,
+                    output=ToolOutput(
+                        observation="Tool execution cancelled by user",
+                        error="Permission denied"
+                    )
+                )
+            
+            # Use modified function if user edited it
+            func = modified_func or func
 
         result = self.agent.tool_manager.execute_func(func=func)
 
@@ -725,6 +758,14 @@ class Runner(Component):
                         function = self._get_planner_function(output)
                         printc(f"function: {function}", color="yellow")
 
+                        # Check if permission is required and emit permission event
+                        if self.permission_manager and self.permission_manager.is_approval_required(function.name):
+                            permission_event = self.permission_manager.create_permission_event(function)
+                            permission_stream_event = RunItemStreamEvent(
+                                name="agent.tool_permission_request", item=permission_event
+                            )
+                            streaming_result.put_nowait(permission_stream_event)
+
                         # Emit tool call event
                         tool_call_item = ToolCallRunItem(data=function)
                         tool_call_id = tool_call_item.id
@@ -937,7 +978,25 @@ class Runner(Component):
         Call this in the acall method.
         Handles both sync and async functions.
         Note: this version has no support for streaming.
+        Includes permission checking if permission_manager is configured.
         """
+        
+        # Check permission before execution
+        if self.permission_manager:
+            allowed, modified_func = await self.permission_manager.check_permission(func)
+            
+            if not allowed:
+                return FunctionOutput(
+                    name=func.name,
+                    input=func,
+                    output=ToolOutput(
+                        observation="Tool execution cancelled by user",
+                        error="Permission denied"
+                    )
+                )
+            
+            # Use modified function if user edited it
+            func = modified_func or func
 
         result = await self.agent.tool_manager.execute_func_async(func=func)
 
