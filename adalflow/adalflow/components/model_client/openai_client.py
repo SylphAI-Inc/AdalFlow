@@ -536,7 +536,7 @@ class OpenAIClient(ModelClient):
     def convert_inputs_to_api_kwargs(
         self,
         input: Optional[Any] = None,
-        model_kwargs: Dict = {},
+        model_kwargs: Optional[Dict] = None,
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
         r"""
@@ -557,7 +557,7 @@ class OpenAIClient(ModelClient):
             Dict: API-specific kwargs for the model call
         """
 
-        final_model_kwargs = model_kwargs.copy()
+        final_model_kwargs = model_kwargs.copy() if model_kwargs else {}
         if model_type == ModelType.EMBEDDER:
             if isinstance(input, str):
                 input = [input]
@@ -639,7 +639,11 @@ class OpenAIClient(ModelClient):
         ),
         max_time=5,
     )
-    def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
+    def call(
+        self,
+        api_kwargs: Optional[Dict] = None,
+        model_type: ModelType = ModelType.UNDEFINED,
+    ):
         """
         kwargs is the combined input and model_kwargs.  Support streaming call.
         For reasoning model, users can add "reasoning" key to the api_kwargs to pass the reasoning config.
@@ -652,6 +656,7 @@ class OpenAIClient(ModelClient):
             }
         }
         """
+        api_kwargs = api_kwargs or {}
         log.info(f"api_kwargs: {api_kwargs}")
         self._api_kwargs = api_kwargs
         if model_type == ModelType.EMBEDDER:
@@ -705,7 +710,9 @@ class OpenAIClient(ModelClient):
         max_time=5,
     )
     async def acall(
-        self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
+        self,
+        api_kwargs: Optional[Dict] = None,
+        model_type: ModelType = ModelType.UNDEFINED,
     ):
         """
         kwargs is the combined input and model_kwargs. Support async streaming call.
@@ -714,6 +721,7 @@ class OpenAIClient(ModelClient):
         with the asynchronous client
         """
         # store the api kwargs in the client
+        api_kwargs = api_kwargs or {}
         self._api_kwargs = api_kwargs
         if self.async_client is None:
             self.async_client = self.init_async_client()
