@@ -3,6 +3,7 @@ import logging
 import inspect
 import asyncio
 import ast
+import uuid
 
 from typing import (
     Any,
@@ -115,13 +116,27 @@ class Runner(Component):
         # assume intermediate tool is gonna modify the ctx
         self.ctx = ctx
         
-        # Register tools with permission manager if provided
+        # Initialize permission manager
+        self._init_permission_manager()
+
+    def _init_permission_manager(self):
+        """Initialize the permission manager and register tools that require approval."""
         if self.permission_manager and hasattr(self.agent, 'tool_manager'):
             # Iterate through tools in the ComponentList
             for tool in self.agent.tool_manager.tools:
                 if hasattr(tool, 'definition') and hasattr(tool, 'require_approval'):
                     tool_name = tool.definition.func_name
                     self.permission_manager.register_tool(tool_name, tool.require_approval)
+    
+    def set_permission_manager(self, permission_manager: Optional[PermissionManager]) -> None:
+        """Set or update the permission manager after runner initialization.
+        
+        Args:
+            permission_manager: The permission manager instance to use for tool approval
+        """
+        self.permission_manager = permission_manager
+        # Re-initialize to register tools with the new permission manager
+        self._init_permission_manager()
 
     def _check_last_step(self, step: Function) -> bool:
         """Check if the last step is the finish step."""
@@ -227,7 +242,7 @@ class Runner(Component):
             Dict[str, Any]
         ] = None,  # if some call use a different config
         use_cache: Optional[bool] = None,
-        id: Optional[str] = None,
+        id: Optional[str] = None, # global run id
     ) -> RunnerResult:
         """Execute the planner synchronously for multiple steps with function calling support.
 
@@ -288,6 +303,8 @@ class Runner(Component):
 
                             function = self._get_planner_function(output)
                             printc(f"function: {function}", color="yellow")
+                            # add a function id 
+                            function.id = str(uuid.uuid4())
 
                             # Create tool span for function execution
                             with tool_span(
@@ -436,8 +453,9 @@ class Runner(Component):
                     name=func.name,
                     input=func,
                     output=ToolOutput(
+                        output="Tool execution cancelled by user",
                         observation="Tool execution cancelled by user",
-                        error="Permission denied"
+                        display="Permission denied"
                     )
                 )
             
@@ -514,6 +532,9 @@ class Runner(Component):
 
                             printc(f"planner output: {output}", color="yellow")
 
+                            # add a function id 
+                            function.id = str(uuid.uuid4())
+
                             function = self._get_planner_function(output)
                             printc(f"function: {function}", color="yellow")
 
@@ -525,7 +546,7 @@ class Runner(Component):
                                 function_kwargs=function.kwargs,
                             ) as tool_span_instance:
                                 function_results = await self._tool_execute_async(
-                                    function
+                                    func=function
                                 )
                                 function_output = function_results.output
                                 function_output_observation = function_output
@@ -756,6 +777,11 @@ class Runner(Component):
                         # update the data field of output with the result of the output processor
 
                         function = self._get_planner_function(output)
+                        function.id = str(uuid.uuid4())
+
+                        # TODO: simplify this
+                        tool_call_id = function.id 
+                        tool_call_name = function.name
                         printc(f"function: {function}", color="yellow")
 
                         # Check if permission is required and emit permission event
@@ -766,14 +792,6 @@ class Runner(Component):
                             )
                             streaming_result.put_nowait(permission_stream_event)
 
-                        # Emit tool call event
-                        tool_call_item = ToolCallRunItem(data=function)
-                        tool_call_id = tool_call_item.id
-                        tool_call_name = tool_call_item.data.name
-                        tool_call_event = RunItemStreamEvent(
-                            name="agent.tool_call_start", item=tool_call_item
-                        )
-                        streaming_result.put_nowait(tool_call_event)
 
                         # Create tool span for streaming function execution
                         with tool_span(
@@ -788,7 +806,7 @@ class Runner(Component):
                             # Call activity might be better designed
 
                             function_result = await self._tool_execute_async(
-                                function
+                                func=function, streaming_result=streaming_result
                             )  # everything must be wrapped in FunctionOutput
 
                             if not isinstance(function_result, FunctionOutput):
@@ -973,6 +991,7 @@ class Runner(Component):
     async def _tool_execute_async(
         self,
         func: Function,
+        streaming_result: Optional[RunnerStreamingResult] = None,
     ) -> Union[FunctionOutput, Parameter]:
         """
         Call this in the acall method.
@@ -990,13 +1009,24 @@ class Runner(Component):
                     name=func.name,
                     input=func,
                     output=ToolOutput(
+                        output = "Tool execution cancelled by user",
                         observation="Tool execution cancelled by user",
-                        error="Permission denied"
+                        display="Permission denied"
                     )
                 )
             
             # Use modified function if user edited it
             func = modified_func or func
+
+        # Emit tool call event
+        if streaming_result is not None:
+            tool_call_item = ToolCallRunItem(data=func, id=func.id)
+            tool_call_id = tool_call_item.id
+            tool_call_name = tool_call_item.data.name
+            tool_call_event = RunItemStreamEvent(
+                name="agent.tool_call_start", item=tool_call_item
+            )
+            streaming_result.put_nowait(tool_call_event)   
 
         result = await self.agent.tool_manager.execute_func_async(func=func)
 

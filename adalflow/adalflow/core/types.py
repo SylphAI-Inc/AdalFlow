@@ -367,6 +367,9 @@ class Function(DataClass):
         fun = Function(name="add", args=[1, 2])
         result = context_map[fun.name](*fun.args)
     """
+    id: Optional[str] = field(
+        default=None, metadata={"desc": "The id of the function call"}
+    )
     thought: Optional[str] = field(
         default=None, metadata={"desc": "Why the function is called"}
     )  # if the model itself is a thinking model, disable thought field

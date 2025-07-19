@@ -42,7 +42,7 @@ class ApprovalQueue:
         
     async def create_request(self, request: FunctionRequest) -> str:
         """Create a new approval request and return its ID."""
-        request_id = str(uuid.uuid4())
+        request_id = request.id
         self.pending_requests[request_id] = request
         # Get the current event loop to ensure Future is created in the right context
         loop = asyncio.get_event_loop()
@@ -200,7 +200,7 @@ class FastAPIPermissionHandler(PermissionManager):
                 "proceed_once": ApprovalOutcome.PROCEED_ONCE,
                 "proceed_always": ApprovalOutcome.PROCEED_ALWAYS,
                 "cancel": ApprovalOutcome.CANCEL,
-                "modify": ApprovalOutcome.MODIFY
+                # "modify": ApprovalOutcome.MODIFY  # TODO: Implement modify functionality in the future
             }
             
             if response.outcome not in outcome_map:
