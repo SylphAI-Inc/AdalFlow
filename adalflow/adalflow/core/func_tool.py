@@ -141,6 +141,7 @@ class FunctionTool(Component):
         self,
         fn: Union[Callable, FunGradComponent],
         definition: Optional[FunctionDefinition] = None,
+        require_approval: bool = False,
     ):
         super().__init__(
             name="FunctionTool", desc="A component calls and executes a function."
@@ -151,6 +152,7 @@ class FunctionTool(Component):
         # TODO: support FunGradComponent later.
 
         self.fn = fn
+        self.require_approval = require_approval
         self.function_type = self.detect_function_type(fn)
         self._is_async = self.function_type in [
             FunctionType.ASYNC,

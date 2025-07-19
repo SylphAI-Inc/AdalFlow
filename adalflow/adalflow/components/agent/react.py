@@ -33,7 +33,10 @@ __all__ = ["DEFAULT_REACT_AGENT_SYSTEM_PROMPT", "ReActAgent"]
 
 
 default_role_desc = """You are an excellent task planner."""
-
+# Ideal answer for agent 
+# 1. *complete answer* when the answer is short 
+# 2. *concise conclusion* when the answer is directly displayed in a tool or written in a file 
+# 3. *structured data* when the answer needs to be structured.
 react_agent_task_desc = r"""
 <START_OF_TASK_SPEC>
 {{role_desc}}

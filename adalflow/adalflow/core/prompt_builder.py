@@ -107,9 +107,9 @@ class Prompt(DataComponent):
         if self.prompt_kwargs:
             composed_kwargs.update(self.prompt_kwargs)
         if kwargs:
-            for key, _ in kwargs.items():
-                if key not in composed_kwargs:
-                    logger.debug(f"Key {key} does not exist in the prompt_kwargs.")
+            # for key, _ in kwargs.items():
+            #     if key not in composed_kwargs:
+            #         logger.debug(f"Key {key} does not exist in the prompt_kwargs.")
             composed_kwargs.update(kwargs)
         return composed_kwargs
 
@@ -124,7 +124,7 @@ class Prompt(DataComponent):
         r"""Print the rendered prompt string using the preset_prompt_kwargs and the provided kwargs."""
         try:
             pass_kwargs = self.compose_prompt_kwargs(**kwargs)
-            pass_kwargs = _convert_prompt_kwargs_to_str(pass_kwargs)
+            pass_kwargs = self._convert_prompt_kwargs_to_str(pass_kwargs)
             logger.debug(f"Prompt kwargs: {pass_kwargs}")
 
             prompt_str = self.jinja2_template.render(**pass_kwargs)
@@ -137,13 +137,52 @@ class Prompt(DataComponent):
     # def __call__(self, *args: Any, **kwds: Any) -> Any:
     #     return self.call(*args, **kwds)
 
+    def _deep_render(self, value: Any, kwargs: Dict[str, Any]) -> Any:
+        """Recursively render *value* with the same kwargs.
+            • If value is another Prompt  → call it with kwargs 
+            • If value is a jinja2.Template 
+            • Otherwise                   → return as‑is
+
+        Note: 
+        - Avoid passing Prompt/Template objects to the prompt kwargs to avoid circular references
+        - Ensure we dont pass used a nested prompt/template in a sequence/dict/list
+        """
+        from jinja2 import Template, UndefinedError
+
+        # 1. filter out the prompt/template objects from kwargs to avoid circular references
+        filtered_kwargs = {k: v for k, v in kwargs.items() if not isinstance(v, (Prompt, Template))}
+
+        if isinstance(value, Prompt):
+            return value.call(**filtered_kwargs)
+
+        if isinstance(value, Template):
+            return value.render(**filtered_kwargs)
+
+        # if isinstance(value, str) and ("{{" in value or "{%" in value):
+        #     # Treat raw strings as one‑off templates
+        #     try:
+        #         tpl = get_jinja2_environment().from_string(value)
+        #         return tpl.render(**filtered_kwargs)
+        #     except UndefinedError:
+        #         # leave unresolved – outer template may supply the missing vars
+        #         return value
+        # if isinstance(value, list):
+        #     return [self._deep_render(v, filtered_kwargs) for v in value]
+
+        # if isinstance(value, dict):
+        #     return {k: self._deep_render(v, filtered_kwargs) for k, v in value.items()}
+
+        return value
+
     def call(self, **kwargs) -> str:
         """
         Renders the prompt template with keyword arguments. Allow None values.
         """
         try:
             pass_kwargs = self.compose_prompt_kwargs(**kwargs)
-            pass_kwargs = _convert_prompt_kwargs_to_str(pass_kwargs)
+            print(f"Prompt kwargs: {pass_kwargs}")
+            pass_kwargs = self._convert_prompt_kwargs_to_str(pass_kwargs)
+            print(f"Prompt kwargs after conversion: {pass_kwargs}")
             prompt_str = self.jinja2_template.render(**pass_kwargs)
             return prompt_str
 
@@ -152,7 +191,7 @@ class Prompt(DataComponent):
 
     def _extra_repr(self) -> str:
         s = f"template: {self.template}"
-        prompt_kwargs_str = _convert_prompt_kwargs_to_str(self.prompt_kwargs)
+        prompt_kwargs_str = self._convert_prompt_kwargs_to_str(self.prompt_kwargs)
         if prompt_kwargs_str:
             s += f", prompt_kwargs: {prompt_kwargs_str}"
         if self.prompt_variables:
@@ -161,7 +200,7 @@ class Prompt(DataComponent):
 
     def __repr__(self) -> str:
         s = f"template: {self.template}"
-        prompt_kwargs_str = _convert_prompt_kwargs_to_str(self.prompt_kwargs)
+        prompt_kwargs_str = self._convert_prompt_kwargs_to_str(self.prompt_kwargs)
         if prompt_kwargs_str:
             s += f", prompt_kwargs: {prompt_kwargs_str}"
         if self.prompt_variables:
@@ -185,28 +224,35 @@ class Prompt(DataComponent):
         return output
 
 
-def _convert_prompt_kwargs_to_str(prompt_kwargs: Dict) -> Dict[str, str]:
-    r"""Convert the prompt_kwargs to a dictionary with string values."""
-    prompt_kwargs_str: Dict[str, str] = {}
+    def _convert_prompt_kwargs_to_str(self, prompt_kwargs: Dict) -> Dict[str, str]:
+        r"""Convert the prompt_kwargs to a dictionary with string values."""
+        prompt_kwargs_str: Dict[str, str] = {}
 
-    for key, p in prompt_kwargs.items():
+        for key, p in prompt_kwargs.items():
 
-        if isinstance(p, Parameter):
+            if isinstance(p, Parameter):
 
-            prompt_kwargs_str[key] = p.data
-        elif isinstance(p, list):
-            prompt_kwargs_str[key] = [
-                (
-                    p_elem.data_in_prompt(p_elem)
-                    if isinstance(p_elem, Parameter)
-                    else p_elem
-                )
-                for p_elem in p
-            ]
+                prompt_kwargs_str[key] = p.data
+            elif isinstance(p, list):
+                prompt_kwargs_str[key] = [
+                    (
+                        p_elem.data_in_prompt(p_elem)
+                        if isinstance(p_elem, Parameter)
+                        else p_elem
+                    )
+                    for p_elem in p
+                ]
 
-        else:
-            prompt_kwargs_str[key] = p
-    return prompt_kwargs_str
+            else:
+                prompt_kwargs_str[key] = p
+
+        # Pass‑2: recursively render any templates ── new behaviour
+        # Create a copy to avoid circular reference during deep rendering
+        context_for_render = prompt_kwargs_str.copy()
+        for k, v in list(prompt_kwargs_str.items()):
+            prompt_kwargs_str[k] = self._deep_render(v, context_for_render)
+            
+        return prompt_kwargs_str
 
 
 @lru_cache(None)
@@ -229,7 +275,8 @@ if __name__ == "__main__":
 
     import adalflow as adal
 
-    template = r"""<START_OF_SYSTEM_MESSAGE>{{ task_desc_str }}<END_OF_SYSTEM_MESSAGE>
+    def test_template():
+        template = r"""<START_OF_SYSTEM_MESSAGE>{{ task_desc_str }}<END_OF_SYSTEM_MESSAGE>
 {# tools #}
 {% if tools %}
 <TOOLS>
@@ -239,23 +286,66 @@ if __name__ == "__main__":
 </TOOLS>{% endif %}
 <START_OF_USER>{{ input_str }} <END_OF_USER>"""
 
-    task_desc_str = "You are a helpful assitant"
+        task_desc_str = "You are a helpful assitant"
 
-    tools = ["google", "wikipedia", "wikidata"]
+        tools = ["google", "wikipedia", "wikidata"]
 
-    prompt = adal.Prompt(
-        template=template,
-        prompt_kwargs={
-            "task_desc_str": task_desc_str,
-            "tools": tools,
-        },
-    )
+        prompt = adal.Prompt(
+            template=template,
+            prompt_kwargs={
+                "task_desc_str": task_desc_str,
+                "tools": tools,
+            },
+        )
 
-    print(prompt(input_str="What is the capital of France?"))
+        print(prompt(input_str="What is the capital of France?"))
 
-    to_dict = prompt.to_dict()
+        to_dict = prompt.to_dict()
 
-    prompt_restructured = adal.Prompt.from_dict(to_dict)
+        prompt_restructured = adal.Prompt.from_dict(to_dict)
 
-    print(to_dict)
-    print(prompt_restructured)
+        print(to_dict)
+        print(prompt_restructured)
+
+    def test_nested_templates():
+        OUTER = """
+    <START_OF_SYSTEM_MESSAGE>{{ task_desc_str }}<END_OF_SYSTEM_MESSAGE>
+    Will write files under {{ work_dir }}
+
+    Examples
+    ---------
+    {{ examples_block }}
+
+    <START_OF_USER>{{ input_str }}<END_OF_USER>
+    """
+
+        EXAMPLES_TEMPLATE = r"""
+        {% for eg in examples %}
+        {{ loop.index }}. {{ eg }}
+        {% endfor %}
+        """
+
+        # create once and reuse
+        inner_examples = Prompt(template=EXAMPLES_TEMPLATE)
+
+        prompt = Prompt(template=OUTER)
+
+        msg = prompt.call(
+            # outer‑level vars
+            task_desc_str = "You are a helpful assistant.",
+            work_dir      = "/tmp/run‑42",
+
+            # nested Prompt object – no manual render needed
+            examples_block = inner_examples,
+
+            # variables that *only* the inner template needs
+            examples = ["Paris is the capital of France", "Rome is the capital of Italy"],
+
+            # user input
+            input_str = "List those capitals again, please."
+        )
+
+        print(msg)
+
+    # test_template()
+    test_nested_templates()
