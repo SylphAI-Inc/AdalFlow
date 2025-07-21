@@ -4,8 +4,8 @@ Test script to demonstrate the permission system for tool execution.
 """
 
 import asyncio
-from adalflow.core.agent import Agent
-from adalflow.core.runner import Runner
+from adalflow.components.agent.agent import Agent
+from adalflow.components.runner.runner import Runner
 from adalflow.core.func_tool import FunctionTool
 from adalflow.apps.cli_permission_handler import CLIPermissionHandler
 from adalflow.core.types import RunItemStreamEvent, ToolOutput

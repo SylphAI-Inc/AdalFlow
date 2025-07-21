@@ -13,8 +13,9 @@ for multi-step reasoning and tool usage. The example shows how to:
 from typing import TypeVar, List, Any, Optional
 
 # Import AdalFlow components
-from adalflow.core.agent import Agent
-from adalflow.core.runner import Runner
+from adalflow.components.agent.agent import Agent
+from adalflow.components.runner.runner import Runner
+
 from adalflow.core.func_tool import FunctionTool
 from adalflow.components.model_client.openai_client import OpenAIClient
 

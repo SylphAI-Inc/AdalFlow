@@ -11,8 +11,8 @@ log.setLevel(logging.DEBUG)
 os.environ["ADALFLOW_DISABLE_TRACING"] = "False"
 
 # AdalFlow imports
-from adalflow.core.agent import Agent
-from adalflow.core.runner import Runner
+from adalflow.components.agent.agent import Agent
+from adalflow.components.runner.runner import Runner
 from adalflow.components.model_client import OpenAIClient
 from adalflow.tracing import set_trace_processors, trace
 

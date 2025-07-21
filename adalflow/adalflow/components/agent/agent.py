@@ -131,7 +131,7 @@ def create_default_tool_manager(
 
         print(_finish.definition)
         processed_tools = tools.copy() if tools else []
-        if add_llm_as_fallback:
+        if add_llm_as_fallback and _additional_llm_tool:
             processed_tools.append(llm_tool)
         processed_tools.append(_finish)
         return processed_tools

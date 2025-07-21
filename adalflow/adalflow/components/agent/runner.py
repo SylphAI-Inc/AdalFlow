@@ -21,7 +21,7 @@ from typing_extensions import TypeAlias
 from adalflow.optim.parameter import Parameter
 from adalflow.utils import printc
 from adalflow.core.component import Component
-from adalflow.core.agent import Agent
+from adalflow.components.agent.agent import Agent
 
 from adalflow.core.types import (
     GeneratorOutput,

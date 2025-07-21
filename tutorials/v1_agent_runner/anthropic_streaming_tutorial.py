@@ -27,8 +27,8 @@ from typing import List
 from adalflow.core.generator import Generator
 from adalflow.core.types import ModelType
 from adalflow.components.model_client.anthropic_client import AnthropicAPIClient
-from adalflow.core.agent import Agent
-from adalflow.core.runner import Runner
+from adalflow.components.agent.agent import Agent
+from adalflow.components.runner.runner import Runner
 from adalflow.core.func_tool import FunctionTool
 from adalflow.core.base_data_class import DataClass
 from dataclasses import dataclass

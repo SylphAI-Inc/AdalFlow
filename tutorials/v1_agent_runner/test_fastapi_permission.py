@@ -7,8 +7,8 @@ Run this script and then use the API endpoints to approve/reject tool executions
 import asyncio
 import uvicorn
 from threading import Thread
-from adalflow.core.agent import Agent
-from adalflow.core.runner import Runner
+from adalflow.components.agent.agent import Agent
+from adalflow.components.runner.runner import Runner
 from adalflow.core.func_tool import FunctionTool
 from adalflow.apps.fastapi_permission_handler import FastAPIPermissionHandler, create_standalone_app
 from adalflow.core.types import RunItemStreamEvent, ToolOutput

@@ -6,8 +6,8 @@ import os
 from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
-from adalflow.core.runner import Runner
-from adalflow.core.agent import Agent
+from adalflow.components.runner.runner import Runner
+from adalflow.components.agent.agent import Agent
 from adalflow.core.types import (
     RawResponsesStreamEvent,
     RunItemStreamEvent,
