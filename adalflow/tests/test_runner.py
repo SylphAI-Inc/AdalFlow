@@ -10,7 +10,7 @@ from adalflow.core.types import (
     RunItemStreamEvent,
 )
 
-from adalflow.core.runner import Runner
+from adalflow.components.agent.runner import Runner
 
 
 class DummyFunction(Function):

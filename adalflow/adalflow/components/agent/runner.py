@@ -2,7 +2,6 @@ from pydantic import BaseModel
 import logging
 import inspect
 import asyncio
-import ast
 import uuid
 import json
 
@@ -66,8 +65,9 @@ AdalflowDataClass: TypeAlias = Type[
     Any
 ]  # Replace with your actual Adalflow dataclass type if available
 
+
 # The runner will create tool call request, add a unique call id.
-# TODO: move this to repo adalflow/agent 
+# TODO: move this to repo adalflow/agent
 class Runner(Component):
     """Executes Agent instances with multi-step iterative planning and tool execution.
 
@@ -137,22 +137,26 @@ class Runner(Component):
         # add ctx (it is just a reference, and only get added to the final response)
         # assume intermediate tool is gonna modify the ctx
         self.ctx = ctx
-        
+
         # Initialize permission manager
         self._init_permission_manager()
 
     def _init_permission_manager(self):
         """Initialize the permission manager and register tools that require approval."""
-        if self.permission_manager and hasattr(self.agent, 'tool_manager'):
+        if self.permission_manager and hasattr(self.agent, "tool_manager"):
             # Iterate through tools in the ComponentList
             for tool in self.agent.tool_manager.tools:
-                if hasattr(tool, 'definition') and hasattr(tool, 'require_approval'):
+                if hasattr(tool, "definition") and hasattr(tool, "require_approval"):
                     tool_name = tool.definition.func_name
-                    self.permission_manager.register_tool(tool_name, tool.require_approval)
-    
-    def set_permission_manager(self, permission_manager: Optional[PermissionManager]) -> None:
+                    self.permission_manager.register_tool(
+                        tool_name, tool.require_approval
+                    )
+
+    def set_permission_manager(
+        self, permission_manager: Optional[PermissionManager]
+    ) -> None:
         """Set or update the permission manager after runner initialization.
-        
+
         Args:
             permission_manager: The permission manager instance to use for tool approval
         """
@@ -260,7 +264,7 @@ class Runner(Component):
         prompt_kwargs: Dict[str, Any],
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
-        id: Optional[str] = None, # global run id
+        id: Optional[str] = None,  # global run id
     ) -> RunnerResult:
         """Execute the planner synchronously for multiple steps with function calling support.
 
@@ -443,19 +447,16 @@ class Runner(Component):
         Handles both sync and async functions by running async ones in event loop.
         Includes permission checking if permission_manager is configured.
         """
-        
+
         # execute permission and blocking mechanism in check_permission
         if self.permission_manager:
-            result = asyncio.run(
-                self.permission_manager.check_permission(func)
-            )
+            result = asyncio.run(self.permission_manager.check_permission(func))
             # Handle both old (2 values) and new (3 values) return formats
             if len(result) == 3:
-                allowed, modified_func, response_data = result
+                allowed, modified_func, _ = result
             else:
                 allowed, modified_func = result
-                response_data = None
-            
+
             if not allowed:
                 return FunctionOutput(
                     name=func.name,
@@ -463,10 +464,10 @@ class Runner(Component):
                     output=ToolOutput(
                         output="Tool execution cancelled by user",
                         observation="Tool execution cancelled by user",
-                        display="Permission denied"
-                    )
+                        display="Permission denied",
+                    ),
                 )
-            
+
             # Use modified function if user edited it
             func = modified_func or func
 
@@ -539,10 +540,9 @@ class Runner(Component):
 
                         printc(f"planner output: {output}", color="yellow")
 
-                        # add a function id 
-                        function.id = str(uuid.uuid4())
-
                         function = self._get_planner_function(output)
+                        # add a function id
+                        function.id = str(uuid.uuid4())
                         printc(f"function: {function}", color="yellow")
 
                         if self._check_last_step(function):
@@ -715,7 +715,12 @@ class Runner(Component):
 
                 # meta data is all keys in the list of context_str
                 query_metadata = {"context_str": prompt_kwargs.get("context_str", None)}
-                self.conversation_memory.add_user_query(UserQuery(query_str=prompt_kwargs.get("input_str", None), metadata=query_metadata))
+                self.conversation_memory.add_user_query(
+                    UserQuery(
+                        query_str=prompt_kwargs.get("input_str", None),
+                        metadata=query_metadata,
+                    )
+                )
             # a reference to the step history
             # set maximum number of steps for the planner into the prompt
             prompt_kwargs["max_steps"] = self.max_steps
@@ -776,7 +781,7 @@ class Runner(Component):
                         function.id = str(uuid.uuid4())
 
                         # TODO: simplify this
-                        tool_call_id = function.id 
+                        tool_call_id = function.id
                         tool_call_name = function.name
                         printc(f"function: {function}", color="yellow")
 
@@ -832,7 +837,14 @@ class Runner(Component):
                             # add the assistant response to the conversation memory
                             # TODO: create a string for the step history
                             if self.use_conversation_memory:
-                                self.conversation_memory.add_assistant_response(AssistantResponse(response_str=processed_data, metadata={"step_history": self.step_history.copy()}))
+                                self.conversation_memory.add_assistant_response(
+                                    AssistantResponse(
+                                        response_str=processed_data,
+                                        metadata={
+                                            "step_history": self.step_history.copy()
+                                        },
+                                    )
+                                )
                             break
 
                         # Emit tool call event
@@ -845,10 +857,20 @@ class Runner(Component):
                         streaming_result.put_nowait(tool_call_event)
 
                         # Check if permission is required and emit permission event
-                        if self.permission_manager and self.permission_manager.is_approval_required(function.name):
-                            permission_event = self.permission_manager.create_permission_event(function)
+                        if (
+                            self.permission_manager
+                            and self.permission_manager.is_approval_required(
+                                function.name
+                            )
+                        ):
+                            permission_event = (
+                                self.permission_manager.create_permission_event(
+                                    function
+                                )
+                            )
                             permission_stream_event = RunItemStreamEvent(
-                                name="agent.tool_permission_request", item=permission_event
+                                name="agent.tool_permission_request",
+                                item=permission_event,
                             )
                             streaming_result.put_nowait(permission_stream_event)
 
@@ -1051,40 +1073,37 @@ class Runner(Component):
         Note: this version has no support for streaming.
         Includes permission checking if permission_manager is configured.
         """
-        
+
         # Check permission before execution
         if self.permission_manager:
             result = await self.permission_manager.check_permission(func)
             # Handle both old (2 values) and new (3 values) return formats
             if len(result) == 3:
-                allowed, modified_func, response_data = result
+                allowed, modified_func, _ = result
             else:
                 allowed, modified_func = result
-                response_data = None
-            
+
             if not allowed:
                 return FunctionOutput(
                     name=func.name,
                     input=func,
                     output=ToolOutput(
-                        output = "Tool execution cancelled by user",
+                        output="Tool execution cancelled by user",
                         observation="Tool execution cancelled by user",
-                        display="Permission denied"
-                    )
+                        display="Permission denied",
+                    ),
                 )
-            
+
             # Use modified function if user edited it
             func = modified_func or func
 
         # Emit tool call event
         if streaming_result is not None:
             tool_call_item = ToolCallRunItem(data=func, id=func.id)
-            tool_call_id = tool_call_item.id
-            tool_call_name = tool_call_item.data.name
             tool_call_event = RunItemStreamEvent(
                 name="agent.tool_call_start", item=tool_call_item
             )
-            streaming_result.put_nowait(tool_call_event)   
+            streaming_result.put_nowait(tool_call_event)
 
         result = await self.agent.tool_manager.execute_func_async(func=func)
 

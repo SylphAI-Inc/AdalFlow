@@ -17,7 +17,7 @@ from dataclasses import dataclass
 
 class ApprovalOutcome(Enum):
     PROCEED_ONCE = "proceed_once"
-    PROCEED_ALWAYS = "proceed_always" 
+    PROCEED_ALWAYS = "proceed_always"
     CANCEL = "cancel"
     MODIFY = "modify"
 
@@ -27,17 +27,17 @@ class PermissionRequest:
     tool_args: list
     tool_kwargs: dict
     confirmation_message: str
-    
+
 class PermissionManager:
     def __init__(self, approval_callback: Optional[Callable] = None):
         self.approval_callback = approval_callback
         self.always_allowed_tools = set()
         self.pending_approvals = {}
-        
+
     async def check_permission(self, func: Function) -> tuple[bool, Optional[Function]]:
         if func.name in self.always_allowed_tools:
             return True, func
-            
+
         if self.approval_callback:
             request = PermissionRequest(
                 tool_name=func.name,
@@ -45,9 +45,9 @@ class PermissionManager:
                 tool_kwargs=func.kwargs,
                 confirmation_message=f"Allow execution of {func.name}?"
             )
-            
+
             outcome = await self.approval_callback(request)
-            
+
             if outcome == ApprovalOutcome.PROCEED_ALWAYS:
                 self.always_allowed_tools.add(func.name)
                 return True, func
@@ -55,7 +55,7 @@ class PermissionManager:
                 return True, func
             elif outcome == ApprovalOutcome.CANCEL:
                 return False, None
-                
+
         return True, func  # Default allow if no callback
 ```
 
@@ -83,13 +83,13 @@ For synchronous execution (`_tool_execute_sync`):
 ```python
 def _tool_execute_sync(self, func: Function) -> Union[FunctionOutput, Parameter]:
     """Execute tool with permission check"""
-    
+
     # Check permission before execution
     if self.permission_manager:
         allowed, modified_func = asyncio.run(
             self.permission_manager.check_permission(func)
         )
-        
+
         if not allowed:
             return FunctionOutput(
                 name=func.name,
@@ -99,16 +99,16 @@ def _tool_execute_sync(self, func: Function) -> Union[FunctionOutput, Parameter]
                     error="Permission denied"
                 )
             )
-        
+
         # Use modified function if user edited it
         func = modified_func or func
-    
+
     # Original execution code
     result = self.agent.tool_manager.execute_func(func=func)
-    
+
     if not isinstance(result, FunctionOutput):
         raise ValueError("Result is not a FunctionOutput")
-        
+
     return result
 ```
 
@@ -116,11 +116,11 @@ For asynchronous execution (`_tool_execute_async`):
 ```python
 async def _tool_execute_async(self, func: Function) -> Union[FunctionOutput, Parameter]:
     """Execute tool asynchronously with permission check"""
-    
+
     # Check permission before execution
     if self.permission_manager:
         allowed, modified_func = await self.permission_manager.check_permission(func)
-        
+
         if not allowed:
             return FunctionOutput(
                 name=func.name,
@@ -130,15 +130,15 @@ async def _tool_execute_async(self, func: Function) -> Union[FunctionOutput, Par
                     error="Permission denied"
                 )
             )
-        
+
         func = modified_func or func
-    
+
     # Original execution code
     result = await self.agent.tool_manager.execute_func_async(func=func)
-    
+
     if not isinstance(result, FunctionOutput):
         raise ValueError("Result is not a FunctionOutput")
-        
+
     return result
 ```
 
@@ -159,20 +159,20 @@ class ApprovalWebSocketHandler:
     def __init__(self):
         self.active_connections: Dict[str, WebSocket] = {}
         self.pending_approvals: Dict[str, asyncio.Future] = {}
-    
+
     async def connect(self, websocket: WebSocket, client_id: str):
         await websocket.accept()
         self.active_connections[client_id] = websocket
-        
+
     async def disconnect(self, client_id: str):
         if client_id in self.active_connections:
             del self.active_connections[client_id]
-    
+
     async def request_approval(self, request: PermissionRequest) -> ApprovalOutcome:
         request_id = str(uuid.uuid4())
         future = asyncio.Future()
         self.pending_approvals[request_id] = future
-        
+
         # Send to all connected clients
         message = {
             "type": "approval_request",
@@ -181,17 +181,17 @@ class ApprovalWebSocketHandler:
             "args": request.tool_args,
             "message": f"Allow {request.tool_name} to execute?"
         }
-        
+
         for ws in self.active_connections.values():
             await ws.send_json(message)
-        
+
         # Wait for user response
         try:
             result = await asyncio.wait_for(future, timeout=30.0)
             return result
         except asyncio.TimeoutError:
             return ApprovalOutcome.CANCEL
-    
+
     async def handle_approval_response(self, data: dict):
         request_id = data.get("id")
         if request_id in self.pending_approvals:
@@ -222,11 +222,11 @@ ws.onmessage = (event) => {
   if (data.type === 'approval_request') {
     // Show UI prompt
     const userChoice = prompt(`${data.message}\n1. Allow once\n2. Allow always\n3. Cancel`);
-    
+
     let outcome = 'cancel';
     if (userChoice === '1') outcome = 'proceed_once';
     else if (userChoice === '2') outcome = 'proceed_always';
-    
+
     ws.send(JSON.stringify({
       type: 'approval_response',
       id: data.id,
@@ -250,20 +250,20 @@ class ApprovalQueue:
     def __init__(self):
         self.pending_requests: Dict[str, PermissionRequest] = {}
         self.responses: Dict[str, asyncio.Future] = {}
-    
+
     async def create_request(self, request: PermissionRequest) -> str:
         request_id = str(uuid.uuid4())
         self.pending_requests[request_id] = request
         self.responses[request_id] = asyncio.Future()
         return request_id
-    
+
     async def wait_for_response(self, request_id: str, timeout: float = 30.0):
         if request_id not in self.responses:
             raise ValueError("Invalid request ID")
-        
+
         try:
             result = await asyncio.wait_for(
-                self.responses[request_id], 
+                self.responses[request_id],
                 timeout=timeout
             )
             return result
@@ -291,7 +291,7 @@ async def get_pending_approvals():
 async def submit_approval(request_id: str, outcome: str):
     if request_id not in approval_queue.responses:
         raise HTTPException(404, "Request not found")
-    
+
     approval_outcome = ApprovalOutcome(outcome)
     approval_queue.responses[request_id].set_result(approval_outcome)
     return {"status": "approved", "outcome": outcome}
@@ -305,12 +305,12 @@ class RESTPermissionManager(PermissionManager):
             tool_kwargs=func.kwargs,
             confirmation_message=f"Allow {func.name}?"
         )
-        
+
         request_id = await approval_queue.create_request(request)
-        
+
         # Wait for user response
         outcome = await approval_queue.wait_for_response(request_id)
-        
+
         if outcome == ApprovalOutcome.PROCEED_ALWAYS:
             self.always_allowed_tools.add(func.name)
             return True, func
@@ -338,10 +338,10 @@ class CLIPermissionManager(PermissionManager):
         print("2. Allow always")
         print("3. Cancel")
         print("4. Modify arguments")
-        
+
         # Get user input asynchronously
         choice = await aioconsole.ainput("Your choice (1-4): ")
-        
+
         if choice == "1":
             return True, func
         elif choice == "2":
@@ -374,28 +374,28 @@ class StreamlitPermissionManager(PermissionManager):
     def __init__(self):
         super().__init__()
         self.pending_approvals = {}
-        
+
     async def check_permission(self, func: Function):
         request_id = str(uuid.uuid4())
-        
+
         # Store request in session state
         if 'pending_approvals' not in st.session_state:
             st.session_state.pending_approvals = {}
-        
+
         st.session_state.pending_approvals[request_id] = {
             'tool': func.name,
             'args': func.args,
             'kwargs': func.kwargs,
             'status': 'pending'
         }
-        
+
         # Wait for user response
         while st.session_state.pending_approvals[request_id]['status'] == 'pending':
             await asyncio.sleep(0.1)
-        
+
         status = st.session_state.pending_approvals[request_id]['status']
         del st.session_state.pending_approvals[request_id]
-        
+
         if status == 'approved_once':
             return True, func
         elif status == 'approved_always':
@@ -412,7 +412,7 @@ def show_approval_requests():
                 with st.expander(f"Tool Request: {req['tool']}"):
                     st.write(f"Arguments: {req['args']}")
                     st.write(f"Kwargs: {req['kwargs']}")
-                    
+
                     col1, col2, col3 = st.columns(3)
                     if col1.button("Allow Once", key=f"once_{req_id}"):
                         st.session_state.pending_approvals[req_id]['status'] = 'approved_once'
@@ -463,19 +463,19 @@ async def run_agent_with_approval():
         permission_manager = RESTPermissionManager()
     else:
         permission_manager = None  # No approval needed
-    
+
     # Create runner with permission support
     runner = Runner(
         agent=my_agent,
         permission_manager=permission_manager
     )
-    
+
     # Run with approval flow
     result = await runner.acall(
         prompt_kwargs={"query": "Process this data"},
         model_kwargs={}
     )
-    
+
     return result
 ```
 

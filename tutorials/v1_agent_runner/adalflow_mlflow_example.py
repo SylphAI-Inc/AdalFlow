@@ -5,7 +5,6 @@ This example shows how to use the new simplified MLflow integration.
 
 from adalflow.tracing import enable_mlflow_local, trace
 from adalflow.components.model_client import OpenAIClient
-from adalflow.utils import setup_env
 import os
 
 # Setup environment (make sure you have .env file with API keys)
@@ -41,21 +40,21 @@ if success:
     print("Creating a test trace...")
     with trace("example_trace") as t:
         print(f"Trace created with ID: {t.trace_id}")
-        
+
         # Example: trace an OpenAI call (requires API key)
         if os.getenv("OPENAI_API_KEY"):
             try:
                 client = OpenAIClient()
                 response = client.call(
                     messages=[{"role": "user", "content": "Say hello in 3 words"}],
-                    model="gpt-3.5-turbo"
+                    model="gpt-3.5-turbo",
                 )
                 print(f"Response: {response.response}")
             except Exception as e:
                 print(f"OpenAI call failed: {e}")
         else:
             print("No OPENAI_API_KEY found, skipping OpenAI call")
-    
+
     print("\n✅ Done! Check http://localhost:8080 for traces.")
 else:
     print("\n❌ MLflow setup failed. Make sure MLflow is installed: pip install mlflow")

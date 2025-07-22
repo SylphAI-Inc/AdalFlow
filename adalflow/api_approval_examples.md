@@ -95,22 +95,22 @@ import asyncio
 
 async def approve_pending_requests():
     base_url = "http://localhost:8000/api/v1/approvals"
-    
+
     async with httpx.AsyncClient() as client:
         # Get pending approvals
         response = await client.get(f"{base_url}/pending")
         pending = response.json()
-        
+
         for request in pending:
             print(f"Tool: {request['tool_name']}")
             print(f"Args: {request['tool_args']}")
-            
+
             # Approve the request
             approval = {
                 "request_id": request['request_id'],
                 "outcome": "proceed_once"
             }
-            
+
             response = await client.post(
                 f"{base_url}/{request['request_id']}/approve",
                 json=approval
@@ -130,7 +130,7 @@ fetch('http://localhost:8000/api/v1/approvals/pending')
   .then(pending => {
     pending.forEach(request => {
       console.log(`Tool: ${request.tool_name}`);
-      
+
       // Show approval UI
       if (confirm(`Approve ${request.tool_name}?`)) {
         // Approve the request

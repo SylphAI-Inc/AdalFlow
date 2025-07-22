@@ -252,7 +252,9 @@ class Agent(Component):
         template: Optional[
             str
         ] = None,  # allow users to update the template but cant delete any parameters
-        role_desc: Optional[Union[str, Prompt]] = None, # support both str and prompte template
+        role_desc: Optional[
+            Union[str, Prompt]
+        ] = None,  # support both str and prompte template
         cache_path: Optional[str] = None,
         use_cache: Optional[bool] = True,
         # default agent parameters

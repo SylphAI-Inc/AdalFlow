@@ -49,7 +49,11 @@ from .scope import (
     gen_trace_id,
 )
 from .setup import GLOBAL_TRACE_PROVIDER
-from .mlflow_integration import enable_mlflow_local, enable_mlflow_local_with_server, get_mlflow_server_command
+from .mlflow_integration import (
+    enable_mlflow_local,
+    enable_mlflow_local_with_server,
+    get_mlflow_server_command,
+)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Convenience functions for managing trace processors

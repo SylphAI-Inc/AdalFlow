@@ -14,7 +14,7 @@ Attributes:
 """
 
 from uuid import uuid4
-from typing import Union, Optional, Dict, Any, List
+from typing import Union, Optional, List
 from adalflow.core.component import Component
 from adalflow.core.db import LocalDB
 from adalflow.core.types import (
@@ -81,21 +81,33 @@ class ConversationMemory(Component):
             template=CONVERSATION_TEMPLATE,
             prompt_kwargs={
                 "dialog_turns": self.current_conversation.dialog_turns,
-                "metadata_filter": metadata_filter
-            }
+                "metadata_filter": metadata_filter,
+            },
         )
         return prompt.call().strip()
 
-    def add_dialog_turn(self, user_query: Union[str, UserQuery], assistant_response: Union[str, AssistantResponse]):
+    def add_dialog_turn(
+        self,
+        user_query: Union[str, UserQuery],
+        assistant_response: Union[str, AssistantResponse],
+    ):
         """Add a new dialog turn to the current conversation.
 
         Args:
             user_query (str): The user's input message.
             assistant_response (str): The assistant's response message.
         """
-        user_query = user_query if isinstance(user_query, UserQuery) else UserQuery(query_str=user_query)
-        assistant_response = assistant_response if isinstance(assistant_response, AssistantResponse) else AssistantResponse(response_str=assistant_response)
-        
+        user_query = (
+            user_query
+            if isinstance(user_query, UserQuery)
+            else UserQuery(query_str=user_query)
+        )
+        assistant_response = (
+            assistant_response
+            if isinstance(assistant_response, AssistantResponse)
+            else AssistantResponse(response_str=assistant_response)
+        )
+
         dialog_turn = DialogTurn(
             id=str(uuid4()),
             user_query=user_query,
@@ -113,7 +125,7 @@ class ConversationMemory(Component):
         """Add a user query to start a new dialog turn.
 
         Args:
-            user_query (Union[str, UserQuery]): The user's input message. 
+            user_query (Union[str, UserQuery]): The user's input message.
                 If UserQuery object, can include metadata.
 
         Returns:
@@ -126,20 +138,26 @@ class ConversationMemory(Component):
             raise ValueError(
                 "There's already a pending user query. Please add an assistant response first."
             )
-        
-        user_query = user_query if isinstance(user_query, UserQuery) else UserQuery(query_str=user_query)
-        
+
+        user_query = (
+            user_query
+            if isinstance(user_query, UserQuery)
+            else UserQuery(query_str=user_query)
+        )
+
         # Create a new dialog turn with just the user query
         turn_id = str(uuid4())
         self._pending_user_query = {
             "id": turn_id,
             "user_query": user_query,
-            "order": self.current_conversation.get_next_order()
+            "order": self.current_conversation.get_next_order(),
         }
-        
+
         return turn_id
 
-    def add_assistant_response(self, assistant_response: Union[str, AssistantResponse]) -> str:
+    def add_assistant_response(
+        self, assistant_response: Union[str, AssistantResponse]
+    ) -> str:
         """Add an assistant response to complete the current dialog turn.
 
         Args:
@@ -155,30 +173,33 @@ class ConversationMemory(Component):
             raise ValueError(
                 "No pending user query found. Please add a user query first."
             )
-        
+
         assistant_response = (
-            assistant_response if isinstance(assistant_response, AssistantResponse) 
+            assistant_response
+            if isinstance(assistant_response, AssistantResponse)
             else AssistantResponse(response_str=assistant_response)
         )
-        
+
         # Create and add the complete dialog turn
         dialog_turn = DialogTurn(
             id=self._pending_user_query["id"],
             user_query=self._pending_user_query["user_query"],
             assistant_response=assistant_response,
-            order=self._pending_user_query["order"]
+            order=self._pending_user_query["order"],
         )
-        
+
         self.current_conversation.append_dialog_turn(dialog_turn)
-        
+
         # Store in database
-        self.turn_db.add({
-            "user_query": self._pending_user_query["user_query"],
-            "assistant_response": assistant_response
-        })
-        
+        self.turn_db.add(
+            {
+                "user_query": self._pending_user_query["user_query"],
+                "assistant_response": assistant_response,
+            }
+        )
+
         # Clear the pending query
         turn_id = self._pending_user_query["id"]
         self._pending_user_query = None
-        
+
         return turn_id

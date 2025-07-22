@@ -4,6 +4,6 @@ we can additionally make it controllable in the runner config, or stop when tool
 
 # flow
 
-The agent outputs a function, attach an id to it, and then the functin execution will use check_permission and emite an event : agent.tool_permission_request 
+The agent outputs a function, attach an id to it, and then the functin execution will use check_permission and emite an event : agent.tool_permission_request
 
 If uers has no response. It will stuck there forever. no time out.

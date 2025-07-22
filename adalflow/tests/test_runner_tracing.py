@@ -5,7 +5,7 @@ from unittest.mock import patch
 from types import SimpleNamespace
 from typing import Any, List
 
-from adalflow.core.runner import Runner
+from adalflow.components.agent.runner import Runner
 from adalflow.core.types import (
     GeneratorOutput,
     Function,

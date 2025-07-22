@@ -139,18 +139,20 @@ class Prompt(DataComponent):
 
     def _deep_render(self, value: Any, kwargs: Dict[str, Any]) -> Any:
         """Recursively render *value* with the same kwargs.
-            • If value is another Prompt  → call it with kwargs 
-            • If value is a jinja2.Template 
+            • If value is another Prompt  → call it with kwargs
+            • If value is a jinja2.Template
             • Otherwise                   → return as‑is
 
-        Note: 
+        Note:
         - Avoid passing Prompt/Template objects to the prompt kwargs to avoid circular references
         - Ensure we dont pass used a nested prompt/template in a sequence/dict/list
         """
-        from jinja2 import Template, UndefinedError
+        from jinja2 import Template
 
         # 1. filter out the prompt/template objects from kwargs to avoid circular references
-        filtered_kwargs = {k: v for k, v in kwargs.items() if not isinstance(v, (Prompt, Template))}
+        filtered_kwargs = {
+            k: v for k, v in kwargs.items() if not isinstance(v, (Prompt, Template))
+        }
 
         if isinstance(value, Prompt):
             return value.call(**filtered_kwargs)
@@ -223,7 +225,6 @@ class Prompt(DataComponent):
         output = super().to_dict(exclude=exclude)
         return output
 
-
     def _convert_prompt_kwargs_to_str(self, prompt_kwargs: Dict) -> Dict[str, str]:
         r"""Convert the prompt_kwargs to a dictionary with string values."""
         prompt_kwargs_str: Dict[str, str] = {}
@@ -251,7 +252,7 @@ class Prompt(DataComponent):
         context_for_render = prompt_kwargs_str.copy()
         for k, v in list(prompt_kwargs_str.items()):
             prompt_kwargs_str[k] = self._deep_render(v, context_for_render)
-            
+
         return prompt_kwargs_str
 
 
@@ -332,17 +333,14 @@ if __name__ == "__main__":
 
         msg = prompt.call(
             # outer‑level vars
-            task_desc_str = "You are a helpful assistant.",
-            work_dir      = "/tmp/run‑42",
-
+            task_desc_str="You are a helpful assistant.",
+            work_dir="/tmp/run‑42",
             # nested Prompt object – no manual render needed
-            examples_block = inner_examples,
-
+            examples_block=inner_examples,
             # variables that *only* the inner template needs
-            examples = ["Paris is the capital of France", "Rome is the capital of Italy"],
-
+            examples=["Paris is the capital of France", "Rome is the capital of Italy"],
             # user input
-            input_str = "List those capitals again, please."
+            input_str="List those capitals again, please.",
         )
 
         print(msg)

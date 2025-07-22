@@ -1221,7 +1221,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             generator_id="generator" + (id if id else ""),
             model_kwargs=self._compose_model_kwargs(**model_kwargs),
             prompt_kwargs=prompt_kwargs,
-            prompt_template_with_keywords=prompt_str
+            prompt_template_with_keywords=prompt_str,
         ) as generator_span_data:
             generation_time = time.time()
             if self.mock_output:

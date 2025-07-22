@@ -839,13 +839,15 @@ class Document(DataClass):
 @dataclass
 class UserQuery:
     query_str: str
-    metadata: Optional[Dict[str, Any]] = None # context or files can be used in the user queries
+    metadata: Optional[Dict[str, Any]] = (
+        None  # context or files can be used in the user queries
+    )
 
 
 @dataclass
 class AssistantResponse:
     response_str: str
-    metadata: Optional[Dict[str, Any]] = None # for agent, we have step history
+    metadata: Optional[Dict[str, Any]] = None  # for agent, we have step history
 
 
 # There could  more other roles in a multi-party conversation. We might consider in the future.
@@ -1144,16 +1146,26 @@ class ToolCallActivityRunItem(RunItem):
         metadata={"desc": "Any data containing the progress of the tool call"},
     )
 
-@dataclass 
+
+@dataclass
 class FunctionRequest(DataClass):
     """
     Event emitted when the Agent is about to execute a function/tool call.
     """
-    id: str = field(default_factory=lambda: str(uuid.uuid4())) # tool call id for this request 
-    tool_name: str = field(default=None, metadata={"desc": "Name of the tool to be called"})
-    tool: Optional[Function] = field(default=None, metadata={"desc": "Function object containing the tool call to be executed"})
-    
-@dataclass 
+
+    id: str = field(
+        default_factory=lambda: str(uuid.uuid4())
+    )  # tool call id for this request
+    tool_name: str = field(
+        default=None, metadata={"desc": "Name of the tool to be called"}
+    )
+    tool: Optional[Function] = field(
+        default=None,
+        metadata={"desc": "Function object containing the tool call to be executed"},
+    )
+
+
+@dataclass
 class ToolCallPermissionRequest(RunItem):
     """
     Event emitted when the Agent is about to execute a function/tool call.
@@ -1178,10 +1190,11 @@ class ToolCallPermissionRequest(RunItem):
         ```
     """
 
-    type: str = field(default="tool_call_permission_request", metadata={"desc": "Type of run item"})
+    type: str = field(
+        default="tool_call_permission_request", metadata={"desc": "Type of run item"}
+    )
     data: Optional[FunctionRequest] = field(
-        default=None,
-        metadata={"desc": "Function request to be executed"}
+        default=None, metadata={"desc": "Function request to be executed"}
     )
 
 
