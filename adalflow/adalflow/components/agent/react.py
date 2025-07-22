@@ -29,7 +29,10 @@ from adalflow.core.prompt_builder import Prompt
 log = logging.getLogger(__name__)
 T = TypeVar("T")
 
-__all__ = ["DEFAULT_REACT_AGENT_SYSTEM_PROMPT", "ReActAgent"]
+__all__ = [
+    "DEFAULT_REACT_AGENT_SYSTEM_PROMPT",
+    "ReActAgent",
+]
 
 
 default_role_desc = """You are an excellent task planner."""

@@ -2,3 +2,4 @@ tests/log
 *.png
 *.svg
 CONTRIBUTING.md
+.pypirc

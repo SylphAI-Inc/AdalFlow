@@ -379,6 +379,14 @@ class Function(DataClass):
         default_factory=dict,
         metadata={"desc": "The keyword arguments of the function"},
     )
+    _is_answer_final: Optional[bool] = field(
+        default=None,
+        metadata={"desc": "Whether this current output is the final answer"},
+    )
+    _answer: Optional[Any] = field(
+        default=None,
+        metadata={"desc": "The final answer if this is the final output."},
+    )
 
     @classmethod
     def from_function(
@@ -424,7 +432,7 @@ class Function(DataClass):
             kwargs=kwargs,
         )
 
-    __output_fields__ = ["thought", "name", "kwargs"]
+    __output_fields__ = ["thought", "name", "kwargs", "_is_answer_final", "_answer"]
 
 
 _action_desc = """FuncName(<kwargs>) \
@@ -1275,13 +1283,24 @@ class RunItemStreamEvent(DataClass):
         "agent.step_complete",  # Complete execution step finished
         "agent.final_output",  # Final processed output available
         "agent.execution_complete",  # Entire Runner execution completed
-    ]
+    ] = field(
+        metadata={
+            "desc": "The name identifying the specific type of execution event that occurred"
+        }
+    )
     """The name identifying the specific type of execution event that occurred."""
     # TODO: convert this to data to be consistent with other events
-    item: RunItem
+    item: RunItem = field(
+        metadata={
+            "desc": "The RunItem instance containing the event-specific data and context"
+        }
+    )
     """The RunItem instance containing the event-specific data and context."""
 
-    type: Literal["run_item_stream_event"] = "run_item_stream_event"
+    type: Literal["run_item_stream_event"] = field(
+        default="run_item_stream_event",
+        metadata={"desc": "Type discriminator for the streaming event system"},
+    )
     """Type discriminator for the streaming event system."""
 
 
@@ -1296,19 +1315,19 @@ as the answer, step history, and error.
 @dataclass
 class RunnerResult:
     step_history: List[StepOutput] = field(
-        metadata={"description": "The step history of the execution"},
+        metadata={"desc": "The step history of the execution"},
         default_factory=list,
     )
     answer: Optional[str] = field(
-        metadata={"description": "The answer to the user's query"}, default=None
+        metadata={"desc": "The answer to the user's query"}, default=None
     )
 
     error: Optional[str] = field(
-        metadata={"description": "The error message if the code execution failed"},
+        metadata={"desc": "The error message if the code execution failed"},
         default=None,
     )
     ctx: Optional[Dict] = field(
-        metadata={"description": "The context of the execution"},
+        metadata={"desc": "The context of the execution"},
         default=None,
     )
 
