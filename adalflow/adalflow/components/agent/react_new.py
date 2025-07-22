@@ -40,17 +40,18 @@ react_agent_task_desc = r"""
 
 Answer the input query using the tools provided below with maximum accuracy.
 
-Each step you will read the previous thought, Action(name, kwargs), and Observation(execution result of the action) and then provide the next Thought and Action.
+Each step you will read the previous steps and then provide a function based on the following instructions
 
 Follow function docstring to best call the tool.
-- For simple queries: Directly call the ``finish`` action and provide the answer.
-- For complex queries:
-    - Step 1: Read the user query and divide it into multisteps. Start with the first tool/subquery.
-    - Call one tool at a time to solve each subquery/subquestion. \
-    - At step 'finish', do a concise conclusion without repeat previous observation/output.
+    - For simple queries: You can directly answer by setting `_is_answer_final` to True and generate the answer in the `_answer` field.
+    - For complex queries:
+        - Step 1: Read the user query and divide it into multisteps. Start with the first tool/subquery.
+        - Call one tool at a time to solve each subquery/subquestion. Set `_is_answer_final` to False for intermediate steps.
+        - To end the call, set the `_is_answer_final` to True and generate the final answer in the `_answer` field.
+
 REMEMBER:
-- Action MUST call one of the tools. It CANNOT be empty.
-- You will ALWAYS END WITH 'finish' tool to finish the task directly with answer or failure message.
+    - Action MUST call one of the tools. It CANNOT be empty other than for the final answer.
+    - The `_answer` field must be the json string of object of the data schema in <START_OF_ANSWER_TYPE_SCHEMA><END_OF_ANSWER_TYPE_SCHEMA>.
 <END_OF_TASK_SPEC>
 """
 
@@ -59,7 +60,7 @@ REMEMBER:
 
 DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
 {{task_desc}}
-- You cant use more than {{max_steps}} steps. At the {{max_steps}}th current step, must finish with answer.
+- You cant use more than {{max_steps}} steps. At the {{max_steps}}th current step, must set `_is_answer_final` to True and provide the answer.
 
 {# Tools #}
 {% if tools %}
@@ -84,9 +85,13 @@ You can either pass context_variables or context_variables['key'] to the tools d
 <END_OF_CONTEXT>
 {% endif %}
 {# output format and examples for output format #}
-<START_OF_OUTPUT_FORMAT>
+<START_OF_OUTPUT_SCHEMA>
 {{output_format_str}}
-<END_OF_OUTPUT_FORMAT>
+The `_answer` field must be of the json string of the following data schema:
+<START_OF_ANSWER_TYPE_SCHEMA>
+{{answer_type_schema}}
+<END_OF_ANSWER_TYPE_SCHEMA>
+<END_OF_OUTPUT_SCHEMA>
 {% if examples %}
 <START_OF_EXAMPLES>
 Examples:
@@ -122,6 +127,15 @@ Step {{ loop.index }}.
 </STEPS>
 {% endif %}
 <END_OF_USER_QUERY>
+"""
+
+"""
+Schema of _answer field of the output: {{answer_type_schema}}
+
+The same rules of JSON formatting for the output applies to the _answer field.
+If the output is the final answer, have the final answer in the _answer field following the provided instructions.
+
+The output format MUST ALWAYS be KEPT.
 """
 
 
@@ -272,6 +286,7 @@ class ReActAgent(Component):
         prompt_kwargs = {
             "tools": self.tool_manager.yaml_definitions,
             "output_format_str": output_parser.format_instructions(),
+            "answer_type_schema": self.answer_data_type,
             "task_desc": Parameter(
                 name="react_agent_task_desc",
                 data=task_desc,
@@ -330,27 +345,9 @@ class ReActAgent(Component):
 
             return None
 
-        # always add **kwargs for us to track the id, __doc__ as the predecessors.
-        from adalflow.optim.grad_component import fun_to_grad_component
-
-        @fun_to_grad_component(
-            desc="Finish",
-            doc_string=Parameter(
-                data="Finish the task with the final answer in the kwargs.",
-                param_type=ParameterType.PROMPT,
-                requires_opt=True,
-                role_desc="Instruct the agent on how to create the final answer from the step history.",
-                name="doc_string",
-            ),
-        )
-        def finish(answer: self.answer_data_type, **kwargs) -> str:
-            return answer
-
-        self._finish = FunctionTool(fn=finish)
         processed_tools = tools.copy()
         if self.add_llm_as_fallback:
             processed_tools.append(llm_tool)
-        processed_tools.append(self._finish)
         return processed_tools
 
     def _execute_action(
@@ -623,7 +620,7 @@ class ReActAgent(Component):
     def _check_last_step(
         self, step_history: List[Union[StepOutput, Parameter]]
     ) -> bool:
-        """Check if the last step is the finish step."""
+        """Check if the last step has is_answer_final set to True."""
         if not step_history:
             return True
 
@@ -635,8 +632,8 @@ class ReActAgent(Component):
         if (
             last_step
             and last_step.action
-            and hasattr(last_step.action, "name")
-            and last_step.action.name == "finish"
+            and hasattr(last_step.action, "is_answer_final")
+            and last_step.action.is_answer_final
         ):
             return True
         return False
@@ -681,14 +678,15 @@ class ReActAgent(Component):
         return self.bicall(*args, **kwargs)
 
     def _is_step_output_last_step(self, step_output: StepOutput) -> bool:
-        """Check if the step output is the last step."""
+        """Check if the step output has is_answer_final set to True."""
         step_output_data = (
             step_output.data if isinstance(step_output, Parameter) else step_output
         )
         if (
             step_output_data
             and step_output_data.function
-            and step_output_data.function.name == "finish"
+            and hasattr(step_output_data.function, "is_answer_final")
+            and step_output_data.function.is_answer_final
         ):
             return True
         return False

@@ -24,7 +24,7 @@ from adalflow.utils import printc
 import logging
 
 
-from adalflow.components.agent.react import (
+from adalflow.components.agent.react_new import (
     DEFAULT_REACT_AGENT_SYSTEM_PROMPT,
     react_agent_task_desc,
 )
