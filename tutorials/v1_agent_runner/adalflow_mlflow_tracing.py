@@ -1,3 +1,6 @@
+# Start the MLflow Tracking Server (in a separate terminal):
+#    mlflow server --host 0.0.0.0 --port 8080
+
 import os
 import asyncio
 import logging
@@ -62,7 +65,8 @@ def create_spanish_agent() -> Agent:
     return Agent(
         name="Spanish-Agent",
         model_client=OpenAIClient(),
-        model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.7},
+        # model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.7},
+        model_kwargs={"model": "gpt-4o", "temperature": 0.3},
         max_steps=3,
         answer_data_type=str,
     )
@@ -73,7 +77,8 @@ def create_english_agent() -> Agent:
     return Agent(
         name="English-Agent",
         model_client=OpenAIClient(),
-        model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.7},
+        # model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3},
+        model_kwargs={"model": "gpt-4o", "temperature": 0.3},
         max_steps=3,
         answer_data_type=str,
     )
@@ -84,7 +89,8 @@ def create_triage_agent() -> Agent:
     return Agent(
         name="Triage-Agent",
         model_client=OpenAIClient(),
-        model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3},
+        # model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3},
+        model_kwargs={"model": "gpt-4o", "temperature": 0.3},
         max_steps=5,
         answer_data_type=str,
     )
@@ -270,20 +276,20 @@ if __name__ == "__main__":
     # Run basic demo
     asyncio.run(main())
 
-    # Run streaming demos
+    # # Run streaming demos
     print("\n" + "=" * 60)
     print("🔄 Running streaming demos...")
     asyncio.run(demo_astream_tracing())
 
-    print("\n" + "=" * 60)
-    print("🔢 Running multi-step streaming demo...")
-    asyncio.run(demo_astream_multi_step())
+    # print("\n" + "=" * 60)
+    # print("🔢 Running multi-step streaming demo...")
+    # asyncio.run(demo_astream_multi_step())
 
     print("\n" + "=" * 60)
     print("⚠️  Running streaming error handling demo...")
     asyncio.run(demo_astream_error_handling())
 
-    # Run extended demo
+    # # Run extended demo
     print("\n" + "=" * 60)
     print("🌍 Running multi-language demo...")
     asyncio.run(demo_multiple_languages())

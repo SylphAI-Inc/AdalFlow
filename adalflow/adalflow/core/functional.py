@@ -439,9 +439,9 @@ def get_type_schema(
             # Handle Enum dataclass types
             enum_members = ", ".join([f"{e.name}={e.value}" for e in type_obj])
             return f"Enum[{type_obj.__name__}({enum_members})]"
-        # Recursively handle nested dataclasses
-        output = str(get_dataclass_schema(type_obj, exclude, type_var_map))
-        return output
+        # Return full schema for dataclasses as string representation
+        schema_dict = get_dataclass_schema(type_obj, exclude, type_var_map)
+        return str(schema_dict)
 
     elif isinstance(type_obj, type) and issubclass(type_obj, Enum):
         # Handle Enum types
