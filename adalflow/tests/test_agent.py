@@ -79,11 +79,10 @@ class TestAgent(unittest.TestCase):
         self.assertEqual(agent.name, "agent-with-fallback")
         self.assertIsInstance(agent.planner, DummyGenerator)
 
-        # Tools include both fallback and finish
+        # Tools include fallback when enabled
         tool_map = agent.tool_manager._context_map
         self.assertIsInstance(tool_map, dict)
         self.assertIn("llm_tool", tool_map)
-        self.assertIn("finish", tool_map)
 
         # Prompt delegation
         prompt = agent.get_prompt(example=123)
@@ -103,10 +102,10 @@ class TestAgent(unittest.TestCase):
             model_client=mc,
         )
 
-        # Only the finish tool
+        # No tools when llm_fallback is disabled and no custom tools provided
         tool_map = agent.tool_manager._context_map
         self.assertNotIn("llm_tool", tool_map)
-        self.assertIn("finish", tool_map)
+        self.assertEqual(len(tool_map), 0)
 
         # Planner still present
         self.assertIsInstance(agent.planner, DummyGenerator)

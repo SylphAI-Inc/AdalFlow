@@ -624,7 +624,7 @@ class DataClass:
                 ordered_dict[field_name] = value
 
         # Update the properties field
-        raw_dict["properties"] = ordered_dict
+        raw_dict["properties"] = dict(ordered_dict)
 
         return raw_dict
 

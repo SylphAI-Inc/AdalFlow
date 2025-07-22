@@ -71,8 +71,10 @@ class MockTracingProcessor(TracingProcessor):
 class DummyFunction(Function):
     """Mimics adalflow.core.types.Function."""
 
-    def __init__(self, name, kwargs=None):
+    def __init__(self, name, kwargs=None, _is_answer_final=False, _answer=None):
         super().__init__(name=name, kwargs=kwargs or {})
+        self._is_answer_final = _is_answer_final
+        self._answer = _answer
 
 
 class FakePlanner:
@@ -94,7 +96,11 @@ class FakePlanner:
         ) as generator_span_data:
             if self._idx >= len(self._outputs):
                 # Return a finish function if we run out of outputs
-                output = GeneratorOutput(data=DummyFunction(name="finish"))
+                output = GeneratorOutput(
+                    data=DummyFunction(
+                        name="finish", _is_answer_final=True, _answer="default_finish"
+                    )
+                )
             else:
                 output = self._outputs[self._idx]
                 self._idx += 1
@@ -117,7 +123,11 @@ class FakePlanner:
         ) as generator_span_data:
             if self._idx >= len(self._outputs):
                 # Return a finish function if we run out of outputs
-                output = GeneratorOutput(data=DummyFunction(name="finish"))
+                output = GeneratorOutput(
+                    data=DummyFunction(
+                        name="finish", _is_answer_final=True, _answer="default_finish"
+                    )
+                )
             else:
                 output = self._outputs[self._idx]
                 self._idx += 1
@@ -209,7 +219,7 @@ class TestRunnerTracing(unittest.TestCase):
 
     def test_runner_call_creates_spans(self):
         """Test that Runner.call creates proper spans."""
-        fn = DummyFunction(name="finish")
+        fn = DummyFunction(name="finish", _is_answer_final=True, _answer="done")
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(output="done")
         agent = DummyAgent(
             planner=FakePlanner([GeneratorOutput(data=fn)]),
@@ -230,7 +240,7 @@ class TestRunnerTracing(unittest.TestCase):
 
     def test_runner_call_with_trace_creates_spans(self):
         """Test that Runner.call with active trace creates proper spans."""
-        fn = DummyFunction(name="finish")
+        fn = DummyFunction(name="finish", _is_answer_final=True, _answer="done")
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(output="done")
         agent = DummyAgent(
             planner=FakePlanner([GeneratorOutput(data=fn)]),
@@ -270,16 +280,13 @@ class TestRunnerTracing(unittest.TestCase):
         generator_span = generator_spans[0]
         self.assertEqual(generator_span.span_data.generator_id, "fake_planner")
 
-        # Check for tool span
+        # When _is_answer_final=True, no tool spans are created since tools aren't executed
         tool_spans = [
             span
             for span in self.processor.span_starts
             if isinstance(span.span_data, AdalFlowToolSpanData)
         ]
-        self.assertEqual(len(tool_spans), 1)
-        tool_span = tool_spans[0]
-        self.assertEqual(tool_span.span_data.tool_name, "finish")
-        self.assertEqual(tool_span.span_data.function_name, "finish")
+        self.assertEqual(len(tool_spans), 0)  # No tool execution for final answers
 
         # Check for step span
         step_spans = [
@@ -291,8 +298,10 @@ class TestRunnerTracing(unittest.TestCase):
         step_span = step_spans[0]
         self.assertEqual(step_span.span_data.step_number, 0)
         self.assertEqual(step_span.span_data.action_type, "planning")
-        self.assertEqual(step_span.span_data.tool_name, "finish")
-        self.assertTrue(step_span.span_data.is_final)
+        self.assertIsNone(
+            step_span.span_data.tool_name
+        )  # No tool execution for final answers
+        self.assertFalse(step_span.span_data.is_final)  # Step span not marked as final
 
         # Check for response span
         response_spans = [
@@ -309,7 +318,9 @@ class TestRunnerTracing(unittest.TestCase):
         """Test that Runner.acall creates proper spans."""
 
         async def async_test():
-            fn = DummyFunction(name="finish")
+            fn = DummyFunction(
+                name="finish", _is_answer_final=True, _answer="async_done"
+            )
             mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
                 output="async_done"
             )
@@ -356,7 +367,9 @@ class TestRunnerTracing(unittest.TestCase):
         """Test that Runner.astream creates proper spans for streaming execution."""
 
         async def async_test():
-            fn = DummyFunction(name="finish")
+            fn = DummyFunction(
+                name="finish", _is_answer_final=True, _answer="stream_done"
+            )
             mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
                 output="stream_done"
             )
@@ -409,7 +422,9 @@ class TestRunnerTracing(unittest.TestCase):
             self.assertEqual(len(step_spans), 1)
             step_span = step_spans[0]
             self.assertEqual(step_span.span_data.action_type, "stream_planning")
-            self.assertTrue(step_span.span_data.is_final)
+            self.assertFalse(
+                step_span.span_data.is_final
+            )  # Step span is not marked as final in streaming case
 
             # Check for response span with streaming metadata
             response_spans = [
@@ -428,8 +443,10 @@ class TestRunnerTracing(unittest.TestCase):
         """Test Runner.astream with multiple steps creates proper spans."""
 
         async def async_test():
-            fn1 = DummyFunction(name="search")
-            fn2 = DummyFunction(name="finish")
+            fn1 = DummyFunction(name="search", _is_answer_final=False)
+            fn2 = DummyFunction(
+                name="finish", _is_answer_final=True, _answer="final_stream_result"
+            )
             mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
                 output=(
                     "search_result"
@@ -474,9 +491,13 @@ class TestRunnerTracing(unittest.TestCase):
             # Check second step
             second_step = step_spans[1]
             self.assertEqual(second_step.span_data.step_number, 1)
-            self.assertEqual(second_step.span_data.tool_name, "finish")
+            self.assertIsNone(
+                second_step.span_data.tool_name
+            )  # No tool execution for final answers
             self.assertEqual(second_step.span_data.action_type, "stream_planning")
-            self.assertTrue(second_step.span_data.is_final)
+            self.assertFalse(
+                second_step.span_data.is_final
+            )  # Step span is not marked as final in streaming case
 
             # Check runner span shows correct final state for streaming
             runner_spans = [
@@ -496,7 +517,7 @@ class TestRunnerTracing(unittest.TestCase):
         """Test Runner.astream error handling creates proper spans."""
 
         async def async_test():
-            fn = DummyFunction(name="error_function")
+            fn = DummyFunction(name="error_function", _is_answer_final=False)
 
             def error_tool_manager(expr_or_fun, step):
                 _ = expr_or_fun, step  # Suppress unused variable warnings
@@ -527,27 +548,41 @@ class TestRunnerTracing(unittest.TestCase):
             ]
             self.assertEqual(len(runner_spans), 1)
             runner_span = runner_spans[0]
-            self.assertEqual(runner_span.span_data.workflow_status, "stream_failed")
-            self.assertIn("Error in step 0:", runner_span.span_data.final_answer)
+            self.assertEqual(runner_span.span_data.workflow_status, "stream_completed")
+            # In this case, the runner continues after error and gets final result
+            self.assertEqual(runner_span.span_data.final_answer, "default_finish")
 
-            # Should have error response span with streaming metadata
+            # Should have multiple response spans (error + final result)
             response_spans = [
                 span
                 for span in self.processor.span_starts
                 if isinstance(span.span_data, AdalFlowResponseSpanData)
             ]
-            self.assertEqual(len(response_spans), 1)
-            response_span = response_spans[0]
-            self.assertEqual(response_span.span_data.result_type, "error")
-            self.assertTrue(response_span.span_data.execution_metadata.get("streaming"))
-            self.assertIn("Error in step 0:", response_span.span_data.answer)
+            self.assertEqual(
+                len(response_spans), 2
+            )  # One for error, one for final result
+
+            # Check error response span (first one)
+            error_response_span = response_spans[0]
+            self.assertEqual(error_response_span.span_data.result_type, "error")
+            self.assertIn("Error in step 0:", error_response_span.span_data.answer)
+
+            # Check final response span (last one)
+            final_response_span = response_spans[1]
+            self.assertEqual(final_response_span.span_data.result_type, "str")
+            self.assertTrue(
+                final_response_span.span_data.execution_metadata.get("streaming")
+            )
+            self.assertEqual(final_response_span.span_data.answer, "default_finish")
 
         asyncio.run(async_test())
 
     def test_runner_multi_step_spans(self):
         """Test Runner with multiple steps creates proper spans."""
-        fn1 = DummyFunction(name="search")
-        fn2 = DummyFunction(name="finish")
+        fn1 = DummyFunction(name="search", _is_answer_final=False)
+        fn2 = DummyFunction(
+            name="finish", _is_answer_final=True, _answer="final_result"
+        )
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
             output="search_result" if expr_or_fun.name == "search" else "final_result"
         )
@@ -582,8 +617,12 @@ class TestRunnerTracing(unittest.TestCase):
         # Check second step
         second_step = step_spans[1]
         self.assertEqual(second_step.span_data.step_number, 1)
-        self.assertEqual(second_step.span_data.tool_name, "finish")
-        self.assertTrue(second_step.span_data.is_final)
+        self.assertIsNone(
+            second_step.span_data.tool_name
+        )  # No tool execution for final answers
+        self.assertFalse(
+            second_step.span_data.is_final
+        )  # Step span not marked as final
 
         # Should have multiple generator spans (one per step)
         generator_spans = [
@@ -593,13 +632,13 @@ class TestRunnerTracing(unittest.TestCase):
         ]
         self.assertEqual(len(generator_spans), 2)
 
-        # Should have multiple tool spans (one per step)
+        # Should have tool spans only for non-final steps (first step only)
         tool_spans = [
             span
             for span in self.processor.span_starts
             if isinstance(span.span_data, AdalFlowToolSpanData)
         ]
-        self.assertEqual(len(tool_spans), 2)
+        self.assertEqual(len(tool_spans), 1)  # Only first step executes tools
 
         # Check runner span shows correct final state
         runner_spans = [
@@ -615,7 +654,7 @@ class TestRunnerTracing(unittest.TestCase):
 
     def test_runner_error_handling_spans(self):
         """Test Runner error handling creates proper spans."""
-        fn = DummyFunction(name="error_function")
+        fn = DummyFunction(name="error_function", _is_answer_final=False)
 
         def error_tool_manager(expr_or_fun, step):
             _ = expr_or_fun, step  # Suppress unused variable warnings
@@ -631,12 +670,12 @@ class TestRunnerTracing(unittest.TestCase):
         with trace("test_workflow"):
             result = runner.call(prompt_kwargs={"query": "test"})
 
-        # Should return error result
+        # Should return final successful result (runner continues after error)
         self.assertIsInstance(result, RunnerResult)
-        self.assertIsNotNone(result.error)
-        self.assertTrue(result.error.startswith("Error in step 0:"))
+        self.assertIsNone(result.error)  # No error in final result
+        self.assertEqual(result.answer, "default_finish")  # Final successful answer
 
-        # Should have created spans despite error
+        # Should have created spans for both error and success
         runner_spans = [
             span
             for span in self.processor.span_starts
@@ -644,25 +683,36 @@ class TestRunnerTracing(unittest.TestCase):
         ]
         self.assertEqual(len(runner_spans), 1)
         runner_span = runner_spans[0]
-        self.assertEqual(runner_span.span_data.workflow_status, "failed")
-        self.assertIn("Error in step 0:", runner_span.span_data.final_answer)
+        self.assertEqual(
+            runner_span.span_data.workflow_status, "completed"
+        )  # Final status is completed
+        self.assertEqual(
+            runner_span.span_data.final_answer, "default_finish"
+        )  # Final answer
 
-        # Should have error response span
+        # Should have multiple response spans (error + success)
         response_spans = [
             span
             for span in self.processor.span_starts
             if isinstance(span.span_data, AdalFlowResponseSpanData)
         ]
-        self.assertEqual(len(response_spans), 1)
-        response_span = response_spans[0]
-        self.assertEqual(response_span.span_data.result_type, "error")
-        self.assertIn("Error in step 0:", response_span.span_data.answer)
+        self.assertEqual(len(response_spans), 2)  # One for error, one for final result
+
+        # Check error response span (first one)
+        error_response_span = response_spans[0]
+        self.assertEqual(error_response_span.span_data.result_type, "error")
+        self.assertIn("Error in step 0:", error_response_span.span_data.answer)
+
+        # Check final response span (last one)
+        final_response_span = response_spans[1]
+        self.assertEqual(final_response_span.span_data.result_type, "str")
+        self.assertEqual(final_response_span.span_data.answer, "default_finish")
 
     def test_runner_disabled_tracing(self):
         """Test Runner with disabled tracing."""
         set_tracing_disabled(True)
 
-        fn = DummyFunction(name="finish")
+        fn = DummyFunction(name="finish", _is_answer_final=True, _answer="done")
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(output="done")
         agent = DummyAgent(
             planner=FakePlanner([GeneratorOutput(data=fn)]),
@@ -700,7 +750,7 @@ class TestRunnerTracing(unittest.TestCase):
             adalflow.tracing.create.GLOBAL_TRACE_PROVIDER = test_provider
 
             try:
-                fn = DummyFunction(name="finish")
+                fn = DummyFunction(name="finish", _is_answer_final=True, _answer="done")
                 mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
                     output="done"
                 )
@@ -728,7 +778,7 @@ class TestRunnerTracing(unittest.TestCase):
 
     def test_runner_span_data_updates(self):
         """Test that runner span data gets updated correctly during execution."""
-        fn = DummyFunction(name="finish")
+        fn = DummyFunction(name="finish", _is_answer_final=True, _answer="done")
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(output="done")
         agent = DummyAgent(
             planner=FakePlanner([GeneratorOutput(data=fn)]),
@@ -762,7 +812,9 @@ class TestRunnerTracing(unittest.TestCase):
     def test_runner_max_steps_without_finish(self):
         """Test Runner that reaches max steps without finish."""
         # Create functions that don't finish
-        functions = [DummyFunction(name=f"action_{i}") for i in range(5)]
+        functions = [
+            DummyFunction(name=f"action_{i}", _is_answer_final=False) for i in range(5)
+        ]
         outputs = [GeneratorOutput(data=fn) for fn in functions]
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
             output=f"output_{expr_or_fun.name}"
@@ -778,8 +830,11 @@ class TestRunnerTracing(unittest.TestCase):
         with trace("test_workflow"):
             result = runner.call(prompt_kwargs={"query": "test"})
 
-        # Should return None when max steps reached without finish
-        self.assertIsNone(result)
+        # Should return RunnerResult with "No output generated" message when max steps reached without finish
+        self.assertIsInstance(result, RunnerResult)
+        self.assertIsNone(result.error)
+        self.assertIsNotNone(result.answer)
+        self.assertTrue(result.answer.startswith("No output generated"))
 
         # Should have created spans for 3 steps
         step_spans = [
@@ -813,7 +868,7 @@ class TestRunnerTracing(unittest.TestCase):
 
     def test_runner_span_hierarchy(self):
         """Test that runner spans have proper hierarchy."""
-        fn = DummyFunction(name="finish")
+        fn = DummyFunction(name="finish", _is_answer_final=True, _answer="done")
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(output="done")
         agent = DummyAgent(
             planner=FakePlanner([GeneratorOutput(data=fn)]),
@@ -864,10 +919,12 @@ class TestRunnerTracingPerformance(unittest.TestCase):
         """Test Runner performance with disabled tracing."""
         set_tracing_disabled(True)
 
-        fn = DummyFunction(name="finish")
+        fn = DummyFunction(name="finish", _is_answer_final=True, _answer="done")
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(output="done")
+        # Create enough outputs for 10 iterations
+        outputs = [GeneratorOutput(data=fn) for _ in range(10)]
         agent = DummyAgent(
-            planner=FakePlanner([GeneratorOutput(data=fn)]),
+            planner=FakePlanner(outputs),
             answer_data_type=None,
             tool_manager=mock_tool_manager,
         )
@@ -895,8 +952,12 @@ class TestRunnerTracingPerformance(unittest.TestCase):
         add_trace_processor(processor)
 
         # Create many steps
-        functions = [DummyFunction(name=f"step_{i}") for i in range(50)]
-        functions.append(DummyFunction(name="finish"))
+        functions = [
+            DummyFunction(name=f"step_{i}", _is_answer_final=False) for i in range(50)
+        ]
+        functions.append(
+            DummyFunction(name="finish", _is_answer_final=True, _answer="final_result")
+        )
         outputs = [GeneratorOutput(data=fn) for fn in functions]
 
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(

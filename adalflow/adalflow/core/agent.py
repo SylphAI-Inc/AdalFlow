@@ -9,7 +9,7 @@ from typing import (
     Callable,
 )
 from adalflow.core.func_tool import FunctionTool, AsyncCallable
-
+from adalflow.core.functional import get_type_schema
 from adalflow.core.component import Component
 from adalflow.core.model_client import ModelClient
 from adalflow.core.generator import Generator
@@ -101,39 +101,9 @@ def create_default_tool_manager(
 
             return None
 
-        # always add **kwargs for us to track the id, __doc__ as the predecessors.
-        from adalflow.optim.grad_component import fun_to_grad_component
-
-        @fun_to_grad_component(
-            desc="Finish",
-            doc_string=Parameter(
-                data="""
-                Finish the task with the final conclusion in the answer.
-                These rules MUST BE FOLLOWED:
-                1. If the specified type of the answer is a Python built-in type, the answer MUST be an object of that specific builtin type.
-                2. If it is not, pass in the answer as a string but with these rules:
-                    - This string will be directly parsed by the caller by using AST.literal_eval, so it must be deserializable using AST.literal_eval.
-                    - Once the string is deserialized, it should be able to be parsed by the caller into the provided type.
-                """,
-                param_type=ParameterType.PROMPT,
-                requires_opt=True,
-                role_desc="Instruct the agent on how to create the final answer from the step history.",
-                name="doc_string",
-            ),
-        )
-        def finish(answer: answer_data_type, **kwargs) -> Union[str, answer_data_type]:
-            # returns a string that is an AST for the answer_data_type
-            log.info(f"answer: {answer}, type: {type(answer)}")
-            # answer will be passed as a dict
-            return answer
-
-        _finish = FunctionTool(fn=finish)
-
-        print(_finish.definition)
         processed_tools = tools.copy() if tools else []
         if add_llm_as_fallback:
             processed_tools.append(llm_tool)
-        processed_tools.append(_finish)
         return processed_tools
 
     # 1. create default ToolManager
@@ -166,6 +136,7 @@ def create_default_planner(
     # default agent parameters
     max_steps: Optional[int] = 10,
     is_thinking_model: Optional[bool] = False,
+    answer_data_type: Optional[Type[T]] = str,
     **kwargs,
 ) -> Generator:
     """Create a default planner with the given model client, model kwargs, template, task desc, cache path, use cache, max steps."""
@@ -180,12 +151,9 @@ def create_default_planner(
     ouput_data_class = Function
     if is_thinking_model:
         # skip the CoT field
-        include_fields = [
-            "name",
-            "kwargs",
-        ]
+        include_fields = ["name", "kwargs", "_is_answer_final", "_answer"]
     else:
-        include_fields = ["thought", "name", "kwargs"]
+        include_fields = ["thought", "name", "kwargs", "_is_answer_final", "_answer"]
     output_parser = JsonOutputParser(
         data_class=ouput_data_class,
         examples=None,
@@ -193,6 +161,14 @@ def create_default_planner(
         return_data_class=True,
         include_fields=include_fields,
     )
+
+    # JsonOutputParser doesn't include the schema for nested fields
+    # answer_type_parser = JsonOutputParser(
+    #     data_class=answer_data_type,
+    #     examples=None,
+    #     return_data_class=True,
+    #     exclude_fields=["types", "properties"],
+    # )
 
     task_desc = Prompt(
         template=react_agent_task_desc,
@@ -222,7 +198,11 @@ def create_default_planner(
         ],  # TODO: make it more clear
         "max_steps": max_steps,  # move to the 2nd step
         "step_history": [],
+        "answer_type_schema": get_type_schema(answer_data_type),
+        # "answer_type_schema": answer_type_parser.format_instructions(),
     }
+
+    # print()
 
     # 3. create default Generator
     planner = Generator(
@@ -351,6 +331,7 @@ class Agent(Component):
             use_cache=use_cache,
             max_steps=max_steps,
             is_thinking_model=is_thinking_model,
+            answer_data_type=answer_data_type,
         )
         self.answer_data_type = answer_data_type  # save the final answer data type for the runner to communicate
         self.max_steps = max_steps

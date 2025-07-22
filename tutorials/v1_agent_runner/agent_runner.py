@@ -51,7 +51,7 @@ def search_tool(query: str) -> str:
     """
     # In a real implementation, this would call a search API
     logger.info(f"Searching for: {query}")
-    return "Search has been completed"
+    return "Search has been completed. The information that you have provide to the user is already in the query that you've sent."
 
 
 def add_tool(x: int, y: int) -> int:
@@ -135,12 +135,14 @@ def run_react_agent_example():
             tools=tools,
             model_client=OpenAIClient(),
             model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.7},
-            answer_data_type=Person,
+            # answer_data_type=Person,
+            answer_data_type=str,
+            max_steps=5,
         )
 
         # Create the runner
         # use default executor
-        runner = Runner(agent=agent, max_steps=5)
+        runner = Runner(agent=agent)
 
         # Example query
         query = (
@@ -303,7 +305,7 @@ async def arun_react_agent_example():
             name="AsyncReActAgent",
             tools=tools,
             model_client=OpenAIClient(),
-            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.7},
+            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.2},
             answer_data_type=Summary,
         )
 
@@ -489,7 +491,7 @@ async def arun_advanced_react_agent():
         name="AsyncAdvancedReActAgent",
         tools=tools,
         model_client=OpenAIClient(),
-        model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.5},
+        model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3},
         # answer_data_type=Organization,
         answer_data_type=PersonSummary,
     )

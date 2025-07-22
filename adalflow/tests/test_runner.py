@@ -16,8 +16,10 @@ from adalflow.core.runner import Runner
 class DummyFunction(Function):
     """Mimics adalflow.core.types.Function."""
 
-    def __init__(self, name, kwargs=None):
+    def __init__(self, name, kwargs=None, _is_answer_final=False, _answer=None):
         super().__init__(name=name, kwargs=kwargs or {})
+        self._is_answer_final = _is_answer_final
+        self._answer = _answer
 
 
 class FakePlanner:
@@ -163,13 +165,15 @@ class TestRunner(unittest.TestCase):
         )
 
     def test_check_last_step(self):
-        finish_fn = DummyFunction(name="finish")
-        cont_fn = DummyFunction(name="continue")
+        finish_fn = DummyFunction(
+            name="finish", _is_answer_final=True, _answer="test answer"
+        )
+        cont_fn = DummyFunction(name="continue", _is_answer_final=False)
         self.assertTrue(self.runner._check_last_step(finish_fn))
         self.assertFalse(self.runner._check_last_step(cont_fn))
 
     def test_call_single_step_finish_returns_runner_response(self):
-        fn = DummyFunction(name="finish")
+        fn = DummyFunction(name="finish", _is_answer_final=True, _answer="done")
         # Create a mock tool manager that returns a FunctionOutput
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(output="done")
         agent = DummyAgent(
@@ -181,15 +185,12 @@ class TestRunner(unittest.TestCase):
 
         result = runner.call(prompt_kwargs={})
 
-        # Verify result is RunnerResponse
+        # Verify result is RunnerResult
         self.assertIsInstance(result, RunnerResult)
         self.assertEqual(result.answer, "done")
-        # function_call_result and function_call fields removed from RunnerResponse
-        # Verify step history contains the execution details
-        self.assertEqual(len(result.step_history), 1)
-        self.assertEqual(result.step_history[0].function, fn)
-        self.assertEqual(len(runner.step_history), 1)
-        self.assertEqual(runner.step_history[0].function, fn)
+        # When _is_answer_final=True, Runner processes answer directly without adding to step history
+        self.assertEqual(len(result.step_history), 0)
+        self.assertEqual(len(runner.step_history), 0)
 
     def test_acall_returns_runner_response(self):
         """Test that acall method returns RunnerResponse."""
@@ -197,7 +198,9 @@ class TestRunner(unittest.TestCase):
         async def async_test():
             from adalflow.core.types import FunctionOutput
 
-            fn = DummyFunction(name="finish")
+            fn = DummyFunction(
+                name="finish", _is_answer_final=True, _answer="async-done"
+            )
             agent = DummyAgent(
                 planner=FakePlanner([GeneratorOutput(data=fn)]), answer_data_type=None
             )
@@ -210,16 +213,12 @@ class TestRunner(unittest.TestCase):
 
             result = await runner.acall(prompt_kwargs={})
 
-            # Verify result is RunnerResponse
+            # Verify result is RunnerResult
             self.assertIsInstance(result, RunnerResult)
             self.assertEqual(result.answer, "async-done")
-            # function_call_result and function_call fields removed from RunnerResponse
-            # Verify step history contains the execution details
-            self.assertEqual(len(result.step_history), 1)
-            self.assertEqual(result.step_history[0].function, fn)
-
-            # Verify step history
-            self.assertEqual(len(runner.step_history), 1)
+            # When _is_answer_final=True, Runner processes answer directly without adding to step history
+            self.assertEqual(len(result.step_history), 0)
+            self.assertEqual(len(runner.step_history), 0)
 
         asyncio.run(async_test())
 
@@ -229,7 +228,9 @@ class TestRunner(unittest.TestCase):
         async def async_test():
             from adalflow.core.types import FunctionOutput
 
-            fn = DummyFunction(name="finish")
+            fn = DummyFunction(
+                name="finish", _is_answer_final=True, _answer="stream-done"
+            )
             agent = DummyAgent(
                 planner=FakeStreamingPlanner([GeneratorOutput(data=fn)]),
                 answer_data_type=None,
@@ -269,10 +270,8 @@ class TestRunner(unittest.TestCase):
             runner_response = final_event.item.data
             self.assertIsInstance(runner_response, RunnerResult)
             self.assertEqual(runner_response.answer, "stream-done")
-            # function_call field removed from RunnerResponse
-            # Verify step history contains the execution details
-            self.assertEqual(len(runner_response.step_history), 1)
-            self.assertEqual(runner_response.step_history[0].function, fn)
+            # When _is_answer_final=True, Runner processes answer directly without adding to step history
+            self.assertEqual(len(runner_response.step_history), 0)
 
             # Verify streaming result has final result
             self.assertEqual(streaming_result.answer, "stream-done")
@@ -281,8 +280,8 @@ class TestRunner(unittest.TestCase):
 
     def test_call_nonfinish_then_finish(self):
         """Test multi-step execution with non-finish then finish functions."""
-        fn1 = DummyFunction(name="search")
-        fn2 = DummyFunction(name="finish")
+        fn1 = DummyFunction(name="search", _is_answer_final=False)
+        fn2 = DummyFunction(name="finish", _is_answer_final=True, _answer="test output")
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
             output="test output"
         )
@@ -295,21 +294,23 @@ class TestRunner(unittest.TestCase):
 
         result = runner.call(prompt_kwargs={})
 
-        # Verify result is RunnerResponse
+        # Verify result is RunnerResult
         self.assertIsInstance(result, RunnerResult)
         self.assertEqual(result.answer, "test output")
-        # function_call_result and function_call fields removed from RunnerResponse
-        # Verify step history contains the execution details
-        self.assertEqual(len(result.step_history), 2)
+        # Verify step history contains only the first (non-final) step execution
+        # The second step with _is_answer_final=True doesn't get added to history
+        self.assertEqual(len(result.step_history), 1)
         self.assertEqual(
-            result.step_history[-1].function, fn2
-        )  # Last step should be fn2
-        self.assertEqual(len(runner.step_history), 2)
+            result.step_history[0].function, fn1
+        )  # Only first step in history
+        self.assertEqual(len(runner.step_history), 1)
 
     def test_call_respects_max_steps_without_finish(self):
         """Test that Runner respects max_steps limit without finish function."""
         # Create outputs for 5 steps without finish
-        functions = [DummyFunction(name=f"action_{i}") for i in range(5)]
+        functions = [
+            DummyFunction(name=f"action_{i}", _is_answer_final=False) for i in range(5)
+        ]
         outputs = [GeneratorOutput(data=fn) for fn in functions]
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
             output=f"output_{expr_or_fun.name}"
@@ -326,9 +327,11 @@ class TestRunner(unittest.TestCase):
         # Should only execute 3 steps due to max_steps limit
         self.assertEqual(len(runner.step_history), 3)
 
-        # When max_steps is reached without finish, result should be None
-        # This is the current behavior - no RunnerResponse is created without finish
-        self.assertIsNone(result)
+        # When max_steps is reached without finish, result should have "No output generated" message
+        self.assertIsInstance(result, RunnerResult)
+        self.assertIsNone(result.error)
+        self.assertIsNotNone(result.answer)
+        self.assertTrue(result.answer.startswith("No output generated"))
 
         # Check that the correct functions were executed
         for i, step in enumerate(runner.step_history):
@@ -337,7 +340,9 @@ class TestRunner(unittest.TestCase):
 
     def test_call_no_answer_data_type(self):
         """Test call with no answer_data_type returns RunnerResult."""
-        fn = DummyFunction(name="finish")
+        fn = DummyFunction(
+            name="finish", _is_answer_final=True, _answer="{'result': 'success'}"
+        )
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
             output="{'result': 'success'}"
         )
@@ -354,11 +359,9 @@ class TestRunner(unittest.TestCase):
         self.assertIsInstance(result, RunnerResult)
         # When no answer_data_type is specified, it defaults to str and should convert dict to string
         self.assertEqual(result.answer, "{'result': 'success'}")
-        # function_call_result and function_call fields removed from RunnerResponse
-        # Verify step history contains the execution details
-        self.assertEqual(len(result.step_history), 1)
-        self.assertEqual(result.step_history[0].function, fn)
-        self.assertEqual(len(runner.step_history), 1)
+        # When _is_answer_final=True, Runner processes answer directly without adding to step history
+        self.assertEqual(len(result.step_history), 0)
+        self.assertEqual(len(runner.step_history), 0)
 
     def test_additional_acall_single_step(self):
         """Additional test for acall single step execution."""
@@ -366,7 +369,9 @@ class TestRunner(unittest.TestCase):
         async def async_test():
             from adalflow.core.types import FunctionOutput
 
-            fn = DummyFunction(name="finish")
+            fn = DummyFunction(
+                name="finish", _is_answer_final=True, _answer="async-done"
+            )
             agent = DummyAgent(
                 planner=FakePlanner([GeneratorOutput(data=fn)]), answer_data_type=None
             )
@@ -382,11 +387,9 @@ class TestRunner(unittest.TestCase):
             # Verify result is RunnerResult
             self.assertIsInstance(result, RunnerResult)
             self.assertEqual(result.answer, "async-done")
-            # function_call_result and function_call fields removed from RunnerResponse
-            # Verify step history contains the execution details
-            self.assertEqual(len(result.step_history), 1)
-            self.assertEqual(result.step_history[0].function, fn)
-            self.assertEqual(len(runner.step_history), 1)
+            # When _is_answer_final=True, Runner processes answer directly without adding to step history
+            self.assertEqual(len(result.step_history), 0)
+            self.assertEqual(len(runner.step_history), 0)
 
         asyncio.run(async_test())
 
@@ -399,12 +402,14 @@ class TestRunner(unittest.TestCase):
         # The Runner should handle None gracefully and return an error in RunnerResult
         result = asyncio.run(runner.acall(prompt_kwargs={}))
 
-        # Should return a RunnerResult with error field populated
+        # Should return a RunnerResult with no output message (runner continues through all steps)
         self.assertIsInstance(result, RunnerResult)
-        self.assertIsNotNone(result.error)
-        self.assertIsNone(result.answer)
-        self.assertTrue(result.error.startswith("Error in step 0:"))
-        self.assertEqual(runner.step_history, [])
+        self.assertIsNone(result.error)  # No error in final result
+        self.assertIsNotNone(result.answer)  # Has answer message
+        self.assertTrue(
+            result.answer.startswith("No output generated")
+        )  # No output completion message
+        self.assertEqual(runner.step_history, [])  # No successful steps in history
 
     def test_process_data_without_answer_data_type(self):
         """Test _process_data without answer_data_type."""
@@ -483,7 +488,9 @@ class TestRunner(unittest.TestCase):
             from adalflow.core.types import FunctionOutput
 
             # Test 1: Single step with finish function
-            fn = DummyFunction(name="finish")
+            fn = DummyFunction(
+                name="finish", _is_answer_final=True, _answer="stream-test"
+            )
             agent = DummyAgent(
                 planner=FakeStreamingPlanner([GeneratorOutput(data=fn)]),
                 answer_data_type=None,
@@ -525,12 +532,16 @@ class TestRunner(unittest.TestCase):
             self.assertIsInstance(final_event.item, FinalOutputItem)
             self.assertIsInstance(final_event.item.data, RunnerResult)
             self.assertEqual(final_event.item.data.answer, "stream-test")
+            # When _is_answer_final=True, no step history is created
+            self.assertEqual(len(final_event.item.data.step_history), 0)
 
         asyncio.run(async_test())
 
     def test_runner_response_consistency(self):
         """Test that all Runner methods return consistent RunnerResponse objects."""
-        fn = DummyFunction(name="finish")
+        fn = DummyFunction(
+            name="finish", _is_answer_final=True, _answer="consistent-output"
+        )
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
             output="consistent-output"
         )
@@ -545,10 +556,8 @@ class TestRunner(unittest.TestCase):
         result1 = runner1.call(prompt_kwargs={})
         self.assertIsInstance(result1, RunnerResult)
         self.assertEqual(result1.answer, "consistent-output")
-        # function_call_result and function_call fields removed from RunnerResponse
-        # Verify step history contains the execution details
-        self.assertEqual(len(result1.step_history), 1)
-        self.assertEqual(result1.step_history[0].function, fn)
+        # When _is_answer_final=True, Runner processes answer directly without adding to step history
+        self.assertEqual(len(result1.step_history), 0)
 
         # Test async call with fresh planner
         async def async_test():
@@ -571,10 +580,8 @@ class TestRunner(unittest.TestCase):
 
             self.assertIsInstance(result2, RunnerResult)
             self.assertEqual(result2.answer, "consistent-output")
-            # function_call_result and function_call fields removed from RunnerResponse
-            # Verify step history contains the execution details
-            self.assertEqual(len(result2.step_history), 1)
-            self.assertEqual(result2.step_history[0].function, fn)
+            # When _is_answer_final=True, Runner processes answer directly without adding to step history
+            self.assertEqual(len(result2.step_history), 0)
 
         asyncio.run(async_test())
 
