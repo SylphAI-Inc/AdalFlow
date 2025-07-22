@@ -23,6 +23,7 @@ include = [
     "adalflow/utils/*",
     "adalflow/tracing/*",
     "adalflow/optim/*",
+    "adalflow/apps/*",
 ]
 
 packages = [{ include = "adalflow", from = "." }]

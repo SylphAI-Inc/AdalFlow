@@ -49,6 +49,7 @@ from .scope import (
     gen_trace_id,
 )
 from .setup import GLOBAL_TRACE_PROVIDER
+from .mlflow_integration import enable_mlflow_local, enable_mlflow_local_with_server, get_mlflow_server_command
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Convenience functions for managing trace processors
@@ -134,4 +135,8 @@ __all__ = [
     "set_tracing_disabled",
     "set_tracing_export_api_key",
     "get_trace_processors",
+    # MLflow integration
+    "enable_mlflow_local",
+    "enable_mlflow_local_with_server",
+    "get_mlflow_server_command",
 ]

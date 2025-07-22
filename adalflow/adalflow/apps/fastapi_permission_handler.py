@@ -8,7 +8,7 @@ from typing import Dict, Optional, List
 from datetime import datetime, timedelta
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from adalflow.core.permission_manager import PermissionManager, ApprovalOutcome
+from adalflow.apps.permission_manager import PermissionManager, ApprovalOutcome
 from adalflow.core.types import FunctionRequest
 import logging
 

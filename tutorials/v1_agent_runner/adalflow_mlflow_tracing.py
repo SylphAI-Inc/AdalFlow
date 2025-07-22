@@ -12,7 +12,7 @@ os.environ["ADALFLOW_DISABLE_TRACING"] = "False"
 
 # AdalFlow imports
 from adalflow.components.agent.agent import Agent
-from adalflow.components.runner.runner import Runner
+from adalflow.components.agent.runner import Runner
 from adalflow.components.model_client import OpenAIClient
 from adalflow.tracing import set_trace_processors, trace
 

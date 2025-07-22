@@ -831,13 +831,13 @@ class Document(DataClass):
 @dataclass
 class UserQuery:
     query_str: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = None # context or files can be used in the user queries
 
 
 @dataclass
 class AssistantResponse:
     response_str: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = None # for agent, we have step history
 
 
 # There could  more other roles in a multi-party conversation. We might consider in the future.
@@ -864,8 +864,8 @@ class DialogTurn(DataClass):
     Examples:
 
         - User: Hi, how are you?
-        - Assistant: I'm fine, thank you!
-        DialogTurn(id=uuid4(), user_query=UserQuery("Hi, how are you?"), assistant_response=AssistantResponse("I'm fine, thank you!"))
+        - Assistant: Doing great!
+        DialogTurn(id=uuid4(), user_query=UserQuery("Hi, how are you?"), assistant_response=AssistantResponse("Doing great!"))
     """
 
     id: str = field(

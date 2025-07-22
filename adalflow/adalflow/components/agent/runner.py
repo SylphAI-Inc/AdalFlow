@@ -39,8 +39,11 @@ from adalflow.core.types import (
     QueueCompleteSentinel,
     ToolOutput,
     ToolCallActivityRunItem,
+    UserQuery,
+    AssistantResponse,
 )
-from adalflow.core.permission_manager import PermissionManager
+from adalflow.apps.permission_manager import PermissionManager
+from adalflow.components.memory.memory import ConversationMemory
 from adalflow.core.functional import _is_pydantic_dataclass, _is_adalflow_dataclass
 from adalflow.tracing import (
     runner_span,
@@ -86,6 +89,7 @@ class Runner(Component):
         ctx: Optional[Dict] = None,
         max_steps: Optional[int] = None,
         permission_manager: Optional[PermissionManager] = None,
+        conversation_memory: Optional[ConversationMemory] = None,
         **kwargs,
     ) -> None:
         """Initialize runner with an agent and configuration.
@@ -96,10 +100,14 @@ class Runner(Component):
             output_type: Optional Pydantic data class type
             max_steps: Maximum number of steps to execute
             permission_manager: Optional permission manager for tool approval
+            conversation_memory: Optional conversation memory
         """
         super().__init__(**kwargs)
         self.agent = agent
         self.permission_manager = permission_manager
+        self.conversation_memory = conversation_memory
+
+        self.use_conversation_memory = conversation_memory is not None
 
         # get agent requirements
         self.max_steps = max_steps
@@ -721,6 +729,13 @@ class Runner(Component):
             prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
 
             prompt_kwargs["step_history"] = self.step_history
+            if self.use_conversation_memory:
+                prompt_kwargs["chat_history_str"] = self.conversation_memory()
+                # save the user query to the conversation memory
+
+                # meta data is all keys in the list of context_str
+                query_metadata = {"context_str": prompt_kwargs.get("context_str", None)}
+                self.conversation_memory.add_user_query(UserQuery(query_str=prompt_kwargs.get("input_str", None), metadata=query_metadata))
             # a reference to the step history
             # set maximum number of steps for the planner into the prompt
             prompt_kwargs["max_steps"] = self.max_steps
@@ -939,6 +954,11 @@ class Runner(Component):
                             streaming_result.answer = processed_data
                             streaming_result.step_history = self.step_history.copy()
                             streaming_result._is_complete = True
+
+                            # add the assistant response to the conversation memory
+                            # TODO: create a string for the step history
+                            if self.use_conversation_memory:
+                                self.conversation_memory.add_assistant_response(AssistantResponse(response_str=processed_data, metadata={"step_history": self.step_history.copy()}))
                             break
 
                         step_count += 1

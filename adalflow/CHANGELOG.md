@@ -5,6 +5,7 @@
 
 -  `Runner` v1 runner to be able to do sync/async agent call.
 -  `Agent` v1 agent contains the planner, tools to collaborate with the Runner.
+-  Tracing of the whole agent, especially with ML flow.
 
 ### Fixed
 - `LocalDB` fixed with keyword arguments.
@@ -25,6 +26,11 @@
   - inside of `GeneratorOutput`, support `thinking` and `tool_user`(`Function` type)
 - `ToolManager` and `FunctionTool`
   - added `is_async_generator` property in `FunctionTool` to support streaming output
+
+- `Memory`
+  - renamed to `ConversationMemory`.
+  - added `add_user_query` and `add_assistant_response` to support adding user query and assistant response separately.
+  - improved the render of the string to be pass as chat history to the LLM.
 
 ### Deleted
 - `FuncComponent` and `func_to_component` decorator.
