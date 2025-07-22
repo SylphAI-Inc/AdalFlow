@@ -165,15 +165,13 @@ class TestRunner(unittest.TestCase):
         )
 
     def test_check_last_step(self):
-        finish_fn = DummyFunction(
-            name="finish", _is_answer_final=True, _answer="test answer"
-        )
         cont_fn = DummyFunction(name="continue", _is_answer_final=False)
-        self.assertTrue(self.runner._check_last_step(finish_fn))
+        answer_output_fn = DummyFunction(name="answer_output", _is_answer_final=True)
+        self.assertTrue(self.runner._check_last_step(answer_output_fn))
         self.assertFalse(self.runner._check_last_step(cont_fn))
 
-    def test_call_single_step_finish_returns_runner_response(self):
-        fn = DummyFunction(name="finish", _is_answer_final=True, _answer="done")
+    def test_call_single_step_answer_output_returns_runner_response(self):
+        fn = DummyFunction(name="answer_output", _is_answer_final=True, _answer="done")
         # Create a mock tool manager that returns a FunctionOutput
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(output="done")
         agent = DummyAgent(
@@ -199,7 +197,7 @@ class TestRunner(unittest.TestCase):
             from adalflow.core.types import FunctionOutput
 
             fn = DummyFunction(
-                name="finish", _is_answer_final=True, _answer="async-done"
+                name="answer_output", _is_answer_final=True, _answer="async-done"
             )
             agent = DummyAgent(
                 planner=FakePlanner([GeneratorOutput(data=fn)]), answer_data_type=None
@@ -229,7 +227,7 @@ class TestRunner(unittest.TestCase):
             from adalflow.core.types import FunctionOutput
 
             fn = DummyFunction(
-                name="finish", _is_answer_final=True, _answer="stream-done"
+                name="answer_output", _is_answer_final=True, _answer="stream-done"
             )
             agent = DummyAgent(
                 planner=FakeStreamingPlanner([GeneratorOutput(data=fn)]),
@@ -278,10 +276,12 @@ class TestRunner(unittest.TestCase):
 
         asyncio.run(async_test())
 
-    def test_call_nonfinish_then_finish(self):
-        """Test multi-step execution with non-finish then finish functions."""
+    def test_call_nonfinish_then_answer_output(self):
+        """Test multi-step execution with non-answer_output then answer_output functions."""
         fn1 = DummyFunction(name="search", _is_answer_final=False)
-        fn2 = DummyFunction(name="finish", _is_answer_final=True, _answer="test output")
+        fn2 = DummyFunction(
+            name="answer_output", _is_answer_final=True, _answer="test output"
+        )
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
             output="test output"
         )
@@ -305,9 +305,9 @@ class TestRunner(unittest.TestCase):
         )  # Only first step in history
         self.assertEqual(len(runner.step_history), 1)
 
-    def test_call_respects_max_steps_without_finish(self):
-        """Test that Runner respects max_steps limit without finish function."""
-        # Create outputs for 5 steps without finish
+    def test_call_respects_max_steps_without_answer_output(self):
+        """Test that Runner respects max_steps limit without answer_output function."""
+        # Create outputs for 5 steps without answer_output
         functions = [
             DummyFunction(name=f"action_{i}", _is_answer_final=False) for i in range(5)
         ]
@@ -327,7 +327,7 @@ class TestRunner(unittest.TestCase):
         # Should only execute 3 steps due to max_steps limit
         self.assertEqual(len(runner.step_history), 3)
 
-        # When max_steps is reached without finish, result should have "No output generated" message
+        # When max_steps is reached without answer_output, result should have "No output generated" message
         self.assertIsInstance(result, RunnerResult)
         self.assertIsNone(result.error)
         self.assertIsNotNone(result.answer)
@@ -341,7 +341,7 @@ class TestRunner(unittest.TestCase):
     def test_call_no_answer_data_type(self):
         """Test call with no answer_data_type returns RunnerResult."""
         fn = DummyFunction(
-            name="finish", _is_answer_final=True, _answer="{'result': 'success'}"
+            name="answer_output", _is_answer_final=True, _answer="{'result': 'success'}"
         )
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
             output="{'result': 'success'}"
@@ -370,7 +370,7 @@ class TestRunner(unittest.TestCase):
             from adalflow.core.types import FunctionOutput
 
             fn = DummyFunction(
-                name="finish", _is_answer_final=True, _answer="async-done"
+                name="answer_output", _is_answer_final=True, _answer="async-done"
             )
             agent = DummyAgent(
                 planner=FakePlanner([GeneratorOutput(data=fn)]), answer_data_type=None
@@ -487,9 +487,9 @@ class TestRunner(unittest.TestCase):
         async def async_test():
             from adalflow.core.types import FunctionOutput
 
-            # Test 1: Single step with finish function
+            # Test 1: Single step with answer_output function
             fn = DummyFunction(
-                name="finish", _is_answer_final=True, _answer="stream-test"
+                name="answer_output", _is_answer_final=True, _answer="stream-test"
             )
             agent = DummyAgent(
                 planner=FakeStreamingPlanner([GeneratorOutput(data=fn)]),
@@ -540,7 +540,7 @@ class TestRunner(unittest.TestCase):
     def test_runner_response_consistency(self):
         """Test that all Runner methods return consistent RunnerResponse objects."""
         fn = DummyFunction(
-            name="finish", _is_answer_final=True, _answer="consistent-output"
+            name="answer_output", _is_answer_final=True, _answer="consistent-output"
         )
         mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(
             output="consistent-output"

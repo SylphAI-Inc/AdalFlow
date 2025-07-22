@@ -343,22 +343,6 @@ class FunctionDefinition(DataClass):
 
 
 @dataclass
-class Summary(DataClass):
-    """Stores the results of an agent's execution."""
-
-    step_count: int
-    final_output: Any
-    search_tool_calls: List[str]
-
-
-@dataclass
-class Person(DataClass):
-    name: str
-    age: int
-    summary: Summary
-
-
-@dataclass
 class Function(DataClass):
     __doc__ = r"""The data modeling of a function call, including the name and keyword arguments.
 

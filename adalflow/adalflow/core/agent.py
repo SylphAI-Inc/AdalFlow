@@ -20,14 +20,12 @@ from adalflow.optim.parameter import Parameter, ParameterType
 from adalflow.components.output_parsers import JsonOutputParser
 from adalflow.utils import printc
 
+from adalflow.components.agent.react import (
+    DEFAULT_ADALFLOW_AGENT_SYSTEM_PROMPT,
+    adalflow_agent_task_desc,
+)
 
 import logging
-
-
-from adalflow.components.agent.react_new import (
-    DEFAULT_REACT_AGENT_SYSTEM_PROMPT,
-    react_agent_task_desc,
-)
 
 
 __all__ = ["Agent"]
@@ -144,7 +142,7 @@ def create_default_planner(
     if not model_client:
         raise ValueError("model_client and model_kwargs are required")
 
-    template = template or DEFAULT_REACT_AGENT_SYSTEM_PROMPT
+    template = template or DEFAULT_ADALFLOW_AGENT_SYSTEM_PROMPT
     role_desc = role_desc or DEFAULT_ROLE_DESC
 
     # define the parser for the intermediate step, which is a Function class
@@ -162,16 +160,8 @@ def create_default_planner(
         include_fields=include_fields,
     )
 
-    # JsonOutputParser doesn't include the schema for nested fields
-    # answer_type_parser = JsonOutputParser(
-    #     data_class=answer_data_type,
-    #     examples=None,
-    #     return_data_class=True,
-    #     exclude_fields=["types", "properties"],
-    # )
-
     task_desc = Prompt(
-        template=react_agent_task_desc,
+        template=adalflow_agent_task_desc,
         prompt_kwargs={"role_desc": role_desc},
     ).call()
 
@@ -199,10 +189,7 @@ def create_default_planner(
         "max_steps": max_steps,  # move to the 2nd step
         "step_history": [],
         "answer_type_schema": get_type_schema(answer_data_type),
-        # "answer_type_schema": answer_type_parser.format_instructions(),
     }
-
-    # print()
 
     # 3. create default Generator
     planner = Generator(

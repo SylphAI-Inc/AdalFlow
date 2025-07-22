@@ -23,8 +23,6 @@ from dataclasses import dataclass
 
 from adalflow.utils import get_logger
 
-import asyncio
-
 
 from dotenv import load_dotenv
 
@@ -134,7 +132,7 @@ def run_react_agent_example():
             name="ReActAgent",
             tools=tools,
             model_client=OpenAIClient(),
-            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.7},
+            model_kwargs={"model": "gpt-3/5-turbo", "temperature": 0.7},
             # answer_data_type=Person,
             answer_data_type=str,
             max_steps=5,
@@ -215,7 +213,7 @@ def run_react_agent_primitive_type():
             name="ReActAgent",
             tools=tools,
             model_client=OpenAIClient(),
-            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3},
+            model_kwargs={"model": "gpt-3/5-turbo", "temperature": 0.3},
             # answer_data_type=list,
             answer_data_type=dict,
         )
@@ -305,7 +303,7 @@ async def arun_react_agent_example():
             name="AsyncReActAgent",
             tools=tools,
             model_client=OpenAIClient(),
-            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.2},
+            model_kwargs={"model": "gpt-3/5-turbo", "temperature": 0.2},
             answer_data_type=Summary,
         )
 
@@ -416,7 +414,7 @@ class Organization(DataClass):
 def run_advanced_react_agent():
     # Create tool instances
     tools = [
-        FunctionTool(fn=search_tool),
+        # FunctionTool(fn=search_tool),
         FunctionTool(fn=add_tool),
         FunctionTool(fn=async_sub_tool),
         FunctionTool(fn=async_multiply_tool),
@@ -429,7 +427,7 @@ def run_advanced_react_agent():
     #     name="AdvancedReActAgent",
     #     tools=tools,
     #     model_client=OpenAIClient(),
-    #     model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.5},
+    #     model_kwargs={"model": "gpt-3/5-turbo", "temperature": 0.5},
     #     answer_data_type=Organization,
     # )
 
@@ -437,7 +435,7 @@ def run_advanced_react_agent():
         name="AdvancedReActAgent",
         tools=tools,
         model_client=OpenAIClient(),
-        model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.5},
+        model_kwargs={"model": "gpt-3/5-turbo", "temperature": 0.3},
         answer_data_type=PersonSummary,
     )
 
@@ -479,7 +477,7 @@ def run_advanced_react_agent():
 
 async def arun_advanced_react_agent():
     tools = [
-        FunctionTool(fn=search_tool),
+        # FunctionTool(fn=search_tool),
         FunctionTool(fn=add_tool),
         FunctionTool(fn=async_sub_tool),
         FunctionTool(fn=async_multiply_tool),
@@ -491,7 +489,7 @@ async def arun_advanced_react_agent():
         name="AsyncAdvancedReActAgent",
         tools=tools,
         model_client=OpenAIClient(),
-        model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3},
+        model_kwargs={"model": "gpt-3/5-turbo", "temperature": 0.3},
         # answer_data_type=Organization,
         answer_data_type=PersonSummary,
     )
@@ -539,7 +537,7 @@ def no_structured_output_run_agent():
             name="NoStructuredOutputAgent",
             tools=tools,
             model_client=OpenAIClient(),
-            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.7},
+            model_kwargs={"model": "gpt-3/5-turbo", "temperature": 0.7},
             answer_data_type=float,
         )
 
@@ -607,12 +605,12 @@ def pydantic_dataclass_run_agent():
             name="PydanticOutputAgent",
             tools=tools,
             model_client=OpenAIClient(),
-            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3},
+            model_kwargs={"model": "gpt-3/5-turbo", "temperature": 0.3},
             answer_data_type=CalculationResult,
         )
 
         # Create the runner
-        runner = Runner(agent=agent, max_steps=5)
+        runner = Runner(agent=agent, max_steps=7)
 
         # Example query
         query = "Calculate ((5 + 3) * 2) - 4 and show your work step by step"
@@ -725,13 +723,13 @@ if __name__ == "__main__":
     examples = [
         ("Synchronous ReAct Agent", run_react_agent_example),
         ("Primitive Type ReAct Agent", run_react_agent_primitive_type),
-        ("Async ReAct Agent", lambda: asyncio.run(arun_react_agent_example())),
-        ("Advanced ReAct Agent", run_advanced_react_agent),
-        (
-            "Advanced Async ReAct Agent",
-            lambda: asyncio.run(arun_advanced_react_agent()),
-        ),
-        ("No Structured Output Agent", no_structured_output_run_agent),
+        # ("Async ReAct Agent", lambda: asyncio.run(arun_react_agent_example())),
+        # ("Advanced ReAct Agent", run_advanced_react_agent),
+        # (
+        #     "Advanced Async ReAct Agent",
+        #     lambda: asyncio.run(arun_advanced_react_agent()),
+        # ),
+        # ("No Structured Output Agent", no_structured_output_run_agent),
         ("Pydantic Dataclass Agent", pydantic_dataclass_run_agent),
     ]
 
