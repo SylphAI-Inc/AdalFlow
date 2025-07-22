@@ -20,7 +20,7 @@ from adalflow.optim.parameter import Parameter, ParameterType
 from adalflow.components.output_parsers import JsonOutputParser
 from adalflow.utils import printc
 
-from adalflow.components.agent.react import (
+from adalflow.components.agent.prompts import (
     DEFAULT_ADALFLOW_AGENT_SYSTEM_PROMPT,
     adalflow_agent_task_desc,
 )
