@@ -8,7 +8,7 @@ from typing import Dict, Optional, List
 from datetime import datetime, timedelta
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from adalflow.apps.permission_manager import PermissionManager, ApprovalOutcome
+from adalflow.apps.permission_manager import PermissionManager, ApprovalOutcome, ApprovalResponse as PermissionApprovalResponse
 from adalflow.core.types import FunctionRequest
 import logging
 
@@ -29,6 +29,7 @@ class ApprovalResponse(BaseModel):
     """API model for approval responses."""
     request_id: str
     outcome: str  # proceed_once, proceed_always, cancel
+    response_data: Optional[str] = None  # Optional response data for tools like clarify
 
 
 class ApprovalQueue:
@@ -84,9 +85,9 @@ class ApprovalQueue:
             self.pending_requests.pop(request_id, None)
             self.responses.pop(request_id, None)
             
-    def set_response(self, request_id: str, outcome: ApprovalOutcome):
+    def set_response(self, request_id: str, outcome: ApprovalOutcome, response_data: Optional[str] = None):
         """Set the response for a pending request."""
-        log.info(f"set_response called for {request_id} with outcome {outcome}")
+        log.info(f"set_response called for {request_id} with outcome {outcome} and response_data: {response_data}")
         if request_id not in self.responses:
             log.error(f"Request {request_id} not found in responses!")
         elif self.responses[request_id].done():
@@ -95,8 +96,13 @@ class ApprovalQueue:
             future = self.responses[request_id]
             loop = future.get_loop()
             log.info(f"Setting result for {request_id} on loop {loop}")
+            # Create response with data if provided
+            if response_data is not None:
+                result = PermissionApprovalResponse(outcome=outcome, response_data=response_data)
+            else:
+                result = outcome
             # Use call_soon_threadsafe to set the result in the correct event loop
-            loop.call_soon_threadsafe(future.set_result, outcome)
+            loop.call_soon_threadsafe(future.set_result, result)
             log.info(f"Result scheduled for {request_id}")
             
     def get_pending_requests(self) -> List[ApprovalRequest]:
@@ -212,15 +218,16 @@ class FastAPIPermissionHandler(PermissionManager):
             outcome = outcome_map[response.outcome]
             
             # Set the response immediately (not in background)
-            log.info(f"About to set response for {request_id} with outcome {outcome}")
+            log.info(f"About to set response for {request_id} with outcome {outcome} and response_data: {response.response_data}")
             # Update status immediately
             self.approval_queue.request_metadata[request_id].status = "approved"
-            self.approval_queue.set_response(request_id, outcome)
+            self.approval_queue.set_response(request_id, outcome, response.response_data)
             
             return {
                 "status": "accepted",
                 "request_id": request_id,
-                "outcome": response.outcome
+                "outcome": response.outcome,
+                "response_data": response.response_data
             }
             
         @self.app.delete(f"{self.api_prefix}/{{request_id}}")

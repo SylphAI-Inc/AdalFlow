@@ -4,6 +4,7 @@ Permission Manager for tool execution approval in AdalFlow.
 
 from typing import Dict, Set, Optional, Callable, Any, Awaitable, Union
 from enum import Enum
+from dataclasses import dataclass
 import asyncio
 import logging
 
@@ -17,6 +18,13 @@ class ApprovalOutcome(Enum):
     PROCEED_ONCE = "proceed_once"
     PROCEED_ALWAYS = "proceed_always"
     CANCEL = "cancel"
+
+
+@dataclass
+class ApprovalResponse:
+    """Response from approval callback including outcome and optional data."""
+    outcome: ApprovalOutcome
+    response_data: Optional[str] = None
 
 
 class PermissionManager:
@@ -52,7 +60,7 @@ class PermissionManager:
     
     def __init__(
         self,
-        approval_callback: Optional[Callable[[FunctionRequest], Awaitable[ApprovalOutcome]]] = None,
+        approval_callback: Optional[Callable[[FunctionRequest], Awaitable[Union[ApprovalOutcome, ApprovalResponse]]]] = None,
         approval_mode: str = "default",  # "default", "auto_approve", "yolo"
     ):
         """
@@ -96,7 +104,7 @@ class PermissionManager:
         # Default to False (no approval required) for unregistered tools
         return self.tool_require_approval.get(tool_name, False)
         
-    async def check_permission(self, func: Function) -> tuple[bool, Optional[Function]]:
+    async def check_permission(self, func: Function) -> tuple[bool, Optional[Function], Optional[str]]:
         """
         Check if the function/tool execution is permitted.
         
@@ -104,18 +112,18 @@ class PermissionManager:
             func: The function to check permission for
             
         Returns:
-            Tuple of (is_allowed, modified_function)
+            Tuple of (is_allowed, modified_function, response_data)
         """
         tool_name = func.name
         
         # Check if approval is required using our centralized logic
         if not self.is_approval_required(tool_name):
-            return True, func
+            return True, func, None
             
         # If approval is required but no callback is set, default to allow with warning
         if not self.approval_callback:
             log.warning(f"No approval callback set, allowing tool '{tool_name}' by default")
-            return True, func
+            return True, func, None
 
         # Ensure to use the same id as the func   
         request = FunctionRequest(
@@ -129,24 +137,49 @@ class PermissionManager:
         try:
             # Interacts with user to get approval
             # the frontend need to display the request and wait for the user to respond
-            outcome = await self.approval_callback(request)
+            result = await self.approval_callback(request)
+            
+            # Handle both old style (just outcome) and new style (with response data)
+            if isinstance(result, ApprovalOutcome):
+                outcome = result
+                response_data = None
+            else:  # ApprovalResponse
+                outcome = result.outcome
+                response_data = result.response_data
             
             # Handle outcome
             if outcome == ApprovalOutcome.PROCEED_ALWAYS:
                 self.always_allowed_tools.add(tool_name)
                 log.info(f"Tool '{tool_name}' added to always allowed list")
-                return True, func
+                return True, func, response_data
             elif outcome == ApprovalOutcome.PROCEED_ONCE:
                 log.info(f"Tool '{tool_name}' approved for single execution")
-                return True, func
+
+                # TODO: avoid using function name, but more of function type, 
+                # or add "clarify" function as a default function, and ensure 
+                # this check can be disabled by configuration
+                
+                # For clarify tool, inject response data into function kwargs
+                if response_data and tool_name == "clarify":
+                    modified_kwargs = {**func.kwargs, "user_response": response_data}
+                    modified_func = Function(
+                        id=func.id,
+                        name=func.name,
+                        args=func.args,
+                        kwargs=modified_kwargs,
+                        thought=func.thought
+                    )
+                    return True, modified_func, response_data
+                    
+                return True, func, response_data
             else:  # CANCEL
                 log.info(f"Tool '{tool_name}' execution cancelled by user")
-                return False, None
+                return False, None, None
                 
         except Exception as e:
             log.error(f"Error during approval callback for tool '{tool_name}': {e}")
             # Default to deny on error for safety
-            return False, None
+            return False, None, None
         finally:
             self.pending_approvals.pop(request.id, None)
             

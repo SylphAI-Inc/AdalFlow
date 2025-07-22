@@ -452,9 +452,15 @@ class Runner(Component):
         
         # execute permission and blocking mechanism in check_permission
         if self.permission_manager:
-            allowed, modified_func = asyncio.run(
+            result = asyncio.run(
                 self.permission_manager.check_permission(func)
             )
+            # Handle both old (2 values) and new (3 values) return formats
+            if len(result) == 3:
+                allowed, modified_func, response_data = result
+            else:
+                allowed, modified_func = result
+                response_data = None
             
             if not allowed:
                 return FunctionOutput(
@@ -1022,7 +1028,13 @@ class Runner(Component):
         
         # Check permission before execution
         if self.permission_manager:
-            allowed, modified_func = await self.permission_manager.check_permission(func)
+            result = await self.permission_manager.check_permission(func)
+            # Handle both old (2 values) and new (3 values) return formats
+            if len(result) == 3:
+                allowed, modified_func, response_data = result
+            else:
+                allowed, modified_func = result
+                response_data = None
             
             if not allowed:
                 return FunctionOutput(
