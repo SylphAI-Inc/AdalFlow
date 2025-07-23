@@ -145,7 +145,6 @@ Step {{ loop.index }}.
 {% endfor %}
 </STEPS>
 {% endif %}
-<END_OF_USER_QUERY>
 <END_OF_USER_PROMPT>
 """
 

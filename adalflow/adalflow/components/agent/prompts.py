@@ -69,11 +69,27 @@ Examples:
 {% endfor %}
 <END_OF_EXAMPLES>
 {% endif %}
+{#contex#}
+{% if context_str %}
+-------------------------
+<START_OF_CONTEXT>
+{{context_str}}
+<END_OF_CONTEXT>
+{% endif %}
 <END_OF_SYSTEM_PROMPT>
------------------
+-------------------------
+<START_OF_USER_PROMPT>
+{# chat history #}
+{% if chat_history_str %}
+<START_OF_CHAT_HISTORY>
+{{chat_history_str}}
+<END_OF_CHAT_HISTORY>
+{% endif %}
+{# user query #}
 <START_OF_USER_QUERY>
 Input query:
 {{ input_str }}
+<END_OF_USER_QUERY>
 _____________________
 Current Step/Max Step: {{step_history|length + 1}} / {{max_steps}}
 {# Step History #}
@@ -94,5 +110,5 @@ Step {{ loop.index }}.
 {% endfor %}
 </STEPS>
 {% endif %}
-<END_OF_USER_QUERY>
+<END_OF_USER_PROMPT>
 """
