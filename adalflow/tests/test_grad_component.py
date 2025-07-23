@@ -5,7 +5,7 @@ from adalflow.optim.grad_component import GradComponent
 from adalflow.optim.parameter import Parameter, OutputParameter
 
 
-class TestGradCpomponent(GradComponent):
+class MockGradComponent(GradComponent):
     def __init__(self):
         super().__init__(desc="test_desc")
 
@@ -16,7 +16,7 @@ class TestGradCpomponent(GradComponent):
 class TestGradComponent(unittest.TestCase):
 
     def setUp(self):
-        self.component = TestGradCpomponent()
+        self.component = MockGradComponent()
         self.component.name = "test_component"
         self.component.training = True
 
@@ -25,9 +25,9 @@ class TestGradComponent(unittest.TestCase):
         self.assertIsNone(self.component.backward_engine)
 
     @patch.object(
-        TestGradCpomponent, "forward", return_value=OutputParameter(data="mock_forward")
+        MockGradComponent, "forward", return_value=OutputParameter(data="mock_forward")
     )
-    @patch.object(TestGradCpomponent, "call", return_value="mock_call")
+    @patch.object(MockGradComponent, "call", return_value="mock_call")
     def test_call_in_training(self, mock_call, mock_forward):
         # When in training mode, forward should be called
         self.component.train()
@@ -36,8 +36,8 @@ class TestGradComponent(unittest.TestCase):
         mock_call.assert_not_called()
         self.assertEqual(result.data, "mock_forward")
 
-    @patch.object(TestGradCpomponent, "forward", return_value="mock_forward")
-    @patch.object(TestGradCpomponent, "call", return_value="mock_call")
+    @patch.object(MockGradComponent, "forward", return_value="mock_forward")
+    @patch.object(MockGradComponent, "call", return_value="mock_call")
     def test_call_not_in_training(self, mock_call, mock_forward):
         # When not in training mode, call should be called
         self.component.training = False

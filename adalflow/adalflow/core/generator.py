@@ -166,8 +166,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         CallbackManager.__init__(self)
 
         self.name = name or self.__class__.__name__
-
-        self._init_prompt(template, prompt_kwargs)
+        self.template = template
+        self.prompt_kwargs = prompt_kwargs
 
         self.model_kwargs = model_kwargs.copy()
         # init the model client
@@ -291,13 +291,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 p.set_peers(peers)
                 setattr(self, key, p)
 
-    def _init_prompt(self, template: str, prompt_kwargs: Dict):
-        r"""Initialize the prompt with the template and prompt_kwargs."""
-        self.template = template
-        self.prompt_kwargs = prompt_kwargs
-        # NOTE: Prompt can handle parameters
-        self.prompt = Prompt(template=template, prompt_kwargs=self.prompt_kwargs)
-
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "Generator":
         r"""Create a Generator instance from the config dictionary.
@@ -337,13 +330,16 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
     # TODO: use prompt_kwargs as users are already familiar with it
     def print_prompt(self, **kwargs) -> str:
-        return self.prompt.print_prompt(**kwargs)
+        prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
+        return prompt.print_prompt(**kwargs)
 
     def get_prompt(self, **kwargs) -> str:
-        return self.prompt.call(**kwargs)
+        prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
+        return prompt.call(**kwargs)
 
     def _extra_repr(self) -> str:
-        s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}, prompt={self.prompt}"
+        prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
+        s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}, prompt={prompt}"
         return s
 
     def _post_call(self, completion: Any) -> GeneratorOutput:
@@ -455,7 +451,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
         # 1. render the prompt from the template
-        prompt_str = self.prompt.call(**prompt_kwargs).strip()
+        prompt_str = self.get_prompt(**prompt_kwargs)
+        # prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
+
+        # prompt_str = prompt.call(**prompt_kwargs).strip()
 
         # 2. combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self._compose_model_kwargs(**model_kwargs)
@@ -1217,11 +1216,12 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         Call the model_client by formatting prompt from the prompt_kwargs,
         and passing the combined model_kwargs to the model client.
         """
+        prompt_str = self.get_prompt(**prompt_kwargs)
         with generator_span(
             generator_id="generator" + (id if id else ""),
             model_kwargs=self._compose_model_kwargs(**model_kwargs),
             prompt_kwargs=prompt_kwargs,
-            prompt_template_with_keywords=self.prompt.call(**prompt_kwargs).strip(),
+            prompt_template_with_keywords=prompt_str,
         ) as generator_span_data:
             generation_time = time.time()
             if self.mock_output:
@@ -1300,12 +1300,13 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         :warning::
             Training is not supported in async call yet.
         """
+        prompt_str = self.get_prompt(**prompt_kwargs)
 
         with generator_span(
             generator_id="generator" + (id if id else ""),
             model_kwargs=self._compose_model_kwargs(**model_kwargs),
             prompt_kwargs=prompt_kwargs,
-            prompt_template_with_keywords=self.prompt.call(**prompt_kwargs).strip(),
+            prompt_template_with_keywords=prompt_str,
         ) as generator_span_data:
 
             if self.mock_output:

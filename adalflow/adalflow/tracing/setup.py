@@ -15,12 +15,14 @@ import os
 import threading
 from typing import Any, Optional, Dict, Union
 
-logger = logging.getLogger(__name__)
 from . import util
 from .processor_interface import TracingProcessor
 from .scope import Scope
 from .spans import NoOpSpan, Span, SpanImpl, TSpanData
 from .traces import NoOpTrace, Trace, TraceImpl
+
+
+logger = logging.getLogger(__name__)
 
 
 class SynchronousMultiTracingProcessor(TracingProcessor):
@@ -80,7 +82,11 @@ class SynchronousMultiTracingProcessor(TracingProcessor):
         Called when the application stops.
         """
         for processor in self._processors:
-            logger.debug(f"Shutting down trace processor {processor}")
+            try:
+                logger.debug(f"Shutting down trace processor {processor}")
+            except (ValueError, OSError):
+                # Logging system may be closed during shutdown
+                pass
             processor.shutdown()
 
     def force_flush(self):
@@ -220,10 +226,41 @@ class TraceProvider:
             return
 
         try:
-            logger.debug("Shutting down trace provider")
+            try:
+                logger.debug("Shutting down trace provider")
+            except (ValueError, OSError):
+                # Logging system may be closed during shutdown
+                pass
             self._multi_processor.shutdown()
         except Exception as e:
-            logger.error(f"Error shutting down trace provider: {e}")
+            try:
+                logger.error(f"Error shutting down trace provider: {e}")
+            except (ValueError, OSError):
+                # Logging system may be closed during shutdown
+                pass
 
 
-GLOBAL_TRACE_PROVIDER = TraceProvider()
+# Lazy initialization - provider will be created on first access
+_GLOBAL_TRACE_PROVIDER = None
+
+
+def get_global_trace_provider():
+    """Get the global trace provider, creating it if necessary."""
+    global _GLOBAL_TRACE_PROVIDER
+    if _GLOBAL_TRACE_PROVIDER is None:
+        _GLOBAL_TRACE_PROVIDER = TraceProvider()
+    return _GLOBAL_TRACE_PROVIDER
+
+
+# For backward compatibility, create a property-like access
+class _GlobalProviderProxy:
+    """Proxy to provide backward-compatible access to GLOBAL_TRACE_PROVIDER."""
+
+    def __getattr__(self, name):
+        return getattr(get_global_trace_provider(), name)
+
+    def __setattr__(self, name, value):
+        return setattr(get_global_trace_provider(), name, value)
+
+
+GLOBAL_TRACE_PROVIDER = _GlobalProviderProxy()

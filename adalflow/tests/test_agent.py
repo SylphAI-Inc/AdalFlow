@@ -4,14 +4,16 @@ import unittest
 import types
 from unittest.mock import patch
 
-import adalflow.core.agent as agent_module
+import adalflow.components.agent as agent_module
+from adalflow.core.model_client import ModelClient
 
 
 # --- Dummy stubs for dependencies ---
 
 
-class FallbackModelClient:
-    pass
+class FallbackModelClient(ModelClient):
+    def call(self, api_kwargs, model_type):
+        return None
 
 
 class DummyGenerator:
@@ -48,8 +50,10 @@ class DummyGenerator:
 
 class TestAgent(unittest.TestCase):
     def setUp(self):
-        # Stub out the real Generator
-        self.gen_patcher = patch.object(agent_module, "Generator", DummyGenerator)
+        # Stub out the real Generator where it's imported in the agent module
+        self.gen_patcher = patch(
+            "adalflow.components.agent.agent.Generator", DummyGenerator
+        )
         self.gen_patcher.start()
 
         # No-op the fun_to_grad_component decorator so `finish` tool registers cleanly

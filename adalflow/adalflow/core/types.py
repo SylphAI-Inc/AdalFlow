@@ -367,6 +367,9 @@ class Function(DataClass):
         fun = Function(name="add", args=[1, 2])
         result = context_map[fun.name](*fun.args)
     """
+    id: Optional[str] = field(
+        default=None, metadata={"desc": "The id of the function call"}
+    )
     thought: Optional[str] = field(
         default=None, metadata={"desc": "Why the function is called"}
     )  # if the model itself is a thinking model, disable thought field
@@ -457,6 +460,7 @@ class RawResponsesStreamEvent(DataClass):
     """
 
     data: Union[Any, None] = None
+    data: Optional[Any] = None
     """The raw responses streaming event from the LLM."""
 
     type: Literal["raw_response_event"] = "raw_response_event"
@@ -835,13 +839,15 @@ class Document(DataClass):
 @dataclass
 class UserQuery:
     query_str: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = (
+        None  # context or files can be used in the user queries
+    )
 
 
 @dataclass
 class AssistantResponse:
     response_str: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = None  # for agent, we have step history
 
 
 # There could  more other roles in a multi-party conversation. We might consider in the future.
@@ -868,8 +874,8 @@ class DialogTurn(DataClass):
     Examples:
 
         - User: Hi, how are you?
-        - Assistant: I'm fine, thank you!
-        DialogTurn(id=uuid4(), user_query=UserQuery("Hi, how are you?"), assistant_response=AssistantResponse("I'm fine, thank you!"))
+        - Assistant: Doing great!
+        DialogTurn(id=uuid4(), user_query=UserQuery("Hi, how are you?"), assistant_response=AssistantResponse("Doing great!"))
     """
 
     id: str = field(
@@ -1142,6 +1148,57 @@ class ToolCallActivityRunItem(RunItem):
 
 
 @dataclass
+class FunctionRequest(DataClass):
+    """
+    Event emitted when the Agent is about to execute a function/tool call.
+    """
+
+    id: str = field(
+        default_factory=lambda: str(uuid.uuid4())
+    )  # tool call id for this request
+    tool_name: str = field(
+        default=None, metadata={"desc": "Name of the tool to be called"}
+    )
+    tool: Optional[Function] = field(
+        default=None,
+        metadata={"desc": "Function object containing the tool call to be executed"},
+    )
+
+
+@dataclass
+class ToolCallPermissionRequest(RunItem):
+    """
+    Event emitted when the Agent is about to execute a function/tool call.
+
+    This event is generated after the planner LLM has decided on a function to call
+    but before the function is actually executed. It allows consumers to monitor
+    what tools are being invoked and potentially intervene or log the calls.
+
+    Attributes:
+        data: The Function object containing the tool call details (name, args, kwargs)
+
+    Event Flow Position:
+        1. Planner generates Function → **ToolCallRunItem** → Function execution → ToolOutputRunItem
+
+    Usage:
+        ```python
+        # Listen for tool calls in streaming
+        async for event in runner.astream(prompt_kwargs).stream_events():
+            if isinstance(event, RunItemStreamEvent) and event.name == "tool_called":
+                tool_call_item = event.item
+                print(f"About to call: {tool_call_item.data.name}")
+        ```
+    """
+
+    type: str = field(
+        default="tool_call_permission_request", metadata={"desc": "Type of run item"}
+    )
+    data: Optional[FunctionRequest] = field(
+        default=None, metadata={"desc": "Function request to be executed"}
+    )
+
+
+@dataclass
 class ToolOutputRunItem(RunItem):
     """
     Event emitted after a function/tool call has been executed.
@@ -1283,6 +1340,7 @@ class RunItemStreamEvent(DataClass):
         "agent.step_complete",  # Complete execution step finished
         "agent.final_output",  # Final processed output available
         "agent.execution_complete",  # Entire Runner execution completed
+        "agent.tool_permission_request",  # Tool permission request before execution
     ] = field(
         metadata={
             "desc": "The name identifying the specific type of execution event that occurred"

@@ -1,4 +1,6 @@
-"""Implementation and optimization of React agent."""
+"""Implementation and optimization of React agent.
+Note: This will be deprecated soon, use Agent + Runner instead.
+"""
 
 from typing import List, Union, Callable, Optional, Any, Dict, TypeVar, Type
 from dataclasses import dataclass, field
@@ -36,7 +38,10 @@ __all__ = [
 
 
 default_role_desc = """You are an excellent task planner."""
-
+# Ideal answer for agent
+# 1. *complete answer* when the answer is short
+# 2. *concise conclusion* when the answer is directly displayed in a tool or written in a file
+# 3. *structured data* when the answer needs to be structured.
 react_agent_task_desc = r"""
 <START_OF_TASK_SPEC>
 {{role_desc}}
@@ -99,12 +104,28 @@ Examples:
 {% endfor %}
 <END_OF_EXAMPLES>
 {% endif %}
+{#contex#}
+{% if context_str %}
+-------------------------
+<START_OF_CONTEXT>
+{{context_str}}
+<END_OF_CONTEXT>
+{% endif %}
 <END_OF_SYSTEM_PROMPT>
 -----------------
+<START_OF_USER_PROMPT>
+{# chat history #}
+{% if chat_history_str %}
+<START_OF_CHAT_HISTORY>
+{{chat_history_str}}
+<END_OF_CHAT_HISTORY>
+{% endif %}
+{# user query #}
 <START_OF_USER_QUERY>
 Input query:
 {{ input_str }}
-_____________________
+<END_OF_USER_QUERY>
+<START_OF_STEP_HISTORY>
 Current Step/Max Step: {{step_history|length + 1}} / {{max_steps}}
 {# Step History #}
 {% if step_history %}
@@ -124,7 +145,7 @@ Step {{ loop.index }}.
 {% endfor %}
 </STEPS>
 {% endif %}
-<END_OF_USER_QUERY>
+<END_OF_USER_PROMPT>
 """
 
 

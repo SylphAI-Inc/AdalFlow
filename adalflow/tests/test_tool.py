@@ -754,7 +754,7 @@ class GradSub(GradComponent):
     #     return f"{x - y} + forward"
 
 
-class TestComponent(Component):
+class MockTestComponent(Component):
     def __init__(self):
         super().__init__()
 
@@ -782,7 +782,7 @@ add = GradAdd()
 sub = GradSub()
 
 
-class TestComponnetInstanceOutsideComponent(Component):
+class MockComponentInstanceOutsideComponent(Component):
     def __init__(self):
         super().__init__()
 
@@ -799,7 +799,7 @@ class TestComponnetInstanceOutsideComponent(Component):
         ]
 
 
-class TestToolManagerComponent(Component):
+class MockToolManagerComponent(Component):
 
     def __init__(self):
         super().__init__()
@@ -829,7 +829,7 @@ def test_function_tool_with_grad_component():
     Once the subcomponent change, it will adapt to training model too.
     """
 
-    test_com = TestComponent()
+    test_com = MockTestComponent()
     assert not test_com.training
     # call the tools
     output = test_com.tools[0](1, 2)
@@ -854,7 +854,7 @@ def test_component_instance_outside_component():
     Once the subcomponent change, it will adapt to training model too.
     """
 
-    test_com = TestComponnetInstanceOutsideComponent()
+    test_com = MockComponentInstanceOutsideComponent()
     assert not test_com.training
     # call the tools
     output = test_com.tools[0](1, 2)
@@ -873,7 +873,7 @@ def test_tool_manager_with_grad_component():
     Once the subcomponent change, it will adapt to training model too.
     """
 
-    test_com = TestToolManagerComponent()
+    test_com = MockToolManagerComponent()
     assert not test_com.training
     # call the tools
     output = test_com.tools_manager.tools[0](1, 2)

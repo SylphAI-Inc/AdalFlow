@@ -138,6 +138,7 @@ class ChatCompletionToResponseConverter:
                     output_index=0,
                     type="response.output_text.delta",
                     sequence_number=sequence_number.get_and_increment(),
+                    logprobs=[],
                 )
                 # Accumulate the text into the response part
                 state.text_content_index_and_output[1].text += delta.content
@@ -412,6 +413,7 @@ class ChatCompletionToResponseConverter:
                     output_index=0,
                     type="response.output_text.delta",
                     sequence_number=sequence_number.get_and_increment(),
+                    logprobs=[],
                 )
                 # Accumulate the text into the response part
                 state.text_content_index_and_output[1].text += delta.content

@@ -14,8 +14,7 @@ log.setLevel(logging.DEBUG)
 os.environ["ADALFLOW_DISABLE_TRACING"] = "False"
 
 # AdalFlow imports
-from adalflow.core.agent import Agent
-from adalflow.core.runner import Runner
+from adalflow.components.agent import Agent, Runner
 from adalflow.components.model_client import OpenAIClient
 from adalflow.tracing import set_trace_processors, trace
 
@@ -40,7 +39,7 @@ def setup_mlflow_tracing():
         return
 
     # Point MLflow to the tracking server
-    mlflow.set_tracking_uri("http://localhost:8080")  # Match your server port
+    mlflow.set_tracking_uri("http://localhost:8000")  # Match your server port
 
     # Create or set an experiment to log traces under
     mlflow.set_experiment("AdalFlow-Agent-Tracing-Experiment")
@@ -281,9 +280,9 @@ if __name__ == "__main__":
     print("🔄 Running streaming demos...")
     asyncio.run(demo_astream_tracing())
 
-    # print("\n" + "=" * 60)
-    # print("🔢 Running multi-step streaming demo...")
-    # asyncio.run(demo_astream_multi_step())
+    print("\n" + "=" * 60)
+    print("🔢 Running multi-step streaming demo...")
+    asyncio.run(demo_astream_multi_step())
 
     print("\n" + "=" * 60)
     print("⚠️  Running streaming error handling demo...")

@@ -100,7 +100,7 @@ def create_default_tool_manager(
             return None
 
         processed_tools = tools.copy() if tools else []
-        if add_llm_as_fallback:
+        if add_llm_as_fallback and _additional_llm_tool:
             processed_tools.append(llm_tool)
         return processed_tools
 
@@ -128,7 +128,7 @@ def create_default_planner(
     template: Optional[
         str
     ] = None,  # allow users to update the template but cant delete any parameters
-    role_desc: Optional[str] = None,
+    role_desc: Optional[Union[str, Prompt]] = None,
     cache_path: Optional[str] = None,
     use_cache: Optional[bool] = False,
     # default agent parameters
@@ -163,7 +163,7 @@ def create_default_planner(
     task_desc = Prompt(
         template=adalflow_agent_task_desc,
         prompt_kwargs={"role_desc": role_desc},
-    ).call()
+    )
 
     prompt_kwargs = {
         "tools": tool_manager.yaml_definitions,
@@ -252,7 +252,9 @@ class Agent(Component):
         template: Optional[
             str
         ] = None,  # allow users to update the template but cant delete any parameters
-        role_desc: Optional[str] = None,
+        role_desc: Optional[
+            Union[str, Prompt]
+        ] = None,  # support both str and prompte template
         cache_path: Optional[str] = None,
         use_cache: Optional[bool] = True,
         # default agent parameters
