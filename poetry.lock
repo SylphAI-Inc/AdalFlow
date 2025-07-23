@@ -46,7 +46,7 @@ testing = ["bitsandbytes", "datasets", "diffusers", "evaluate", "parameterized",
 
 [[package]]
 name = "adalflow"
-version = "1.0.4"
+version = "1.0.5a1"
 description = "The Library to Build and Auto-optimize LLM Applications"
 optional = false
 python-versions = ">=3.9, <4.0"
@@ -55,6 +55,7 @@ files = []
 develop = true
 
 [package.dependencies]
+asyncstdlib = "^3.13.1"
 backoff = "^2.2.1"
 colorama = "^0.4.6"
 diskcache = "^5.6.3"

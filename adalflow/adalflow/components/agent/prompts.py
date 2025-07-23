@@ -22,7 +22,7 @@ Follow function docstring to best call the tool.
 
 REMEMBER:
     - Action MUST call one of the tools other than for the final answer.
-    - The `_answer` field must be the json string of object of the data schema in <START_OF_ANSWER_TYPE_SCHEMA><END_OF_ANSWER_TYPE_SCHEMA>.
+    - The `_answer` field must be either a python builtin type or a json deserialiable string based on the data schema in <START_OF_ANSWER_TYPE_SCHEMA><END_OF_ANSWER_TYPE_SCHEMA>.
 <END_OF_TASK_SPEC>
 """
 
@@ -55,7 +55,7 @@ You can either pass context_variables or context_variables['key'] to the tools d
 {# output format and examples for output format #}
 <START_OF_OUTPUT_SCHEMA>
 {{output_format_str}}
-The `_answer` field must be of the json string of the following data schema.
+The `_answer` field must be either a python builtin type or a json deserialiable string based on the data schema. 
 <START_OF_ANSWER_TYPE_SCHEMA>
 {{answer_type_schema}}
 <END_OF_ANSWER_TYPE_SCHEMA>
@@ -91,6 +91,7 @@ Input query:
 {{ input_str }}
 <END_OF_USER_QUERY>
 _____________________
+
 Current Step/Max Step: {{step_history|length + 1}} / {{max_steps}}
 {# Step History #}
 {% if step_history %}
