@@ -848,13 +848,13 @@ class Runner(Component):
                             break
 
                         # Emit tool call event
-                        tool_call_item = ToolCallRunItem(data=function)
-                        tool_call_id = tool_call_item.id
-                        tool_call_name = tool_call_item.data.name
-                        tool_call_event = RunItemStreamEvent(
-                            name="agent.tool_call_start", item=tool_call_item
-                        )
-                        streaming_result.put_nowait(tool_call_event)
+                        # tool_call_item = ToolCallRunItem(data=function)
+                        # tool_call_id = tool_call_item.id
+                        # tool_call_name = tool_call_item.data.name
+                        # tool_call_event = RunItemStreamEvent(
+                        #     name="agent.tool_call_start", item=tool_call_item
+                        # )
+                        # streaming_result.put_nowait(tool_call_event)
 
                         # Check if permission is required and emit permission event
                         if (
