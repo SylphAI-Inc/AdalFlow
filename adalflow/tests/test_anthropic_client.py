@@ -1,7 +1,8 @@
 import unittest
-from unittest.mock import Mock, patch
-import pytest
+from unittest.mock import Mock, AsyncMock, patch
 from collections.abc import Iterator
+
+import pytest
 
 from adalflow.components.model_client.anthropic_client import (
     AnthropicAPIClient,
@@ -51,13 +52,19 @@ except ImportError:
             self.data = data
 
 
-class TestAnthropicAPIClient(unittest.TestCase):
+class TestAnthropicAPIClient(unittest.IsolatedAsyncioTestCase):
     """Test suite for AnthropicAPIClient"""
 
     def setUp(self):
         """Set up test fixtures"""
-        with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "test_key"}):
-            self.client = AnthropicAPIClient()
+        # Patch the environment variable for the duration of all tests
+        self.env_patcher = patch.dict("os.environ", {"ANTHROPIC_API_KEY": "test_key"})
+        self.env_patcher.start()
+        self.client = AnthropicAPIClient()
+
+    def tearDown(self):
+        """Clean up test fixtures"""
+        self.env_patcher.stop()
 
     def test_init_sync_client(self):
         """Test synchronous client initialization"""
@@ -237,14 +244,13 @@ class TestAnthropicAPIClient(unittest.TestCase):
             self.client.call({}, ModelType.EMBEDDER)
         self.assertIn("not supported", str(context.exception))
 
-    @pytest.mark.asyncio
     async def test_acall(self):
         """Test asynchronous call"""
         # Setup mock
         mock_response = Mock(spec=ChatCompletion)
-        # Create a mock async client
+        # Create a mock async client with proper async mock
         mock_async_client = Mock()
-        mock_async_client.chat.completions.create = Mock(return_value=mock_response)
+        mock_async_client.chat.completions.create = AsyncMock(return_value=mock_response)
         self.client.async_client = mock_async_client
 
         # Test call
@@ -257,7 +263,6 @@ class TestAnthropicAPIClient(unittest.TestCase):
         self.assertEqual(result, mock_response)
         mock_async_client.chat.completions.create.assert_called_once_with(**api_kwargs)
 
-    @pytest.mark.asyncio
     async def test_acall_unsupported_model_type(self):
         """Test that unsupported model type raises ValueError in async call"""
         with self.assertRaises(ValueError) as context:

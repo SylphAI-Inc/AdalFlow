@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import Mock
-import pytest
 from dataclasses import dataclass
 
 from adalflow.components.model_client.chat_completion_to_response_converter import (
@@ -411,10 +410,9 @@ class TestSyncHandleStream(unittest.TestCase):
         self.assertEqual(completed_event.response.usage.total_tokens, 15)
 
 
-class TestAsyncHandleStream(unittest.TestCase):
+class TestAsyncHandleStream(unittest.IsolatedAsyncioTestCase):
     """Test suite for async_handle_stream"""
 
-    @pytest.mark.asyncio
     async def test_async_handle_stream_empty_stream(self):
         """Test async_handle_stream with empty stream"""
         mock_response = Mock(spec=Response)
@@ -437,7 +435,6 @@ class TestAsyncHandleStream(unittest.TestCase):
         # Last event should be response.completed
         self.assertEqual(events[-1].type, "response.completed")
 
-    @pytest.mark.asyncio
     async def test_async_handle_stream_single_chunk_with_content(self):
         """Test async_handle_stream with single chunk containing content"""
         mock_response = Mock(spec=Response)
@@ -479,7 +476,6 @@ class TestAsyncHandleStream(unittest.TestCase):
         # Last event should be response.completed
         self.assertEqual(events[-1].type, "response.completed")
 
-    @pytest.mark.asyncio
     async def test_async_handle_stream_multiple_chunks_with_content(self):
         """Test async_handle_stream with multiple chunks containing content"""
         mock_response = Mock(spec=Response)

@@ -435,21 +435,37 @@ class TestRunner(unittest.TestCase):
 
     def test_tool_execute_sync_with_async_function_no_loop(self):
         """Test _tool_execute_sync with async function when no event loop is running."""
+        import warnings
 
         mock_function = DummyFunction(name="test_async_func")
         mock_result = SimpleNamespace(output="async_result")
 
-        async def async_mock():
-            return mock_result
+        created_coroutines = []
 
-        # Mock the tool_manager to return a coroutine
-        # Note: This test case is complex because _tool_execute_sync needs to handle async properly
-        # For now, let's just verify it can handle the async case without crashing
-        self.runner.agent.tool_manager = MockToolManager(
-            lambda expr_or_fun, step: async_mock()
-        )
+        def create_coro():
+            async def async_mock():
+                return mock_result
+            coro = async_mock()
+            created_coroutines.append(coro)
+            return coro
 
-        result = self.runner._tool_execute_sync(mock_function)
+        # Suppress the RuntimeWarning about unawaited coroutines for this specific test
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=RuntimeWarning, message=".*coroutine.*was never awaited.*")
+            
+            # Mock the tool_manager to return a coroutine
+            # Note: This test case is complex because _tool_execute_sync needs to handle async properly
+            # For now, let's just verify it can handle the async case without crashing
+            self.runner.agent.tool_manager = MockToolManager(
+                lambda expr_or_fun, step: create_coro()
+            )
+
+            result = self.runner._tool_execute_sync(mock_function)
+
+            # Close any created coroutines to prevent warnings
+            for coro in created_coroutines:
+                coro.close()
+
         # _tool_execute_sync wraps the result in FunctionOutput
         from adalflow.core.types import FunctionOutput
 
