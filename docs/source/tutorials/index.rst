@@ -206,6 +206,8 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
      - Modern Agent and Runner architecture for autonomous AI systems.
    * - :doc:`streaming`
      - Real-time streaming of agent execution and LLM responses.
+   * - :doc:`tracing`
+     - Tracing and visualization of agent execution.
 
 .. toctree::
     :maxdepth: 1
@@ -216,6 +218,7 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
     agent
     agents
     streaming
+    tracing
 
 .. Core functionals
 .. -------------------
