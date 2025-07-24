@@ -15,11 +15,14 @@ packages = [
 # if you cant import package, use export PYTHONPATH=$(pwd):$PYTHONPATH
 
 [tool.poetry.dependencies]
-python = ">=3.11, <4.0"
+python = ">=3.11, <3.13"
 adalflow = { path = "adalflow", develop = true }
 black = { extras = ["jupyter"], version = "^24.10.0" }
 aioitertools = "^0.12.0"
 asyncstdlib = "^3.13.1"
+dspy = "^2.6.27"
+dspy-ai = "^2.6.27"
+mlflow = "^3.1.4"
 
 [tool.poetry.group.dev.dependencies]
 
@@ -39,7 +42,6 @@ torch = ">=2.0, <3.0"
 textgrad = "^0.1.4"
 tensorboardx = "^2.6.2.2"
 tensorboard = "^2.17.0"
-dspy-ai = "^2.4.13"
 
 
 transformers = "^4.44.0"

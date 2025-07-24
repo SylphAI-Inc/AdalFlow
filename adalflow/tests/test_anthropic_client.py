@@ -250,7 +250,9 @@ class TestAnthropicAPIClient(unittest.IsolatedAsyncioTestCase):
         mock_response = Mock(spec=ChatCompletion)
         # Create a mock async client with proper async mock
         mock_async_client = Mock()
-        mock_async_client.chat.completions.create = AsyncMock(return_value=mock_response)
+        mock_async_client.chat.completions.create = AsyncMock(
+            return_value=mock_response
+        )
         self.client.async_client = mock_async_client
 
         # Test call

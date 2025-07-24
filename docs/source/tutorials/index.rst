@@ -202,6 +202,10 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
      - Provide tools (function calls) to interact with the generator.
    * - :doc:`agent`
      - The ReactAgent.
+   * - :doc:`agents`
+     - Modern Agent and Runner architecture for autonomous AI systems.
+   * - :doc:`streaming`
+     - Real-time streaming of agent execution and LLM responses.
 
 .. toctree::
     :maxdepth: 1
@@ -210,6 +214,8 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
 
     tool_helper
     agent
+    agents
+    streaming
 
 .. Core functionals
 .. -------------------

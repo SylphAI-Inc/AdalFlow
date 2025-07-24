@@ -39,3 +39,4 @@ extend/
 logs/
 mlruns/
 mlartifacts/
+logs/

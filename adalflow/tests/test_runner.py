@@ -445,14 +445,19 @@ class TestRunner(unittest.TestCase):
         def create_coro():
             async def async_mock():
                 return mock_result
+
             coro = async_mock()
             created_coroutines.append(coro)
             return coro
 
         # Suppress the RuntimeWarning about unawaited coroutines for this specific test
         with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=RuntimeWarning, message=".*coroutine.*was never awaited.*")
-            
+            warnings.filterwarnings(
+                "ignore",
+                category=RuntimeWarning,
+                message=".*coroutine.*was never awaited.*",
+            )
+
             # Mock the tool_manager to return a coroutine
             # Note: This test case is complex because _tool_execute_sync needs to handle async properly
             # For now, let's just verify it can handle the async case without crashing

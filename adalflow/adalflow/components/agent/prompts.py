@@ -55,7 +55,7 @@ You can either pass context_variables or context_variables['key'] to the tools d
 {# output format and examples for output format #}
 <START_OF_OUTPUT_SCHEMA>
 {{output_format_str}}
-The `_answer` field must be either a python builtin type or a json deserialiable string based on the data schema. 
+The `_answer` field must be either a python builtin type or a json deserialiable string based on the data schema.
 <START_OF_ANSWER_TYPE_SCHEMA>
 {{answer_type_schema}}
 <END_OF_ANSWER_TYPE_SCHEMA>
