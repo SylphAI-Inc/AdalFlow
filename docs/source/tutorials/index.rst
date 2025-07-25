@@ -202,14 +202,6 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
      - Provide tools (function calls) to interact with the generator.
    * - :doc:`agent`
      - The ReactAgent.
-   * - :doc:`agents_runner`
-     - Modern Agent and Runner architecture for autonomous AI systems.
-   * - :doc:`streaming`
-     - Real-time streaming of agent execution and LLM responses.
-   * - :doc:`tracing`
-     - Tracing and visualization of agent execution.
-   * - :doc:`permission_management`
-     - Secure tool execution with permission management and approval workflows.
 
 .. toctree::
     :maxdepth: 1
@@ -218,10 +210,19 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
 
     tool_helper
     agent
-    agents_runner
-    streaming
-    tracing
-    permission_management
+
+Advanced Topics
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Advanced Topics
+    :hidden:
+
+    ../new_tutorials/agents_runner
+    ../new_tutorials/streaming
+    ../new_tutorials/tracing
+    ../new_tutorials/permission_management
 
 .. Core functionals
 .. -------------------

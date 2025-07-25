@@ -29,15 +29,6 @@ AdalFlow's tracing system implements the same interface as OpenAI's agents SDK, 
 AdalFlow automatically traces agent executions when tracing is enabled:
 
 ```python
-from adalflow.utils import setup_env
-from adalflow.components.agent import Agent, Runner
-from adalflow.core.func_tool import FunctionTool
-from adalflow.components.model_client.openai_client import OpenAIClient
-from adalflow.tracing import set_tracing_disabled
-
-# Setup environment
-setup_env()
-
 def calculator(expression: str) -> str:
     """Simple calculator tool."""
     try:
@@ -71,8 +62,6 @@ def agent_tracing_example():
     # Create runner
     runner = Runner(agent=agent)
 
-    print("Executing agent with automatic tracing...")
-
     # Execute agent - automatically traced
     result = runner.call(
         prompt_kwargs={
@@ -81,11 +70,6 @@ def agent_tracing_example():
     )
 
     print(f"Agent result: {result.answer}")
-    print(f"Steps taken: {len(result.step_history)}")
-    print("Automatic tracing captured:")
-    print("   • Complete agent workflow")
-    print("   • Individual tool calls")
-    print("   • LLM generation steps")
 
     return result
 
@@ -105,8 +89,6 @@ mlflow server --host 127.0.0.1 --port 8000
 ```python
 def demo_mlflow_integration():
     """Demonstrate MLflow integration for enterprise tracing."""
-    print_section_header("MLflow Integration")
-
     def analysis_tool(data: str) -> str:
         """Analyze data and return insights."""
         return f"Analysis of '{data}': This appears to be a numerical calculation with result involving multiplication and addition."
@@ -115,25 +97,12 @@ def demo_mlflow_integration():
         """Generate a formatted report."""
         return f"## Analysis Report\n\n**Content**: {content}\n\n**Generated**: Using AdalFlow tracing with MLflow integration"
 
-    print("🔧 Attempting to enable MLflow tracing...")
-    print("📌 Note: MLflow server should be running at http://localhost:8000")
-    print("   Start with: mlflow server --host 127.0.0.1 --port 8000")
-
     # Try to enable MLflow tracing
     mlflow_enabled = enable_mlflow_local(
         tracking_uri="http://localhost:8000",
         experiment_name="AdalFlow-Tracing-Demo",
         project_name="Agent-Workflows"
     )
-
-    if mlflow_enabled:
-        print("✅ MLflow tracing enabled")
-        print("📊 View traces at: http://localhost:8000")
-    else:
-        print("⚠️ MLflow not available, using default tracing")
-        print("💡 To enable MLflow:")
-        print("   1. Install: pip install mlflow")
-        print("   2. Start server: mlflow server --host 127.0.0.1 --port 8000")
 
     # Ensure tracing is enabled
     set_tracing_disabled(False)
@@ -152,7 +121,6 @@ def demo_mlflow_integration():
 
     runner = Runner(agent=agent)
 
-    print("\n🤖 Executing workflow with MLflow tracing...")
     # Execute workflow - automatically traced to MLflow if available
     with trace(workflow_name="AdalFlow-Agent"):
         result = runner.call(
@@ -161,16 +129,7 @@ def demo_mlflow_integration():
             }
         )
 
-    print(f"📝 Analysis complete: {result.answer}")
-
-    if mlflow_enabled:
-        print("\n📈 Trace data has been sent to MLflow!")
-        print("🔍 Check the MLflow UI for detailed execution traces:")
-        print("   • Navigate to: http://localhost:8000")
-        print("   • Look for experiment: 'AdalFlow-Tracing-Demo'")
-        print("   • View traces and spans for the complete workflow")
-    else:
-        print("📊 Trace data captured with default processors")
+    print(f"Analysis complete: {result.answer}")
 
     return result
 
@@ -189,85 +148,15 @@ AdalFlow's tracing system is designed to be compatible with any visualization li
 
 ## Basic Tracing Patterns
 
-### Streaming with Tracing
-
-Combine tracing with streaming for real-time observability:
-
-```python
-async def demo_streaming_with_tracing():
-    """Demonstrate streaming execution with automatic tracing."""
-    from adalflow.core.types import RunItemStreamEvent, FinalOutputItem
-
-    print_section_header("Streaming with Tracing")
-
-    # Define a simple tool
-    def data_processor(data: str) -> str:
-        """Process data and return insights."""
-        return f"Processed: {data.upper()}"
-
-    # Enable tracing
-    set_tracing_disabled(False)
-
-    enable_mlflow_local(
-        tracking_uri="http://localhost:8000",
-        experiment_name="AdalFlow-Tracing-Demo",
-        project_name="Agent-Workflows"
-    )
-
-    # Create agent
-    agent = Agent(
-        name="StreamingTracedAgent",
-        tools=[FunctionTool(data_processor)],
-        model_client=OpenAIClient(),
-        model_kwargs={"model": "gpt-4o", "temperature": 0.3},
-        max_steps=3
-    )
-
-    runner = Runner(agent=agent)
-
-    print("🚀 Starting streaming execution with tracing enabled")
-    print("📊 Both streaming events and tracing data will be captured")
-
-    with trace(workflow_name="AdalFlow-Agent"):
-        streaming_result = runner.astream(
-            prompt_kwargs={
-                "input_str": "Process the text 'hello world' and explain what happened"
-            },
-            model_kwargs={"stream": True}
-        )
-
-        event_count = 0
-        async for event in streaming_result.stream_events():
-            event_count += 1
-            if isinstance(event, RunItemStreamEvent):
-                if event.name == "agent.tool_call_start":
-                    print(f"🔧 Tool Call: {event.item.data.name}")
-                elif event.name == "agent.tool_call_complete":
-                    print(f"✅ Tool Complete")
-                elif isinstance(event.item, FinalOutputItem):
-                    print(f"🎯 Final Result: {event.item.data.answer}")
-
-    print(f"📈 Processed {event_count} streaming events")
-    print("📊 Trace data has been automatically captured alongside streaming")
-```
-
-The above script generates the following output:
-
-![streaming_with_tracing](../_static/images/adalflow_tracing_streaming_mlflow.png)
-
 ### Tracing while Streaming Agent which has Async Generator Tools
 
 When agents use async generator tools, its return type can be set to `ToolCallActivityRunItem` which will have it captured by tracing.
 
 ```python
-setup_env()
-
 async def demo_async_generator_tools_with_tracing():
     """Demonstrate tracing agent with async generator tools during streaming."""
     import asyncio
     from adalflow.core.types import RunItemStreamEvent, FinalOutputItem, ToolCallActivityRunItem
-
-    print_section_header("Async Generator Tools with Tracing")
 
     # Define async generator tools
     async def data_processor(query: str):
@@ -320,11 +209,6 @@ async def demo_async_generator_tools_with_tracing():
         project_name="AsyncGenerator-Workflows"
     )
 
-    if mlflow_enabled:
-        print("✅ MLflow tracing enabled for async generator tools")
-    else:
-        print("⚠️ Using default tracing (MLflow not available)")
-
     # Create agent with async generator tools
     agent = Agent(
         name="AsyncGeneratorAgent",
@@ -340,9 +224,6 @@ async def demo_async_generator_tools_with_tracing():
 
     runner = Runner(agent=agent)
 
-    print("🚀 Starting agent with async generator tools...")
-    print("📊 Both streaming events and async tool outputs will be traced")
-
     # Execute with tracing context
     with trace(workflow_name="AsyncGenerator-Agent"):
         streaming_result = runner.astream(
@@ -352,53 +233,15 @@ async def demo_async_generator_tools_with_tracing():
             model_kwargs={"stream": True}
         )
 
-        print("\n🔄 Processing streaming events...")
-        event_count = 0
-        tool_outputs = []
-
         async for event in streaming_result.stream_events():
-            event_count += 1
-
             if isinstance(event, RunItemStreamEvent):
-                if event.name == "agent.tool_call_start":
-                    print(f"\n🔧 Tool Starting: {event.item.data.name}")
-
-                elif event.name == "agent.tool_call_activity":
+                if event.name == "agent.tool_call_activity":
                     # This captures async generator yields
-                    print(f"   📝 Activity Event: {event.item}")
                     if hasattr(event.item, 'data') and event.item.data:
-                        print(f"   📝 Yielded: {event.item.data}")
-                        tool_outputs.append(event.item.data)
-
-                elif event.name == "agent.tool_call_complete":
-                    print(f"✅ Tool Completed")
-
-                elif event.name == "agent.step_complete":
-                    print(f"📋 Step Complete")
+                        print(f"📝 Yielded: {event.item.data}")
 
                 elif isinstance(event.item, FinalOutputItem):
-                    print(f"\n🎯 Final Result: {event.item.data.answer}")
-
-        print(f"\n📈 Processing complete!")
-        print(f"   • Total events processed: {event_count}")
-        print(f"   • Async tool outputs captured: {len(tool_outputs)}")
-
-        if mlflow_enabled:
-            print("\n📊 Trace data with async generator outputs sent to MLflow!")
-            print("🔍 Check MLflow UI for:")
-            print("   • Async tool execution spans")
-            print("   • Generator yield events")
-            print("   • Complete streaming workflow")
-            print("   • Navigate to: http://localhost:8000")
-        else:
-            print("📊 Async generator trace data captured with default processors")
-
-# Helper function for section headers
-def print_section_header(title: str):
-    """Print a formatted section header."""
-    print(f"\n{'='*60}")
-    print(f"🎯 {title}")
-    print(f"{'='*60}")
+                    print(f"🎯 Final Result: {event.item.data.answer}")
 
 # Run the example
 asyncio.run(demo_async_generator_tools_with_tracing())

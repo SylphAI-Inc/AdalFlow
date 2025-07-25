@@ -47,7 +47,6 @@ def calculator(expression: str) -> str:
 
 def file_writer(filename: str, content: str) -> ToolOutput:
     """Write content to a file - requires permission."""
-    print(f"[Tool Execution] Writing to file: {filename}")
     try:
         with open(filename, 'w') as f:
             f.write(content)
@@ -80,7 +79,6 @@ runner = Runner(agent=agent, permission_manager=permission_handler)
 
 # Tools will now require approval before execution
 result = runner.call(prompt_kwargs={"input_str": "Create a file called 'test.txt' with content 'Hello World'"})
-print(result.answer)
 ```
 
 You should see a temporary file that was created by the agent from the tutorial.

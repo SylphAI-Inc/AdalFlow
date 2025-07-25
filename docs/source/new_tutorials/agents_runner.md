@@ -15,15 +15,6 @@ This separation allows for flexible customization of both planning and execution
 Here's a minimal example to get you started:
 
 ```python
-from adalflow.utils import setup_env
-from adalflow.core.types import ToolOutput
-from adalflow.components.agent import Agent, Runner
-from adalflow.components.model_client.openai_client import OpenAIClient
-from adalflow.core.func_tool import FunctionTool
-from adalflow.apps.cli_permission_handler import CLIPermissionHandler
-
-setup_env()
-
 def calculator(expression: str) -> str:
     """Evaluate a mathematical expression."""
     try:
@@ -34,7 +25,6 @@ def calculator(expression: str) -> str:
 
 def file_writer(filename: str, content: str) -> ToolOutput:
     """Write content to a file - requires permission."""
-    print(f"[Tool Execution] Writing to file: {filename}")
     try:
         with open(filename, 'w') as f:
             f.write(content)
@@ -88,9 +78,6 @@ The Agent uses a Generator-based planner for decision-making and a ToolManager w
 #### Basic Configuration
 
 ```python
-from adalflow.components.agent import Agent
-from adalflow.components.model_client.openai_client import OpenAIClient
-
 agent = Agent(
     name="MyAgent",                    # Agent identifier
     tools=[],                          # List of available tools
@@ -103,19 +90,17 @@ agent = Agent(
 #### Key Parameters
 
 - **name**: A descriptive name for your agent
-- **tools**: List of FunctionTool or callable objects the agent can use (see [Tool Helper](tool_helper.rst) for detailed information)
-- **model_client**: The language model client used by the generator (OpenAI, Anthropic, etc.) (see [Generator](generator.rst) and [Model Client](model_client.rst) for detailed information)
+- **tools**: List of FunctionTool or callable objects the agent can use (see [Tool Helper](../tutorials/tool_helper) for detailed information)
+- **model_client**: The language model client used by the generator (OpenAI, Anthropic, etc.) (see [Generator](../tutorials/generator) and [Model Client](../tutorials/model_client) for detailed information)
 - **model_kwargs**: Configuration for the language model used by the generator
 - **max_steps**: Maximum number of reasoning steps before termination
-- **answer_data_type**: Expected type for the final answer. The data type can be a Pydantic dataclass, Adalflow dataclass (see [Base Data Class](base_data_class.rst)), or a built-in Python type.
+- **answer_data_type**: Expected type for the final answer. The data type can be a Pydantic dataclass, Adalflow dataclass (see [Base Data Class](../tutorials/base_data_class)), or a built-in Python type.
 
 ### Runner
 
 The Runner executes Agent instances with support for multi-step reasoning, tool execution, and conversation management.
 
 ```python
-from adalflow.components.agent import Agent, Runner
-
 runner = Runner(
     agent=agent,
     max_steps=5,           # Override agent's max_steps if needed
@@ -155,22 +140,13 @@ class RunnerResult:
 
 ### Tools
 
-Tools extend your agent's capabilities. AdalFlow supports several tool types: 
+Tools extend your agent's capabilities. AdalFlow supports several tool types:
 
 #### Function Tools
 
 Convert regular Python functions into agent tools. Tools can return various types including basic Python types, custom objects, or `ToolOutput` for enhanced control:
 
 ```python
-from adalflow.core.func_tool import FunctionTool
-from adalflow.core.types import ToolOutput
-from adalflow.components.agent import Agent
-from adalflow.components.model_client.openai_client import OpenAIClient
-from adalflow.utils import setup_env
-
-setup_env()
-
-
 # Basic return types
 def search_web(query: str) -> str:
     """Search the web for information."""
@@ -209,7 +185,7 @@ agent = Agent(
 )
 ```
 
-You can also use synchronous and asynchronous callables (such as a custom function, class method) as tools that are not necessarily FunctionTools. Further information is provided in the [Tool Helper](tool_helper.rst) documentation. For instance, you could have created tools as below without using FunctionTool
+You can also use synchronous and asynchronous callables (such as a custom function, class method) as tools that are not necessarily FunctionTools. Further information is provided in the [Tool Helper](../tutorials/tool_helper) documentation. For instance, you could have created tools as below without using FunctionTool
 
 ```python
 tools = [
@@ -232,7 +208,7 @@ agent = Agent(
 
 ### Streaming Execution
 
-You can execute agents with streaming support for real-time updates. See the [Streaming](streaming.md) tutorial for detailed information and examples.
+You can execute agents with streaming support for real-time updates. See the [Streaming](streaming) tutorial for detailed information and examples.
 
 ### Permission Management
 
@@ -247,14 +223,6 @@ For comprehensive coverage of permission management features including CLI handl
 Create a Retrieval-Augmented Generation agent. We will provide a more detailed tutorial for the RAG Agent and also evaluate its performance against benchmarks.
 
 ```python
-from adalflow.utils import setup_env
-from adalflow.components.agent import Agent, Runner
-from adalflow.core.func_tool import FunctionTool
-from adalflow.components.model_client.openai_client import OpenAIClient
-from adalflow.core.retriever import Retriever
-
-setup_env()
-
 class DocumentRetriever(Retriever):
     def __init__(self, documents: list):
         super().__init__()
@@ -295,14 +263,6 @@ result = runner.call(
 An agent that can perform various mathematical operations:
 
 ```python
-import math
-from adalflow.utils import setup_env
-from adalflow.components.agent import Agent, Runner
-from adalflow.components.model_client.openai_client import OpenAIClient
-from adalflow.core.func_tool import FunctionTool
-
-setup_env()
-
 def basic_calculator(expression: str) -> str:
     """Evaluate basic mathematical expressions."""
     try:
@@ -375,13 +335,6 @@ result = runner.call(
 An agent that can search for information and synthesize results:
 
 ```python
-from adalflow.utils import setup_env
-from adalflow.core.func_tool import FunctionTool
-from adalflow.components.agent import Agent, Runner
-from adalflow.components.model_client.openai_client import OpenAIClient
-
-setup_env()
-
 def web_search(query: str) -> str:
     """Search for information on the web."""
     # This is a simplified example - in practice, use proper search APIs
@@ -445,11 +398,6 @@ AdalFlow agents follow a structured execution pattern:
 Configure different language models:
 
 ```python
-from adalflow.utils import setup_env
-setup_env()
-
-# OpenAI
-from adalflow.components.model_client.openai_client import OpenAIClient
 model_client = OpenAIClient()
 model_kwargs = {"model": "gpt-4o", "temperature": 0.7}
 
@@ -461,7 +409,7 @@ model_kwargs = {"model": "claude-3-sonnet-20240229"}
 
 ### Output Types
 
-Specify expected output types. The output types can be a built-in Python type, a Pydantic dataclass, or an Adalflow dataclass (see [Base Data Class](base_data_class.rst)).
+Specify expected output types. The output types can be a built-in Python type, a Pydantic dataclass, or an Adalflow dataclass (see [Base Data Class](../tutorials/base_data_class)).
 
 ```python
 # String output
@@ -488,7 +436,7 @@ agent = Agent(
 
 ### Custom System Templates
 
-Customize the agent's behavior with custom prompt templates which are further detailed in the [Prompt](prompt.rst) documentation.
+Customize the agent's behavior with custom prompt templates which are further detailed in the [Prompt](../tutorials/prompt) documentation.
 
 ```python
 custom_template = """
