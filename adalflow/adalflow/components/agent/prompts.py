@@ -18,7 +18,7 @@ Follow function docstring to best call the tool.
     - For complex queries:
         - Step 1: Read the user query and divide it into multisteps. Start with the first tool/subquery.
         - Call one tool at a time to solve each subquery/subquestion. Set `_is_answer_final` to False for intermediate steps.
-        - To end the call, set the `_is_answer_final` to True and generate the final answer in the `_answer` field.
+        - To end the call, set the `_is_answer_final` to True and generate the final answer in the `_answer` field. Note that the function is not called at the final step.
 
 REMEMBER:
     - Action MUST call one of the tools other than for the final answer.

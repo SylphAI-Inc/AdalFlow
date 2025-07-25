@@ -12,7 +12,7 @@ Both event types can be consumed simultaneously, giving you fine-grained control
 
 ## Basic Streaming
 
-The simplest way to stream agent execution is using the `Runner.astream()` method:
+The simplest way to stream agent execution is using the `Runner.astream()` method which returns a `RunnerStreamingResult` object. You can consume the events by calling the `stream_events()` method on the `RunnerStreamingResult` object which internally holds an asyncio queue.
 
 ```python
 import asyncio
@@ -59,9 +59,9 @@ async def stream_example():
 asyncio.run(stream_example())
 ```
 
-## Raw Response Events
+## Raw Response Stream Events
 
-Raw response events provide token-level updates directly from the language model. These events contain the streaming chunks as they're generated:
+Raw response stream events are raw events from the language model. These events contain the streaming chunks as they're generated:
 
 ```python
 import asyncio
@@ -134,20 +134,12 @@ asyncio.run(handle_raw_responses())
 | `agent.final_output` | Final processed output available |
 | `agent.execution_complete` | Entire execution finished |
 | `agent.tool_permission_request` | Tool permission request before execution |
-| `message_output_created` | New message output created |
-| `handoff_requested` | Agent handoff requested |
-| `handoff_occured` | Agent handoff occurred |
-| `tool_called` | Tool function called |
-| `tool_output` | Tool execution output |
-| `reasoning_item_created` | Reasoning item created |
-| `mcp_approval_requested` | MCP approval requested |
-| `mcp_list_tools` | MCP tools listed |
 
 This comprehensive streaming system enables you to build responsive, real-time applications with AdalFlow agents while maintaining full control over the execution flow and user experience.
 
 ### Raw Response Event Structure
 
-Raw response events contain the streaming data under its `data` field,directly from the model client:
+Raw response stream events contain the streaming data under its `data` field,directly from the model client:
 
 ```python
 # Example raw response event data
@@ -297,6 +289,8 @@ agent = Agent(
 runner = Runner(agent=agent)
 
 async def multi_tool_streaming():
+    print("🚀 Starting multi-tool agent streaming...")
+    
     streaming_result = runner.astream(
         prompt_kwargs={
             "input_str": "Calculate the square root of 144, then search for information about that number"
@@ -308,11 +302,11 @@ async def multi_tool_streaming():
     async for event in streaming_result.stream_events():
         if isinstance(event, RunItemStreamEvent):
             if isinstance(event.item, ToolCallRunItem):
-                print(f"\n🔧 Step {step_count + 1}: Calling {event.item.function.name}")
-                print(f"   Arguments: {event.item.function.kwargs}")
+                print(f"\n🔧 Step {step_count + 1}: Calling {event.item.data.name}")
+                print(f"   Arguments: {event.item.data.kwargs}")
             
             elif isinstance(event.item, ToolOutputRunItem):
-                print(f"✅ Result: {event.item.output}")
+                print(f"✅ Result: {event.item.data.output}")
             
             elif isinstance(event.item, StepRunItem):
                 step_count += 1
@@ -320,7 +314,9 @@ async def multi_tool_streaming():
             
             elif isinstance(event.item, FinalOutputItem):
                 print(f"\n🎯 Final Answer:")
-                print(event.item.data.answer)
+                print(event.item.data)
+    
+    print("\n✨ Agent execution completed!")
 
 asyncio.run(multi_tool_streaming())
 ```
@@ -548,114 +544,7 @@ anthropic_agent = Agent(
     name="AnthropicAgent", 
     tools=[FunctionTool(calculator)],
     model_client=AnthropicAPIClient(),
-    model_kwargs={"model": "claude-3-sonnet-20240229", "stream": True},
+    model_kwargs={"model": "claude-3-5-haiku-20241022", "stream": True, "temperature": 0.8},
     max_steps=5
 )
-```
-
-### Groq Streaming
-
-```python
-from adalflow.utils import setup_env
-from adalflow.components.agent import Agent
-from adalflow.components.model_client.groq_client import GroqAPIClient
-from adalflow.core.func_tool import FunctionTool
-
-setup_env()
-
-def calculator(expression: str) -> str:
-    try:
-        result = eval(expression)
-        return f"Result: {result}"
-    except Exception as e:
-        return f"Error: {e}"
-
-groq_agent = Agent(
-    name="GroqAgent",
-    tools=[FunctionTool(calculator)],
-    model_client=GroqAPIClient(),
-    model_kwargs={"model": "llama3-70b-8192", "stream": True},
-    max_steps=5
-)
-```
-
-## Error Handling in Streaming
-
-Handle errors gracefully during streaming execution:
-
-```python
-import asyncio
-from adalflow.utils import setup_env
-from adalflow.components.agent import Agent, Runner
-from adalflow.components.model_client.openai_client import OpenAIClient
-from adalflow.core.func_tool import FunctionTool
-from adalflow.core.types import RunItemStreamEvent, ToolOutputRunItem, FinalOutputItem
-
-# Setup environment
-setup_env()
-
-def calculator(expression: str) -> str:
-    """Evaluate a mathematical expression."""
-    try:
-        result = eval(expression)
-        return f"Result: {result}"
-    except Exception as e:
-        return f"Error: {e}"
-
-agent = Agent(
-    name="StreamingAgent",
-    tools=[FunctionTool(calculator)],
-    model_client=OpenAIClient(),
-    model_kwargs={"model": "gpt-4o", "temperature": 0.3},
-    max_steps=5
-)
-
-runner = Runner(agent=agent)
-
-async def robust_streaming():
-    try:
-        streaming_result = runner.astream(
-            prompt_kwargs={"input_str": "Calculate 100 / 0 and then 50 * 2"},
-            model_kwargs={"stream": True}
-        )
-        
-        async for event in streaming_result.stream_events():
-            try:
-                if isinstance(event, RunItemStreamEvent):
-                    if isinstance(event.item, ToolOutputRunItem):
-                        if "Error:" in str(event.item.output):
-                            print(f"⚠️  Tool error detected: {event.item.output}")
-                        else:
-                            print(f"✅ Tool success: {event.item.output}")
-                    
-                    elif isinstance(event.item, FinalOutputItem):
-                        print(f"🎯 Execution completed: {event.item.data.answer}")
-            
-            except Exception as e:
-                print(f"Error processing event: {e}")
-                continue
-    
-    except Exception as e:
-        print(f"Streaming failed: {e}")
-
-asyncio.run(robust_streaming())
-```
-
-### Consuming from Stream 
-Consume the events in the stream as they come and only process the events you need. 
-
-```python
-async def filtered_streaming():
-    streaming_result = runner.astream(
-        prompt_kwargs={"input_str": "Process this data"},
-        model_kwargs={"stream": True}
-    )
-    
-    async for event in streaming_result.stream_events():
-        # Only process tool completion and final output events
-        if isinstance(event, RunItemStreamEvent):
-            if isinstance(event.item, (ToolOutputRunItem, FinalOutputItem)):
-                print(f"Important event: {event}")
-
-asyncio.run(filtered_streaming())
 ```

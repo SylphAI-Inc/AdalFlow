@@ -94,6 +94,21 @@ type = "directory"
 url = "adalflow"
 
 [[package]]
+name = "aioconsole"
+version = "0.8.1"
+description = "Asynchronous console and interfaces for asyncio"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "aioconsole-0.8.1-py3-none-any.whl", hash = "sha256:e1023685cde35dde909fbf00631ffb2ed1c67fe0b7058ebb0892afbde5f213e5"},
+    {file = "aioconsole-0.8.1.tar.gz", hash = "sha256:0535ce743ba468fb21a1ba43c9563032c779534d4ecd923a46dbd350ad91d234"},
+]
+
+[package.extras]
+dev = ["pytest", "pytest-asyncio", "pytest-cov", "pytest-repeat", "uvloop ; platform_python_implementation != \"PyPy\" and sys_platform != \"win32\""]
+
+[[package]]
 name = "aiohappyeyeballs"
 version = "2.6.1"
 description = "Happy Eyeballs for asyncio"
@@ -3450,14 +3465,14 @@ typing = ["fire", "mypy (>=1.0.0)", "types-setuptools"]
 
 [[package]]
 name = "litellm"
-version = "1.74.7"
+version = "1.74.8"
 description = "Library to easily interface with LLM API providers"
 optional = false
 python-versions = "!=2.7.*,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,!=3.7.*,>=3.8"
 groups = ["main", "dev"]
 files = [
-    {file = "litellm-1.74.7-py3-none-any.whl", hash = "sha256:d630785faf07813cf0d5e9fb0bb84aaa18aa728297858c58c56f34c0b9190df1"},
-    {file = "litellm-1.74.7.tar.gz", hash = "sha256:53b809a342154d8543ea96422cf962cd5ea9df293f83dab0cc63b27baadf0ece"},
+    {file = "litellm-1.74.8-py3-none-any.whl", hash = "sha256:f9433207d1e12e545495e5960fe02d93e413ecac4a28225c522488e1ab1157a1"},
+    {file = "litellm-1.74.8.tar.gz", hash = "sha256:6e0a18aecf62459d465ee6d9a2526fcb33719a595b972500519abe95fe4906e0"},
 ]
 
 [package.dependencies]
@@ -3476,7 +3491,7 @@ tokenizers = "*"
 [package.extras]
 caching = ["diskcache (>=5.6.1,<6.0.0)"]
 extra-proxy = ["azure-identity (>=1.15.0,<2.0.0)", "azure-keyvault-secrets (>=4.8.0,<5.0.0)", "google-cloud-kms (>=2.21.3,<3.0.0)", "prisma (==0.11.0)", "redisvl (>=0.4.1,<0.5.0) ; python_version >= \"3.9\" and python_version < \"3.14\"", "resend (>=0.8.0,<0.9.0)"]
-proxy = ["PyJWT (>=2.8.0,<3.0.0)", "apscheduler (>=3.10.4,<4.0.0)", "azure-identity (>=1.15.0,<2.0.0)", "azure-storage-blob (>=12.25.1,<13.0.0)", "backoff", "boto3 (==1.34.34)", "cryptography (>=43.0.1,<44.0.0)", "fastapi (>=0.115.5,<0.116.0)", "fastapi-sso (>=0.16.0,<0.17.0)", "gunicorn (>=23.0.0,<24.0.0)", "litellm-enterprise (==0.1.15)", "litellm-proxy-extras (==0.2.11)", "mcp (==1.10.0) ; python_version >= \"3.10\"", "orjson (>=3.9.7,<4.0.0)", "pynacl (>=1.5.0,<2.0.0)", "python-multipart (>=0.0.18,<0.0.19)", "pyyaml (>=6.0.1,<7.0.0)", "rich (==13.7.1)", "rq", "uvicorn (>=0.29.0,<0.30.0)", "uvloop (>=0.21.0,<0.22.0) ; sys_platform != \"win32\"", "websockets (>=13.1.0,<14.0.0)"]
+proxy = ["PyJWT (>=2.8.0,<3.0.0)", "apscheduler (>=3.10.4,<4.0.0)", "azure-identity (>=1.15.0,<2.0.0)", "azure-storage-blob (>=12.25.1,<13.0.0)", "backoff", "boto3 (==1.34.34)", "cryptography (>=43.0.1,<44.0.0)", "fastapi (>=0.115.5,<0.116.0)", "fastapi-sso (>=0.16.0,<0.17.0)", "gunicorn (>=23.0.0,<24.0.0)", "litellm-enterprise (==0.1.15)", "litellm-proxy-extras (==0.2.11)", "mcp (==1.10.0) ; python_version >= \"3.10\"", "orjson (>=3.9.7,<4.0.0)", "polars (>=1.31.0,<2.0.0) ; python_version >= \"3.10\"", "pynacl (>=1.5.0,<2.0.0)", "python-multipart (>=0.0.18,<0.0.19)", "pyyaml (>=6.0.1,<7.0.0)", "rich (==13.7.1)", "rq", "uvicorn (>=0.29.0,<0.30.0)", "uvloop (>=0.21.0,<0.22.0) ; sys_platform != \"win32\"", "websockets (>=13.1.0,<14.0.0)"]
 utils = ["numpydoc"]
 
 [[package]]
@@ -8069,4 +8084,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11, <3.13"
-content-hash = "bbaddfc7f2ee22ce5e89ef090a63c59b142cf2c40b1afab528f24158b1b93fd1"
+content-hash = "fcea413ee3a8e5296e067d4911cdad7240bc609a74671c9598a5f6bba2385c29"

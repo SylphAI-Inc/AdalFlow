@@ -1,6 +1,6 @@
 # Agents and Runner
 
-Agents are the core building block for creating autonomous AI systems in AdalFlow. An agent combines reasoning capabilities with tool usage, allowing it to break down complex tasks into steps, use available tools, and iteratively work toward solutions.
+Agents are the core building block for creating autonomous AI systems in AdalFlow. An agent combines reasoning capabilities with tool usage, allowing it to break down complex tasks into steps, use available tools, and iteratively work toward solutions. This approach is motivated by the ReAcT (Reasoning and Acting) framework [[Yao et al., 2022]](https://arxiv.org/abs/2210.03629), which combines reasoning traces and task-specific actions in language models.
 
 ## Overview
 
@@ -15,44 +15,75 @@ This separation allows for flexible customization of both planning and execution
 Here's a minimal example to get you started:
 
 ```python
+from adalflow.utils import setup_env
+from adalflow.core.types import ToolOutput
 from adalflow.components.agent import Agent, Runner
 from adalflow.components.model_client.openai_client import OpenAIClient
 from adalflow.core.func_tool import FunctionTool
+from adalflow.apps.cli_permission_handler import CLIPermissionHandler
 
-# Define a simple tool
+setup_env()
+
 def calculator(expression: str) -> str:
     """Evaluate a mathematical expression."""
     try:
         result = eval(expression)
-        return f"The result is: {result}"
+        return f"Result: {result}"
     except Exception as e:
         return f"Error: {e}"
 
-# Create the agent
+def file_writer(filename: str, content: str) -> ToolOutput:
+    """Write content to a file - requires permission."""
+    print(f"[Tool Execution] Writing to file: {filename}")
+    try:
+        with open(filename, 'w') as f:
+            f.write(content)
+        return ToolOutput(
+            output=f"Successfully wrote {len(content)} characters to {filename}",
+            observation=f"File {filename} written successfully",
+            display=f"✍️ Wrote: {filename}",
+        )
+    except Exception as e:
+        return ToolOutput(
+            output=f"Error writing to file: {e}",
+            observation=f"Failed to write to {filename}",
+            display=f"❌ Failed: {filename}",
+        ) 
+
+# Create agent with tools that require permission
 agent = Agent(
-    name="MathAgent",
-    tools=[FunctionTool(calculator)],
+    name="PermissionAgent",
+    tools=[
+        FunctionTool(calculator),  # Safe tool - no permission needed
+        FunctionTool(file_writer, require_approval=True),  # Requires permission
+    ],
     model_client=OpenAIClient(),
     model_kwargs={"model": "gpt-4o", "temperature": 0.3},
-    max_steps=5
+    max_steps=6
 )
 
-# Create the runner
-runner = Runner(agent=agent)
+permission_handler = CLIPermissionHandler(approval_mode="default")
+runner = Runner(agent=agent, permission_manager=permission_handler)
 
-# Execute a query
-result = runner.call(
-    prompt_kwargs={"input_str": "What is 15 * 7 + 23?"}
-)
-
-print(result.answer)
+# Tools will now require approval before execution
+result = runner.call(prompt_kwargs={"input_str": "Invoke the file_writer tool and create a temporary file"})
 ```
+
+The result of the above code is as follows:
+```
+RunnerResult(
+    step_history=[StepOutput(step=0, action=Function(...), observation='The result is: 128', ctx=None)], 
+    answer='The result of 15 * 7 + 23 is 128.', 
+    error=None, 
+    ctx=None
+)
+```
+
 
 ## Core Components
 
-### Agent
-
-The Agent class orchestrates AI planning and tool execution using a ReAct (Reasoning and Acting) architecture. By default, the Agent uses a Generator-based planner for decision-making and a ToolManager for managing and executing tools when not explicitly provided.
+### Agent 
+The Agent uses a Generator-based planner for decision-making and a ToolManager which we can configure.
 
 #### Basic Configuration
 
@@ -72,26 +103,55 @@ agent = Agent(
 #### Key Parameters
 
 - **name**: A descriptive name for your agent
-- **tools**: List of FunctionTool objects the agent can use
-- **model_client**: The language model client (OpenAI, Anthropic, etc.)
-- **model_kwargs**: Configuration for the language model
+- **tools**: List of FunctionTool or callable objects the agent can use (see [Tool Helper](tool_helper.rst) for detailed information)
+- **model_client**: The language model client used by the generator (OpenAI, Anthropic, etc.) (see [Generator](generator.rst) and [Model Client](model_client.rst) for detailed information)
+- **model_kwargs**: Configuration for the language model used by the generator 
 - **max_steps**: Maximum number of reasoning steps before termination
-- **answer_data_type**: Expected type for the final answer (str, int, etc.)
+- **answer_data_type**: Expected type for the final answer. The data type can be a Pydantic dataclass, Adalflow dataclass (see [Base Data Class](base_data_class.rst)), or a built-in Python type.
 
 ### Runner
 
 The Runner executes Agent instances with support for multi-step reasoning, tool execution, and conversation management.
 
 ```python
-from adalflow.components.agent import Runner
+from adalflow.components.agent import Agent, Runner
 
 runner = Runner(
     agent=agent,
     max_steps=5,           # Override agent's max_steps if needed
-    memory=None,           # Optional conversation memory
-    permissions=None       # Optional permission manager
 )
 ```
+
+#### RunnerResult
+
+The `Runner.call()` method returns a `RunnerResult` object that contains comprehensive information about the execution:
+
+```python 
+@dataclass
+class RunnerResult:
+    step_history: List[StepOutput] = field(
+        metadata={"desc": "The step history of the execution"},
+        default_factory=list,
+    )
+    answer: Optional[str] = field(
+        metadata={"desc": "The answer to the user's query"}, default=None
+    )
+    error: Optional[str] = field(
+        metadata={"desc": "The error message if the code execution failed"},
+        default=None,
+    )
+    ctx: Optional[Dict] = field(
+        metadata={"desc": "The context of the execution"},
+        default=None,
+    )
+```
+
+**Field Descriptions:**
+
+- **step_history**: A chronological list of `StepOutput` objects representing each reasoning step the agent took, including the action performed, tool calls, and observations received.
+- **answer**: The final answer or result produced by the agent after completing all reasoning steps.
+- **error**: Contains error information if the agent execution failed due to an exception, timeout, or other issues. `None` if execution was successful.
+- **ctx**: Optional context dictionary that can store additional metadata or state information from the execution process.
 
 ### Tools
 
@@ -104,6 +164,12 @@ Convert regular Python functions into agent tools. Tools can return various type
 ```python
 from adalflow.core.func_tool import FunctionTool
 from adalflow.core.types import ToolOutput
+from adalflow.components.agent import Agent
+from adalflow.components.model_client.openai_client import OpenAIClient
+from adalflow.utils import setup_env
+
+setup_env()
+
 
 # Basic return types
 def search_web(query: str) -> str:
@@ -132,121 +198,130 @@ tools = [
     FunctionTool(send_email),
     FunctionTool(advanced_search)
 ]
+
+# Create the agent
+agent = Agent(
+    name="MathAgent",
+    tools=tools,
+    model_client=OpenAIClient(),
+    model_kwargs={"model": "gpt-4o", "temperature": 0.3},
+    max_steps=5
+)
 ```
 
-#### Component Tools
-
-Use AdalFlow components as tools:
+You can also use synchronous and asynchronous callables (such as a custom function, class method) as tools that are not necessarily FunctionTools. Further information is provided in the [Tool Helper](tool_helper.rst) documentation. For instance, you could have created tools as below without using FunctionTool
 
 ```python
-from adalflow.core.retriever import Retriever
-from adalflow.core.func_tool import FunctionTool
-
-# Assuming you have a retriever implementation
-retriever = MyRetriever(top_k=3)
-tools = [FunctionTool(retriever.call)]
-```
-
-#### Tool Return Types
-
-AdalFlow tools are flexible and can return various types:
-
-```python
-from adalflow.core.types import ToolOutput
-import asyncio
-
-# Basic Python types
-def calculate(expression: str) -> float:
-    """Return a number."""
-    return eval(expression)
-
-def get_data() -> dict:
-    """Return structured data."""
-    return {"key": "value", "count": 42}
-
-# Async tools
-async def fetch_api_data(url: str) -> dict:
-    """Async tool returning data."""
-    # Simulate API call
-    await asyncio.sleep(0.1)
-    return {"status": "success", "data": "api_result"}
-
-# Generator tools for streaming
-def stream_results(count: int):
-    """Generator tool for streaming output."""
-    for i in range(count):
-        yield f"Result {i+1}"
-
-# ToolOutput for enhanced control
-def enhanced_tool(query: str) -> ToolOutput:
-    """Tool with rich output information."""
-    result = f"Processed: {query}"
-    return ToolOutput(
-        output=result,                    # Main output for the agent
-        observation="Processing completed successfully",  # Agent reasoning context
-        display=f"✅ {query} processed",  # User-friendly display
-        metadata={"processing_time": 0.5, "status": "success"}
-    )
-
-# All tool types can be used with FunctionTool
 tools = [
-    FunctionTool(calculate),
-    FunctionTool(get_data),
-    FunctionTool(fetch_api_data),
-    FunctionTool(stream_results),
-    FunctionTool(enhanced_tool)
+    search_web,
+    send_email,
+    advanced_search
 ]
+
+# Create the agent
+agent = Agent(
+    name="MathAgent",
+    tools=tools,
+    model_client=OpenAIClient(),
+    model_kwargs={"model": "gpt-4o", "temperature": 0.3},
+    max_steps=5
+)
 ```
 
 ## Advanced Features
 
 ### Streaming Execution
 
-Execute agents with streaming support for real-time updates:
-
-```python
-import asyncio
-
-async def stream_example():
-    runner = Runner(agent=agent)
-    
-    async for event in runner.astream(
-        prompt_kwargs={"input_str": "Analyze this data..."}
-    ):
-        print(f"Event: {event}")
-
-# Run the streaming example
-asyncio.run(stream_example())
-```
-
-### Memory Integration
-
-Add persistent conversation memory:
-
-```python
-from adalflow.components.memory import Memory
-
-memory = Memory()
-runner = Runner(agent=agent, memory=memory)
-
-# Conversations will now maintain context across calls
-result1 = runner.call(prompt_kwargs={"input_str": "Remember my name is John"})
-result2 = runner.call(prompt_kwargs={"input_str": "What's my name?"})
-```
+You can execute agents with streaming support for real-time updates. See the [Streaming](streaming.md) tutorial for detailed information and examples.
 
 ### Permission Management
 
-Add approval workflows for sensitive operations:
+AdalFlow provides a permission management system that allows you to control and approve tool executions before they run. This is particularly useful for tools that perform sensitive operations like file system access, API calls, or external communications.
+
+For comprehensive coverage of permission management features including CLI handlers, FastAPI integration, custom permission managers, and security best practices, see the dedicated [Permission Management](permission_management.md) tutorial.
+
+#### Core Components
+
+The permission system consists of:
+
+- **Permission Managers**: Components that manage approval workflows (e.g., `CLIPermissionHandler`, `AutoApprovalHandler`)
+- **Approval Modes**: Different strategies for handling permission requests:
+  - `"default"`: Respects all tool categories (always_allowed, blocked, require_approval)
+  - `"auto_approve"`: Automatically approves tools requiring approval (still respects blocked_tools)
+  - `"yolo"`: Bypasses all permission checks entirely (use only in development/trusted environments)
+- **Tool Categories**: 
+  - `always_allowed_tools`: Tools that never require approval
+  - `blocked_tools`: Tools that are completely blocked from execution
+  - `tool_require_approval`: Tools that need explicit approval before execution
+- **Approval Outcomes**: 
+  - `PROCEED_ONCE`: Allow this single execution
+  - `PROCEED_ALWAYS`: Allow this tool always (adds to always_allowed_tools)
+  - `CANCEL`: Deny execution
+
+Note that tools are expected to have a `require_approval` attribute to be properly registered in the permission manager. It is most convenient to create tools that needs approval via the FunctionTool class. 
+
+#### Usage Example
+
+Add approval workflows for sensitive operations such as creating a file:
 
 ```python
-from adalflow.components.agent.permissions import PermissionManager
+from adalflow.apps.cli_permission_handler import CLIPermissionHandler
+from adalflow.utils import setup_env
+from adalflow.core.types import ToolOutput
+from adalflow.core.types import FunctionRequest
+from adalflow.components.agent import Agent, Runner
+from adalflow.components.model_client.openai_client import OpenAIClient
+from adalflow.core.func_tool import FunctionTool
+from adalflow.core.types import RunItemStreamEvent, FinalOutputItem, ToolCallRunItem, ToolOutputRunItem, StepRunItem
 
-permissions = PermissionManager()
-runner = Runner(agent=agent, permissions=permissions)
+setup_env()
+
+def calculator(expression: str) -> str:
+    """Evaluate a mathematical expression."""
+    try:
+        result = eval(expression)
+        return f"Result: {result}"
+    except Exception as e:
+        return f"Error: {e}"
+
+def file_writer(filename: str, content: str) -> ToolOutput:
+    """Write content to a file - requires permission."""
+    print(f"[Tool Execution] Writing to file: {filename}")
+    try:
+        with open(filename, 'w') as f:
+            f.write(content)
+        return ToolOutput(
+            output=f"Successfully wrote {len(content)} characters to {filename}",
+            observation=f"File {filename} written successfully",
+            display=f"✍️ Wrote: {filename}",
+        )
+    except Exception as e:
+        return ToolOutput(
+            output=f"Error writing to file: {e}",
+            observation=f"Failed to write to {filename}",
+            display=f"❌ Failed: {filename}",
+        )
+
+# Create agent with tools that require permission
+agent = Agent(
+    name="PermissionAgent",
+    tools=[
+        FunctionTool(calculator),  # Safe tool - no permission needed
+        FunctionTool(file_writer, require_approval=True),  # Requires permission
+    ],
+    model_client=OpenAIClient(),
+    model_kwargs={"model": "gpt-4o", "temperature": 0.3},
+    max_steps=6
+)
+
+permission_handler = CLIPermissionHandler(approval_mode="default")
+runner = Runner(agent=agent, permission_manager=permission_handler)
 
 # Tools will now require approval before execution
-result = runner.call(prompt_kwargs={"input_str": "Delete all files"})
+result = runner.call(prompt_kwargs={"input_str": "Invoke the file_writer tool and create a temporary file"})
 ```
+
+You should see a temporary file that was created by the agent from the tutorial. 
 
 ## Examples
 
@@ -304,8 +379,12 @@ An agent that can perform various mathematical operations:
 
 ```python
 import math
+from adalflow.utils import setup_env
 from adalflow.components.agent import Agent, Runner
+from adalflow.components.model_client.openai_client import OpenAIClient
 from adalflow.core.func_tool import FunctionTool
+
+setup_env()
 
 def basic_calculator(expression: str) -> str:
     """Evaluate basic mathematical expressions."""
@@ -465,7 +544,7 @@ model_kwargs = {"model": "claude-3-sonnet-20240229"}
 
 ### Output Types
 
-Specify expected output types:
+Specify expected output types. The output types can be a built-in Python type, a Pydantic dataclass, or an Adalflow dataclass (see [Base Data Class](base_data_class.rst)).
 
 ```python
 # String output
@@ -490,88 +569,24 @@ agent = Agent(
 )
 ```
 
-### Custom System Prompts
+### Custom System Templates
 
-Customize the agent's behavior with custom prompts:
+Customize the agent's behavior with custom prompt templates which are further detailed in the [Prompt](prompt.rst) documentation.
 
 ```python
-custom_prompt = """
+custom_template = """
+<system>
+{{ system_prompt }}
 You are a helpful assistant specialized in data analysis. 
 Always provide step-by-step reasoning and cite your sources.
 When using tools, explain why you chose each tool.
+</system>
 """
 
 agent = Agent(
     name="DataAnalyst",
-    system_prompt=custom_prompt,
+    template=custom_template,
     # ... other config
 )
 ```
 
-## Error Handling
-
-Agents include robust error handling:
-
-```python
-try:
-    result = runner.call(
-        prompt_kwargs={"input_str": "Complex query here"}
-    )
-    print(f"Success: {result.answer}")
-except Exception as e:
-    print(f"Agent execution failed: {e}")
-    
-    # Access step history for debugging
-    if hasattr(result, 'step_history'):
-        for i, step in enumerate(result.step_history):
-            print(f"Step {i+1}: {step.function} -> {step.observation}")
-```
-
-## Best Practices
-
-### Tool Design
-
-1. **Clear Descriptions**: Provide detailed docstrings for tools
-2. **Type Hints**: Use proper type annotations. The return type can be `ToolOutput` or other types. 
-3. **Error Handling**: Handle exceptions gracefully within tools
-4. **Focused Functionality**: Keep tools focused on single responsibilities
-
-```python
-def good_tool_example(query: str, limit: int = 10) -> str:
-    """
-    Search for information with a specific query.
-    
-    Args:
-        query: The search query string
-        limit: Maximum number of results to return (default: 10)
-        
-    Returns:
-        Formatted search results as a string
-        
-    Raises:
-        ValueError: If query is empty
-    """
-    if not query.strip():
-        raise ValueError("Query cannot be empty")
-    
-    try:
-        # Tool implementation
-        results = perform_search(query, limit)
-        return format_results(results)
-    except Exception as e:
-        return f"Search failed: {str(e)}"
-```
-
-### Agent Configuration
-
-1. **Reasonable Step Limits**: Set appropriate max_steps to prevent infinite loops
-2. **Model Selection**: Choose models appropriate for your task complexity
-3. **Tool Combinations**: Ensure tools work well together
-4. **Testing**: Test agents thoroughly with various inputs
-
-### Performance Optimization
-
-1. **Caching**: Enable caching for expensive operations
-2. **Async Tools**: Use async tools for I/O operations
-3. **Batch Operations**: Group related operations when possible
-4. **Monitoring**: Use AdalFlow's tracing capabilities
