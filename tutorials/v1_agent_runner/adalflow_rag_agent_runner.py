@@ -1,17 +1,16 @@
 """
 AdalFlow RAG Agent Runner using AdalFlow's Runner and Agent components
 
-This implementation demonstrates how to create a RAG (Retrieval-Augmented Generation) 
-system using AdalFlow's core Agent and Runner components, with a DspyRetriever 
+This implementation demonstrates how to create a RAG (Retrieval-Augmented Generation)
+system using AdalFlow's core Agent and Runner components, with a DspyRetriever
 for document retrieval functionality.
 """
 
-from typing import List, Optional
+from typing import Optional
 import dspy
 
 print(dspy.__version__)
 
-import adalflow as adal
 from adalflow.components.agent import Agent, Runner
 from adalflow.core.func_tool import FunctionTool
 from adalflow.components.model_client.openai_client import OpenAIClient

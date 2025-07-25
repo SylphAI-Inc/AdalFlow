@@ -48,7 +48,7 @@ def file_writer(filename: str, content: str) -> ToolOutput:
             output=f"Error writing to file: {e}",
             observation=f"Failed to write to {filename}",
             display=f"❌ Failed: {filename}",
-        ) 
+        )
 
 # Create agent with tools that require permission
 agent = Agent(
@@ -72,9 +72,9 @@ result = runner.call(prompt_kwargs={"input_str": "Invoke the file_writer tool an
 The result of the above code is as follows:
 ```
 RunnerResult(
-    step_history=[StepOutput(step=0, action=Function(...), observation='The result is: 128', ctx=None)], 
-    answer='The result of 15 * 7 + 23 is 128.', 
-    error=None, 
+    step_history=[StepOutput(step=0, action=Function(...), observation='The result is: 128', ctx=None)],
+    answer='The result of 15 * 7 + 23 is 128.',
+    error=None,
     ctx=None
 )
 ```
@@ -82,7 +82,7 @@ RunnerResult(
 
 ## Core Components
 
-### Agent 
+### Agent
 The Agent uses a Generator-based planner for decision-making and a ToolManager which we can configure.
 
 #### Basic Configuration
@@ -105,7 +105,7 @@ agent = Agent(
 - **name**: A descriptive name for your agent
 - **tools**: List of FunctionTool or callable objects the agent can use (see [Tool Helper](tool_helper.rst) for detailed information)
 - **model_client**: The language model client used by the generator (OpenAI, Anthropic, etc.) (see [Generator](generator.rst) and [Model Client](model_client.rst) for detailed information)
-- **model_kwargs**: Configuration for the language model used by the generator 
+- **model_kwargs**: Configuration for the language model used by the generator
 - **max_steps**: Maximum number of reasoning steps before termination
 - **answer_data_type**: Expected type for the final answer. The data type can be a Pydantic dataclass, Adalflow dataclass (see [Base Data Class](base_data_class.rst)), or a built-in Python type.
 
@@ -126,7 +126,7 @@ runner = Runner(
 
 The `Runner.call()` method returns a `RunnerResult` object that contains comprehensive information about the execution:
 
-```python 
+```python
 @dataclass
 class RunnerResult:
     step_history: List[StepOutput] = field(
@@ -155,7 +155,7 @@ class RunnerResult:
 
 ### Tools
 
-Tools extend your agent's capabilities. AdalFlow supports several tool types:
+Tools extend your agent's capabilities. AdalFlow supports several tool types: 
 
 #### Function Tools
 
@@ -240,94 +240,11 @@ AdalFlow provides a permission management system that allows you to control and 
 
 For comprehensive coverage of permission management features including CLI handlers, FastAPI integration, custom permission managers, and security best practices, see the dedicated [Permission Management](permission_management.md) tutorial.
 
-#### Core Components
-
-The permission system consists of:
-
-- **Permission Managers**: Components that manage approval workflows (e.g., `CLIPermissionHandler`, `AutoApprovalHandler`)
-- **Approval Modes**: Different strategies for handling permission requests:
-  - `"default"`: Respects all tool categories (always_allowed, blocked, require_approval)
-  - `"auto_approve"`: Automatically approves tools requiring approval (still respects blocked_tools)
-  - `"yolo"`: Bypasses all permission checks entirely (use only in development/trusted environments)
-- **Tool Categories**: 
-  - `always_allowed_tools`: Tools that never require approval
-  - `blocked_tools`: Tools that are completely blocked from execution
-  - `tool_require_approval`: Tools that need explicit approval before execution
-- **Approval Outcomes**: 
-  - `PROCEED_ONCE`: Allow this single execution
-  - `PROCEED_ALWAYS`: Allow this tool always (adds to always_allowed_tools)
-  - `CANCEL`: Deny execution
-
-Note that tools are expected to have a `require_approval` attribute to be properly registered in the permission manager. It is most convenient to create tools that needs approval via the FunctionTool class. 
-
-#### Usage Example
-
-Add approval workflows for sensitive operations such as creating a file:
-
-```python
-from adalflow.apps.cli_permission_handler import CLIPermissionHandler
-from adalflow.utils import setup_env
-from adalflow.core.types import ToolOutput
-from adalflow.core.types import FunctionRequest
-from adalflow.components.agent import Agent, Runner
-from adalflow.components.model_client.openai_client import OpenAIClient
-from adalflow.core.func_tool import FunctionTool
-from adalflow.core.types import RunItemStreamEvent, FinalOutputItem, ToolCallRunItem, ToolOutputRunItem, StepRunItem
-
-setup_env()
-
-def calculator(expression: str) -> str:
-    """Evaluate a mathematical expression."""
-    try:
-        result = eval(expression)
-        return f"Result: {result}"
-    except Exception as e:
-        return f"Error: {e}"
-
-def file_writer(filename: str, content: str) -> ToolOutput:
-    """Write content to a file - requires permission."""
-    print(f"[Tool Execution] Writing to file: {filename}")
-    try:
-        with open(filename, 'w') as f:
-            f.write(content)
-        return ToolOutput(
-            output=f"Successfully wrote {len(content)} characters to {filename}",
-            observation=f"File {filename} written successfully",
-            display=f"✍️ Wrote: {filename}",
-        )
-    except Exception as e:
-        return ToolOutput(
-            output=f"Error writing to file: {e}",
-            observation=f"Failed to write to {filename}",
-            display=f"❌ Failed: {filename}",
-        )
-
-# Create agent with tools that require permission
-agent = Agent(
-    name="PermissionAgent",
-    tools=[
-        FunctionTool(calculator),  # Safe tool - no permission needed
-        FunctionTool(file_writer, require_approval=True),  # Requires permission
-    ],
-    model_client=OpenAIClient(),
-    model_kwargs={"model": "gpt-4o", "temperature": 0.3},
-    max_steps=6
-)
-
-permission_handler = CLIPermissionHandler(approval_mode="default")
-runner = Runner(agent=agent, permission_manager=permission_handler)
-
-# Tools will now require approval before execution
-result = runner.call(prompt_kwargs={"input_str": "Invoke the file_writer tool and create a temporary file"})
-```
-
-You should see a temporary file that was created by the agent from the tutorial. 
-
 ## Examples
 
 ### RAG Agent
 
-Create a Retrieval-Augmented Generation agent. We will provide a more detailed tutorial for the RAG Agent and also evaluate its performance against benchmarks. 
+Create a Retrieval-Augmented Generation agent. We will provide a more detailed tutorial for the RAG Agent and also evaluate its performance against benchmarks.
 
 ```python
 from adalflow.utils import setup_env
@@ -342,7 +259,7 @@ class DocumentRetriever(Retriever):
     def __init__(self, documents: list):
         super().__init__()
         self.documents = documents
-    
+
     def call(self, input: str, top_k: int = 3):
         # Simple similarity search implementation
         # In practice, use vector embeddings
@@ -359,7 +276,7 @@ documents = [
 retriever = DocumentRetriever(documents)
 
 agent = Agent(
-    name="RAGAgent", 
+    name="RAGAgent",
     tools=[FunctionTool(retriever.call)],
     model_client=OpenAIClient(),
     model_kwargs={"model": "gpt-4o"},
@@ -403,7 +320,7 @@ def advanced_math(operation: str, value: float) -> str:
         "log": math.log,
         "factorial": math.factorial
     }
-    
+
     if operation in ops:
         try:
             result = ops[operation](value)
@@ -420,7 +337,7 @@ def unit_converter(value: float, from_unit: str, to_unit: str) -> str:
         "mm": 0.001, "cm": 0.01, "m": 1, "km": 1000,
         "in": 0.0254, "ft": 0.3048, "yd": 0.9144, "mi": 1609.34
     }
-    
+
     if from_unit in length_units and to_unit in length_units:
         meters = value * length_units[from_unit]
         result = meters / length_units[to_unit]
@@ -478,7 +395,7 @@ def summarize_text(text: str, max_length: int = 200) -> str:
     """Summarize a piece of text."""
     if len(text) <= max_length:
         return text
-    
+
     # Simple truncation - in practice, use proper summarization
     return text[:max_length] + "..."
 
@@ -577,7 +494,7 @@ Customize the agent's behavior with custom prompt templates which are further de
 custom_template = """
 <system>
 {{ system_prompt }}
-You are a helpful assistant specialized in data analysis. 
+You are a helpful assistant specialized in data analysis.
 Always provide step-by-step reasoning and cite your sources.
 When using tools, explain why you chose each tool.
 </system>
@@ -589,4 +506,3 @@ agent = Agent(
     # ... other config
 )
 ```
-

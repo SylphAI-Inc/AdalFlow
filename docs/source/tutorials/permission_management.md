@@ -11,16 +11,16 @@ The permission system consists of:
   - `"default"`: Respects all tool categories (always_allowed, blocked, require_approval)
   - `"auto_approve"`: Automatically approves tools requiring approval (still respects blocked_tools)
   - `"yolo"`: Bypasses all permission checks entirely (use only in development/trusted environments)
-- **Tool Categories**: 
+- **Tool Categories**:
   - `always_allowed_tools`: Tools that never require approval
   - `blocked_tools`: Tools that are completely blocked from execution
   - `tool_require_approval`: Tools that need explicit approval before execution
-- **Approval Outcomes**: 
+- **Approval Outcomes**:
   - `PROCEED_ONCE`: Allow this single execution
   - `PROCEED_ALWAYS`: Allow this tool always (adds to always_allowed_tools)
   - `CANCEL`: Deny execution
 
-Note that tools are expected to have a `require_approval` attribute to be properly registered in the permission manager. It is most convenient to create tools that needs approval via the FunctionTool class. 
+Note that tools are expected to have a `require_approval` attribute to be properly registered in the permission manager. It is most convenient to create tools that needs approval via the FunctionTool class.
 
 ## Basic Usage Example
 
@@ -121,7 +121,7 @@ Options:
 3. Cancel
 4. Modify arguments (not implemented)
 ------------------------------------------------------------
-Your choice (1-4): 
+Your choice (1-4):
 ```
 
 ### Auto Approval Handler

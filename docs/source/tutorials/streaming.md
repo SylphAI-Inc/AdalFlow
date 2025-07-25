@@ -50,7 +50,7 @@ async def stream_example():
         prompt_kwargs={"input_str": "What is 15 * 7 + 23?"},
         model_kwargs={"stream": True}
     )
-    
+
     # Process streaming events
     async for event in streaming_result.stream_events():
         print(f"Event: {event}")
@@ -99,7 +99,7 @@ async def handle_raw_responses():
         prompt_kwargs={"input_str": "Calculate 25 * 4 and explain the result"},
         model_kwargs={"stream": True}
     )
-    
+
     async for event in streaming_result.stream_events():
         if isinstance(event, RawResponsesStreamEvent):
             # Process raw model output
@@ -167,10 +167,10 @@ from adalflow.components.agent import Agent, Runner
 from adalflow.components.model_client.openai_client import OpenAIClient
 from adalflow.core.func_tool import FunctionTool
 from adalflow.core.types import (
-    RunItemStreamEvent, 
-    ToolCallRunItem, 
-    ToolOutputRunItem, 
-    StepRunItem, 
+    RunItemStreamEvent,
+    ToolCallRunItem,
+    ToolOutputRunItem,
+    StepRunItem,
     FinalOutputItem
 )
 
@@ -202,21 +202,21 @@ async def handle_agent_events():
         prompt_kwargs={"input_str": "Calculate 15 * 7 + 23 and explain the steps"},
         model_kwargs={"stream": True}
     )
-    
+
     async for event in streaming_result.stream_events():
         if isinstance(event, RunItemStreamEvent):
             if isinstance(event.item, ToolCallRunItem):
                 print(f"🔧 Calling tool: {event.item.function.name}")
                 print(f"   Arguments: {event.item.function.kwargs}")
-            
+
             elif isinstance(event.item, ToolOutputRunItem):
                 print(f"✅ Tool completed: {event.item.function.name}")
                 print(f"   Result: {event.item.output}")
-            
+
             elif isinstance(event.item, StepRunItem):
                 print(f"📋 Step {event.item.step} completed")
                 print(f"   Observation: {event.item.observation}")
-            
+
             elif isinstance(event.item, FinalOutputItem):
                 print(f"🎯 Final answer: {event.item.data.answer}")
 
@@ -257,7 +257,7 @@ def advanced_calculator(operation: str, value: float) -> str:
         "cos": math.cos,
         "log": math.log
     }
-    
+
     if operation in ops:
         try:
             result = ops[operation](value)
@@ -290,32 +290,32 @@ runner = Runner(agent=agent)
 
 async def multi_tool_streaming():
     print("🚀 Starting multi-tool agent streaming...")
-    
+
     streaming_result = runner.astream(
         prompt_kwargs={
             "input_str": "Calculate the square root of 144, then search for information about that number"
         },
         model_kwargs={"stream": True}
     )
-    
+
     step_count = 0
     async for event in streaming_result.stream_events():
         if isinstance(event, RunItemStreamEvent):
             if isinstance(event.item, ToolCallRunItem):
                 print(f"\n🔧 Step {step_count + 1}: Calling {event.item.data.name}")
                 print(f"   Arguments: {event.item.data.kwargs}")
-            
+
             elif isinstance(event.item, ToolOutputRunItem):
                 print(f"✅ Result: {event.item.data.output}")
-            
+
             elif isinstance(event.item, StepRunItem):
                 step_count += 1
                 print(f"📋 Step {step_count} completed")
-            
+
             elif isinstance(event.item, FinalOutputItem):
                 print(f"\n🎯 Final Answer:")
                 print(event.item.data)
-    
+
     print("\n✨ Agent execution completed!")
 
 asyncio.run(multi_tool_streaming())
@@ -323,7 +323,7 @@ asyncio.run(multi_tool_streaming())
 
 ## Streaming with Permissions
 
-AdalFlow supports permission management during streaming, allowing you to approve or deny tool calls in real-time. The tutorial should create a calculation_result.txt. 
+AdalFlow supports permission management during streaming, allowing you to approve or deny tool calls in real-time. The tutorial should create a calculation_result.txt.
 
 ```python
 import asyncio
@@ -400,14 +400,14 @@ async def stream_with_permissions():
     """Demonstrate streaming with permission management."""
     print("🚀 Starting streaming execution with permission management")
     print("Note: Some tools will require approval during execution\n")
-    
+
     streaming_result = runner.astream(
         prompt_kwargs={
             "input_str": "Calculate 25 * 4, then write the result to 'calculation_result.txt', and finally run a system check command 'ls -la'"
         },
         model_kwargs={"stream": True}
     )
-    
+
     # Stream events to JSON file and handle permission requests
     async for event in streaming_result.stream_to_json("logs/permission_execution_log.json"):
         if isinstance(event, RunItemStreamEvent):
@@ -435,7 +435,7 @@ async def demo_permission_system():
     print("• Handle permission requests during streaming")
     print("• Stream events with permission controls")
     print("=" * 80)
-    
+
     await stream_with_permissions()
 
 # Run the demonstration
@@ -448,7 +448,7 @@ You can save streaming events to a file for later analysis:
 
 ```python
 import asyncio
-import os 
+import os
 from adalflow.utils import setup_env
 from adalflow.components.agent import Agent, Runner
 from adalflow.components.model_client.openai_client import OpenAIClient
@@ -484,7 +484,7 @@ async def stream_to_file():
         prompt_kwargs={"input_str": "Calculate 50 * 3 + 25 and explain the calculation"},
         model_kwargs={"stream": True}
     )
-    
+
     # Stream events to JSON file
     async for event in streaming_result.stream_to_json("logs/execution_log.json"):
         # Events are automatically saved to file
@@ -541,7 +541,7 @@ def calculator(expression: str) -> str:
         return f"Error: {e}"
 
 anthropic_agent = Agent(
-    name="AnthropicAgent", 
+    name="AnthropicAgent",
     tools=[FunctionTool(calculator)],
     model_client=AnthropicAPIClient(),
     model_kwargs={"model": "claude-3-5-haiku-20241022", "stream": True, "temperature": 0.8},
