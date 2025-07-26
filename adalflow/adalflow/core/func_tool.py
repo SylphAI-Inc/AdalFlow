@@ -142,6 +142,7 @@ class FunctionTool(Component):
         fn: Union[Callable, FunGradComponent],
         definition: Optional[FunctionDefinition] = None,
         require_approval: bool = False,
+        pre_execute_callback: Optional[Callable] = None,
     ):
         super().__init__(
             name="FunctionTool", desc="A component calls and executes a function."
@@ -153,6 +154,7 @@ class FunctionTool(Component):
 
         self.fn = fn
         self.require_approval = require_approval
+        self.pre_execute_callback = pre_execute_callback # executed before the function is called, often useful for generating confirmation logics to the user
         self.function_type = self.detect_function_type(fn)
         self._is_async = self.function_type in [
             FunctionType.ASYNC,
