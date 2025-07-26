@@ -1,4 +1,6 @@
-"""Implementation and optimization of React agent."""
+"""Implementation and optimization of React agent.
+Note: This will be deprecated soon, use Agent + Runner instead.
+"""
 
 from typing import List, Union, Callable, Optional, Any, Dict, TypeVar, Type
 from dataclasses import dataclass, field
@@ -29,11 +31,17 @@ from adalflow.core.prompt_builder import Prompt
 log = logging.getLogger(__name__)
 T = TypeVar("T")
 
-__all__ = ["DEFAULT_REACT_AGENT_SYSTEM_PROMPT", "ReActAgent"]
+__all__ = [
+    "DEFAULT_REACT_AGENT_SYSTEM_PROMPT",
+    "ReActAgent",
+]
 
 
 default_role_desc = """You are an excellent task planner."""
-
+# Ideal answer for agent
+# 1. *complete answer* when the answer is short
+# 2. *concise conclusion* when the answer is directly displayed in a tool or written in a file
+# 3. *structured data* when the answer needs to be structured.
 react_agent_task_desc = r"""
 <START_OF_TASK_SPEC>
 {{role_desc}}
@@ -47,11 +55,10 @@ Follow function docstring to best call the tool.
 - For complex queries:
     - Step 1: Read the user query and divide it into multisteps. Start with the first tool/subquery.
     - Call one tool at a time to solve each subquery/subquestion. \
-    - At step 'finish', give the final answer based on all previous steps.
+    - At step 'finish', do a concise conclusion without repeat previous observation/output.
 REMEMBER:
 - Action MUST call one of the tools. It CANNOT be empty.
 - You will ALWAYS END WITH 'finish' tool to finish the task directly with answer or failure message.
-- When the tool is a class method and when class_instance exists, use <class_instance_value>.<func_name> to call instead (NOT the CLASS NAME)
 <END_OF_TASK_SPEC>
 """
 
@@ -97,12 +104,28 @@ Examples:
 {% endfor %}
 <END_OF_EXAMPLES>
 {% endif %}
+{#contex#}
+{% if context_str %}
+-------------------------
+<START_OF_CONTEXT>
+{{context_str}}
+<END_OF_CONTEXT>
+{% endif %}
 <END_OF_SYSTEM_PROMPT>
 -----------------
+<START_OF_USER_PROMPT>
+{# chat history #}
+{% if chat_history_str %}
+<START_OF_CHAT_HISTORY>
+{{chat_history_str}}
+<END_OF_CHAT_HISTORY>
+{% endif %}
+{# user query #}
 <START_OF_USER_QUERY>
 Input query:
 {{ input_str }}
-_____________________
+<END_OF_USER_QUERY>
+<START_OF_STEP_HISTORY>
 Current Step/Max Step: {{step_history|length + 1}} / {{max_steps}}
 {# Step History #}
 {% if step_history %}
@@ -122,7 +145,7 @@ Step {{ loop.index }}.
 {% endfor %}
 </STEPS>
 {% endif %}
-<END_OF_USER_QUERY>
+<END_OF_USER_PROMPT>
 """
 
 
@@ -347,7 +370,7 @@ class ReActAgent(Component):
         def finish(answer: self.answer_data_type, **kwargs) -> str:
             return answer
 
-        self._finish = FunctionTool(fn=finish, component=finish)
+        self._finish = FunctionTool(fn=finish)
         processed_tools = tools.copy()
         if self.add_llm_as_fallback:
             processed_tools.append(llm_tool)
@@ -476,9 +499,13 @@ class ReActAgent(Component):
 
                 if step_output and step_output.action:
 
-                    result: FunctionOutput = self.tool_manager(
-                        expr_or_fun=x.data,  # Function
-                        step="execute",
+                    # result: FunctionOutput = self.tool_manager(
+                    #     expr_or_fun=x.data,  # Function
+                    #     step="execute",
+                    # )
+
+                    result: FunctionOutput = self.tool_manager.execute_func(
+                        func=fun_expr
                     )
 
                     step_output.observation = result.output
@@ -762,7 +789,7 @@ if __name__ == "__main__":
                 return self.llm_tool(prompt_kwargs={"input_str": input}, id=id)
 
             self.react_agent = ReActAgent(
-                tools=[FunctionTool(llm_as_tool, component=self.llm_tool)],
+                tools=[FunctionTool(llm_as_tool)],
                 max_steps=2,
                 add_llm_as_fallback=False,
                 model_client=OpenAIClient(),

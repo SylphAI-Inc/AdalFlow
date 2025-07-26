@@ -163,7 +163,7 @@ autodoc_docstring_signature = True
 # MyST parser configuration for markdown files
 myst_enable_extensions = [
     "colon_fence",
-    "deflist", 
+    "deflist",
     "html_admonition",
     "html_image",
     "replacements",
@@ -181,8 +181,8 @@ mermaid_init_js = "mermaid.initialize({startOnLoad:true});"
 
 # Include markdown files in source parsing
 source_suffix = {
-    '.rst': None,
-    '.md': None,
+    ".rst": None,
+    ".md": None,
 }
 
 autodoc_default_options = {

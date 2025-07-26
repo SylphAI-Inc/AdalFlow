@@ -10,9 +10,12 @@ from typing import (
     Any,
     TypeVar,
     Callable,
-    Generator,
+    Generator as GeneratorType,
     Union,
     Literal,
+    Iterable,
+    AsyncIterable,
+    AsyncGenerator,
 )
 import re
 
@@ -25,7 +28,10 @@ from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
 openai = safe_import(OptionalPackages.OPENAI.value[0], OptionalPackages.OPENAI.value[1])
 
-from openai import OpenAI, AsyncOpenAI, Stream
+from openai import (
+    OpenAI,
+    AsyncOpenAI,
+)  # , Stream  # COMMENTED OUT - USING RESPONSE API ONLY
 from openai import (
     APITimeoutError,
     InternalServerError,
@@ -33,33 +39,37 @@ from openai import (
     UnprocessableEntityError,
     BadRequestError,
 )
-from openai.types import Completion, CreateEmbeddingResponse, Image
-from openai.types.chat import ChatCompletionChunk, ChatCompletion
-from openai.types.responses import Response, ResponseUsage
+from openai.types import (
+    Completion,
+    CreateEmbeddingResponse,
+    Image,
+)
 
+# from openai.types.chat import ChatCompletionChunk, ChatCompletion  # COMMENTED OUT - USING RESPONSE API ONLY
+from openai.types.responses import Response, ResponseUsage
 from adalflow.core.model_client import ModelClient
 from adalflow.core.types import (
     ModelType,
     EmbedderOutput,
-    TokenLogProb,
-    CompletionUsage,
     ResponseUsage as AdalFlowResponseUsage,
     InputTokensDetails,
     OutputTokensDetails,
     GeneratorOutput,
 )
+
 from adalflow.components.model_client.utils import parse_embedding_response
 
 log = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
-# completion parsing functions and you can combine them into one singple chat completion parser
-def get_first_message_content(completion: ChatCompletion) -> str:
-    r"""When we only need the content of the first message.
-    It is the default parser for chat completion."""
-    log.debug(f"raw completion: {completion}")
-    return completion.choices[0].message.content
+# OLD CHAT COMPLETION PARSING FUNCTIONS (COMMENTED OUT)
+# # completion parsing functions and you can combine them into one single chat completion parser
+# def get_first_message_content(completion: ChatCompletion) -> str:
+#     r"""When we only need the content of the first message.
+#     It is the default parser for chat completion."""
+#     log.debug(f"raw completion: {completion}")
+#     return completion.choices[0].message.content
 
 
 def get_response_output_text(response: Response) -> str:
@@ -90,41 +100,69 @@ def estimate_token_count(text: str) -> int:
     return len(tokens)
 
 
-def parse_stream_response(completion: ChatCompletionChunk) -> str:
-    r"""Parse the response of the stream API."""
-    output = completion.choices[0].delta.content
-    if hasattr(completion, "citations"):
-        citations = completion.citations
-        return output, citations
-    return output
+# OLD CHAT COMPLETION STREAMING FUNCTIONS (COMMENTED OUT)
+# def parse_stream_chat_completion(completion: ChatCompletionChunk) -> str:
+#     r"""Parse the completion chunks of the chat completion API."""
+#     output = completion.choices[0].delta.content
+#     if hasattr(completion, "citations"):
+#         citations = completion.citations
+#         return output, citations
+#     return output
 
 
-def handle_streaming_response(generator: Stream[ChatCompletionChunk]):
-    r"""Handle the streaming response."""
-    for completion in generator:
-        log.debug(f"Raw chunk completion: {completion}")
-        parsed_content = parse_stream_response(completion)
-        yield parsed_content
+# def handle_streaming_chat_completion(generator: Stream[ChatCompletionChunk]):
+#     r"""Handle the streaming completion."""
+#     for completion in generator:
+#         log.debug(f"Raw chunk completion: {completion}")
+#         parsed_content = parse_stream_chat_completion(completion)
+#         yield parsed_content
 
 
-def get_all_messages_content(completion: ChatCompletion) -> List[str]:
-    r"""When the n > 1, get all the messages content."""
-    return [c.message.content for c in completion.choices]
+async def handle_streaming_response(
+    stream: AsyncIterable[Any],
+) -> AsyncGenerator[str, None]:
+    """
+    Async generator that processes a stream of SSE events from client.responses.create(..., stream=True).
+
+    Args:
+        stream: An async iterable of SSE events from the OpenAI API
+
+    Yields:
+        str: Non-empty text fragments parsed from the stream events
+    """
+    async for event in stream:
+        yield event
 
 
-def get_probabilities(completion: ChatCompletion) -> List[List[TokenLogProb]]:
-    r"""Get the probabilities of each token in the completion."""
-    log_probs = []
-    for c in completion.choices:
-        content = c.logprobs.content
-        print(content)
-        log_probs_for_choice = []
-        for openai_token_logprob in content:
-            token = openai_token_logprob.token
-            logprob = openai_token_logprob.logprob
-            log_probs_for_choice.append(TokenLogProb(token=token, logprob=logprob))
-        log_probs.append(log_probs_for_choice)
-    return log_probs
+def handle_streaming_response_sync(stream: Iterable) -> GeneratorType:
+    """
+    Synchronous version: Iterate over an SSE stream from client.responses.create(..., stream=True),
+    logging each raw event and yielding non-empty text fragments.
+    """
+    # already compatible as this is the OpenAI client
+    for event in stream:
+        yield event
+
+
+# OLD CHAT COMPLETION UTILITY FUNCTIONS (COMMENTED OUT)
+# def get_all_messages_content(completion: ChatCompletion) -> List[str]:
+#     r"""When the n > 1, get all the messages content."""
+#     return [c.message.content for c in completion.choices]
+
+
+# def get_probabilities(completion: ChatCompletion) -> List[List[TokenLogProb]]:
+#     r"""Get the probabilities of each token in the completion."""
+#     log_probs = []
+#     for c in completion.choices:
+#         content = c.logprobs.content
+#         print(content)
+#         log_probs_for_choice = []
+#         for openai_token_logprob in content:
+#             token = openai_token_logprob.token
+#             logprob = openai_token_logprob.logprob
+#             log_probs_for_choice.append(TokenLogProb(token=token, logprob=logprob))
+#         log_probs.append(log_probs_for_choice)
+#     return log_probs
 
 
 class OpenAIClient(ModelClient):
@@ -154,13 +192,20 @@ class OpenAIClient(ModelClient):
 
     Args:
         api_key (Optional[str], optional): OpenAI API key. Defaults to `None`.
-        non_streaming_chat_completion_parser (Callable[[Completion], Any], optional): The parser for non-streaming chat completions.
-            Defaults to `get_first_message_content`.
-        streaming_chat_completion_parser (Callable[[Completion], Any], optional): The parser for streaming chat completions.
+        non_streaming_chat_completion_parser (Callable[[Completion], Any], optional): Legacy parser for chat completions.
+            Defaults to `None` (deprecated).
+        streaming_chat_completion_parser (Callable[[Completion], Any], optional): Legacy parser for streaming chat completions.
+            Defaults to `None` (deprecated).
+        non_streaming_response_parser (Callable[[Response], Any], optional): The parser for non-streaming responses.
+            Defaults to `get_response_output_text`.
+        streaming_response_parser (Callable[[Response], Any], optional): The parser for streaming responses.
             Defaults to `handle_streaming_response`.
+        input_type (Literal["text", "messages"]): Input type for the client. Defaults to "text".
         base_url (str): The API base URL to use when initializing the client.
-            Defaults to `"https://api.openai.com"`, but can be customized for third-party API providers or self-hosted models.
+            Defaults to `"https://api.openai.com/v1/"`, but can be customized for third-party API providers or self-hosted models.
         env_api_key_name (str): The environment variable name for the API key. Defaults to `"OPENAI_API_KEY"`.
+        organization (Optional[str], optional): OpenAI organization key. Defaults to None.
+        headers (Optional[Dict[str, str]], optional): Additional headers to include in API requests. Defaults to None.
 
     References:
         - OpenAI API Overview: https://platform.openai.com/docs/introduction
@@ -176,15 +221,16 @@ class OpenAIClient(ModelClient):
     def __init__(
         self,
         api_key: Optional[str] = None,
+        # OLD CHAT COMPLETION PARSER PARAMS (kept for backward compatibility)
         non_streaming_chat_completion_parser: Optional[
             Callable[[Completion], Any]
         ] = None,  # non-streaming parser
         streaming_chat_completion_parser: Optional[
             Callable[[Completion], Any]
         ] = None,  # streaming parser
-        # parser for responses (api used for reasoning modeles)
-        non_streaming_response_parser: Optional[Callable[[Completion], Any]] = None,
-        streaming_response_parser: Optional[Callable[[Completion], Any]] = None,
+        # Response API parsers (used for reasoning models)
+        non_streaming_response_parser: Optional[Callable[[Response], Any]] = None,
+        streaming_response_parser: Optional[Callable[[Response], Any]] = None,
         input_type: Literal["text", "messages"] = "text",
         base_url: str = "https://api.openai.com/v1/",
         env_api_key_name: str = "OPENAI_API_KEY",
@@ -195,6 +241,11 @@ class OpenAIClient(ModelClient):
 
         Args:
             api_key (Optional[str], optional): OpenAI API key. Defaults to None.
+            non_streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): Legacy parser for chat completions. Defaults to None.
+            streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): Legacy parser for streaming chat completions. Defaults to None.
+            non_streaming_response_parser (Optional[Callable[[Response], Any]], optional): Parser for non-streaming responses. Defaults to None.
+            streaming_response_parser (Optional[Callable[[Response], Any]], optional): Parser for streaming responses. Defaults to None.
+            input_type (Literal["text", "messages"]): Input type for the client. Defaults to "text".
             base_url (str): The API base URL to use when initializing the client.
             env_api_key_name (str): The environment variable name for the API key. Defaults to `"OPENAI_API_KEY"`.
             organization (Optional[str], optional): OpenAI organization key. Defaults to None.
@@ -208,20 +259,36 @@ class OpenAIClient(ModelClient):
         self.headers = headers or {}
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
-        self.non_streaming_chat_completion_parser = (
-            non_streaming_chat_completion_parser or get_first_message_content
-        )
-        self.chat_completion_parser = self.non_streaming_chat_completion_parser
-        self.streaming_chat_completion_parser = (
-            streaming_chat_completion_parser or handle_streaming_response
-        )
+        self._input_type = input_type
+        self._api_kwargs = {}  # add api kwargs when the OpenAI Client is called
+
+        # OLD CHAT COMPLETION API PARSERS (COMMENTED OUT)
+        # # Chat Completion API Parsers
+        # # (used only for synchronous (stream + non-streaming) calls via create API)
+        # self.non_streaming_chat_completion_parser = (
+        #     non_streaming_chat_completion_parser or get_first_message_content
+        # )
+        # self.streaming_chat_completion_parser = (
+        #     streaming_chat_completion_parser or handle_streaming_chat_completion
+        # )
+
+        # Response API parsers (RESPONSE API ONLY NOW)
+        # (used for both synchronous and asynchronous (stream + non-streaming) calls via Response API)
         self.non_streaming_response_parser = (
             non_streaming_response_parser or get_response_output_text
         )
-        self.streaming_response_parser = streaming_response_parser or None
+        # Separate sync and async streaming parsers
+        self.streaming_response_parser_sync = handle_streaming_response_sync
+        self.streaming_response_parser_async = (
+            streaming_response_parser or handle_streaming_response
+        )
+
+        # Default parsers (will be set dynamically based on sync/async context)
         self.response_parser = self.non_streaming_response_parser
-        self._input_type = input_type
-        self._api_kwargs = {}  # add api kwargs when the OpenAI Client is called
+        self.streaming_response_parser = (
+            self.streaming_response_parser_async
+        )  # Default to async
+        # self.chat_completion_parser = self.non_streaming_chat_completion_parser  # COMMENTED OUT
 
     def init_sync_client(self):
         api_key = self._api_key or os.getenv(self._env_api_key_name)
@@ -261,73 +328,140 @@ class OpenAIClient(ModelClient):
     #         log.error(f"Error parsing the completion: {e}")
     #         return GeneratorOutput(data=None, error=str(e), raw_response=completion)
 
-    # NOTE: this is adapted to parse both completion and response
+    # OLD CHAT COMPLETIONS API FUNCTION (COMMENTED OUT)
+    # def parse_chat_completion(
+    #     self,
+    #     completion: Union[
+    #         ChatCompletion, GeneratorType[ChatCompletionChunk, None, None], Response
+    #     ],
+    # ) -> "GeneratorOutput":
+    #     """Function handles a lot of logic is used for parsing both stream responses and nonstream responses.
+    #     # Determine parser based on completion type and streaming mode
+    #     parser = (
+    #         self.chat_completion_parser
+    #         if isinstance(completion, ChatCompletion)
+    #         else self.response_parser
+    #     )
+    #     log.debug(f"completion/response: {completion}, parser: {parser}")
+    #     try:
+    #         data = parser(completion)
+    #     except Exception as e:
+    #         log.error(f"Error parsing the completion: {e}")
+    #         return GeneratorOutput(data=None, error=str(e), raw_response=completion)
+
+    #     try:
+    #         usage = self.track_completion_usage(completion)
+    #         return GeneratorOutput(
+    #             data=None, error=None, raw_response=data, usage=usage
+    #         )
+    #     except Exception as e:
+    #         log.error(f"Error tracking the completion usage: {e}")
+    #         return GeneratorOutput(data=None, error=str(e), raw_response=data)
+
+    # NEW RESPONSE API ONLY FUNCTION
     def parse_chat_completion(
         self,
-        completion: Union[
-            ChatCompletion, Generator[ChatCompletionChunk, None, None], Response
-        ],
+        completion: Union[Response, AsyncIterable],
     ) -> "GeneratorOutput":
-        """Parse the completion, and put it into the raw_response."""
-        parser = (
-            self.chat_completion_parser
-            if isinstance(completion, ChatCompletion)
-            else self.response_parser
-        )
+        """Parse the Response API completion and put it into the raw_response.
+        Fully migrated to Response API only."""
+
+        parser = self.response_parser
         log.debug(f"completion/response: {completion}, parser: {parser}")
-        try:
-            data = parser(completion)
-        except Exception as e:
-            log.error(f"Error parsing the completion: {e}")
-            return GeneratorOutput(data=None, error=str(e), raw_response=completion)
 
-        try:
-            usage = self.track_completion_usage(completion)
-            return GeneratorOutput(
-                data=None, error=None, raw_response=data, usage=usage
-            )
-        except Exception as e:
-            log.error(f"Error tracking the completion usage: {e}")
-            return GeneratorOutput(data=None, error=str(e), raw_response=data)
+        data = parser(completion)
+        usage = self.track_completion_usage(completion)
+        return GeneratorOutput(data=None, error=None, raw_response=data, usage=usage)
 
-    # NOTE: this is adapted to parse both completion and response
+    # OLD CHAT COMPLETIONS API FUNCTION (COMMENTED OUT)
+    # # NOTE: this is adapted to parse both completion and response
+    # def track_completion_usage(
+    #     self,
+    #     completion: Union[
+    #         ChatCompletion, GeneratorType[ChatCompletionChunk, None, None], Response, AsyncIterable
+    #     ],
+    # ) -> Union[CompletionUsage, ResponseUsage]:
+    #     # Handle the case where completion is an async generator of response stream events
+    #     try:
+    #         if isinstance(completion, Response):
+    #             # Handle Response object with ResponseUsage structure
+    #             input_tokens_details = InputTokensDetails(
+    #                 cached_tokens=getattr(completion.usage, "cached_tokens", 0)
+    #             )
+
+    #             output_tokens_details = OutputTokensDetails(
+    #                 reasoning_tokens=getattr(completion.usage, "reasoning_tokens", 0)
+    #             )
+
+    #             usage = AdalFlowResponseUsage(
+    #                 input_tokens=completion.usage.input_tokens,
+    #                 input_tokens_details=input_tokens_details,
+    #                 output_tokens=completion.usage.output_tokens,
+    #                 output_tokens_details=output_tokens_details,
+    #                 total_tokens=completion.usage.total_tokens,
+    #             )
+    #         # TODO implement __aiter__ and __iter__ for Response iterator
+    #         elif hasattr(completion, '__aiter__') or hasattr(completion, '__iter__'):
+    #             # Handle async generator or regular generator/iterator of response stream events
+    #             # For generators/iterators, we cannot consume them here as it would exhaust them
+    #             # The usage information will need to be tracked elsewhere when the stream is consumed
+    #             log.warning("Cannot track usage for generator/iterator. Usage tracking should be handled when consuming the stream.")
+    #             return CompletionUsage(
+    #                 completion_tokens=None, prompt_tokens=None, total_tokens=None
+    #             )
+    #         else:
+    #             # Handle ChatCompletion with CompletionUsage structure
+    #             usage = CompletionUsage(
+    #                 completion_tokens=completion.usage.completion_tokens,
+    #                 prompt_tokens=completion.usage.prompt_tokens,
+    #                 total_tokens=completion.usage.total_tokens,
+    #             )
+    #         return usage
+    #     except Exception as e:
+    #         log.error(f"Error tracking the completion usage: {e}")
+    #         return CompletionUsage(
+    #             completion_tokens=None, prompt_tokens=None, total_tokens=None
+    #         )
+
+    # NEW RESPONSE API ONLY FUNCTION
     def track_completion_usage(
         self,
-        completion: Union[
-            ChatCompletion, Generator[ChatCompletionChunk, None, None], Response
-        ],
-    ) -> Union[CompletionUsage, ResponseUsage]:
-        try:
-            if isinstance(completion, Response):
-                # Handle Response object with ResponseUsage structure
-                input_tokens_details = InputTokensDetails(
-                    cached_tokens=getattr(completion.usage, "cached_tokens", 0)
-                )
-
-                output_tokens_details = OutputTokensDetails(
-                    reasoning_tokens=getattr(completion.usage, "reasoning_tokens", 0)
-                )
-
-                usage = AdalFlowResponseUsage(
-                    input_tokens=completion.usage.input_tokens,
-                    input_tokens_details=input_tokens_details,
-                    output_tokens=completion.usage.output_tokens,
-                    output_tokens_details=output_tokens_details,
-                    total_tokens=completion.usage.total_tokens,
-                )
-            else:
-                # Handle ChatCompletion with CompletionUsage structure
-                usage = CompletionUsage(
-                    completion_tokens=completion.usage.completion_tokens,
-                    prompt_tokens=completion.usage.prompt_tokens,
-                    total_tokens=completion.usage.total_tokens,
-                )
-            return usage
-        except Exception as e:
-            log.error(f"Error tracking the completion usage: {e}")
-            return CompletionUsage(
-                completion_tokens=None, prompt_tokens=None, total_tokens=None
+        completion: Union[Response, AsyncIterable],
+    ) -> ResponseUsage:
+        """Track usage for Response API only."""
+        if isinstance(completion, Response):
+            # Handle Response object with ResponseUsage structure
+            input_tokens_details = InputTokensDetails(
+                cached_tokens=getattr(completion.usage, "cached_tokens", 0)
             )
+
+            output_tokens_details = OutputTokensDetails(
+                reasoning_tokens=getattr(completion.usage, "reasoning_tokens", 0)
+            )
+
+            return AdalFlowResponseUsage(
+                input_tokens=completion.usage.input_tokens,
+                input_tokens_details=input_tokens_details,
+                output_tokens=completion.usage.output_tokens,
+                output_tokens_details=output_tokens_details,
+                total_tokens=completion.usage.total_tokens,
+            )
+
+        # otherwise return the AdalFlowResponseUsage with None values with log warnings
+        elif hasattr(completion, "__aiter__") or hasattr(completion, "__iter__"):
+            log.warning(
+                "Cannot track usage for generator/iterator. Usage tracking should be handled when consuming the stream."
+            )
+        else:
+            log.warning(f"Unknown completion type: {type(completion)}")
+
+        return AdalFlowResponseUsage(
+            input_tokens=None,
+            input_tokens_details=InputTokensDetails(cached_tokens=0),
+            output_tokens=None,
+            output_tokens_details=OutputTokensDetails(reasoning_tokens=0),
+            total_tokens=None,
+        )
 
     def parse_embedding_response(
         self, response: CreateEmbeddingResponse
@@ -431,14 +565,25 @@ class OpenAIClient(ModelClient):
             if not isinstance(input, Sequence):
                 raise TypeError("input must be a sequence of text")
             final_model_kwargs["input"] = input
-        elif model_type == ModelType.LLM or model_type == ModelType.LLM_REASONING:
-            # convert input to messages
-            messages: List[Dict[str, str]] = []
-            images = final_model_kwargs.pop("images", None)
-            detail = final_model_kwargs.pop("detail", "auto")
-            messages = self._convert_llm_inputs_to_messages(input, images, detail)
-            final_model_kwargs["messages"] = messages
+        # elif model_type == ModelType.LLM or model_type == ModelType.LLM_REASONING:
+        #     # convert input to messages
+        #     messages: List[Dict[str, str]] = []
+        #     images = final_model_kwargs.pop("images", None)
+        #     detail = final_model_kwargs.pop("detail", "auto")
+        #     messages = self._convert_llm_inputs_to_messages(input, images, detail)
+        #     final_model_kwargs["messages"] = messages
 
+        # replacing to use the model response API and save under input
+        elif model_type == ModelType.LLM or model_type == ModelType.LLM_REASONING:
+            # For Response API, input should be a string, not messages
+            # If input is already a string, use it directly
+            # if isinstance(input, str):
+            #     final_model_kwargs["input"] = input
+            # else:
+            #     # Convert structured input to string format if needed
+            #     final_model_kwargs["input"] = self._convert_llm_inputs_to_messages(input)
+            final_model_kwargs["input"] = input
+            # double check that this is cast to string
         elif model_type == ModelType.IMAGE_GENERATION:
             # For image generation, input is the prompt
             final_model_kwargs["prompt"] = input
@@ -511,25 +656,26 @@ class OpenAIClient(ModelClient):
         self._api_kwargs = api_kwargs
         if model_type == ModelType.EMBEDDER:
             return self.sync_client.embeddings.create(**api_kwargs)
-        elif model_type == ModelType.LLM:
+        # OLD CHAT COMPLETION CALLS (COMMENTED OUT)
+        # elif model_type == ModelType.LLM:
+        #     if "stream" in api_kwargs and api_kwargs.get("stream", False):
+        #         log.debug("streaming call")
+        #         self.chat_completion_parser = self.streaming_chat_completion_parser
+        #         return self.sync_client.chat.completions.create(**api_kwargs)
+        #     else:
+        #         log.debug("non-streaming call")
+        #         self.chat_completion_parser = self.non_streaming_chat_completion_parser
+        #         return self.sync_client.chat.completions.create(**api_kwargs)
+        elif model_type == ModelType.LLM_REASONING or model_type == ModelType.LLM:
             if "stream" in api_kwargs and api_kwargs.get("stream", False):
                 log.debug("streaming call")
-                self.chat_completion_parser = self.streaming_chat_completion_parser
-                return self.sync_client.chat.completions.create(**api_kwargs)
+                self.response_parser = (
+                    self.streaming_response_parser_sync
+                )  # Use sync streaming parser
+                return self.sync_client.responses.create(**api_kwargs)
             else:
                 log.debug("non-streaming call")
-                self.chat_completion_parser = self.non_streaming_chat_completion_parser
-                return self.sync_client.chat.completions.create(**api_kwargs)
-        elif model_type == ModelType.LLM_REASONING:
-            # convert messages to input by changing only the naming
-            api_kwargs["input"] = api_kwargs.pop("messages", None)
-
-            if "stream" in api_kwargs and api_kwargs.get("stream", False):
-                log.debug("streaming call")
-                raise ValueError("streaming call is not supported for LLM_REASONING")
-            else:
-                log.debug("non-streaming call")
-                self.chat_completion_parser = self.non_streaming_chat_completion_parser
+                self.response_parser = self.non_streaming_response_parser
                 return self.sync_client.responses.create(**api_kwargs)
         elif model_type == ModelType.IMAGE_GENERATION:
             # Determine which image API to call based on the presence of image/mask
@@ -562,7 +708,10 @@ class OpenAIClient(ModelClient):
         self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
     ):
         """
-        kwargs is the combined input and model_kwargs
+        kwargs is the combined input and model_kwargs. Support async streaming call.
+
+        This method now relies on the OpenAI Responses API to handle streaming and non-streaming calls
+        with the asynchronous client
         """
         # store the api kwargs in the client
         self._api_kwargs = api_kwargs
@@ -570,8 +719,33 @@ class OpenAIClient(ModelClient):
             self.async_client = self.init_async_client()
         if model_type == ModelType.EMBEDDER:
             return await self.async_client.embeddings.create(**api_kwargs)
-        elif model_type == ModelType.LLM:
-            return await self.async_client.chat.completions.create(**api_kwargs)
+        # old chat completions api calls (commented out)
+        # elif model_type == ModelType.LLM:
+        #     return await self.async_client.chat.completions.create(**api_kwargs)
+        # elif model_type == ModelType.LLM_REASONING:
+        #     if "stream" in api_kwargs and api_kwargs.get("stream", False):
+        #         log.debug("async streaming call")
+        #         self.response_parser = self.streaming_response_parser
+        #         # setting response parser as async streaming parser for Response API
+        #         return await self.async_client.responses.create(**api_kwargs)
+        #     else:
+        #         log.debug("async non-streaming call")
+        #         self.response_parser = self.non_streaming_response_parser
+        #         # setting response parser as async non-streaming parser for Response API
+        #         return await self.async_client.responses.create(**api_kwargs)
+        elif model_type == ModelType.LLM or model_type == ModelType.LLM_REASONING:
+            if "stream" in api_kwargs and api_kwargs.get("stream", False):
+                log.debug("async streaming call")
+                self.response_parser = (
+                    self.streaming_response_parser_async
+                )  # Use async streaming parser
+                # setting response parser as async streaming parser for Response API
+                return await self.async_client.responses.create(**api_kwargs)
+            else:
+                log.debug("async non-streaming call")
+                self.response_parser = self.non_streaming_response_parser
+                # setting response parser as async non-streaming parser for Response API
+                return await self.async_client.responses.create(**api_kwargs)
         elif model_type == ModelType.IMAGE_GENERATION:
             # Determine which image API to call based on the presence of image/mask
             if "image" in api_kwargs:

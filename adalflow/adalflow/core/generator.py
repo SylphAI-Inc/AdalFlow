@@ -4,11 +4,16 @@ It is a pipeline that consists of three subcomponents."""
 
 import json
 import re
+import time
 from pathlib import Path
 
-from typing import Any, Dict, Optional, Union, Callable, Tuple, List
+from typing import Any, Dict, Optional, Union, Callable, Tuple, List, AsyncGenerator
+from collections.abc import AsyncIterable
 import logging
 from dataclasses import dataclass, field
+
+from openai.types.responses import ResponseCompletedEvent
+from adalflow.core.tokenizer import Tokenizer
 
 
 from adalflow.core.types import (
@@ -35,9 +40,9 @@ from adalflow.core.default_prompt_template import DEFAULT_ADALFLOW_SYSTEM_PROMPT
 from adalflow.optim.function import BackwardContext
 from adalflow.utils.cache import CachedEngine
 from adalflow.tracing.callback_manager import CallbackManager
+from adalflow.tracing import generator_span
 from adalflow.utils.global_config import get_adalflow_default_root_path
 from adalflow.core.string_parser import JsonParser
-
 
 from adalflow.optim.text_grad.backend_engine_prompt import (
     FEEDBACK_ENGINE_TEMPLATE,
@@ -127,7 +132,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         name: Optional[str] = None,
         # args for the cache
         cache_path: Optional[str] = None,
-        use_cache: bool = False,
+        use_cache: bool = True,
     ) -> None:
         r"""The default prompt is set to the DEFAULT_ADALFLOW_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
@@ -161,8 +166,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         CallbackManager.__init__(self)
 
         self.name = name or self.__class__.__name__
-
-        self._init_prompt(template, prompt_kwargs)
+        self.template = template
+        self.prompt_kwargs = prompt_kwargs
 
         self.model_kwargs = model_kwargs.copy()
         # init the model client
@@ -201,6 +206,12 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self._trace_api_kwargs: Dict[str, Any] = (
             {}
         )  # used by dynamic computation graph and backpropagation
+
+        self._tokenizer: Tokenizer = Tokenizer()
+
+    @property
+    def use_cache(self):
+        return self._use_cache
 
     def update_default_backward_pass_setup(self, setup: BackwardPassSetup):
         self.backward_pass_setup = setup
@@ -280,13 +291,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 p.set_peers(peers)
                 setattr(self, key, p)
 
-    def _init_prompt(self, template: str, prompt_kwargs: Dict):
-        r"""Initialize the prompt with the template and prompt_kwargs."""
-        self.template = template
-        self.prompt_kwargs = prompt_kwargs
-        # NOTE: Prompt can handle parameters
-        self.prompt = Prompt(template=template, prompt_kwargs=self.prompt_kwargs)
-
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "Generator":
         r"""Create a Generator instance from the config dictionary.
@@ -326,13 +330,16 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
     # TODO: use prompt_kwargs as users are already familiar with it
     def print_prompt(self, **kwargs) -> str:
-        return self.prompt.print_prompt(**kwargs)
+        prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
+        return prompt.print_prompt(**kwargs)
 
     def get_prompt(self, **kwargs) -> str:
-        return self.prompt.call(**kwargs)
+        prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
+        return prompt.call(**kwargs)
 
     def _extra_repr(self) -> str:
-        s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}, prompt={self.prompt}"
+        prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
+        s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}, prompt={prompt}"
         return s
 
     def _post_call(self, completion: Any) -> GeneratorOutput:
@@ -341,8 +348,11 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         output: GeneratorOutput = self.model_client.parse_chat_completion(completion)
         # save the api response
         output.api_response = completion
+
         # Now adding the data field to the output
         data = output.raw_response
+
+        # TODO implement support for synchronous iterator in the future
         if self.output_processors:
             if data:
                 try:
@@ -351,23 +361,120 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 except Exception as e:
                     log.error(f"Error processing the output processors: {e}")
                     output.error = str(e)
-
         else:
             output.data = data
+
+        return output
+
+    async def _output_processing(
+        self, data: AsyncIterable, generator_output: GeneratorOutput
+    ) -> AsyncGenerator[Any, None]:
+        r"""Create an async generator from the async_iterable returned by model client and yield from them
+        apply output processors and store in generator output.
+        Consume the raw_response and yield each event.
+        Store the final output text in the generator output data field.
+        """
+
+        # the raw response of the generator output should be an async iterable
+        if not isinstance(data, AsyncIterable):
+            raise ValueError("The data is not an async iterable")
+
+        final_output_text = ""
+
+        # iterate over the events in the data and yield each event and store the final output text
+        # this assumes that the raw_response of the generator output stores a
+        # async iterable of events based on the OpenAI Responses API documentation for streaming
+        async for event in data:
+            log.debug(f"Raw event: {event!r}")
+            yield event
+
+            if ResponseCompletedEvent and isinstance(event, ResponseCompletedEvent):
+                resp = event.response
+                log.debug(f"Response completed: {event.response.output_text}")
+                if getattr(resp, "output_text", None):
+                    final_output_text = resp.output_text
+
+        if self.output_processors:
+            if final_output_text:
+                try:
+                    final_output = self.output_processors(final_output_text)
+                    generator_output.data = final_output
+                except Exception as e:
+                    log.error(f"Error processing the output processors: {e}")
+                    generator_output.error = str(e)
+        else:
+            generator_output.data = None
+
+    async def _async_post_call(self, completion: Any) -> GeneratorOutput:
+        r"""Get completion and depending on whether the client is streaming from the model client, create a GeneratorOutput or an AsyncGenerator.
+        when the client is not streaming, the post call return a GeneratorOutput where the final output after applying the output processors is stored under the data field.
+        When the client is streaming, the post call returns an Async Generator which will yield the events under the raw response and then also
+        the final Generator Output. The final Generator Output will have under data the final output after applying the output processors.
+        """
+        # parse chat completion will only fill the raw_response
+        output: GeneratorOutput = self.model_client.parse_chat_completion(completion)
+        # save the api response
+        output.api_response = completion
+
+        log.info(
+            f"Response from the Model Client Stream before being processed: {output.raw_response}"
+        )
+
+        # Now adding the data field to the output and setting as the raw response
+        data = output.raw_response
+
+        # Handle async iterables from OpenAI Agent/Responses API streaming
+        # return an async generator
+        if isinstance(output.raw_response, AsyncIterable):
+            original_raw_response = (
+                output.raw_response
+            )  # pass in the raw response to the output processing to avoid circular dependency
+            output.raw_response = self._output_processing(original_raw_response, output)
+        else:
+            # return a GeneratorOutput if the raw response is not an async iterable
+            # process the model client's final response with the output processors
+            log.info(f"Response from the Model Client before being processed: {data}")
+            if self.output_processors:
+                if data:
+                    try:
+                        data = self.output_processors(data)
+                        output.data = data
+                    except Exception as e:
+                        log.error(f"Error processing the output processors: {e}")
+                        output.error = str(e)
+            else:
+                output.data = data
+            log.info(f"Response from the Model Client after being processed: {data}")
 
         return output
 
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
         # 1. render the prompt from the template
-        prompt_str = self.prompt.call(**prompt_kwargs).strip()
+        prompt_str = self.get_prompt(**prompt_kwargs)
+        # prompt = Prompt(template=self.template, prompt_kwargs=self.prompt_kwargs)
+
+        # prompt_str = prompt.call(**prompt_kwargs).strip()
 
         # 2. combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self._compose_model_kwargs(**model_kwargs)
 
+        max_tokens = composed_model_kwargs.get("max_tokens", None)
+        use_prompt_str = prompt_str
+        if max_tokens is not None:
+            prompt_tokens = self._tokenizer.count_tokens(prompt_str)
+            if prompt_tokens > max_tokens:
+                use_prompt_str = prompt_str[:max_tokens]
+                log.warning(
+                    f"Prompt is too long: {prompt_tokens} tokens, max tokens: {max_tokens}. Truncated prompt to: {use_prompt_str}"
+                )
+            # delete max_tokens from the model_kwargs
+            del composed_model_kwargs["max_tokens"]
+
         # 3. convert app's inputs to api inputs
         api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
-            input=prompt_str,
+            # rename from input since input is a builtin object
+            input=use_prompt_str,
             model_kwargs=composed_model_kwargs,
             model_type=self.model_type,
         )
@@ -388,8 +495,33 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             completion = self.model_client.call(
                 api_kwargs=api_kwargs, model_type=self.model_type
             )
-            # prepare cache
+            # prepare cache - skip caching for streaming responses which contain unpickleable threading objects
+            if use_cache and not api_kwargs.get("stream", False):
+                self._save_cache(index_content, completion)
+            return completion
+        except Exception as e:
+            log.error(f"Error calling the model: {e}")
+            raise e
+
+    async def _async_model_client_call(
+        self, api_kwargs: Dict, use_cache: bool = False
+    ) -> Any:
+        # async call the model client with caching support
+        try:
+            # check the cache
+            index_content = json.dumps(api_kwargs)  # + f"training: {self.training}"
             if use_cache:
+                # Check cache first - cache operations are sync
+                cached_completion = self._check_cache(index_content)
+                if cached_completion is not None:
+                    log.debug("Cache hit for async call")
+                    return cached_completion
+
+            completion = await self.model_client.acall(
+                api_kwargs=api_kwargs, model_type=self.model_type
+            )
+            # save to cache - skip caching for streaming responses which contain unpickleable threading objects
+            if use_cache and not api_kwargs.get("stream", False):
                 self._save_cache(index_content, completion)
             return completion
         except Exception as e:
@@ -1084,49 +1216,76 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         Call the model_client by formatting prompt from the prompt_kwargs,
         and passing the combined model_kwargs to the model client.
         """
-        if self.mock_output:
-            return GeneratorOutput(data=self.mock_output_data, id=id)
-
-        log.debug(f"prompt_kwargs: {prompt_kwargs}")
-        log.debug(f"model_kwargs: {model_kwargs}")
-
-        api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
-
-        log.debug(f"api_kwargs: {api_kwargs}")
-        output: GeneratorOutputType = None
-        # call the model client
-
-        completion = None
-        use_cache = use_cache if use_cache is not None else self._use_cache
-        try:
-            completion = self._model_client_call(
-                api_kwargs=api_kwargs, use_cache=use_cache
-            )
-        except Exception as e:
-            log.error(f"Error calling the model: {e}")
-            output = GeneratorOutput(error=str(e), id=id)
-        # process the completion
-        if completion is not None:
-            try:
-                output = self._post_call(completion)
-            except Exception as e:
-                log.error(f"Error processing the output: {e}")
-                output = GeneratorOutput(
-                    raw_response=str(completion), error=str(e), id=id
-                )
-
-        # User only need to use one of them, no need to use them all.
-        output.id = id
-        self._run_callbacks(
-            output,
-            input=api_kwargs,
+        prompt_str = self.get_prompt(**prompt_kwargs)
+        with generator_span(
+            generator_id="generator" + (id if id else ""),
+            model_kwargs=self._compose_model_kwargs(**model_kwargs),
             prompt_kwargs=prompt_kwargs,
-            model_kwargs=model_kwargs,
-        )
+            prompt_template_with_keywords=prompt_str,
+        ) as generator_span_data:
+            generation_time = time.time()
+            if self.mock_output:
+                return GeneratorOutput(data=self.mock_output_data, id=id)
 
-        log.info(f"output: {output}")
-        self._trace_api_kwargs = api_kwargs  # tracing
-        return output
+            log.debug(f"prompt_kwargs: {prompt_kwargs}")
+            log.debug(f"model_kwargs: {model_kwargs}")
+
+            api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
+
+            log.debug(f"api_kwargs: {api_kwargs}")
+            output: GeneratorOutputType = None
+            # call the model client
+
+            completion = None
+            use_cache = use_cache if use_cache is not None else self._use_cache
+            try:
+                completion = self._model_client_call(
+                    api_kwargs=api_kwargs, use_cache=use_cache
+                )
+            except Exception as e:
+                log.error(f"Error calling the model: {e}")
+                output = GeneratorOutput(error=str(e), id=id)
+            # process the completion
+            if completion is not None:
+                try:
+                    log.debug(f"Entering _post_call with completion: {completion}")
+                    output = self._post_call(completion)
+                except Exception as e:
+                    log.error(f"Error processing the output: {e}")
+                    output = GeneratorOutput(
+                        raw_response=str(completion), error=str(e), id=id
+                    )
+
+            # User only need to use one of them, no need to use them all.
+            output.id = id
+            self._run_callbacks(
+                output,
+                input=api_kwargs,
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
+            )
+
+            log.info(f"output: {output}")
+            self._trace_api_kwargs = api_kwargs  # tracing
+
+            generator_span_data.span_data.update_attributes(
+                {"raw_response": output.raw_response}
+            )
+            generator_span_data.span_data.update_attributes(
+                {"api_response": output.api_response}
+            )
+            generator_span_data.span_data.update_attributes(
+                {"final_response": output.data}
+            )
+            generator_span_data.span_data.update_attributes(
+                {"generation_time_in_seconds": time.time() - generation_time}
+            )
+            generator_span_data.span_data.update_attributes(
+                {"token_usage": output.usage}
+            )
+            generator_span_data.span_data.update_attributes({"api_kwargs": api_kwargs})
+
+            return output
 
     # TODO: training is not supported in async call yet
     async def acall(
@@ -1135,44 +1294,90 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         model_kwargs: Optional[Dict] = {},
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
-    ) -> GeneratorOutputType:
+    ) -> Union[GeneratorOutputType, AsyncGenerator[GeneratorOutputType, None]]:
         r"""Async call the model with the input and model_kwargs.
 
         :warning::
             Training is not supported in async call yet.
         """
-        log.info(f"prompt_kwargs: {prompt_kwargs}")
-        log.info(f"model_kwargs: {model_kwargs}")
+        prompt_str = self.get_prompt(**prompt_kwargs)
 
-        api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
-        output: GeneratorOutputType = None
-        # call the model client
-        completion = None
-
-        try:
-            completion = await self.model_client.acall(
-                api_kwargs=api_kwargs, model_type=self.model_type
-            )
-        except Exception as e:
-            log.error(f"Error calling the model: {e}")
-            output = GeneratorOutput(error=str(e))
-
-        if completion:
-            try:
-                output = self._post_call(completion)
-            except Exception as e:
-                log.error(f"Error processing the output: {e}")
-                output = GeneratorOutput(raw_response=str(completion), error=str(e))
-
-        log.info(f"output: {output}")
-        self._run_callbacks(
-            output,
-            input=api_kwargs,
+        with generator_span(
+            generator_id="generator" + (id if id else ""),
+            model_kwargs=self._compose_model_kwargs(**model_kwargs),
             prompt_kwargs=prompt_kwargs,
-            model_kwargs=model_kwargs,
-        )
-        self._trace_api_kwargs = api_kwargs  # tracing
-        return output
+            prompt_template_with_keywords=prompt_str,
+        ) as generator_span_data:
+
+            if self.mock_output:
+                generator_span_data.span_data.update_attributes(
+                    {"final_response": self.mock_output_data}
+                )
+                return GeneratorOutput(data=self.mock_output_data, id=id)
+
+            generation_time = time.time()
+            log.info(f"prompt_kwargs: {prompt_kwargs}")
+            log.info(f"model_kwargs: {model_kwargs}")
+
+            api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
+            output: GeneratorOutputType = None
+            # call the model client
+            completion = None
+            use_cache = use_cache if use_cache is not None else self._use_cache
+
+            log.info(f"api_kwargs: {api_kwargs}")
+
+            try:
+                completion = await self._async_model_client_call(
+                    api_kwargs=api_kwargs, use_cache=use_cache
+                )
+            except Exception as e:
+                log.error(f"Error calling the model: {e}")
+                output = GeneratorOutput(error=str(e), id=id)
+
+            if completion is not None:
+                try:
+                    # set ouput id in async post call instead
+                    output = await self._async_post_call(completion)
+                except Exception as e:
+                    log.error(f"Error processing the output: {e}")
+                    output = GeneratorOutput(
+                        raw_response=str(completion), error=str(e), id=id
+                    )
+
+            # User only need to use one of them, no need to use them all.
+            output.id = id
+            log.info(f"output: {output}")
+            # if the output is not an async generator then set its id and run call backs
+            # TODO support when output is an Async Generator
+            if not isinstance(output, AsyncGenerator):
+                self._run_callbacks(
+                    output,
+                    input=api_kwargs,
+                    prompt_kwargs=prompt_kwargs,
+                    model_kwargs=model_kwargs,
+                )
+                self._trace_api_kwargs = api_kwargs  # tracing
+
+            # Update generator span attributes similar to call method
+            generator_span_data.span_data.update_attributes(
+                {"raw_response": output.raw_response if output else None}
+            )
+            generator_span_data.span_data.update_attributes(
+                {"api_response": output.api_response if output else None}
+            )
+            generator_span_data.span_data.update_attributes(
+                {"final_response": output.data if output else None}
+            )
+            generator_span_data.span_data.update_attributes(
+                {"generation_time_in_seconds": time.time() - generation_time}
+            )
+            generator_span_data.span_data.update_attributes(
+                {"token_usage": output.usage if output else None}
+            )
+            generator_span_data.span_data.update_attributes({"api_kwargs": api_kwargs})
+
+            return output
 
     def __call__(self, *args, **kwargs) -> Union[GeneratorOutputType, Any]:
         if self.training:

@@ -4,15 +4,16 @@ import unittest
 import types
 from unittest.mock import patch
 
-import adalflow.core.agent as agent_module
-from adalflow.core.types import FunctionOutput
+import adalflow.components.agent as agent_module
+from adalflow.core.model_client import ModelClient
 
 
 # --- Dummy stubs for dependencies ---
 
 
-class FallbackModelClient:
-    pass
+class FallbackModelClient(ModelClient):
+    def call(self, api_kwargs, model_type):
+        return None
 
 
 class DummyGenerator:
@@ -25,6 +26,8 @@ class DummyGenerator:
         prompt_kwargs=None,
         output_processors=None,
         name=None,
+        cache_path=None,
+        use_cache=True,
         **kwargs,
     ):
         self.training = False
@@ -35,6 +38,8 @@ class DummyGenerator:
         self.prompt_kwargs = prompt_kwargs
         self.output_processors = output_processors
         self.name = name
+        self.cache_path = cache_path
+        self.use_cache = use_cache
 
     def get_prompt(self, **kwargs):
         return f"dummy-prompt({kwargs})"
@@ -45,8 +50,10 @@ class DummyGenerator:
 
 class TestAgent(unittest.TestCase):
     def setUp(self):
-        # Stub out the real Generator
-        self.gen_patcher = patch.object(agent_module, "Generator", DummyGenerator)
+        # Stub out the real Generator where it's imported in the agent module
+        self.gen_patcher = patch(
+            "adalflow.components.agent.agent.Generator", DummyGenerator
+        )
         self.gen_patcher.start()
 
         # No-op the fun_to_grad_component decorator so `finish` tool registers cleanly
@@ -76,11 +83,10 @@ class TestAgent(unittest.TestCase):
         self.assertEqual(agent.name, "agent-with-fallback")
         self.assertIsInstance(agent.planner, DummyGenerator)
 
-        # Tools include both fallback and finish
+        # Tools include fallback when enabled
         tool_map = agent.tool_manager._context_map
         self.assertIsInstance(tool_map, dict)
         self.assertIn("llm_tool", tool_map)
-        self.assertIn("finish", tool_map)
 
         # Prompt delegation
         prompt = agent.get_prompt(example=123)
@@ -100,10 +106,10 @@ class TestAgent(unittest.TestCase):
             model_client=mc,
         )
 
-        # Only the finish tool
+        # No tools when llm_fallback is disabled and no custom tools provided
         tool_map = agent.tool_manager._context_map
         self.assertNotIn("llm_tool", tool_map)
-        self.assertIn("finish", tool_map)
+        self.assertEqual(len(tool_map), 0)
 
         # Planner still present
         self.assertIsInstance(agent.planner, DummyGenerator)
@@ -178,6 +184,101 @@ class TestAgent(unittest.TestCase):
         self.assertEqual(
             agent.tool_manager._additional_context["context_variables"], ctx
         )
+
+    def test_agent_answer_data_type_attribute(self):
+        """Test that Agent properly stores answer_data_type for Runner integration."""
+        mc = FallbackModelClient()
+
+        # Test with string type
+        agent_str = agent_module.Agent(
+            name="agent-str",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+            answer_data_type=str,
+        )
+        self.assertEqual(agent_str.answer_data_type, str)
+
+        # Test with dict type
+        agent_dict = agent_module.Agent(
+            name="agent-dict",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+            answer_data_type=dict,
+        )
+        self.assertEqual(agent_dict.answer_data_type, dict)
+
+    def test_agent_max_steps_attribute(self):
+        """Test that Agent properly stores max_steps for Runner integration."""
+        mc = FallbackModelClient()
+
+        # Test default max_steps
+        agent_default = agent_module.Agent(
+            name="agent-default",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+        )
+        self.assertEqual(agent_default.max_steps, 10)  # Default value
+
+        # Test custom max_steps
+        agent_custom = agent_module.Agent(
+            name="agent-custom",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+            max_steps=5,
+        )
+        self.assertEqual(agent_custom.max_steps, 5)
+
+    def test_agent_integration_with_runner_requirements(self):
+        """Test that Agent has all required attributes for Runner integration."""
+        mc = FallbackModelClient()
+        agent = agent_module.Agent(
+            name="agent-runner-ready",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+            answer_data_type=str,
+            max_steps=8,
+        )
+
+        # Verify all required attributes for Runner are present
+        self.assertTrue(hasattr(agent, "planner"))
+        self.assertTrue(hasattr(agent, "tool_manager"))
+        self.assertTrue(hasattr(agent, "max_steps"))
+        self.assertTrue(hasattr(agent, "answer_data_type"))
+
+        # Verify planner has required methods for Runner
+        # The DummyGenerator uses __call__ method (like real Generator)
+        self.assertTrue(hasattr(agent.planner, "__call__"))
+        self.assertTrue(callable(agent.planner))
+
+        # Verify tool_manager has required functionality for Runner
+        self.assertTrue(hasattr(agent.tool_manager, "__call__"))
+        self.assertTrue(callable(agent.tool_manager))
+
+    def test_agent_training_mode_propagation(self):
+        """Test that Agent's is_training method properly reflects planner training state."""
+        mc = FallbackModelClient()
+        agent = agent_module.Agent(
+            name="agent-training",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+        )
+
+        # Initially should not be in training mode
+        self.assertFalse(agent.is_training())
+
+        # Set planner to training mode
+        agent.planner.training = True
+        self.assertTrue(agent.is_training())
+
+        # Disable training mode
+        agent.planner.training = False
+        self.assertFalse(agent.is_training())
 
 
 if __name__ == "__main__":

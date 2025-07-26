@@ -7,10 +7,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 import json
 
+from adalflow.core.base_data_class import DataClass
+from adalflow.core.prompt_builder import Prompt
+from adalflow.utils import serialize
+
 if TYPE_CHECKING:
     from adalflow.core.generator import Generator
-from adalflow.core.base_data_class import DataClass
-from adalflow.utils import serialize
 
 
 log = logging.getLogger(__name__)
@@ -77,8 +79,12 @@ class GeneratorStateLogger:
         r"""Log the prompt states of the generator with the given name."""
         self._generator_names.add(name)
 
+        # Create a Prompt object from the generator's template and prompt_kwargs
+        prompt = Prompt(
+            template=generator.template, prompt_kwargs=generator.prompt_kwargs
+        )
         prompt_states: Dict = (
-            generator.prompt.to_dict()
+            prompt.to_dict()
         )  # TODO: log all states of the generator instead of just the prompt
 
         try:

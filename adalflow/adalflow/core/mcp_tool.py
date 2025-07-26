@@ -10,8 +10,10 @@ The module enables dynamic discovery and invocation of MCP tools for agent-based
 
 import os
 import json
+import asyncio
 from datetime import timedelta
 from pathlib import Path
+from typing import Optional, Union
 from adalflow.core.func_tool import FunctionTool
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
@@ -19,7 +21,7 @@ from mcp.client.sse import sse_client
 from mcp.client.streamable_http import streamablehttp_client
 from contextlib import asynccontextmanager
 import logging
-from typing import Union, List, Any, Optional, Literal
+from typing import List, Any, Literal
 from dataclasses import dataclass, field
 
 from adalflow.core.component import Component
@@ -48,7 +50,7 @@ class MCPServerStdioParams:
         default=None,
         metadata={"desc": "The environment variables to set for the server."},
     )
-    cwd: Optional[str | Path] = field(
+    cwd: Optional[Union[str, Path]] = field(
         default=None,
         metadata={"desc": "The working directory to use when spawning the process."},
     )
@@ -275,44 +277,33 @@ class MCPFunctionTool(FunctionTool):
         Initialize the MCPFunctionTool with the specified server parameters and MCP tool.
         """
         # set params before calling super().__init__ such that _create_fn_definition can use these info.
+        if not isinstance(mcp_tool, types.Tool):
+            raise ValueError("mcp_tool must be an instance of mcp.types.Tool")
         self.server_params = server_params
         self.mcp_tool = mcp_tool
         super().__init__(fn=execute_mcp_op, definition=self._create_fn_definition())
 
+    # NOTE: dont support optional in the data class
     def _create_fn_definition(self) -> FunctionDefinition:
         """
         Create a FunctionDefinition for the MCP tool.
         This overrides the base class method to customize the function signature and description based on the MCP tool's schema.
         """
-        # remove 'title' from function parameters
-        func_parameters = {
-            k: v for k, v in self.mcp_tool.inputSchema.items() if k != "title"
-        }
-        func_parameters["properties"] = {
-            arg_name: {k: v for k, v in props.items() if k != "title"}
-            for arg_name, props in func_parameters["properties"].items()
-        }
+        name = self.mcp_tool.name
+        description = self.mcp_tool.description
+        schema = f"input schema: {self.mcp_tool.inputSchema}"
 
-        # Build the description
-        arg_list = [
-            f'{arg_name}: {props["type"]}'
-            for arg_name, props in func_parameters["properties"].items()
-        ]
-        signature_str = f"({', '.join(arg_list)})"
-        description = f"{self.mcp_tool.name}{signature_str}\n"
-        # signature_str: add(a: int, b: int, id=None) -> int
-
-        cls_name = self.mcp_tool.name
-        if cls_name:
-            description += f"Belongs to class: {cls_name}\n"
-
-        if self.mcp_tool.description:
-            description += f"Docstring: {self.mcp_tool.description}\n"
+        # the outputSchema may not be available https://modelcontextprotocol.io/specification/draft/server/tools#output-schema
+        if (
+            hasattr(self.mcp_tool, "outputSchema")
+            and self.mcp_tool.outputSchema is not None
+        ):
+            schema += f"\noutput schema: {self.mcp_tool.outputSchema}"
 
         return FunctionDefinition(
-            func_name=self.mcp_tool.name,
+            func_name=name,
             func_desc=description,
-            func_parameters=func_parameters,
+            func_parameters=schema,
         )
 
     async def acall(self, *args: Any, **kwargs: Any) -> FunctionOutput:
@@ -361,11 +352,35 @@ class MCPFunctionTool(FunctionTool):
             "MCPFunctionTool does not support bicall. Use acall instead, which is designed for asynchronous execution."
         )
 
-    def call(self, *args, **kwargs):
-        """This function is not supported in MCPFunctionTool."""
-        raise ValueError(
-            "MCPFunctionTool does not support call. Use acall instead, which is designed for asynchronous execution."
-        )
+    def call(self, *args, **kwargs) -> FunctionOutput:
+        """Execute the function synchronously by running the async call method.
+
+        This is a convenience method that wraps the async `acall` method using `asyncio.run()`.
+        It allows synchronous usage of MCP tools without requiring async/await syntax.
+
+        Args:
+            *args: Positional arguments (not supported, raises assertion error)
+            **kwargs: Keyword arguments to pass to the MCP tool
+
+        Returns:
+            FunctionOutput: The result of the MCP tool execution
+
+        Example:
+
+        .. code-block:: python
+
+            server_params = StdioServerParameters(
+                command="python",
+                args=["mcp_server.py"]
+            )
+            # Get tools from the server
+            async with mcp_session_context(server_params) as session:
+                tools = await session.list_tools()
+
+            tool_1 = MCPFunctionTool(server_params, tools[0])
+            output = tool_1.call(param1="value1")  # Synchronous call
+        """
+        return asyncio.run(self.acall(*args, **kwargs))
 
 
 class MCPToolManager(Component):
@@ -403,7 +418,7 @@ class MCPToolManager(Component):
     def __init__(
         self,
         cache_tools_list: bool = True,
-        client_session_timeout_seconds: float | None = None,
+        client_session_timeout_seconds: Optional[float] = None,
     ):
         self.server_params = {}
         self.cache_tools_list = cache_tools_list
@@ -411,7 +426,7 @@ class MCPToolManager(Component):
         self.client_session_timeout_seconds = client_session_timeout_seconds
 
         # The cache is always dirty at startup, so that we fetch tools at least once
-        self._tools_list: list[MCPFunctionTool] | None = []
+        self._tools_list: Optional[list[MCPFunctionTool]] = []
         self._cached_servers: list[str] = []
 
     def add_servers_from_json_file(self, json_path: str):
@@ -525,6 +540,7 @@ class MCPToolManager(Component):
             server_names (List[str], optional): A list of server names to filter the tools.
                 If None, all servers are listed.
         """
+        # TODO: this is not good implementation, it establishes two times of connections each time.
         for name, params in self.server_params.items():
             if server_names and name not in server_names:
                 continue
@@ -534,7 +550,11 @@ class MCPToolManager(Component):
 
             print(f"\n🔧 Getting Tools from server {name}:")
             # get all tools from the server
-            self._tools_list.extend(await self._get_all_server_tools(params))
+            try:
+                self._tools_list.extend(await self._get_all_server_tools(params))
+            except Exception as e:
+                print(f"Error getting tools from server {name}: {e}")
+                continue
             self._cached_servers.append(name)
         return self._tools_list
 
@@ -550,4 +570,8 @@ class MCPToolManager(Component):
                 print(f"  • {tool.name}: {tool.description}")
                 tools.append(tool)
 
-        return [MCPFunctionTool(server_params, t) for t in tools]
+        try:
+            return [MCPFunctionTool(server_params, t) for t in tools]
+        except Exception as e:
+            print(f"Error getting tools from server: {e}")
+            return []

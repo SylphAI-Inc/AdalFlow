@@ -439,9 +439,9 @@ def get_type_schema(
             # Handle Enum dataclass types
             enum_members = ", ".join([f"{e.name}={e.value}" for e in type_obj])
             return f"Enum[{type_obj.__name__}({enum_members})]"
-        # Recursively handle nested dataclasses
-        output = str(get_dataclass_schema(type_obj, exclude, type_var_map))
-        return output
+        # Return full schema for dataclasses as string representation
+        schema_dict = get_dataclass_schema(type_obj, exclude, type_var_map)
+        return str(schema_dict)
 
     elif isinstance(type_obj, type) and issubclass(type_obj, Enum):
         # Handle Enum types
@@ -1303,3 +1303,16 @@ def random_sample(
     indices = np.random.choice(len(dataset), size=num_shots, replace=replace, p=weights)
 
     return [dataset[i] for i in indices]
+
+
+def _is_pydantic_dataclass(cls: Any) -> bool:
+    # check whether cls is a pydantic dataclass
+    return isinstance(cls, type) and issubclass(cls, BaseModel)
+
+
+def _is_adalflow_dataclass(cls: Any) -> bool:
+    # avoid circular imports
+    from adalflow.core.base_data_class import DataClass
+
+    # check whether cls is a adalflow dataclass
+    return isinstance(cls, type) and issubclass(cls, DataClass)

@@ -9,7 +9,7 @@ from typing import (
     Callable,
 )
 from adalflow.core.func_tool import FunctionTool, AsyncCallable
-
+from adalflow.core.functional import get_type_schema
 from adalflow.core.component import Component
 from adalflow.core.model_client import ModelClient
 from adalflow.core.generator import Generator
@@ -18,15 +18,14 @@ from adalflow.core.prompt_builder import Prompt
 from adalflow.core.types import GeneratorOutput, ModelType, Function
 from adalflow.optim.parameter import Parameter, ParameterType
 from adalflow.components.output_parsers import JsonOutputParser
+from adalflow.utils import printc
 
+from adalflow.components.agent.prompts import (
+    DEFAULT_ADALFLOW_AGENT_SYSTEM_PROMPT,
+    adalflow_agent_task_desc,
+)
 
 import logging
-
-
-from adalflow.components.agent.react import (
-    DEFAULT_REACT_AGENT_SYSTEM_PROMPT,
-    react_agent_task_desc,
-)
 
 
 __all__ = ["Agent"]
@@ -52,6 +51,7 @@ DEFAULT_ROLE_DESC = """You are an excellent task planner."""
 #   Docstring: Run bash command with permission check.
 
 #   '
+
 
 # the context will wrap the whole component
 def create_default_tool_manager(
@@ -99,39 +99,9 @@ def create_default_tool_manager(
 
             return None
 
-        # always add **kwargs for us to track the id, __doc__ as the predecessors.
-        from adalflow.optim.grad_component import fun_to_grad_component
-
-        @fun_to_grad_component(
-            desc="Finish",
-            doc_string=Parameter(
-                data="""
-                Finish the task with the final answer passed as an argument.
-                These rules MUST BE FOLLOWED:
-                1. If the specified type of the answer is a Python built-in type, have the answer be an object of that type.
-                2. If it is not, pass in the answer as a string but with these rules:
-                    - This string will be directly parsed by the caller by using AST.literal_eval, so it must be deserializable using AST.literal_eval.
-                    - Once the string is deserialized, it should be able to be parsed by the caller into the provided type.
-                """,
-                param_type=ParameterType.PROMPT,
-                requires_opt=True,
-                role_desc="Instruct the agent on how to create the final answer from the step history.",
-                name="doc_string",
-            ),
-        )
-        def finish(answer: answer_data_type, **kwargs) -> Union[str, answer_data_type]:
-            # returns a string that is an AST for the answer_data_type
-            log.info(f"answer: {answer}, type: {type(answer)}")
-            # answer will be passed as a dict
-            return answer
-
-        _finish = FunctionTool(fn=finish)
-
-        print(_finish.definition)
         processed_tools = tools.copy() if tools else []
-        if add_llm_as_fallback:
+        if add_llm_as_fallback and _additional_llm_tool:
             processed_tools.append(llm_tool)
-        processed_tools.append(_finish)
         return processed_tools
 
     # 1. create default ToolManager
@@ -158,12 +128,13 @@ def create_default_planner(
     template: Optional[
         str
     ] = None,  # allow users to update the template but cant delete any parameters
-    role_desc: Optional[str] = None,
+    role_desc: Optional[Union[str, Prompt]] = None,
     cache_path: Optional[str] = None,
     use_cache: Optional[bool] = False,
     # default agent parameters
     max_steps: Optional[int] = 10,
     is_thinking_model: Optional[bool] = False,
+    answer_data_type: Optional[Type[T]] = str,
     **kwargs,
 ) -> Generator:
     """Create a default planner with the given model client, model kwargs, template, task desc, cache path, use cache, max steps."""
@@ -171,19 +142,16 @@ def create_default_planner(
     if not model_client:
         raise ValueError("model_client and model_kwargs are required")
 
-    template = template or DEFAULT_REACT_AGENT_SYSTEM_PROMPT
+    template = template or DEFAULT_ADALFLOW_AGENT_SYSTEM_PROMPT
     role_desc = role_desc or DEFAULT_ROLE_DESC
 
     # define the parser for the intermediate step, which is a Function class
     ouput_data_class = Function
     if is_thinking_model:
         # skip the CoT field
-        include_fields = [
-            "name",
-            "kwargs",
-        ]
+        include_fields = ["name", "kwargs", "_is_answer_final", "_answer"]
     else:
-        include_fields = ["thought", "name", "kwargs"]
+        include_fields = ["thought", "name", "kwargs", "_is_answer_final", "_answer"]
     output_parser = JsonOutputParser(
         data_class=ouput_data_class,
         examples=None,
@@ -193,9 +161,9 @@ def create_default_planner(
     )
 
     task_desc = Prompt(
-        template=react_agent_task_desc,
+        template=adalflow_agent_task_desc,
         prompt_kwargs={"role_desc": role_desc},
-    ).call()
+    )
 
     prompt_kwargs = {
         "tools": tool_manager.yaml_definitions,
@@ -220,6 +188,7 @@ def create_default_planner(
         ],  # TODO: make it more clear
         "max_steps": max_steps,  # move to the 2nd step
         "step_history": [],
+        "answer_type_schema": get_type_schema(answer_data_type),
     }
 
     # 3. create default Generator
@@ -235,25 +204,36 @@ def create_default_planner(
         use_cache=use_cache,
     )
 
+    printc(f"planner use cache: {planner.use_cache}")
+    printc(f"planner cache path: {planner.cache_path}")
+
     return planner
 
 
 class Agent(Component):
-    """
-    An agent is a high-level component that holds (1) a generator as task plannaer (calling tools) and (2) a tool manager to manage tools.
+    """A high-level agentic component that orchestrates AI planning and tool execution.
 
-    It comes with default prompt template that instructs LLM (1) agentic task description (2) template on adding definitions of tools
-    (3) arguments to fill in history.
+    The Agent combines a Generator-based planner for task decomposition with a ToolManager
+    for function calling. It uses a ReAct (Reasoning and Acting) architecture to iteratively
+    plan steps and execute tools to solve complex tasks.
 
-    Additionally, it comes with two helper tools:
-    1. finish: to finish the task
-    2. additional_llm_tool: to answer any input query with llm's world knowledge. Use me as a fallback tool or when the query is simple.
+    The Agent comes with default prompt templates for agentic reasoning, automatic tool
+    definition integration, and step history tracking. It includes built-in helper tools:
+    - finish: Terminates execution with the final answer
+    - llm_tool: Fallback tool using LLM world knowledge for simple queries
+
+    Architecture:
+        Agent contains two main components:
+        1. Planner (Generator): Plans and reasons about next actions using an LLM
+        2. ToolManager: Manages and executes available tools/functions
 
     Attributes:
-        name (str): Name of the agent
-        tool_manager (ToolManager): Stores and manages tools
-        generator (Generator): Handles text generation with a language model
-        the output_processors must return the type StepOutput
+        name (str): Unique identifier for the agent instance
+        tool_manager (ToolManager): Manages available tools and their execution
+        planner (Generator): LLM-based planner for task decomposition and reasoning
+        answer_data_type (Type): Expected type for the final answer output
+        max_steps (int): Maximum number of planning steps allowed
+        is_thinking_model (bool): Whether the underlying model supports chain-of-thought
     """
 
     def __init__(
@@ -266,13 +246,17 @@ class Agent(Component):
         # Generator parameters
         model_client: Optional[ModelClient] = None,
         model_kwargs: Optional[Dict[str, Any]] = {},
-        model_type: Optional[ModelType] = ModelType.LLM,
+        model_type: Optional[
+            ModelType
+        ] = ModelType.LLM,  # by default use LLM reasoning model
         template: Optional[
             str
         ] = None,  # allow users to update the template but cant delete any parameters
-        role_desc: Optional[str] = None,
+        role_desc: Optional[
+            Union[str, Prompt]
+        ] = None,  # support both str and prompte template
         cache_path: Optional[str] = None,
-        use_cache: Optional[bool] = False,
+        use_cache: Optional[bool] = True,
         # default agent parameters
         answer_data_type: Optional[Type[T]] = str,  # the data type of the final answer
         max_steps: Optional[int] = 10,
@@ -336,6 +320,7 @@ class Agent(Component):
             use_cache=use_cache,
             max_steps=max_steps,
             is_thinking_model=is_thinking_model,
+            answer_data_type=answer_data_type,
         )
         self.answer_data_type = answer_data_type  # save the final answer data type for the runner to communicate
         self.max_steps = max_steps

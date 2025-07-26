@@ -496,6 +496,9 @@ class DataClass:
         data = instance.to_dict()
         return pydantic_model(**data)
 
+    def pydantic(self):
+        return self.to_pydantic(self)
+
     @classmethod
     def pydantic_to_dataclass(cls, pydantic_obj):
         """
@@ -621,7 +624,7 @@ class DataClass:
                 ordered_dict[field_name] = value
 
         # Update the properties field
-        raw_dict["properties"] = ordered_dict
+        raw_dict["properties"] = dict(ordered_dict)
 
         return raw_dict
 
