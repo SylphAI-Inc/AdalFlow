@@ -1,0 +1,9 @@
+.. _tracing-setup:
+
+setup
+====================
+
+.. automodule:: tracing.setup
+   :members:
+   :undoc-members:
+   :show-inheritance:

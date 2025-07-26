@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -534,14 +547,14 @@ and (2) a <cite>forward</cite> method, which will be called during the <cite>tra
 </section>
 <section id="parameters">
 <h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
-<p><a class="reference internal" href="../apis/optim/optim.parameter.html#optim.parameter.Parameter" title="optim.parameter.Parameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code></a> are used to save (1) intermediate forward data and (2) gradients/feedback, and (3) graph information such as <cite>predecessors</cite>.
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code> are used to save (1) intermediate forward data and (2) gradients/feedback, and (3) graph information such as <cite>predecessors</cite>.
 It also has function like <cite>draw_graph</cite> to help you visualize the structure of your computation graph.</p>
 </section>
 <section id="dataclass-and-structured-output">
 <h2>DataClass and Structured Output<a class="headerlink" href="#dataclass-and-structured-output" title="Link to this heading">¶</a></h2>
-<p><a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></a> is used for developers to define a data model.
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code> is used for developers to define a data model.
 Similar to <cite>Pydantic</cite>, it has methods like <cite>to_yaml_signature</cite>, <cite>to_json_signature</cite>, <cite>to_yaml</cite>, <cite>to_json</cite> to help you generate the data model schema and to generate the json/yaml data representation as strings.
-It can be best used together with <a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code></a> for structured output.</p>
+It can be best used together with <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code> for structured output.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 
 <span class="nd">@dataclass</span>

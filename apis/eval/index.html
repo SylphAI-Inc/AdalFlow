@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,352 +480,12 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="eval.base.html#module-eval.base" title="eval.base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.base</span></code></a></p></td>
-<td><p>Abstract base class for evaluation metrics.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="eval.answer_match_acc.html#module-eval.answer_match_acc" title="eval.answer_match_acc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.answer_match_acc</span></code></a></p></td>
-<td><p>This is the metric for QA generation.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="eval.retriever_recall.html#module-eval.retriever_recall" title="eval.retriever_recall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.retriever_recall</span></code></a></p></td>
-<td><p>Retriever Recall &#64;k metric.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="eval.llm_as_judge.html#module-eval.llm_as_judge" title="eval.llm_as_judge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.llm_as_judge</span></code></a></p></td>
-<td><p>This is the metric to use an LLM as a judge for evaluating the performance of predicted answers.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="eval.g_eval.html#module-eval.g_eval" title="eval.g_eval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.g_eval</span></code></a></p></td>
-<td><p>Implementation of G-Eval: G-eval &lt;<a class="reference external" href="https://arxiv.org/abs/2303.08774">https://arxiv.org/abs/2303.08774</a>, <a class="reference external" href="https://github.com/nlpyang/geval">https://github.com/nlpyang/geval</a>&gt; Instead of getting 1/5 as the score, AdalFlow will use 0.2 as the score, so that we can have a score in range [0, 1] for all metrics.</p></td>
-</tr>
 </tbody>
 </table>
 </div>
 <div class="toctree-wrapper compound">
 </div>
 <hr class="docutils" />
-<dl class="py class" id="module-eval">
-<dt class="sig sig-object py" id="eval.AnswerMatchAcc">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AnswerMatchAcc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'exact_match'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fuzzy_match'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rouge_score'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bleu_score'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bert_score'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'f1_score'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'exact_match'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/answer_match_acc.html#AnswerMatchAcc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.AnswerMatchAcc" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEvaluator</span></code></p>
-<p>Metric for answer matching. It compares the predicted answer with the ground truth answer.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>type</strong> (<em>str</em>) – Type of matching evaluation. Can be “exact_match” or “fuzzy_match”. “exact_match” requires the predicted answer to be exactly the same as the ground truth answer. “fuzzy_match” requires the predicted answer to contain the ground truth answer.</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pred_answers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;positive&quot;</span><span class="p">,</span> <span class="s2">&quot;negative&quot;</span><span class="p">,</span> <span class="s2">&quot;this is neutral&quot;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_answers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;positive&quot;</span><span class="p">,</span> <span class="s2">&quot;negative&quot;</span><span class="p">,</span> <span class="s2">&quot;neutral&quot;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">answer_match_acc</span> <span class="o">=</span> <span class="n">AnswerMatchAcc</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;exact_match&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_acc</span><span class="p">,</span> <span class="n">acc_list</span> <span class="o">=</span> <span class="n">answer_match_acc</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">all_pred_answer</span><span class="p">,</span> <span class="n">all_gt_answer</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_acc</span>
-<span class="go">2 / 3</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">acc_list</span>
-<span class="go">[1.0, 1.0, 0.0]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">answer_match_acc</span> <span class="o">=</span> <span class="n">AnswerMatchAcc</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;fuzzy_match&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_acc</span><span class="p">,</span> <span class="n">acc_list</span> <span class="o">=</span> <span class="n">answer_match_acc</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">all_pred_answer</span><span class="p">,</span> <span class="n">all_gt_answer</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_acc</span>
-<span class="go">1.0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">acc_list</span>
-<span class="go">[1.0, 1.0, 1.0]</span>
-</pre></div>
-</div>
-<p>References:
-1. HotpotQA: <a class="reference external" href="https://github.com/hotpotqa/hotpot/blob/master/hotpot_evaluate_v1.py">https://github.com/hotpotqa/hotpot/blob/master/hotpot_evaluate_v1.py</a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="eval.AnswerMatchAcc.compute_single_item">
-<span class="sig-name descname"><span class="pre">compute_single_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_gt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/eval/answer_match_acc.html#AnswerMatchAcc.compute_single_item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.AnswerMatchAcc.compute_single_item" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the match accuracy of the predicted answer for a single query.</p>
-<p>Allow any type of input for pred_answer and gt_answer.
-When evaluating, the input will be converted to string.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pred_answer</strong> (<em>object</em>) – Predicted answer.</p></li>
-<li><p><strong>gt_answer</strong> (<em>object</em>) – Ground truth answer.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Match accuracy.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="eval.AnswerMatchAcc.compute">
-<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_answers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt_answers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EvaluationResult</span></span></span><a class="reference internal" href="../../_modules/eval/answer_match_acc.html#AnswerMatchAcc.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.AnswerMatchAcc.compute" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the match accuracy of the predicted answer for a list of queries.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pred_answers</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of predicted answer strings.</p></li>
-<li><p><strong>gt_answers</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of ground truth answer strings.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p>float: Average match accuracy.</p></li>
-<li><p>List[float]: Match accuracy values for each query.</p></li>
-</ul>
-</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="eval.RetrieverEvaluator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RetrieverEvaluator</span></span><a class="reference internal" href="../../_modules/eval/retriever_recall.html#RetrieverEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.RetrieverEvaluator" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEvaluator</span></code></p>
-<p>Return Recall&#64;k and Precision&#64;k.</p>
-<p>Recall&#64;k = Number of relevant retrieved documents/ Total number of relevant documents (len(gt_contexts))
-Precision&#64;k = Number of relevant retrieved documents/ Total number of retrieved documents (len(retrieved_contexts))</p>
-<p>In our implementation, we use exact string matching between each gt context and the joined retrieved context string.
-You can use the longest common subsequence (LCS) or other similarity metrics(or embedding based) to decide if it is a match or not.</p>
-<p>You can also pass ids of retrieved and the reference.</p>
-<p>If you do not even have the ground truth context, but only grounth truth answers, you can consider using
-RAGAS framework for now. It computes the recall as:</p>
-<p>Recall = [GT statements that can be attributed to the retrieved context] / [GT statements]</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">all_retrieved_context</span> <span class="o">=</span> <span class="p">[</span>
-<span class="go">[&quot;Apple is founded before Google.&quot;,</span>
-<span class="go">&quot;Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.&quot;,</span>
-<span class="go">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">all_gt_context</span> <span class="o">=</span> <span class="p">[</span>
-<span class="go">    [</span>
-<span class="go">        &quot;Apple is founded in 1976.&quot;,</span>
-<span class="go">        &quot;Google is founded in 1998.&quot;,</span>
-<span class="go">        &quot;Apple is founded before Google.&quot;,</span>
-<span class="go">    ],</span>
-<span class="go">    [&quot;Feburary has 28 days in common years&quot;, &quot;Feburary has 29 days in leap years&quot;],</span>
-<span class="go">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">retriever_recall</span> <span class="o">=</span> <span class="n">RetrieverRecall</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_recall</span><span class="p">,</span> <span class="n">recall_list</span> <span class="o">=</span> <span class="n">retriever_recall</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">all_retrieved_context</span><span class="p">,</span> <span class="n">all_gt_context</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_recall</span>
-<span class="go">2 / 3</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">recall_list</span>
-<span class="go">[1 / 3, 1.0]</span>
-</pre></div>
-</div>
-<p class="rubric">References</p>
-<ul class="simple">
-<li><p>RAGAS: <a class="reference external" href="https://docs.ragas.io/en/stable/concepts/metrics/context_recall.html">https://docs.ragas.io/en/stable/concepts/metrics/context_recall.html</a></p></li>
-</ul>
-<dl class="py method">
-<dt class="sig sig-object py" id="eval.RetrieverEvaluator.compute_single_item">
-<span class="sig-name descname"><span class="pre">compute_single_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">retrieved_context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt_context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eval/retriever_recall.html#RetrieverEvaluator.compute_single_item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.RetrieverEvaluator.compute_single_item" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the recall of the retrieved context for a single query.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>retrieved_context</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of retrieved context strings.</p></li>
-<li><p><strong>gt_context</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of ground truth context strings.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Recall value.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="eval.RetrieverEvaluator.compute">
-<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">retrieved_contexts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt_contexts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EvaluationResult</span></span></span><a class="reference internal" href="../../_modules/eval/retriever_recall.html#RetrieverEvaluator.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.RetrieverEvaluator.compute" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the recall of the retrieved context for a list of queries.
-:param retrieved_context: List of retrieved context strings.
-:param gt_contexts: List of ground truth context strings.
-:type gt_contexts: List[List[str]]</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p>float: Average recall value.</p></li>
-<li><p>List[float]: Recall values for each query.</p></li>
-</ul>
-</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="eval.LLMasJudge">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LLMasJudge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">llm_judge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/llm_as_judge.html#LLMasJudge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.LLMasJudge" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEvaluator</span></code></p>
-<p>LLM as judge for evaluating the performance of a LLM.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>llm_evaluator</strong> (<a class="reference internal" href="../core/core.component.html#core.component.Component" title="core.component.Component"><em>Component</em></a><em>, </em><em>optional</em>) – The LLM evaluator to use. Defaults to DefaultLLMJudge.</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">questions</span> <span class="o">=</span> <span class="p">[</span>
-<span class="go">&quot;Is Beijing in China?&quot;,</span>
-<span class="go">&quot;Is Apple founded before Google?&quot;,</span>
-<span class="go">&quot;Is earth flat?&quot;,</span>
-<span class="go">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pred_answers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;Yes, Appled is founded before Google&quot;</span><span class="p">,</span> <span class="s2">&quot;Yes&quot;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_answers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;No&quot;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">judgement_query</span> <span class="o">=</span> <span class="s2">&quot;For the question, does the predicted answer contain the ground truth answer?&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">llm_judge</span> <span class="o">=</span> <span class="n">LLMasJudge</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_judgement</span><span class="p">,</span> <span class="n">judgement_list</span> <span class="o">=</span> <span class="n">llm_judge</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
-<span class="go">questions, gt_answers, pred_answers, judgement_query</span>
-<span class="go">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_judgement</span>
-<span class="go">2 / 3</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">judgement_list</span>
-<span class="go">[True, True, False]</span>
-</pre></div>
-</div>
-<p>Customize the LLMJudge</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">llm_judge</span> <span class="o">=</span> <span class="n">Def</span>
-</pre></div>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="eval.LLMasJudge.compute">
-<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_answers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">questions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt_answers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="eval.llm_as_judge.html#eval.llm_as_judge.LLMJudgeEvalResult" title="eval.llm_as_judge.LLMJudgeEvalResult"><span class="pre">LLMJudgeEvalResult</span></a></span></span><a class="reference internal" href="../../_modules/eval/llm_as_judge.html#LLMasJudge.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.LLMasJudge.compute" title="Link to this definition">¶</a></dt>
-<dd><p>Get the judgement of the predicted answer for a list of questions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>questions</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of question strings.</p></li>
-<li><p><strong>gt_answers</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of ground truth answer strings.</p></li>
-<li><p><strong>pred_answers</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of predicted answer strings.</p></li>
-<li><p><strong>judgement_query</strong> (<em>str</em>) – Judgement query string.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The evaluation result.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>LLMEvalResult</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="eval.GEvalJudgeEvaluator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GEvalJudgeEvaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">llm_judge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/g_eval.html#GEvalJudgeEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.GEvalJudgeEvaluator" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEvaluator</span></code></p>
-<p>LLM as judge for evaluating the performance of a LLM in form of GEval with 4 main metrics:</p>
-<p>Relevance, Fluency, Consistency, Coherence.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>llm_judge</strong> (<a class="reference internal" href="../core/core.component.html#core.component.Component" title="core.component.Component"><em>Component</em></a><em>, </em><em>optional</em>) – The LLM evaluator to use. Defaults to GEvalLLMJudge().</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="eval.GEvalJudgeEvaluator.compute_single_item">
-<span class="sig-name descname"><span class="pre">compute_single_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eval/g_eval.html#GEvalJudgeEvaluator.compute_single_item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.GEvalJudgeEvaluator.compute_single_item" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the score for a single item.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>input_str</strong> (<em>str</em>) – The input string with all information.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The judgement result.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict[str, Any]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="eval.GEvalJudgeEvaluator.compute">
-<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_strs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eval/g_eval.html#GEvalJudgeEvaluator.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.GEvalJudgeEvaluator.compute" title="Link to this definition">¶</a></dt>
-<dd><p>Get the judgement of the predicted answer for a list of questions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>input_strs</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of input strings.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The judgement result.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List[Dict[str, Any]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="eval.GEvalLLMJudge">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GEvalLLMJudge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelClient</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eval.g_eval.html#eval.g_eval.NLGTask" title="eval.g_eval.NLGTask"><span class="pre">NLGTask</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/g_eval.html#GEvalLLMJudge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.GEvalLLMJudge" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
-<p>Demonstrate how to use an LLM/Generator to output True or False for a judgement query.</p>
-<p>You can use any of your template to adapt to more tasks and sometimes you can directly ask LLM to output a score in range [0, 1] instead of only True or False.</p>
-<p>A call on the LLM judge equalize to _compute_single_item method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model_client</strong> (<a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><em>ModelClient</em></a>) – The model client to use for the generator.</p></li>
-<li><p><strong>model_kwargs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – The model kwargs to pass to the model client. Defaults to {}. Please refer to <a class="reference internal" href="../components/components.model_client.html#components-model-client"><span class="std std-ref">ModelClient</span></a> for the details on how to set the model_kwargs for your specific model if it is from our library.</p></li>
-<li><p><strong>template</strong> (<em>str</em><em>, </em><em>optional</em>) – The template to use for the LLM evaluator. Defaults to None.</p></li>
-<li><p><strong>use_cache</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use cache for the LLM evaluator. Defaults to True.</p></li>
-<li><p><strong>default_task</strong> (<a class="reference internal" href="eval.g_eval.html#eval.g_eval.NLGTask" title="eval.g_eval.NLGTask"><em>NLGTask</em></a><em>, </em><em>optional</em>) – The default task to use for the judgement query. Defaults to None.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="eval.GEvalLLMJudge.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eval/g_eval.html#GEvalLLMJudge.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.GEvalLLMJudge.call" title="Link to this definition">¶</a></dt>
-<dd><p>Pass the input string with all information to the LLM evaluator and get the judgement.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>input_str</strong> (<em>str</em>) – The input string with all information.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The judgement result.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict[str, Any]</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="eval.GEvalMetric">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GEvalMetric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/g_eval.html#GEvalMetric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.GEvalMetric" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="eval.GEvalMetric.RELEVANCE">
-<span class="sig-name descname"><span class="pre">RELEVANCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Relevance'</span></em><a class="headerlink" href="#eval.GEvalMetric.RELEVANCE" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="eval.GEvalMetric.FLUENCY">
-<span class="sig-name descname"><span class="pre">FLUENCY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Fluency'</span></em><a class="headerlink" href="#eval.GEvalMetric.FLUENCY" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="eval.GEvalMetric.CONSISTENCY">
-<span class="sig-name descname"><span class="pre">CONSISTENCY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Consistency'</span></em><a class="headerlink" href="#eval.GEvalMetric.CONSISTENCY" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="eval.GEvalMetric.COHERENCE">
-<span class="sig-name descname"><span class="pre">COHERENCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Coherence'</span></em><a class="headerlink" href="#eval.GEvalMetric.COHERENCE" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 </section>
 </section>
 
@@ -871,39 +544,7 @@ RAGAS framework for now. It computes the recall as:</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Evaluation</a><ul>
-<li><a class="reference internal" href="#overview">Overview</a><ul>
-<li><a class="reference internal" href="#eval.AnswerMatchAcc"><code class="docutils literal notranslate"><span class="pre">AnswerMatchAcc</span></code></a><ul>
-<li><a class="reference internal" href="#eval.AnswerMatchAcc.compute_single_item"><code class="docutils literal notranslate"><span class="pre">AnswerMatchAcc.compute_single_item()</span></code></a></li>
-<li><a class="reference internal" href="#eval.AnswerMatchAcc.compute"><code class="docutils literal notranslate"><span class="pre">AnswerMatchAcc.compute()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#eval.RetrieverEvaluator"><code class="docutils literal notranslate"><span class="pre">RetrieverEvaluator</span></code></a><ul>
-<li><a class="reference internal" href="#eval.RetrieverEvaluator.compute_single_item"><code class="docutils literal notranslate"><span class="pre">RetrieverEvaluator.compute_single_item()</span></code></a></li>
-<li><a class="reference internal" href="#eval.RetrieverEvaluator.compute"><code class="docutils literal notranslate"><span class="pre">RetrieverEvaluator.compute()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#eval.LLMasJudge"><code class="docutils literal notranslate"><span class="pre">LLMasJudge</span></code></a><ul>
-<li><a class="reference internal" href="#eval.LLMasJudge.compute"><code class="docutils literal notranslate"><span class="pre">LLMasJudge.compute()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#eval.GEvalJudgeEvaluator"><code class="docutils literal notranslate"><span class="pre">GEvalJudgeEvaluator</span></code></a><ul>
-<li><a class="reference internal" href="#eval.GEvalJudgeEvaluator.compute_single_item"><code class="docutils literal notranslate"><span class="pre">GEvalJudgeEvaluator.compute_single_item()</span></code></a></li>
-<li><a class="reference internal" href="#eval.GEvalJudgeEvaluator.compute"><code class="docutils literal notranslate"><span class="pre">GEvalJudgeEvaluator.compute()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#eval.GEvalLLMJudge"><code class="docutils literal notranslate"><span class="pre">GEvalLLMJudge</span></code></a><ul>
-<li><a class="reference internal" href="#eval.GEvalLLMJudge.call"><code class="docutils literal notranslate"><span class="pre">GEvalLLMJudge.call()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#eval.GEvalMetric"><code class="docutils literal notranslate"><span class="pre">GEvalMetric</span></code></a><ul>
-<li><a class="reference internal" href="#eval.GEvalMetric.RELEVANCE"><code class="docutils literal notranslate"><span class="pre">GEvalMetric.RELEVANCE</span></code></a></li>
-<li><a class="reference internal" href="#eval.GEvalMetric.FLUENCY"><code class="docutils literal notranslate"><span class="pre">GEvalMetric.FLUENCY</span></code></a></li>
-<li><a class="reference internal" href="#eval.GEvalMetric.CONSISTENCY"><code class="docutils literal notranslate"><span class="pre">GEvalMetric.CONSISTENCY</span></code></a></li>
-<li><a class="reference internal" href="#eval.GEvalMetric.COHERENCE"><code class="docutils literal notranslate"><span class="pre">GEvalMetric.COHERENCE</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#overview">Overview</a></li>
 </ul>
 </li>
 </ul>

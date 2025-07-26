@@ -1,0 +1,33 @@
+.. _tracing-span_data:
+
+span_data
+=========================
+
+.. automodule:: tracing.span_data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      AdalFlowGeneratorSpanData
+      AdalFlowResponseSpanData
+      AdalFlowRunnerSpanData
+      AdalFlowStepSpanData
+      AdalFlowToolSpanData
+      AgentSpanData
+      CustomSpanData
+      FunctionSpanData
+      GenerationSpanData
+      GuardrailSpanData
+      HandoffSpanData
+      MCPListToolsSpanData
+      ResponseSpanData
+      SpanData
+      SpeechGroupSpanData
+      SpeechSpanData
+      TranscriptionSpanData
+

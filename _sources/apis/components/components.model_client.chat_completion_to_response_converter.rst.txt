@@ -1,0 +1,9 @@
+.. _components-model_client-chat_completion_to_response_converter:
+
+chat_completion_to_response_converter
+=========================================================================
+
+.. automodule:: components.model_client.chat_completion_to_response_converter
+   :members:
+   :undoc-members:
+   :show-inheritance:

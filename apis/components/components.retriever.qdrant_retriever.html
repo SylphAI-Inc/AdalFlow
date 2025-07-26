@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -454,62 +467,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-components.retriever.qdrant_retriever">
-<span id="qdrant-retriever"></span><span id="components-retriever-qdrant-retriever"></span><h1>qdrant_retriever<a class="headerlink" href="#module-components.retriever.qdrant_retriever" title="Link to this heading">¶</a></h1>
-<p>Leverage a Qdrant collection to retrieve documents.</p>
-<p class="rubric">Classes</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.retriever.qdrant_retriever.QdrantRetriever" title="components.retriever.qdrant_retriever.QdrantRetriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QdrantRetriever</span></code></a>(collection_name, client, ...)</p></td>
-<td><p>Use a Qdrant collection to retrieve documents.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="components.retriever.qdrant_retriever.QdrantRetriever">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">QdrantRetriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QdrantClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Embedder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'meta_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Filter</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/qdrant_retriever.html#QdrantRetriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.qdrant_retriever.QdrantRetriever" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
-<p>Use a Qdrant collection to retrieve documents.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>collection_name</strong> (<em>str</em>) – the collection name in Qdrant.</p></li>
-<li><p><strong>client</strong> (<em>QdrantClient</em>) – An instance of qdrant_client.QdrantClient.</p></li>
-<li><p><strong>embedder</strong> (<a class="reference internal" href="../core/core.embedder.html#core.embedder.Embedder" title="core.embedder.Embedder"><em>Embedder</em></a>) – An instance of Embedder.</p></li>
-<li><p><strong>top_k</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – top k documents to fetch. Defaults to 10.</p></li>
-<li><p><strong>vector_name</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – the name of the vector in the collection. Defaults to None.</p></li>
-<li><p><strong>text_key</strong> (<em>str</em><em>, </em><em>optional</em>) – the key in the payload that contains the text. Defaults to “text”.</p></li>
-<li><p><strong>metadata_key</strong> (<em>str</em><em>, </em><em>optional</em>) – the key in the payload that contains the metadata. Defaults to “meta_data”.</p></li>
-<li><p><strong>filter</strong> (<em>Optional</em><em>[</em><em>models.Filter</em><em>]</em><em>, </em><em>optional</em>) – the filter to apply to the query. Defaults to None.</p></li>
-</ul>
-</dd>
-</dl>
-<p>References:
-[1] Qdrant: <a class="reference external" href="https://qdrant.tech/">https://qdrant.tech/</a>
-[2] Documentation: <a class="reference external" href="https://qdrant.tech/documentation/">https://qdrant.tech/documentation/</a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="components.retriever.qdrant_retriever.QdrantRetriever.reset_index">
-<span class="sig-name descname"><span class="pre">reset_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/qdrant_retriever.html#QdrantRetriever.reset_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.qdrant_retriever.QdrantRetriever.reset_index" title="Link to this definition">¶</a></dt>
-<dd><p>Initialize/reset any attributes/states for the index.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.retriever.qdrant_retriever.QdrantRetriever.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverOutput</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/components/retriever/qdrant_retriever.html#QdrantRetriever.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.qdrant_retriever.QdrantRetriever.call" title="Link to this definition">¶</a></dt>
-<dd><p>User must override this for the inference scenario
-if bicall is not defined.</p>
-</dd></dl>
-
-</dd></dl>
-
+          <section id="qdrant-retriever">
+<span id="components-retriever-qdrant-retriever"></span><h1>qdrant_retriever<a class="headerlink" href="#qdrant-retriever" title="Link to this heading">¶</a></h1>
 </section>
 
         </article>
@@ -554,31 +519,8 @@ if bicall is not defined.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">qdrant_retriever</a><ul>
-<li><a class="reference internal" href="#components.retriever.qdrant_retriever.QdrantRetriever"><code class="docutils literal notranslate"><span class="pre">QdrantRetriever</span></code></a><ul>
-<li><a class="reference internal" href="#components.retriever.qdrant_retriever.QdrantRetriever.reset_index"><code class="docutils literal notranslate"><span class="pre">QdrantRetriever.reset_index()</span></code></a></li>
-<li><a class="reference internal" href="#components.retriever.qdrant_retriever.QdrantRetriever.call"><code class="docutils literal notranslate"><span class="pre">QdrantRetriever.call()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

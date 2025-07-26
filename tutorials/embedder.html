@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Retriever" href="retriever.html" /><link rel="prev" title="Parser" href="output_parsers.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Text Splitter" href="text_splitter.html" /><link rel="prev" title="Parser" href="output_parsers.html" />
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Embedder - Build and Optimize LM Workflows</title>
@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -476,14 +489,14 @@
 <li><p>When to use <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and how to use it?</p></li>
 <li><p>How to batch processing with <code class="docutils literal notranslate"><span class="pre">BatchEmbedder</span></code>?</p></li>
 </ol>
-<p><a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.Embedder" title="core.embedder.Embedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.Embedder</span></code></a> class is similar to <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, it is a user-facing component that orchestrates embedding models via <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> and <code class="docutils literal notranslate"><span class="pre">output_processors</span></code>.
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.Embedder</span></code> class is similar to <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, it is a user-facing component that orchestrates embedding models via <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> and <code class="docutils literal notranslate"><span class="pre">output_processors</span></code>.
 Compared with using <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> directly, <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> further simplify the interface and output a standard <code class="docutils literal notranslate"><span class="pre">EmbedderOutput</span></code> format.</p>
 <p>By switching the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>, you can use different embedding models in your task pipeline easily, or even embedd different data such as text, image, etc.</p>
 <section id="embedderoutput">
 <h2>EmbedderOutput<a class="headerlink" href="#embedderoutput" title="Link to this heading">¶</a></h2>
-<p><a class="reference internal" href="../apis/core/core.types.html#core.types.EmbedderOutput" title="core.types.EmbedderOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.EmbedderOutput</span></code></a> is a standard output format of <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>. It is a subclass of <cite>DataClass</cite> and it contains the following core fields:</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.EmbedderOutput</span></code> is a standard output format of <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>. It is a subclass of <cite>DataClass</cite> and it contains the following core fields:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code>: a list of embeddings, each embedding if of type <a class="reference internal" href="../apis/core/core.types.html#core.types.Embedding" title="core.types.Embedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Embedding</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code>: a list of embeddings, each embedding if of type <code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Embedding</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">error</span></code>: Error message if any error occurs during the model inference stage. Failure in the output processing stage will raise an exception instead of setting this field.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">raw_response</span></code>: Used for failed model inference.</p></li>
 </ul>
@@ -631,7 +644,7 @@ Putting it all together, we can create a new embedder with the output processor.
 <section id="batchembedder">
 <h2>BatchEmbedder<a class="headerlink" href="#batchembedder" title="Link to this heading">¶</a></h2>
 <p>Especially in data processing pipelines, you can often have more than 1000 queries to embed. We need to chunk our queries into smaller batches to avoid memory overflow.
-<a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.BatchEmbedder" title="core.embedder.BatchEmbedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code></a> is designed to handle this situation. For now, the code is rather simple, but in the future it can be extended to support multi-processing when you use AdalFlow in production data pipeline.</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code> is designed to handle this situation. For now, the code is rather simple, but in the future it can be extended to support multi-processing when you use AdalFlow in production data pipeline.</p>
 <p>The BatchEmbedder orchestrates the <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and handles the batching process. To use it, you need to pass the <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and the batch size to the constructor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">BatchEmbedder</span>
 
@@ -657,13 +670,13 @@ Putting it all together, we can create a new embedder with the output processor.
 <div class="highlight admonition">
 <p class="admonition-title">API reference</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.Embedder" title="core.embedder.Embedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.Embedder</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.BatchEmbedder" title="core.embedder.BatchEmbedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.EmbedderOutput" title="core.types.EmbedderOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.EmbedderOutput</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.Embedding" title="core.types.Embedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Embedding</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.Embedder</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.EmbedderOutput</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Embedding</span></code></p></li>
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformersClient</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.normalize_vector" title="core.functional.normalize_vector"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.functional.normalize_vector</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.functional.normalize_vector</span></code></p></li>
 </ul>
 </div>
 </section>
@@ -674,12 +687,12 @@ Putting it all together, we can create a new embedder with the output processor.
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="retriever.html">
+          <a class="next-page" href="text_splitter.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Retriever</div>
+                <div class="title">Text Splitter</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

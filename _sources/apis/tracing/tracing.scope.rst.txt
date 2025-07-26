@@ -1,0 +1,9 @@
+.. _tracing-scope:
+
+scope
+====================
+
+.. automodule:: tracing.scope
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -228,7 +228,12 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -489,27 +502,27 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.BooleanParser" title="core.string_parser.BooleanParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">BooleanParser</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">BooleanParser</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
 <td><p>Extracts the first boolean value from the text as <code class="docutils literal notranslate"><span class="pre">bool</span></code>. Supports both ‘True/False’ and ‘true/false’.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.IntParser" title="core.string_parser.IntParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntParser</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">IntParser</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
 <td><p>Extracts the first integer value from the text as <code class="docutils literal notranslate"><span class="pre">int</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.FloatParser" title="core.string_parser.FloatParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">FloatParser</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">FloatParser</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></td>
 <td><p>Extracts the first float value from the text as <code class="docutils literal notranslate"><span class="pre">float</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.ListParser" title="core.string_parser.ListParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">ListParser</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ListParser</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">list</span></code></p></td>
 <td><p>Extracts ‘[]’ and parses the first list string from the text. Uses both <cite>json.loads</cite> and <cite>yaml.safe_load</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.JsonParser" title="core.string_parser.JsonParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonParser</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonParser</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
 <td><p>Extracts ‘[]’ and ‘{}’ and parses JSON strings from the text. It resorts to <cite>yaml.safe_load</cite> for robust parsing.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.YamlParser" title="core.string_parser.YamlParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">YamlParser</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">YamlParser</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
 <td><p>Extracts <code class="docutils literal notranslate"><span class="pre">`yaml`</span></code>, <code class="docutils literal notranslate"><span class="pre">`yml`</span></code> or the whole string and parses YAML strings from the text.</p></td>
 </tr>
@@ -668,7 +681,7 @@
 </section>
 <section id="dataclassparser">
 <h2>DataClassParser<a class="headerlink" href="#dataclassparser" title="Link to this heading">¶</a></h2>
-<p>For more complicated data structures, we can use <a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></a> to define it.
+<p>For more complicated data structures, we can use <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code> to define it.
 The usage of it is pretty much the same as native <cite>dataclass</cite> from <cite>dataclasses</cite>.</p>
 <p>Let’s try to define a User class:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
@@ -694,7 +707,7 @@ The usage of it is pretty much the same as native <cite>dataclass</cite> from <c
 </div>
 <p>We have three classes to work with structured data.
 They are <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code>,
-<a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser" title="components.output_parsers.outputs.JsonOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonOutputParser</span></code></a>, and <cite>YamlOutputParser&lt;components.output_parsers.outputs.YamlOutputParser&gt;</cite>.
+<code class="xref py py-class docutils literal notranslate"><span class="pre">JsonOutputParser</span></code>, and <cite>YamlOutputParser&lt;components.output_parsers.outputs.YamlOutputParser&gt;</cite>.
 <cite>DataClassParser</cite> is the easiest to use.</p>
 <p>Now, lets’ create a parser that will use the <cite>SampleDataClass</cite> to parse the output json string back to the data class instance.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.output_parsers</span> <span class="kn">import</span> <span class="n">DataClassParser</span>
@@ -801,13 +814,13 @@ They are <code class="xref py py-class docutils literal notranslate"><span class
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/core/core.string_parser.html#core-string-parser"><span class="std std-ref">string_parser</span></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.output_parsers.html#components-output-parsers"><span class="std std-ref">OutputParser</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser" title="components.output_parsers.outputs.JsonOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.JsonOutputParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.YamlOutputParser" title="components.output_parsers.outputs.YamlOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.YamlOutputParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser" title="components.output_parsers.outputs.OutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.OutputParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.BooleanOutputParser" title="components.output_parsers.outputs.BooleanOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.BooleanOutputParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.ListOutputParser" title="components.output_parsers.outputs.ListOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.ListOutputParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.dataclass_parser.DataClassParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.base_data_class.DataClass</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.JsonOutputParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.YamlOutputParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.OutputParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.BooleanOutputParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.ListOutputParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.dataclass_parser.DataClassParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.base_data_class.DataClass</span></code></p></li>
 </ul>
 </div>
 </section>

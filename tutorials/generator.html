@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -481,7 +494,7 @@ It is a pipeline consisting of three subcomponents. By switching the prompt temp
 <p><span class="caption-text">Generator - The Orchestrator for LLM Prediction</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>The <a class="reference internal" href="../apis/core/core.generator.html#core.generator.Generator" title="core.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a> is designed to achieve the following goals:</p>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code> is designed to achieve the following goals:</p>
 <ol class="arabic simple">
 <li><p>Model Agnostic: The Generator should be able to call any LLM model with the same prompt.</p></li>
 <li><p>Unified interface: It manages the pipeline from prompt (input) -&gt; model call -&gt; output parsing, while still giving users full control over each part.</p></li>
@@ -505,7 +518,7 @@ If no output processor provided, it is decided by the model client and often ret
 They take two optional arguments:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code> (dict): This is combined with the <code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code> from the initial <code class="docutils literal notranslate"><span class="pre">Prompt</span></code> component and used to format the prompt.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> (dict): This is  combined with the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> from the initial model client, and along with <a class="reference internal" href="../apis/core/core.types.html#core.types.ModelType.LLM" title="core.types.ModelType.LLM"><code class="xref py py-const docutils literal notranslate"><span class="pre">ModelType.LLM</span></code></a>, it is passed to the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>.
+<li><p><code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> (dict): This is  combined with the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> from the initial model client, and along with <code class="xref py py-const docutils literal notranslate"><span class="pre">ModelType.LLM</span></code>, it is passed to the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>.
 The ModelClient will interpret all the inputs as <code class="docutils literal notranslate"><span class="pre">api_kwargs</span></code> specific to each model API provider.</p></li>
 </ul>
 <div class="admonition note">
@@ -522,7 +535,7 @@ The ModelClient will interpret all the inputs as <code class="docutils literal n
 Instead, <cite>Generator</cite> will always return an output record.
 We made this design choice because it can be really helpful to log various failed cases in your train/eval sets all together for further investigation and improvement.</p>
 </div>
-<p>In particular, we created <a class="reference internal" href="../apis/core/core.types.html#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeneratorOutput</span></code></a> to capture important information.</p>
+<p>In particular, we created <code class="xref py py-class docutils literal notranslate"><span class="pre">GeneratorOutput</span></code> to capture important information.</p>
 <ul class="simple">
 <li><p><cite>data</cite> (object) : Stores the final processed response after all three components in the pipeline, indicating <cite>success</cite>.</p></li>
 <li><p><cite>error</cite> (str): Contains the error message if any of the three components in the pipeline fail. When this is not <cite>None</cite>, it indicates <cite>failure</cite>.</p></li>
@@ -766,7 +779,7 @@ You:
 <h3>Switch the model_client<a class="headerlink" href="#switch-the-model-client" title="Link to this heading">¶</a></h3>
 <p>Also, did you notice that we have already switched to using models from <cite>OpenAI</cite> in the above example?
 This demonstrates how easy it is to switch the <cite>model_client</cite> in the Generator, making it a truly model-agnostic component.
-We can even use <a class="reference internal" href="../apis/core/core.types.html#core.types.ModelClientType" title="core.types.ModelClientType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClientType</span></code></a> to switch the model client without handling multiple imports.</p>
+We can even use <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClientType</span></code> to switch the model client without handling multiple imports.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
 
 <span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
@@ -857,10 +870,10 @@ We imported <code class="docutils literal notranslate"><span class="pre">Generat
 <h3>Examples Across the Library<a class="headerlink" href="#examples-across-the-library" title="Link to this heading">¶</a></h3>
 <p>Besides these examples, LLM is like water, even in our library, we have components that have adpated Generator to various other functionalities.</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever" title="components.retriever.llm_retriever.LLMRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMRetriever</span></code></a> is a retriever that uses Generator to call LLM to retrieve the most relevant documents.</p></li>
-<li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge" title="eval.llm_as_judge.DefaultLLMJudge"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultLLMJudge</span></code></a> is a judge that uses Generator to call LLM to evaluate the quality of the response.</p></li>
-<li><p><a class="reference internal" href="../apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer" title="optim.text_grad.tgd_optimizer.TGDOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">TGDOptimizer</span></code></a> is an optimizer that uses Generator to call LLM to optimize the prompt.</p></li>
-<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReAct</span> <span class="pre">Agent</span> <span class="pre">Planner</span></code></a> is an LLM planner that uses Generator to plan and to call functions in ReAct Agent.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMRetriever</span></code> is a retriever that uses Generator to call LLM to retrieve the most relevant documents.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultLLMJudge</span></code> is a judge that uses Generator to call LLM to evaluate the quality of the response.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TGDOptimizer</span></code> is an optimizer that uses Generator to call LLM to optimize the prompt.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ReAct</span> <span class="pre">Agent</span> <span class="pre">Planner</span></code> is an LLM planner that uses Generator to plan and to call functions in ReAct Agent.</p></li>
 </ul>
 </section>
 </section>
@@ -941,19 +954,19 @@ It will require users to define <code class="docutils literal notranslate"><span
 <div class="highlight admonition">
 <p class="admonition-title">API reference</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../apis/core/core.generator.html#core.generator.Generator" title="core.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.generator.Generator</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.GeneratorOutput</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.generator.Generator</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.GeneratorOutput</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.default_prompt_template.html#id0" title="core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.ModelClientType" title="core.types.ModelClientType"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.ModelClientType</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.ModelType" title="core.types.ModelType"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.ModelType</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.JsonParser" title="core.string_parser.JsonParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.string_parser.JsonParser</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt" title="core.prompt_builder.Prompt"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.prompt_builder.Prompt</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger" title="tracing.generator_call_logger.GeneratorCallLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_call_logger.GeneratorCallLogger</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger" title="tracing.generator_state_logger.GeneratorStateLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_state_logger.GeneratorStateLogger</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever" title="components.retriever.llm_retriever.LLMRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.llm_retriever.LLMRetriever</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge" title="eval.llm_as_judge.DefaultLLMJudge"><code class="xref py py-class docutils literal notranslate"><span class="pre">eval.llm_as_judge.DefaultLLMJudge</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer" title="optim.text_grad.tgd_optimizer.TGDOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.text_grad.tgd_optimizer.TGDOptimizer</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.ModelClientType</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.ModelType</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.string_parser.JsonParser</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.prompt_builder.Prompt</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_call_logger.GeneratorCallLogger</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_state_logger.GeneratorStateLogger</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.llm_retriever.LLMRetriever</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">eval.llm_as_judge.DefaultLLMJudge</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.text_grad.tgd_optimizer.TGDOptimizer</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/utils/utils.config.html#utils.config.new_component" title="utils.config.new_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">utils.config.new_component()</span></code></a></p></li>
 </ul>
 </div>

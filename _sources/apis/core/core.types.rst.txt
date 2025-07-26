@@ -21,26 +21,41 @@ types
 
       AssistantResponse
       CompletionUsage
-      ComponentToolOutput
       Conversation
       DialogTurn
       Document
       EmbedderOutput
       EmbedderOutputType
       Embedding
+      EventEncoder
+      FinalOutputItem
       Function
       FunctionDefinition
       FunctionExpression
       FunctionOutput
+      FunctionRequest
       GeneratorOutput
       InputTokensDetails
       ModelClientType
       ModelType
       OutputTokensDetails
+      QueueCompleteSentinel
+      QueueSentinel
+      RawResponsesStreamEvent
       ResponseUsage
       RetrieverOutput
+      RunItem
+      RunItemStreamEvent
+      RunnerResult
+      RunnerStreamingResult
       StepOutput
+      StepRunItem
       TokenLogProb
+      ToolCallActivityRunItem
+      ToolCallPermissionRequest
+      ToolCallRunItem
+      ToolOutput
+      ToolOutputRunItem
       Usage
       UserQuery
 

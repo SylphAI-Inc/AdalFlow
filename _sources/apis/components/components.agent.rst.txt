@@ -9,7 +9,10 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   components.agent.agent
+   components.agent.prompts
    components.agent.react
+   components.agent.runner
 
 
 ---------------

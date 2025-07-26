@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -454,156 +467,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-eval.g_eval">
-<span id="g-eval"></span><span id="eval-g-eval"></span><h1>g_eval<a class="headerlink" href="#module-eval.g_eval" title="Link to this heading">¶</a></h1>
-<p>Implementation of G-Eval: G-eval &lt;<a class="reference external" href="https://arxiv.org/abs/2303.08774">https://arxiv.org/abs/2303.08774</a>, <a class="reference external" href="https://github.com/nlpyang/geval">https://github.com/nlpyang/geval</a>&gt;
-Instead of getting 1/5 as the score, AdalFlow will use 0.2 as the score, so that we can have a score in range [0, 1] for all metrics.</p>
-<p class="rubric">Classes</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eval.g_eval.GEvalJudgeEvaluator" title="eval.g_eval.GEvalJudgeEvaluator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GEvalJudgeEvaluator</span></code></a>([llm_judge])</p></td>
-<td><p>LLM as judge for evaluating the performance of a LLM in form of GEval with 4 main metrics:</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eval.g_eval.GEvalLLMJudge" title="eval.g_eval.GEvalLLMJudge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GEvalLLMJudge</span></code></a>([model_client, model_kwargs, ...])</p></td>
-<td><p>Demonstrate how to use an LLM/Generator to output True or False for a judgement query.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eval.g_eval.GEvalMetric" title="eval.g_eval.GEvalMetric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GEvalMetric</span></code></a>(value[, names, module, ...])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eval.g_eval.NLGTask" title="eval.g_eval.NLGTask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NLGTask</span></code></a>(value[, names, module, qualname, ...])</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="eval.g_eval.GEvalMetric">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GEvalMetric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/g_eval.html#GEvalMetric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.g_eval.GEvalMetric" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="eval.g_eval.GEvalMetric.RELEVANCE">
-<span class="sig-name descname"><span class="pre">RELEVANCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Relevance'</span></em><a class="headerlink" href="#eval.g_eval.GEvalMetric.RELEVANCE" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="eval.g_eval.GEvalMetric.FLUENCY">
-<span class="sig-name descname"><span class="pre">FLUENCY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Fluency'</span></em><a class="headerlink" href="#eval.g_eval.GEvalMetric.FLUENCY" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="eval.g_eval.GEvalMetric.CONSISTENCY">
-<span class="sig-name descname"><span class="pre">CONSISTENCY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Consistency'</span></em><a class="headerlink" href="#eval.g_eval.GEvalMetric.CONSISTENCY" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="eval.g_eval.GEvalMetric.COHERENCE">
-<span class="sig-name descname"><span class="pre">COHERENCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Coherence'</span></em><a class="headerlink" href="#eval.g_eval.GEvalMetric.COHERENCE" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="eval.g_eval.NLGTask">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NLGTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/g_eval.html#NLGTask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.g_eval.NLGTask" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="eval.g_eval.NLGTask.SUMMARIZATION">
-<span class="sig-name descname"><span class="pre">SUMMARIZATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'criteria_coherence':</span> <span class="pre">'Coherence</span> <span class="pre">(1-5)</span> <span class="pre">-</span> <span class="pre">the</span> <span class="pre">collective</span> <span class="pre">quality</span> <span class="pre">of</span> <span class="pre">all</span> <span class="pre">sentences.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">We</span> <span class="pre">align</span> <span class="pre">this</span> <span class="pre">dimension</span> <span class="pre">with</span> <span class="pre">the</span> <span class="pre">DUC</span> <span class="pre">quality</span> <span class="pre">question</span> <span class="pre">of</span> <span class="pre">structure</span> <span class="pre">and</span> <span class="pre">coherence</span> <span class="pre">whereby</span> <span class="pre">&quot;the</span> <span class="pre">summary</span> <span class="pre">should</span> <span class="pre">be</span> <span class="pre">well-structured</span> <span class="pre">and</span> <span class="pre">well-organized.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">The</span> <span class="pre">summary</span> <span class="pre">should</span> <span class="pre">not</span> <span class="pre">just</span> <span class="pre">be</span> <span class="pre">a</span> <span class="pre">heap</span> <span class="pre">of</span> <span class="pre">related</span> <span class="pre">information,</span> <span class="pre">but</span> <span class="pre">should</span> <span class="pre">build</span> <span class="pre">from</span> <span class="pre">sentence</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">coherent</span> <span class="pre">body</span> <span class="pre">of</span> <span class="pre">information</span> <span class="pre">about</span> <span class="pre">a</span> <span class="pre">topic.',</span> <span class="pre">'criteria_consistency':</span> <span class="pre">'Consistency</span> <span class="pre">(1-5)</span> <span class="pre">-</span> <span class="pre">the</span> <span class="pre">factual</span> <span class="pre">alignment</span> <span class="pre">between</span> <span class="pre">the</span> <span class="pre">summary</span> <span class="pre">and</span> <span class="pre">the</span> <span class="pre">summarized</span> <span class="pre">source.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">A</span> <span class="pre">factually</span> <span class="pre">consistent</span> <span class="pre">summary</span> <span class="pre">contains</span> <span class="pre">only</span> <span class="pre">statements</span> <span class="pre">that</span> <span class="pre">are</span> <span class="pre">entailed</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">source</span> <span class="pre">document.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Annotators</span> <span class="pre">were</span> <span class="pre">also</span> <span class="pre">asked</span> <span class="pre">to</span> <span class="pre">penalize</span> <span class="pre">summaries</span> <span class="pre">that</span> <span class="pre">contained</span> <span class="pre">hallucinated</span> <span class="pre">facts.</span> <span class="pre">',</span> <span class="pre">'criteria_fluency':</span> <span class="pre">'Fluency</span> <span class="pre">(1-3):</span> <span class="pre">the</span> <span class="pre">quality</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">summary</span> <span class="pre">in</span> <span class="pre">terms</span> <span class="pre">of</span> <span class="pre">grammar,</span> <span class="pre">spelling,</span> <span class="pre">punctuation,</span> <span class="pre">word</span> <span class="pre">choice,</span> <span class="pre">and</span> <span class="pre">sentence</span> <span class="pre">structure.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">1:</span> <span class="pre">Poor.</span> <span class="pre">The</span> <span class="pre">summary</span> <span class="pre">has</span> <span class="pre">many</span> <span class="pre">errors</span> <span class="pre">that</span> <span class="pre">make</span> <span class="pre">it</span> <span class="pre">hard</span> <span class="pre">to</span> <span class="pre">understand</span> <span class="pre">or</span> <span class="pre">sound</span> <span class="pre">unnatural.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">2:</span> <span class="pre">Fair.</span> <span class="pre">The</span> <span class="pre">summary</span> <span class="pre">has</span> <span class="pre">some</span> <span class="pre">errors</span> <span class="pre">that</span> <span class="pre">affect</span> <span class="pre">the</span> <span class="pre">clarity</span> <span class="pre">or</span> <span class="pre">smoothness</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">text,</span> <span class="pre">but</span> <span class="pre">the</span> <span class="pre">main</span> <span class="pre">points</span> <span class="pre">are</span> <span class="pre">still</span> <span class="pre">comprehensible.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">3:</span> <span class="pre">Good.</span> <span class="pre">The</span> <span class="pre">summary</span> <span class="pre">has</span> <span class="pre">few</span> <span class="pre">or</span> <span class="pre">no</span> <span class="pre">errors</span> <span class="pre">and</span> <span class="pre">is</span> <span class="pre">easy</span> <span class="pre">to</span> <span class="pre">read</span> <span class="pre">and</span> <span class="pre">follow.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">',</span> <span class="pre">'criteria_relevance':</span> <span class="pre">'Relevance</span> <span class="pre">(1-5)</span> <span class="pre">-</span> <span class="pre">selection</span> <span class="pre">of</span> <span class="pre">important</span> <span class="pre">content</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">source.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">The</span> <span class="pre">summary</span> <span class="pre">should</span> <span class="pre">include</span> <span class="pre">only</span> <span class="pre">important</span> <span class="pre">information</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">source</span> <span class="pre">document.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Annotators</span> <span class="pre">were</span> <span class="pre">instructed</span> <span class="pre">to</span> <span class="pre">penalize</span> <span class="pre">summaries</span> <span class="pre">which</span> <span class="pre">contained</span> <span class="pre">redundancies</span> <span class="pre">and</span> <span class="pre">excess</span> <span class="pre">information.',</span> <span class="pre">'steps_coherence':</span> <span class="pre">'1.</span> <span class="pre">Read</span> <span class="pre">the</span> <span class="pre">input</span> <span class="pre">text</span> <span class="pre">carefully</span> <span class="pre">and</span> <span class="pre">identify</span> <span class="pre">the</span> <span class="pre">main</span> <span class="pre">topic</span> <span class="pre">and</span> <span class="pre">key</span> <span class="pre">points.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">2.</span> <span class="pre">Read</span> <span class="pre">the</span> <span class="pre">summary</span> <span class="pre">and</span> <span class="pre">assess</span> <span class="pre">how</span> <span class="pre">well</span> <span class="pre">it</span> <span class="pre">captures</span> <span class="pre">the</span> <span class="pre">main</span> <span class="pre">topic</span> <span class="pre">and</span> <span class="pre">key</span> <span class="pre">points.</span> <span class="pre">And</span> <span class="pre">if</span> <span class="pre">it</span> <span class="pre">presents</span> <span class="pre">them</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">clear</span> <span class="pre">and</span> <span class="pre">logical</span> <span class="pre">order.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">3.</span> <span class="pre">Assign</span> <span class="pre">a</span> <span class="pre">score</span> <span class="pre">for</span> <span class="pre">coherence</span> <span class="pre">on</span> <span class="pre">a</span> <span class="pre">scale</span> <span class="pre">of</span> <span class="pre">1</span> <span class="pre">to</span> <span class="pre">5,</span> <span class="pre">where</span> <span class="pre">1</span> <span class="pre">is</span> <span class="pre">the</span> <span class="pre">lowest</span> <span class="pre">and</span> <span class="pre">5</span> <span class="pre">is</span> <span class="pre">the</span> <span class="pre">highest</span> <span class="pre">based</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">Evaluation</span> <span class="pre">Criteria.',</span> <span class="pre">'steps_consistency':</span> <span class="pre">'1.</span> <span class="pre">Read</span> <span class="pre">the</span> <span class="pre">summary</span> <span class="pre">and</span> <span class="pre">the</span> <span class="pre">source</span> <span class="pre">document</span> <span class="pre">carefully.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">2.</span> <span class="pre">Identify</span> <span class="pre">the</span> <span class="pre">main</span> <span class="pre">facts</span> <span class="pre">and</span> <span class="pre">details</span> <span class="pre">it</span> <span class="pre">presents.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">3.</span> <span class="pre">Read</span> <span class="pre">the</span> <span class="pre">summary</span> <span class="pre">and</span> <span class="pre">compare</span> <span class="pre">it</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">source</span> <span class="pre">document</span> <span class="pre">to</span> <span class="pre">identify</span> <span class="pre">any</span> <span class="pre">inconsistencies</span> <span class="pre">or</span> <span class="pre">factual</span> <span class="pre">errors</span> <span class="pre">that</span> <span class="pre">are</span> <span class="pre">not</span> <span class="pre">supported</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">source.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">4.</span> <span class="pre">Assign</span> <span class="pre">a</span> <span class="pre">score</span> <span class="pre">for</span> <span class="pre">consistency</span> <span class="pre">based</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">Evaluation</span> <span class="pre">Criteria.',</span> <span class="pre">'steps_fluency':</span> <span class="pre">None,</span> <span class="pre">'steps_relevance':</span> <span class="pre">'1.</span> <span class="pre">Read</span> <span class="pre">the</span> <span class="pre">summary</span> <span class="pre">and</span> <span class="pre">the</span> <span class="pre">source</span> <span class="pre">document</span> <span class="pre">carefully.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">2.</span> <span class="pre">Compare</span> <span class="pre">the</span> <span class="pre">summary</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">source</span> <span class="pre">document</span> <span class="pre">and</span> <span class="pre">identify</span> <span class="pre">the</span> <span class="pre">main</span> <span class="pre">points</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">article.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">3.</span> <span class="pre">Assess</span> <span class="pre">how</span> <span class="pre">well</span> <span class="pre">the</span> <span class="pre">summary</span> <span class="pre">covers</span> <span class="pre">the</span> <span class="pre">main</span> <span class="pre">points</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">article,</span> <span class="pre">and</span> <span class="pre">how</span> <span class="pre">much</span> <span class="pre">irrelevant</span> <span class="pre">or</span> <span class="pre">redundant</span> <span class="pre">information</span> <span class="pre">it</span> <span class="pre">contains.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">4.</span> <span class="pre">Assign</span> <span class="pre">a</span> <span class="pre">relevance</span> <span class="pre">score</span> <span class="pre">from</span> <span class="pre">1</span> <span class="pre">to</span> <span class="pre">5.',</span> <span class="pre">'task_desc_str':</span> <span class="pre">'You</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">given</span> <span class="pre">a</span> <span class="pre">summary</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">text.</span>&#160; <span class="pre">Please</span> <span class="pre">evaluate</span> <span class="pre">the</span> <span class="pre">summary</span> <span class="pre">based</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">following</span> <span class="pre">criteria:'}</span></em><a class="headerlink" href="#eval.g_eval.NLGTask.SUMMARIZATION" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="eval.g_eval.GEvalLLMJudge">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GEvalLLMJudge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelClient</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#eval.g_eval.NLGTask" title="eval.g_eval.NLGTask"><span class="pre">NLGTask</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/g_eval.html#GEvalLLMJudge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.g_eval.GEvalLLMJudge" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
-<p>Demonstrate how to use an LLM/Generator to output True or False for a judgement query.</p>
-<p>You can use any of your template to adapt to more tasks and sometimes you can directly ask LLM to output a score in range [0, 1] instead of only True or False.</p>
-<p>A call on the LLM judge equalize to _compute_single_item method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model_client</strong> (<a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><em>ModelClient</em></a>) – The model client to use for the generator.</p></li>
-<li><p><strong>model_kwargs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – The model kwargs to pass to the model client. Defaults to {}. Please refer to <a class="reference internal" href="../components/components.model_client.html#components-model-client"><span class="std std-ref">ModelClient</span></a> for the details on how to set the model_kwargs for your specific model if it is from our library.</p></li>
-<li><p><strong>template</strong> (<em>str</em><em>, </em><em>optional</em>) – The template to use for the LLM evaluator. Defaults to None.</p></li>
-<li><p><strong>use_cache</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use cache for the LLM evaluator. Defaults to True.</p></li>
-<li><p><strong>default_task</strong> (<a class="reference internal" href="#eval.g_eval.NLGTask" title="eval.g_eval.NLGTask"><em>NLGTask</em></a><em>, </em><em>optional</em>) – The default task to use for the judgement query. Defaults to None.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="eval.g_eval.GEvalLLMJudge.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eval/g_eval.html#GEvalLLMJudge.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.g_eval.GEvalLLMJudge.call" title="Link to this definition">¶</a></dt>
-<dd><p>Pass the input string with all information to the LLM evaluator and get the judgement.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>input_str</strong> (<em>str</em>) – The input string with all information.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The judgement result.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict[str, Any]</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="eval.g_eval.GEvalJudgeEvaluator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GEvalJudgeEvaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">llm_judge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/g_eval.html#GEvalJudgeEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.g_eval.GEvalJudgeEvaluator" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEvaluator</span></code></p>
-<p>LLM as judge for evaluating the performance of a LLM in form of GEval with 4 main metrics:</p>
-<p>Relevance, Fluency, Consistency, Coherence.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>llm_judge</strong> (<a class="reference internal" href="../core/core.component.html#core.component.Component" title="core.component.Component"><em>Component</em></a><em>, </em><em>optional</em>) – The LLM evaluator to use. Defaults to GEvalLLMJudge().</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="eval.g_eval.GEvalJudgeEvaluator.compute_single_item">
-<span class="sig-name descname"><span class="pre">compute_single_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eval/g_eval.html#GEvalJudgeEvaluator.compute_single_item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.g_eval.GEvalJudgeEvaluator.compute_single_item" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the score for a single item.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>input_str</strong> (<em>str</em>) – The input string with all information.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The judgement result.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict[str, Any]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="eval.g_eval.GEvalJudgeEvaluator.compute">
-<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_strs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eval/g_eval.html#GEvalJudgeEvaluator.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.g_eval.GEvalJudgeEvaluator.compute" title="Link to this definition">¶</a></dt>
-<dd><p>Get the judgement of the predicted answer for a list of questions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>input_strs</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of input strings.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The judgement result.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List[Dict[str, Any]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+          <section id="g-eval">
+<span id="eval-g-eval"></span><h1>g_eval<a class="headerlink" href="#g-eval" title="Link to this heading">¶</a></h1>
 </section>
 
         </article>
@@ -648,46 +519,8 @@ Instead of getting 1/5 as the score, AdalFlow will use 0.2 as the score, so that
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">g_eval</a><ul>
-<li><a class="reference internal" href="#eval.g_eval.GEvalMetric"><code class="docutils literal notranslate"><span class="pre">GEvalMetric</span></code></a><ul>
-<li><a class="reference internal" href="#eval.g_eval.GEvalMetric.RELEVANCE"><code class="docutils literal notranslate"><span class="pre">GEvalMetric.RELEVANCE</span></code></a></li>
-<li><a class="reference internal" href="#eval.g_eval.GEvalMetric.FLUENCY"><code class="docutils literal notranslate"><span class="pre">GEvalMetric.FLUENCY</span></code></a></li>
-<li><a class="reference internal" href="#eval.g_eval.GEvalMetric.CONSISTENCY"><code class="docutils literal notranslate"><span class="pre">GEvalMetric.CONSISTENCY</span></code></a></li>
-<li><a class="reference internal" href="#eval.g_eval.GEvalMetric.COHERENCE"><code class="docutils literal notranslate"><span class="pre">GEvalMetric.COHERENCE</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#eval.g_eval.NLGTask"><code class="docutils literal notranslate"><span class="pre">NLGTask</span></code></a><ul>
-<li><a class="reference internal" href="#eval.g_eval.NLGTask.SUMMARIZATION"><code class="docutils literal notranslate"><span class="pre">NLGTask.SUMMARIZATION</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#eval.g_eval.GEvalLLMJudge"><code class="docutils literal notranslate"><span class="pre">GEvalLLMJudge</span></code></a><ul>
-<li><a class="reference internal" href="#eval.g_eval.GEvalLLMJudge.call"><code class="docutils literal notranslate"><span class="pre">GEvalLLMJudge.call()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#eval.g_eval.GEvalJudgeEvaluator"><code class="docutils literal notranslate"><span class="pre">GEvalJudgeEvaluator</span></code></a><ul>
-<li><a class="reference internal" href="#eval.g_eval.GEvalJudgeEvaluator.compute_single_item"><code class="docutils literal notranslate"><span class="pre">GEvalJudgeEvaluator.compute_single_item()</span></code></a></li>
-<li><a class="reference internal" href="#eval.g_eval.GEvalJudgeEvaluator.compute"><code class="docutils literal notranslate"><span class="pre">GEvalJudgeEvaluator.compute()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

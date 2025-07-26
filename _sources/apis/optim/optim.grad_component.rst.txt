@@ -7,18 +7,3 @@ grad_component
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Functions
-
-   .. autosummary::
-
-      fun_to_grad_component
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      FunGradComponent
-      GradComponent
-

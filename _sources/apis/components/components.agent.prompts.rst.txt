@@ -1,0 +1,16 @@
+.. _components-agent-prompts:
+
+prompts
+===============================
+
+.. automodule:: components.agent.prompts
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Constants
+
+   .. autodata:: components.agent.prompts.default_role_desc
+   .. autodata:: components.agent.prompts.adalflow_agent_task_desc
+

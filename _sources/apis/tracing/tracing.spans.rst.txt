@@ -1,0 +1,9 @@
+.. _tracing-spans:
+
+spans
+====================
+
+.. automodule:: tracing.spans
+   :members:
+   :undoc-members:
+   :show-inheritance:

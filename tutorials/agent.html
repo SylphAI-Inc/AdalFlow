@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="LLM Evaluation" href="evaluation.html" /><link rel="prev" title="Function calls" href="tool_helper.html" />
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>Agent - Build and Optimize LM Workflows</title>
+        <title>ReAct Agent - Build and Optimize LM Workflows</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Agent</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -468,18 +481,18 @@
       <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
       <span style="vertical-align: middle;"> Open Source Code</span>
    </a>
-</div><section id="agent">
-<h1>Agent<a class="headerlink" href="#agent" title="Link to this heading">¶</a></h1>
+</div><section id="react-agent">
+<h1>ReAct Agent<a class="headerlink" href="#react-agent" title="Link to this heading">¶</a></h1>
 <blockquote class="epigraph">
 <div><p>“An autonomous agent is a system situated within and a part of an environment that senses that environment and acts on it, over time, in pursuit of its own agenda and so as to effect what it senses in the future.”</p>
 <p class="attribution">—Franklin and Graesser (1997)</p>
 </div></blockquote>
-<p>Alongside the well-known RAGs, agents <a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>  are another popular family of LLM applications.
+<p>Alongside the well-known RAGs, agents <a class="footnote-reference brackets" href="#id4" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>  are another popular family of LLM applications.
 What makes agents stand out is their ability to reason, plan, and act via accessible tools.
 When it comes to implementation, AdalFlow has simplified it down to a generator that can use tools, taking multiple steps (sequential or parallel) to complete a user query.</p>
 <section id="design">
 <h2>Design<a class="headerlink" href="#design" title="Link to this heading">¶</a></h2>
-<p>We will first introduce ReAct <a class="footnote-reference brackets" href="#id4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, a general paradigm for building agents with a sequential of interleaving thought, action, and observation steps.</p>
+<p>We will first introduce ReAct <a class="footnote-reference brackets" href="#id5" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, a general paradigm for building agents with a sequential of interleaving thought, action, and observation steps.</p>
 <ul class="simple">
 <li><p><strong>Thought</strong>: The reasoning behind taking an action.</p></li>
 <li><p><strong>Action</strong>: The action to take from a predefined set of actions. In particular, these are the tools/functional tools we have introduced in <a class="reference internal" href="tool_helper.html"><span class="doc">tools</span></a>.</p></li>
@@ -487,7 +500,7 @@ When it comes to implementation, AdalFlow has simplified it down to a generator 
 </ul>
 <section id="prompt-and-data-models">
 <h3>Prompt and Data Models<a class="headerlink" href="#prompt-and-data-models" title="Link to this heading">¶</a></h3>
-<p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT" title="components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></a> is the default prompt for React agent’s LLM planner.
+<p><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code> is the default prompt for React agent’s LLM planner.
 We can categorize the prompt template into four parts:</p>
 <ol class="arabic simple">
 <li><p>Task description</p></li>
@@ -543,7 +556,7 @@ Additionally, we teach it how to handle simple queries and complex queries.</p>
 <ol class="arabic simple" start="4">
 <li><p>Agent step history.</p></li>
 </ol>
-<p>We use <a class="reference internal" href="../apis/core/core.types.html#core.types.StepOutput" title="core.types.StepOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">StepOutput</span></code></a> to record the agent’s step history, including:</p>
+<p>We use <code class="xref py py-class docutils literal notranslate"><span class="pre">StepOutput</span></code> to record the agent’s step history, including:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">action</span></code>: This will be the <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> instance predicted by the agent.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">observation</span></code>: The execution result of the action.</p></li>
@@ -601,13 +614,13 @@ This LLM will use the same model client and model arguments as the agent’s pla
 </pre></div>
 </div>
 </section>
-<section id="react-agent">
-<h3>React Agent<a class="headerlink" href="#react-agent" title="Link to this heading">¶</a></h3>
-<p>We define the class <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code></a> to put everything together.
+<section id="id3">
+<h3>React Agent<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<p>We define the class <code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code> to put everything together.
 It will orchestrate two components:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">planner</span></code>: A <code class="docutils literal notranslate"><span class="pre">Generator</span></code> that works with a <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code> to parse the output format and examples of the function calls using <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code>.</p></li>
-<li><p><a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ToolManager</span></code></a>: Manages a given list of tools, the finish function, and the LLM tool. It is responsible for parsing and executing the functions.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ToolManager</span></code>: Manages a given list of tools, the finish function, and the LLM tool. It is responsible for parsing and executing the functions.</p></li>
 </ul>
 <p>Additionally, it manages <cite>step_history</cite> as a list of <code class="docutils literal notranslate"><span class="pre">StepOutput</span></code> instances for the agent’s internal state.</p>
 <div class="table-wrapper colwidths-given docutils container">
@@ -860,7 +873,7 @@ However, using it on general queries might be an overkill, as it might take more
 <p><strong>Template</strong></p>
 <p>The first thing you want to customize is the template itself.
 You can do this by passing your own template to the agent’s constructor.
-We suggest you to modify our default template: <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT" title="components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></a>.</p>
+We suggest you to modify our default template: <code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code>.</p>
 <p><strong>Examples for Better Output Format</strong></p>
 <p>Secondly, the <code class="docutils literal notranslate"><span class="pre">examples</span></code> in the constructor allow you to provide more examples to enforce the correct output format.
 For instance, if we want it to learn how to correctly call <cite>multiply</cite>, we can pass in a list of <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> instances with the correct format.
@@ -913,15 +926,15 @@ ________
 </pre></div>
 </div>
 <p><strong>Subclass ReActAgent</strong></p>
-<p>If you want to customize the agent further, you can subclass the <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code></a> and override the methods you want to change.</p>
+<p>If you want to customize the agent further, you can subclass the <code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code> and override the methods you want to change.</p>
 <div class="highlight admonition">
 <p class="admonition-title">References</p>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id3" role="doc-footnote">
+<aside class="footnote brackets" id="id4" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>A survey on large language model based autonomous agents: <a class="reference external" href="https://github.com/Paitesanshi/LLM-Agent-Survey">https://github.com/Paitesanshi/LLM-Agent-Survey</a></p>
 </aside>
-<aside class="footnote brackets" id="id4" role="doc-footnote">
+<aside class="footnote brackets" id="id5" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>ReAct: <a class="reference external" href="https://arxiv.org/abs/2210.03629">https://arxiv.org/abs/2210.03629</a></p>
 </aside>
@@ -930,9 +943,9 @@ ________
 <div class="highlight admonition">
 <p class="admonition-title">API References</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.StepOutput" title="core.types.StepOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.StepOutput</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT" title="components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.StepOutput</span></code></p></li>
+<li><p><code class="xref py py-const docutils literal notranslate"><span class="pre">components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></p></li>
 </ul>
 </div>
 </section>
@@ -992,11 +1005,11 @@ ________
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Agent</a><ul>
+<li><a class="reference internal" href="#">ReAct Agent</a><ul>
 <li><a class="reference internal" href="#design">Design</a><ul>
 <li><a class="reference internal" href="#prompt-and-data-models">Prompt and Data Models</a></li>
 <li><a class="reference internal" href="#tools">Tools</a></li>
-<li><a class="reference internal" href="#react-agent">React Agent</a></li>
+<li><a class="reference internal" href="#id3">React Agent</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#agent-in-action">Agent In Action</a></li>

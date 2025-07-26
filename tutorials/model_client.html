@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -507,7 +520,7 @@ It really is just normal model inference code.</p>
 </section>
 <section id="modelclient-protocol">
 <h2>ModelClient Protocol<a class="headerlink" href="#modelclient-protocol" title="Link to this heading">¶</a></h2>
-<p>A model client can be used to manage different types of models, we defined a <a class="reference internal" href="../apis/core/core.types.html#core.types.ModelType" title="core.types.ModelType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelType</span></code></a> to categorize the model type.</p>
+<p>A model client can be used to manage different types of models, we defined a <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelType</span></code> to categorize the model type.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ModelType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">EMBEDDER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">LLM</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -1797,11 +1810,11 @@ custom model client</p>
 <div class="highlight admonition">
 <p class="admonition-title">API reference</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../apis/core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.model_client.ModelClient</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.model_client.ModelClient</span></code></p></li>
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformersClient</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient" title="components.model_client.groq_client.GroqAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.groq_client.GroqAPIClient</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient" title="components.model_client.anthropic_client.AnthropicAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.anthropic_client.AnthropicAPIClient</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.anthropic_client.AnthropicAPIClient</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient" title="components.model_client.google_client.GoogleGenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.google_client.GoogleGenAIClient</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient" title="components.model_client.cohere_client.CohereAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.cohere_client.CohereAPIClient</span></code></a></p></li>
 </ul>

@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -474,7 +487,7 @@
         FT --&gt; PF
         PF --&gt; |&quot;All context as parameters&quot;| LLM1[&quot;LLM sees all params&quot;]
     end
-    
+
     subgraph &quot;Component Tool Pattern&quot;
         CT[&quot;FunctionTool(component.acall)&quot;]
         C[&quot;Component&quot;]
@@ -483,7 +496,7 @@
         C --&gt; CC
         C --&gt; |&quot;Clean interface&quot;| LLM2[&quot;LLM sees only query&quot;]
     end
-    
+
     style CC fill:#e1f5fe
     style LLM1 fill:#ffecb3
     style LLM2 fill:#c8e6c9
@@ -504,7 +517,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">conversation_id</span> <span class="o">=</span> <span class="n">conversation_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_preferences</span> <span class="o">=</span> <span class="n">user_preferences</span>  <span class="c1"># Persistent context</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>  <span class="c1"># Hidden credentials</span>
-    
+
     <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="c1"># Only query parameter visible to LLM</span>
         <span class="c1"># Context available via self.*</span>
@@ -538,18 +551,18 @@
         B --&gt; C[&quot;Raw Processing&quot;]
         C --&gt; D[&quot;Large Data Results&quot;]
     end
-    
+
     subgraph &quot;Output Transformation&quot;
         D --&gt; E[&quot;ComponentToolOutput&quot;]
         E --&gt; F[&quot;output: Full Data&quot;]
         E --&gt; G[&quot;observation: LLM Summary&quot;]
     end
-    
+
     subgraph &quot;Usage&quot;
         F --&gt; H[&quot;Internal Processing&lt;br/&gt;Downstream Components&quot;]
         G --&gt; I[&quot;LLM Context&lt;br/&gt;Agent Decision Making&quot;]
     end
-    
+
     style E fill:#e8f5e8
     style F fill:#fff3e0
     style G fill:#e3f2fd
@@ -563,7 +576,7 @@
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">as_tool</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ComponentToolOutput</span><span class="p">,</span> <span class="n">SearchResults</span><span class="p">]:</span>
         <span class="c1"># Perform search - returns large SearchResults object</span>
         <span class="n">search_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_engine</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">as_tool</span><span class="p">:</span>
             <span class="c1"># Create concise observation for LLM</span>
             <span class="n">observation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_to_observation</span><span class="p">(</span><span class="n">search_results</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
@@ -584,13 +597,13 @@
 <span class="s2">    Answer: {{ output.answerBox }}</span>
 <span class="s2">    __________________________</span>
 <span class="s2">    {</span><span class="si">% e</span><span class="s2">ndif %}</span>
-<span class="s2">    </span>
+
 <span class="s2">    {</span><span class="si">% i</span><span class="s2">f output.organic %}</span>
 <span class="s2">    Search Results:</span>
 
 <span class="s2">    {</span><span class="si">% f</span><span class="s2">or result in output.organic %}</span>
 <span class="s2">    {{loop.index}}.</span>
-<span class="s2">    Title: {{ result.title }} </span>
+<span class="s2">    Title: {{ result.title }}</span>
 <span class="s2">    Link: {{ result.link }}</span>
 <span class="s2">    Snippet: {{ result.snippet }}</span>
 <span class="s2">    {</span><span class="si">% i</span><span class="s2">f result.credibility_score %}</span>
@@ -605,268 +618,6 @@
 </div>
 </section>
 </section>
-<section id="real-world-examples">
-<h2>Real-World Examples<a class="headerlink" href="#real-world-examples" title="Link to this heading">¶</a></h2>
-<section id="search-tool-with-context-persistence">
-<h3>1. Search Tool with Context Persistence<a class="headerlink" href="#search-tool-with-context-persistence" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SearchTool</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search tool with persistent configuration and credibility checking.&quot;&quot;&quot;</span>
-    
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="c1"># Persistent context - not exposed to LLM</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span> <span class="o">=</span> <span class="n">model_client</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">search_engine</span> <span class="o">=</span> <span class="n">SerpSearch</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">credibility_checker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_credibility_checker</span><span class="p">()</span>
-    
-    <span class="k">def</span> <span class="nf">_setup_credibility_checker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal setup - not a tool method&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Generator</span><span class="p">(</span>
-            <span class="n">model_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="p">,</span>
-            <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
-            <span class="n">template</span><span class="o">=</span><span class="n">CREDIBILITY_TEMPLATE</span><span class="p">,</span>
-            <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-    
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">num_sources</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-        <span class="n">check_credibility</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentToolOutput</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Search the web for information.</span>
-<span class="sd">        </span>
-<span class="sd">        Args:</span>
-<span class="sd">            query: The search query</span>
-<span class="sd">            num_sources: Number of sources to return</span>
-<span class="sd">            check_credibility: Whether to check source credibility</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Use persistent context</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_engine</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">num_sources</span><span class="p">)</span>
-        
-        <span class="k">if</span> <span class="n">check_credibility</span><span class="p">:</span>
-            <span class="c1"># Use persistent credibility checker</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_by_credibility</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-        
-        <span class="c1"># Format for LLM consumption</span>
-        <span class="n">observation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_to_observation</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
-        
-        <span class="k">return</span> <span class="n">ComponentToolOutput</span><span class="p">(</span>
-            <span class="n">output</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>  <span class="c1"># Full SearchResults object</span>
-            <span class="n">observation</span><span class="o">=</span><span class="n">observation</span>  <span class="c1"># Concise summary for LLM</span>
-        <span class="p">)</span>
-
-<span class="c1"># Usage as ComponentTool</span>
-<span class="n">search_tool</span> <span class="o">=</span> <span class="n">SearchTool</span><span class="p">(</span>
-    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
-    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">}</span>
-<span class="p">)</span>
-<span class="n">search_function_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">search_tool</span><span class="o">.</span><span class="n">acall</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="permission-tool-with-async-generators">
-<h3>2. Permission Tool with Async Generators<a class="headerlink" href="#permission-tool-with-async-generators" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PermissionTool</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tool that requests user permission before executing commands.&quot;&quot;&quot;</span>
-    
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permission_state</span><span class="p">:</span> <span class="n">UserPermissionState</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="c1"># Persistent permission state</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">permission_state</span> <span class="o">=</span> <span class="n">permission_state</span>
-    
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">ComponentToolOutput</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Execute a command with user permission.</span>
-<span class="sd">        </span>
-<span class="sd">        Args:</span>
-<span class="sd">            command: The command to execute</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">command_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
-        
-        <span class="c1"># Request permission (non-blocking)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">permission_state</span><span class="o">.</span><span class="n">request_permission_or_response</span><span class="p">(</span><span class="n">command_id</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
-        
-        <span class="c1"># First yield: thinking state</span>
-        <span class="k">yield</span> <span class="n">ComponentToolOutput</span><span class="p">(</span>
-            <span class="n">output</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;think&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;requesting permission for: </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">},</span>
-            <span class="n">is_streaming</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
-        
-        <span class="c1"># Wait for user response (blocking)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">permission_state</span><span class="o">.</span><span class="n">wait_for_permission_or_response</span><span class="p">(</span><span class="n">command_id</span><span class="p">)</span>
-        
-        <span class="c1"># Execute based on permission</span>
-        <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="n">PermissionStatus</span><span class="o">.</span><span class="n">ACCEPT</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
-            <span class="n">observation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Command executed: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">observation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Command denied: </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&quot;</span>
-        
-        <span class="c1"># Final yield: result</span>
-        <span class="k">yield</span> <span class="n">ComponentToolOutput</span><span class="p">(</span>
-            <span class="n">output</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">},</span>
-            <span class="n">observation</span><span class="o">=</span><span class="n">observation</span>
-        <span class="p">)</span>
-
-<span class="c1"># Usage with conversation context</span>
-<span class="n">permission_state</span> <span class="o">=</span> <span class="n">UserPermissionState</span><span class="p">(</span><span class="n">conversation_id</span><span class="o">=</span><span class="s2">&quot;session_123&quot;</span><span class="p">)</span>
-<span class="n">permission_tool_component</span> <span class="o">=</span> <span class="n">PermissionTool</span><span class="p">(</span><span class="n">permission_state</span><span class="o">=</span><span class="n">permission_state</span><span class="p">)</span>
-<span class="n">permission_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">permission_tool_component</span><span class="o">.</span><span class="n">acall</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="planning-agent-with-complex-state">
-<h3>3. Planning Agent with Complex State<a class="headerlink" href="#planning-agent-with-complex-state" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PlannerAgent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Agent that creates search plans with conversation context.&quot;&quot;&quot;</span>
-    
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="c1"># Persistent planning context</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span> <span class="o">=</span> <span class="n">model_client</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">user_preferences</span> <span class="o">=</span> <span class="p">{}</span>
-        
-        <span class="c1"># Internal LLM for planning</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">planner_llm</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
-            <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
-            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
-            <span class="n">template</span><span class="o">=</span><span class="n">PLANNING_TEMPLATE</span><span class="p">,</span>
-            <span class="n">output_processors</span><span class="o">=</span><span class="n">DataClassParser</span><span class="p">(</span><span class="n">WebSearchPlan</span><span class="p">)</span>
-        <span class="p">)</span>
-    
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">instructions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">as_tool</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ComponentToolOutput</span><span class="p">,</span> <span class="n">WebSearchPlan</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a search plan for the given query.</span>
-<span class="sd">        </span>
-<span class="sd">        Args:</span>
-<span class="sd">            query: The user&#39;s query</span>
-<span class="sd">            instructions: Optional additional instructions</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Use conversation context</span>
-        <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
-            <span class="s2">&quot;instructions&quot;</span><span class="p">:</span> <span class="n">instructions</span><span class="p">,</span>
-            <span class="s2">&quot;conversation_history&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span><span class="p">,</span>
-            <span class="s2">&quot;user_preferences&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_preferences</span>
-        <span class="p">}</span>
-        
-        <span class="n">plan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner_llm</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
-        
-        <span class="c1"># Update conversation history</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span> <span class="s2">&quot;plan&quot;</span><span class="p">:</span> <span class="n">plan</span><span class="p">})</span>
-        
-        <span class="k">if</span> <span class="n">as_tool</span><span class="p">:</span>
-            <span class="n">observation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_to_observation</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">ComponentToolOutput</span><span class="p">(</span>
-                <span class="n">output</span><span class="o">=</span><span class="n">plan</span><span class="p">,</span>  <span class="c1"># Full WebSearchPlan object</span>
-                <span class="n">observation</span><span class="o">=</span><span class="n">observation</span>  <span class="c1"># Summary for LLM</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">plan</span>
-
-<span class="c1"># Usage in agent</span>
-<span class="n">planner_agent</span> <span class="o">=</span> <span class="n">PlannerAgent</span><span class="p">(</span>
-    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
-    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">}</span>
-<span class="p">)</span>
-<span class="n">planner_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">planner_agent</span><span class="o">.</span><span class="n">call</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="integration-with-agent-framework">
-<h2>Integration with Agent Framework<a class="headerlink" href="#integration-with-agent-framework" title="Link to this heading">¶</a></h2>
-<pre  class="mermaid">
-        sequenceDiagram
-    participant U as User
-    participant R as Runner
-    participant A as Agent
-    participant CT as ComponentTool
-    participant C as Component
-    participant LLM as Language Model
-    
-    U-&gt;&gt;R: Query
-    R-&gt;&gt;A: Execute with tools
-    A-&gt;&gt;LLM: Plan with available tools
-    LLM-&gt;&gt;A: Tool call decision
-    A-&gt;&gt;CT: FunctionTool.call()
-    CT-&gt;&gt;C: component.acall(query)
-    
-    Note over C: Accesses persistent&lt;br/&gt;context &amp; state
-    
-    C-&gt;&gt;C: Process with full context
-    C-&gt;&gt;CT: ComponentToolOutput
-    
-    Note over CT: Separates output&lt;br/&gt;from observation
-    
-    CT-&gt;&gt;A: observation (for LLM)
-    A-&gt;&gt;LLM: Tool result
-    LLM-&gt;&gt;A: Next action/final answer
-    A-&gt;&gt;R: Result
-    R-&gt;&gt;U: Final response
-    
-    Note over C,A: Component maintains&lt;br/&gt;state across calls
-    </pre><section id="agent-setup">
-<h3>Agent Setup<a class="headerlink" href="#agent-setup" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">Runner</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span>
-
-<span class="c1"># Create component tools with persistent context</span>
-<span class="n">search_tool</span> <span class="o">=</span> <span class="n">SearchTool</span><span class="p">(</span>
-    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
-    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
-    <span class="n">conversation_id</span><span class="o">=</span><span class="s2">&quot;user_session_123&quot;</span><span class="p">,</span>
-    <span class="n">user_preferences</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;academic_sources&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
-<span class="p">)</span>
-
-<span class="n">planner_tool</span> <span class="o">=</span> <span class="n">PlannerAgent</span><span class="p">(</span>
-    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
-    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4&quot;</span><span class="p">}</span>
-<span class="p">)</span>
-
-<span class="c1"># Wrap as FunctionTools</span>
-<span class="n">search_function_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">search_tool</span><span class="o">.</span><span class="n">acall</span><span class="p">)</span>
-<span class="n">planner_function_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">planner_tool</span><span class="o">.</span><span class="n">call</span><span class="p">)</span>
-
-<span class="c1"># Create agent with component tools</span>
-<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ResearchAgent&quot;</span><span class="p">,</span>
-    <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;A research assistant with planning and search capabilities&quot;</span><span class="p">,</span>
-    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
-    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">},</span>
-    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">planner_function_tool</span><span class="p">,</span> <span class="n">search_function_tool</span><span class="p">],</span>
-    <span class="n">answer_data_type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span> <span class="n">max_steps</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="execution-example">
-<h3>Execution Example<a class="headerlink" href="#execution-example" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;What are the latest developments in quantum computing?&quot;</span>
-    
-    <span class="c1"># Agent automatically uses component tools with their persistent context</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">runner</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">})</span>
-    
-    <span class="c1"># Tools maintain state across calls within the conversation</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">answer</span><span class="p">)</span>
-
-<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
-</pre></div>
-</div>
-</section>
-</section>
 <section id="component-tool-vs-function-tool-comparison">
 <h2>Component Tool vs Function Tool Comparison<a class="headerlink" href="#component-tool-vs-function-tool-comparison" title="Link to this heading">¶</a></h2>
 <pre  class="mermaid">
@@ -877,40 +628,40 @@
         F1[&quot;Pure Function&quot;]
         P1[&quot;fn(param1, param2, ..., paramN)&quot;]
         R1[&quot;Direct Return&quot;]
-        
+
         FT1 --&gt; F1
         F1 --&gt; P1
         P1 --&gt; R1
-        
+
         P1 -.-&gt; |&quot;All visible to LLM&quot;| LLM1[&quot;LLM Context&quot;]
     end
-    
+
     subgraph &quot;Component Tool Architecture&quot;
         direction TB
         FT2[&quot;FunctionTool&quot;]
         C2[&quot;Component&quot;]
         M2[&quot;component.acall(query)&quot;]
-        
+
         subgraph &quot;Hidden Context&quot;
             direction LR
             HC[&quot;• Configuration&lt;br/&gt;• Credentials&lt;br/&gt;• State&lt;br/&gt;• History&quot;]
         end
-        
+
         CTO[&quot;ComponentToolOutput&quot;]
         O2[&quot;output: Full Data&quot;]
         OB2[&quot;observation: Summary&quot;]
-        
+
         FT2 --&gt; C2
         C2 --&gt; M2
         HC --&gt; C2
         M2 --&gt; CTO
         CTO --&gt; O2
         CTO --&gt; OB2
-        
+
         OB2 -.-&gt; |&quot;Clean interface&quot;| LLM2[&quot;LLM Context&quot;]
         O2 -.-&gt; |&quot;Full data&quot;| DS[&quot;Downstream Systems&quot;]
     end
-    
+
     style HC fill:#ffe0e0
     style CTO fill:#e0f0e0
     style LLM1 fill:#fff3e0
@@ -966,7 +717,7 @@
         <span class="c1"># ✅ Store configuration, not per-call data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;api_key&#39;</span><span class="p">])</span>
-        
+
         <span class="c1"># ❌ Don&#39;t store call-specific data as instance variables</span>
         <span class="c1"># self.last_query = None  # This would leak between calls</span>
 </pre></div>
@@ -1023,89 +774,6 @@
 <li><p><a class="reference internal" href="#./Agent.md"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">Agent</span></code></span></a>: Uses tools for extended capabilities</p></li>
 <li><p><a class="reference internal" href="#./Runner.md"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">Runner</span></code></span></a>: Executes agents with tool support</p></li>
 </ul>
-</section>
-<section id="migration-from-function-tools">
-<h2>Migration from Function Tools<a class="headerlink" href="#migration-from-function-tools" title="Link to this heading">¶</a></h2>
-<pre  class="mermaid">
-        flowchart TD
-    subgraph &quot;Before: Function Tool&quot;
-        direction TB
-        FT1[&quot;FunctionTool(search_web)&quot;]
-        SF1[&quot;search_web()&quot;]
-        P1[&quot;Parameters:&lt;br/&gt;• query: str&lt;br/&gt;• api_key: str&lt;br/&gt;• user_id: str&lt;br/&gt;• preferences: dict&quot;]
-        R1[&quot;Raw Results&quot;]
-        
-        FT1 --&gt; SF1
-        SF1 --&gt; P1
-        P1 --&gt; R1
-        
-        P1 -.-&gt; |&quot;All exposed&quot;| LLM1[&quot;LLM sees all params&quot;]
-        R1 -.-&gt; |&quot;Direct output&quot;| LLM1
-    end
-    
-    subgraph &quot;After: Component Tool&quot;
-        direction TB
-        FT2[&quot;FunctionTool(component.acall)&quot;]
-        ST2[&quot;SearchTool Component&quot;]
-        
-        subgraph &quot;Hidden in __init__&quot;
-            HC2[&quot;• api_key&lt;br/&gt;• user_id&lt;br/&gt;• preferences&lt;br/&gt;• client&quot;]
-        end
-        
-        AC2[&quot;acall(query: str)&quot;]
-        CTO2[&quot;ComponentToolOutput&quot;]
-        OUT2[&quot;output: Full Results&quot;]
-        OBS2[&quot;observation: LLM Summary&quot;]
-        
-        FT2 --&gt; ST2
-        HC2 --&gt; ST2
-        ST2 --&gt; AC2
-        AC2 --&gt; CTO2
-        CTO2 --&gt; OUT2
-        CTO2 --&gt; OBS2
-        
-        AC2 -.-&gt; |&quot;Clean interface&quot;| LLM2[&quot;LLM sees only query&quot;]
-        OBS2 -.-&gt; |&quot;Optimized output&quot;| LLM2
-    end
-    
-    FT1 -.-&gt; |&quot;Migration&quot;| FT2
-    
-    style HC2 fill:#ffe0e0
-    style CTO2 fill:#e0f0e0
-    style LLM1 fill:#fff3e0  
-    style LLM2 fill:#e3f2fd
-    </pre><section id="before-function-tool">
-<h3>Before (Function Tool)<a class="headerlink" href="#before-function-tool" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">search_web</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">preferences</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-    <span class="c1"># All context as parameters</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">SearchClient</span><span class="p">(</span><span class="n">api_key</span><span class="p">)</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">preferences</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">results</span>  <span class="c1"># Raw output to LLM</span>
-
-<span class="n">search_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">search_web</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="after-component-tool">
-<h3>After (Component Tool)<a class="headerlink" href="#after-component-tool" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SearchTool</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">preferences</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">SearchClient</span><span class="p">(</span><span class="n">api_key</span><span class="p">)</span>  <span class="c1"># Hidden context</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">preferences</span> <span class="o">=</span> <span class="n">preferences</span>
-    
-    <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentToolOutput</span><span class="p">:</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preferences</span><span class="p">)</span>
-        <span class="n">observation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_for_llm</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>  <span class="c1"># LLM-optimized</span>
-        <span class="k">return</span> <span class="n">ComponentToolOutput</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">observation</span><span class="o">=</span><span class="n">observation</span><span class="p">)</span>
-
-<span class="n">search_tool_component</span> <span class="o">=</span> <span class="n">SearchTool</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="n">preferences</span><span class="o">=</span><span class="p">{})</span>
-<span class="n">search_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">search_tool_component</span><span class="o">.</span><span class="n">acall</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>ComponentTool provides a powerful pattern for building sophisticated, context-aware tools that maintain clean interfaces while hiding implementation complexity from LLMs.</p>
-</section>
 </section>
 </section>
 
@@ -1176,17 +844,6 @@
 <li><a class="reference internal" href="#observation-template-example">Observation Template Example</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#real-world-examples">Real-World Examples</a><ul>
-<li><a class="reference internal" href="#search-tool-with-context-persistence">1. Search Tool with Context Persistence</a></li>
-<li><a class="reference internal" href="#permission-tool-with-async-generators">2. Permission Tool with Async Generators</a></li>
-<li><a class="reference internal" href="#planning-agent-with-complex-state">3. Planning Agent with Complex State</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#integration-with-agent-framework">Integration with Agent Framework</a><ul>
-<li><a class="reference internal" href="#agent-setup">Agent Setup</a></li>
-<li><a class="reference internal" href="#execution-example">Execution Example</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#component-tool-vs-function-tool-comparison">Component Tool vs Function Tool Comparison</a></li>
 <li><a class="reference internal" href="#best-practices">Best Practices</a><ul>
 <li><a class="reference internal" href="#state-management">1. <strong>State Management</strong></a></li>
@@ -1196,11 +853,6 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#related-components">Related Components</a></li>
-<li><a class="reference internal" href="#migration-from-function-tools">Migration from Function Tools</a><ul>
-<li><a class="reference internal" href="#before-function-tool">Before (Function Tool)</a></li>
-<li><a class="reference internal" href="#after-component-tool">After (Component Tool)</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>

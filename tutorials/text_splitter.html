@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Data (Database/Pipeline)" href="db.html" /><link rel="prev" title="Retriever" href="retriever.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Data (Database/Pipeline)" href="db.html" /><link rel="prev" title="Embedder" href="embedder.html" />
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Text Splitter - Build and Optimize LM Workflows</title>
@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -484,7 +497,7 @@
 Shorter content is more manageable and fits memory constraint.
 The goal of the <code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> is to chunk large data into smaller ones, potentially improving embedding and retrieving.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> is designed to efficiently process and chunk <strong>plain text</strong>.
-It leverages configurable separators to facilitate the splitting of <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-obj docutils literal notranslate"><span class="pre">document</span> <span class="pre">object</span></code></a> into smaller manageable document chunks.</p>
+It leverages configurable separators to facilitate the splitting of <code class="xref py py-obj docutils literal notranslate"><span class="pre">document</span> <span class="pre">object</span></code> into smaller manageable document chunks.</p>
 </section>
 <section id="how-does-it-work">
 <h2>How does it work<a class="headerlink" href="#how-does-it-work" title="Link to this heading">¶</a></h2>
@@ -502,7 +515,7 @@ Here are sample examples and you will see the real output of <code class="docuti
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>Type 2:</strong> Use <a class="reference internal" href="../apis/core/core.tokenizer.html#core.tokenizer.Tokenizer" title="core.tokenizer.Tokenizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tokenizer.Tokenizer</span></code></a>. It works as:</p></li>
+<li><p><strong>Type 2:</strong> Use <code class="xref py py-class docutils literal notranslate"><span class="pre">core.tokenizer.Tokenizer</span></code>. It works as:</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Hello, world!&quot;</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot; world&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">]</span>
 </pre></div>
@@ -698,7 +711,7 @@ AdalFlow’s future implementations will introduce splitters for <code class="do
 <section id="customization-tips">
 <h2>Customization Tips<a class="headerlink" href="#customization-tips" title="Link to this heading">¶</a></h2>
 <p>You can also customize the <code class="docutils literal notranslate"><span class="pre">SEPARATORS</span></code>. For example, by defining <code class="docutils literal notranslate"><span class="pre">SEPARATORS</span></code> = <code class="docutils literal notranslate"><span class="pre">{&quot;question&quot;:</span> <span class="pre">&quot;?&quot;}</span> <span class="pre">``and</span> <span class="pre">setting</span> <span class="pre">``split_by</span> <span class="pre">=</span> <span class="pre">&quot;question&quot;</span></code>, the document will be split at each <code class="docutils literal notranslate"><span class="pre">?</span></code>, ideal for processing text structured
-as a series of questions. If you need to customize <a class="reference internal" href="../apis/core/core.tokenizer.html#core.tokenizer.Tokenizer" title="core.tokenizer.Tokenizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tokenizer.Tokenizer</span></code></a>, please check <a class="reference external" href="https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb">Reference</a>.</p>
+as a series of questions. If you need to customize <code class="xref py py-class docutils literal notranslate"><span class="pre">core.tokenizer.Tokenizer</span></code>, please check <a class="reference external" href="https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb">Reference</a>.</p>
 </section>
 </section>
 
@@ -716,14 +729,14 @@ as a series of questions. If you need to customize <a class="reference internal"
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="retriever.html">
+          <a class="prev-page" href="embedder.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Retriever</div>
+                <div class="title">Embedder</div>
                 
               </div>
             </a>

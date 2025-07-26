@@ -7,11 +7,3 @@ gsm8k
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      GSM8K
-

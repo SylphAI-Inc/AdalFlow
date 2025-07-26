@@ -7,11 +7,3 @@ dataclass_parser
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      DataClassParser
-

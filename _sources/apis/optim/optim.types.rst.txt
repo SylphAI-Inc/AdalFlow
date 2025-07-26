@@ -7,16 +7,3 @@ types
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      EvaluationResult
-      ParameterType
-      PromptData
-      TrainerResult
-      TrainerStepResult
-      TrainerValidateStats
-

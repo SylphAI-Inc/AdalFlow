@@ -1,0 +1,20 @@
+.. _tracing-util:
+
+util
+===================
+
+.. automodule:: tracing.util
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      gen_group_id
+      gen_span_id
+      gen_trace_id
+      time_iso
+

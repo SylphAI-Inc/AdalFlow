@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Agent" href="agent.html" /><link rel="prev" title="RAG with Memory" href="rag_with_memory.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="ReAct Agent" href="agent.html" /><link rel="prev" title="RAG with Memory" href="rag_with_memory.html" />
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Function calls - Build and Optimize LM Workflows</title>
@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -554,13 +567,13 @@ But it is limiting:</p>
 </div>
 <p>This is not only more flexible, but also it is also a more efficient/compact way to call a function.</p>
 <p><strong>Data Models</strong></p>
-<p>We have four <code class="docutils literal notranslate"><span class="pre">DataClass</span></code> models: <a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionDefinition" title="core.types.FunctionDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionDefinition</span></code></a>, <a class="reference internal" href="../apis/core/core.types.html#core.types.Function" title="core.types.Function"><code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></a>, <a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionExpression" title="core.types.FunctionExpression"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionExpression</span></code></a>, and <a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionOutput" title="core.types.FunctionOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionOutput</span></code></a> to handle function calls.</p>
+<p>We have four <code class="docutils literal notranslate"><span class="pre">DataClass</span></code> models: <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionDefinition</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionExpression</span></code>, and <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionOutput</span></code> to handle function calls.</p>
 <p>These classes not only help with data structuring but also by being a subclass of <code class="docutils literal notranslate"><span class="pre">DataClass</span></code>, it can be easily used in the prompt.
 <code class="docutils literal notranslate"><span class="pre">Function</span></code> has three important attributes: <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">args</span></code>, and <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> for the function name, positional arguments and keyword arguments.
 <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> only has one action for the function call expression.
 Both can be used to format the output in the prompt. We will demonstrate how to use it later.</p>
 <p><strong>Components</strong></p>
-<p>We have two components: <a class="reference internal" href="../apis/core/core.func_tool.html#core.func_tool.FunctionTool" title="core.func_tool.FunctionTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionTool</span></code></a> and <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ToolManager</span></code></a> to streamline the lifecyle of (1)
+<p>We have two components: <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionTool</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">ToolManager</span></code> to streamline the lifecyle of (1)
 creating the function definition (2) formatting the prompt with the definitions and output format (3) parsing the response (4) executing the function.</p>
 <p><code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code> is a container of a single function. It handles the function definition and executing of the function. It supports both sync and async functions.
 <code class="docutils literal notranslate"><span class="pre">ToolManager</span></code> manages all tools. And it handles the execution and context_map that is used to parse the functions sercurely.</p>
@@ -899,7 +912,7 @@ The output is:</p>
 <span class="o">&lt;</span><span class="n">START_OF_USER</span><span class="o">&gt;</span><span class="p">:</span> <span class="kc">None</span><span class="o">&lt;</span><span class="n">END_OF_USER</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>We will use <a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser" title="components.output_parsers.outputs.JsonOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.JsonOutputParser</span></code></a> to streamline the formatting of our output data type.</p>
+<p>We will use <code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.JsonOutputParser</span></code> to streamline the formatting of our output data type.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.output_parsers</span> <span class="kn">import</span> <span class="n">JsonOutputParser</span>
 
 <span class="n">func_parser</span> <span class="o">=</span> <span class="n">JsonOutputParser</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">Function</span><span class="p">,</span> <span class="n">exclude_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">,</span> <span class="s2">&quot;args&quot;</span><span class="p">])</span>
@@ -941,7 +954,7 @@ The output is:</p>
 </pre></div>
 </div>
 <p><strong>Run Queries</strong></p>
-<p>We will use <code class="docutils literal notranslate"><span class="pre">Function.from_dict</span></code> to get the final output type from the json object. Here we use <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func" title="core.tool_manager.ToolManager.execute_func"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func()</span></code></a> to execute it directly.</p>
+<p>We will use <code class="docutils literal notranslate"><span class="pre">Function.from_dict</span></code> to get the final output type from the json object. Here we use <code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func()</span></code> to execute it directly.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;add 2 and 3&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search for something&quot;</span><span class="p">,</span>
@@ -1066,8 +1079,8 @@ We will use FunctionExpression this time in the parser. And we added the necessa
         <span class="k">return</span> <span class="kc">None</span>
 </pre></div>
 </div>
-<p>In this case, we used <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.parse_func_expr" title="core.tool_manager.ToolManager.parse_func_expr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.parse_func_expr()</span></code></a> and <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func" title="core.tool_manager.ToolManager.execute_func"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func()</span></code></a> to execute the function.
-Or we can directly use <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr" title="core.tool_manager.ToolManager.execute_func_expr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func_expr()</span></code></a> to execute the function expression. Both are equivalent.</p>
+<p>In this case, we used <code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.parse_func_expr()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func()</span></code> to execute the function.
+Or we can directly use <code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func_expr()</span></code> to execute the function expression. Both are equivalent.</p>
 <p>From the output shown below, this time we get all function calls executed successfully.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="n">Query</span><span class="p">:</span> <span class="n">add</span> <span class="mi">2</span> <span class="ow">and</span> <span class="mi">3</span>
 <span class="o">--------------------------------------------------</span>
@@ -1133,7 +1146,7 @@ Or we can directly use <a class="reference internal" href="../apis/core/core.too
 <span class="s2">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<p>As LLM has problem calling <code class="docutils literal notranslate"><span class="pre">add_point</span></code>, we will add one example and we will generate it with <a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionExpression.from_function" title="core.types.FunctionExpression.from_function"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.types.FunctionExpression.from_function()</span></code></a>.
+<p>As LLM has problem calling <code class="docutils literal notranslate"><span class="pre">add_point</span></code>, we will add one example and we will generate it with <code class="xref py py-meth docutils literal notranslate"><span class="pre">core.types.FunctionExpression.from_function()</span></code>.
 We will update our outputparser to use the example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">example</span> <span class="o">=</span> <span class="n">FunctionExpression</span><span class="o">.</span><span class="n">from_function</span><span class="p">(</span>
         <span class="n">func</span><span class="o">=</span><span class="n">add_points</span><span class="p">,</span> <span class="n">p1</span><span class="o">=</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">p2</span><span class="o">=</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
@@ -1388,18 +1401,18 @@ With the tool, we can create an agent and ask it to search for news.</p>
 <div class="highlight admonition">
 <p class="admonition-title">API References</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionDefinition" title="core.types.FunctionDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionDefinition</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.Function" title="core.types.Function"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Function</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionExpression" title="core.types.FunctionExpression"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionExpression</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionOutput" title="core.types.FunctionOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionOutput</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.func_tool.html#core.func_tool.FunctionTool" title="core.func_tool.FunctionTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.func_tool.FunctionTool</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionDefinition</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Function</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionExpression</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionOutput</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.func_tool.FunctionTool</span></code></p></li>
 <li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">core.mcp_tool.MCPFunctionTool()</span></code></p></li>
 <li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">core.mcp_tool.MCPToolManager()</span></code></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.get_fun_schema" title="core.functional.get_fun_schema"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.get_fun_schema()</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.parse_function_call_expr" title="core.functional.parse_function_call_expr"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.parse_function_call_expr()</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.get_fun_schema()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.parse_function_call_expr()</span></code></p></li>
 <li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.sandbox_execute()</span></code></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.generate_function_call_expression_from_callable" title="core.functional.generate_function_call_expression_from_callable"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.generate_function_call_expression_from_callable()</span></code></a></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.generate_function_call_expression_from_callable()</span></code></p></li>
 </ul>
 </div>
 </section>
@@ -1415,7 +1428,7 @@ With the tool, we can create an agent and ask it to search for news.</p>
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Agent</div>
+                <div class="title">ReAct Agent</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -454,101 +467,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-components.memory.memory">
-<span id="memory"></span><span id="components-memory-memory"></span><h1>memory<a class="headerlink" href="#module-components.memory.memory" title="Link to this heading">¶</a></h1>
-<p>Memory component for user-assistant conversations.</p>
-<p>Memory can include data modeling, in-memory data storage, local file data storage, cloud data persistence, data pipeline, data retriever.
-It is itself an LLM application and different use cases can do it differently.</p>
-<p>This component handles the storage and retrieval of conversation history between users
-and assistants. It provides local memory experience with the ability to format and
-return conversation history.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="components.memory.memory.current_conversation">
-<span class="sig-name descname"><span class="pre">current_conversation</span></span><a class="headerlink" href="#components.memory.memory.current_conversation" title="Link to this definition">¶</a></dt>
-<dd><p>Stores the current active conversation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../core/core.types.html#core.types.Conversation" title="core.types.Conversation">Conversation</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="components.memory.memory.turn_db">
-<span class="sig-name descname"><span class="pre">turn_db</span></span><a class="headerlink" href="#components.memory.memory.turn_db" title="Link to this definition">¶</a></dt>
-<dd><p>Database for storing all conversation turns.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../core/core.db.html#core.db.LocalDB" title="core.db.LocalDB">LocalDB</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="components.memory.memory.conver_db">
-<span class="sig-name descname"><span class="pre">conver_db</span></span><a class="headerlink" href="#components.memory.memory.conver_db" title="Link to this definition">¶</a></dt>
-<dd><p>Database for storing complete conversations.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../core/core.db.html#core.db.LocalDB" title="core.db.LocalDB">LocalDB</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<p class="rubric">Classes</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.memory.memory.Memory" title="components.memory.memory.Memory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Memory</span></code></a>([turn_db])</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="components.memory.memory.Memory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">turn_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LocalDB</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/memory/memory.html#Memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.memory.Memory" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="components.memory.memory.Memory.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/memory/memory.html#Memory.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.memory.Memory.call" title="Link to this definition">¶</a></dt>
-<dd><p>Returns the current conversation history as a formatted string.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>Formatted conversation history with alternating user and assistant messages.</dt><dd><p>Returns empty string if no conversation history exists.</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.memory.memory.Memory.add_dialog_turn">
-<span class="sig-name descname"><span class="pre">add_dialog_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assistant_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/memory/memory.html#Memory.add_dialog_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.memory.Memory.add_dialog_turn" title="Link to this definition">¶</a></dt>
-<dd><p>Add a new dialog turn to the current conversation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>user_query</strong> (<em>str</em>) – The user’s input message.</p></li>
-<li><p><strong>assistant_response</strong> (<em>str</em>) – The assistant’s response message.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+          <section id="memory">
+<span id="components-memory-memory"></span><h1>memory<a class="headerlink" href="#memory" title="Link to this heading">¶</a></h1>
 </section>
 
         </article>
@@ -593,34 +519,8 @@ return conversation history.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">memory</a><ul>
-<li><a class="reference internal" href="#components.memory.memory.current_conversation"><code class="docutils literal notranslate"><span class="pre">current_conversation</span></code></a></li>
-<li><a class="reference internal" href="#components.memory.memory.turn_db"><code class="docutils literal notranslate"><span class="pre">turn_db</span></code></a></li>
-<li><a class="reference internal" href="#components.memory.memory.conver_db"><code class="docutils literal notranslate"><span class="pre">conver_db</span></code></a></li>
-<li><a class="reference internal" href="#components.memory.memory.Memory"><code class="docutils literal notranslate"><span class="pre">Memory</span></code></a><ul>
-<li><a class="reference internal" href="#components.memory.memory.Memory.call"><code class="docutils literal notranslate"><span class="pre">Memory.call()</span></code></a></li>
-<li><a class="reference internal" href="#components.memory.memory.Memory.add_dialog_turn"><code class="docutils literal notranslate"><span class="pre">Memory.add_dialog_turn()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

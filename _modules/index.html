@@ -227,7 +227,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -275,7 +280,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/logging.html">Logger Example</a></li>
@@ -319,6 +328,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -350,7 +360,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -458,11 +471,8 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>All modules for which code is available</h1>
-<ul><li><a href="components/agent/react.html">components.agent.react</a></li>
-<li><a href="components/data_process/data_components.html">components.data_process.data_components</a></li>
+<ul><li><a href="components/data_process/data_components.html">components.data_process.data_components</a></li>
 <li><a href="components/data_process/text_splitter.html">components.data_process.text_splitter</a></li>
-<li><a href="components/memory/memory.html">components.memory.memory</a></li>
-<li><a href="components/model_client/anthropic_client.html">components.model_client.anthropic_client</a></li>
 <li><a href="components/model_client/azureai_client.html">components.model_client.azureai_client</a></li>
 <li><a href="components/model_client/cohere_client.html">components.model_client.cohere_client</a></li>
 <li><a href="components/model_client/google_client.html">components.model_client.google_client</a></li>
@@ -470,64 +480,9 @@
 <li><a href="components/model_client/ollama_client.html">components.model_client.ollama_client</a></li>
 <li><a href="components/model_client/transformers_client.html">components.model_client.transformers_client</a></li>
 <li><a href="components/model_client/utils.html">components.model_client.utils</a></li>
-<li><a href="components/output_parsers/dataclass_parser.html">components.output_parsers.dataclass_parser</a></li>
-<li><a href="components/output_parsers/outputs.html">components.output_parsers.outputs</a></li>
-<li><a href="components/retriever/bm25_retriever.html">components.retriever.bm25_retriever</a></li>
-<li><a href="components/retriever/faiss_retriever.html">components.retriever.faiss_retriever</a></li>
-<li><a href="components/retriever/lancedb_retriver.html">components.retriever.lancedb_retriver</a></li>
-<li><a href="components/retriever/llm_retriever.html">components.retriever.llm_retriever</a></li>
-<li><a href="components/retriever/postgres_retriever.html">components.retriever.postgres_retriever</a></li>
-<li><a href="components/retriever/qdrant_retriever.html">components.retriever.qdrant_retriever</a></li>
-<li><a href="components/retriever/reranker_retriever.html">components.retriever.reranker_retriever</a></li>
-<li><a href="core/agent.html">core.agent</a></li>
-<li><a href="core/base_data_class.html">core.base_data_class</a></li>
 <li><a href="core/component.html">core.component</a></li>
 <li><a href="core/container.html">core.container</a></li>
 <li><a href="core/db.html">core.db</a></li>
-<li><a href="core/embedder.html">core.embedder</a></li>
-<li><a href="core/func_tool.html">core.func_tool</a></li>
-<li><a href="core/functional.html">core.functional</a></li>
-<li><a href="core/generator.html">core.generator</a></li>
-<li><a href="core/model_client.html">core.model_client</a></li>
-<li><a href="core/prompt_builder.html">core.prompt_builder</a></li>
-<li><a href="core/retriever.html">core.retriever</a></li>
-<li><a href="core/runner.html">core.runner</a></li>
-<li><a href="core/string_parser.html">core.string_parser</a></li>
-<li><a href="core/tokenizer.html">core.tokenizer</a></li>
-<li><a href="core/tool_manager.html">core.tool_manager</a></li>
-<li><a href="core/types.html">core.types</a></li>
-<li><a href="datasets/big_bench_hard.html">datasets.big_bench_hard</a></li>
-<li><a href="datasets/gsm8k.html">datasets.gsm8k</a></li>
-<li><a href="datasets/hotpot_qa.html">datasets.hotpot_qa</a></li>
-<li><a href="datasets/trec.html">datasets.trec</a></li>
-<li><a href="datasets/types.html">datasets.types</a></li>
-<li><a href="datasets/utils.html">datasets.utils</a></li>
-<li><a href="eval/answer_match_acc.html">eval.answer_match_acc</a></li>
-<li><a href="eval/base.html">eval.base</a></li>
-<li><a href="eval/functional.html">eval.functional</a></li>
-<li><a href="eval/g_eval.html">eval.g_eval</a></li>
-<li><a href="eval/llm_as_judge.html">eval.llm_as_judge</a></li>
-<li><a href="eval/retriever_recall.html">eval.retriever_recall</a></li>
-<li><a href="eval/utils.html">eval.utils</a></li>
-<li><a href="optim/few_shot/bootstrap_optimizer.html">optim.few_shot.bootstrap_optimizer</a></li>
-<li><a href="optim/function.html">optim.function</a></li>
-<li><a href="optim/grad_component.html">optim.grad_component</a></li>
-<li><a href="optim/gradient.html">optim.gradient</a></li>
-<li><a href="optim/loss_component.html">optim.loss_component</a></li>
-<li><a href="optim/optimizer.html">optim.optimizer</a></li>
-<li><a href="optim/parameter.html">optim.parameter</a></li>
-<li><a href="optim/sampler.html">optim.sampler</a></li>
-<li><a href="optim/text_grad/llm_text_loss.html">optim.text_grad.llm_text_loss</a></li>
-<li><a href="optim/text_grad/ops.html">optim.text_grad.ops</a></li>
-<li><a href="optim/text_grad/text_loss_with_eval_fn.html">optim.text_grad.text_loss_with_eval_fn</a></li>
-<li><a href="optim/text_grad/tgd_optimizer.html">optim.text_grad.tgd_optimizer</a></li>
-<li><a href="optim/trainer/adal.html">optim.trainer.adal</a></li>
-<li><a href="optim/trainer/trainer.html">optim.trainer.trainer</a></li>
-<li><a href="optim/types.html">optim.types</a></li>
-<li><a href="tracing/callback_manager.html">tracing.callback_manager</a></li>
-<li><a href="tracing/decorators.html">tracing.decorators</a></li>
-<li><a href="tracing/generator_call_logger.html">tracing.generator_call_logger</a></li>
-<li><a href="tracing/generator_state_logger.html">tracing.generator_state_logger</a></li>
 <li><a href="utils/cache.html">utils.cache</a></li>
 <li><a href="utils/config.html">utils.config</a></li>
 <li><a href="utils/data.html">utils.data</a></li>

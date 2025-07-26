@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -454,262 +467,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-optim.types">
-<span id="types"></span><span id="optim-types"></span><h1>types<a class="headerlink" href="#module-optim.types" title="Link to this heading">¶</a></h1>
-<p>All data types used by Parameter, Optimizer, AdalComponent, and Trainer.</p>
-<p class="rubric">Classes</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#optim.types.EvaluationResult" title="optim.types.EvaluationResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EvaluationResult</span></code></a>([score, feedback])</p></td>
-<td><p>A single evaluation of task pipeline response to a score in range [0, 1].</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#optim.types.ParameterType" title="optim.types.ParameterType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterType</span></code></a>(value[, names, module, ...])</p></td>
-<td><p>Enum for the type of parameter to compute the loss with, and to inform the optimizer.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#optim.types.PromptData" title="optim.types.PromptData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PromptData</span></code></a>(id, name, data[, requires_opt])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#optim.types.TrainerResult" title="optim.types.TrainerResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrainerResult</span></code></a>(steps, val_scores, ...)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#optim.types.TrainerStepResult" title="optim.types.TrainerStepResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrainerStepResult</span></code></a>([step, val_score, ...])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#optim.types.TrainerValidateStats" title="optim.types.TrainerValidateStats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrainerValidateStats</span></code></a>([max_score, min_score, ...])</p></td>
-<td><p>A single evaluation of task pipeline response to a score in range [0, 1].</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.types.ParameterType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ParameterType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/types.html#ParameterType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.types.ParameterType" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>Enum for the type of parameter to compute the loss with, and to inform the optimizer.</p>
-<p>The meaning of reach tuple is:
-1. First element: the name of the parameter.
-2. Second element: the description of the parameter.
-3. Third element: whether the parameter is trainable.</p>
-<p>To access each element, use the following:
-1. name: <cite>ParameterType.PROMPT.value</cite>
-2. description: <cite>ParameterType.PROMPT.description</cite>
-3. trainable: <cite>ParameterType.PROMPT.default_trainable</cite></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.ParameterType.PROMPT">
-<span class="sig-name descname"><span class="pre">PROMPT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'prompt'</span></em><a class="headerlink" href="#optim.types.ParameterType.PROMPT" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.ParameterType.DEMOS">
-<span class="sig-name descname"><span class="pre">DEMOS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'demos'</span></em><a class="headerlink" href="#optim.types.ParameterType.DEMOS" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.ParameterType.INPUT">
-<span class="sig-name descname"><span class="pre">INPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'input'</span></em><a class="headerlink" href="#optim.types.ParameterType.INPUT" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.ParameterType.OUTPUT">
-<span class="sig-name descname"><span class="pre">OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'output'</span></em><a class="headerlink" href="#optim.types.ParameterType.OUTPUT" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.ParameterType.HYPERPARAM">
-<span class="sig-name descname"><span class="pre">HYPERPARAM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'hyperparam'</span></em><a class="headerlink" href="#optim.types.ParameterType.HYPERPARAM" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.ParameterType.GENERATOR_OUTPUT">
-<span class="sig-name descname"><span class="pre">GENERATOR_OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'generator_output'</span></em><a class="headerlink" href="#optim.types.ParameterType.GENERATOR_OUTPUT" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.ParameterType.RETRIEVER_OUTPUT">
-<span class="sig-name descname"><span class="pre">RETRIEVER_OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'retriever_output'</span></em><a class="headerlink" href="#optim.types.ParameterType.RETRIEVER_OUTPUT" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.ParameterType.LOSS_OUTPUT">
-<span class="sig-name descname"><span class="pre">LOSS_OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'loss'</span></em><a class="headerlink" href="#optim.types.ParameterType.LOSS_OUTPUT" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.ParameterType.SUM_OUTPUT">
-<span class="sig-name descname"><span class="pre">SUM_OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sum'</span></em><a class="headerlink" href="#optim.types.ParameterType.SUM_OUTPUT" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.ParameterType.NONE">
-<span class="sig-name descname"><span class="pre">NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></em><a class="headerlink" href="#optim.types.ParameterType.NONE" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.types.EvaluationResult">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EvaluationResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feedback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/types.html#EvaluationResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.types.EvaluationResult" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
-<p>A single evaluation of task pipeline response to a score in range [0, 1].</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.EvaluationResult.score">
-<span class="sig-name descname"><span class="pre">score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#optim.types.EvaluationResult.score" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.EvaluationResult.feedback">
-<span class="sig-name descname"><span class="pre">feedback</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#optim.types.EvaluationResult.feedback" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.types.PromptData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PromptData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requires_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/types.html#PromptData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.types.PromptData" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.PromptData.id">
-<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.types.PromptData.id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.PromptData.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.types.PromptData.name" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.PromptData.data">
-<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.types.PromptData.data" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.PromptData.requires_opt">
-<span class="sig-name descname"><span class="pre">requires_opt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#optim.types.PromptData.requires_opt" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.types.TrainerStepResult">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TrainerStepResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attempted_val_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.types.PromptData" title="optim.types.PromptData"><span class="pre">optim.types.PromptData</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/types.html#TrainerStepResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.types.TrainerStepResult" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerStepResult.step">
-<span class="sig-name descname"><span class="pre">step</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#optim.types.TrainerStepResult.step" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerStepResult.val_score">
-<span class="sig-name descname"><span class="pre">val_score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.types.TrainerStepResult.val_score" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerStepResult.test_score">
-<span class="sig-name descname"><span class="pre">test_score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.types.TrainerStepResult.test_score" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerStepResult.attempted_val_score">
-<span class="sig-name descname"><span class="pre">attempted_val_score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.types.TrainerStepResult.attempted_val_score" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerStepResult.prompt">
-<span class="sig-name descname"><span class="pre">prompt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.types.PromptData" title="optim.types.PromptData"><span class="pre">PromptData</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.types.TrainerStepResult.prompt" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.types.TrainerValidateStats">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TrainerValidateStats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_of_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_of_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/types.html#TrainerValidateStats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.types.TrainerValidateStats" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A single evaluation of task pipeline response to a score in range [0, 1].</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerValidateStats.max_score">
-<span class="sig-name descname"><span class="pre">max_score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#optim.types.TrainerValidateStats.max_score" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerValidateStats.min_score">
-<span class="sig-name descname"><span class="pre">min_score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#optim.types.TrainerValidateStats.min_score" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerValidateStats.mean_of_score">
-<span class="sig-name descname"><span class="pre">mean_of_score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#optim.types.TrainerValidateStats.mean_of_score" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerValidateStats.std_of_score">
-<span class="sig-name descname"><span class="pre">std_of_score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#optim.types.TrainerValidateStats.std_of_score" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.types.TrainerResult">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TrainerResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps:</span> <span class="pre">List[int]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_scores:</span> <span class="pre">List[float]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_scores:</span> <span class="pre">List[float]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_results:</span> <span class="pre">List[optim.types.TrainerStepResult]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">effective_measure:</span> <span class="pre">Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Dict]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_stats:</span> <span class="pre">optim.types.TrainerValidateStats</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_stamp:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_time:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_score:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainer_state:</span> <span class="pre">Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Any]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/types.html#TrainerResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.types.TrainerResult" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerResult.steps">
-<span class="sig-name descname"><span class="pre">steps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.types.TrainerResult.steps" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerResult.val_scores">
-<span class="sig-name descname"><span class="pre">val_scores</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.types.TrainerResult.val_scores" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerResult.test_scores">
-<span class="sig-name descname"><span class="pre">test_scores</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.types.TrainerResult.test_scores" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerResult.step_results">
-<span class="sig-name descname"><span class="pre">step_results</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.types.TrainerStepResult" title="optim.types.TrainerStepResult"><span class="pre">TrainerStepResult</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.types.TrainerResult.step_results" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerResult.effective_measure">
-<span class="sig-name descname"><span class="pre">effective_measure</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.types.TrainerResult.effective_measure" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerResult.validate_stats">
-<span class="sig-name descname"><span class="pre">validate_stats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#optim.types.TrainerValidateStats" title="optim.types.TrainerValidateStats"><span class="pre">TrainerValidateStats</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.types.TrainerResult.validate_stats" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerResult.time_stamp">
-<span class="sig-name descname"><span class="pre">time_stamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.types.TrainerResult.time_stamp" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerResult.total_time">
-<span class="sig-name descname"><span class="pre">total_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#optim.types.TrainerResult.total_time" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerResult.test_score">
-<span class="sig-name descname"><span class="pre">test_score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.types.TrainerResult.test_score" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.types.TrainerResult.trainer_state">
-<span class="sig-name descname"><span class="pre">trainer_state</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.types.TrainerResult.trainer_state" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+          <section id="types">
+<span id="optim-types"></span><h1>types<a class="headerlink" href="#types" title="Link to this heading">¶</a></h1>
 </section>
 
         </article>
@@ -754,79 +519,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">types</a><ul>
-<li><a class="reference internal" href="#optim.types.ParameterType"><code class="docutils literal notranslate"><span class="pre">ParameterType</span></code></a><ul>
-<li><a class="reference internal" href="#optim.types.ParameterType.PROMPT"><code class="docutils literal notranslate"><span class="pre">ParameterType.PROMPT</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.ParameterType.DEMOS"><code class="docutils literal notranslate"><span class="pre">ParameterType.DEMOS</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.ParameterType.INPUT"><code class="docutils literal notranslate"><span class="pre">ParameterType.INPUT</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.ParameterType.OUTPUT"><code class="docutils literal notranslate"><span class="pre">ParameterType.OUTPUT</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.ParameterType.HYPERPARAM"><code class="docutils literal notranslate"><span class="pre">ParameterType.HYPERPARAM</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.ParameterType.GENERATOR_OUTPUT"><code class="docutils literal notranslate"><span class="pre">ParameterType.GENERATOR_OUTPUT</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.ParameterType.RETRIEVER_OUTPUT"><code class="docutils literal notranslate"><span class="pre">ParameterType.RETRIEVER_OUTPUT</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.ParameterType.LOSS_OUTPUT"><code class="docutils literal notranslate"><span class="pre">ParameterType.LOSS_OUTPUT</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.ParameterType.SUM_OUTPUT"><code class="docutils literal notranslate"><span class="pre">ParameterType.SUM_OUTPUT</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.ParameterType.NONE"><code class="docutils literal notranslate"><span class="pre">ParameterType.NONE</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#optim.types.EvaluationResult"><code class="docutils literal notranslate"><span class="pre">EvaluationResult</span></code></a><ul>
-<li><a class="reference internal" href="#optim.types.EvaluationResult.score"><code class="docutils literal notranslate"><span class="pre">EvaluationResult.score</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.EvaluationResult.feedback"><code class="docutils literal notranslate"><span class="pre">EvaluationResult.feedback</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#optim.types.PromptData"><code class="docutils literal notranslate"><span class="pre">PromptData</span></code></a><ul>
-<li><a class="reference internal" href="#optim.types.PromptData.id"><code class="docutils literal notranslate"><span class="pre">PromptData.id</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.PromptData.name"><code class="docutils literal notranslate"><span class="pre">PromptData.name</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.PromptData.data"><code class="docutils literal notranslate"><span class="pre">PromptData.data</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.PromptData.requires_opt"><code class="docutils literal notranslate"><span class="pre">PromptData.requires_opt</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#optim.types.TrainerStepResult"><code class="docutils literal notranslate"><span class="pre">TrainerStepResult</span></code></a><ul>
-<li><a class="reference internal" href="#optim.types.TrainerStepResult.step"><code class="docutils literal notranslate"><span class="pre">TrainerStepResult.step</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerStepResult.val_score"><code class="docutils literal notranslate"><span class="pre">TrainerStepResult.val_score</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerStepResult.test_score"><code class="docutils literal notranslate"><span class="pre">TrainerStepResult.test_score</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerStepResult.attempted_val_score"><code class="docutils literal notranslate"><span class="pre">TrainerStepResult.attempted_val_score</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerStepResult.prompt"><code class="docutils literal notranslate"><span class="pre">TrainerStepResult.prompt</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#optim.types.TrainerValidateStats"><code class="docutils literal notranslate"><span class="pre">TrainerValidateStats</span></code></a><ul>
-<li><a class="reference internal" href="#optim.types.TrainerValidateStats.max_score"><code class="docutils literal notranslate"><span class="pre">TrainerValidateStats.max_score</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerValidateStats.min_score"><code class="docutils literal notranslate"><span class="pre">TrainerValidateStats.min_score</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerValidateStats.mean_of_score"><code class="docutils literal notranslate"><span class="pre">TrainerValidateStats.mean_of_score</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerValidateStats.std_of_score"><code class="docutils literal notranslate"><span class="pre">TrainerValidateStats.std_of_score</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#optim.types.TrainerResult"><code class="docutils literal notranslate"><span class="pre">TrainerResult</span></code></a><ul>
-<li><a class="reference internal" href="#optim.types.TrainerResult.steps"><code class="docutils literal notranslate"><span class="pre">TrainerResult.steps</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerResult.val_scores"><code class="docutils literal notranslate"><span class="pre">TrainerResult.val_scores</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerResult.test_scores"><code class="docutils literal notranslate"><span class="pre">TrainerResult.test_scores</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerResult.step_results"><code class="docutils literal notranslate"><span class="pre">TrainerResult.step_results</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerResult.effective_measure"><code class="docutils literal notranslate"><span class="pre">TrainerResult.effective_measure</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerResult.validate_stats"><code class="docutils literal notranslate"><span class="pre">TrainerResult.validate_stats</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerResult.time_stamp"><code class="docutils literal notranslate"><span class="pre">TrainerResult.time_stamp</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerResult.total_time"><code class="docutils literal notranslate"><span class="pre">TrainerResult.total_time</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerResult.test_score"><code class="docutils literal notranslate"><span class="pre">TrainerResult.test_score</span></code></a></li>
-<li><a class="reference internal" href="#optim.types.TrainerResult.trainer_state"><code class="docutils literal notranslate"><span class="pre">TrainerResult.trainer_state</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

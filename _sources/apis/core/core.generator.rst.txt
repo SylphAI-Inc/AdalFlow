@@ -7,19 +7,3 @@ generator
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Functions
-
-   .. autosummary::
-
-      create_teacher_generator
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      BackwardEngine
-      BackwardPassSetup
-      Generator
-

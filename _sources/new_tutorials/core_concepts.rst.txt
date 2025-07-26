@@ -7,7 +7,7 @@
    </div>
 
 
-Core Concepts   
+Core Concepts
 =================
 
 LLM-AutoDiff
@@ -80,7 +80,7 @@ There are four main types of components in AdalFlow:
         eval_fn_desc="exact_match: 1 if str(y) == str(y_gt) else 0"
     )
 
-    
+
 For a full walkthrough of the component system, please refer to :ref:`Full Tutorial <question_answering>`.
 
 Parameters
@@ -104,10 +104,10 @@ It can be best used together with :class:`DataClassParser<components.output_pars
     class TrecData:
         question: str = field(
             metadata={"desc": "The question asked by the user"}
-        ) 
+        )
         label: int = field(
             metadata={"desc": "The label of the question"}, default=0
-        ) 
+        )
 
 ``DataClass`` covers the following:
 

@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apis/components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../apis/components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -589,7 +602,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">tc_delta</span> <span class="ow">in</span> <span class="n">delta</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">tc_delta</span><span class="o">.</span><span class="n">index</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">function_calls</span><span class="p">:</span>
         <span class="n">state</span><span class="o">.</span><span class="n">function_calls</span><span class="p">[</span><span class="n">tc_delta</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">ResponseFunctionToolCall</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-    
+
     <span class="c1"># Accumulate name and arguments</span>
     <span class="n">state</span><span class="o">.</span><span class="n">function_calls</span><span class="p">[</span><span class="n">tc_delta</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="n">tc_function</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
     <span class="n">state</span><span class="o">.</span><span class="n">function_calls</span><span class="p">[</span><span class="n">tc_delta</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">arguments</span> <span class="o">+=</span> <span class="n">tc_function</span><span class="o">.</span><span class="n">arguments</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
@@ -607,18 +620,18 @@
     subgraph &quot;Agent Runtime&quot;
         A[Runner.run_streamed] --&gt; B[Model.stream_response]
     end
-    
+
     subgraph &quot;Model Layer&quot;
         B --&gt; C{Model Type}
         C --&gt;|Responses API| D[OpenAIResponsesModel]
         C --&gt;|Chat Completions| E[OpenAIChatCompletionsModel]
     end
-    
+
     subgraph &quot;OpenAI APIs&quot;
         D --&gt; F[Responses API Stream]
         E --&gt; G[Chat Completions Stream]
     end
-    
+
     subgraph &quot;Event Processing&quot;
         F --&gt; H[Direct Pass-through]
         G --&gt; I[ChatCompletionStreamHandler]
@@ -626,7 +639,7 @@
         H --&gt; K[TResponseStreamEvent]
         J --&gt; K
     end
-    
+
     subgraph &quot;Agent Stream Events&quot;
         K --&gt; L[RawResponsesStreamEvent]
         L --&gt; M[RunItemStreamEvent]
@@ -658,7 +671,7 @@
     Client-&gt;&gt;Runner: run_streamed()
     Runner-&gt;&gt;Model: stream_response()
     Model-&gt;&gt;OpenAI: Chat/Responses API call
-    
+
     loop For each chunk
         OpenAI-&gt;&gt;Model: Stream chunk
         Model-&gt;&gt;Model: Convert to TResponseStreamEvent
@@ -668,7 +681,7 @@
         Runner-&gt;&gt;EventQueue: Emit processed event
         EventQueue-&gt;&gt;Client: Stream event to consumer
     end
-    
+
     Model-&gt;&gt;EventQueue: Emit final ResponseCompletedEvent
     Runner-&gt;&gt;EventQueue: Complete streaming
     </pre></section>
@@ -725,14 +738,14 @@
 <span class="c1"># Process each chunk</span>
 <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">stream</span><span class="p">:</span>
     <span class="n">delta</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">delta</span>
-    
+
     <span class="c1"># Handle text content</span>
     <span class="k">if</span> <span class="n">delta</span><span class="o">.</span><span class="n">content</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">state</span><span class="o">.</span><span class="n">text_content_index_and_output</span><span class="p">:</span>
             <span class="c1"># Initialize new content part</span>
             <span class="n">state</span><span class="o">.</span><span class="n">text_content_index_and_output</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">ResponseOutputText</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
             <span class="k">yield</span> <span class="n">ResponseContentPartAddedEvent</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-        
+
         <span class="c1"># Emit text delta</span>
         <span class="k">yield</span> <span class="n">ResponseTextDeltaEvent</span><span class="p">(</span><span class="n">delta</span><span class="o">=</span><span class="n">delta</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
         <span class="n">state</span><span class="o">.</span><span class="n">text_content_index_and_output</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">delta</span><span class="o">.</span><span class="n">content</span>
@@ -812,7 +825,7 @@
 <span class="k">async</span> <span class="k">for</span> <span class="n">raw_event</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">stream_response</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
     <span class="c1"># Emit raw event</span>
     <span class="n">queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">RawResponsesStreamEvent</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">raw_event</span><span class="p">))</span>
-    
+
     <span class="c1"># Process and emit semantic events</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_event</span><span class="p">,</span> <span class="n">ResponseCompletedEvent</span><span class="p">):</span>
         <span class="c1"># Generate RunItemStreamEvent for new messages/tools</span>
@@ -836,7 +849,7 @@
         <span class="n">llm_event</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">data</span>
         <span class="k">if</span> <span class="n">llm_event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;response.output_text.delta&quot;</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">llm_event</span><span class="o">.</span><span class="n">delta</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-    
+
     <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;run_item_stream_event&quot;</span><span class="p">:</span>
         <span class="c1"># Processed agent event</span>
         <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;message_output_created&quot;</span><span class="p">:</span>

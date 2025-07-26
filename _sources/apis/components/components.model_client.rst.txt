@@ -12,6 +12,7 @@ Submodules
    components.model_client.anthropic_client
    components.model_client.azureai_client
    components.model_client.bedrock_client
+   components.model_client.chat_completion_to_response_converter
    components.model_client.cohere_client
    components.model_client.deepseek_client
    components.model_client.fireworks_client

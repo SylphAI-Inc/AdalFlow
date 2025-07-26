@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -228,7 +228,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -276,7 +281,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/rag_playbook.html">RAG Playbook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/rag_with_memory.html">RAG with Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/tool_helper.html">Function calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/evaluation.html">LLM Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/datasets.html">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/logging.html">Logger Example</a></li>
@@ -320,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.anthropic_client.html">anthropic_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.azureai_client.html">azureai_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.deepseek_client.html">deepseek_client</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.model_client.fireworks_client.html">fireworks_client</a></li>
@@ -351,7 +361,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.agent.prompts.html">prompts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../components/components.agent.runner.html">runner</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -454,109 +467,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-core.model_client">
-<span id="model-client"></span><span id="core-model-client"></span><h1>model_client<a class="headerlink" href="#module-core.model_client" title="Link to this heading">¶</a></h1>
-<p>ModelClient is the protocol and base class for all models(either via APIs or local models) to communicate with components.</p>
-<p class="rubric">Classes</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.model_client.ModelClient" title="core.model_client.ModelClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelClient</span></code></a>(*args, **kwargs)</p></td>
-<td><p>The protocol and abstract class for all models(either via APIs or local models) to communicate with components.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="core.model_client.ModelClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ModelClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/model_client.html#ModelClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.model_client.ModelClient" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataComponent</span></code></p>
-<p>The protocol and abstract class for all models(either via APIs or local models) to communicate with components.</p>
-<p>ModelClient is to separate the model API calls from the rest of the system,
-making it a plug-and-play component that can be used in functional components like Generator and Embedder.</p>
-<p>For a particular API provider, such as OpenAI, we will have a class that inherits from ModelClient.
-It does four things:</p>
-<ol class="arabic simple">
-<li><p>Initialize the client, including both sync and async.</p></li>
-<li><p>Convert the standard AdalFlow components inputs to the API-specific format.</p></li>
-<li><p>Call the API and parse the response.</p></li>
-<li><p>Handle API specific exceptions and errors to retry the call.</p></li>
-</ol>
-<p>Check the subclasses in <cite>components/model_client/</cite> directory for the functional API clients we have.</p>
-<blockquote>
-<div><p>This interface is designed to bridge the gap between AdalFlow components inputs and model APIs.</p>
-<p>You can see examples of the subclasses in components/model_client/ directory.</p>
-</div></blockquote>
-<dl class="py method">
-<dt class="sig sig-object py" id="core.model_client.ModelClient.init_sync_client">
-<span class="sig-name descname"><span class="pre">init_sync_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/model_client.html#ModelClient.init_sync_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.model_client.ModelClient.init_sync_client" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.model_client.ModelClient.init_async_client">
-<span class="sig-name descname"><span class="pre">init_async_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/model_client.html#ModelClient.init_async_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.model_client.ModelClient.init_async_client" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.model_client.ModelClient.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/model_client.html#ModelClient.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.model_client.ModelClient.call" title="Link to this definition">¶</a></dt>
-<dd><p>Subclass use this to call the API with the sync client.
-model_type: this decides which API, such as chat.completions or embeddings for OpenAI.
-api_kwargs: all the arguments that the API call needs, subclass should implement this method.</p>
-<p>Additionally in subclass you can implement the error handling and retry logic here. See OpenAIClient for example.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.model_client.ModelClient.acall">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/model_client.html#ModelClient.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.model_client.ModelClient.acall" title="Link to this definition">¶</a></dt>
-<dd><p>Subclass use this to call the API with the async client.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.model_client.ModelClient.convert_inputs_to_api_kwargs">
-<span class="sig-name descname"><span class="pre">convert_inputs_to_api_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../../_modules/core/model_client.html#ModelClient.convert_inputs_to_api_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.model_client.ModelClient.convert_inputs_to_api_kwargs" title="Link to this definition">¶</a></dt>
-<dd><p>Bridge the Component’s standard input and model_kwargs into API-specific format, the api_kwargs that will be used in _call and _acall methods.</p>
-<p>All types of models supported by this particular provider should be handled here.
-:param input: input to the model. Defaults to None.
-:type input: Optional[Any], optional
-:param model_kwargs: model kwargs
-:type model_kwargs: Dict
-:param model_type: model type
-:type model_type: ModelType</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.model_client.ModelClient.parse_chat_completion">
-<span class="sig-name descname"><span class="pre">parse_chat_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span></span></span><a class="reference internal" href="../../_modules/core/model_client.html#ModelClient.parse_chat_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.model_client.ModelClient.parse_chat_completion" title="Link to this definition">¶</a></dt>
-<dd><p>Parse the chat completion to str.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.model_client.ModelClient.track_completion_usage">
-<span class="sig-name descname"><span class="pre">track_completion_usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">CompletionUsage</span></span></span><a class="reference internal" href="../../_modules/core/model_client.html#ModelClient.track_completion_usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.model_client.ModelClient.track_completion_usage" title="Link to this definition">¶</a></dt>
-<dd><p>Track the chat completion usage. Use OpenAI standard API for tracking.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.model_client.ModelClient.parse_embedding_response">
-<span class="sig-name descname"><span class="pre">parse_embedding_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EmbedderOutput</span></span></span><a class="reference internal" href="../../_modules/core/model_client.html#ModelClient.parse_embedding_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.model_client.ModelClient.parse_embedding_response" title="Link to this definition">¶</a></dt>
-<dd><p>Parse the embedding response to a structure AdalFlow components can understand.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.model_client.ModelClient.list_models">
-<span class="sig-name descname"><span class="pre">list_models</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/model_client.html#ModelClient.list_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.model_client.ModelClient.list_models" title="Link to this definition">¶</a></dt>
-<dd><p>List all available models from this provider</p>
-</dd></dl>
-
-</dd></dl>
-
+          <section id="model-client">
+<span id="core-model-client"></span><h1>model_client<a class="headerlink" href="#model-client" title="Link to this heading">¶</a></h1>
 </section>
 
         </article>
@@ -601,38 +519,8 @@ api_kwargs: all the arguments that the API call needs, subclass should implement
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">model_client</a><ul>
-<li><a class="reference internal" href="#core.model_client.ModelClient"><code class="docutils literal notranslate"><span class="pre">ModelClient</span></code></a><ul>
-<li><a class="reference internal" href="#core.model_client.ModelClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">ModelClient.init_sync_client()</span></code></a></li>
-<li><a class="reference internal" href="#core.model_client.ModelClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">ModelClient.init_async_client()</span></code></a></li>
-<li><a class="reference internal" href="#core.model_client.ModelClient.call"><code class="docutils literal notranslate"><span class="pre">ModelClient.call()</span></code></a></li>
-<li><a class="reference internal" href="#core.model_client.ModelClient.acall"><code class="docutils literal notranslate"><span class="pre">ModelClient.acall()</span></code></a></li>
-<li><a class="reference internal" href="#core.model_client.ModelClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">ModelClient.convert_inputs_to_api_kwargs()</span></code></a></li>
-<li><a class="reference internal" href="#core.model_client.ModelClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">ModelClient.parse_chat_completion()</span></code></a></li>
-<li><a class="reference internal" href="#core.model_client.ModelClient.track_completion_usage"><code class="docutils literal notranslate"><span class="pre">ModelClient.track_completion_usage()</span></code></a></li>
-<li><a class="reference internal" href="#core.model_client.ModelClient.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">ModelClient.parse_embedding_response()</span></code></a></li>
-<li><a class="reference internal" href="#core.model_client.ModelClient.list_models"><code class="docutils literal notranslate"><span class="pre">ModelClient.list_models()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
