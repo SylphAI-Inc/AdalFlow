@@ -5,8 +5,8 @@ Agents are the core building block for creating autonomous AI systems in AdalFlo
 ## Overview
 
 An AdalFlow agent consists of two main components:
-- **Agent**: Handles planning and decision-making using a Generator-based planner
-- **Runner**: Manages execution, tool calling, and conversation flow
+- {doc}`Agent <../apis/components/components.agent.agent>`: Handles planning and decision-making using a Generator-based planner
+- {doc}`Runner <../apis/components/components.agent.runner>`: Manages execution, tool calling, and conversation flow
 
 This separation allows for flexible customization of both planning and execution logic.
 
@@ -23,40 +23,20 @@ def calculator(expression: str) -> str:
     except Exception as e:
         return f"Error: {e}"
 
-def file_writer(filename: str, content: str) -> ToolOutput:
-    """Write content to a file - requires permission."""
-    try:
-        with open(filename, 'w') as f:
-            f.write(content)
-        return ToolOutput(
-            output=f"Successfully wrote {len(content)} characters to {filename}",
-            observation=f"File {filename} written successfully",
-            display=f"✍️ Wrote: {filename}",
-        )
-    except Exception as e:
-        return ToolOutput(
-            output=f"Error writing to file: {e}",
-            observation=f"Failed to write to {filename}",
-            display=f"❌ Failed: {filename}",
-        )
-
 # Create agent with tools that require permission
 agent = Agent(
     name="PermissionAgent",
     tools=[
-        FunctionTool(calculator),  # Safe tool - no permission needed
-        FunctionTool(file_writer, require_approval=True),  # Requires permission
+        FunctionTool(calculator), 
     ],
     model_client=OpenAIClient(),
     model_kwargs={"model": "gpt-4o", "temperature": 0.3},
     max_steps=6
 )
 
-permission_handler = CLIPermissionHandler(approval_mode="default")
-runner = Runner(agent=agent, permission_manager=permission_handler)
+runner = Runner(agent=agent)
 
-# Tools will now require approval before execution
-result = runner.call(prompt_kwargs={"input_str": "Invoke the file_writer tool and create a temporary file"})
+result = runner.call(prompt_kwargs={"input_str": "Invoke the calculator tool and calculate 15 * 7 + 23"})
 ```
 
 The result of the above code is as follows:
@@ -110,26 +90,6 @@ runner = Runner(
 #### RunnerResult
 
 The `Runner.call()` method returns a `RunnerResult` object that contains comprehensive information about the execution:
-
-```python
-@dataclass
-class RunnerResult:
-    step_history: List[StepOutput] = field(
-        metadata={"desc": "The step history of the execution"},
-        default_factory=list,
-    )
-    answer: Optional[str] = field(
-        metadata={"desc": "The answer to the user's query"}, default=None
-    )
-    error: Optional[str] = field(
-        metadata={"desc": "The error message if the code execution failed"},
-        default=None,
-    )
-    ctx: Optional[Dict] = field(
-        metadata={"desc": "The context of the execution"},
-        default=None,
-    )
-```
 
 **Field Descriptions:**
 
@@ -208,177 +168,13 @@ agent = Agent(
 
 ### Streaming Execution
 
-You can execute agents with streaming support for real-time updates. See the [Streaming](streaming) tutorial for detailed information and examples.
+You can execute agents with {doc}`RunnerStreamingResult <../apis/core/core.types>` support for real-time updates. See the [Streaming](streaming) tutorial for detailed information and examples.
 
 ### Permission Management
 
-AdalFlow provides a permission management system that allows you to control and approve tool executions before they run. This is particularly useful for tools that perform sensitive operations like file system access, API calls, or external communications.
+AdalFlow provides a **PermissionManager** system that allows you to control and approve tool executions before they run. This is particularly useful for tools that perform sensitive operations like file system access, API calls, or external communications.
 
 For comprehensive coverage of permission management features including CLI handlers, FastAPI integration, custom permission managers, and security best practices, see the dedicated [Permission Management](permission_management.md) tutorial.
-
-## Examples
-
-### RAG Agent
-
-Create a Retrieval-Augmented Generation agent. We will provide a more detailed tutorial for the RAG Agent and also evaluate its performance against benchmarks.
-
-```python
-class DocumentRetriever(Retriever):
-    def __init__(self, documents: list):
-        super().__init__()
-        self.documents = documents
-
-    def call(self, input: str, top_k: int = 3):
-        # Simple similarity search implementation
-        # In practice, use vector embeddings
-        relevant_docs = [doc for doc in self.documents if input.lower() in doc.lower()]
-        return relevant_docs[:top_k]
-
-# Setup
-documents = [
-    "Python is a programming language.",
-    "Machine learning uses algorithms to learn patterns.",
-    "AdalFlow is a framework for building AI applications."
-]
-
-retriever = DocumentRetriever(documents)
-
-agent = Agent(
-    name="RAGAgent",
-    tools=[FunctionTool(retriever.call)],
-    model_client=OpenAIClient(),
-    model_kwargs={"model": "gpt-4o"},
-    max_steps=5
-)
-
-runner = Runner(agent=agent)
-
-result = runner.call(
-    prompt_kwargs={"input_str": "What is AdalFlow?"}
-)
-```
-
-### Multi-Tool Calculator Agent
-
-An agent that can perform various mathematical operations:
-
-```python
-def basic_calculator(expression: str) -> str:
-    """Evaluate basic mathematical expressions."""
-    try:
-        result = eval(expression)
-        return f"Result: {result}"
-    except Exception as e:
-        return f"Error: {e}"
-
-def advanced_math(operation: str, value: float) -> str:
-    """Perform advanced mathematical operations."""
-    ops = {
-        "sqrt": math.sqrt,
-        "sin": math.sin,
-        "cos": math.cos,
-        "log": math.log,
-        "factorial": math.factorial
-    }
-
-    if operation in ops:
-        try:
-            result = ops[operation](value)
-            return f"{operation}({value}) = {result}"
-        except Exception as e:
-            return f"Error: {e}"
-    else:
-        return f"Unknown operation: {operation}"
-
-def unit_converter(value: float, from_unit: str, to_unit: str) -> str:
-    """Convert between different units."""
-    # Length conversions (to meters)
-    length_units = {
-        "mm": 0.001, "cm": 0.01, "m": 1, "km": 1000,
-        "in": 0.0254, "ft": 0.3048, "yd": 0.9144, "mi": 1609.34
-    }
-
-    if from_unit in length_units and to_unit in length_units:
-        meters = value * length_units[from_unit]
-        result = meters / length_units[to_unit]
-        return f"{value} {from_unit} = {result} {to_unit}"
-    else:
-        return "Unsupported unit conversion"
-
-# Create agent with multiple tools
-tools = [
-    FunctionTool(basic_calculator),
-    FunctionTool(advanced_math),
-    FunctionTool(unit_converter)
-]
-
-agent = Agent(
-    name="MathAgent",
-    tools=tools,
-    model_client=OpenAIClient(),
-    model_kwargs={"model": "gpt-4o", "temperature": 0.3},
-    max_steps=10
-)
-
-runner = Runner(agent=agent)
-
-# Example usage
-result = runner.call(
-    prompt_kwargs={
-        "input_str": "First calculate the square root of 144, then convert 5 feet to meters"
-    }
-)
-```
-
-### Research Agent with Web Search
-
-An agent that can search for information and synthesize results:
-
-```python
-def web_search(query: str) -> str:
-    """Search for information on the web."""
-    # This is a simplified example - in practice, use proper search APIs
-    try:
-        # Placeholder for actual web search implementation
-        return f"Search results for '{query}': [Relevant information found]"
-    except Exception as e:
-        return f"Search failed: {e}"
-
-def summarize_text(text: str, max_length: int = 200) -> str:
-    """Summarize a piece of text."""
-    if len(text) <= max_length:
-        return text
-
-    # Simple truncation - in practice, use proper summarization
-    return text[:max_length] + "..."
-
-def fact_check(claim: str) -> str:
-    """Fact-check a claim by searching for supporting evidence."""
-    # In practice, implement proper fact-checking logic
-    return f"Fact-checking result for '{claim}': [Analysis needed]"
-
-tools = [
-    FunctionTool(web_search),
-    FunctionTool(summarize_text),
-    FunctionTool(fact_check)
-]
-
-agent = Agent(
-    name="ResearchAgent",
-    tools=tools,
-    model_client=OpenAIClient(),
-    model_kwargs={"model": "gpt-4o", "temperature": 0.3},
-    max_steps=8
-)
-
-runner = Runner(agent=agent)
-
-result = runner.call(
-    prompt_kwargs={
-        "input_str": "Research the latest developments in quantum computing and provide a summary"
-    }
-)
-```
 
 ## Execution Flow
 
@@ -436,12 +232,10 @@ agent = Agent(
 
 ### Custom System Templates
 
-Customize the agent's behavior with custom prompt templates which are further detailed in the [Prompt](../tutorials/prompt) documentation.
+Customize the agent's role description as below by creating a custom role description string.
 
 ```python
-custom_template = """
-<system>
-{{ system_prompt }}
+custom_role_desc = """
 You are a helpful assistant specialized in data analysis.
 Always provide step-by-step reasoning and cite your sources.
 When using tools, explain why you chose each tool.
@@ -450,7 +244,36 @@ When using tools, explain why you chose each tool.
 
 agent = Agent(
     name="DataAnalyst",
-    template=custom_template,
+    role_desc=custom_role_desc,
     # ... other config
 )
 ```
+
+In practice to customize the whole template and planner configurations, pass in a new planner with custom configurations. Refer to `Generator` for more details.
+
+## Tracing
+
+AdalFlow provides comprehensive tracing capabilities to monitor and debug agent execution. You can trace agent steps, tool calls, and model interactions. See the [Tracing](tracing) tutorial for detailed information on setting up and using tracing features.
+
+## API Reference
+
+:::{admonition} API reference
+:class: highlight
+
+- {doc}`adalflow.components.agent.agent.Agent <../apis/components/components.agent.agent>`
+- {doc}`adalflow.components.agent.runner.Runner <../apis/components/components.agent.runner>`
+- {doc}`adalflow.core.types.RunnerResult <../apis/core/core.types>`
+- {doc}`adalflow.core.types.RunnerStreamingResult <../apis/core/core.types>`
+- {doc}`adalflow.core.types.StepOutput <../apis/core/core.types>`
+- {doc}`adalflow.core.types.FunctionOutput <../apis/core/core.types>`
+- {doc}`adalflow.core.types.ToolOutput <../apis/core/core.types>`
+- {doc}`adalflow.core.func_tool.FunctionTool <../apis/core/core.func_tool>`
+- {doc}`adalflow.core.generator.Generator <../apis/core/core.generator>`
+- {doc}`adalflow.core.tool_manager.ToolManager <../apis/core/core.tool_manager>`
+- {doc}`adalflow.tracing.runner_span <../apis/tracing/tracing.create>`
+- {doc}`adalflow.tracing.tool_span <../apis/tracing/tracing.create>`
+- {doc}`adalflow.tracing.GeneratorStateLogger <../apis/tracing/tracing.generator_state_logger>`
+- {doc}`adalflow.tracing.GeneratorCallLogger <../apis/tracing/tracing.generator_call_logger>`
+:::
+
+

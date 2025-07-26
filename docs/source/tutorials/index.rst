@@ -222,7 +222,7 @@ Advanced Topics
     ../new_tutorials/agents_runner
     ../new_tutorials/streaming
     ../new_tutorials/tracing
-    ../new_tutorials/permission_management
+    ../new_tutorials/human_in_the_loop
 
 .. Core functionals
 .. -------------------

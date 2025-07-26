@@ -1,4 +1,4 @@
-# Permission Management
+# Human in the Loop
 
 AdalFlow provides a permission management system that allows you to control and approve tool executions before they run. This is particularly useful for tools that perform sensitive operations like file system access, API calls, or external communications.
 
@@ -6,7 +6,7 @@ AdalFlow provides a permission management system that allows you to control and 
 
 The permission system consists of:
 
-- **Permission Managers**: Components that manage approval workflows (e.g., `CLIPermissionHandler`, `AutoApprovalHandler`)
+- **PermissionManager**: Components that manage approval workflows (e.g., **CLIPermissionHandler**, **AutoApprovalHandler**)
 - **Approval Modes**: Different strategies for handling permission requests:
   - `"default"`: Respects all tool categories (always_allowed, blocked, require_approval)
   - `"auto_approve"`: Automatically approves tools requiring approval (still respects blocked_tools)
@@ -15,7 +15,7 @@ The permission system consists of:
   - `always_allowed_tools`: Tools that never require approval
   - `blocked_tools`: Tools that are completely blocked from execution
   - `tool_require_approval`: Tools that need explicit approval before execution
-- **Approval Outcomes**:
+- **ApprovalOutcome**:
   - `PROCEED_ONCE`: Allow this single execution
   - `PROCEED_ALWAYS`: Allow this tool always (adds to always_allowed_tools)
   - `CANCEL`: Deny execution
@@ -78,10 +78,35 @@ permission_handler = CLIPermissionHandler(approval_mode="default")
 runner = Runner(agent=agent, permission_manager=permission_handler)
 
 # Tools will now require approval before execution
-result = runner.call(prompt_kwargs={"input_str": "Create a file called 'test.txt' with content 'Hello World'"})
+result = runner.call(prompt_kwargs={"input_str": "Create a file called 'test.txt' with some interesting content"})
 ```
 
-You should see a temporary file that was created by the agent from the tutorial.
+You should see a temporary file that was created by the agent from the tutorial that contains interesting content. 
+
+```
+Title: The Whispering Woods
+
+Introduction:
+Nestled between the towering peaks of the Silver Mountains lies the Whispering Woods, a place shrouded in mystery and enchantment. Legends speak of ancient spirits that dwell within, their voices carried by the wind to those who dare to listen.
+
+Chapter 1: The Call of the Forest
+In the village of Elderglen, tales of the Whispering Woods were as common as the morning sun. Elders spoke of a time when the forest was alive with magic, a sanctuary for creatures of myth and wonder. Young Elara, a curious soul with a heart full of adventure, felt an irresistible pull towards the woods.
+
+Chapter 2: The Enchanted Path
+One crisp autumn morning, Elara set out on a journey to uncover the secrets of the forest. As she stepped onto the leaf-strewn path, the trees seemed to lean in, their branches forming a protective archway. The air was filled with a symphony of rustling leaves and distant whispers.
+
+Chapter 3: Guardians of the Grove
+Deep within the heart of the woods, Elara encountered the Guardians—ethereal beings who watched over the forest. They spoke of a hidden realm where time stood still, a place where dreams and reality intertwined. To enter, one must prove their heart's true intent.
+
+Chapter 4: The Trials of Truth
+Guided by the Guardians, Elara faced a series of trials, each designed to test her courage, wisdom, and compassion. She navigated through illusions, solved ancient riddles, and embraced the unknown, her spirit unwavering.
+
+Chapter 5: The Heart of the Forest
+Having passed the trials, Elara reached the heart of the forest—a serene glade bathed in golden light. Here, the whispers grew louder, revealing the forest's ancient secrets and the interconnectedness of all life. Elara realized her purpose: to be a bridge between the world of magic and the realm of man.
+
+Conclusion: A New Beginning
+Returning to Elderglen, Elara shared her journey with the villagers, inspiring a newfound respect for the Whispering Woods. The forest, once a place of mystery, became a symbol of harmony and hope, its whispers a reminder of the magic that lies within us all.
+```
 
 ## Permission Handler Types
 
@@ -131,3 +156,15 @@ For development environments or trusted scenarios:
 auto_handler = AutoApprovalHandler()
 runner = Runner(agent=agent, permission_manager=auto_handler)
 ```
+
+## API Reference
+
+:::{admonition} API reference
+:class: highlight
+
+- {doc}`adalflow.components.agent.agent.Agent <../apis/components/components.agent.agent>`
+- {doc}`adalflow.components.agent.runner.Runner <../apis/components/components.agent.runner>`
+- {doc}`adalflow.core.func_tool.FunctionTool <../apis/core/core.func_tool>`
+- {doc}`adalflow.core.types.ToolOutput <../apis/core/core.types>`
+- {doc}`adalflow.core.types.FunctionRequest <../apis/core/core.types>`
+:::

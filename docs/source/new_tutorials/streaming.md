@@ -5,8 +5,8 @@ Streaming allows you to receive real-time updates as your agent executes steps, 
 
 AdalFlow's streaming architecture provides two types of real-time events:
 
-1. **Raw Response Events**: Token-level updates from the language model
-2. **Run Item Events**: High-level agent execution progress (tool calls, step completion, etc.)
+1. {doc}`RawResponsesStreamEvent <../apis/core/core.types>`: Token-level updates from the language model
+2. {doc}`RunItemStreamEvent <../apis/core/core.types>`: High-level agent execution progress (tool calls, step completion, etc.)
 
 Both event types can be consumed simultaneously, giving you fine-grained control over how you handle streaming data.
 
@@ -221,3 +221,23 @@ anthropic_agent = Agent(
     max_steps=5
 )
 ```
+
+## API Reference
+
+:::{admonition} API reference
+:class: highlight
+
+- {doc}`adalflow.components.agent.agent.Agent <../apis/components/components.agent.agent>`
+- {doc}`adalflow.components.agent.runner.Runner <../apis/components/components.agent.runner>`
+- {doc}`adalflow.core.types.RunnerStreamingResult <../apis/core/core.types>`
+- {doc}`adalflow.core.types.RawResponsesStreamEvent <../apis/core/core.types>`
+- {doc}`adalflow.core.types.RunItemStreamEvent <../apis/core/core.types>`
+- {doc}`adalflow.core.types.ToolCallRunItem <../apis/core/core.types>`
+- {doc}`adalflow.core.types.ToolOutputRunItem <../apis/core/core.types>`
+- {doc}`adalflow.core.types.StepRunItem <../apis/core/core.types>`
+- {doc}`adalflow.core.types.FinalOutputItem <../apis/core/core.types>`
+- {doc}`adalflow.core.types.ToolCallActivityRunItem <../apis/core/core.types>`
+- {doc}`adalflow.core.func_tool.FunctionTool <../apis/core/core.func_tool>`
+- {doc}`adalflow.components.model_client.openai_client.OpenAIClient <../apis/components/components.model_client.openai_client>`
+- {doc}`adalflow.components.model_client.anthropic_client.AnthropicAPIClient <../apis/components/components.model_client.anthropic_client>`
+:::

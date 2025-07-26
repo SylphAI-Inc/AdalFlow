@@ -1,6 +1,6 @@
 # Tracing
 
-AdalFlow provides a comprehensive tracing system that is **compatible with OpenAI's tracing interface** and supports custom trace providers for integration with various observability backends like MLflow, Weights & Biases, and other visualization tools.
+AdalFlow provides a comprehensive tracing system that is **compatible with OpenAI's tracing interface** and supports custom {doc}`TracingProcessor <../apis/tracing/tracing.processor_interface>` for integration with various observability backends like MLflow, Weights & Biases, and other visualization tools.
 
 ## Overview
 
@@ -8,17 +8,17 @@ AdalFlow's tracing system follows the OpenAI Agents SDK patterns and provides:
 
 1. **OpenAI-Compatible Interface**: Full compatibility with OpenAI's trace provider format
 2. **Multiple Backend Support**: MLflow, custom exporters, and JSON logging
-3. **Hierarchical Tracing**: Traces contain spans for detailed execution tracking
+3. {doc}`Trace <../apis/tracing/tracing.traces>`: Traces contain spans for detailed execution tracking
 4. **Automatic Instrumentation**: Built-in tracing for agents, generators, and tools
-5. **Custom Trace Providers**: Support for any visualization library that implements OpenAI's trace provider interface
+5. {doc}`TracingProcessor <../apis/tracing/tracing.processor_interface>`: Support for any visualization library that implements OpenAI's trace provider interface
 
 ## Core Concepts
 
 ### Traces and Spans
 
-- **Trace**: Represents a complete workflow execution (e.g., the high level task to the agent)
-- **Span**: Represents individual operations within a trace (e.g., steps of the task, tool calls, LLM requests)
-- **Span Data**: Contains detailed information about each operation
+- {doc}`Trace <../apis/tracing/tracing.traces>`: Represents a complete workflow execution (e.g., the high level task to the agent)
+- {doc}`Span <../apis/tracing/tracing.spans>`: Represents individual operations within a trace (e.g., steps of the task, tool calls, LLM requests)
+- {doc}`SpanData <../apis/tracing/tracing.span_data>`: Contains detailed information about each operation
 
 ### OpenAI Compatibility
 
@@ -288,3 +288,33 @@ mlflow server --host 127.0.0.1 --port 8000
 | `Custom` | User-defined | Integration with any backend that provides custom trace providers that implements OpenAI's trace provider interface |
 
 AdalFlow's tracing system provides comprehensive observability for agent workflows while maintaining compatibility with OpenAI's interface, enabling integration with any visualization tool that supports the OpenAI trace provider format.
+
+## API Reference
+
+:::{admonition} API reference
+:class: highlight
+
+- {doc}`adalflow.tracing.traces.Trace <../apis/tracing/tracing.traces>`
+- {doc}`adalflow.tracing.traces.TraceImpl <../apis/tracing/tracing.traces>`
+- {doc}`adalflow.tracing.spans.Span <../apis/tracing/tracing.spans>`
+- {doc}`adalflow.tracing.spans.SpanImpl <../apis/tracing/tracing.spans>`
+- {doc}`adalflow.tracing.span_data.SpanData <../apis/tracing/tracing.span_data>`
+- {doc}`adalflow.tracing.span_data.AdalFlowRunnerSpanData <../apis/tracing/tracing.span_data>`
+- {doc}`adalflow.tracing.span_data.AdalFlowGeneratorSpanData <../apis/tracing/tracing.span_data>`
+- {doc}`adalflow.tracing.span_data.AdalFlowToolSpanData <../apis/tracing/tracing.span_data>`
+- {doc}`adalflow.tracing.processor_interface.TracingProcessor <../apis/tracing/tracing.processor_interface>`
+- {doc}`adalflow.tracing.processor_interface.TracingExporter <../apis/tracing/tracing.processor_interface>`
+- {doc}`adalflow.tracing.create.trace <../apis/tracing/tracing.create>`
+- {doc}`adalflow.tracing.create.runner_span <../apis/tracing/tracing.create>`
+- {doc}`adalflow.tracing.create.generator_span <../apis/tracing/tracing.create>`
+- {doc}`adalflow.tracing.create.tool_span <../apis/tracing/tracing.create>`
+- {doc}`adalflow.tracing.mlflow_integration.enable_mlflow_local <../apis/tracing/tracing.mlflow_integration>`
+- {doc}`adalflow.tracing.GeneratorStateLogger <../apis/tracing/tracing.generator_state_logger>`
+- {doc}`adalflow.tracing.GeneratorCallLogger <../apis/tracing/tracing.generator_call_logger>`
+- {doc}`adalflow.components.agent.agent.Agent <../apis/components/components.agent.agent>`
+- {doc}`adalflow.components.agent.runner.Runner <../apis/components/components.agent.runner>`
+- {doc}`adalflow.components.model_client.openai_client.OpenAIClient <../apis/components/components.model_client.openai_client>`
+- {doc}`adalflow.core.types.ToolCallActivityRunItem <../apis/core/core.types>`
+- {doc}`adalflow.core.types.RunItemStreamEvent <../apis/core/core.types>`
+- {doc}`adalflow.core.types.FinalOutputItem <../apis/core/core.types>`
+:::

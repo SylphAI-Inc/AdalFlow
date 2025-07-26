@@ -24,4 +24,4 @@ Tutorials
    Agent Runner <agents_runner>
    Streaming <streaming>
    Tracing <tracing>
-   Permission Management <permission_management>
+   Human in the Loop <human_in_the_loop>
