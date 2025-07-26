@@ -102,11 +102,17 @@ class HotPotQA(Dataset):
             "Dev must be all hard to match official dev, but training can be flexible."
         )
 
+        # hf_official_train = load_dataset(
+        #     "hotpot_qa", "fullwiki", split="train", trust_remote_code=True
+        # )
+        # hf_official_dev = load_dataset(
+        #     "hotpot_qa", "fullwiki", split="validation", trust_remote_code=True
+        # )
         hf_official_train = load_dataset(
-            "hotpot_qa", "fullwiki", split="train", trust_remote_code=True
+            "hotpot_qa", "fullwiki", split="train"
         )
         hf_official_dev = load_dataset(
-            "hotpot_qa", "fullwiki", split="validation", trust_remote_code=True
+            "hotpot_qa", "fullwiki", split="validation"
         )
         data_path_dir = os.path.dirname(data_path)
         # save all the original data

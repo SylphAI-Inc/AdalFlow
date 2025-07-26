@@ -14,7 +14,7 @@
       </a>
    </div>
 
-Agent
+ReAct Agent
 ====================
 
 .. epigraph::
