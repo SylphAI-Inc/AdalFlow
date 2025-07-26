@@ -211,6 +211,19 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
     tool_helper
     agent
 
+Advanced Topics
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Advanced Topics
+    :hidden:
+
+    ../new_tutorials/agents_runner
+    ../new_tutorials/streaming
+    ../new_tutorials/tracing
+    ../new_tutorials/human_in_the_loop
+
 .. Core functionals
 .. -------------------
 .. Code path: ``adalflow.core``

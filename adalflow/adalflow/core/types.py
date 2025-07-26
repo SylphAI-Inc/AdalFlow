@@ -460,7 +460,6 @@ class RawResponsesStreamEvent(DataClass):
     """
 
     data: Union[Any, None] = None
-    data: Optional[Any] = None
     """The raw responses streaming event from the LLM."""
 
     type: Literal["raw_response_event"] = "raw_response_event"
