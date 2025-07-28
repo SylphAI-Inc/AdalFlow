@@ -43,6 +43,13 @@ query: {{ turn.user_query.query_str }}
 {% endif -%}
 {% if turn.assistant_response -%}
 Assistant: {{ turn.assistant_response.response_str }}
+{% if turn.assistant_response.metadata -%}
+{% for key, value in turn.assistant_response.metadata.items() -%}
+{% if not metadata_filter or key in metadata_filter -%}
+{{ key }}: {{ value }}
+{% endif -%}
+{% endfor -%}
+{% endif -%}
 {% endif -%}
 {% if not loop.last %}
 {% endif -%}

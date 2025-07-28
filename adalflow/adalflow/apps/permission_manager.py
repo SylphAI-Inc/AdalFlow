@@ -7,7 +7,9 @@ from enum import Enum
 from dataclasses import dataclass
 import logging
 
-from adalflow.core.types import Function, FunctionRequest, ToolCallPermissionRequest
+from adalflow.core.types import Function, FunctionRequest, ToolCallPermissionRequest, ToolOutput
+from adalflow.core.tool_manager import ToolManager, FunctionTool
+
 
 log = logging.getLogger(__name__)
 
@@ -67,6 +69,7 @@ class PermissionManager:
             ]
         ] = None,
         approval_mode: str = "default",  # "default", "auto_approve", "yolo"
+        tool_manager: Optional[ToolManager] = None,
     ):
         """
         Initialize the permission manager.
@@ -83,6 +86,10 @@ class PermissionManager:
         self.tool_require_approval: Dict[str, bool] = (
             {}
         )  # Track which tools require approval
+        self.tool_manager = tool_manager
+
+    def set_tool_manager(self, tool_manager: ToolManager):
+        self.tool_manager = tool_manager
 
     def register_tool(self, tool_name: str, require_approval: bool = True):
         """Register a tool and whether it requires approval."""
@@ -183,7 +190,7 @@ class PermissionManager:
                 return True, func, response_data
             else:  # CANCEL
                 log.info(f"Tool '{tool_name}' execution cancelled by user")
-                return False, None, None
+                return False, None, response_data
 
         except Exception as e:
             log.error(f"Error during approval callback for tool '{tool_name}': {e}")
@@ -212,7 +219,29 @@ class PermissionManager:
         """Get all pending approval requests."""
         return self.pending_approvals.copy()
 
-    def create_permission_event(self, func: Function) -> ToolCallPermissionRequest:
-        """Create a permission request event for streaming."""
+    def create_permission_event(self, func: Function) -> Union[ToolCallPermissionRequest, ToolOutput]:
+        """Create a permission request event for streaming. Now used only for streaming. Only streaming supports human in the loop"""
         request = FunctionRequest(id=func.id, tool_name=func.name, tool=func)
+        function_tool: FunctionTool = self.tool_manager.get_function_tool_by_name(func.name)
+        # TODO: validate the tool, and if tool does not exits, how should we process it here?
+        if function_tool is None:
+            log.warning(f"Tool '{func.name}' not found in tool manager")
+            # defer the error to the later step
+            return ToolCallPermissionRequest(data=request) 
+
+        if function_tool.pre_execute_callback is not None:
+            # pass the func.parameters to execute the callback (ensure only sync function for now)
+            # TODO: wrap the pre_execute_call
+            result = function_tool.pre_execute_callback(**func.kwargs)
+
+            # check if there is an error field 
+            error = None
+            if hasattr(result, "error") and result.error is not None:
+                error = result.error
+                # we need to output a ToolOutput (pre_execute_error)
+                log.error(f"Pre execute callback result: {result}")
+                return ToolOutput(output=error, observation = error, status="error")
+            # we need to present user the error 
+            if result is not None:
+                request.confirmation_details = result            
         return ToolCallPermissionRequest(data=request)

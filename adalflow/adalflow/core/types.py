@@ -487,6 +487,11 @@ class GeneratorOutput(DataClass, Generic[T_co]):
         default=None, metadata={"desc": "The unique id of the output"}
     )
 
+    input: Optional[Any] = field(
+        default=None,
+        metadata={"desc": "The input to the generator"},
+    )
+
     data: T_co = field(
         default=None,
         metadata={"desc": "The final output data potentially after output parsers"},
@@ -674,6 +679,7 @@ class FunctionOutput(DataClass):
 ######################################################################################
 @dataclass
 class ToolOutput(DataClass):
+    """Using ToolOutput means a completed tool call even if it has error"""
     output: Any = field(
         default=None, metadata={"description": "The output of the tool"}
     )
@@ -692,6 +698,9 @@ class ToolOutput(DataClass):
     )
     metadata: Optional[Dict[str, Any]] = field(
         default=None, metadata={"description": "Additional metadata"}
+    )
+    status: Literal["success", "cancelled", "error"] = field(
+        default="success", metadata={"description": "The status of a completed tool call"}
     )
 
 
@@ -1105,7 +1114,7 @@ class ToolCallRunItem(RunItem):
         ```
     """
 
-    type: str = field(default="tool_call", metadata={"desc": "Type of run item"})
+    type: str = field(default="tool_call_start", metadata={"desc": "Type of run item"})
     data: Optional[Function] = field(
         default=None,
         metadata={"desc": "Function object containing the tool call to be executed"},
@@ -1162,6 +1171,11 @@ class FunctionRequest(DataClass):
         default=None,
         metadata={"desc": "Function object containing the tool call to be executed"},
     )
+    # send this to the frontend user to display the details of the confirmation
+    confirmation_details: Optional[Any] = field(
+        default=None,
+        metadata={"desc": "Confirmation details for the tool call"},
+    )
 
 
 @dataclass
@@ -1177,13 +1191,14 @@ class ToolCallPermissionRequest(RunItem):
         data: The Function object containing the tool call details (name, args, kwargs)
 
     Event Flow Position:
-        1. Planner generates Function → **ToolCallRunItem** → Function execution → ToolOutputRunItem
+        1. Planner generates Function → **ToolCallPermissionRequest** → ToolCallPermissionResponse → ToolCallRunItem
+        or when user rejects the tool call, ToolCallPermissionRequest → ToolCallPermissionResponse → ToolOutputRunItem
 
     Usage:
         ```python
         # Listen for tool calls in streaming
         async for event in runner.astream(prompt_kwargs).stream_events():
-            if isinstance(event, RunItemStreamEvent) and event.name == "tool_called":
+            if isinstance(event, RunItemStreamEvent) and event.name == "tool_call_permission_request":
                 tool_call_item = event.item
                 print(f"About to call: {tool_call_item.data.name}")
         ```

@@ -301,6 +301,12 @@ class ToolManager(Component):
         else:
             raise ValueError(f"expr_or_fun should be a Parameter. Got {expr_or_fun}")
 
+    def get_function_tool_by_name(self, name: str) -> Optional[FunctionTool]:
+        for tool in self.tools:
+            if tool.definition.func_name == name:
+                return tool
+        return None
+
     def execute_func(
         self,
         func: Union[Function, Parameter],
